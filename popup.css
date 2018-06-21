@@ -1,0 +1,14 @@
+
+body {
+    font-family: "Helvetica Neue ", Helvetica, Arial, sans-serif;
+    font-size: 100%;
+    margin:5px;
+    width: 350px;
+    min-height: 450px;
+    padding: 15px;
+}
+
+#add_account_div
+{
+  display: none;
+}

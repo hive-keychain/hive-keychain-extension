@@ -1,10 +1,14 @@
 {
   "name": "Steem Wallet",
-  "version": "0.1",
+  "version": "1.0",
   "description": "Secure Steem Wallet Extension.",
   "permissions": ["activeTab", "declarativeContent", "storage"],
-  "page_action": {
+  "browser_action": {
     "default_popup": "popup.html",
+    "default_icon": "images/logo.png"},
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "manifest_version": 2
 }
