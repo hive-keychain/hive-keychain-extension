@@ -1,0 +1,10 @@
+{
+  "name": "Steem Wallet",
+  "version": "0.1",
+  "description": "Secure Steem Wallet Extension.",
+  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "page_action": {
+    "default_popup": "popup.html",
+  },
+  "manifest_version": 2
+}
