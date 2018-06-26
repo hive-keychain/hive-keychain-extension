@@ -24,12 +24,18 @@ $("#check_add_account").click(function(){
         const pub_posting=result["0"].posting.key_auths["0"]["0"];
         const pub_memo=result["0"].memo_key;
         if(steem.auth.isWif(pwd)){
-          if(isMemoWif(pwd,pub_memo))
+          if(isMemoWif(pwd,pub_memo)){
             $("#message_account_checked").html("Saved memo key for user @"+username+"!");
-          else if(isPostingWif(pwd,pub_posting))
+            addAccount({name:username,keys:{memo:pwd,memoPubkey:pub_memo}});
+          }
+          else if(isPostingWif(pwd,pub_posting)){
             $("#message_account_checked").html("Saved posting key for user @"+username+"!");
-          else if(isActiveWif(pwd,pub_active))
+            addAccount({name:username,keys:{posting:pwd,postingPubkey:pub_posting}});
+          }
+          else if(isActiveWif(pwd,pub_active)){
             $("#message_account_checked").html("Saved active key for user @"+username+"!");
+            addAccount({name:username,keys:{active:pwd,activePubkey:pub_active}});
+          }
         }
         else {
           const keys=steem.auth.getPrivateKeys(username, pwd, ["posting","active","memo"]);
@@ -51,6 +57,28 @@ $("#check_add_account").click(function(){
     $("#message_account_checked").html("Please fill the fields");
 });
 
+$("#save_master").click(function(){
+  if($("#posting_key").prop("checked")||$("#active_key").prop("checked")||$("#memo_key").prop("checked")){
+    var permissions=[];
+    if($("#posting_key").prop("checked"))
+      permissions.push("posting");
+    if($("#active_key").prop("checked"))
+      permissions.push("active");
+    if($("#memo_key").prop("checked"))
+      permissions.push("memo");
+    const keys=steem.auth.getPrivateKeys($("#username").val(), $("#pwd").val(), permissions);
+    addAccount({name:username,keys:keys});
+
+  }
+});
+
+// Add new account to Chrome local storage
+function addAccount(account)
+{
+  console.log(account);
+}
+
+// Set visibilities back to normal when coming back to main menu
 function ReinitializeAddAccountPage()
 {
     $("#add_account_div").css("display","none");
@@ -63,6 +91,9 @@ function ReinitializeAddAccountPage()
     $("#active_key").prop("checked",true);
     $("#memo_key").prop("checked",true);
 }
+
+//Check WIF validity
+
 function isActiveWif(pwd,active)
 {
   return steem.auth.wifToPublic(pwd)==active;
