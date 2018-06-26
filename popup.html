@@ -5,14 +5,27 @@
     <link  rel="stylesheet" type="text/css" href="popup.css">
   </head>
   <body>
-    <h1>Steem Wallet</h1>
-    <button id="add_account">+ Add Account</button>
+    <div id="main">
+      <h1>Steem Wallet</h1>
+      <button id="add_account">+ Add Account</button>
+    </div>
     <div id="add_account_div">
-      <input type="text"></input>
-      <input type="password"></input>
-      <button id="save_add_account">Save</button>
+      <div class="back_menu">Back to Main Menu</div>
+      <h2>Add Account</h2>
+      <input type="text" id="username" placeholder="Username"></input>
+      <input type="password" id="pwd" placeholder="WIF or Master key"></input>
+      <button id="check_add_account">Check</button>
+      <p id="message_account_checked"></p>
+      <div id="master_check">
+        <input type="checkbox" checked=true id="posting_key"/><label for="posting_key">Posting</label>
+        <input type="checkbox" checked=true id="active_key"/><label for="active_key">Active</label>
+        <input type="checkbox" checked=true id="memo_key"/><label for="memo_key">Memo</label>
+        <button id="save_master">Save</button>
+      </div>
+
     </div>
     <script src="vendor/jquery.js"></script>
+    <script src="vendor/steemjs.js"></script>
     <script src="popup.js"></script>
   </body>
 </html>

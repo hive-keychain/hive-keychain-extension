@@ -1,14 +1,51 @@
-
-body {
-    font-family: "Helvetica Neue ", Helvetica, Arial, sans-serif;
-    font-size: 100%;
-    margin:5px;
-    width: 350px;
-    min-height: 450px;
-    padding: 15px;
+body
+{
+  font-family: "Helvetica Neue ", Helvetica, Arial, sans-serif;
+  font-size: 100%;
+  margin:5px;
+  width: 350px;
+  min-height: 450px;
+  padding: 15px;
 }
 
 #add_account_div
 {
   display: none;
+}
+
+#message_account_checked
+{
+  display: none;
+}
+
+#master_check
+{
+  display: none;
+}
+
+.back_menu {
+    cursor: pointer;
+    padding-left: 30px;
+    padding-right: 20px;
+    background-image: url(images/new-back.png);
+    background-position: 60px center;
+    background-repeat: no-repeat;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    background-size: contain;
+    color: #376FA7;
+}
+
+#add_account_div  input{
+  margin-bottom: 20px;
+  margin-right: 15px;
+}
+
+#master_check input{
+  margin-right: 5px;
+}
+
+#master_check label{
+  margin-right: 15px;
 }
