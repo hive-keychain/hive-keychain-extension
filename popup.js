@@ -5,6 +5,11 @@ $("#add_account").click(function(){
   $("#main").css("display","none");
 });
 
+$(".back_menu").click(function(){
+    ReinitializeAddAccountPage();
+    $("#main").css("display","block");
+});
+
 $("#check_add_account").click(function(){
   $("#message_account_checked").css("display","block");
   $("#master_check").css("display","none");
@@ -46,6 +51,18 @@ $("#check_add_account").click(function(){
     $("#message_account_checked").html("Please fill the fields");
 });
 
+function ReinitializeAddAccountPage()
+{
+    $("#add_account_div").css("display","none");
+    $("#message_account_checked").css("display","none");
+    $("#master_check").css("display","none");
+    $("#username").val("");
+    $("#pwd").val("");
+    $("#message_account_checked").html("");
+    $("#posting_key").prop("checked",true);
+    $("#active_key").prop("checked",true);
+    $("#memo_key").prop("checked",true);
+}
 function isActiveWif(pwd,active)
 {
   return steem.auth.wifToPublic(pwd)==active;
