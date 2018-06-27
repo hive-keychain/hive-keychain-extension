@@ -1,4 +1,7 @@
+var accounts_json=null;
+
 steem.api.setOptions({ url: 'https://api.steemit.com' });
+InitializePopup();
 
 $("#add_account").click(function(){
   $("#add_account_div").css("display","block");
@@ -6,8 +9,7 @@ $("#add_account").click(function(){
 });
 
 $(".back_menu").click(function(){
-    ReinitializeAddAccountPage();
-    $("#main").css("display","block");
+    InitializePopup();
 });
 
 $("#check_add_account").click(function(){
@@ -91,11 +93,12 @@ function addAccount(account)
     chrome.storage.local.set({
           accounts:accounts
       });
+    InitializePopup();
   });
 }
 
 // Set visibilities back to normal when coming back to main menu
-function ReinitializeAddAccountPage()
+function InitializePopup()
 {
     $("#add_account_div").css("display","none");
     $("#message_account_checked").css("display","none");
@@ -106,6 +109,9 @@ function ReinitializeAddAccountPage()
     $("#posting_key").prop("checked",true);
     $("#active_key").prop("checked",true);
     $("#memo_key").prop("checked",true);
+    $("#main").css("display","block");
+    
+
 }
 
 //Check WIF validity
