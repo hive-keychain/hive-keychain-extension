@@ -115,6 +115,14 @@ function InitializePopup()
     $("#main").css("display","block");
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
+      if(accounts_json!=null){
+        for(account of accounts_json.list){
+          $("#accounts").append("<div class='account_row'><span class='account_name'>"+account.name+"</span>"
+            +(account.keys.hasOwnProperty("posting")?"<span class='acc_key'>P</span>":"")
+            +(account.keys.hasOwnProperty("active")?"<span class='acc_key'>A</span>":"")
+            +(account.keys.hasOwnProperty("memo")?"<span class='acc_key'>M</span>":"")+"</div>");
+        }
+      }
     });
 
 }
