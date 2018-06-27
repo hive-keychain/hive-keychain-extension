@@ -18,6 +18,9 @@ $("#check_add_account").click(function(){
   const username=$("#username").val();
   const pwd=$("#pwd").val();
   if(username!==""&&pwd!==""){
+    if(accounts_json.list.find(function (element) {return element.name==username}))
+      $("#message_account_checked").html("You already registered an account for @"+username+"!");
+    else
     steem.api.getAccounts([username], function(err, result) {
       console.log(err, result);
       if (result.length!=0)
@@ -110,7 +113,9 @@ function InitializePopup()
     $("#active_key").prop("checked",true);
     $("#memo_key").prop("checked",true);
     $("#main").css("display","block");
-    
+    chrome.storage.local.get(['accounts'], function (items) {
+      accounts_json=items.accounts==undefined?null:items.accounts;
+    });
 
 }
 
