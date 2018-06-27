@@ -49,8 +49,10 @@ $("#check_add_account").click(function(){
 
         }
       }
-      else
+      else{
+        console.log(err);
         $("#message_account_checked").html("Incorrect username");
+      }
     });
   }
   else
@@ -67,7 +69,7 @@ $("#save_master").click(function(){
     if($("#memo_key").prop("checked"))
       permissions.push("memo");
     const keys=steem.auth.getPrivateKeys($("#username").val(), $("#pwd").val(), permissions);
-    addAccount({name:username,keys:keys});
+    addAccount({name:$("#username").val(),keys:keys});
 
   }
 });
@@ -76,6 +78,20 @@ $("#save_master").click(function(){
 function addAccount(account)
 {
   console.log(account);
+  chrome.storage.local.get(['accounts'], function (items) {
+    var accounts=null;
+    var saved_accounts=items.accounts;
+    if(saved_accounts==undefined)
+      accounts={list:[account]};
+    else{
+      saved_accounts.list.push(account)
+      accounts=saved_accounts;
+    }
+    console.log(accounts);
+    chrome.storage.local.set({
+          accounts:accounts
+      });
+  });
 }
 
 // Set visibilities back to normal when coming back to main menu
