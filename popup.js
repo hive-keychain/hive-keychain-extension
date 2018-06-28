@@ -113,7 +113,7 @@ function InitializePopup()
     $("#active_key").prop("checked",true);
     $("#memo_key").prop("checked",true);
     $("#main").css("display","block");
-    $("#account_info").hide();
+    $(".account_info").hide();
     $(".account_info_content").hide();
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
@@ -131,9 +131,10 @@ function InitializePopup()
           console.log();
           const account=accounts_json.list[$(this).index()];
           console.log(account);
+          $(".account_info").attr("id","a"+$(this).index());
           $("#account_info_name").html(account.name);
           $("#main").hide();
-          $("#account_info").show();
+          $(".account_info").show();
         });
       }
     });
@@ -143,7 +144,16 @@ $(".account_info_menu").click(function(){
   $(".account_info_content").eq($(this).index($(".account_info_menu"))).toggle();
 });
 
+$("#confirm_forget_account").click(function(){
+  const i=parseInt($(".account_info").attr("id").replace("a",""));
+  accounts_json.list.splice(i,1);
+  chrome.storage.local.set({
+        accounts:accounts_json
+    },function(){
+      InitializePopup();
+    });
 
+});
 //Check WIF validity
 
 function isActiveWif(pwd,active)

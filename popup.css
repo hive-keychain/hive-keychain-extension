@@ -8,7 +8,7 @@ body
   padding: 15px;
 }
 
-#add_account_div,#message_account_checked,#master_check, #account_info, .account_info_content{
+#add_account_div,#message_account_checked,#master_check, .account_info, .account_info_content{
   display: none;
 }
 
