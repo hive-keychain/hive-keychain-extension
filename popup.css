@@ -8,8 +8,7 @@ body
   padding: 15px;
 }
 
-#add_account_div,#message_account_checked,#master_check, #account_info
-{
+#add_account_div,#message_account_checked,#master_check, #account_info, .account_info_content{
   display: none;
 }
 
@@ -82,4 +81,8 @@ body
 
 #master_check label{
   margin-right: 15px;
+}
+
+.account_info_menu{
+  cursor:pointer;
 }

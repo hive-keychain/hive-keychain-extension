@@ -103,9 +103,9 @@ function addAccount(account)
 // Set visibilities back to normal when coming back to main menu
 function InitializePopup()
 {
-    $("#add_account_div").css("display","none");
-    $("#message_account_checked").css("display","none");
-    $("#master_check").css("display","none");
+    $("#add_account_div").hide();
+    $("#message_account_checked").hide();
+    $("#master_check").hide();
     $("#username").val("");
     $("#pwd").val("");
     $("#message_account_checked").html("");
@@ -113,19 +113,36 @@ function InitializePopup()
     $("#active_key").prop("checked",true);
     $("#memo_key").prop("checked",true);
     $("#main").css("display","block");
+    $("#account_info").hide();
+    $(".account_info_content").hide();
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
       if(accounts_json!=null){
+        $("#accounts").empty();
         for(account of accounts_json.list){
           $("#accounts").append("<div class='account_row'><span class='account_name'>@"+account.name+"</span><span class='acc_keys'>"
             +(account.keys.hasOwnProperty("posting")?"<span class='acc_key'>P</span>":"")
             +(account.keys.hasOwnProperty("active")?"<span class='acc_key'>A</span>":"")
             +(account.keys.hasOwnProperty("memo")?"<span class='acc_key'>M</span>":"")+"</span></div>");
         }
+
+        //OnClick on account
+        $(".account_row").click(function(){
+          console.log();
+          const account=accounts_json.list[$(this).index()];
+          console.log(account);
+          $("#account_info_name").html(account.name);
+          $("#main").hide();
+          $("#account_info").show();
+        });
       }
     });
-
 }
+
+$(".account_info_menu").click(function(){
+  $(".account_info_content").eq($(this).index($(".account_info_menu"))).toggle();
+});
+
 
 //Check WIF validity
 

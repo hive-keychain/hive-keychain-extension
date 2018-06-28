@@ -27,10 +27,17 @@
       </div>
     </div>
     <div id="account_info">
+      <div class="back_menu">Back to Main Menu</div>
       <h2 id="account_info_name"></h2>
-      <div class="account_info_menu" id="account_info_keys">Keys</div>
-      <div class="account_info_menu" id="transactions">Transactions</div>
-      <div class="account_info_menu" id="forget_account">Forget account</div>
+      <div class="account_info_menu" >Keys</div>
+      <div class="account_info_content"></div>
+      <div class="account_info_menu" >Transactions</div>
+      <div class="account_info_content"></div>
+      <div class="account_info_menu" >Forget account</div>
+      <div class="account_info_content">
+        <p>This action will remove this account and all its permissions from your Steem Wallet.</p>
+        <button id="confirm_forget_account">Confirm</button>
+      </div>
     </div>
     <script src="vendor/jquery.js"></script>
     <script src="vendor/steemjs.js"></script>
