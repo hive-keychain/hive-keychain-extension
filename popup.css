@@ -3,38 +3,72 @@ body
   font-family: "Helvetica Neue ", Helvetica, Arial, sans-serif;
   font-size: 100%;
   margin:5px;
-  width: 350px;
+  width: 220px;
   min-height: 450px;
   padding: 15px;
 }
 
-#add_account_div
+#add_account_div,#message_account_checked,#master_check, #account_info
 {
   display: none;
 }
 
-#message_account_checked
-{
-  display: none;
+#add_account{
+  margin-top: 10px;
+  cursor: pointer;
 }
-
-#master_check
-{
-  display: none;
-}
-
 .back_menu {
     cursor: pointer;
     padding-left: 30px;
     padding-right: 20px;
     background-image: url(images/new-back.png);
-    background-position: 60px center;
+    background-position: 10px center;
     background-repeat: no-repeat;
     font-size: 14px;
     text-align: center;
     text-transform: uppercase;
     background-size: contain;
     color: #376FA7;
+}
+
+.account_row{
+  width: 100%;
+  white-space:nowrap;
+  overflow:hidden;
+  border-bottom: 2px solid whitesmoke;
+  padding-bottom: 10px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.account_row:hover{
+  color:blue;
+}
+
+.account_name
+{
+  float:left;
+}
+
+.acc_keys {
+  display: block;
+  text-align: right;
+}
+
+.acc_key {
+	padding-top:2px;
+	padding-bottom:2px;
+	font-size: 12px;
+	display: inline-block;
+	border-radius: 25px;
+	border: 1px solid #42bb8b;
+	text-align: center;
+	padding-left: 5px;
+	padding-right: 5px;
+  margin-left: 10px;
+}
+.acc_key:first {
+  margin-left: 0px;
 }
 
 #add_account_div  input{

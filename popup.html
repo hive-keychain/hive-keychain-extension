@@ -10,7 +10,7 @@
       <h2>Accounts</h2>
       <div id="accounts">
       </div>
-      <button id="add_account">+ Add Account</button>
+      <div id="add_account">+ Add Account</div>
     </div>
     <div id="add_account_div">
       <div class="back_menu">Back to Main Menu</div>
@@ -25,7 +25,12 @@
         <input type="checkbox" checked=true id="memo_key"/><label for="memo_key">Memo</label>
         <button id="save_master">Save</button>
       </div>
-
+    </div>
+    <div id="account_info">
+      <h2 id="account_info_name"></h2>
+      <div class="account_info_menu" id="account_info_keys">Keys</div>
+      <div class="account_info_menu" id="transactions">Transactions</div>
+      <div class="account_info_menu" id="forget_account">Forget account</div>
     </div>
     <script src="vendor/jquery.js"></script>
     <script src="vendor/steemjs.js"></script>
