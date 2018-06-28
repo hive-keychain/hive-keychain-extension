@@ -31,9 +31,21 @@
       <h2 id="account_info_name"></h2>
       <div class="account_info_menu" ><img src="/images/down_chevron.png">Keys</div>
       <div class="account_info_content"></div>
-      <div class="account_info_menu" ><img src="/images/down_chevron.png">Transfers</div>
+      <div class="account_info_menu" style="display:none" id="transfer_to"><img src="/images/down_chevron.png">Transfer</div>
       <div class="account_info_content">
-        <div id="acc_transfers">Loading...</div>
+        <input type="text" id="recipient" placeholder="To username"/>
+        <input type="number" id="amt_send" placeholder="Amount"/>
+        <select id="currency">
+          <option value="SBD">SBD</option>
+          <option value="STEEM">STEEM</option>
+        </select>
+        <input type="text" placeholder="Memo"id="memo_send"/>
+        <button id="send_transfer">Send</button>
+        <div id="message_send_transfer"></div>
+      </div>
+      <div class="account_info_menu" ><img src="/images/down_chevron.png">Wallet History</div>
+      <div class="account_info_content">
+        <div id="acc_transfers"></div>
       </div>
       <div class="account_info_menu" ><img src="/images/down_chevron.png">Forget account</div>
       <div class="account_info_content">

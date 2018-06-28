@@ -128,3 +128,25 @@ body
   margin-top: 5px;
 }
 .italic{font-style: italic;}
+input{
+  width: 82%;
+  margin-bottom: 10px;
+  font-size: 1em;
+}
+#amt_send{
+  width: 55%;
+}
+#currency{
+  width: 25%;
+  font-size: 1em;
+}
+#send_transfer{
+  display: block;
+  padding:0 20px 0 20px;
+  font-size: 1em;
+  margin-top: 10px;
+}
+
+#message_send_transfer{
+  margin-top: 10px;
+}

@@ -51,17 +51,16 @@ $("#check_add_account").click(function(){
           }
           else
             $("#message_account_checked").html("Incorrect private key or password.");
-
         }
       }
       else{
         console.log(err);
-        $("#message_account_checked").html("Incorrect username");
+        $("#message_account_checked").html("Please check the username and try again.");
       }
     });
   }
   else
-    $("#message_account_checked").html("Please fill the fields");
+    $("#message_account_checked").html("Please fill the fields.");
 });
 
 $("#save_master").click(function(){
@@ -117,6 +116,7 @@ function InitializePopup()
     $(".account_info_content").hide();
     $("#acc_transfers").empty();
     $(".account_info_menu").removeClass("rotate180");
+    $("#transfer_to").hide();
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
       if(accounts_json!=null){
@@ -130,9 +130,11 @@ function InitializePopup()
 
         //OnClick on account
         $(".account_row").click(function(){
-          console.log();
           const account=accounts_json.list[$(this).index()];
+          $("#acc_transfers").html("Loading...");
           console.log(account);
+          if(account.keys.hasOwnProperty("active"))
+            $("#transfer_to").show();
           $(".account_info").attr("id","a"+$(this).index());
           $("#account_info_name").html("@"+account.name);
           $("#main").hide();
@@ -159,29 +161,58 @@ $("#confirm_forget_account").click(function(){
     });
 });
 
-$(".account_info_menu").eq(1).click(function(){
+// Display Wallet history
+$(".account_info_menu").eq(2).click(function(){
   if($(".transfer_row").length==0){
+    $("#acc_transfers").empty();
     const username=$("#account_info_name").html().replace("@","");
     steem.api.getAccountHistory(username, -1, 1000, function(err, result) {
-      console.log(result,err);
-      var transfers = result.filter(tx => tx[1].op[0] === 'transfer').slice(0,10);
-      $("#acc_transfers").empty();
-      for (transfer of transfers){
-        var memo=transfer[1].op[1].memo;
-        if(memo[0]=="#"){
-          if(accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))].keys.hasOwnProperty("memo"))
-            memo=window.decodeMemo(accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))].keys.memo, memo);
-          else
-            memo="Add your private memo key to read this memo";
+      console.log(err);
+      if(result!=null){
+        var transfers = result.filter(tx => tx[1].op[0] === 'transfer').slice(0,10);
+          if(transfers.length!=0){
+          for (transfer of transfers){
+            var memo=transfer[1].op[1].memo;
+            if(memo[0]=="#"){
+              if(accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))].keys.hasOwnProperty("memo"))
+                memo=window.decodeMemo(accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))].keys.memo, memo);
+              else
+                memo="Add your private memo key to read this memo";
+            }
+            $("#acc_transfers").append("<div class='transfer_row "+(transfer[1].op[1].from==username?"red":"green")+"'><span class='transfer_name'>"+(transfer[1].op[1].from==username?"To @"+transfer[1].op[1].to:"From @"+transfer[1].op[1].from)+":</span><span class='transfer_val'>"+transfer[1].op[1].amount+"</span></div><div class='memo'>"+memo+"</div><hr>");
+          }
+          $(".transfer_row").click(function(){
+              console.log("a",$(this).index());
+              $(".memo").eq($(this).index()/3).slideToggle();
+          });
         }
-        $("#acc_transfers").append("<div class='transfer_row "+(transfer[1].op[1].from==username?"red":"green")+"'><span class='transfer_name'>"+(transfer[1].op[1].from==username?"To @"+transfer[1].op[1].to:"From @"+transfer[1].op[1].from)+":</span><span class='transfer_val'>"+transfer[1].op[1].amount+"</span></div><div class='memo'>"+memo+"</div><hr>");
+        else
+          $("#acc_transfers").append("No recent transfers");
       }
-      $(".transfer_row").click(function(){
-          console.log("a",$(this).index());
-          $(".memo").eq($(this).index()/3).slideToggle();
-      });
+        else
+          $("#acc_transfers").append("Something went wrong! Please try again later!");
     });
   }
+});
+
+// Send STEEM or SBD to an user
+$("#send_transfer").click(function(){
+  const to=$("#recipient").val();
+  const amount=$("#amt_send").val();
+  const currency=$("#currency").val();
+  const memo=$("#memo_send").val();
+  const account=accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))];
+  if(to!=""&&amount!=""&&amount>=0.001){
+    steem.broadcast.transfer(account.keys.active, account.name, to, amount+" "+currency, memo, function(err, result) {
+        $("#message_send_transfer").empty();
+      if(err==null)
+        $("#message_send_transfer").append("<span class='green'>Transaction successful!</span>");
+      else {
+        $("#message_send_transfer").append("<span class='red'>Something went wrong! Make sure you have enough STEEM/SBD, check the recipient's username and your internet connexion and try again!</span>");
+      }
+    });
+  }
+
 });
 
 //Check WIF validity
