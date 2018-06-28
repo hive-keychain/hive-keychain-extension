@@ -13,8 +13,11 @@ body
 }
 
 #add_account{
-  margin-top: 10px;
+  margin-top: 20px;
   cursor: pointer;
+  color:#42bb8b;
+  font-weight: bold;
+  font-size: 1.2em;
 }
 .back_menu {
     cursor: pointer;
@@ -41,7 +44,7 @@ body
 }
 
 .account_row:hover{
-  color:blue;
+  color:#42bb8b;
 }
 
 .account_name
