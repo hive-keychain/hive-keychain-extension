@@ -141,7 +141,10 @@ function InitializePopup()
 }
 
 $(".account_info_menu").click(function(){
-  $(".account_info_content").eq($(this).index($(".account_info_menu"))).toggle();
+  $(".account_info_content").eq($(this).index()/2-1).slideToggle();
+  if($(this).hasClass("rotate180"))
+    $(this).removeClass("rotate180");
+  else $(this).addClass("rotate180");
 });
 
 $("#confirm_forget_account").click(function(){

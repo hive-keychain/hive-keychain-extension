@@ -3,7 +3,7 @@ body
   font-family: "Helvetica Neue ", Helvetica, Arial, sans-serif;
   font-size: 100%;
   margin:5px;
-  width: 220px;
+  width: 270px;
   min-height: 450px;
   padding: 15px;
 }
@@ -33,7 +33,7 @@ body
     color: #376FA7;
 }
 
-.account_row{
+.account_row,.account_info_menu{
   width: 100%;
   white-space:nowrap;
   overflow:hidden;
@@ -43,7 +43,7 @@ body
   cursor: pointer;
 }
 
-.account_row:hover{
+.account_row:hover,.account_info_menu:hover{
   color:#42bb8b;
 }
 
@@ -87,5 +87,31 @@ body
 }
 
 .account_info_menu{
-  cursor:pointer;
+    cursor: pointer;
+    line-height: 40px;
+    display: block;
+    position: relative;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    text-decoration: none;
+    font-size: 1.2em;
+    color: #000;
+}
+.account_info_menu img{
+  height: 15px;
+  vertical-align: middle;
+  transform-origin: top left;
+  /* IE 10+, Firefox, etc. */
+  -webkit-transform-origin: top left;
+  /* Chrome */
+  -ms-transform-origin: top left;
+  /* IE 9 */
+  margin-right: 40px;
+}
+
+.rotate180 img {
+  transform: rotate(180deg) translate(-100%, -100%);
+  -webkit-transform: rotate(180deg) translate(-100%, -100%);
+  -ms-transform: rotate(180deg) translateX(-100%, -100%);
 }
