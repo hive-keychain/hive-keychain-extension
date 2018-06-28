@@ -31,8 +31,10 @@
       <h2 id="account_info_name"></h2>
       <div class="account_info_menu" ><img src="/images/down_chevron.png">Keys</div>
       <div class="account_info_content"></div>
-      <div class="account_info_menu" ><img src="/images/down_chevron.png">Transactions</div>
-      <div class="account_info_content"></div>
+      <div class="account_info_menu" ><img src="/images/down_chevron.png">Transfers</div>
+      <div class="account_info_content">
+        <div id="acc_transfers">Loading...</div>
+      </div>
       <div class="account_info_menu" ><img src="/images/down_chevron.png">Forget account</div>
       <div class="account_info_content">
         <p>This action will remove this account and all its permissions from your Steem Wallet.</p>
@@ -40,6 +42,7 @@
       </div>
     </div>
     <script src="vendor/jquery.js"></script>
+    <script src="vendor/decode.min.js"></script>
     <script src="vendor/steemjs.js"></script>
     <script src="popup.js"></script>
   </body>

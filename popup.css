@@ -3,19 +3,23 @@ body
   font-family: "Helvetica Neue ", Helvetica, Arial, sans-serif;
   font-size: 100%;
   margin:5px;
-  width: 270px;
+  width: 320px;
   min-height: 450px;
   padding: 15px;
+  --steem-dark-blue:#1a509a;
+  --steem-light-blue:#4ba2f2;
 }
 
-#add_account_div,#message_account_checked,#master_check, .account_info, .account_info_content{
+#add_account_div,#message_account_checked,#master_check, .account_info, .account_info_content,.memo{
   display: none;
 }
-
+#acc_transfers{
+  margin-bottom: 20px;
+}
 #add_account{
   margin-top: 20px;
   cursor: pointer;
-  color:#42bb8b;
+  color:var(--steem-light-blue);
   font-weight: bold;
   font-size: 1.2em;
 }
@@ -38,21 +42,22 @@ body
   white-space:nowrap;
   overflow:hidden;
   border-bottom: 2px solid whitesmoke;
-  padding-bottom: 10px;
-  margin-top: 10px;
+  padding-bottom: 15px;
+  margin-top: 15px;
   cursor: pointer;
+  font-size: 1.2em;
 }
 
 .account_row:hover,.account_info_menu:hover{
-  color:#42bb8b;
+  color:var(--steem-dark-blue);
 }
 
-.account_name
+.account_name, .transfer_name
 {
   float:left;
 }
 
-.acc_keys {
+.acc_keys,.transfer_val {
   display: block;
   text-align: right;
 }
@@ -63,7 +68,7 @@ body
 	font-size: 12px;
 	display: inline-block;
 	border-radius: 25px;
-	border: 1px solid #42bb8b;
+	border: 1px solid var(--steem-light-blue);
 	text-align: center;
 	padding-left: 5px;
 	padding-right: 5px;
@@ -115,3 +120,11 @@ body
   -webkit-transform: rotate(180deg) translate(-100%, -100%);
   -ms-transform: rotate(180deg) translateX(-100%, -100%);
 }
+
+.red{color:red;}
+.green{color:green;}
+.memo{
+  text-overflow: clip;
+  margin-top: 5px;
+}
+.italic{font-style: italic;}

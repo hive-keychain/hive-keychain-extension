@@ -115,6 +115,8 @@ function InitializePopup()
     $("#main").css("display","block");
     $(".account_info").hide();
     $(".account_info_content").hide();
+    $("#acc_transfers").empty();
+    $(".account_info_menu").removeClass("rotate180");
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
       if(accounts_json!=null){
@@ -132,7 +134,7 @@ function InitializePopup()
           const account=accounts_json.list[$(this).index()];
           console.log(account);
           $(".account_info").attr("id","a"+$(this).index());
-          $("#account_info_name").html(account.name);
+          $("#account_info_name").html("@"+account.name);
           $("#main").hide();
           $(".account_info").show();
         });
@@ -155,8 +157,33 @@ $("#confirm_forget_account").click(function(){
     },function(){
       InitializePopup();
     });
-
 });
+
+$(".account_info_menu").eq(1).click(function(){
+  if($(".transfer_row").length==0){
+    const username=$("#account_info_name").html().replace("@","");
+    steem.api.getAccountHistory(username, -1, 1000, function(err, result) {
+      console.log(result,err);
+      var transfers = result.filter(tx => tx[1].op[0] === 'transfer').slice(0,10);
+      $("#acc_transfers").empty();
+      for (transfer of transfers){
+        var memo=transfer[1].op[1].memo;
+        if(memo[0]=="#"){
+          if(accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))].keys.hasOwnProperty("memo"))
+            memo=window.decodeMemo(accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))].keys.memo, memo);
+          else
+            memo="Add your private memo key to read this memo";
+        }
+        $("#acc_transfers").append("<div class='transfer_row "+(transfer[1].op[1].from==username?"red":"green")+"'><span class='transfer_name'>"+(transfer[1].op[1].from==username?"To @"+transfer[1].op[1].to:"From @"+transfer[1].op[1].from)+":</span><span class='transfer_val'>"+transfer[1].op[1].amount+"</span></div><div class='memo'>"+memo+"</div><hr>");
+      }
+      $(".transfer_row").click(function(){
+          console.log("a",$(this).index());
+          $(".memo").eq($(this).index()/3).slideToggle();
+      });
+    });
+  }
+});
+
 //Check WIF validity
 
 function isActiveWif(pwd,active)
