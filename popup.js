@@ -117,6 +117,8 @@ function InitializePopup()
     $("#acc_transfers").empty();
     $(".account_info_menu").removeClass("rotate180");
     $("#transfer_to").hide();
+    $("#add_key_div").hide();
+    $("#new_key").val("");
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
       if(accounts_json!=null){
@@ -153,21 +155,101 @@ $(".account_info_menu").click(function(){
 
 $("#confirm_forget_account").click(function(){
   const i=parseInt($(".account_info").attr("id").replace("a",""));
-  accounts_json.list.splice(i,1);
-  chrome.storage.local.set({
-        accounts:accounts_json
-    },function(){
-      InitializePopup();
-    });
+  deleteAccount(i);
 });
 
+// Manage keys
+$(".account_info_menu").eq(0).click(function(){
+  manageKeys();
+});
+
+function manageKeys(){
+  if($(".row_account_keys").length==0){
+    const i=parseInt($(".account_info").attr("id").replace("a",""));
+    const keys=accounts_json.list[i].keys;
+    for(keyName in keys)
+    {
+      if(!keyName.includes("Pubkey"))
+      {
+        $("#keys_info").append("<div class='row_account_keys'><div class='type_key'>"+keyName[0]+"</div><div class='div_keys'><div class='privateRow'><input type='text' readOnly='true' value='"+keys[keyName]+"' class='privKey'></input><img class='copyKey'/><img id='"+keyName+"' class='deleteKey'/></div><div class='publicRow'><input type='text' readOnly='true' value='"+keys[keyName+"Pubkey"]+"' class='pubKey'></input><img class='copyKey'/></div></div></div>");
+      }
+    }
+
+    $(".copyKey").click(function(){
+      $(this).parent().children().eq(0).select();
+      document.execCommand("copy");
+      document.selection.empty();
+    });
+
+    $(".deleteKey").click(function(){
+        delete accounts_json.list[i].keys[$(this).attr("id")];
+        delete accounts_json.list[i].keys[$(this).attr("id")+"Pubkey"];
+        $(this).closest($(".row_account_keys")).remove();
+        if($(".row_account_keys").length==0)
+          deleteAccount();
+        else {
+          updateAccount();
+        }
+    });
+  }
+}
+// Show add a new key
+$('#add_key').click(function(){
+  $('#add_key_div').show();
+});
+
+// Try to add the new key
+$('#add_new_key').click(function(){
+  const username=$("#account_info_name").html().replace("@","");
+  const i=parseInt($(".account_info").attr("id").replace("a",""));
+  const keys=accounts_json.list[i].keys;
+  const pwd=$("#new_key").val();
+  if(steem.auth.isWif(pwd)){
+    steem.api.getAccounts([username], function(err, result) {
+      console.log(err, result);
+      if (result.length!=0)
+      {
+        const pub_active=result["0"].active.key_auths["0"]["0"];
+        const pub_posting=result["0"].posting.key_auths["0"]["0"];
+        const pub_memo=result["0"].memo_key;
+        if(isMemoWif(pwd,pub_memo)){
+          if(keys.hasOwnProperty("memo"))
+            $("#error_add_key").html("You already entered your memo key!");
+          else
+            addKeys(i,"memo",pwd,pub_memo);
+        }
+        else if(isPostingWif(pwd,pub_posting)){
+          if(keys.hasOwnProperty("posting"))
+            $("#error_add_key").html("You already entered your posting key!");
+          else
+            addKeys(i,"posting",pwd,pub_posting);
+        }
+        else if(isActiveWif(pwd,pub_active)){
+          if(keys.hasOwnProperty("active"))
+            $("#error_add_key").html("You already entered your active key!");
+          else
+            addKeys(i,"active",pwd,pub_active);
+      }
+    }
+    });
+  }
+  else
+    $("#error_add_key").html("Not a private WIF!");
+});
+
+function addKeys(i,key,priv,pub){
+  accounts_json.list[i].keys[key]=priv;
+  accounts_json.list[i].keys[key+"Pubkey"]=pub;
+  updateAccount();
+  $("#keys_info").empty();
+  manageKeys();
+}
 // Display Wallet history
 $(".account_info_menu").eq(2).click(function(){
   if($(".transfer_row").length==0){
-    $("#acc_transfers").empty();
     const username=$("#account_info_name").html().replace("@","");
     steem.api.getAccountHistory(username, -1, 1000, function(err, result) {
-      console.log(err);
+      $("#acc_transfers").empty();
       if(result!=null){
         var transfers = result.filter(tx => tx[1].op[0] === 'transfer').slice(0,10);
           if(transfers.length!=0){
@@ -212,11 +294,25 @@ $("#send_transfer").click(function(){
       }
     });
   }
-
 });
 
-//Check WIF validity
 
+function deleteAccount(i){
+  accounts_json.list.splice(i,1);
+  chrome.storage.local.set({
+        accounts:accounts_json
+    },function(){
+      InitializePopup();
+    });
+}
+
+function updateAccount(){
+  chrome.storage.local.set({
+        accounts:accounts_json
+    });
+}
+
+//Check WIF validity
 function isActiveWif(pwd,active)
 {
   return steem.auth.wifToPublic(pwd)==active;

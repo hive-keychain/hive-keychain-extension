@@ -30,7 +30,16 @@
       <div class="back_menu">Back to Main Menu</div>
       <h2 id="account_info_name"></h2>
       <div class="account_info_menu" ><img src="/images/down_chevron.png">Keys</div>
-      <div class="account_info_content"></div>
+      <div class="account_info_content">
+        <div id="keys_info"></div>
+        <div id="add_key">+ Add key</div>
+        <div id="add_key_div">
+          <input type="password" placeholder="Private Wif" id="new_key"/>
+          <button id="add_new_key">Add</button>
+          <p id="error_add_key"></p>
+        </div>
+
+      </div>
       <div class="account_info_menu" style="display:none" id="transfer_to"><img src="/images/down_chevron.png">Transfer</div>
       <div class="account_info_content">
         <input type="text" id="recipient" placeholder="To username"/>

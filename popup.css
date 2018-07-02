@@ -10,7 +10,7 @@ body
   --steem-light-blue:#4ba2f2;
 }
 
-#add_account_div,#message_account_checked,#master_check, .account_info, .account_info_content,.memo{
+#add_key_div,#add_account_div,#message_account_checked,#master_check, .account_info, .account_info_content,.memo{
   display: none;
 }
 #acc_transfers{
@@ -149,4 +149,62 @@ input{
 
 #message_send_transfer{
   margin-top: 10px;
+}
+
+.type_key{
+  padding-top:2px;
+  padding-bottom:2px;
+  font-size: 12px;
+  display: inline-block;
+  border-radius: 25px;
+  border: 1px solid var(--steem-light-blue);
+  text-align: center;
+  padding-left: 5px;
+  padding-right: 5px;
+  float:left;
+  text-transform: capitalize;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+.div_keys{
+  width:280px;
+  display: inline-block;
+}
+.privKey, .pubKey{
+  display: inline-block;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  margin-bottom: 10px;
+  margin-right: 10px;
+  width:200px;
+  vertical-align: middle;
+
+}
+
+.pubKey{
+  color: grey;
+  font-style: italic;
+}
+
+.copyKey{
+  content: url("images/copy.png");
+  height: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.deleteKey{
+  content: url("images/delete.png");
+  height: 20px;
+  cursor: pointer;
+}
+
+#add_key{
+  margin-top: 20px;
+  cursor: pointer;
+  color:var(--steem-light-blue);
+  font-weight: bold;
+  font-size: 1.2em;
+  margin-bottom: 10px;
 }
