@@ -120,6 +120,9 @@ function InitializePopup()
     $("#add_key_div").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
+    $("#balance_steem").html("STEEM");
+    $("#balance_sbd").html("SBD");
+    $("#balance_sp").html("SP");
 
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
@@ -135,6 +138,26 @@ function InitializePopup()
         //OnClick on account
         $(".account_row").click(function(){
           const account=accounts_json.list[$(this).index()];
+          steem.api.getAccounts([account.name], function(err, result) {
+            console.log(result,err);
+            if (result.length!=0)
+            {
+            const sbd=result["0"].sbd_balance;
+            const vs=result["0"].vesting_shares;
+            const steem_v=result["0"].balance;
+            steem.api.getDynamicGlobalProperties(function(err, res) {
+              if (res.length!=0)
+              {
+                const total_vesting_shares=res.total_vesting_shares;
+                const total_vesting_fund=res.total_vesting_fund_steem;
+                const sp=steem.formatter.vestToSteem(vs, total_vesting_shares, total_vesting_fund);
+                $("#balance_steem").html(numberWithCommas(steem_v));
+                $("#balance_sbd").html(numberWithCommas(sbd));
+                $("#balance_sp").html(numberWithCommas(sp.toFixed(3))+" SP");
+              }
+            });
+          }
+          });
           $("#acc_transfers").html("Loading...");
           console.log(account);
           if(account.keys.hasOwnProperty("active"))
@@ -328,4 +351,8 @@ function isPostingWif(pwd,posting)
 function isMemoWif(pwd,memo)
 {
   return steem.auth.wifToPublic(pwd)==memo;
+}
+
+var numberWithCommas = (x) => {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

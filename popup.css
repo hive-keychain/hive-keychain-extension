@@ -213,3 +213,12 @@ input{
   font-size: 1.2em;
   margin-bottom: 10px;
 }
+
+#balances{
+  color:var(--steem-light-blue);
+  font-size: 1.2em;
+  font-weight: bold;
+}
+#balance_sbd{
+  color:var(--steem-dark-blue);
+}
