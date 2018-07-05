@@ -123,6 +123,7 @@ function InitializePopup()
     $("#balance_steem").html("");
     $("#balance_sbd").html("");
     $("#balance_sp").html("");
+    $("#balance_loader").show();
 
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
@@ -154,6 +155,7 @@ function InitializePopup()
                 $("#balance_steem").html(numberWithCommas(steem_v));
                 $("#balance_sbd").html(numberWithCommas(sbd));
                 $("#balance_sp").html(numberWithCommas(sp.toFixed(3))+" SP");
+                $("#balance_loader").hide();
               }
             });
           }
@@ -305,6 +307,8 @@ $(".account_info_menu").eq(2).click(function(){
 
 // Send STEEM or SBD to an user
 $("#send_transfer").click(function(){
+  $("#send_loader").show();
+  $("#send_transfer").hide();
   const to=$("#recipient").val();
   const amount=$("#amt_send").val();
   const currency=$("#currency").val();
@@ -312,7 +316,8 @@ $("#send_transfer").click(function(){
   const account=accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))];
   if(to!=""&&amount!=""&&amount>=0.001){
     steem.broadcast.transfer(account.keys.active, account.name, to, amount+" "+currency, memo, function(err, result) {
-        $("#message_send_transfer").empty();
+      $("#message_send_transfer").empty();
+      $("#send_loader").hide();
       if(err==null)
         $("#message_send_transfer").append("<span class='green'>Transaction successful!</span>");
       else {
