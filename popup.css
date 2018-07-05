@@ -128,16 +128,21 @@ body
   margin-top: 5px;
 }
 .italic{font-style: italic;}
+
+
+#send input{
+    width: 82%;
+    margin-bottom: 10px;
+}
 input{
-  width: 82%;
-  margin-bottom: 10px;
   font-size: 1em;
 }
+
 #amt_send{
-  width: 55%;
+  width: 55%!important;
 }
 #currency{
-  width: 25%;
+  width: 25%!important;
   font-size: 1em;
 }
 #send_transfer{
