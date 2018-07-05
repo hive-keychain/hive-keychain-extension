@@ -119,6 +119,8 @@ function InitializePopup()
     $("#transfer_to").hide();
     $("#add_key_div").hide();
     $("#new_key").val("");
+    $("#keys_info").empty();
+
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
       if(accounts_json!=null){
