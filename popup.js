@@ -18,7 +18,7 @@ $("#check_add_account").click(function(){
   const username=$("#username").val();
   const pwd=$("#pwd").val();
   if(username!==""&&pwd!==""){
-    if(accounts_json.list.find(function (element) {return element.name==username}))
+    if(accounts_json && accounts_json.list.find(function (element) {return element.name==username}))
       $("#message_account_checked").html("You already registered an account for @"+username+"!");
     else
     steem.api.getAccounts([username], function(err, result) {
