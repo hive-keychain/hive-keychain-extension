@@ -120,9 +120,9 @@ function InitializePopup()
     $("#add_key_div").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
-    $("#balance_steem").html("STEEM");
-    $("#balance_sbd").html("SBD");
-    $("#balance_sp").html("SP");
+    $("#balance_steem").html("");
+    $("#balance_sbd").html("");
+    $("#balance_sp").html("");
 
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
@@ -172,7 +172,7 @@ function InitializePopup()
 }
 
 $(".account_info_menu").click(function(){
-  $(".account_info_content").eq($(this).index()/2-1).slideToggle();
+  $(".account_info_content").eq(($(this).index()-3)/2).slideToggle();
   if($(this).hasClass("rotate180"))
     $(this).removeClass("rotate180");
   else $(this).addClass("rotate180");
@@ -254,8 +254,9 @@ $('#add_new_key').click(function(){
             $("#error_add_key").html("You already entered your active key!");
           else
             addKeys(i,"active",pwd,pub_active);
-      }
-    }
+        } else
+          $("#error_add_key").html("This is not one of your keys!");
+        }
     });
   }
   else
