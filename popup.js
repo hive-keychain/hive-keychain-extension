@@ -315,7 +315,7 @@ $("#send_transfer").click(function(){
   const memo=$("#memo_send").val();
   const account=accounts_json.list[parseInt($(".account_info").attr("id").replace("a",""))];
   if(to!=""&&amount!=""&&amount>=0.001){
-    steem.broadcast.transfer(account.keys.active, account.name, to, amount+" "+currency, memo, function(err, result) {
+    steem.broadcast.transfer(account.keys.active, account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
       $("#message_send_transfer").empty();
       $("#send_loader").hide();
       if(err==null)
