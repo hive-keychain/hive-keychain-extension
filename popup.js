@@ -6,11 +6,14 @@ chrome.storage.local.get(['accounts','mk'], function (items) {
     if(items.mk==null||items.mk==undefined){
       if(items.accounts==null||items.accounts==undefined)
         showRegister();
-      else
+      else{
         showUnlock();
+      }
     }
-    else
+    else{
+      mk=items.mk;
       InitializePopup();
+    }
 });
 
 $("#lock").click(function(){
@@ -123,19 +126,15 @@ $("#save_master").click(function(){
 // Add new account to Chrome local storage
 function addAccount(account)
 {
-  console.log(account);
-  chrome.storage.local.get(['accounts'], function (items) {
-    var accounts=null;
-    var saved_accounts=items.accounts;
-    if(saved_accounts==undefined)
+    var saved_accounts=accounts_json;
+    if(saved_accounts==undefined||saved_accounts==null)
       accounts={list:[account]};
     else{
       saved_accounts.list.push(account)
       accounts=saved_accounts;
     }
-    console.log(accounts);
     chrome.storage.local.set({
-          accounts:accounts
+          accounts:encryptJson(accounts,mk)
       });
     InitializePopup();
   });
@@ -170,7 +169,7 @@ function InitializePopup()
     $("#unlock").hide();
 
     chrome.storage.local.get(['accounts'], function (items) {
-      accounts_json=items.accounts==undefined?null:items.accounts;
+      accounts_json=items.accounts==undefined?null:decryptToJson(items.accounts,mk);
       if(accounts_json!=null){
         $("#accounts").empty();
         for(account of accounts_json.list){
@@ -361,7 +360,7 @@ function sendTransfer(){
 function deleteAccount(i){
   accounts_json.list.splice(i,1);
   chrome.storage.local.set({
-        accounts:accounts_json
+        accounts:encryptJson(accounts_json,mk)
     },function(){
       InitializePopup();
     });
@@ -369,7 +368,7 @@ function deleteAccount(i){
 
 function updateAccount(){
   chrome.storage.local.set({
-        accounts:accounts_json
+        accounts:encryptJson(accounts_json,mk)
     });
 }
 

@@ -4,6 +4,21 @@ var keySize = 256;
 var ivSize = 128;
 var iterations = 100;
 
+function encryptJson(json,pwd){
+  json.hash=md5(json.list);
+  console.log(json,pwd);
+  var msg= encrypt(JSON.stringify(json),pwd);
+  return msg;
+}
+
+function decryptToJson(msg,pwd){
+  var decrypted=JSON.parse(decrypt(msg,pwd).toString(CryptoJS.enc.Utf8));
+  if(decrypted.hash!=null&&decrypted.hash==md5(decrypted.list))
+    return decrypted;
+  else
+    return null;
+}
+
 function encrypt (msg, pass) {
   var salt = CryptoJS.lib.WordArray.random(128/8);
   var key = CryptoJS.PBKDF2(pass, salt, {
