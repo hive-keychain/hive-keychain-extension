@@ -267,3 +267,16 @@ input{
   color:var(--steem-dark-blue);
 
 }
+
+.error{
+  margin-top: 10px;
+  color: red;
+}
+
+#lock{
+  cursor: pointer;
+  margin-top: 50px;
+  color: var(--steem-dark-blue);
+  font-size: 1.3em;
+  font-weight: bold;
+}

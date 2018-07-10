@@ -11,6 +11,7 @@
       <input type="password" id="master_pwd" placeholder="Password"/>
       <input type="password" id="confirm_master_pwd" placeholder="Confirm"/>
       <button id="submit_master_pwd">Submit</button>
+      <div id="error_register" class="error"></div>
     </div>
     <div id="unlock">
       <h1>Steem Wallet</h1>
@@ -30,6 +31,7 @@
       <div id="accounts">
       </div>
       <div id="add_account">+ Add Account</div>
+      <div id="lock">Lock</div>
     </div>
     <div id="add_account_div">
       <div class="back_menu">Back to Main Menu</div>
@@ -61,9 +63,8 @@
         <div id="add_key_div">
           <input type="password" placeholder="Private Wif" id="new_key"/>
           <button id="add_new_key">Add</button>
-          <p id="error_add_key"></p>
+          <p id="error_add_key" class="error"></p>
         </div>
-
       </div>
       <div class="account_info_menu" style="display:none" id="transfer_to"><img src="/images/down_chevron.png">Transfer</div>
       <div class="account_info_content" id="send">

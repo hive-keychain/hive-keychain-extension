@@ -1,25 +1,32 @@
-var accounts_json=null;
+var accounts_json=null,mk=null;
 
 steem.api.setOptions({ url: 'https://api.steemit.com' });
-InitializePopup();
 
-chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
-  console.log(msg);
-  if(msg.isUnlocked==false){
-    $("#main").hide();
-    $("#unlock").show();
-  }
-});
-
-chrome.storage.local.get(['accounts'], function (items) {
+chrome.storage.local.get(['accounts','mk'], function (items) {
   if(items.accounts==null||items.accounts==undefined)
   {
     $("#main").hide();
     $("#register").show();
   }
-  else{
-    chrome.runtime.sendMessage({command:"isUnlocked"},function(response){});
-  }
+    if(items.mk==null||items.mk==undefined){
+      if(items.accounts==null||items.accounts==undefined)
+      {
+        $("#main").hide();
+        $("#register").show();
+      }
+      else {
+        $("#main").hide();
+        $("#unlock").show();
+      }
+    }
+    else
+      InitializePopup();
+});
+
+$("#lock").click(function(){
+  chrome.storage.local.remove("mk");
+  $("#main").hide();
+  $("#unlock").show();
 });
 
 $("#forgot").click(function(){
@@ -33,6 +40,25 @@ $("#forgot_div button").click(function(){
       $("#register").show();
   });
 });
+
+$("#submit_master_pwd").click(function(){
+  console.log($("#master_pwd").val());
+  if(!$("#master_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)){
+    if($("#master_pwd").val()==$("#confirm_master_pwd").val())
+    {
+      mk=$("#master_pwd").val();
+      chrome.storage.local.set({mk:mk},function(){
+        InitializePopup();
+      });
+    }
+    else
+      $("#error_register").html("Your passwords do not match");
+  }
+  else
+    $("#error_register").html("Please use a stronger password. At least 8 characters (upper and lower case, digits and special characters).");
+});
+
+
 
 $("#add_account").click(function(){
   $("#add_account_div").css("display","block");
@@ -155,6 +181,8 @@ function InitializePopup()
     $("#balance_sbd").html("");
     $("#balance_sp").html("");
     $("#balance_loader").show();
+    $("#register").hide();
+    $("#unlock").hide();
 
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=items.accounts==undefined?null:items.accounts;
