@@ -10,7 +10,7 @@ body
   --steem-light-blue:#4ba2f2;
 }
 
-#add_key_div,#add_account_div,#message_account_checked,#master_check, .account_info, .account_info_content,.memo{
+#forgot_div,#unlock, #register,#add_key_div,#add_account_div,#message_account_checked,#master_check, .account_info, .account_info_content,.memo{
   display: none;
 }
 #acc_transfers{
@@ -243,4 +243,27 @@ input{
 #balance_loader div{
   width: 40px;
   height:40px;
+}
+
+#register, #unlock
+{
+  text-align: center;
+}
+
+#register input, #unlock input{
+  width: 80%;
+  margin-bottom: 10px;
+}
+
+#forgot,#forgot_div{
+  text-align: left;
+}
+
+#forgot{
+  display: block;
+  text-decoration: none;
+  padding-bottom: 10px;
+  padding-top: 50px;
+  color:var(--steem-dark-blue);
+
 }

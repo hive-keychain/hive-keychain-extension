@@ -3,6 +3,37 @@ var accounts_json=null;
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 InitializePopup();
 
+chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
+  console.log(msg);
+  if(msg.isUnlocked==false){
+    $("#main").hide();
+    $("#unlock").show();
+  }
+});
+
+chrome.storage.local.get(['accounts'], function (items) {
+  if(items.accounts==null||items.accounts==undefined)
+  {
+    $("#main").hide();
+    $("#register").show();
+  }
+  else{
+    chrome.runtime.sendMessage({command:"isUnlocked"},function(response){});
+  }
+});
+
+$("#forgot").click(function(){
+  $("#forgot_div").show();
+});
+
+$("#forgot_div button").click(function(){
+  chrome.storage.local.clear(function(){
+      $("#forgot_div").hide();
+      $("#unlock").hide();
+      $("#register").show();
+  });
+});
+
 $("#add_account").click(function(){
   $("#add_account_div").css("display","block");
   $("#main").css("display","none");

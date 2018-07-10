@@ -5,6 +5,25 @@
     <link  rel="stylesheet" type="text/css" href="popup.css">
   </head>
   <body>
+    <div id="register">
+      <h1>Steem Wallet</h1>
+      <p>Please chose a strong password to encrypt your private keys.</p>
+      <input type="password" id="master_pwd" placeholder="Password"/>
+      <input type="password" id="confirm_master_pwd" placeholder="Confirm"/>
+      <button id="submit_master_pwd">Submit</button>
+    </div>
+    <div id="unlock">
+      <h1>Steem Wallet</h1>
+      <p>Unlock your wallet with your master password!</p>
+      <input type="password" id="unlock_pwd" placeholder="Password"/>
+      <button id="submit_unlock">Unlock</button>
+      <a href="#" id="forgot">I forgot my password.</a>
+      <div id="forgot_div">
+        <p>If you forgot your password, you can clear your data but will have to enter all your keys again.</p>
+        <button>Confirm</button>
+      </div>
+
+    </div>
     <div id="main">
       <h1>Steem Wallet</h1>
       <h2>Accounts</h2>
