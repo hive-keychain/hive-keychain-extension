@@ -3,21 +3,11 @@ var accounts_json=null,mk=null;
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 
 chrome.storage.local.get(['accounts','mk'], function (items) {
-  if(items.accounts==null||items.accounts==undefined)
-  {
-    $("#main").hide();
-    $("#register").show();
-  }
     if(items.mk==null||items.mk==undefined){
       if(items.accounts==null||items.accounts==undefined)
-      {
-        $("#main").hide();
-        $("#register").show();
-      }
-      else {
-        $("#main").hide();
-        $("#unlock").show();
-      }
+        showRegister();
+      else
+        showUnlock();
     }
     else
       InitializePopup();
@@ -25,8 +15,7 @@ chrome.storage.local.get(['accounts','mk'], function (items) {
 
 $("#lock").click(function(){
   chrome.storage.local.remove("mk");
-  $("#main").hide();
-  $("#unlock").show();
+  showUnlock();
 });
 
 $("#forgot").click(function(){
@@ -58,11 +47,8 @@ $("#submit_master_pwd").click(function(){
     $("#error_register").html("Please use a stronger password. At least 8 characters (upper and lower case, digits and special characters).");
 });
 
-
-
 $("#add_account").click(function(){
-  $("#add_account_div").css("display","block");
-  $("#main").css("display","none");
+  showAddAccount();
 });
 
 $(".back_menu").click(function(){
@@ -131,7 +117,6 @@ $("#save_master").click(function(){
       permissions.push("memo");
     const keys=steem.auth.getPrivateKeys($("#username").val(), $("#pwd").val(), permissions);
     addAccount({name:$("#username").val(),keys:keys});
-
   }
 });
 
@@ -202,31 +187,14 @@ function InitializePopup()
             console.log(result,err);
             if (result.length!=0)
             {
-            const sbd=result["0"].sbd_balance;
-            const vs=result["0"].vesting_shares;
-            const steem_v=result["0"].balance;
             steem.api.getDynamicGlobalProperties(function(err, res) {
               if (res.length!=0)
-              {
-                const total_vesting_shares=res.total_vesting_shares;
-                const total_vesting_fund=res.total_vesting_fund_steem;
-                const sp=steem.formatter.vestToSteem(vs, total_vesting_shares, total_vesting_fund);
-                $("#balance_steem").html(numberWithCommas(steem_v));
-                $("#balance_sbd").html(numberWithCommas(sbd));
-                $("#balance_sp").html(numberWithCommas(sp.toFixed(3))+" SP");
-                $("#balance_loader").hide();
-              }
+                showBalances(result,res);
             });
           }
           });
           $("#acc_transfers").html("Loading...");
-          console.log(account);
-          if(account.keys.hasOwnProperty("active"))
-            $("#transfer_to").show();
-          $(".account_info").attr("id","a"+$(this).index());
-          $("#account_info_name").html("@"+account.name);
-          $("#main").hide();
-          $(".account_info").show();
+          showAccountInfo(account,this);
         });
       }
     });
@@ -366,8 +334,11 @@ $(".account_info_menu").eq(2).click(function(){
 
 // Send STEEM or SBD to an user
 $("#send_transfer").click(function(){
-  $("#send_loader").show();
-  $("#send_transfer").hide();
+  showLoader();
+  sendTransfer();
+});
+
+function sendTransfer(){
   const to=$("#recipient").val();
   const amount=$("#amt_send").val();
   const currency=$("#currency").val();
@@ -384,7 +355,7 @@ $("#send_transfer").click(function(){
       }
     });
   }
-});
+}
 
 
 function deleteAccount(i){
@@ -420,4 +391,48 @@ function isMemoWif(pwd,memo)
 
 var numberWithCommas = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// Handle pages visibility
+
+function showRegister(){
+  $("#main").hide();
+  $("#register").show();
+}
+
+function showUnlock(){
+  $("#main").hide();
+  $("#unlock").show();
+}
+
+function showLoader(){
+  $("#send_loader").show();
+  $("#send_transfer").hide();
+}
+
+function showAccountInfo(account,that){
+  if(account.keys.hasOwnProperty("active"))
+    $("#transfer_to").show();
+  $(".account_info").attr("id","a"+$(that).index());
+  $("#account_info_name").html("@"+account.name);
+  $("#main").hide();
+  $(".account_info").show();
+}
+
+function showBalances(result,res){
+  const sbd=result["0"].sbd_balance;
+  const vs=result["0"].vesting_shares;
+  const steem_v=result["0"].balance;
+  const total_vesting_shares=res.total_vesting_shares;
+  const total_vesting_fund=res.total_vesting_fund_steem;
+  const sp=steem.formatter.vestToSteem(vs, total_vesting_shares, total_vesting_fund);
+  $("#balance_steem").html(numberWithCommas(steem_v));
+  $("#balance_sbd").html(numberWithCommas(sbd));
+  $("#balance_sp").html(numberWithCommas(sp.toFixed(3))+" SP");
+  $("#balance_loader").hide();
+}
+
+function showAddAccount(){
+  $("#add_account_div").css("display","block");
+  $("#main").css("display","none");
 }
