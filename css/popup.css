@@ -27,7 +27,7 @@ body
     cursor: pointer;
     padding-left: 30px;
     padding-right: 20px;
-    background-image: url(images/new-back.png);
+    background-image: url("../images/new-back.png");
     background-position: 10px center;
     background-repeat: no-repeat;
     font-size: 14px;
@@ -193,14 +193,14 @@ input{
 }
 
 .copyKey{
-  content: url("images/copy.png");
+  content: url("../images/copy.png");
   height: 20px;
   margin-right: 10px;
   cursor: pointer;
 }
 
 .deleteKey{
-  content: url("images/delete.png");
+  content: url("../images/delete.png");
   height: 20px;
   cursor: pointer;
 }

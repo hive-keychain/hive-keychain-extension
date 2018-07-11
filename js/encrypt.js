@@ -12,11 +12,17 @@ function encryptJson(json,pwd){
 }
 
 function decryptToJson(msg,pwd){
-  var decrypted=JSON.parse(decrypt(msg,pwd).toString(CryptoJS.enc.Utf8));
-  if(decrypted.hash!=null&&decrypted.hash==md5(decrypted.list))
-    return decrypted;
-  else
+  try{
+    var decrypted=decrypt(msg,pwd).toString(CryptoJS.enc.Utf8);
+    decrypted=JSON.parse(decrypted);
+    if(decrypted.hash!=null&&decrypted.hash==md5(decrypted.list))
+      return decrypted;
+    else
+      return null;
+  }
+  catch(e){
     return null;
+  }
 }
 
 function encrypt (msg, pass) {

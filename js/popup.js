@@ -12,12 +12,18 @@ chrome.storage.local.get(['accounts','mk'], function (items) {
     }
     else{
       mk=items.mk;
-      InitializePopup();
+      initializeMainMenu();
     }
 });
 
 $("#lock").click(function(){
   chrome.storage.local.remove("mk");
+  if(accounts_json==null)
+  {
+    accounts_json={list:[]};
+    chrome.storage.local.set({accounts:encryptJson(accounts_json,mk)});
+    mk=null;
+  }
   showUnlock();
 });
 
@@ -25,8 +31,36 @@ $("#forgot").click(function(){
   $("#forgot_div").show();
 });
 
+$("#submit_unlock").click(function(){
+  chrome.storage.local.get(['accounts'], function (items) {
+    var pwd=$("#unlock_pwd").val();
+    if(decryptToJson(items.accounts,pwd)!=null)
+    {
+      mk=pwd;
+      chrome.storage.local.set({mk:mk});
+      $("#error_unlock").html("");
+      $("#unlock_pwd").val("");
+      initializeMainMenu();
+    }
+    else
+      $("#error_unlock").html("Wrong password!");
+  });
+});
+
+$('#unlock_pwd').keypress(function(e){
+    if(e.keyCode==13)
+    $('#submit_unlock').click();
+});
+
+$('#confirm_master_pwd').keypress(function(e){
+    if(e.keyCode==13)
+    $('#submit_master_pwd').click();
+});
+
 $("#forgot_div button").click(function(){
   chrome.storage.local.clear(function(){
+      accounts_json=null;
+      mk=null;
       $("#forgot_div").hide();
       $("#unlock").hide();
       $("#register").show();
@@ -34,13 +68,12 @@ $("#forgot_div button").click(function(){
 });
 
 $("#submit_master_pwd").click(function(){
-  console.log($("#master_pwd").val());
   if(!$("#master_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)){
     if($("#master_pwd").val()==$("#confirm_master_pwd").val())
     {
       mk=$("#master_pwd").val();
       chrome.storage.local.set({mk:mk},function(){
-        InitializePopup();
+        initializeMainMenu();
       });
     }
     else
@@ -55,7 +88,7 @@ $("#add_account").click(function(){
 });
 
 $(".back_menu").click(function(){
-    InitializePopup();
+  initializeMainMenu();
 });
 
 $("#check_add_account").click(function(){
@@ -127,7 +160,7 @@ $("#save_master").click(function(){
 function addAccount(account)
 {
     var saved_accounts=accounts_json;
-    if(saved_accounts==undefined||saved_accounts==null)
+    if(saved_accounts==undefined||saved_accounts==null||saved_accounts.list==0)
       accounts={list:[account]};
     else{
       saved_accounts.list.push(account)
@@ -136,13 +169,13 @@ function addAccount(account)
     chrome.storage.local.set({
           accounts:encryptJson(accounts,mk)
       });
-    InitializePopup();
-  });
+    initializeMainMenu();
 }
 
 // Set visibilities back to normal when coming back to main menu
-function InitializePopup()
+function initializeMainMenu()
 {
+    $("#accounts").html("");
     $("#add_account_div").hide();
     $("#message_account_checked").hide();
     $("#master_check").hide();
@@ -169,7 +202,7 @@ function InitializePopup()
     $("#unlock").hide();
 
     chrome.storage.local.get(['accounts'], function (items) {
-      accounts_json=items.accounts==undefined?null:decryptToJson(items.accounts,mk);
+      accounts_json=(items.accounts==undefined||items.accounts=={list:[]})?null:decryptToJson(items.accounts,mk);
       if(accounts_json!=null){
         $("#accounts").empty();
         for(account of accounts_json.list){
@@ -362,7 +395,7 @@ function deleteAccount(i){
   chrome.storage.local.set({
         accounts:encryptJson(accounts_json,mk)
     },function(){
-      InitializePopup();
+      initializeMainMenu();
     });
 }
 
