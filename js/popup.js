@@ -2,22 +2,28 @@ var accounts_json=null,mk=null;
 
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 
-chrome.storage.local.get(['accounts','mk'], function (items) {
-    if(items.mk==null||items.mk==undefined){
-      if(items.accounts==null||items.accounts==undefined)
-        showRegister();
-      else{
-        showUnlock();
-      }
-    }
-    else{
-      mk=items.mk;
-      initializeMainMenu();
+chrome.runtime.sendMessage({command:"getMk"},function(response){});
+chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
+  if(msg.command=="sendBackMk"){
+    console.log(msg);
+    chrome.storage.local.get(['accounts'], function (items) {
+        if(msg.mk==null||msg.mk==undefined){
+          if(items.accounts==null||items.accounts==undefined)
+            showRegister();
+          else{
+            showUnlock();
+          }
+        }
+        else{
+          mk=msg.mk;
+          initializeMainMenu();
+        }
+      });
     }
 });
 
 $("#lock").click(function(){
-  chrome.storage.local.remove("mk");
+  chrome.runtime.sendMessage({command:"sendMk",mk:null},function(response){});
   if(accounts_json==null)
   {
     accounts_json={list:[]};
@@ -37,7 +43,7 @@ $("#submit_unlock").click(function(){
     if(decryptToJson(items.accounts,pwd)!=null)
     {
       mk=pwd;
-      chrome.storage.local.set({mk:mk});
+      chrome.runtime.sendMessage({command:"sendMk",mk:mk},function(response){});
       $("#error_unlock").html("");
       $("#unlock_pwd").val("");
       initializeMainMenu();
@@ -72,9 +78,8 @@ $("#submit_master_pwd").click(function(){
     if($("#master_pwd").val()==$("#confirm_master_pwd").val())
     {
       mk=$("#master_pwd").val();
-      chrome.storage.local.set({mk:mk},function(){
-        initializeMainMenu();
-      });
+      chrome.runtime.sendMessage({command:"sendMk",mk:mk},function(response){});
+      initializeMainMenu();
     }
     else
       $("#error_register").html("Your passwords do not match");

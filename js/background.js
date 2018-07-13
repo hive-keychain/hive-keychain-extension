@@ -1,6 +1,14 @@
+var mk=null;
+
 chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
-  console.log(msg);
-  if(msg.command="isUnlocked"){
-    chrome.runtime.sendMessage({isUnlocked:false,accounts:null},function(response){});
+  if(msg.command=="getMk"){
+    chrome.runtime.sendMessage({command:"sendBackMk",mk:mk},function(response){});
+  }
+});
+
+chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
+  if(msg.command=="sendMk"){
+    mk=msg.mk;
+    console.log(mk);
   }
 });
