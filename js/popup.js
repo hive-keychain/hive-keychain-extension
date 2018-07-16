@@ -343,7 +343,8 @@ $(".account_info_menu").eq(2).click(function(){
     steem.api.getAccountHistory(username, -1, 1000, function(err, result) {
       $("#acc_transfers").empty();
       if(result!=null){
-        var transfers = result.filter(tx => tx[1].op[0] === 'transfer').slice(0,10);
+          var transfers = result.filter(tx => tx[1].op[0] === 'transfer');
+          transfers=transfers.slice(-10).reverse();
           if(transfers.length!=0){
           for (transfer of transfers){
             var memo=transfer[1].op[1].memo;

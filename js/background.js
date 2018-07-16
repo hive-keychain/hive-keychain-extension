@@ -12,3 +12,5 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     console.log(mk);
   }
 });
+
+alert('Hello, World!');
