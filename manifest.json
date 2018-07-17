@@ -10,11 +10,11 @@
     "scripts": ["js/background.js"],
     "persistent": true
   },
+  "web_accessible_resources":["/images/logo.png","html/dialog.html"],
   "content_scripts": [
     {
-      "matches": ["https://*/*","http://0.0.0.0:8000/*"],
-      "js": ["vendor/jquery.js","js/web_interface.js"],
-      "web_accessible_ressources":["/images/logo.png"]
+      "matches": ["https://*/*","http://0.0.0.0:1337/*"],
+      "js": ["vendor/jquery.js","js/web_interface.js"]
     }
   ],
   "manifest_version": 2
