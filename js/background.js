@@ -16,11 +16,13 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
 
 chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="sendRequest"){
-    console.log(msg);
-    createConfirmationPopup(msg.request);
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+      createConfirmationPopup(msg.request,tabs[0].id);
+    });
   }
 });
-function createConfirmationPopup(request){
+
+function createConfirmationPopup(request,tab){
   console.log(request);
   var width=250;
 
@@ -28,20 +30,6 @@ function createConfirmationPopup(request){
   if(id_win!=null){
     chrome.windows.remove(id_win);
     id_win=null;
-  }
-
-  //Process the data received from the content script
-  switch(request.type){
-    case "decode":
-    break;
-    case "post":
-    break;
-    case "vote":
-    break;
-    case "custom":
-    break;
-    case "transfer":
-    break;
   }
 
   //Create new window on the top right of the screen
@@ -55,7 +43,47 @@ function createConfirmationPopup(request){
       }, function(win) {
         id_win=win.id;
         setTimeout(function(){
-          chrome.runtime.sendMessage({command:"sendDialogInfo",request},function(response){});
+          if(mk==null){
+              sendErrors(tab,"locked","The wallet is locked!",request);
+            }
+          else{
+            chrome.storage.local.get(['accounts'], function (items) {
+                  if(items.accounts==null||items.accounts==undefined)
+                    sendErrors(tab,"no_user","No wallet for this user!",request);
+                  else{
+                    var accounts=(items.accounts==undefined||items.accounts=={list:[]})?null:decryptToJson(items.accounts,mk);
+                    if(!accounts.list.find(function(e){return e.name==request.username;}))
+                      sendErrors(tab,"no_user","No wallet for this user!",request);
+                    else{
+                      var account=accounts.list.find(function(e){return e.name==request.username;});
+                      var typeWif=getRequiredWifType(request);
+                      if(account.keys[typeWif]==undefined)
+                        sendErrors(tab,"no_key_"+typeWif,"No "+typeWif+" key for user @"+account.name+"!",request);
+                    }
+                  }
+              });
+          }
         },100);
    });
  }
+
+function sendErrors(tab,error,message,request){
+  chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:false,error:error,result:null,data:request,message:message}});
+  chrome.runtime.sendMessage({command:"sendDialogInfo",msg:{success:false,error:error,result:null,data:request,message:message}});
+}
+
+function getRequiredWifType(request){
+  switch(request.type){
+    case "decode":
+      return request.method.toLowerCase();
+    break;
+    case "post":
+    case "vote":
+    case "custom":
+      return "posting";
+    break;
+    case "transfer":
+       return"active";
+    break;
+  }
+}

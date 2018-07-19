@@ -17,10 +17,12 @@ function decryptToJson(msg,pwd){
     decrypted=JSON.parse(decrypted);
     if(decrypted.hash!=null&&decrypted.hash==md5(decrypted.list))
       return decrypted;
-    else
+    else{
       return null;
+    }
   }
   catch(e){
+    console.log(e);
     return null;
   }
 }

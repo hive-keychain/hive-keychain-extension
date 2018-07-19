@@ -441,6 +441,7 @@ function showRegister(){
 function showUnlock(){
   $("#main").hide();
   $("#unlock").show();
+  $("#unlock_pwd").focus();
 }
 
 function showLoader(){
