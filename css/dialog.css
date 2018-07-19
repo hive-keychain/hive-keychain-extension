@@ -1,0 +1,39 @@
+
+html,body{height: 80%;}
+
+.modal-content{
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+h2{
+  font-size: 2em;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.error{
+  font-size: 1.2em;
+  margin-top: 10px;
+  margin-bottom: 50px;
+}
+
+.error_header:before{
+  content:"";
+  background-image: url("../images/error.svg");
+  height:20px;
+  width: 20px;
+  margin-right: 7px;
+  display: inline-block;
+}
+.modal-body{
+  text-align: center;
+}
+
+button{
+  font-size: 1.2em;
+  padding: 8px 25px 8px 25px;
+}
