@@ -5,11 +5,11 @@ document.addEventListener('swHandshake', function(request) {
 document.addEventListener('swRequest', function(request) {
   var req=request.detail;
   if(req!=null&&req!=undefined&&req.type!=undefined&&req.type!=null&&((req.type=="decode"&&isFilled(req.username)&&isFilled(req.message)&&isFilledKey(req.method))||
-    (req.type=="vote"&&isFilled(req.username)&&isFilledWeight(req.weight)&&isFilled(req.permlink))||
+    (req.type=="vote"&&isFilled(req.username)&&isFilledWeight(req.weight)&&isFilled(req.url))||
     (req.type=="post"&&isFilled(req.username)&&isFilled(req.title)&&isFilled(req.body)&&isFilled(req.permlink)&&isFilled(req.parent_perm)&&isFilled(req.parent_username)&&isFilled(req.json_metadata)||
     (req.type=="custom"&&isFilled(req.username)&&isFilled(req.json))||
     (req.type=="transfer"&&isFilled(req.username)&&isFilledAmt(req.amount)&&isFilled(req.to)&&isFilledCurrency(req.currency))))){
-        chrome.runtime.sendMessage({command:"sendRequest",request:req},function(response){});
+        chrome.runtime.sendMessage({command:"sendRequest",request:req,domain:window.location.hostname},function(response){});
     }
   else{
     var response={success:false,error:"incomplete",result:null,message:"Incomplete data",data:req};

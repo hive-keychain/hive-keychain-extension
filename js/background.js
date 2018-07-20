@@ -17,12 +17,12 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
 chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="sendRequest"){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
-      createConfirmationPopup(msg.request,tabs[0].id);
+      createConfirmationPopup(msg.request,tabs[0].id,msg.domain);
     });
   }
 });
 
-function createConfirmationPopup(request,tab){
+function createConfirmationPopup(request,tab,domain){
   console.log(request);
   var width=250;
 
@@ -59,6 +59,8 @@ function createConfirmationPopup(request,tab){
                       var typeWif=getRequiredWifType(request);
                       if(account.keys[typeWif]==undefined)
                         sendErrors(tab,"no_key_"+typeWif,"No "+typeWif+" key for user @"+account.name+"!",request);
+                      else
+                        chrome.runtime.sendMessage({command:"sendDialogConfirm",data:request,domain:domain,tab:tab});
                     }
                   }
               });
@@ -69,7 +71,7 @@ function createConfirmationPopup(request,tab){
 
 function sendErrors(tab,error,message,request){
   chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:false,error:error,result:null,data:request,message:message}});
-  chrome.runtime.sendMessage({command:"sendDialogInfo",msg:{success:false,error:error,result:null,data:request,message:message}});
+  chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:error,result:null,data:request,message:message}});
 }
 
 function getRequiredWifType(request){
