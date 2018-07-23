@@ -28,7 +28,8 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         break;
       case "vote":
         $("#weight").html(msg.data.weight/100+" %");
-        $("#url").html(msg.data.url);
+        $("#author").html(msg.data.author);
+        $("#perm").html(msg.data.permlink);
         break;
       case "custom":
         $("#custom_json").html(msg.data.json);

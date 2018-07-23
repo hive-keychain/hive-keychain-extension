@@ -1,5 +1,8 @@
 var mk=null;
 var id_win=null;
+var key=null;
+
+steem.api.setOptions({ url: 'https://api.steemit.com' });
 
 chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="getMk"){
@@ -7,7 +10,6 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   }
   else if(msg.command=="sendMk"){
     mk=msg.mk;
-    console.log(mk);
   }
   else if(msg.command=="sendRequest"){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
@@ -15,7 +17,27 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     });
   }
   else if(msg.command=="acceptTransaction"){
-
+    switch (msg.data.type){
+      case "vote":
+      steem.broadcast.vote(key, msg.data.username, msg.data.author,  msg.data.permlink,  parseInt(msg.data.weight), function(err, result) {
+        console.log(err, result);
+        chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
+      });
+      break;
+      case "custom":
+      steem.broadcast.customJson(key, JSON.parse(msg.data.json).requiredAuths, JSON.parse(msg.data.json).requiredPostingAuths, JSON.parse(msg.data.json).id, JSON.parse(msg.data.json).json, function(err, result) {
+        console.log(err, result);
+        chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
+      });
+      break;
+      case "transfer":
+      steem.broadcast.transfer(key, msg.data.username, msg.data.to, msg.data.amount+" "+msg.data.currency, msg.data.memo, function(err, result) {
+        console.log(err, result);
+        chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
+      });
+      break;
+    }
+    key=null;
   }
 });
 
@@ -55,8 +77,10 @@ function createConfirmationPopup(request,tab,domain){
                       var typeWif=getRequiredWifType(request);
                       if(account.keys[typeWif]==undefined)
                         sendErrors(tab,"no_key_"+typeWif,"No "+typeWif+" key for user @"+account.name+"!",request);
-                      else
+                      else{
+                        key=account.keys[typeWif];
                         chrome.runtime.sendMessage({command:"sendDialogConfirm",data:request,domain:domain,tab:tab});
+                      }
                     }
                   }
               });

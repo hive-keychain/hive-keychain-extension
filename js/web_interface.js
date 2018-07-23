@@ -4,15 +4,16 @@ document.addEventListener('swHandshake', function(request) {
 
 document.addEventListener('swRequest', function(request) {
   var req=request.detail;
+  console.log(req);
   if(req!=null&&req!=undefined&&req.type!=undefined&&req.type!=null&&((req.type=="decode"&&isFilled(req.username)&&isFilled(req.message)&&isFilledKey(req.method))||
-    (req.type=="vote"&&isFilled(req.username)&&isFilledWeight(req.weight)&&isFilled(req.url))||
+    (req.type=="vote"&&isFilled(req.username)&&isFilledWeight(req.weight)&&isFilled(req.permlink)&&isFilled(req.author))||
     (req.type=="post"&&isFilled(req.username)&&isFilled(req.title)&&isFilled(req.body)&&isFilled(req.permlink)&&isFilled(req.parent_perm)&&isFilled(req.parent_username)&&isFilled(req.json_metadata)||
-    (req.type=="custom"&&isFilled(req.username)&&isFilled(req.json))||
+    (req.type=="custom"&&isFilled(req.username)&&isFilledJSON(req.json))||
     (req.type=="transfer"&&isFilled(req.username)&&isFilledAmt(req.amount)&&isFilled(req.to)&&isFilledCurrency(req.currency))))){
         chrome.runtime.sendMessage({command:"sendRequest",request:req,domain:window.location.hostname},function(response){});
     }
   else{
-    var response={success:false,error:"incomplete",result:null,message:"Incomplete data",data:req};
+    var response={success:false,error:"incomplete",result:null,message:"Incomplete data or wrong format",data:req};
     sendResponse(response);
   }
 });
@@ -31,6 +32,14 @@ function sendResponse(response){
 
 function isFilled(obj){
   return obj!=undefined&&obj!=null&&obj!="";
+}
+
+function isFilledJSON(obj){
+  try{
+    return isFilled(obj)&&JSON.parse(obj).hasOwnProperty("requiredAuths")&&JSON.parse(obj).hasOwnProperty("requiredPostingAuths")&&JSON.parse(obj).hasOwnProperty("id")&&JSON.parse(obj).hasOwnProperty("json");
+  } catch (e) {
+      return false;
+  }
 }
 
 function isFilledAmt(obj){
