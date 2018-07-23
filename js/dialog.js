@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="sendDialogError"){
+    // Display error window
     if(!msg.msg.success){
-      console.log(msg);
       $(".modal-content").addClass("modal-content-error");
       $("#dialog_header").html("Error");
       $("#dialog_header").addClass("error_header");
@@ -13,6 +13,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     }
   }
   else if(msg.command=="sendDialogConfirm"){
+    // Display confirmation window
     var type=msg.data.type;
     var title=type=="custom"?"custom JSON":msg.data.type;
     title=title.charAt(0).toUpperCase()+title.slice(1);
@@ -53,11 +54,13 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         break;
     }
 
+    // Closes the window and launch the transaction in background
     $("#proceed").click(function(){
       chrome.runtime.sendMessage({command:"acceptTransaction",data:msg.data,tab:msg.tab});
       window.close();
     });
 
+    // Closes the window and notify the content script (and then the website) that the user refused the transaction.
     $("#cancel").click(function(){
       chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:false,error:"user_cancel",result:null,data:msg.data,message:"Request canceled by user!"}});
       window.close();

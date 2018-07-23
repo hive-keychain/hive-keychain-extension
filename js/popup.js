@@ -2,10 +2,12 @@ var accounts_json=null,mk=null;
 
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 
-chrome.runtime.sendMessage({command:"getMk"},function(response){});
+// Ask background if it is unlocked
+chrome.runtime.sendMessage({command:"getMk"});
+
+// Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="sendBackMk"){
-    console.log(msg);
     chrome.storage.local.get(['accounts'], function (items) {
         if(msg.mk==null||msg.mk==undefined){
           if(items.accounts==null||items.accounts==undefined)
@@ -22,6 +24,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     }
 });
 
+// Lock the wallet and destroy traces of the mk
 $("#lock").click(function(){
   chrome.runtime.sendMessage({command:"sendMk",mk:null},function(response){});
   if(accounts_json==null)
@@ -33,10 +36,12 @@ $("#lock").click(function(){
   showUnlock();
 });
 
+// Show forgot password
 $("#forgot").click(function(){
   $("#forgot_div").show();
 });
 
+// Unlock with masterkey and show the main menu
 $("#submit_unlock").click(function(){
   chrome.storage.local.get(['accounts'], function (items) {
     var pwd=$("#unlock_pwd").val();
@@ -53,6 +58,8 @@ $("#submit_unlock").click(function(){
   });
 });
 
+// Use "Enter" as confirmation button for unlocking and registration
+
 $('#unlock_pwd').keypress(function(e){
     if(e.keyCode==13)
     $('#submit_unlock').click();
@@ -63,6 +70,7 @@ $('#confirm_master_pwd').keypress(function(e){
     $('#submit_master_pwd').click();
 });
 
+// If user forgot Mk, he can reset the wallet
 $("#forgot_div button").click(function(){
   chrome.storage.local.clear(function(){
       accounts_json=null;
@@ -73,6 +81,7 @@ $("#forgot_div button").click(function(){
   });
 });
 
+// Registration confirmation
 $("#submit_master_pwd").click(function(){
   if(!$("#master_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)){
     if($("#master_pwd").val()==$("#confirm_master_pwd").val())
@@ -96,6 +105,9 @@ $(".back_menu").click(function(){
   initializeMainMenu();
 });
 
+// Adding accounts. Private keys can be entered individually or by the mean of the
+// master key, in which case user can chose which keys to store, mk will then be
+// discarded.
 $("#check_add_account").click(function(){
   $("#message_account_checked").css("display","block");
   $("#master_check").css("display","none");
@@ -106,7 +118,6 @@ $("#check_add_account").click(function(){
       $("#message_account_checked").html("You already registered an account for @"+username+"!");
     else
     steem.api.getAccounts([username], function(err, result) {
-      console.log(err, result);
       if (result.length!=0)
       {
         const pub_active=result["0"].active.key_auths["0"]["0"];
@@ -138,7 +149,6 @@ $("#check_add_account").click(function(){
         }
       }
       else{
-        console.log(err);
         $("#message_account_checked").html("Please check the username and try again.");
       }
     });
@@ -147,6 +157,7 @@ $("#check_add_account").click(function(){
     $("#message_account_checked").html("Please fill the fields.");
 });
 
+// If master key was entered, handle which keys to save.
 $("#save_master").click(function(){
   if($("#posting_key").prop("checked")||$("#active_key").prop("checked")||$("#memo_key").prop("checked")){
     var permissions=[];
@@ -161,7 +172,7 @@ $("#save_master").click(function(){
   }
 });
 
-// Add new account to Chrome local storage
+// Add new account to Chrome local storage (encrypted with AES)
 function addAccount(account)
 {
     var saved_accounts=accounts_json;
@@ -221,7 +232,6 @@ function initializeMainMenu()
         $(".account_row").click(function(){
           const account=accounts_json.list[$(this).index()];
           steem.api.getAccounts([account.name], function(err, result) {
-            console.log(result,err);
             if (result.length!=0)
             {
             steem.api.getDynamicGlobalProperties(function(err, res) {
@@ -237,6 +247,7 @@ function initializeMainMenu()
     });
 }
 
+// Account Info Menu style
 $(".account_info_menu").click(function(){
   $(".account_info_content").eq(($(this).index()-3)/2).slideToggle();
   if($(this).hasClass("rotate180"))
@@ -244,6 +255,7 @@ $(".account_info_menu").click(function(){
   else $(this).addClass("rotate180");
 });
 
+// Delete account and all its keys
 $("#confirm_forget_account").click(function(){
   const i=parseInt($(".account_info").attr("id").replace("a",""));
   deleteAccount(i);
@@ -254,6 +266,7 @@ $(".account_info_menu").eq(0).click(function(){
   manageKeys();
 });
 
+// Display Add Copy or delete individual keys
 function manageKeys(){
   if($(".row_account_keys").length==0){
     const i=parseInt($(".account_info").attr("id").replace("a",""));
@@ -297,7 +310,6 @@ $('#add_new_key').click(function(){
   const pwd=$("#new_key").val();
   if(steem.auth.isWif(pwd)){
     steem.api.getAccounts([username], function(err, result) {
-      console.log(err, result);
       if (result.length!=0)
       {
         const pub_active=result["0"].active.key_auths["0"]["0"];
@@ -329,6 +341,7 @@ $('#add_new_key').click(function(){
     $("#error_add_key").html("Not a private WIF!");
 });
 
+// Add the new keys to the display and the encrypted storage
 function addKeys(i,key,priv,pub){
   accounts_json.list[i].keys[key]=priv;
   accounts_json.list[i].keys[key+"Pubkey"]=pub;
@@ -357,7 +370,6 @@ $(".account_info_menu").eq(2).click(function(){
             $("#acc_transfers").append("<div class='transfer_row "+(transfer[1].op[1].from==username?"red":"green")+"'><span class='transfer_name'>"+(transfer[1].op[1].from==username?"To @"+transfer[1].op[1].to:"From @"+transfer[1].op[1].from)+":</span><span class='transfer_val'>"+transfer[1].op[1].amount+"</span></div><div class='memo'>"+memo+"</div><hr>");
           }
           $(".transfer_row").click(function(){
-              console.log("a",$(this).index());
               $(".memo").eq($(this).index()/3).slideToggle();
           });
         }
@@ -395,7 +407,7 @@ function sendTransfer(){
   }
 }
 
-
+// Delete account (and encrypt the rest)
 function deleteAccount(i){
   accounts_json.list.splice(i,1);
   chrome.storage.local.set({
@@ -405,6 +417,7 @@ function deleteAccount(i){
     });
 }
 
+// Update account (encrypted)
 function updateAccount(){
   chrome.storage.local.set({
         accounts:encryptJson(accounts_json,mk)

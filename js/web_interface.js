@@ -1,10 +1,14 @@
+// Content script interfacing the website and the extension
+
+// Answering the handshakes
 document.addEventListener('swHandshake', function(request) {
   location.href="javascript:onGetHandshake(); void 0";
 });
 
+// Answering the requests
 document.addEventListener('swRequest', function(request) {
   var req=request.detail;
-  console.log(req);
+  // If all information are filled, send the request to the background, if not notify an error
   if(req!=null&&req!=undefined&&req.type!=undefined&&req.type!=null&&((req.type=="decode"&&isFilled(req.username)&&isFilled(req.message)&&req.message[0]=="#"&&isFilledKey(req.method))||
     (req.type=="vote"&&isFilled(req.username)&&isFilledWeight(req.weight)&&isFilled(req.permlink)&&isFilled(req.author))||
     (req.type=="post"&&isFilled(req.username)&&isFilled(req.title)&&isFilled(req.body)&&isFilled(req.permlink)&&isFilled(req.parent_perm)&&isFilled(req.json_metadata)||
@@ -18,6 +22,7 @@ document.addEventListener('swRequest', function(request) {
   }
 });
 
+// Get notification from the background upon request completion and pass it to the website.
 chrome.runtime.onMessage.addListener(function(obj,sender,sendResp){
   if(obj.command=="answerRequest"){
     sendResponse(obj.msg);
@@ -29,7 +34,6 @@ function sendResponse(response){
 }
 
 // Functions used to check the incoming data
-
 function isFilled(obj){
   return obj!=undefined&&obj!=null&&obj!="";
 }
