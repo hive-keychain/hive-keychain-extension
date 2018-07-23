@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Steem Wallet</title>
+  </head>
+  <body>
+    <h3>Handshake</h3>
+    <button id="sw-handshake">Hi Steem-Wallet, are you here?</button>
+    <h3>Decode memo</h3>
+    <input type="text" placeholder="username" id="decode_user"/>
+    <select id="decode_method">
+      <option>Memo</option>
+      <option>Posting</option>
+      <option>Active</option>
+    </select>
+    <input type="text" id="decode_message" placeholder="message"/>
+    <button id="send_decode">Send</button>
+    <h3>Post</h3>
+    <input type="text" placeholder="username" id="post_username"/>
+    <input type="text" placeholder="title" id="post_title"/>
+    <input type="text" placeholder="permlink" id="post_perm"/>
+    <input type="text" placeholder="body" id="post_body"/>
+    <input type="text" placeholder="json_metadata" id="post_json"/>
+    <input type="text" placeholder="parent_username" id="post_pu"/>
+    <input type="text" placeholder="parent_perm" id="post_pp"/>
+    <button id="send_post">Send</button>
+    <h3>Vote</h3>
+    <input type="text" placeholder="username" id="vote_username"/>
+    <input type="text" placeholder="author" id="vote_author"/>
+    <input type="text" placeholder="permlink" id="vote_perm"/>
+    <input type="number" placeholder="weight" id="vote_weight"/>
+    <button id="send_vote">Send</button>
+    <h3>Custom_JSON</h3>
+    <input type="text" placeholder="username" id="custom_username"/>
+    <input type="text" placeholder="custom_json" id="custom_json"/>
+    <button id="send_custom">Send</button>
+    <h3>Transfer</h3>
+    <input type="text" placeholder="from" id="transfer_from"/>
+    <input type="text" placeholder="to" id="transfer_to"/>
+    <input type="text" placeholder="memo" id="transfer_memo"/>
+    <input type="number" placeholder="0.000" id="transfer_val"/>
+    <select id="transfer_currency">
+      <option>STEEM</option>
+      <option>SBD</option>
+    </select>
+    <button id="send_tra">Send</button>
+    <script src="jquery.js"></script>
+    <script src="main.js"></script>
+  </body>
+</html>
