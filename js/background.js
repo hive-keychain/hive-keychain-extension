@@ -17,27 +17,43 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     });
   }
   else if(msg.command=="acceptTransaction"){
-    switch (msg.data.type){
-      case "vote":
-      steem.broadcast.vote(key, msg.data.username, msg.data.author,  msg.data.permlink,  parseInt(msg.data.weight), function(err, result) {
-        console.log(err, result);
-        chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
-      });
-      break;
-      case "custom":
-      steem.broadcast.customJson(key, JSON.parse(msg.data.json).requiredAuths, JSON.parse(msg.data.json).requiredPostingAuths, JSON.parse(msg.data.json).id, JSON.parse(msg.data.json).json, function(err, result) {
-        console.log(err, result);
-        chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
-      });
-      break;
-      case "transfer":
-      steem.broadcast.transfer(key, msg.data.username, msg.data.to, msg.data.amount+" "+msg.data.currency, msg.data.memo, function(err, result) {
-        console.log(err, result);
-        chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
-      });
-      break;
+    try{
+      switch (msg.data.type){
+        case "vote":
+          steem.broadcast.vote(key, msg.data.username, msg.data.author,  msg.data.permlink,  parseInt(msg.data.weight), function(err, result) {
+            console.log(err, result);
+            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
+          });
+        break;
+        case "custom":
+          steem.broadcast.customJson(key, JSON.parse(msg.data.json).requiredAuths, JSON.parse(msg.data.json).requiredPostingAuths, JSON.parse(msg.data.json).id, JSON.parse(msg.data.json).json, function(err, result) {
+            console.log(err, result);
+            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
+          });
+        break;
+        case "transfer":
+          steem.broadcast.transfer(key, msg.data.username, msg.data.to, msg.data.amount+" "+msg.data.currency, msg.data.memo, function(err, result) {
+            console.log(err, result);
+            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
+          });
+        break;
+        case "post":
+          steem.broadcast.comment(key, msg.data.parent_username, msg.data.parent_perm, msg.data.username, msg.data.permlink, msg.data.title, msg.data.body, msg.data.json_metadata, function(err, result) {
+            console.log(err, result);
+            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
+          });
+        break;
+        case "decode":
+          var decoded=window.decodeMemo(key, msg.data.message);
+          console.log(msg.data.message,key,decoded);
+          chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:true,error:null,result:decoded,data:msg.data,message:"Success!"}});
+        break;
+      }
+      key=null;
     }
-    key=null;
+    catch(e){
+      sendErrors(msg.tab,"wrong_transaction","The transaction failed for an unknown reason!",msg.data);
+    }
   }
 });
 

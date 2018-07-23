@@ -5,9 +5,9 @@ document.addEventListener('swHandshake', function(request) {
 document.addEventListener('swRequest', function(request) {
   var req=request.detail;
   console.log(req);
-  if(req!=null&&req!=undefined&&req.type!=undefined&&req.type!=null&&((req.type=="decode"&&isFilled(req.username)&&isFilled(req.message)&&isFilledKey(req.method))||
+  if(req!=null&&req!=undefined&&req.type!=undefined&&req.type!=null&&((req.type=="decode"&&isFilled(req.username)&&isFilled(req.message)&&req.message[0]=="#"&&isFilledKey(req.method))||
     (req.type=="vote"&&isFilled(req.username)&&isFilledWeight(req.weight)&&isFilled(req.permlink)&&isFilled(req.author))||
-    (req.type=="post"&&isFilled(req.username)&&isFilled(req.title)&&isFilled(req.body)&&isFilled(req.permlink)&&isFilled(req.parent_perm)&&isFilled(req.parent_username)&&isFilled(req.json_metadata)||
+    (req.type=="post"&&isFilled(req.username)&&isFilled(req.title)&&isFilled(req.body)&&isFilled(req.permlink)&&isFilled(req.parent_perm)&&isFilled(req.json_metadata)||
     (req.type=="custom"&&isFilled(req.username)&&isFilledJSON(req.json))||
     (req.type=="transfer"&&isFilled(req.username)&&isFilledAmt(req.amount)&&isFilled(req.to)&&isFilledCurrency(req.currency))))){
         chrome.runtime.sendMessage({command:"sendRequest",request:req,domain:window.location.hostname},function(response){});

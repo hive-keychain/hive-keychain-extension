@@ -7,7 +7,7 @@
     "default_popup": "html/popup.html",
     "default_icon": "images/logo.png"},
   "background": {
-    "scripts": ["vendor/cryptojs.min.js","vendor/md5.min.js","js/encrypt.js","vendor/steemjs.js","js/background.js"],
+    "scripts": ["vendor/cryptojs.min.js","vendor/md5.min.js","js/encrypt.js","vendor/steemjs.js","vendor/decode.min.js","js/background.js"],
     "persistent": true
   },
   "web_accessible_resources":["/images/logo.png","html/dialog.html"],

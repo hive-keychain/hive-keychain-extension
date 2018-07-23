@@ -55,6 +55,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
 
     $("#proceed").click(function(){
       chrome.runtime.sendMessage({command:"acceptTransaction",data:msg.data,tab:msg.tab});
+      window.close();
     });
 
     $("#cancel").click(function(){
