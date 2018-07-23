@@ -2,6 +2,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="sendDialogError"){
     if(!msg.msg.success){
       console.log(msg);
+      $(".modal-content").addClass("modal-content-error");
       $("#dialog_header").html("Error");
       $("#dialog_header").addClass("error_header");
       $("#error_dialog").html(msg.msg.message);
@@ -11,10 +12,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
       });
     }
   }
-});
-
-chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
-  if(msg.command=="sendDialogConfirm"){
+  else if(msg.command=="sendDialogConfirm"){
     var type=msg.data.type;
     var title=type=="custom"?"custom JSON":msg.data.type;
     title=title.charAt(0).toUpperCase()+title.slice(1);
@@ -41,6 +39,16 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         $("#memo").html(msg.data.memo);
         if(msg.data.memo.length>0)
           $(".transfer_memo").css("display","block");
+        break;
+      case "post":
+      $("#title").html(msg.data.title);
+      $("#permlink").html(msg.data.permlink);
+      $("#body").html(msg.data.body);
+      $("#json_metadata").html(msg.data.json_metadata);
+      $("#parent_url").html(msg.data.parent_perm);
+      $("#parent_username").html(msg.data.parent_username);
+      if(msg.data.parent_username==null||msg.data.parent_username==undefined)
+        $("#parent_username").css("display","none");
         break;
     }
 

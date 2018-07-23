@@ -5,33 +5,29 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="getMk"){
     chrome.runtime.sendMessage({command:"sendBackMk",mk:mk},function(response){});
   }
-});
-
-chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
-  if(msg.command=="sendMk"){
+  else if(msg.command=="sendMk"){
     mk=msg.mk;
     console.log(mk);
   }
-});
-
-chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
-  if(msg.command=="sendRequest"){
+  else if(msg.command=="sendRequest"){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
       createConfirmationPopup(msg.request,tabs[0].id,msg.domain);
     });
   }
+  else if(msg.command=="acceptTransaction"){
+
+  }
 });
+
 
 function createConfirmationPopup(request,tab,domain){
   console.log(request);
   var width=250;
-
   //Ensuring only one window is opened by the extension at a time.
   if(id_win!=null){
     chrome.windows.remove(id_win);
     id_win=null;
   }
-
   //Create new window on the top right of the screen
   chrome.windows.create({
      url: chrome.runtime.getURL("html/dialog.html"),

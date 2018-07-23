@@ -1,7 +1,8 @@
 
-html,body{height: 80%;}
+html,body{overflow-x: hidden;
+word-wrap: break-word;}
 
-.modal-content{
+.modal-content-error{
   height: 100%;
   display: flex;
   margin-top: 10px;
@@ -47,7 +48,8 @@ button{
 #modal-body-msg{
   text-align: left;
   width: 100%;
-  margin-left: 30px;
+  margin-left: 15px;
+  margin-right: 15px;
 }
 
 #proceed,#cancel{
