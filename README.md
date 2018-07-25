@@ -28,6 +28,7 @@ Websites can ask Steem Wallet the following:
 To get a working example of how websites can interact with the extension:
 
 `cd example`
-`python -m http.server 8000 //or any other method to run a static server`
+`python -m http.server 1337 //or any other method to run a static server`
 
-Open the example at the port specified on localhost (here 8000).
+Open the example at the port specified on localhost (here 1337).
+On localhost, it will only run on this port.
