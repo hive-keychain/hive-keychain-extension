@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   else if(msg.command=="sendRequest"){ // Receive request (website -> content_script -> background)
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
       // create a window to let users confirm the transaction
-      createConfirmationPopup(msg.request,tabs[0].id,msg.domain);
+      checkBeforeCreate(msg.request,tabs[0].id,msg.domain);
     });
   }
   else if(msg.command=="unlockFromDialog"){ // Receive unlock request from dialog
@@ -31,7 +31,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         {
           mk=msg.mk;
           console.log(msg);
-          createConfirmationPopup(msg.data,msg.tab,msg.domain);
+          checkBeforeCreate(msg.data,msg.tab,msg.domain);
         }
         else {
           chrome.runtime.sendMessage({command:"wrongMk"});
@@ -55,45 +55,48 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
           });
       });
     }
-
+    performTransaction(msg.data,msg.tab);
       // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
-    try{
-      switch (msg.data.type){
-        case "vote":
-          steem.broadcast.vote(key, msg.data.username, msg.data.author,  msg.data.permlink,  parseInt(msg.data.weight), function(err, result) {
-            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
-          });
-        break;
-        case "custom":
-          steem.broadcast.customJson(key, msg.data.method.toLowerCase()=="active"?[msg.data.username]:null, msg.data.method.toLowerCase()=="posting"?[msg.data.username]:null, msg.data.id, msg.data.json, function(err, result) {
-            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
-          });
-        break;
-        case "transfer":
-          steem.broadcast.transfer(key, msg.data.username, msg.data.to, msg.data.amount+" "+msg.data.currency, msg.data.memo, function(err, result) {
-            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
-          });
-        break;
-        case "post":
-          steem.broadcast.comment(key, msg.data.parent_username, msg.data.parent_perm, msg.data.username, msg.data.permlink, msg.data.title, msg.data.body, msg.data.json_metadata, function(err, result) {
-            chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
-          });
-        break;
-        case "decode":
-          var decoded=window.decodeMemo(key, msg.data.message);
-          chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:true,error:null,result:decoded,data:msg.data,message:"Success!"}});
-        break;
-      }
-      key=null;
-    }
-    catch(e){
-      sendErrors(msg.tab,"wrong_transaction","The transaction failed for an unknown reason!",msg.data);
-    }
+
+
   }
 });
 
-
-function createConfirmationPopup(request,tab,domain){
+function performTransaction(data,tab){
+  try{
+    switch (data.type){
+      case "vote":
+        steem.broadcast.vote(key, data.username, data.author,  data.permlink,  parseInt(data.weight), function(err, result) {
+          chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:data,message:err==null?"Success!":"Transaction error!"}});
+        });
+      break;
+      case "custom":
+        steem.broadcast.customJson(key, data.method.toLowerCase()=="active"?[data.username]:null, data.method.toLowerCase()=="posting"?[data.username]:null, data.id, data.json, function(err, result) {
+          chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:data,message:err==null?"Success!":"Transaction error!"}});
+        });
+      break;
+      case "transfer":
+        steem.broadcast.transfer(key, data.username, data.to, data.amount+" "+data.currency, data.memo, function(err, result) {
+          chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:data,message:err==null?"Success!":"Transaction error!"}});
+        });
+      break;
+      case "post":
+        steem.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
+          chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:data,message:err==null?"Success!":"Transaction error!"}});
+        });
+      break;
+      case "decode":
+        var decoded=window.decodeMemo(key, data.message);
+        chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:true,error:null,result:decoded,data:data,message:"Success!"}});
+      break;
+    }
+    key=null;
+  }
+  catch(e){
+    sendErrors(tab,"wrong_transaction","The transaction failed for an unknown reason!",data);
+  }
+}
+function createPopup(callback){
   var width=250;
   //Ensuring only one window is opened by the extension at a time.
   if(id_win!=null){
@@ -111,41 +114,69 @@ function createConfirmationPopup(request,tab,domain){
       }, function(win) {
         id_win=win.id;
         setTimeout(function(){
-          if(mk==null){ // Check if locked
-            chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:"locked",result:null,data:request,message:"The wallet is locked!"},tab:tab,domain:domain});
-            }
-          else{
-            chrome.storage.local.get(['accounts','no_confirm'], function (items) { // Check user
-                  console.log(items.no_confirm);
-                  if(items.accounts==null||items.accounts==undefined)
-                    sendErrors(tab,"no_wallet","No wallet!",request);
-                  else{
-                    // Check that user and wanted keys are in the wallet
-                    var accounts=(items.accounts==undefined||items.accounts=={list:[]})?null:decryptToJson(items.accounts,mk);
-                    if(!accounts.list.find(function(e){return e.name==request.username;}))
-                      sendErrors(tab,"no_user","No wallet for this user!",request);
-                    else{
-                      var account=accounts.list.find(function(e){return e.name==request.username;});
-                      var typeWif=getRequiredWifType(request);
-                      console.log(typeWif);
-                      var req=request;
-                      if(req.type=="custom")
-                        req.method=typeWif;
-                      if(account.keys[typeWif]==undefined)
-                        sendErrors(tab,"no_key_"+typeWif,"No "+typeWif+" key for user @"+account.name+"!",request);
-                      else{
-                        key=account.keys[typeWif];
-                        chrome.runtime.sendMessage({command:"sendDialogConfirm",data:req,domain:domain,tab:tab});
-                        // Send the request to confirmation window
-                      }
-                    }
-                  }
-              });
-          }
+          callback();
         },100);
-   });
+      });
+
+}
+
+function checkBeforeCreate(request,tab,domain){
+    if(mk==null){ // Check if locked
+      function callback(){chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:"locked",result:null,data:request,message:"The wallet is locked!"},tab:tab,domain:domain});}
+      createPopup(callback);
+      }
+    else{
+      chrome.storage.local.get(['accounts','no_confirm'], function (items) { // Check user
+        if(items.accounts==null||items.accounts==undefined){
+          function callback(){sendErrors(tab,"no_wallet","No wallet!",request);}
+          createPopup(callback);
+        }
+        else{
+          // Check that user and wanted keys are in the wallet
+          var accounts=(items.accounts==undefined||items.accounts=={list:[]})?null:decryptToJson(items.accounts,mk);
+          if(!accounts.list.find(function(e){return e.name==request.username;})){
+            function callback(){sendErrors(tab,"no_user","No wallet for this user!",request);}
+            createPopup(callback);
+          }
+          else{
+            var account=accounts.list.find(function(e){return e.name==request.username;});
+            var typeWif=getRequiredWifType(request);
+            console.log(typeWif);
+            var req=request;
+            if(req.type=="custom")
+              req.method=typeWif;
+            if(account.keys[typeWif]==undefined){
+              function callback(){sendErrors(tab,"no_key_"+typeWif,"No "+typeWif+" key for user @"+account.name+"!",request);}
+              createPopup(callback);
+            }
+            else{
+              key=account.keys[typeWif];
+              console.log(hasNoConfirm(JSON.parse(items.no_confirm),req,domain));
+              if(!hasNoConfirm(JSON.parse(items.no_confirm),req,domain)){
+                function callback(){chrome.runtime.sendMessage({command:"sendDialogConfirm",data:req,domain:domain,tab:tab});}
+                createPopup(callback);
+                // Send the request to confirmation window
+              }
+              else{
+                chrome.windows.remove(id_win);
+                performTransaction(req,tab);
+              }
+            }
+          }
+        }
+    });
+  }
  }
 
+function hasNoConfirm(arr,data,domain){
+  try{
+    return arr[data.username][domain][data.type]==true;
+  }
+  catch(e){
+    console.log(e);
+    return false;
+  }
+}
 // Send errors back to the content_script, it will forward it to website
 function sendErrors(tab,error,message,request){
   chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:false,error:error,result:null,data:request,message:message}});
