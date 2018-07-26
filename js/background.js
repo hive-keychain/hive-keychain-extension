@@ -145,10 +145,7 @@ function getRequiredWifType(request){
       return "posting";
     break;
     case "custom":
-      if(request.id=="custom")
-        return (request.method==null||request.method==undefined)?"posting":request.method.toLowerCase();
-      else
-        return "posting";
+      return (request.method==null||request.method==undefined)?"posting":request.method.toLowerCase();
     break;
     case "transfer":
        return"active";
