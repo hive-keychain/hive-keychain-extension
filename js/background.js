@@ -29,7 +29,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         if(decryptToJson(items.accounts,msg.mk)!=null)
         {
           mk=msg.mk;
-          console.log(msg.data);
+          console.log(msg);
           createConfirmationPopup(msg.data,msg.tab,null);
         }
         else {
@@ -48,7 +48,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
           });
         break;
         case "custom":
-          steem.broadcast.customJson(key, JSON.parse(msg.data.json).requiredAuths, JSON.parse(msg.data.json).requiredPostingAuths, JSON.parse(msg.data.json).id, JSON.parse(msg.data.json).json, function(err, result) {
+          steem.broadcast.customJson(key, msg.data.method.toLowerCase()=="active"?[msg.data.username]:null, msg.data.method.toLowerCase()=="posting"?[msg.data.username]:null, msg.data.id, msg.data.json, function(err, result) {
             chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:err==null,error:err,result:result,data:msg.data,message:err==null?"Success!":"Transaction error!"}});
           });
         break;
@@ -95,7 +95,7 @@ function createConfirmationPopup(request,tab,domain){
         id_win=win.id;
         setTimeout(function(){
           if(mk==null){ // Check if locked
-              sendErrors(tab,"locked","The wallet is locked!",request);
+            chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:"locked",result:null,data:request,message:"The wallet is locked!"},tab:tab});
             }
           else{
             chrome.storage.local.get(['accounts'], function (items) { // Check user
@@ -109,11 +109,15 @@ function createConfirmationPopup(request,tab,domain){
                     else{
                       var account=accounts.list.find(function(e){return e.name==request.username;});
                       var typeWif=getRequiredWifType(request);
+                      console.log(typeWif);
+                      var req=request;
+                      if(req.type=="custom")
+                        req.method=typeWif;
                       if(account.keys[typeWif]==undefined)
                         sendErrors(tab,"no_key_"+typeWif,"No "+typeWif+" key for user @"+account.name+"!",request);
                       else{
                         key=account.keys[typeWif];
-                        chrome.runtime.sendMessage({command:"sendDialogConfirm",data:request,domain:domain,tab:tab});
+                        chrome.runtime.sendMessage({command:"sendDialogConfirm",data:req,domain:domain,tab:tab});
                         // Send the request to confirmation window
                       }
                     }
@@ -127,7 +131,7 @@ function createConfirmationPopup(request,tab,domain){
 // Send errors back to the content_script, it will forward it to website
 function sendErrors(tab,error,message,request){
   chrome.tabs.sendMessage(tab,{command:"answerRequest",msg:{success:false,error:error,result:null,data:request,message:message}});
-  chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:error,result:null,data:request,message:message}});
+  chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:error,result:null,data:request,message:message},tab:tab});
 }
 
 // Get the key needed for each type of transaction
@@ -138,8 +142,13 @@ function getRequiredWifType(request){
     break;
     case "post":
     case "vote":
-    case "custom":
       return "posting";
+    break;
+    case "custom":
+      if(request.id=="custom")
+        return (request.method==null||request.method==undefined)?"posting":request.method.toLowerCase();
+      else
+        return "posting";
     break;
     case "transfer":
        return"active";

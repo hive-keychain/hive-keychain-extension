@@ -5,7 +5,9 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
       if(msg.msg.error=="locked"){
         $(".unlock").css("display","block");
         $("#error-ok").css("display","none");
+        console.log(msg,msg.tab);
         $("#no-unlock").click(function(){
+          chrome.tabs.sendMessage(msg.tab,{command:"answerRequest",msg:{success:false,error:"locked",result:null,data:msg.msg.data,message:"The wallet is locked!"}});
             window.close();
         });
         $("#yes-unlock").click(function(){
@@ -51,6 +53,8 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         break;
       case "custom":
         $("#custom_json").html(msg.data.json);
+        $("#custom_type").html(msg.data.id);
+        $("#custom_key").html(msg.data.method);
         break;
       case "transfer":
         $("#to").html(msg.data.to);

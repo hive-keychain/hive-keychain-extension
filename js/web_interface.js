@@ -12,7 +12,7 @@ document.addEventListener('swRequest', function(request) {
   if(req!=null&&req!=undefined&&req.type!=undefined&&req.type!=null&&((req.type=="decode"&&isFilled(req.username)&&isFilled(req.message)&&req.message[0]=="#"&&isFilledKey(req.method))||
     (req.type=="vote"&&isFilled(req.username)&&isFilledWeight(req.weight)&&isFilled(req.permlink)&&isFilled(req.author))||
     (req.type=="post"&&isFilled(req.username)&&isFilled(req.title)&&isFilled(req.body)&&isFilled(req.permlink)&&isFilled(req.parent_perm)&&isFilled(req.json_metadata)||
-    (req.type=="custom"&&isFilled(req.username)&&isFilledJSON(req.json))||
+    (req.type=="custom"&&isFilled(req.username)&&isFilled(req.json)&&isFilled(req.id))||
     (req.type=="transfer"&&isFilled(req.username)&&isFilledAmt(req.amount)&&isFilled(req.to)&&isFilledCurrency(req.currency))))){
         chrome.runtime.sendMessage({command:"sendRequest",request:req,domain:window.location.hostname},function(response){});
     }

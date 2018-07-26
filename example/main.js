@@ -44,7 +44,9 @@ $("#send_vote").click(function(){
 $("#send_custom").click(function(){
   var request={type:"custom",
               username:$("#custom_username").val(),
-              json:$("#custom_json").val() // example   json:{"id":"custom","json":"{fill here}","requiredAuths":[], "requiredPostingAuths": ["stoodkev"]}
+              id:$("#custom_id").val(), //can be "custom", "follow", "reblog" etc.
+              method:$("#custom_method option:selected").text(), // Posting key is used by default, active can be specified for id=custom .
+              json:$("#custom_json").val() //content of your json
               };
     dispatchCustomEvent("swRequest",request);
 });
