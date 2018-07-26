@@ -13,7 +13,7 @@
   "web_accessible_resources":["/images/logo.png","html/dialog.html"],
   "content_scripts": [
     {
-      "matches": ["https://*/*","http://0.0.0.0:1337/*"],
+      "matches": ["https://*/*","http://0.0.0.0:1337/*","http://localhost:1337/*"],
       "js": ["vendor/jquery.js","js/web_interface.js"]
     }
   ],

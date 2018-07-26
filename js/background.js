@@ -2,6 +2,7 @@ var mk=null;
 var id_win=null;
 var key=null;
 
+//chrome.storage.local.remove("no_confirm");
 steem.api.setOptions({ url: 'https://api.steemit.com' });
 
 //Listen to the other parts of the extension
@@ -30,7 +31,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         {
           mk=msg.mk;
           console.log(msg);
-          createConfirmationPopup(msg.data,msg.tab,null);
+          createConfirmationPopup(msg.data,msg.tab,msg.domain);
         }
         else {
           chrome.runtime.sendMessage({command:"wrongMk"});
@@ -39,7 +40,23 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     });
   }
   else if(msg.command=="acceptTransaction"){
-    // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
+    if(msg.keep){
+      chrome.storage.local.get(['no_confirm'], function (items) {
+        var keep=(items.no_confirm==null||items.no_confirm==undefined)?{}:JSON.parse(items.no_confirm);
+        if(keep[msg.data.username]==undefined){
+          keep[msg.data.username]={};
+        }
+        if(keep[msg.data.username][msg.domain]==undefined){
+          keep[msg.data.username][msg.domain]={};
+        }
+        keep[msg.data.username][msg.domain][msg.data.type]=true;
+        chrome.storage.local.set({
+              no_confirm:JSON.stringify(keep)
+          });
+      });
+    }
+
+      // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
     try{
       switch (msg.data.type){
         case "vote":
@@ -95,10 +112,11 @@ function createConfirmationPopup(request,tab,domain){
         id_win=win.id;
         setTimeout(function(){
           if(mk==null){ // Check if locked
-            chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:"locked",result:null,data:request,message:"The wallet is locked!"},tab:tab});
+            chrome.runtime.sendMessage({command:"sendDialogError",msg:{success:false,error:"locked",result:null,data:request,message:"The wallet is locked!"},tab:tab,domain:domain});
             }
           else{
-            chrome.storage.local.get(['accounts'], function (items) { // Check user
+            chrome.storage.local.get(['accounts','no_confirm'], function (items) { // Check user
+                  console.log(items.no_confirm);
                   if(items.accounts==null||items.accounts==undefined)
                     sendErrors(tab,"no_wallet","No wallet!",request);
                   else{

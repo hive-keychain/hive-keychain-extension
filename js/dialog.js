@@ -11,12 +11,13 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
             window.close();
         });
         $("#yes-unlock").click(function(){
-          chrome.runtime.sendMessage({command:"unlockFromDialog",data:msg.msg.data,tab:msg.tab,mk:$("#unlock-dialog").val()});
+          chrome.runtime.sendMessage({command:"unlockFromDialog",data:msg.msg.data,tab:msg.tab,mk:$("#unlock-dialog").val(),domain:msg.domain});
         });
         $('#unlock-dialog').keypress(function(e){
             if(e.keyCode==13)
             $('#yes-unlock').click();
         });
+        $('#unlock-dialog').focus();
       }
       $(".modal-content").addClass("modal-content-error");
       $("#dialog_header").html("Error");
@@ -42,6 +43,10 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
     $(".modal-body-error").css("display","none");
     $("#username").html("@"+msg.data.username);
     $("#modal-content").css("align-items","flex-start");
+    if(type!="transfer"){
+      $("#keep_div").css("display","block");
+      $("#keep_label").html("Do not ask again for @"+msg.data.username+"'s "+msg.data.type+ " authorization on "+msg.domain);
+    }
     switch (type) {
       case "decode":
         $("#wif").html(msg.data.method);
@@ -77,7 +82,7 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
 
     // Closes the window and launch the transaction in background
     $("#proceed").click(function(){
-      chrome.runtime.sendMessage({command:"acceptTransaction",data:msg.data,tab:msg.tab});
+      chrome.runtime.sendMessage({command:"acceptTransaction",data:msg.data,tab:msg.tab,domain:msg.domain,keep:$("#keep").is(':checked')});
       window.close();
     });
 
