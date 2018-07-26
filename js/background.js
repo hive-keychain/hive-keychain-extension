@@ -19,6 +19,25 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
       createConfirmationPopup(msg.request,tabs[0].id,msg.domain);
     });
   }
+  else if(msg.command=="unlockFromDialog"){ // Receive unlock request from dialog
+    chrome.storage.local.get(['accounts'], function (items) { // Check user
+      if(items.accounts==null||items.accounts==undefined)
+      {
+        sendErrors(msg.tab,"no_wallet","No wallet!",msg.data);
+      }
+      else{
+        if(decryptToJson(items.accounts,msg.mk)!=null)
+        {
+          mk=msg.mk;
+          console.log(msg.data);
+          createConfirmationPopup(msg.data,msg.tab,null);
+        }
+        else {
+          chrome.runtime.sendMessage({command:"wrongMk"});
+        }
+      }
+    });
+  }
   else if(msg.command=="acceptTransaction"){
     // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
     try{
@@ -81,7 +100,7 @@ function createConfirmationPopup(request,tab,domain){
           else{
             chrome.storage.local.get(['accounts'], function (items) { // Check user
                   if(items.accounts==null||items.accounts==undefined)
-                    sendErrors(tab,"no_user","No wallet for this user!",request);
+                    sendErrors(tab,"no_wallet","No wallet!",request);
                   else{
                     // Check that user and wanted keys are in the wallet
                     var accounts=(items.accounts==undefined||items.accounts=={list:[]})?null:decryptToJson(items.accounts,mk);

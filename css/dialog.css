@@ -62,3 +62,10 @@ button{
 #message_send{
   margin-bottom: 15px;
 }
+
+.unlock{
+  display: none;
+}
+#unlock-dialog{
+  margin-bottom: 15px;
+}

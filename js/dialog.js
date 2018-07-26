@@ -2,15 +2,32 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
   if(msg.command=="sendDialogError"){
     // Display error window
     if(!msg.msg.success){
+      if(msg.msg.error=="locked"){
+        $(".unlock").css("display","block");
+        $("#error-ok").css("display","none");
+        $("#no-unlock").click(function(){
+            window.close();
+        });
+        $("#yes-unlock").click(function(){
+          chrome.runtime.sendMessage({command:"unlockFromDialog",data:msg.msg.data,tab:msg.tab,mk:$("#unlock-dialog").val()});
+        });
+        $('#unlock-dialog').keypress(function(e){
+            if(e.keyCode==13)
+            $('#yes-unlock').click();
+        });
+      }
       $(".modal-content").addClass("modal-content-error");
       $("#dialog_header").html("Error");
       $("#dialog_header").addClass("error_header");
       $("#error_dialog").html(msg.msg.message);
       $("#modal-body-msg button").css("display","none");
-      $(".modal-body-error button").click(function(){
+      $("#error-ok").click(function(){
           window.close();
       });
     }
+  }
+  else if(msg.command=="wrongMk"){
+    $("#error-mk").html("Wrong password!");
   }
   else if(msg.command=="sendDialogConfirm"){
     // Display confirmation window
