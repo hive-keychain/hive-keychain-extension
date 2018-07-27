@@ -30,7 +30,6 @@ chrome.runtime.onMessage.addListener(function(msg,sender,sendResp){
         if(decryptToJson(items.accounts,msg.mk)!=null)
         {
           mk=msg.mk;
-          console.log(msg);
           checkBeforeCreate(msg.data,msg.tab,msg.domain);
         }
         else {
@@ -141,7 +140,6 @@ function checkBeforeCreate(request,tab,domain){
           else{
             var account=accounts.list.find(function(e){return e.name==request.username;});
             var typeWif=getRequiredWifType(request);
-            console.log(typeWif);
             var req=request;
             if(req.type=="custom")
               req.method=typeWif;
@@ -151,8 +149,7 @@ function checkBeforeCreate(request,tab,domain){
             }
             else{
               key=account.keys[typeWif];
-              console.log(hasNoConfirm(JSON.parse(items.no_confirm),req,domain));
-              if(!hasNoConfirm(JSON.parse(items.no_confirm),req,domain)){
+              if(!hasNoConfirm(items.no_confirm,req,domain)){
                 function callback(){chrome.runtime.sendMessage({command:"sendDialogConfirm",data:req,domain:domain,tab:tab});}
                 createPopup(callback);
                 // Send the request to confirmation window
@@ -170,10 +167,9 @@ function checkBeforeCreate(request,tab,domain){
 
 function hasNoConfirm(arr,data,domain){
   try{
-    return arr[data.username][domain][data.type]==true;
+    return JSON.parse(arr)[data.username][domain][data.type]==true;
   }
   catch(e){
-    console.log(e);
     return false;
   }
 }

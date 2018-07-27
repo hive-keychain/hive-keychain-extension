@@ -231,6 +231,8 @@ function initializeMainMenu()
         //OnClick on account
         $(".account_row").click(function(){
           const account=accounts_json.list[$(this).index()];
+          setPreferences(account);
+
           steem.api.getAccounts([account.name], function(err, result) {
             if (result.length!=0)
             {
@@ -247,6 +249,37 @@ function initializeMainMenu()
     });
 }
 
+function setPreferences(account){
+  chrome.storage.local.get(['no_confirm'], function (items) {
+    try{
+          var pref=JSON.parse(items.no_confirm);
+          $("#pref").html("");
+          if(Object.keys(pref[account.name]).length==0)
+            $("#pref").html("No preferences");
+          for(var obj in pref[account.name]){
+            $("#pref").append("<h4>"+obj+"</h4>");
+            for(var sub in pref[account.name][obj])
+            {
+              $("#pref").append("<div><div id='pref_name'>"+sub+"</div><img id='"+account.name+","+obj+","+sub+"' class='deletePref'/></div>");
+            }
+        }
+
+        $(".deletePref").click(function(){
+          var user=$(this).attr("id").split(",")[0];
+          var domain=$(this).attr("id").split(",")[1];
+          var type=$(this).attr("id").split(",")[2];
+          delete pref[user][domain][type];
+          if(Object.keys(pref[user][domain]).length==0)
+            delete pref[user][domain];
+          chrome.storage.local.set({no_confirm:JSON.stringify(pref)},function(){
+              setPreferences(account);
+          });
+        });
+    }
+    catch(e){
+    }
+  });
+}
 // Account Info Menu style
 $(".account_info_menu").click(function(){
   $(".account_info_content").eq(($(this).index()-3)/2).slideToggle();

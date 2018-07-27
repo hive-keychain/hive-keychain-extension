@@ -192,6 +192,11 @@ input{
   font-style: italic;
 }
 
+#pref_name{
+  width: 100px;
+  display: inline-block;
+}
+
 .copyKey{
   content: url("../images/copy.png");
   height: 20px;
@@ -199,11 +204,13 @@ input{
   cursor: pointer;
 }
 
-.deleteKey{
+.deleteKey,.deletePref{
   content: url("../images/delete.png");
   height: 20px;
   cursor: pointer;
 }
+
+.deletePref{height: 15px;}
 
 #add_key{
   margin-top: 20px;
