@@ -35,32 +35,59 @@
       <a href="#" id="forgot">Forgot Password?</a>
     </div>
     <div id="forgot_div">
-      <div class="back_enabled">Reset account</div>
+      <div class="back_enabled" id="back_forgot">Reset account</div>
       <p>If you forgot your password, you can clear your data but will have to enter all your keys again.</p>
       <button>Confirm</button>
     </div>
     <div class="error_div"></div>
     <div id="main">
-      <h1>Steem Wallet</h1>
-      <h2>Accounts</h2>
       <div id="accounts">
       </div>
       <div id="add_account">+ Add Account</div>
       <div id="lock">Lock</div>
     </div>
     <div id="add_account_div">
-      <div class="back_menu">Back to Main Menu</div>
-      <h2>Add Account</h2>
-      <input type="text" id="username" placeholder="Username"></input>
-      <input type="password" id="pwd" placeholder="WIF or Master key"></input>
-      <button id="check_add_account">Check</button>
-      <p id="message_account_checked"></p>
-      <div id="master_check">
-        <input type="checkbox" checked=true id="posting_key"/><label for="posting_key">Posting</label>
-        <input type="checkbox" checked=true id="active_key"/><label for="active_key">Active</label>
-        <input type="checkbox" checked=true id="memo_key"/><label for="memo_key">Memo</label>
-        <button id="save_master">Save</button>
+      <div class="back_menu back_enabled">Set up</div>
+      <p>Your Master Key is used to retrieve your posting, active, and memo keys. The Master Key will NOT be saved. Private Keys may later be disabled in your settings. <br><br>NOTE: You may enter any key, however Master Key is recommended.</p>
+
+      <div class="input_container">
+        <input type="text" id="username" placeholder="Username"></input>
+        <img src="../images/arobase.png" class="input_img"/>
       </div>
+        <div class="input_container">
+          <input type="password" id="pwd" placeholder="Private key"></input>
+          <img src="../images/key.png" class="input_img"/>
+        </div>
+      <button id="check_add_account">Import keys</button>
+    </div>
+    <div id="master_check">
+      <div class="back_add_key back_enabled">Import Keys</div>
+      <p>Import successful! <br><br>Please select the Keys you wish to store with Steem Wallet!</p>
+      <div class="key_checkbox">
+        <label for="posting_key" class="checkbox_container">
+          <div>Posting Key</div>
+          <div>For posting and voting</div>
+          <input type="checkbox" checked="checked" id="posting_key"/>
+          <span class="checkmark"/>
+        </label>
+      </div>
+      <div class="key_checkbox">
+        <label for="active_key" class="checkbox_container">
+            <div>Active Key</div>
+            <div>For making transfers and orders</div>
+          <input type="checkbox" checked=true id="active_key"/>
+          <span class="checkmark"/>
+        </label>
+      </div>
+      <div class="key_checkbox">
+        <label for="memo_key" class="checkbox_container">
+            <div>Memo Key</div>
+            <div>For sending and reading memos</div>
+          <input type="checkbox" checked=true id="memo_key"/>
+          <span class="checkmark"/>
+        </label>
+      </div>
+      <button id="save_master">Save</button>
     </div>
     <div class="account_info">
       <div class="back_menu">Back to Main Menu</div>

@@ -84,6 +84,10 @@ $("#forgot_div button").click(function(){
   });
 });
 
+$("#back_forgot").click(function(){
+  $("#forgot_div").hide();
+  $("#unlock").show();
+});
 // Registration confirmation
 $("#submit_master_pwd").click(function(){
   if(!$("#master_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)){
@@ -130,13 +134,14 @@ $(".back_menu").click(function(){
 // master key, in which case user can chose which keys to store, mk will then be
 // discarded.
 $("#check_add_account").click(function(){
-  $("#message_account_checked").css("display","block");
   $("#master_check").css("display","none");
   const username=$("#username").val();
   const pwd=$("#pwd").val();
   if(username!==""&&pwd!==""){
-    if(accounts_json && accounts_json.list.find(function (element) {return element.name==username}))
-      $("#message_account_checked").html("You already registered an account for @"+username+"!");
+    if(accounts_json && accounts_json.list.find(function (element) {return element.name==username})){
+      $(".error_div").html("You already registered an account for @"+username+"!");
+      $(".error_div").show();
+    }
     else
     steem.api.getAccounts([username], function(err, result) {
       if (result.length!=0)
@@ -146,15 +151,12 @@ $("#check_add_account").click(function(){
         const pub_memo=result["0"].memo_key;
         if(steem.auth.isWif(pwd)){
           if(isMemoWif(pwd,pub_memo)){
-            $("#message_account_checked").html("Saved memo key for user @"+username+"!");
             addAccount({name:username,keys:{memo:pwd,memoPubkey:pub_memo}});
           }
           else if(isPostingWif(pwd,pub_posting)){
-            $("#message_account_checked").html("Saved posting key for user @"+username+"!");
             addAccount({name:username,keys:{posting:pwd,postingPubkey:pub_posting}});
           }
           else if(isActiveWif(pwd,pub_active)){
-            $("#message_account_checked").html("Saved active key for user @"+username+"!");
             addAccount({name:username,keys:{active:pwd,activePubkey:pub_active}});
           }
         }
@@ -162,20 +164,30 @@ $("#check_add_account").click(function(){
           const keys=steem.auth.getPrivateKeys(username, pwd, ["posting","active","memo"]);
           if(keys.activePubkey==pub_active&&keys.postingPubkey==pub_posting&&keys.memoPubkey==pub_memo)
           {
-            $("#message_account_checked").html("You entered your master key, select which private keys you wish to save. Your master key will not be saved.");
-            $("#master_check").css("display","block");
+            $("#add_account_div").hide();
+            $("#master_check").show();
           }
-          else
-            $("#message_account_checked").html("Incorrect private key or password.");
+          else{
+            $(".error_div").html("Incorrect private key or password.");
+            $(".error_div").show();
+          }
         }
       }
       else{
-        $("#message_account_checked").html("Please check the username and try again.");
+        $(".error_div").html("Please check the username and try again.");
+        $(".error_div").show();
       }
     });
   }
-  else
-    $("#message_account_checked").html("Please fill the fields.");
+  else{
+    $(".error_div").html("Please fill the fields.");
+    $(".error_div").show();
+  }
+});
+
+$(".back_add_key").click(function(){
+    $("#master_check").hide();
+    $("#add_account_div").show();
 });
 
 // If master key was entered, handle which keys to save.
@@ -214,11 +226,11 @@ function initializeMainMenu()
 {
     $("#accounts").html("");
     $("#add_account_div").hide();
-    $("#message_account_checked").hide();
+    $(".error_div").hide();
     $("#master_check").hide();
     $("#username").val("");
     $("#pwd").val("");
-    $("#message_account_checked").html("");
+    $(".error_div").html("");
     $("#posting_key").prop("checked",true);
     $("#active_key").prop("checked",true);
     $("#memo_key").prop("checked",true);
@@ -237,7 +249,7 @@ function initializeMainMenu()
     $("#balance_loader").show();
     $("#register").hide();
     $("#unlock").hide();
-
+    $("#add_account_div .back_enabled").removeClass("back_disabled");
     chrome.storage.local.get(['accounts'], function (items) {
       accounts_json=(items.accounts==undefined||items.accounts=={list:[]})?null:decryptToJson(items.accounts,mk);
       if(accounts_json!=null){
@@ -266,6 +278,11 @@ function initializeMainMenu()
           $("#acc_transfers").html("Loading...");
           showAccountInfo(account,this);
         });
+      }
+      else{
+        $("#main").hide();
+        $("#add_account_div").show();
+        $("#add_account_div .back_enabled").addClass("back_disabled");
       }
     });
 }
