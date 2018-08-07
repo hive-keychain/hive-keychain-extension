@@ -39,6 +39,7 @@ $("#lock").click(function(){
 // Show forgot password
 $("#forgot").click(function(){
   $("#forgot_div").show();
+  $("#unlock").hide();
 });
 
 // Unlock with masterkey and show the main menu
@@ -49,12 +50,15 @@ $("#submit_unlock").click(function(){
     {
       mk=pwd;
       chrome.runtime.sendMessage({command:"sendMk",mk:mk},function(response){});
-      $("#error_unlock").html("");
+      $(".error_div").html("");
+      $(".error_div").hide();
       $("#unlock_pwd").val("");
       initializeMainMenu();
     }
-    else
-      $("#error_unlock").html("Wrong password!");
+    else{
+      $(".error_div").html("Wrong password!");
+      $(".error_div").show();
+    }
   });
 });
 
@@ -76,7 +80,6 @@ $("#forgot_div button").click(function(){
       accounts_json=null;
       mk=null;
       $("#forgot_div").hide();
-      $("#unlock").hide();
       $("#register").show();
   });
 });
@@ -89,12 +92,30 @@ $("#submit_master_pwd").click(function(){
       mk=$("#master_pwd").val();
       chrome.runtime.sendMessage({command:"sendMk",mk:mk},function(response){});
       initializeMainMenu();
+      $(".error_div").hide();
     }
-    else
-      $("#error_register").html("Your passwords do not match");
+    else{
+      $(".error_div").html("Your passwords do not match!");
+      $(".error_div").show();
+    }
   }
-  else
-    $("#error_register").html("Please use a stronger password. At least 8 characters (upper and lower case, digits and special characters).");
+  else{
+  $(".error_div").html("Please use a stronger password!");
+    $(".error_div").show();
+  }
+});
+
+$(".input_img_right_eye").click(function(){
+  if($("#unlock_pwd").prop("type")=="password"){
+    $("#unlock_pwd").prop("type","text");
+    $(".input_img_right_eye").prop("src","../images/eye.png");
+    $(".input_img_right_eye").height("20.72px");
+  }
+  else{
+    $("#unlock_pwd").prop("type","password");
+    $(".input_img_right_eye").prop("src","../images/hide.png");
+    $(".input_img_right_eye").height("29.93px");
+  }
 });
 
 $("#add_account").click(function(){

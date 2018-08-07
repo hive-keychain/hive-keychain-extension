@@ -1,6 +1,8 @@
 
-html,body{overflow-x: hidden;
-word-wrap: break-word;}
+html,body{
+  overflow-x: hidden;
+  word-wrap: break-word;
+}
 
 .modal-content-error{
   height: 100%;

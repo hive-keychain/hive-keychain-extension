@@ -5,27 +5,41 @@
     <link  rel="stylesheet" type="text/css" href="../css/popup.css">
   </head>
   <body>
+    <div class="cloud"></div>
     <div id="register">
-      <h1>Steem Wallet</h1>
-      <p>Please chose a strong password to encrypt your private keys.</p>
-      <input type="password" id="master_pwd" placeholder="Password"/>
-      <input type="password" id="confirm_master_pwd" placeholder="Confirm"/>
+      <img src="../images/logo-white.png" class="logo-white"/>
+      <p>Steem Wallet is a better way to access your STEEM accounts. Simple. Lightweight. Secure. <br><br>
+        Let's start by creating a Steem Wallet password. You will need this password to access or make changes to your account(s).</p>
+      <div class="input_container">
+        <input type="password" id="master_pwd" placeholder="Password"/>
+        <img src="../images/lock.png" class="input_img"/>
+      </div>
+      <div class="input_container">
+        <input type="password" id="confirm_master_pwd" placeholder="Confirm"/>
+        <img src="../images/lock.png" class="input_img"/>
+      </div>
       <button id="submit_master_pwd">Submit</button>
-      <div id="error_register" class="error"></div>
     </div>
     <div id="unlock">
-      <h1>Steem Wallet</h1>
-      <p>Unlock your wallet with your master password!</p>
-      <input type="password" id="unlock_pwd" placeholder="Password"/>
-      <button id="submit_unlock">Unlock</button>
-      <div id="error_unlock" class="error"></div>
-      <a href="#" id="forgot">I forgot my password.</a>
-      <div id="forgot_div">
-        <p>If you forgot your password, you can clear your data but will have to enter all your keys again.</p>
-        <button>Confirm</button>
+      <img src="../images/logo-white.png" class="logo-white"/>
+      <p>It's a better way to access your STEEM accounts. Simple. Lightweight. Secure.<br/><br/>Be Free and Steem On.</p>
+      <div class="input_container">
+        <input type="password" id="unlock_pwd" placeholder="Password"/>
+        <img src="../images/lock.png" class="input_img"/>
+        <img src="../images/hide.png" class="input_img_right_eye"/>
       </div>
-
+      <div class="input_container">
+        <button id="submit_unlock">Sign In</button>
+        <img src="../images/submit.png" class="input_img_right_submit"/>
+      </div>
+      <a href="#" id="forgot">Forgot Password?</a>
     </div>
+    <div id="forgot_div">
+      <div class="back_enabled">Reset account</div>
+      <p>If you forgot your password, you can clear your data but will have to enter all your keys again.</p>
+      <button>Confirm</button>
+    </div>
+    <div class="error_div"></div>
     <div id="main">
       <h1>Steem Wallet</h1>
       <h2>Accounts</h2>
