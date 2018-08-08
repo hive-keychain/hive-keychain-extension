@@ -299,14 +299,124 @@ input:focus {
     transform: rotate(45deg);
 }
 
-#acc_transfers{
-  margin-bottom: 20px;
+.main_header{
+  height:30px;
 }
-#add_account{
-  margin-top: 20px;
+
+.main_header img:first-of-type{
+  width: 41.21px;
+  height: 100%;
+  float: left;
+}
+
+.main_header span{
+  height: 30px;
+  width: 244.79px;
+  display: inline-block;
+  text-align: right;
+}
+
+#lock, #settings{
+  height: 100%;
+  width: auto;
   cursor: pointer;
-  font-weight: bold;
-  font-size: 1.2em;
+}
+
+#lock{
+  margin-right: 20.16px;
+  margin-left: 169.79px;
+}
+
+.custom-select {
+  position: relative;
+  width: 100% !important;
+  height: 48.43px;
+  border: 1px solid rgba(0, 96, 96,0.29);
+  border-radius: 5px;
+  margin-top: 20px;
+}
+.custom-select select {
+  display: none; /*hide original SELECT element:*/
+}
+.select-selected {
+  background-color: rgba(0, 96, 96,0.29);
+  padding-left: 20px !important;
+}
+.select-selected:before {
+  background-image:  url("../images/arobase-light.png");
+  background-size:  30px 30px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  content:"";
+  width: 30px;
+  height: 30px;
+  padding-right: 15px;
+  vertical-align: -25%;
+  pointer-events: all;
+  cursor: pointer;
+}
+/*style the arrow inside the select element:*/
+.select-selected:after {
+  position: absolute;
+  content: "";
+  top: 22px;
+  right: 10px;
+  width: 0;
+  height: 0;
+  border: 10px solid transparent;
+  border-color: #88F7FB transparent transparent transparent;
+}
+/*point the arrow upwards when the select box is open (active):*/
+.select-selected.select-arrow-active:after {
+  border-color: transparent transparent #88F7FB transparent;
+  top: 11px;
+}
+/*style the items (options), including the selected item:*/
+.select-items div,.select-selected {
+  box-sizing: border-box;
+  color: #88F7FB;
+  font-family: Futura;
+  font-size: 20px;
+  line-height: 28px;
+  padding: 9px 0px 4px 65px;
+  border: 1px solid transparent;
+  border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+  cursor: pointer;
+}
+/*style items (options):*/
+.select-items {
+  position: absolute;
+  background-color: rgba(0, 96, 96,0.84);
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+.select-items:last-of-type div{
+  padding-left: 20px !important;
+  text-transform: uppercase;
+}
+
+.select-items:last-of-type div::before{
+    background-image:  url("../images/plus.png");
+    background-size:  30px 30px;
+    background-repeat: no-repeat;
+    display: inline-block !important;
+    content:"";
+    width: 30px;
+    height: 30px;
+    padding-right: 15px;
+    vertical-align: -25%;
+    pointer-events: all;
+    cursor: pointer;
+}
+/*hide the items when the select box is closed:*/
+.select-hide {
+  display: none;
+}
+.select-items div:hover, .same-as-selected {
+  background-color: rgba(0, 96, 96,1);
 }
 
 .account_row,.account_info_menu{
@@ -320,9 +430,6 @@ input:focus {
   font-size: 1.2em;
 }
 
-.account_row:hover,.account_info_menu:hover{
-  color:var(--steem-dark-blue);
-}
 
 .account_name, .transfer_name
 {
@@ -348,14 +455,6 @@ input:focus {
 }
 .acc_key:first {
   margin-left: 0px;
-}
-
-#master_check input{
-  margin-right: 5px;
-}
-
-#master_check label{
-  margin-right: 15px;
 }
 
 .account_info_menu{
@@ -517,17 +616,4 @@ input{
 #balance_loader div{
   width: 40px;
   height:40px;
-}
-
-
-
-
-
-
-#lock{
-  cursor: pointer;
-  margin-top: 50px;
-  color: var(--steem-dark-blue);
-  font-size: 1.3em;
-  font-weight: bold;
 }

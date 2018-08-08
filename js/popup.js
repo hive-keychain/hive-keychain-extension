@@ -122,10 +122,6 @@ $(".input_img_right_eye").click(function(){
   }
 });
 
-$("#add_account").click(function(){
-  showAddAccount();
-});
-
 $(".back_menu").click(function(){
   initializeMainMenu();
 });
@@ -254,13 +250,12 @@ function initializeMainMenu()
       accounts_json=(items.accounts==undefined||items.accounts=={list:[]})?null:decryptToJson(items.accounts,mk);
       if(accounts_json!=null){
         $("#accounts").empty();
+        $(".custom-select").html("<select></select>");
         for(account of accounts_json.list){
-          $("#accounts").append("<div class='account_row'><span class='account_name'>@"+account.name+"</span><span class='acc_keys'>"
-            +(account.keys.hasOwnProperty("posting")?"<span class='acc_key'>P</span>":"")
-            +(account.keys.hasOwnProperty("active")?"<span class='acc_key'>A</span>":"")
-            +(account.keys.hasOwnProperty("memo")?"<span class='acc_key'>M</span>":"")+"</span></div>");
+          $(".custom-select select").append("<option>"+account.name+"</option>");
         }
-
+        $(".custom-select select").append("<option name='add_account'>Add New Account</option>");
+        initiateCustomSelect();
         //OnClick on account
         $(".account_row").click(function(){
           const account=accounts_json.list[$(this).index()];
@@ -286,6 +281,7 @@ function initializeMainMenu()
       }
     });
 }
+
 
 function setPreferences(account){
   chrome.storage.local.get(['no_confirm'], function (items) {
@@ -558,4 +554,83 @@ function showBalances(result,res){
 function showAddAccount(){
   $("#add_account_div").css("display","block");
   $("#main").css("display","none");
+}
+
+function initiateCustomSelect(){
+  var x, i, j, selElmnt, a, b, c;
+/*look for any elements with the class "custom-select":*/
+x = document.getElementsByClassName("custom-select");
+for (i = 0; i < x.length; i++) {
+  selElmnt = x[i].getElementsByTagName("select")[0];
+  /*for each element, create a new DIV that will act as the selected item:*/
+  a = document.createElement("DIV");
+  a.setAttribute("class", "select-selected");
+  a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+  x[i].appendChild(a);
+  /*for each element, create a new DIV that will contain the option list:*/
+  b = document.createElement("DIV");
+  b.setAttribute("class", "select-items select-hide");
+  for (j = 1; j < selElmnt.length; j++) {
+    /*for each option in the original select element,
+    create a new DIV that will act as an option item:*/
+    c = document.createElement("DIV");
+    c.innerHTML = selElmnt.options[j].innerHTML;
+    c.addEventListener("click", function(e) {
+        /*when an item is clicked, update the original select box,
+        and the selected item:*/
+        var y, i, k, s, h;
+        s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+        h = this.parentNode.previousSibling;
+        for (i = 0; i < s.length; i++) {
+          if (s.options[i].innerHTML == this.innerHTML) {
+            s.selectedIndex = i;
+            h.innerHTML = this.innerHTML;
+            y = this.parentNode.getElementsByClassName("same-as-selected");
+            for (k = 0; k < y.length; k++) {
+              y[k].removeAttribute("class");
+            }
+            this.setAttribute("class", "same-as-selected");
+            break;
+          }
+        }
+        h.click();
+    });
+    b.appendChild(c);
+  }
+  x[i].appendChild(b);
+  a.addEventListener("click", function(e) {
+      /*when the select box is clicked, close any other select boxes,
+      and open/close the current select box:*/
+      e.stopPropagation();
+      closeAllSelect(this);
+      this.nextSibling.classList.toggle("select-hide");
+      this.classList.toggle("select-arrow-active");
+      console.log(this.innerHTML);
+      if(this.innerHTML.includes("Add New Account")){
+        showAddAccount();
+      }
+  });
+}
+function closeAllSelect(elmnt) {
+  /*a function that will close all select boxes in the document,
+  except the current select box:*/
+  var x, y, i, arrNo = [];
+  x = document.getElementsByClassName("select-items");
+  y = document.getElementsByClassName("select-selected");
+  for (i = 0; i < y.length; i++) {
+    if (elmnt == y[i]) {
+      arrNo.push(i)
+    } else {
+      y[i].classList.remove("select-arrow-active");
+    }
+  }
+  for (i = 0; i < x.length; i++) {
+    if (arrNo.indexOf(i)) {
+      x[i].classList.add("select-hide");
+    }
+  }
+}
+/*if the user clicks anywhere outside the select box,
+then close all select boxes:*/
+document.addEventListener("click", closeAllSelect);
 }
