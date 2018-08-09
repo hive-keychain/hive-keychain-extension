@@ -1,146 +1,160 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <title>Steem Wallet</title>
-    <link  rel="stylesheet" type="text/css" href="../css/popup.css">
-  </head>
-  <body>
+    <link rel="stylesheet" type="text/css" href="../css/popup.css">
+</head>
+
+<body>
     <div class="cloud"></div>
     <div id="register">
-      <img src="../images/logo-white.png" class="logo-white"/>
-      <p>Steem Wallet is a better way to access your STEEM accounts. Simple. Lightweight. Secure. <br><br>
-        Let's start by creating a Steem Wallet password. You will need this password to access or make changes to your account(s).</p>
-      <div class="input_container">
-        <input type="password" id="master_pwd" placeholder="Password"/>
-        <img src="../images/lock.png" class="input_img"/>
-      </div>
-      <div class="input_container">
-        <input type="password" id="confirm_master_pwd" placeholder="Confirm"/>
-        <img src="../images/lock.png" class="input_img"/>
-      </div>
-      <button id="submit_master_pwd">Submit</button>
+        <img src="../images/logo-white.png" class="logo-white" />
+        <p>Steem Wallet is a better way to access your STEEM accounts. Simple. Lightweight.
+            Secure. <br><br> Let's start by creating a Steem Wallet password. You
+            will need this password to access or make changes to your account(s).</p>
+        <div class="input_container">
+            <input type="password" id="master_pwd" placeholder="Password" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="password" id="confirm_master_pwd" placeholder="Confirm" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <button id="submit_master_pwd">Submit</button>
     </div>
     <div id="unlock">
-      <img src="../images/logo-white.png" class="logo-white"/>
-      <p>It's a better way to access your STEEM accounts. Simple. Lightweight. Secure.<br/><br/>Be Free and Steem On.</p>
-      <div class="input_container">
-        <input type="password" id="unlock_pwd" placeholder="Password"/>
-        <img src="../images/lock.png" class="input_img"/>
-        <img src="../images/hide.png" class="input_img_right_eye"/>
-      </div>
-      <div class="input_container">
-        <button id="submit_unlock">Sign In</button>
-        <img src="../images/submit.png" class="input_img_right_submit"/>
-      </div>
-      <a href="#" id="forgot">Forgot Password?</a>
+        <img src="../images/logo-white.png" class="logo-white" />
+        <p>It's a better way to access your STEEM accounts. Simple. Lightweight. Secure.<br/><br/>Be
+            Free and Steem On.</p>
+        <div class="input_container">
+            <input type="password" id="unlock_pwd" placeholder="Password" />
+            <img src="../images/lock.png" class="input_img" />
+            <img src="../images/hide.png" class="input_img_right_eye" />
+        </div>
+        <div class="input_container">
+            <button id="submit_unlock">Sign In</button>
+            <img src="../images/submit.png" class="input_img_right_submit" />
+        </div>
+        <a href="#" id="forgot">Forgot Password?</a>
     </div>
     <div id="forgot_div">
-      <div class="back_enabled" id="back_forgot">Reset account</div>
-      <p>If you forgot your password, you can clear your data but will have to enter all your keys again.</p>
-      <button>Confirm</button>
+        <div class="back_enabled" id="back_forgot">Reset account</div>
+        <p>If you forgot your password, you can clear your data but will have to enter
+            all your keys again.</p>
+        <button>Confirm</button>
     </div>
     <div class="error_div"></div>
     <div id="main">
-      <div class="main_header">
-        <img src="../images/small_logo.png"/>
-        <span>
+        <div class="main_header">
+            <img src="../images/small_logo.png" />
+            <span>
           <img src="../images/lock.png" id="lock"/>
           <img src="../images/squares.png" id="settings"/>
         </span>
-      </div>
-      <div class="custom-select" style="width:200px;">
-        <select>
+        </div>
+        <div class="custom-select" style="width:200px;">
+            <select>
         </select>
-      </div>
+        </div>
     </div>
     <div id="add_account_div">
-      <div class="back_menu back_enabled">Set up</div>
-      <p>Your Master Key is used to retrieve your posting, active, and memo keys. The Master Key will NOT be saved. Private Keys may later be disabled in your settings. <br><br>NOTE: You may enter any key, however Master Key is recommended.</p>
+        <div class="back_menu back_enabled">Set up</div>
+        <p>Your Master Key is used to retrieve your posting, active, and memo keys.
+            The Master Key will NOT be saved. Private Keys may later be disabled
+            in your settings. <br><br>NOTE: You may enter any key, however Master
+            Key is recommended.</p>
 
-      <div class="input_container">
-        <input type="text" id="username" placeholder="Username"></input>
-        <img src="../images/arobase.png" class="input_img"/>
-      </div>
         <div class="input_container">
-          <input type="password" id="pwd" placeholder="Private key"></input>
-          <img src="../images/key.png" class="input_img"/>
+            <input type="text" id="username" placeholder="Username"></input>
+            <img src="../images/arobase.png" class="input_img" />
         </div>
-      <button id="check_add_account">Import keys</button>
+        <div class="input_container">
+            <input type="password" id="pwd" placeholder="Private key"></input>
+            <img src="../images/key.png" class="input_img" />
+        </div>
+        <button id="check_add_account">Import keys</button>
     </div>
     <div id="master_check">
-      <div class="back_add_key back_enabled">Import Keys</div>
-      <p>Import successful! <br><br>Please select the Keys you wish to store with Steem Wallet!</p>
-      <div class="key_checkbox">
-        <label for="posting_key" class="checkbox_container">
+        <div class="back_add_key back_enabled">Import Keys</div>
+        <p>Import successful! <br><br>Please select the Keys you wish to store with
+            Steem Wallet!</p>
+        <div class="key_checkbox">
+            <label for="posting_key" class="checkbox_container">
           <div>Posting Key</div>
           <div>For posting and voting</div>
           <input type="checkbox" checked="checked" id="posting_key"/>
           <span class="checkmark"/>
         </label>
-      </div>
-      <div class="key_checkbox">
-        <label for="active_key" class="checkbox_container">
+        </div>
+        <div class="key_checkbox">
+            <label for="active_key" class="checkbox_container">
             <div>Active Key</div>
             <div>For making transfers and orders</div>
           <input type="checkbox" checked=true id="active_key"/>
           <span class="checkmark"/>
         </label>
-      </div>
-      <div class="key_checkbox">
-        <label for="memo_key" class="checkbox_container">
+        </div>
+        <div class="key_checkbox">
+            <label for="memo_key" class="checkbox_container">
             <div>Memo Key</div>
             <div>For sending and reading memos</div>
           <input type="checkbox" checked=true id="memo_key"/>
           <span class="checkmark"/>
         </label>
-      </div>
-      <button id="save_master">Save</button>
+        </div>
+        <button id="save_master">Save</button>
     </div>
     <div class="account_info">
-      <div class="back_menu">Back to Main Menu</div>
-      <h2 id="account_info_name"></h2>
-      <div id="balances">
-        <div class="loader" id="balance_loader"><div></div></div>
-        <div id="balance_steem"></div>
-        <div id="balance_sbd"></div>
-        <div id="balance_sp"></div>
-      </div>
-      <div class="account_info_menu" ><img src="/images/down_chevron.png">Keys</div>
-      <div class="account_info_content">
-        <div id="keys_info"></div>
-        <div id="add_key">+ Add key</div>
-        <div id="add_key_div">
-          <input type="password" placeholder="Private Wif" id="new_key"/>
-          <button id="add_new_key">Add</button>
-          <p id="error_add_key" class="error"></p>
+        <div class="back_menu">Back to Main Menu</div>
+        <h2 id="account_info_name"></h2>
+        <div id="balances">
+            <div class="loader" id="balance_loader">
+                <div></div>
+            </div>
+            <div id="balance_steem"></div>
+            <div id="balance_sbd"></div>
+            <div id="balance_sp"></div>
         </div>
-      </div>
-      <div class="account_info_menu" style="display:none" id="transfer_to"><img src="/images/down_chevron.png">Transfer</div>
-      <div class="account_info_content" id="send">
-        <input type="text" id="recipient" placeholder="To username"/>
-        <input type="number" id="amt_send" placeholder="Amount"/>
-        <select id="currency">
+        <div class="account_info_menu"><img src="/images/down_chevron.png">Keys</div>
+        <div class="account_info_content">
+            <div id="keys_info"></div>
+            <div id="add_key">+ Add key</div>
+            <div id="add_key_div">
+                <input type="password" placeholder="Private Wif" id="new_key" />
+                <button id="add_new_key">Add</button>
+                <p id="error_add_key" class="error"></p>
+            </div>
+        </div>
+        <div class="account_info_menu" style="display:none" id="transfer_to"><img src="/images/down_chevron.png">Transfer</div>
+        <div class="account_info_content" id="send">
+            <input type="text" id="recipient" placeholder="To username" />
+            <input type="number" id="amt_send" placeholder="Amount" />
+            <select id="currency">
           <option value="SBD">SBD</option>
           <option value="STEEM">STEEM</option>
         </select>
-        <input type="text" placeholder="Memo"id="memo_send"/>
-        <button id="send_transfer">Send</button>
-        <div class="loader" id="send_loader" style="display:none"><div></div></div>
-        <div id="message_send_transfer"></div>
-      </div>
-      <div class="account_info_menu" ><img src="/images/down_chevron.png">Wallet History</div>
-      <div class="account_info_content">
-        <div id="acc_transfers"></div>
-      </div>
-      <div class="account_info_menu" ><img src="/images/down_chevron.png">Preferences</div>
-      <div class="account_info_content">
-        <div id="pref">No preferences</div>
-      </div>
-      <div class="account_info_menu" ><img src="/images/down_chevron.png">Forget account</div>
-      <div class="account_info_content">
-        <p>This action will remove this account and all its permissions from your Steem Wallet.</p>
-        <button id="confirm_forget_account">Confirm</button>
-      </div>
+            <input type="text" placeholder="Memo" id="memo_send" />
+            <button id="send_transfer">Send</button>
+            <div class="loader" id="send_loader" style="display:none">
+                <div></div>
+            </div>
+            <div id="message_send_transfer"></div>
+        </div>
+        <div class="account_info_menu"><img src="/images/down_chevron.png">Wallet History</div>
+        <div class="account_info_content">
+            <div id="acc_transfers"></div>
+        </div>
+        <div class="account_info_menu"><img src="/images/down_chevron.png">Preferences</div>
+        <div class="account_info_content">
+            <div id="pref">No preferences</div>
+        </div>
+        <div class="account_info_menu"><img src="/images/down_chevron.png">Forget account</div>
+        <div class="account_info_content">
+            <p>This action will remove this account and all its permissions from your
+                Steem Wallet.</p>
+            <button id="confirm_forget_account">Confirm</button>
+        </div>
     </div>
     <script src="../vendor/jquery.js"></script>
     <script src="../vendor/decode.min.js"></script>
@@ -149,5 +163,6 @@
     <script src="../vendor/cryptojs.min.js"></script>
     <script src="../js/encrypt.js"></script>
     <script src="../js/popup.js"></script>
-  </body>
+</body>
+
 </html>

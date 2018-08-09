@@ -1,77 +1,81 @@
-
-html,body{
-  overflow-x: hidden;
-  word-wrap: break-word;
+html,
+body {
+    overflow-x: hidden;
+    word-wrap: break-word;
 }
 
-.modal-content-error{
-  height: 100%;
-  display: flex;
-  margin-top: 10px;
-  flex-direction: column;
-  justify-content: center;
-  align-items:center;
+.modal-content-error {
+    height: 100%;
+    display: flex;
+    margin-top: 10px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-h2{
-  font-size: 2em;
-  text-align: center;
-  margin-bottom: 30px;
+h2 {
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-.error{
-  font-size: 1.2em;
-  margin-top: 10px;
-  margin-bottom: 50px;
+.error {
+    font-size: 1.2em;
+    margin-top: 10px;
+    margin-bottom: 50px;
 }
 
-.error_header:before{
-  content:"";
-  background-image: url("../images/error.svg");
-  height:20px;
-  width: 20px;
-  margin-right: 7px;
-  display: inline-block;
-}
-.modal-body-error{
-  text-align: center;
+.error_header:before {
+    content: "";
+    background-image: url("../images/error.svg");
+    height: 20px;
+    width: 20px;
+    margin-right: 7px;
+    display: inline-block;
 }
 
-button{
-  font-size: 1.2em;
-  padding: 8px 25px 8px 25px;
+.modal-body-error {
+    text-align: center;
 }
 
-#modal-body-msg > div, #modal-body-msg > h3{
-  display: none;
-  height: auto;
+button {
+    font-size: 1.2em;
+    padding: 8px 25px 8px 25px;
 }
 
-#modal-body-msg{
-  text-align: left;
-  width: 100%;
-  margin-left: 15px;
-  margin-right: 15px;
+#modal-body-msg>div,
+#modal-body-msg>h3 {
+    display: none;
+    height: auto;
 }
 
-#proceed,#cancel{
+#modal-body-msg {
+    text-align: left;
+    width: 100%;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#proceed,
+#cancel {
     font-size: 1em;
     padding: 4px 15px 4px 15px;
     margin: 10px;
     margin-top: 40px;
 }
 
-#message_send{
-  margin-bottom: 15px;
+#message_send {
+    margin-bottom: 15px;
 }
 
-.unlock{
-  display: none;
-}
-#unlock-dialog{
-  margin-bottom: 15px;
+.unlock {
+    display: none;
 }
 
-#keep_div{
-  margin-top: 15px;
+#unlock-dialog {
+    margin-bottom: 15px;
+}
+
+#keep_div {
+    margin-top: 15px;
 }
