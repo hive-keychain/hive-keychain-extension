@@ -49,14 +49,37 @@
         <div class="main_header">
             <img src="../images/small_logo.png" />
             <span>
-          <img src="../images/lock.png" id="lock"/>
-          <img src="../images/squares.png" id="settings"/>
-        </span>
+              <img src="../images/lock_wallet.png" id="lock"/>
+              <img src="../images/squares.png" id="settings"/>
+            </span>
         </div>
         <div class="custom-select" style="width:200px;">
             <select>
-        </select>
+            </select>
         </div>
+        <div id="voting_power">
+            <span></span>
+            <span></span>
+        </div>
+        <div id="wallet">
+            <div id="wallet_amt">
+                <div>...</div>
+                <div>...</div>
+                <div>...</div>
+            </div>
+            <div id="wallet_currency">
+                <div>STEEM</div>
+                <div>SBD</div>
+                <div>SP</div>
+            </div>
+        </div>
+        <div id="account_value">
+            <div id="account_value_header">Estimated Account Value</div>
+            <div id="account_value_amt">...</div>
+            <div id="account_value_currency">USD</div>
+        </div>
+        <button id="send">Send</button>
+        <button id="history">Wallet History</button>
     </div>
     <div id="add_account_div">
         <div class="back_menu back_enabled">Set up</div>
@@ -81,11 +104,11 @@
             Steem Wallet!</p>
         <div class="key_checkbox">
             <label for="posting_key" class="checkbox_container">
-          <div>Posting Key</div>
-          <div>For posting and voting</div>
-          <input type="checkbox" checked="checked" id="posting_key"/>
-          <span class="checkmark"/>
-        </label>
+              <div>Posting Key</div>
+              <div>For posting and voting</div>
+              <input type="checkbox" checked="checked" id="posting_key"/>
+              <span class="checkmark"/>
+            </label>
         </div>
         <div class="key_checkbox">
             <label for="active_key" class="checkbox_container">

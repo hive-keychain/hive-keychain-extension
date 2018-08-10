@@ -1,5 +1,7 @@
-var accounts_json = null,
+let accounts_json = null,
     mk = null;
+let priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
+const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 
 steem.api.setOptions({
     url: 'https://api.steemit.com'
@@ -55,7 +57,7 @@ $("#forgot").click(function() {
 // Unlock with masterkey and show the main menu
 $("#submit_unlock").click(function() {
     chrome.storage.local.get(['accounts'], function(items) {
-        var pwd = $("#unlock_pwd").val();
+        const pwd = $("#unlock_pwd").val();
         if (decryptToJson(items.accounts, pwd) != null) {
             mk = pwd;
             chrome.runtime.sendMessage({
@@ -210,7 +212,7 @@ $(".back_add_key").click(function() {
 // If master key was entered, handle which keys to save.
 $("#save_master").click(function() {
     if ($("#posting_key").prop("checked") || $("#active_key").prop("checked") || $("#memo_key").prop("checked")) {
-        var permissions = [];
+        let permissions = [];
         if ($("#posting_key").prop("checked"))
             permissions.push("posting");
         if ($("#active_key").prop("checked"))
@@ -227,7 +229,7 @@ $("#save_master").click(function() {
 
 // Add new account to Chrome local storage (encrypted with AES)
 function addAccount(account) {
-    var saved_accounts = accounts_json;
+    let saved_accounts = accounts_json;
     if (saved_accounts == undefined || saved_accounts == null || saved_accounts.list == 0)
         accounts = {
             list: [account]
@@ -282,22 +284,6 @@ function initializeMainMenu() {
             }
             $(".custom-select select").append("<option name='add_account'>Add New Account</option>");
             initiateCustomSelect();
-            //OnClick on account
-            $(".account_row").click(function() {
-                const account = accounts_json.list[$(this).index()];
-                setPreferences(account);
-
-                steem.api.getAccounts([account.name], function(err, result) {
-                    if (result.length != 0) {
-                        steem.api.getDynamicGlobalProperties(function(err, res) {
-                            if (res.length != 0)
-                                showBalances(result, res);
-                        });
-                    }
-                });
-                $("#acc_transfers").html("Loading...");
-                showAccountInfo(account, this);
-            });
         } else {
             $("#main").hide();
             $("#add_account_div").show();
@@ -310,21 +296,21 @@ function initializeMainMenu() {
 function setPreferences(account) {
     chrome.storage.local.get(['no_confirm'], function(items) {
         try {
-            var pref = JSON.parse(items.no_confirm);
+            const pref = JSON.parse(items.no_confirm);
             $("#pref").html("");
             if (Object.keys(pref[account.name]).length == 0)
                 $("#pref").html("No preferences");
-            for (var obj in pref[account.name]) {
+            for (let obj in pref[account.name]) {
                 $("#pref").append("<h4>" + obj + "</h4>");
-                for (var sub in pref[account.name][obj]) {
+                for (let sub in pref[account.name][obj]) {
                     $("#pref").append("<div><div id='pref_name'>" + sub + "</div><img id='" + account.name + "," + obj + "," + sub + "' class='deletePref'/></div>");
                 }
             }
 
             $(".deletePref").click(function() {
-                var user = $(this).attr("id").split(",")[0];
-                var domain = $(this).attr("id").split(",")[1];
-                var type = $(this).attr("id").split(",")[2];
+                const user = $(this).attr("id").split(",")[0];
+                const domain = $(this).attr("id").split(",")[1];
+                const type = $(this).attr("id").split(",")[2];
                 delete pref[user][domain][type];
                 if (Object.keys(pref[user][domain]).length == 0)
                     delete pref[user][domain];
@@ -440,11 +426,11 @@ $(".account_info_menu").eq(2).click(function() {
         steem.api.getAccountHistory(username, -1, 1000, function(err, result) {
             $("#acc_transfers").empty();
             if (result != null) {
-                var transfers = result.filter(tx => tx[1].op[0] === 'transfer');
+                let transfers = result.filter(tx => tx[1].op[0] === 'transfer');
                 transfers = transfers.slice(-10).reverse();
                 if (transfers.length != 0) {
                     for (transfer of transfers) {
-                        var memo = transfer[1].op[1].memo;
+                        let memo = transfer[1].op[1].memo;
                         if (memo[0] == "#") {
                             if (accounts_json.list[parseInt($(".account_info").attr("id").replace("a", ""))].keys.hasOwnProperty("memo"))
                                 memo = window.decodeMemo(accounts_json.list[parseInt($(".account_info").attr("id").replace("a", ""))].keys.memo, memo);
@@ -519,7 +505,7 @@ function isMemoWif(pwd, memo) {
     return steem.auth.wifToPublic(pwd) == memo;
 }
 
-var numberWithCommas = (x) => {
+let numberWithCommas = (x) => {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
@@ -548,19 +534,6 @@ function showAccountInfo(account, that) {
     $("#account_info_name").html("@" + account.name);
     $("#main").hide();
     $(".account_info").show();
-}
-
-function showBalances(result, res) {
-    const sbd = result["0"].sbd_balance;
-    const vs = result["0"].vesting_shares;
-    const steem_v = result["0"].balance;
-    const total_vesting_shares = res.total_vesting_shares;
-    const total_vesting_fund = res.total_vesting_fund_steem;
-    const sp = steem.formatter.vestToSteem(vs, total_vesting_shares, total_vesting_fund);
-    $("#balance_steem").html(numberWithCommas(steem_v));
-    $("#balance_sbd").html(numberWithCommas(sbd));
-    $("#balance_sp").html(numberWithCommas(sp.toFixed(3)) + " SP");
-    $("#balance_loader").hide();
 }
 
 function showAddAccount() {
@@ -610,6 +583,8 @@ function initiateCustomSelect() {
             b.appendChild(c);
         }
         x[i].appendChild(b);
+
+        loadAccount(a.innerHTML);
         a.addEventListener("click", function(e) {
             /*when the select box is clicked, close any other select boxes,
             and open/close the current select box:*/
@@ -617,12 +592,15 @@ function initiateCustomSelect() {
             closeAllSelect(this);
             this.nextSibling.classList.toggle("select-hide");
             this.classList.toggle("select-arrow-active");
-            console.log(this.innerHTML);
             if (this.innerHTML.includes("Add New Account")) {
                 showAddAccount();
+            } else if (!this.classList.contains("select-arrow-active")) {
+                loadAccount(this.innerHTML);
             }
         });
     }
+
+
 
     function closeAllSelect(elmnt) {
         /*a function that will close all select boxes in the document,
@@ -646,4 +624,144 @@ function initiateCustomSelect() {
     /*if the user clicks anywhere outside the select box,
     then close all select boxes:*/
     document.addEventListener("click", closeAllSelect);
+}
+
+function loadAccount(name) {
+    let account = accounts_json.list.filter(function(obj, i) {
+        return obj.name === name;
+    })[0];
+    $("#wallet_amt div").html("...");
+    setPreferences(account);
+    steem.api.getAccounts([account.name], function(err, result) {
+        console.log(err, result);
+        if (result.length != 0) {
+            $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? "100" : getVotingPower(result[0]) / 100).toFixed(2) + "%");
+            if (totalSteem != null)
+                showUserData(result);
+            else
+                Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
+                .then(function(values) {
+                    votePowerReserveRate = values["0"].vote_power_reserve_rate;
+                    totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
+                    totalVests = Number(values["0"].total_vesting_shares.split(' ')[0]);
+                    rewardBalance = parseFloat(values["2"].reward_balance.replace(" STEEM", ""));
+                    recentClaims = values["2"].recent_claims;
+                    steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
+                    dynamicProp = values[0];
+                    priceSBD = values["3"];
+                    priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
+                    priceBTC = values["5"];
+                    showUserData(result);
+                });
+        }
+    });
+    $("#acc_transfers").html("Loading...");
+}
+
+function showUserData(result) {
+    showBalances(result, dynamicProp);
+    $("#voting_power span").eq(1).html("Vote Value: $ " + getVotingDollarsPerAccount(100, result["0"]));
+    console.log(priceSBD, priceSteem, priceBTC, steem_p, sbd, sp);
+    $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)))
+}
+
+function getVotingPower(account) {
+    const voting_power = account.voting_power;
+    const last_vote_time = new Date((account.last_vote_time) + 'Z');
+    const elapsed_seconds = (new Date() - last_vote_time) / 1000;
+    const regenerated_power = Math.round((10000 * elapsed_seconds) / STEEMIT_VOTE_REGENERATION_SECONDS);
+    const current_power = Math.min(voting_power + regenerated_power, 10000);
+    return current_power;
+};
+
+function getVotingDollarsPerAccount(voteWeight, account) {
+    const effective_vesting_shares = Math.round(getEffectiveVestingSharesPerAccount(account) * 1000000);
+    const weight = voteWeight * 100;
+    const current_power = getVotingPower(account);
+    const max_vote_denom = votePowerReserveRate * STEEMIT_VOTE_REGENERATION_SECONDS / (60 * 60 * 24);
+    let used_power = Math.round((current_power * weight) / 10000);
+    used_power = Math.round((used_power + max_vote_denom - 1) / max_vote_denom);
+    const rshares = Math.round((effective_vesting_shares * used_power) / (10000))
+    const voteValue = rshares *
+        rewardBalance / recentClaims *
+        steemPrice;
+    return voteValue.toFixed(3);
+}
+
+function getEffectiveVestingSharesPerAccount(account) {
+    const effective_vesting_shares = parseFloat(account.vesting_shares.replace(" VESTS", "")) +
+        parseFloat(account.received_vesting_shares.replace(" VESTS", "")) -
+        parseFloat(account.delegated_vesting_shares.replace(" VESTS", ""));
+    return effective_vesting_shares;
+};
+
+function showBalances(result, res) {
+    console.log("show balance");
+    sbd = result["0"].sbd_balance.replace("SBD", "");
+    const vs = result["0"].vesting_shares;
+    steem_p = result["0"].balance.replace("STEEM", "");
+    const total_vesting_shares = res.total_vesting_shares;
+    const total_vesting_fund = res.total_vesting_fund_steem;
+    sp = steem.formatter.vestToSteem(vs, total_vesting_shares, total_vesting_fund);
+    $("#wallet_amt div").eq(0).html(numberWithCommas(steem_p));
+    $("#wallet_amt div").eq(1).html(numberWithCommas(sbd));
+    $("#wallet_amt div").eq(2).html(numberWithCommas(sp.toFixed(3)));
+    $("#balance_loader").hide();
+}
+
+function getPriceSteemAsync() {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "GET",
+            beforeSend: function(xhttp) {
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+            },
+            url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM',
+            success: function(response) {
+                resolve(response.result['Bid']);
+            },
+            error: function(msg) {
+                resolve(msg);
+            }
+        });
+    });
+}
+
+function getBTCPriceAsync() {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "GET",
+            beforeSend: function(xhttp) {
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+            },
+            url: 'https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC',
+            success: function(response) {
+                resolve(response.result['Bid']);
+            },
+            error: function(msg) {
+                resolve(msg);
+            }
+        });
+    });
+}
+
+function getPriceSBDAsync() {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "GET",
+            beforeSend: function(xhttp) {
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+            },
+            url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-SBD',
+            success: function(response) {
+                resolve(response.result['Bid']);
+            },
+            error: function(msg) {
+                resolve(msg);
+            }
+        });
+    });
 }

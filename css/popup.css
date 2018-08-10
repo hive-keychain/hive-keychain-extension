@@ -154,7 +154,8 @@ input:focus {
 #unlock button,
 #forgot_div button,
 #add_account_div button,
-#master_check button {
+#master_check button,
+#main button {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -355,8 +356,8 @@ input:focus {
 }
 
 #lock {
-    margin-right: 20.16px;
-    margin-left: 169.79px;
+    margin-right: 19.8px;
+    margin-left: 168.29px;
 }
 
 .custom-select {
@@ -468,58 +469,109 @@ input:focus {
     background-color: rgba(0, 96, 96, 1);
 }
 
-.account_row,
-.account_info_menu {
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    border-bottom: 2px solid whitesmoke;
-    padding-bottom: 15px;
-    margin-top: 15px;
-    cursor: pointer;
-    font-size: 1.2em;
-}
-
-
-.account_name,
-.transfer_name {
-    float: left;
-}
-
-.acc_keys,
-.transfer_val {
-    display: block;
-    text-align: right;
-}
-
-.acc_key {
-    padding-top: 2px;
-    padding-bottom: 2px;
-    font-size: 12px;
+#wallet_amt,
+#wallet_currency {
     display: inline-block;
-    border-radius: 25px;
-    border: 1px solid var(--steem-light-blue);
+    height: 98px;
+    text-align: right;
+    font-size: 24px;
+    line-height: 34px;
+}
+
+#wallet {
+    display: inline-block;
+    margin-left: -32px;
+    width: 350px;
+    margin-top: 26px;
+    background-color: rgba(0, 156, 156, 0.4);
+    box-sizing: border-box;
+    margin-right: -32px;
+    padding: 18px 0;
+}
+
+#wallet_amt div:last-of-type,
+#wallet_currency div:last-of-type {
+    color: #006060;
+}
+
+#wallet_currency {
+    width: 72px;
+    margin-left: 5px;
+}
+
+#wallet_amt {
+    width: 209px;
+    float: left;
+    padding-left: 32px;
+}
+
+#voting_power {
+    margin-top: 9.57px;
+    color: white;
+    line-height: 20px;
+    font-size: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+}
+
+#account_value {
+    display: inline-block;
+    margin-left: -32px;
+    width: 350px;
+    background-color: rgba(0, 156, 156, 0.8);
+    box-sizing: border-box;
+    margin-right: -32px;
+    padding: 18px 0;
+}
+
+#account_value_header {
+    line-height: 20px;
+    font-size: 16px;
     text-align: center;
-    padding-left: 5px;
-    padding-right: 5px;
-    margin-left: 10px;
+    width: 100%;
 }
 
-.acc_key:first {
-    margin-left: 0px;
+#account_value_header::after {
+    content: "";
+    background-image: url("../images/info.png");
+    background-size: 12.25px 12.25px;
+    display: inline-block;
+    background-repeat: no-repeat;
+    height: 12.25px;
+    width: 12.25px;
+    vertical-align: 8%;
+    margin-left: 7px;
 }
 
-.account_info_menu {
-    cursor: pointer;
-    line-height: 40px;
-    display: block;
-    position: relative;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    text-decoration: none;
-    font-size: 1.2em;
-    color: #000;
+#account_value_amt,
+#account_value_currency {
+    display: inline-block;
+    height: 31px;
+    text-align: right;
+    font-size: 24px;
+    line-height: 31px;
+}
+
+#account_value_currency {
+    width: 72px;
+    margin-left: 5px;
+}
+
+#account_value_amt {
+    width: 209px;
+    float: left;
+    padding-left: 32px;
+}
+
+#send {
+    margin-top: 24px;
+    margin-bottom: 14px;
+}
+
+#history {
+    margin-bottom: -35px;
 }
 
 .account_info_menu img {
@@ -534,20 +586,6 @@ input:focus {
     margin-right: 40px;
 }
 
-.rotate180 img {
-    transform: rotate(180deg) translate(-100%, -100%);
-    -webkit-transform: rotate(180deg) translate(-100%, -100%);
-    -ms-transform: rotate(180deg) translateX(-100%, -100%);
-}
-
-.red {
-    color: red;
-}
-
-.green {
-    color: green;
-}
-
 .memo {
     text-overflow: clip;
     margin-top: 5px;
@@ -555,12 +593,6 @@ input:focus {
 
 .italic {
     font-style: italic;
-}
-
-
-#send input {
-    width: 82%;
-    margin-bottom: 10px;
 }
 
 input {
