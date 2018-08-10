@@ -222,10 +222,10 @@ input:focus {
     content: none;
 }
 
-.error_div {
+.error_div, .success_div {
     display: none;
-    background-color: rgba(201, 53, 53, 0.74);
     position: absolute;
+    background-color: rgba(201, 53, 53, 0.74);
     bottom: 0;
     z-index: 3;
     width: 100%;
@@ -236,6 +236,10 @@ input:focus {
     box-sizing: border-box;
     font-size: 16px;
     text-align: center;
+}
+
+.success_div {
+  background-color: rgba(0, 156, 156, 0.74);
 }
 
 #forgot_div,

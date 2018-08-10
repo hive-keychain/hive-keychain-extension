@@ -249,6 +249,7 @@ function initializeMainMenu() {
     $("#accounts").html("");
     $("#add_account_div").hide();
     $(".error_div").hide();
+    $(".success_div").hide();
     $("#master_check").hide();
     $("#username").val("");
     $("#pwd").val("");
@@ -470,13 +471,16 @@ function sendTransfer() {
     const memo = $("#memo_send").val();
     if (to != "" && amount != "" && amount >= 0.001) {
         steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
-            $("#message_send_transfer").empty();
             $("#send_loader").hide();
-            if (err == null)
-                $("#message_send_transfer").append("<span class='green'>Transaction successful!</span>");
-            else {
-                $("#message_send_transfer").append("<span class='red'>Something went wrong! Make sure you have enough STEEM/SBD, check the recipient's username and your internet connexion and try again!</span>");
+            if (err == null){
+                $(".error_div").hide();
+                $(".success_div").html("Transfer successful!").show();
             }
+            else {
+                $(".success_div").hide();
+                $(".error_div").html("Something went wrong! Please try again!").show();
+            }
+            $("#send_transfer").show();
         });
     }
 }
