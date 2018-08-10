@@ -430,10 +430,11 @@ input:focus {
     font-family: Futura;
     font-size: 20px;
     line-height: 28px;
-    padding: 9px 0px 4px 65px;
+    padding: 9px 0px 8px 65px;
     border: 1px solid transparent;
-    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-    cursor: pointer;
+    /*border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;*/
+		cursor: pointer;
+		border-radius: 3px;
 }
 
 /*style items (options):*/
