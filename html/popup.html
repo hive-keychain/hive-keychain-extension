@@ -53,7 +53,7 @@
               <img src="../images/squares.png" id="settings"/>
             </span>
         </div>
-        <div class="custom-select" style="width:200px;">
+        <div class="custom-select">
             <select>
             </select>
         </div>
@@ -80,6 +80,22 @@
         </div>
         <button id="send">Send</button>
         <button id="history">Wallet History</button>
+    </div>
+    <div id="send_div">
+        <div class="back_menu back_enabled">Transfer</div>
+        <input type="text" id="recipient" placeholder="To username" />
+        <input type="number" id="amt_send" placeholder="Amount" />
+        <div class="custom-select" id="currency_send">
+          <select>
+            <option value="SBD">SBD</option>
+            <option value="STEEM">STEEM</option>
+          </select>
+        </div>
+        <input type="text" placeholder="Memo" id="memo_send" />
+        <button id="send_transfer">Send</button>
+        <div class="loader" id="send_loader" style="display:none">
+            <div></div>
+        </div>
     </div>
     <div id="add_account_div">
         <div class="back_menu back_enabled">Set up</div>
@@ -150,20 +166,6 @@
             </div>
         </div>
         <div class="account_info_menu" style="display:none" id="transfer_to"><img src="/images/down_chevron.png">Transfer</div>
-        <div class="account_info_content" id="send">
-            <input type="text" id="recipient" placeholder="To username" />
-            <input type="number" id="amt_send" placeholder="Amount" />
-            <select id="currency">
-          <option value="SBD">SBD</option>
-          <option value="STEEM">STEEM</option>
-        </select>
-            <input type="text" placeholder="Memo" id="memo_send" />
-            <button id="send_transfer">Send</button>
-            <div class="loader" id="send_loader" style="display:none">
-                <div></div>
-            </div>
-            <div id="message_send_transfer"></div>
-        </div>
         <div class="account_info_menu"><img src="/images/down_chevron.png">Wallet History</div>
         <div class="account_info_content">
             <div id="acc_transfers"></div>

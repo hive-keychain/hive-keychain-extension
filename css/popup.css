@@ -48,7 +48,8 @@ body {
 #main,
 #forgot_div,
 #add_account_div,
-#master_check {
+#master_check,
+#send_div {
     position: absolute;
     margin: 0 !important;
     padding: 32px !important;
@@ -122,7 +123,8 @@ input:focus {
 
 #register input,
 #unlock input,
-#add_account_div input {
+#add_account_div input,
+#send_div input {
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
@@ -155,6 +157,7 @@ input:focus {
 #forgot_div button,
 #add_account_div button,
 #master_check button,
+#send_div button,
 #main button {
     border-radius: 5px;
     width: 100%;
@@ -242,6 +245,7 @@ input:focus {
 #add_account_div,
 #message_account_checked,
 #master_check,
+#send_div,
 .account_info,
 .account_info_content,
 .memo {
@@ -469,6 +473,25 @@ input:focus {
     background-color: rgba(0, 96, 96, 1);
 }
 
+#currency_send {
+    display: inline-block;
+    width: 45% !important;
+    height: 100% !important;
+    margin-top: 0px;
+    margin-left: 2.9%;
+}
+
+#currency_send .select-items div::before, #currency_send .select-selected::before {
+    content: none;
+    padding: 0;
+}
+
+#currency_send .select-items div, #currency_send.select-selected {
+  padding-left: 20px !important;
+}
+
+
+
 #wallet_amt,
 #wallet_currency {
     display: inline-block;
@@ -567,47 +590,34 @@ input:focus {
 
 #send {
     margin-top: 24px;
-    margin-bottom: 14px;
 }
 
 #history {
+    margin-top: 14px;
     margin-bottom: -35px;
 }
 
-.account_info_menu img {
-    height: 15px;
-    vertical-align: middle;
-    transform-origin: top left;
-    /* IE 10+, Firefox, etc. */
-    -webkit-transform-origin: top left;
-    /* Chrome */
-    -ms-transform-origin: top left;
-    /* IE 9 */
-    margin-right: 40px;
+#send_div input:first-of-type {
+    margin-top: 32px;
 }
+
+#send_div input:last-of-type {
+    margin-bottom: 32px;
+}
+
+#send_div input {
+    padding-left: 10px;
+}
+
 
 .memo {
     text-overflow: clip;
-    margin-top: 5px;
 }
 
-.italic {
-    font-style: italic;
-}
-
-input {
-    font-size: 1em;
-}
 
 #amt_send {
-    width: 55% !important;
+    width: 50% !important;
 }
-
-#currency {
-    width: 25% !important;
-    font-size: 1em;
-}
-
 #send_transfer {
     display: block;
     padding: 0 20px 0 20px;

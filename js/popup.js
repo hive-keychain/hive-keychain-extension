@@ -1,8 +1,8 @@
 let accounts_json = null,
     mk = null;
-let priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
+let active_account,priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
 const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
-
+let custom_created=false;
 steem.api.setOptions({
     url: 'https://api.steemit.com'
 });
@@ -271,6 +271,7 @@ function initializeMainMenu() {
     $("#balance_loader").show();
     $("#register").hide();
     $("#unlock").hide();
+    $("#send_div").hide();
     $("#add_account_div .back_enabled").removeClass("back_disabled");
     chrome.storage.local.get(['accounts'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
@@ -278,11 +279,11 @@ function initializeMainMenu() {
         }) ? null : decryptToJson(items.accounts, mk);
         if (accounts_json != null) {
             $("#accounts").empty();
-            $(".custom-select").html("<select></select>");
+            $(".custom-select").eq(0).html("<select></select>");
             for (account of accounts_json.list) {
-                $(".custom-select select").append("<option>" + account.name + "</option>");
+                $(".custom-select select").eq(0).append("<option>" + account.name + "</option>");
             }
-            $(".custom-select select").append("<option name='add_account'>Add New Account</option>");
+            $(".custom-select select").eq(0).append("<option name='add_account'>Add New Account</option>");
             initiateCustomSelect();
         } else {
             $("#main").hide();
@@ -450,6 +451,11 @@ $(".account_info_menu").eq(2).click(function() {
     }
 });
 
+$("#send").click(function(){
+    $("#send_div").show();
+    $("#main").hide();
+});
+
 // Send STEEM or SBD to an user
 $("#send_transfer").click(function() {
     showLoader();
@@ -459,11 +465,11 @@ $("#send_transfer").click(function() {
 function sendTransfer() {
     const to = $("#recipient").val();
     const amount = $("#amt_send").val();
-    const currency = $("#currency").val();
+    const currency = $("#currency_send .select-selected").html();
+    console.log(currency,active_account);
     const memo = $("#memo_send").val();
-    const account = accounts_json.list[parseInt($(".account_info").attr("id").replace("a", ""))];
     if (to != "" && amount != "" && amount >= 0.001) {
-        steem.broadcast.transfer(account.keys.active, account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
+        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
             $("#message_send_transfer").empty();
             $("#send_loader").hide();
             if (err == null)
@@ -546,7 +552,12 @@ function initiateCustomSelect() {
     x = document.getElementsByClassName("custom-select");
     console.log(x.length);
     for (i = 0; i < x.length; i++) {
+        if(i==1&&custom_created)
+          return;
+        if(i==1&&!custom_created)
+          custom_created=true;
         selElmnt = x[i].getElementsByTagName("select")[0];
+        console.log(selElmnt);
         /*for each element, create a new DIV that will act as the selected item:*/
         a = document.createElement("DIV");
         a.setAttribute("class", "select-selected");
@@ -583,8 +594,8 @@ function initiateCustomSelect() {
             b.appendChild(c);
         }
         x[i].appendChild(b);
-
-        loadAccount(a.innerHTML);
+        if(i==0)
+          loadAccount(a.innerHTML);
         a.addEventListener("click", function(e) {
             /*when the select box is clicked, close any other select boxes,
             and open/close the current select box:*/
@@ -594,7 +605,7 @@ function initiateCustomSelect() {
             this.classList.toggle("select-arrow-active");
             if (this.innerHTML.includes("Add New Account")) {
                 showAddAccount();
-            } else if (!this.classList.contains("select-arrow-active")) {
+            } else if (!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
                 loadAccount(this.innerHTML);
             }
         });
@@ -629,34 +640,40 @@ function loadAccount(name) {
     let account = accounts_json.list.filter(function(obj, i) {
         return obj.name === name;
     })[0];
-    $(".wallet_infos").html("...");
-    $("#voting_power span").html("");
-    setPreferences(account);
-    steem.api.getAccounts([account.name], function(err, result) {
-        console.log(err, result);
-        if (result.length != 0) {
-            console.log(getVotingPower(result[0]));
-            $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
-            if (totalSteem != null)
-                showUserData(result);
-            else
-                Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
-                .then(function(values) {
-                    votePowerReserveRate = values["0"].vote_power_reserve_rate;
-                    totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
-                    totalVests = Number(values["0"].total_vesting_shares.split(' ')[0]);
-                    rewardBalance = parseFloat(values["2"].reward_balance.replace(" STEEM", ""));
-                    recentClaims = values["2"].recent_claims;
-                    steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
-                    dynamicProp = values[0];
-                    priceSBD = values["3"];
-                    priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
-                    priceBTC = values["5"];
-                    showUserData(result);
-                });
-        }
+    if(account!=null&&account!=undefined){
+      active_account=account;
+      console.log("account",account);
+      $("#send").toggle(account.keys.hasOwnProperty("active"));
+      $(".wallet_infos").html("...");
+      $("#voting_power span").html("");
+      setPreferences(account);
+      steem.api.getAccounts([account.name], function(err, result) {
+          console.log(err, result);
+          if (result.length != 0) {
+              console.log(getVotingPower(result[0]));
+              $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
+              if (totalSteem != null)
+                  showUserData(result);
+              else
+                  Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
+                  .then(function(values) {
+                      votePowerReserveRate = values["0"].vote_power_reserve_rate;
+                      totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
+                      totalVests = Number(values["0"].total_vesting_shares.split(' ')[0]);
+                      rewardBalance = parseFloat(values["2"].reward_balance.replace(" STEEM", ""));
+                      recentClaims = values["2"].recent_claims;
+                      steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
+                      dynamicProp = values[0];
+                      priceSBD = values["3"];
+                      priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
+                      priceBTC = values["5"];
+                      showUserData(result);
+                  });
+          }
     });
-    $("#acc_transfers").html("Loading...");
+
+  }
+  $("#acc_transfers").html("Loading...");
 }
 
 function showUserData(result) {
