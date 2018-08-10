@@ -542,9 +542,9 @@ function showAddAccount() {
 }
 
 function initiateCustomSelect() {
-    var x, i, j, selElmnt, a, b, c;
     /*look for any elements with the class "custom-select":*/
     x = document.getElementsByClassName("custom-select");
+    console.log(x.length);
     for (i = 0; i < x.length; i++) {
         selElmnt = x[i].getElementsByTagName("select")[0];
         /*for each element, create a new DIV that will act as the selected item:*/
@@ -555,7 +555,7 @@ function initiateCustomSelect() {
         /*for each element, create a new DIV that will contain the option list:*/
         b = document.createElement("DIV");
         b.setAttribute("class", "select-items select-hide");
-        for (j = 1; j < selElmnt.length; j++) {
+        for (j = 0; j < selElmnt.length; j++) {
             /*for each option in the original select element,
             create a new DIV that will act as an option item:*/
             c = document.createElement("DIV");
@@ -600,8 +600,6 @@ function initiateCustomSelect() {
         });
     }
 
-
-
     function closeAllSelect(elmnt) {
         /*a function that will close all select boxes in the document,
         except the current select box:*/
@@ -627,15 +625,18 @@ function initiateCustomSelect() {
 }
 
 function loadAccount(name) {
+    console.log("load account" + name);
     let account = accounts_json.list.filter(function(obj, i) {
         return obj.name === name;
     })[0];
-    $("#wallet_amt div").html("...");
+    $(".wallet_infos").html("...");
+    $("#voting_power span").html("");
     setPreferences(account);
     steem.api.getAccounts([account.name], function(err, result) {
         console.log(err, result);
         if (result.length != 0) {
-            $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? "100" : getVotingPower(result[0]) / 100).toFixed(2) + "%");
+            console.log(getVotingPower(result[0]));
+            $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
             if (totalSteem != null)
                 showUserData(result);
             else

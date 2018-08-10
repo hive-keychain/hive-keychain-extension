@@ -439,12 +439,12 @@ input:focus {
     z-index: 99;
 }
 
-.select-items:last-of-type div {
+.select-items div:last-of-type {
     padding-left: 20px !important;
     text-transform: uppercase;
 }
 
-.select-items:last-of-type div::before {
+.select-items div:last-of-type::before {
     background-image: url("../images/plus.png");
     background-size: 30px 30px;
     background-repeat: no-repeat;
