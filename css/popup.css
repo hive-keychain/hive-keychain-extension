@@ -49,7 +49,8 @@ body {
 #forgot_div,
 #add_account_div,
 #master_check,
-#send_div {
+#send_div,
+#acc_transfers {
     position: absolute;
     margin: 0 !important;
     padding: 32px !important;
@@ -121,6 +122,14 @@ input:focus {
     height: 29.99px;
 }
 
+#send_div .input_container img {
+    position: absolute;
+    top: 9px;
+    left: 20px;
+    width: 29.99px;
+    height: 29.99px;
+}
+
 #register input,
 #unlock input,
 #add_account_div input,
@@ -128,7 +137,7 @@ input:focus {
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
-    margin-bottom: 20.57px;
+    margin-bottom: 20px;
     background: rgba(255, 255, 255, 0.65);
     border: 1px solid rgba(255, 255, 255, 0.65);
     padding-left: 97px;
@@ -250,6 +259,7 @@ input:focus {
 #message_account_checked,
 #master_check,
 #send_div,
+#acc_transfers,
 .account_info,
 .account_info_content,
 .memo {
@@ -260,6 +270,8 @@ input:focus {
     margin-top: 22px;
 }
 
+.red { color:red; }
+.green { color:green; }
 .key_checkbox {
     display: block;
     height: 32px;
@@ -480,10 +492,12 @@ input:focus {
 
 #currency_send {
     display: inline-block;
-    width: 45% !important;
+    width: 106px !important;
     height: 100% !important;
     margin-top: 0px;
-    margin-left: 2.9%;
+    background-color: rgba(33, 172, 204, 0.75);
+    height:48px;
+    margin-bottom: 1px;
 }
 
 #currency_send .select-items div::before, #currency_send .select-selected::before {
@@ -491,8 +505,8 @@ input:focus {
     padding: 0;
 }
 
-#currency_send .select-items div, #currency_send.select-selected {
-  padding-left: 20px !important;
+#currency_send .select-items div, #currency_send .select-selected {
+  padding-left: 10px !important;
 }
 
 
@@ -602,18 +616,34 @@ input:focus {
     margin-bottom: -35px;
 }
 
-#send_div input:first-of-type {
-    margin-top: 32px;
-}
-
-#send_div input:last-of-type {
-    margin-bottom: 32px;
-}
-
 #send_div input {
     padding-left: 10px;
 }
 
+#recipient {
+  padding-left: 65px !important;
+}
+
+.transfer_balance {
+  margin: 25px 0px 25px 0px;
+  padding: 18px 0px 15.21px 0px;
+  background-color: rgba(0, 156, 156,0.4);
+  box-sizing: border-box;
+  margin-right: -32px;
+  margin-left: -32px;
+  text-align: center;
+}
+
+.transfer_balance div:first-of-type {
+  margin-bottom: 12px;
+  font-size: 16px;
+  line-height: 22px;
+}
+
+.transfer_balance div:last-of-type {
+  font-size: 20px;
+  line-height: 28px;
+}
 
 .memo {
     text-overflow: clip;
@@ -621,19 +651,35 @@ input:focus {
 
 
 #amt_send {
-    width: 50% !important;
+    width: 167px !important;
+    margin-right: 7px;
+    text-align: right;
 }
 #send_transfer {
     display: block;
     padding: 0 20px 0 20px;
     font-size: 1em;
-    margin-top: 10px;
 }
 
-#message_send_transfer {
-    margin-top: 10px;
+#acc_transfers .back_menu {
+    margin-bottom: 30px;
 }
 
+#acc_transfers, #transfer_rows{
+  height: 468px;
+  width: 100%;
+  overflow-y: scroll;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
 .type_key {
     padding-top: 2px;
     padding-bottom: 2px;

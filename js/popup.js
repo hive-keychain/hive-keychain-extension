@@ -135,6 +135,7 @@ $(".input_img_right_eye").click(function() {
 });
 
 $(".back_menu").click(function() {
+  console.log("back");
     initializeMainMenu();
 });
 
@@ -253,6 +254,7 @@ function initializeMainMenu() {
     $("#master_check").hide();
     $("#username").val("");
     $("#pwd").val("");
+    $("#acc_transfers").hide();
     $(".error_div").html("");
     $("#posting_key").prop("checked", true);
     $("#active_key").prop("checked", true);
@@ -260,7 +262,6 @@ function initializeMainMenu() {
     $("#main").css("display", "block");
     $(".account_info").hide();
     $(".account_info_content").hide();
-    $("#acc_transfers").empty();
     $(".account_info_menu").removeClass("rotate180");
     $("#transfer_to").hide();
     $("#add_key_div").hide();
@@ -421,39 +422,14 @@ function addKeys(i, key, priv, pub) {
     $("#keys_info").empty();
     manageKeys();
 }
-// Display Wallet history
-$(".account_info_menu").eq(2).click(function() {
-    if ($(".transfer_row").length == 0) {
-        const username = $("#account_info_name").html().replace("@", "");
-        steem.api.getAccountHistory(username, -1, 1000, function(err, result) {
-            $("#acc_transfers").empty();
-            if (result != null) {
-                let transfers = result.filter(tx => tx[1].op[0] === 'transfer');
-                transfers = transfers.slice(-10).reverse();
-                if (transfers.length != 0) {
-                    for (transfer of transfers) {
-                        let memo = transfer[1].op[1].memo;
-                        if (memo[0] == "#") {
-                            if (accounts_json.list[parseInt($(".account_info").attr("id").replace("a", ""))].keys.hasOwnProperty("memo"))
-                                memo = window.decodeMemo(accounts_json.list[parseInt($(".account_info").attr("id").replace("a", ""))].keys.memo, memo);
-                            else
-                                memo = "Add your private memo key to read this memo";
-                        }
-                        $("#acc_transfers").append("<div class='transfer_row " + (transfer[1].op[1].from == username ? "red" : "green") + "'><span class='transfer_name'>" + (transfer[1].op[1].from == username ? "To @" + transfer[1].op[1].to : "From @" + transfer[1].op[1].from) + ":</span><span class='transfer_val'>" + transfer[1].op[1].amount + "</span></div><div class='memo'>" + memo + "</div><hr>");
-                    }
-                    $(".transfer_row").click(function() {
-                        $(".memo").eq($(this).index() / 3).slideToggle();
-                    });
-                } else
-                    $("#acc_transfers").append("No recent transfers");
-            } else
-                $("#acc_transfers").append("Something went wrong! Please try again later!");
-        });
-    }
-});
 
 $("#send").click(function(){
     $("#send_div").show();
+    $("#main").hide();
+});
+
+$("#history").click(function(){
+    $("#acc_transfers").show();
     $("#main").hide();
 });
 
@@ -482,6 +458,11 @@ function sendTransfer() {
             }
             $("#send_transfer").show();
         });
+    }
+    else {
+      $(".error_div").html("Please fill the fields!").show();
+      $("#send_loader").hide();
+      $("#send_transfer").show();
     }
 }
 
@@ -611,6 +592,11 @@ function initiateCustomSelect() {
                 showAddAccount();
             } else if (!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
                 loadAccount(this.innerHTML);
+            } else if(this.innerHTML=="SBD"){
+              $(".transfer_balance div").eq(1).html(sbd);
+
+            } else if(this.innerHTML=="STEEM"){
+              $(".transfer_balance div").eq(1).html(steem_p);
             }
         });
     }
@@ -675,13 +661,38 @@ function loadAccount(name) {
                   });
           }
     });
-
+    steem.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
+        $("#acc_transfers div").eq(1).empty();
+        if (result != null) {
+            let transfers = result.filter(tx => tx[1].op[0] === 'transfer');
+            transfers = transfers.slice(-10).reverse();
+            if (transfers.length != 0) {
+                for (transfer of transfers) {
+                    let memo = transfer[1].op[1].memo;
+                    if (memo[0] == "#") {
+                        if (active_account.keys.hasOwnProperty("memo"))
+                            memo = window.decodeMemo(active_account.keys.memo, memo);
+                        else
+                            memo = "Add your private memo key to read this memo";
+                    }
+                    console.log(transfer);
+                    $("#acc_transfers div").eq(1).append("<div class='transfer_row " + (transfer[1].op[1].from == active_account.name ? "red" : "green") + "'><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "To @" + transfer[1].op[1].to : "From @" + transfer[1].op[1].from) + ":</span><span class='transfer_val'>" + transfer[1].op[1].amount + "</span></div><div class='memo'>" + memo + "</div><hr>");
+                }
+                $(".transfer_row").click(function() {
+                  console.log($(this).index());
+                    $(".memo").eq(($(this).index()) / 3).slideToggle();
+                });
+            } else
+                $("#acc_transfers div").eq(1).append("No recent transfers");
+        } else
+            $("#acc_transfers div").eq(1).append("Something went wrong! Please try again later!");
+    });
   }
-  $("#acc_transfers").html("Loading...");
 }
 
 function showUserData(result) {
     showBalances(result, dynamicProp);
+    $(".transfer_balance div").eq(1).html(steem_p);
     $("#voting_power span").eq(1).html("Vote Value: $ " + getVotingDollarsPerAccount(100, result["0"]));
     console.log(priceSBD, priceSteem, priceBTC, steem_p, sbd, sp);
     $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)))

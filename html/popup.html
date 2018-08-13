@@ -83,20 +83,31 @@
         <button id="history">Wallet History</button>
     </div>
     <div id="send_div">
-        <div class="back_menu back_enabled">Transfer</div>
-        <input type="text" id="recipient" placeholder="To username" />
-        <input type="number" id="amt_send" placeholder="Amount" />
+        <div class="back_menu back_enabled">Transfer Funds</div>
+        <div class="transfer_balance">
+          <div>STEEM Balance</div>
+          <div></div>
+        </div>
+        <div class="input_container">
+            <input type="text" id="recipient" placeholder="USERNAME" />
+            <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <input type="number" id="amt_send" placeholder="0.000" />
         <div class="custom-select" id="currency_send">
           <select>
+          <option value="STEEM">STEEM</option>
             <option value="SBD">SBD</option>
-            <option value="STEEM">STEEM</option>
           </select>
         </div>
-        <input type="text" placeholder="Memo" id="memo_send" />
-        <button id="send_transfer">Send</button>
+        <input type="text" placeholder="MEMO (optional)" id="memo_send" />
+        <button id="send_transfer">Send Now</button>
         <div class="loader" id="send_loader" style="display:none">
             <div></div>
         </div>
+    </div>
+    <div id="acc_transfers">
+      <div class="back_menu back_enabled">Wallet History</div>
+      <div id="transfer_rows"></div>
     </div>
     <div id="add_account_div">
         <div class="back_menu back_enabled">Set up</div>
@@ -146,16 +157,6 @@
         <button id="save_master">Save</button>
     </div>
     <div class="account_info">
-        <div class="back_menu">Back to Main Menu</div>
-        <h2 id="account_info_name"></h2>
-        <div id="balances">
-            <div class="loader" id="balance_loader">
-                <div></div>
-            </div>
-            <div id="balance_steem"></div>
-            <div id="balance_sbd"></div>
-            <div id="balance_sp"></div>
-        </div>
         <div class="account_info_menu"><img src="/images/down_chevron.png">Keys</div>
         <div class="account_info_content">
             <div id="keys_info"></div>
@@ -167,10 +168,7 @@
             </div>
         </div>
         <div class="account_info_menu" style="display:none" id="transfer_to"><img src="/images/down_chevron.png">Transfer</div>
-        <div class="account_info_menu"><img src="/images/down_chevron.png">Wallet History</div>
-        <div class="account_info_content">
-            <div id="acc_transfers"></div>
-        </div>
+
         <div class="account_info_menu"><img src="/images/down_chevron.png">Preferences</div>
         <div class="account_info_content">
             <div id="pref">No preferences</div>
