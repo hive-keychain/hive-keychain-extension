@@ -275,12 +275,18 @@ function initializeMainMenu() {
     $("#unlock").hide();
     $("#send_div").hide();
     $("#add_account_div .back_enabled").removeClass("back_disabled");
-    chrome.storage.local.get(['accounts'], function(items) {
+    chrome.storage.local.get(['accounts','last_account'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
         if (accounts_json != null) {
             $("#accounts").empty();
+            if(items.last_account!=undefined&&items.last_account!=null){
+              let last=accounts_json.list.filter(function(o,i){return o.name==items.last_account;});
+              accounts_json.list=accounts_json.list.filter(function(o,i){return o.name!=items.last_account;});
+              accounts_json.list.unshift(last[0]);
+              console.log(accounts_json);
+            }
             $(".custom-select").eq(0).html("<select></select>");
             for (account of accounts_json.list) {
                 $(".custom-select select").eq(0).append("<option>" + account.name + "</option>");
@@ -591,6 +597,9 @@ function initiateCustomSelect() {
             if (this.innerHTML.includes("Add New Account")) {
                 showAddAccount();
             } else if (!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
+                chrome.storage.local.set({
+                    last_account: this.innerHTML
+                });
                 loadAccount(this.innerHTML);
             } else if(this.innerHTML=="SBD"){
               $(".transfer_balance div").eq(1).html(sbd);
