@@ -9,7 +9,9 @@ html {
     border-radius: 1px;
     margin: 0 !important;
     padding: 0 !important;
-    background: linear-gradient(328deg, #3DF9B4, #00FFF6, #31CBFA, #739DFF) !important;
+    background-image: linear-gradient(328deg, #3DF9B4, #00FFF6, #31CBFA, #739DFF) !important;
+    background-repeat:no-repeat;
+    background-attachment: fixed;
     top: 0;
     left: 0;
     position: relative;
@@ -625,12 +627,10 @@ input:focus {
 }
 
 .transfer_balance {
-  margin: 25px 0px 25px 0px;
+  margin: 25px -32px 25px -32px;
   padding: 18px 0px 15.21px 0px;
   background-color: rgba(0, 156, 156,0.4);
   box-sizing: border-box;
-  margin-right: -32px;
-  margin-left: -32px;
   text-align: center;
 }
 
@@ -665,13 +665,26 @@ input:focus {
     margin-bottom: 30px;
 }
 
-#acc_transfers, #transfer_rows{
-  height: 468px;
-  width: 100%;
-  overflow-y: scroll;
-  box-sizing: border-box;
+#acc_transfers {
+    width: 100%;
+    height: 468px;
 }
 
+#transfer_rows{
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+    margin-left:  -32px;
+      margin-right:  -32px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+.memo {
+  margin-top: 6px;
+  font-style: italic;
+}
 ::-webkit-scrollbar {
     width: 0px;  /* remove scrollbar space */
     background: transparent;  /* optional: just make scrollbar invisible */
@@ -680,86 +693,35 @@ input:focus {
 ::-webkit-scrollbar-thumb {
     background: #FF0000;
 }
-.type_key {
-    padding-top: 2px;
-    padding-bottom: 2px;
-    font-size: 12px;
-    display: inline-block;
-    border-radius: 25px;
-    border: 1px solid var(--steem-light-blue);
-    text-align: center;
-    padding-left: 5px;
-    padding-right: 5px;
-    float: left;
-    text-transform: capitalize;
-    margin-right: 10px;
-    margin-top: 10px;
+
+
+.transfer_row {
+  padding:11px 32px 11px 32px;
 }
 
-.div_keys {
-    width: 280px;
-    display: inline-block;
+.transfer_row:nth-child(odd) {
+  background-color: rgba(0, 156, 156,0.4);
 }
 
-.privKey,
-.pubKey {
-    display: inline-block;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    white-space: nowrap;
-    margin-bottom: 10px;
-    margin-right: 10px;
-    width: 200px;
-    vertical-align: middle;
-
+.transfer_row:nth-child(even) {
+  background-color: rgba(0, 156, 156,0.8);
 }
 
-.pubKey {
-    color: grey;
-    font-style: italic;
+.transfer_row span {
+  display: inline-block;
 }
 
-#pref_name {
-    width: 100px;
-    display: inline-block;
+.transfer_row span:nth-child(odd) {
+  width: 186px;
 }
 
-.copyKey {
-    content: url("../images/copy.png");
-    height: 20px;
-    margin-right: 10px;
-    cursor: pointer;
+.transfer_date, .transfer_val {
+  margin-bottom: 6px;
 }
 
-.deleteKey,
-.deletePref {
-    content: url("../images/delete.png");
-    height: 20px;
-    cursor: pointer;
-}
-
-.deletePref {
-    height: 15px;
-}
-
-#add_key {
-    margin-top: 20px;
-    cursor: pointer;
-    color: var(--steem-light-blue);
-    font-weight: bold;
-    font-size: 1.2em;
-    margin-bottom: 10px;
-}
-
-#balances {
-    height: 66px;
-    color: var(--steem-light-blue);
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-#balance_sbd {
-    color: var(--steem-dark-blue);
+.transfer_row span:nth-child(even) {
+  width: 100px;
+  text-align: right;
 }
 
 .loader {

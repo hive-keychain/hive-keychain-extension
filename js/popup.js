@@ -669,6 +669,9 @@ function loadAccount(name) {
             if (transfers.length != 0) {
                 for (transfer of transfers) {
                     let memo = transfer[1].op[1].memo;
+                    let timestamp=transfer[1].timestamp;
+                    let date=new Date(timestamp);
+                    timestamp=(date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear();
                     if (memo[0] == "#") {
                         if (active_account.keys.hasOwnProperty("memo"))
                             memo = window.decodeMemo(active_account.keys.memo, memo);
@@ -676,11 +679,12 @@ function loadAccount(name) {
                             memo = "Add your private memo key to read this memo";
                     }
                     console.log(transfer);
-                    $("#acc_transfers div").eq(1).append("<div class='transfer_row " + (transfer[1].op[1].from == active_account.name ? "red" : "green") + "'><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "To @" + transfer[1].op[1].to : "From @" + transfer[1].op[1].from) + ":</span><span class='transfer_val'>" + transfer[1].op[1].amount + "</span></div><div class='memo'>" + memo + "</div><hr>");
+                    $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date'>"+timestamp+"</span><span class='transfer_val'>" + transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from)
+                    +"</span><span class='transfer_cur'>"+transfer[1].op[1].amount.split(" ")[1]+"</span><div class='memo'>" + memo + "</div></div>");
                 }
                 $(".transfer_row").click(function() {
                   console.log($(this).index());
-                    $(".memo").eq(($(this).index()) / 3).slideToggle();
+                    $(".memo").eq(($(this).index())).slideToggle();
                 });
             } else
                 $("#acc_transfers div").eq(1).append("No recent transfers");
