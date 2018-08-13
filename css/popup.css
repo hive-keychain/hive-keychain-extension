@@ -562,12 +562,12 @@ input:focus {
 
 #account_value {
     display: inline-block;
-    margin-left: -32px;
+    margin: 0px -32px 10px -32px;
     width: 350px;
     background-color: rgba(0, 156, 156, 0.8);
     box-sizing: border-box;
-    margin-right: -32px;
     padding: 18px 0;
+
 }
 
 #account_value_header {
@@ -610,7 +610,7 @@ input:focus {
 }
 
 #send {
-    margin-top: 24px;
+    margin-top: 14px;
 }
 
 #history {

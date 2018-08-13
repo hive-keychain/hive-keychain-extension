@@ -644,7 +644,8 @@ function loadAccount(name) {
       console.log("account",account);
       $("#send").toggle(account.keys.hasOwnProperty("active"));
       $(".wallet_infos").html("...");
-      $("#voting_power span").html("");
+      $("#voting_power span").eq(0).html("Voting Power: ...");
+      $("#voting_power span").eq(1).html("Vote Value: ...");
       setPreferences(account);
       steem.api.getAccounts([account.name], function(err, result) {
           console.log(err, result);
