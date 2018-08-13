@@ -679,7 +679,7 @@ function loadAccount(name) {
                             memo = "Add your private memo key to read this memo";
                     }
                     console.log(transfer);
-                    $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date'>"+timestamp+"</span><span class='transfer_val'>" + transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from)
+                    $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date'>"+timestamp+"</span><span class='transfer_val'>" + (transfer[1].op[1].from == active_account.name ? "-": "+")+" "+transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from)
                     +"</span><span class='transfer_cur'>"+transfer[1].op[1].amount.split(" ")[1]+"</span><div class='memo'>" + memo + "</div></div>");
                 }
                 $(".transfer_row").click(function() {
