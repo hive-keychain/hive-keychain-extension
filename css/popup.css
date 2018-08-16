@@ -9,7 +9,7 @@ html {
     border-radius: 1px;
     margin: 0 !important;
     padding: 0 !important;
-    background-image: linear-gradient(328deg, #3DF9B4, #00FFF6, #31CBFA, #739DFF) !important;
+    background-image: linear-gradient(328deg, #3df9b4, #00d3cc, #a779ff) !important;
     background-repeat:no-repeat;
     background-attachment: fixed;
     top: 0;
@@ -52,7 +52,13 @@ body {
 #add_account_div,
 #master_check,
 #send_div,
-#acc_transfers {
+#acc_transfers,
+#settings_div,
+.settings_child,
+#pref_div {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
     position: absolute;
     margin: 0 !important;
     padding: 32px !important;
@@ -169,7 +175,8 @@ input:focus {
 #add_account_div button,
 #master_check button,
 #send_div button,
-#main button {
+#main button,
+#delete_account {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -264,7 +271,9 @@ input:focus {
 #acc_transfers,
 .account_info,
 .account_info_content,
-.memo {
+.memo,
+.settings_child,
+#pref_div {
     display: none;
 }
 
@@ -462,12 +471,12 @@ input:focus {
     z-index: 99;
 }
 
-.select-items div:last-of-type {
+.custom-select-main .select-items div:last-of-type {
     padding-left: 20px !important;
     text-transform: uppercase;
 }
 
-.select-items div:last-of-type::before {
+.custom-select-main .select-items div:last-of-type::before {
     background-image: url("../images/plus.png");
     background-size: 30px 30px;
     background-repeat: no-repeat;
@@ -724,33 +733,106 @@ input:focus {
   text-align: right;
 }
 
-.loader {
-    vertical-align: middle;
-    display: block;
+#settings_div {
+  display: none;
+  width: 100%;
 }
 
-.loader div {
-    border: 4px solid #f3f3f3;
-    /* Light grey */
-    border-top: 4px solid var(--steem-light-blue);
-    /* Blue */
-    border-radius: 50%;
-    width: 15px;
-    margin-left: 0em;
-    height: 15px;
-    animation: spin 2s linear infinite;
+.setting_row {
+  display: flex;
+  align-items: center;
+  height:60px;
+  width: 100%;
+  margin:0px -32px 0px -32px;
+  padding: 0 32px 0 32px;
+  vertical-align: middle;
+  cursor:pointer;
 }
 
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+#settings_div div:first-of-type {
+  margin-bottom: 46px;
 }
 
-#balance_loader div {
-    width: 40px;
-    height: 40px;
+.setting_row img {
+  height:20.6px;
+  margin-right: 35.8px;
+}
+
+.setting_row span {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.setting_row:nth-child(odd), .keys_info:nth-child(odd) {
+  background-color: rgba(0, 156, 156,0.8);
+}
+
+.setting_row:nth-child(even), .keys_info:nth-child(even)  {
+  background-color: rgba(0, 156, 156,0.4);
+}
+
+#about_div div:first-of-type {
+    margin-bottom: 30px;
+}
+
+#manage_keys .back_pref {
+    margin-bottom: 44px;
+}
+
+#manage_keys .usernames {
+  margin-bottom: 24.6px;
+}
+
+.keys_info {
+  position: relative;
+  min-height: 80px;
+  margin:0px -32px 0px -32px;
+  padding: 11px 32px 10px 32px;
+  box-sizing: border-box;
+}
+
+.keys_info div {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 10px;
+  line-height: 10px;
+}
+.keys_info span {
+  font-size: 16px;
+  line-height: 16px;
+}
+.keys_info span:first-of-type {
+  width:186px;
+  float: left;
+  display: inline-block;
+}
+.remove_key {
+  display: inline-block;
+  width: 100px;;
+  color:#c93535;
+  text-align: right;
+}
+
+.private_key {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.img_add_key {
+  display: none;
+  position: absolute;
+  top: 0;
+  width: 270px;
+  height: 100%;
+  padding-right: 32px;
+  background-image: url('../images/plus_key.png');
+  background-repeat: no-repeat;
+  background-size: 32px 32px;
+  background-position: center center;
+}
+
+#delete_account {
+    margin-top: 40px;
+    background-color: #8e0000;
 }

@@ -3,6 +3,7 @@ let accounts_json = null,
 let active_account,priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
 const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 let custom_created=false;
+let manageKey=false;
 steem.api.setOptions({
     url: 'https://api.steemit.com'
 });
@@ -43,9 +44,20 @@ $("#lock").click(function() {
         chrome.storage.local.set({
             accounts: encryptJson(accounts_json, mk)
         });
-        mk = null;
     }
+    $("#back_forgot_settings").attr("id","back_forgot");
+    mk = null;
     showUnlock();
+});
+
+$("#settings").click(function(){
+  $("#settings_div").show();
+  $("#main").hide();
+});
+
+$("#about").click(function(){
+  $("#about_div").show();
+  $("#settings_div").hide();
 });
 
 // Show forgot password
@@ -99,7 +111,23 @@ $("#forgot_div button").click(function() {
 
 $("#back_forgot").click(function() {
     $("#forgot_div").hide();
-    $("#unlock").show();
+    if($(this).attr("id")=="back_forgot_settings")
+      $("#settings_div").show();
+    else
+      $("#unlock").show();
+});
+
+$(".back_pref").click(function(){
+    $(".settings_child").hide();
+    $("#settings_div").show();
+});
+
+$("#manage").click(function(){
+    manageKey=true;
+    $("#manage_keys").show();
+    $("#settings_div").hide();
+    console.log($(".usernames").eq(1).html());
+    manageKeys($(".usernames .select-selected").eq(1).html());
 });
 // Registration confirmation
 $("#submit_master_pwd").click(function() {
@@ -210,6 +238,12 @@ $(".back_add_key").click(function() {
     $("#add_account_div").show();
 });
 
+$("#clear").click(function(){
+    $("#settings_div").hide();
+    $("#forgot_div").show();
+    $("#back_forgot").attr("id","back_forgot_settings");
+});
+
 // If master key was entered, handle which keys to save.
 $("#save_master").click(function() {
     if ($("#posting_key").prop("checked") || $("#active_key").prop("checked") || $("#memo_key").prop("checked")) {
@@ -274,7 +308,9 @@ function initializeMainMenu() {
     $("#register").hide();
     $("#unlock").hide();
     $("#send_div").hide();
+    $("#settings_div").hide();
     $("#add_account_div .back_enabled").removeClass("back_disabled");
+    manageKey=false;
     chrome.storage.local.get(['accounts','last_account'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
@@ -287,11 +323,11 @@ function initializeMainMenu() {
               accounts_json.list.unshift(last[0]);
               console.log(accounts_json);
             }
-            $(".custom-select").eq(0).html("<select></select>");
+            $(".usernames").html("<select></select>");
             for (account of accounts_json.list) {
-                $(".custom-select select").eq(0).append("<option>" + account.name + "</option>");
+                $(".usernames select").append("<option>" + account.name + "</option>");
             }
-            $(".custom-select select").eq(0).append("<option name='add_account'>Add New Account</option>");
+            $(".usernames select").eq(0).append("<option name='add_account'>Add New Account</option>");
             initiateCustomSelect();
         } else {
             $("#main").hide();
@@ -352,14 +388,43 @@ $(".account_info_menu").eq(0).click(function() {
 });
 
 // Display Add Copy or delete individual keys
-function manageKeys() {
-    if ($(".row_account_keys").length == 0) {
-        const i = parseInt($(".account_info").attr("id").replace("a", ""));
-        const keys = accounts_json.list[i].keys;
+function manageKeys(name) {
+  console.log(name);
+  let account = accounts_json.list.filter(function(obj, i) {
+      return obj.name === name;
+  })[0];
+        const keys = account.keys;
+        $(".public_key").html("");
+        $(".private_key").html("");
         for (keyName in keys) {
-            if (!keyName.includes("Pubkey")) {
-                $("#keys_info").append("<div class='row_account_keys'><div class='type_key'>" + keyName[0] + "</div><div class='div_keys'><div class='privateRow'><input type='text' readOnly='true' value='" + keys[keyName] + "' class='privKey'></input><img class='copyKey'/><img id='" + keyName + "' class='deleteKey'/></div><div class='publicRow'><input type='text' readOnly='true' value='" + keys[keyName + "Pubkey"] + "' class='pubKey'></input><img class='copyKey'/></div></div></div>");
+            if (keyName.includes("posting")) {
+              if(keyName.includes("Pubkey"))
+                $(".public_key").eq(0).html(account.keys[keyName]);
+              else
+                $(".private_key").eq(0).html(account.keys[keyName]);
+            } else if (keyName.includes("active")) {
+              if(keyName.includes("Pubkey"))
+                $(".public_key").eq(1).html(account.keys[keyName]);
+              else
+                $(".private_key").eq(1).html(account.keys[keyName]);
+            } else if (keyName.includes("memo")) {
+              if(keyName.includes("Pubkey"))
+                $(".public_key").eq(2).html(account.keys[keyName]);
+              else
+                $(".private_key").eq(2).html(account.keys[keyName]);
             }
+        }
+        if($(".private_key").eq(0).html()===""){
+            $(".img_add_key").eq(0).show();
+            $(".remove_key").eq(0).hide();
+        }
+        if($(".private_key").eq(1).html()===""){
+          $(".img_add_key").eq(1).show();
+          $(".remove_key").eq(1).hide();
+        }
+        if($(".private_key").eq(2).html()===""){
+          $(".img_add_key").eq(2).show();
+          $(".remove_key").eq(2).hide();
         }
 
         $(".copyKey").click(function() {
@@ -378,7 +443,6 @@ function manageKeys() {
                 updateAccount();
             }
         });
-    }
 }
 // Show add a new key
 $('#add_key').click(function() {
@@ -542,6 +606,7 @@ function initiateCustomSelect() {
     /*look for any elements with the class "custom-select":*/
     x = document.getElementsByClassName("custom-select");
     console.log(x.length);
+    //TODO: here
     for (i = 0; i < x.length; i++) {
         if(i==1&&custom_created)
           return;
@@ -596,7 +661,7 @@ function initiateCustomSelect() {
             this.classList.toggle("select-arrow-active");
             if (this.innerHTML.includes("Add New Account")) {
                 showAddAccount();
-            } else if (!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
+            } else if (!manageKey&&!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
                 chrome.storage.local.set({
                     last_account: this.innerHTML
                 });
@@ -606,6 +671,8 @@ function initiateCustomSelect() {
 
             } else if(this.innerHTML=="STEEM"){
               $(".transfer_balance div").eq(1).html(steem_p);
+            } else if(manageKey) {
+              manageKeys(this.innerHTML);
             }
         });
     }
@@ -641,16 +708,13 @@ function loadAccount(name) {
     })[0];
     if(account!=null&&account!=undefined){
       active_account=account;
-      console.log("account",account);
       $("#send").toggle(account.keys.hasOwnProperty("active"));
       $(".wallet_infos").html("...");
       $("#voting_power span").eq(0).html("Voting Power: ...");
       $("#voting_power span").eq(1).html("Vote Value: ...");
       setPreferences(account);
       steem.api.getAccounts([account.name], function(err, result) {
-          console.log(err, result);
           if (result.length != 0) {
-              console.log(getVotingPower(result[0]));
               $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
               if (totalSteem != null)
                   showUserData(result);
@@ -688,12 +752,10 @@ function loadAccount(name) {
                         else
                             memo = "Add your private memo key to read this memo";
                     }
-                    console.log(transfer);
                     $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date'>"+timestamp+"</span><span class='transfer_val'>" + (transfer[1].op[1].from == active_account.name ? "-": "+")+" "+transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from)
                     +"</span><span class='transfer_cur'>"+transfer[1].op[1].amount.split(" ")[1]+"</span><div class='memo'>" + memo + "</div></div>");
                 }
                 $(".transfer_row").click(function() {
-                  console.log($(this).index());
                     $(".memo").eq(($(this).index())).slideToggle();
                 });
             } else
@@ -743,7 +805,6 @@ function getEffectiveVestingSharesPerAccount(account) {
 };
 
 function showBalances(result, res) {
-    console.log("show balance");
     sbd = result["0"].sbd_balance.replace("SBD", "");
     const vs = result["0"].vesting_shares;
     steem_p = result["0"].balance.replace("STEEM", "");
