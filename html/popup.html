@@ -82,6 +82,13 @@
         <button id="send">Send</button>
         <button id="history">Wallet History</button>
     </div>
+    <div id="estimation_info">
+      <div class="back_menu back_enabled">account value</div>
+      <div>
+        The estimated account value is a ballpark idea of what your funds are worth in USD.<br><br>
+        Please note that the value does not take into account pending market trades, transfers, or transactions.
+      </div>
+    </div>
     <div id="acc_transfers">
       <div class="back_menu back_enabled">Wallet History</div>
       <div id="transfer_rows"></div>
@@ -168,21 +175,21 @@
       </div>
             <div class="keys_info">
               <span>POSTING KEY</span>
-              <span class="remove_key">REMOVE</span>
+              <span id="posting" class="remove_key">REMOVE</span>
               <div class="private_key"></div>
               <div class="public_key"></div>
               <div class="img_add_key"></div>
             </div>
             <div class="keys_info">
               <span>ACTIVE KEY</span>
-              <span class="remove_key">REMOVE</span>
+              <span id="active" class="remove_key">REMOVE</span>
               <div class="private_key"></div>
               <div class="public_key"></div>
               <div class="img_add_key"></div>
             </div>
             <div class="keys_info">
               <span>MEMO KEY</span>
-              <span class="remove_key">REMOVE</span>
+              <span id="memo" class="remove_key">REMOVE</span>
               <div class="private_key"></div>
               <div class="public_key"></div>
               <div class="img_add_key"></div>
@@ -195,6 +202,10 @@
                 <p id="error_add_key" class="error"></p>
             </div>!-->
     </div>
+    <div id="copied">
+      <div>Key copied to clipboard!</div>
+    </div>
+    <input id="fake_input"/>
     <div id="send_div">
         <div class="back_menu back_enabled">Transfer Funds</div>
         <div class="transfer_balance">

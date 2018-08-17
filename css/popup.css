@@ -55,7 +55,8 @@ body {
 #acc_transfers,
 #settings_div,
 .settings_child,
-#pref_div {
+#pref_div,
+#estimation_info {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -273,7 +274,8 @@ input:focus {
 .account_info_content,
 .memo,
 .settings_child,
-#pref_div {
+#pref_div,
+#estimation_info {
     display: none;
 }
 
@@ -584,6 +586,7 @@ input:focus {
     font-size: 16px;
     text-align: center;
     width: 100%;
+    pointer-events:none;
 }
 
 #account_value_header::after {
@@ -596,6 +599,8 @@ input:focus {
     width: 12.25px;
     vertical-align: 8%;
     margin-left: 7px;
+    pointer-events:auto;
+    cursor: pointer;
 }
 
 #account_value_amt,
@@ -808,6 +813,7 @@ input:focus {
   display: inline-block;
 }
 .remove_key {
+  cursor: pointer;
   display: inline-block;
   width: 100px;;
   color:#c93535;
@@ -817,6 +823,11 @@ input:focus {
 .private_key {
   margin-top: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.public_key {
+  cursor: pointer;
 }
 
 .img_add_key {
@@ -835,4 +846,41 @@ input:focus {
 #delete_account {
     margin-top: 40px;
     background-color: #8e0000;
+}
+
+#estimation_info div:first-of-type{
+    margin-bottom: 46px;
+}
+
+#copied {
+  width: 100%;
+  height:34px;
+  background-color: black;
+  color:#88f7fb;
+  padding: 0px 32px 0 32px;
+  font-size: 16px;
+  line-height: 22px;
+  display: flex;
+  align-items:  center;
+  justify-content: center;
+}
+
+#copied div::before{
+    content: "";
+    display: inline-block;
+    height: 10.6px;
+    width: 10.60px;
+    background-image: url("../images/key.png");
+    background-repeat: no-repeat;
+    background-size: 10.6px 10.6px;
+    padding-right: 25px;
+}
+
+#copied div{
+  width: 100%;
+}
+
+#fake_input {
+  position: absolute;
+        left: -9999px;
 }

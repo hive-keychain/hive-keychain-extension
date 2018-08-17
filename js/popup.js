@@ -8,6 +8,8 @@ steem.api.setOptions({
     url: 'https://api.steemit.com'
 });
 
+$("#copied").hide();
+
 // Ask background if it is unlocked
 chrome.runtime.sendMessage({
     command: "getMk"
@@ -293,18 +295,17 @@ function initializeMainMenu() {
     $("#posting_key").prop("checked", true);
     $("#active_key").prop("checked", true);
     $("#memo_key").prop("checked", true);
-    $("#main").css("display", "block");
     $(".account_info").hide();
     $(".account_info_content").hide();
     $(".account_info_menu").removeClass("rotate180");
     $("#transfer_to").hide();
     $("#add_key_div").hide();
+    $("#estimation_info").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
     $("#balance_steem").html("");
     $("#balance_sbd").html("");
     $("#balance_sp").html("");
-    $("#balance_loader").show();
     $("#register").hide();
     $("#unlock").hide();
     $("#send_div").hide();
@@ -315,8 +316,9 @@ function initializeMainMenu() {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
-        if (accounts_json != null) {
+        if (accounts_json != null&&accounts_json.list.length!=0) {
             $("#accounts").empty();
+            $("#main").show();
             if(items.last_account!=undefined&&items.last_account!=null){
               let last=accounts_json.list.filter(function(o,i){return o.name==items.last_account;});
               accounts_json.list=accounts_json.list.filter(function(o,i){return o.name!=items.last_account;});
@@ -368,46 +370,38 @@ function setPreferences(account) {
         } catch (e) {}
     });
 }
-// Account Info Menu style
-$(".account_info_menu").click(function() {
-    $(".account_info_content").eq(($(this).index() - 3) / 2).slideToggle();
-    if ($(this).hasClass("rotate180"))
-        $(this).removeClass("rotate180");
-    else $(this).addClass("rotate180");
-});
-
-// Delete account and all its keys
-$("#confirm_forget_account").click(function() {
-    const i = parseInt($(".account_info").attr("id").replace("a", ""));
-    deleteAccount(i);
-});
-
-// Manage keys
-$(".account_info_menu").eq(0).click(function() {
-    manageKeys();
-});
 
 // Display Add Copy or delete individual keys
 function manageKeys(name) {
   console.log(name);
+  let index=-1;
   let account = accounts_json.list.filter(function(obj, i) {
-      return obj.name === name;
+    if(obj.name === name){
+      index = i;
+      return obj;
+    }
   })[0];
         const keys = account.keys;
         $(".public_key").html("");
         $(".private_key").html("");
         for (keyName in keys) {
             if (keyName.includes("posting")) {
+              $(".img_add_key").eq(0).hide();
+              $(".remove_key").eq(0).show();
               if(keyName.includes("Pubkey"))
                 $(".public_key").eq(0).html(account.keys[keyName]);
               else
                 $(".private_key").eq(0).html(account.keys[keyName]);
             } else if (keyName.includes("active")) {
+              $(".img_add_key").eq(1).hide();
+              $(".remove_key").eq(1).show();
               if(keyName.includes("Pubkey"))
                 $(".public_key").eq(1).html(account.keys[keyName]);
               else
                 $(".private_key").eq(1).html(account.keys[keyName]);
             } else if (keyName.includes("memo")) {
+              $(".remove_key").eq(2).show();
+              $(".img_add_key").eq(2).hide();
               if(keyName.includes("Pubkey"))
                 $(".public_key").eq(2).html(account.keys[keyName]);
               else
@@ -426,27 +420,47 @@ function manageKeys(name) {
           $(".img_add_key").eq(2).show();
           $(".remove_key").eq(2).hide();
         }
-
-        $(".copyKey").click(function() {
-            $(this).parent().children().eq(0).select();
+        let timeout=null;
+        $(".private_key, .public_key").click(function() {
+            if(timeout!=null)
+              clearTimeout(timeout);
+            $("#copied").hide();
+            $("#fake_input").val($(this).html());
+            console.log($("#fake_input").val());
+            $("#fake_input").select();
             document.execCommand("copy");
-            document.selection.empty();
+            $("#copied").slideDown(600);
+            timeout=setTimeout(function(){$("#copied").slideUp(600);},6000);
         });
 
-        $(".deleteKey").click(function() {
-            delete accounts_json.list[i].keys[$(this).attr("id")];
-            delete accounts_json.list[i].keys[$(this).attr("id") + "Pubkey"];
-            $(this).closest($(".row_account_keys")).remove();
-            if ($(".row_account_keys").length == 0)
-                deleteAccount();
+        $(".remove_key").unbind("click").click(function() {
+            delete accounts_json.list[index].keys[$(this).attr("id")];
+            delete accounts_json.list[index].keys[$(this).attr("id") + "Pubkey"];
+            if (Object.keys(accounts_json.list[index].keys).length==0)
+            {
+                deleteAccount(index);
+                $(".settings_child").hide();
+                $("#settings_div").show();
+            }
             else {
                 updateAccount();
+                manageKeys(name);
             }
+
+        });
+        // Delete account and all its keys
+        $("#delete_account").unbind("click").click(function() {
+            deleteAccount(index);
         });
 }
 // Show add a new key
 $('#add_key').click(function() {
     $('#add_key_div').show();
+});
+
+$("#account_value_header").click(function() {
+    $('#main').hide();
+    $("#estimation_info").show();
 });
 
 // Try to add the new key
@@ -542,6 +556,7 @@ function deleteAccount(i) {
     chrome.storage.local.set({
         accounts: encryptJson(accounts_json, mk)
     }, function() {
+        $(".settings_child").hide();
         initializeMainMenu();
     });
 }
@@ -606,11 +621,10 @@ function initiateCustomSelect() {
     /*look for any elements with the class "custom-select":*/
     x = document.getElementsByClassName("custom-select");
     console.log(x.length);
-    //TODO: here
     for (i = 0; i < x.length; i++) {
-        if(i==1&&custom_created)
+        if(i==2&&custom_created)
           return;
-        if(i==1&&!custom_created)
+        if(i==2&&!custom_created)
           custom_created=true;
         selElmnt = x[i].getElementsByTagName("select")[0];
         console.log(selElmnt);
