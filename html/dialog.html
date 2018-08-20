@@ -7,15 +7,17 @@
 </head>
 
 <body>
+    <div class="cloud"></div>
     <div class="modal-content">
-        <div class="modal-header">
-            <h2 id="dialog_header"></h2>
-        </div>
+        <h2 id="dialog_header"></h2>
         <div class="modal-body-error">
             <div class="error" id="error_dialog"></div>
             <button id="error-ok">Ok</button>
             <div class="unlock">
-                <input id="unlock-dialog" type="password" />
+              <div class="input_container">
+                  <input id="unlock-dialog" type="password" />
+                  <img src="../images/lock.png" class="input_img" />
+              </div>
                 <button id="yes-unlock">Unlock</button>
                 <button id="no-unlock">Cancel</button>
                 <div id="error-mk"></div>
@@ -56,11 +58,17 @@
             <div class="post" id="parent_username"></div>
             <h3 class="post">Parent Permlink</h3>
             <div class="post" id="parent_url"></div>
-            <div id="keep_div">
-                <input id="keep" type="checkbox" /><label id="keep_label" for="keep"></label>
-            </div>
-            <button id="proceed">Proceed</button>
-            <button id="cancel">Cancel</button>
+        </div>
+        <div id= "confirm_footer">
+          <div class="key_checkbox">
+              <label for="keep" class="checkbox_container">
+                <div id="keep_label"></div>
+                <input id="keep" type="checkbox" />
+                <span class="checkmark"/>
+              </label>
+          </div>
+          <button id="cancel">Cancel</button>
+          <button id="proceed">Confirm</button>
         </div>
     </div>
     </div>

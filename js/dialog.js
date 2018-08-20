@@ -1,11 +1,12 @@
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendDialogError") {
         // Display error window
+
         if (!msg.msg.success) {
+
             if (msg.msg.error == "locked") {
-                $(".unlock").css("display", "block");
-                $("#error-ok").css("display", "none");
-                console.log(msg, msg.tab);
+                $(".unlock").show();
+                $("#error-ok").hide();
                 $("#no-unlock").click(function() {
                     chrome.tabs.sendMessage(msg.tab, {
                         command: "answerRequest",
@@ -34,11 +35,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
                 $('#unlock-dialog').focus();
             }
-            $(".modal-content").addClass("modal-content-error");
             $("#dialog_header").html("Error");
             $("#dialog_header").addClass("error_header");
             $("#error_dialog").html(msg.msg.message);
-            $("#modal-body-msg button").css("display", "none");
+            $("#modal-body-msg button").hide();
             $("#error-ok").click(function() {
                 window.close();
             });
@@ -47,17 +47,18 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#error-mk").html("Wrong password!");
     } else if (msg.command == "sendDialogConfirm") {
         // Display confirmation window
+        $("#confirm_footer").show();
         var type = msg.data.type;
         var title = type == "custom" ? "custom JSON" : msg.data.type;
         title = title.charAt(0).toUpperCase() + title.slice(1);
         $("#dialog_header").html(title);
         var message = "";
-        $("." + type).css("display", "block");
-        $(".modal-body-error").css("display", "none");
+        $("." + type).show();
+        $(".modal-body-error").hide();
         $("#username").html("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
         if (type != "transfer") {
-            $("#keep_div").css("display", "block");
+            $("#keep_div").show();
             $("#keep_label").html("Do not ask again for @" + msg.data.username + "'s " + msg.data.type + " authorization on " + msg.domain);
         }
         switch (type) {
@@ -79,7 +80,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#amount").html(msg.data.amount + " " + msg.data.currency);
                 $("#memo").html(msg.data.memo);
                 if (msg.data.memo.length > 0)
-                    $(".transfer_memo").css("display", "block");
+                    $(".transfer_memo").show();
                 break;
             case "post":
                 $("#title").html(msg.data.title);
@@ -89,7 +90,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#parent_url").html(msg.data.parent_perm);
                 $("#parent_username").html(msg.data.parent_username);
                 if (msg.data.parent_username == null || msg.data.parent_username == undefined)
-                    $("#parent_username").css("display", "none");
+                    $("#parent_username").hide();
                 break;
         }
 

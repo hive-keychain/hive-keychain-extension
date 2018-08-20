@@ -143,7 +143,7 @@ function performTransaction(data, tab) {
 }
 
 function createPopup(callback) {
-    var width = 250;
+    var width = 350;
     //Ensuring only one window is opened by the extension at a time.
     if (id_win != null) {
         chrome.windows.remove(id_win);
@@ -153,13 +153,22 @@ function createPopup(callback) {
     chrome.windows.create({
         url: chrome.runtime.getURL("html/dialog.html"),
         type: "popup",
-        height: 500,
-        width: width,
-        left: screen.availWidth - 200,
+        height: 566,
+        width: 350,
+        left: screen.availWidth - width,
         top: 0
     }, function(win) {
+
+        console.log(win);
         id_win = win.id;
         setTimeout(function() {
+          // Window create fails to take into account window size so it s updated afterwhile.
+          chrome.windows.update( win.id, {
+              height: 566,
+              width: 350,
+              top:0,
+              left: screen.availWidth - width
+            });
             callback();
         }, 100);
     });
