@@ -37,10 +37,21 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             }
             $("#dialog_header").html("Error");
             $("#dialog_header").addClass("error_header");
-            $("#error_dialog").html(msg.msg.message);
+            $("#error_dialog").html(msg.msg.display_msg);
             $("#modal-body-msg button").hide();
             $("#error-ok").click(function() {
-                window.close();
+              chrome.tabs.sendMessage(msg.tab, {
+                command: "answerRequest",
+                msg: {
+                    success: false,
+                    error: msg.msg.error,
+                    result: null,
+                    data: msg.msg.data,
+                    message: msg.msg.message
+                }
+              });
+
+              window.close();
             });
         }
     } else if (msg.command == "wrongMk") {
