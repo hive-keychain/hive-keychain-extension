@@ -174,7 +174,33 @@ $(".back_menu").click(function() {
   console.log("back");
     initializeMainMenu();
 });
+$("#change_pwd").click(function(){
+  $("#settings_div").hide();
+  $("#change_password").show();
+});
 
+$("#confirm_change_pwd").click(function(){
+    if(mk===$("#old_pwd").val()){
+      if($("#new_pwd").val()===$("#confirm_new_pwd").val()){
+        console.log($("#new_pwd").val());
+        if(!$("#new_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)){
+          mk=$("#new_pwd").val();
+          updateAccount();
+          chrome.runtime.sendMessage({
+              command: "sendMk",
+              mk: mk
+          }, function(response) {});
+          $("#settings_div").show();
+          $("#change_password").hide();
+          $(".error_div").hide();
+        }
+          else showError("Please use a stronger password!");
+      }
+        else showError("The new passwords do not match!");
+    }
+    else
+      showError("Wrong current password");
+});
 // Adding accounts. Private keys can be entered individually or by the mean of the
 // master key, in which case user can chose which keys to store, mk will then be
 // discarded.

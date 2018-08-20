@@ -209,6 +209,23 @@
       <div>Key copied to clipboard!</div>
     </div>
     <input id="fake_input"/>
+    <div id="change_password" class="settings_child">
+      <div class="back_enabled back_pref">Change Password</div>
+      <p>Input your old password for confirmation, then chose a new password.</p>
+      <div class="input_container">
+          <input type="password" id="old_pwd" placeholder="Old Password" />
+          <img src="../images/lock.png" class="input_img" />
+      </div>
+      <div class="input_container">
+          <input type="password" id="new_pwd" placeholder="New Password" />
+          <img src="../images/lock.png" class="input_img" />
+      </div>
+      <div class="input_container">
+          <input type="password" id="confirm_new_pwd" placeholder="Confirm" />
+          <img src="../images/lock.png" class="input_img" />
+      </div>
+      <button id="confirm_change_pwd">Confirm</button>
+    </div>
     <div id="send_div">
         <div class="back_menu back_enabled">Transfer Funds</div>
         <div class="transfer_balance">
