@@ -33,7 +33,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
         chrome.storage.local.get(['accounts'], function(items) { // Check user
             if (items.accounts == null || items.accounts == undefined) {
-                sendErrors(msg.tab, "no_wallet", "No wallet!", msg.data);
+                sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
             } else {
                 if (decryptToJson(items.accounts, msg.mk) != null) {
                     mk = msg.mk;
@@ -144,7 +144,7 @@ function performTransaction(data, tab) {
         }
         key = null;
     } catch (e) {
-        sendErrors(tab, "wrong_transaction", "The transaction failed for an unknown reason!", data);
+        sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
     }
 }
 
@@ -201,7 +201,8 @@ function checkBeforeCreate(request, tab, domain) {
                     error: "locked",
                     result: null,
                     data: request,
-                    message: "The wallet is locked!"
+                    message: "The wallet is locked!",
+                    display_msg: "The current website is requesting a " + request.type + " transaction from account @" + request.username + ". Please unlock the wallet to continue."
                 },
                 tab: tab,
                 domain: domain
@@ -212,7 +213,7 @@ function checkBeforeCreate(request, tab, domain) {
         chrome.storage.local.get(['accounts', 'no_confirm'], function(items) { // Check user
             if (items.accounts == null || items.accounts == undefined) {
                 function callback() {
-                    sendErrors(tab, "no_wallet", "No wallet!", request);
+                    sendErrors(tab, "no_wallet", "No wallet!", "", request);
                 }
                 createPopup(callback);
             } else {
@@ -224,7 +225,7 @@ function checkBeforeCreate(request, tab, domain) {
                         return e.name == request.username;
                     })) {
                     function callback() {
-                        sendErrors(tab, "user_cancel", "Request canceled by user!", request);
+                        sendErrors(tab, "user_cancel", "Request was canceled by the user.", "This site has requested to send a " + request.type + " transaction from account @" + request.username + " which has not been added to the Steem Wallet.", request);
                     }
                     createPopup(callback);
                 } else {
@@ -237,7 +238,7 @@ function checkBeforeCreate(request, tab, domain) {
                         req.method = typeWif;
                     if (account.keys[typeWif] == undefined) {
                         function callback() {
-                            sendErrors(tab, "no_key_" + typeWif, "No " + typeWif + " key for user @" + account.name + "!", request);
+                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "This site has requested to send a " + request.type + " transaction from account @" + request.username + " using the " + typeWif + " key, which has not been added to the Steem Wallet.", request);
                         }
                         createPopup(callback);
                     } else {
@@ -272,17 +273,7 @@ function hasNoConfirm(arr, data, domain) {
     }
 }
 // Send errors back to the content_script, it will forward it to website
-function sendErrors(tab, error, message, request) {
-    chrome.tabs.sendMessage(tab, {
-        command: "answerRequest",
-        msg: {
-            success: false,
-            error: error,
-            result: null,
-            data: request,
-            message: message
-        }
-    });
+function sendErrors(tab, error, message, display_msg, request) {
     chrome.runtime.sendMessage({
         command: "sendDialogError",
         msg: {
@@ -290,7 +281,8 @@ function sendErrors(tab, error, message, request) {
             error: error,
             result: null,
             data: request,
-            message: message
+            message: message,
+            display_msg: display_msg
         },
         tab: tab
     });

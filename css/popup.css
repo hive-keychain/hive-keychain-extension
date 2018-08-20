@@ -523,7 +523,7 @@ input:focus {
 #currency_send {
     display: inline-block;
     width: 106px !important;
-    height: 100% !important;
+    /*height: 100% !important;*/
     margin-top: 0px;
     background-color: rgba(33, 172, 204, 0.75);
     height:48px;

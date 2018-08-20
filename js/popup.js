@@ -732,10 +732,11 @@ function initiateCustomSelect() {
                 });
                 loadAccount(this.innerHTML);
             } else if(this.innerHTML=="SBD"){
-              $(".transfer_balance div").eq(1).html(sbd);
-
+              $(".transfer_balance div").eq(0).text('SBD Balance');
+              $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
             } else if(this.innerHTML=="STEEM"){
-              $(".transfer_balance div").eq(1).html(steem_p);
+              $(".transfer_balance div").eq(0).text('STEEM Balance');
+              $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
             } else if(manageKey) {
               manageKeys(this.innerHTML);
             } else if(getPref){
@@ -834,7 +835,7 @@ function loadAccount(name) {
 
 function showUserData(result) {
     showBalances(result, dynamicProp);
-    $(".transfer_balance div").eq(1).html(steem_p);
+    $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
     $("#voting_power span").eq(1).html("Vote Value: $ " + getVotingDollarsPerAccount(100, result["0"]));
     console.log(priceSBD, priceSteem, priceBTC, steem_p, sbd, sp);
     $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)))
