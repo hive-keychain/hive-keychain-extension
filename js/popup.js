@@ -119,6 +119,12 @@ $("#back_forgot").click(function() {
       $("#unlock").show();
 });
 
+$("#add_key_div .back_enabled").click(function(){
+  $("#add_key_div").hide();
+  $("#manage_keys").show();
+  $(".error_div").hide();
+});
+
 $(".back_pref").click(function(){
     $(".settings_child").hide();
     $("#settings_div").show();
@@ -452,59 +458,68 @@ function manageKeys(name) {
         $("#delete_account").unbind("click").click(function() {
             deleteAccount(index);
         });
+        $(".img_add_key").unbind("click").click(function() {
+            $("#manage_keys").hide();
+            $("#add_key_div").show();
+        });
+
+        // Try to add the new key
+        $('#add_new_key').unbind("click").click(function() {
+            const keys = accounts_json.list[index].keys;
+            const pwd = $("#new_key").val();
+            if (steem.auth.isWif(pwd)) {
+                steem.api.getAccounts([name], function(err, result) {
+                    if (result.length != 0) {
+                        const pub_active = result["0"].active.key_auths["0"]["0"];
+                        const pub_posting = result["0"].posting.key_auths["0"]["0"];
+                        const pub_memo = result["0"].memo_key;
+                        if (isMemoWif(pwd, pub_memo)) {
+                            if (keys.hasOwnProperty("memo"))
+                                showError("You already entered your memo key!");
+                            else
+                                addKeys(index, "memo", pwd, pub_memo,name);
+                        } else if (isPostingWif(pwd, pub_posting)) {
+                            if (keys.hasOwnProperty("posting"))
+                                showError("You already entered your posting key!");
+                            else
+                                addKeys(index, "posting", pwd, pub_posting,name);
+                        } else if (isActiveWif(pwd, pub_active)) {
+                            if (keys.hasOwnProperty("active"))
+                                showError("You already entered your active key!");
+                            else
+                                addKeys(index, "active", pwd, pub_active,name);
+                        } else
+                            showError("This is not one of your keys!");
+                    }
+                });
+            } else
+                showError("Not a private WIF!");
+        });
 }
 // Show add a new key
 $('#add_key').click(function() {
     $('#add_key_div').show();
 });
 
+function showError(message){
+  $(".error_div").html(message);
+  $(".error_div").show();
+}
 $("#account_value_header").click(function() {
     $('#main').hide();
     $("#estimation_info").show();
 });
 
-// Try to add the new key
-$('#add_new_key').click(function() {
-    const username = $("#account_info_name").html().replace("@", "");
-    const i = parseInt($(".account_info").attr("id").replace("a", ""));
-    const keys = accounts_json.list[i].keys;
-    const pwd = $("#new_key").val();
-    if (steem.auth.isWif(pwd)) {
-        steem.api.getAccounts([username], function(err, result) {
-            if (result.length != 0) {
-                const pub_active = result["0"].active.key_auths["0"]["0"];
-                const pub_posting = result["0"].posting.key_auths["0"]["0"];
-                const pub_memo = result["0"].memo_key;
-                if (isMemoWif(pwd, pub_memo)) {
-                    if (keys.hasOwnProperty("memo"))
-                        $("#error_add_key").html("You already entered your memo key!");
-                    else
-                        addKeys(i, "memo", pwd, pub_memo);
-                } else if (isPostingWif(pwd, pub_posting)) {
-                    if (keys.hasOwnProperty("posting"))
-                        $("#error_add_key").html("You already entered your posting key!");
-                    else
-                        addKeys(i, "posting", pwd, pub_posting);
-                } else if (isActiveWif(pwd, pub_active)) {
-                    if (keys.hasOwnProperty("active"))
-                        $("#error_add_key").html("You already entered your active key!");
-                    else
-                        addKeys(i, "active", pwd, pub_active);
-                } else
-                    $("#error_add_key").html("This is not one of your keys!");
-            }
-        });
-    } else
-        $("#error_add_key").html("Not a private WIF!");
-});
-
 // Add the new keys to the display and the encrypted storage
-function addKeys(i, key, priv, pub) {
+function addKeys(i, key, priv, pub,name) {
     accounts_json.list[i].keys[key] = priv;
     accounts_json.list[i].keys[key + "Pubkey"] = pub;
     updateAccount();
-    $("#keys_info").empty();
-    manageKeys();
+    manageKeys(name);
+    $("#add_key_div").hide();
+    $("#new_key").val("");
+    $(".error_div").hide();
+    $("#manage_keys").show();
 }
 
 $("#send").click(function(){

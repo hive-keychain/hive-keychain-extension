@@ -195,12 +195,15 @@
               <div class="img_add_key"></div>
             </div>
             <button id="delete_account">DELETE THIS ACCOUNT</button>
-            <!--<div id="add_key">+ Add key</div>
-            <div id="add_key_div">
-                <input type="password" placeholder="Private Wif" id="new_key" />
-                <button id="add_new_key">Add</button>
-                <p id="error_add_key" class="error"></p>
-            </div>!-->
+    </div>
+    <div id="add_key_div">
+        <div class="back_enabled">Add Key</div>
+        <p>Add Private keys to your account, you cannot add the Master Key here.</p>
+        <div class="input_container">
+            <input type="password" id="new_key" placeholder="Private Key"></input>
+            <img src="../images/key.png" class="input_img" />
+        </div>
+        <button id="add_new_key">Import key</button>
     </div>
     <div id="copied">
       <div>Key copied to clipboard!</div>

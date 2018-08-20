@@ -1,8 +1,46 @@
-html,
-body {
-    overflow-x: hidden;
+@font-face {
+    font-family: Futura;
+    src: url("../fonts/Futura-Boo.otf");
+    font-weight: 400;
+}
+
+html {
+    overflow: hidden;
+    border-radius: 1px;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-image: linear-gradient(328deg, #3df9b4, #00d3cc, #a779ff) !important;
+    background-repeat:no-repeat;
+    background-attachment: fixed;
+    top: 0;
+    left: 0;
+    position: relative;
+    height: 566px;
+    width: 350px !important;
     word-wrap: break-word;
 }
+
+body {
+    height: 100%;
+    font-family: Futura !important;
+    font-weight: 400;
+    padding: 0 !important;
+    width: 100%;
+    margin: 0 !important;
+    overflow: hidden;
+}
+
+.cloud {
+    background: url("../images/bg-steam@2x.png") no-repeat;
+    background-size: cover;
+    width: 350px;
+    height: 436px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+}
+
 
 .modal-content-error {
     height: 100%;
