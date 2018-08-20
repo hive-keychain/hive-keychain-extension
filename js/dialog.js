@@ -61,6 +61,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             $("#keep_div").show();
             $("#keep_label").html("Do not ask again for @" + msg.data.username + "'s " + msg.data.type + " authorization on " + msg.domain);
         }
+        else {
+          $(".keep_checkbox").css("visibility","hidden");
+        }
         switch (type) {
             case "decode":
                 $("#wif").html(msg.data.method);
