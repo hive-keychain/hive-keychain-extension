@@ -109,7 +109,7 @@ h2::before {
     height: 29.93px;
 }
 
-input {
+.input_container input {
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
