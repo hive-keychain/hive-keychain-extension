@@ -195,13 +195,18 @@ input:focus {
     cursor: pointer;
 }
 
+button:hover {
+  background-color: #917FC6;
+}
+
+
 #submit_unlock {
     margin-bottom: 12.57px;
 }
 
-#submit_unlock:hover {
-    background-color: #0DA3DB;
-    border: solid 1px #0DA3DB;
+#submit_master_pwd:hover,#submit_unlock:hover, #check_add_account:hover,#save_master:hover,#send:hover,#history:hover, #forgot_div button:hover, #add_new_key:hover {
+    background-color: #917FC6;
+    border: solid 1px #917FC6;
 }
 
 #forgot {
