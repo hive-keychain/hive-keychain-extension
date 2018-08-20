@@ -1,7 +1,7 @@
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendDialogError") {
         // Display error window
-
+        
         if (!msg.msg.success) {
 
             if (msg.msg.error == "locked") {
