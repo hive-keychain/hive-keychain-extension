@@ -912,3 +912,26 @@ input:focus {
 #add_key_div input {
   padding-left: 65px;
 }
+
+.deletePref {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url("../images/delete.png");
+  background-repeat: no-repeat;
+  background-size: 16px 16px;
+}
+
+#pref{
+    margin-top: 40px;
+}
+
+.pref_name {
+  width:150px;
+  display: inline-block;
+  float: left;
+}
+
+#pref_div .back_pref {
+  margin-bottom: 40px;
+}

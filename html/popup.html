@@ -150,6 +150,10 @@
         <img src="../images/password.png" />
         <span>Change Password</span>
       </div>
+      <div class="setting_row" id="preferences">
+        <img src="../images/settings.png" />
+        <span>Preferences</span>
+      </div>
       <div class="setting_row" id="about">
         <img src="../images/info.png"  />
         <span>About Steem Wallet</span>
@@ -163,9 +167,6 @@
     <div id="about_div" class="settings_child">
         <div class="back_enabled back_pref">About</div>
         <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</div>
-    </div>
-    <div id="pref_div" class="settings_child">
-        <div id="pref">No preferences</div>
     </div>
     <div id="manage_keys"class="settings_child">
       <div class="back_enabled back_pref">Manage Accounts</div>
@@ -195,6 +196,14 @@
               <div class="img_add_key"></div>
             </div>
             <button id="delete_account">DELETE THIS ACCOUNT</button>
+    </div>
+    <div id="pref_div" class="settings_child">
+        <div class="back_enabled back_pref">Preferences</div>
+        <div class="custom-select usernames" id="custom_select_pref">
+            <select>
+            </select>
+        </div>
+        <div id="pref">No preferences</div>
     </div>
     <div id="add_key_div">
         <div class="back_enabled">Add Key</div>

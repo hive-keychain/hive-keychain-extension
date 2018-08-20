@@ -3,7 +3,7 @@ let accounts_json = null,
 let active_account,priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
 const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 let custom_created=false;
-let manageKey=false;
+let manageKey,getPref=false;
 steem.api.setOptions({
     url: 'https://api.steemit.com'
 });
@@ -128,6 +128,8 @@ $("#add_key_div .back_enabled").click(function(){
 $(".back_pref").click(function(){
     $(".settings_child").hide();
     $("#settings_div").show();
+    manageKey=false;
+    getPref=false;
 });
 
 $("#manage").click(function(){
@@ -200,6 +202,13 @@ $("#confirm_change_pwd").click(function(){
     }
     else
       showError("Wrong current password");
+});
+
+$("#preferences").click(function(){
+    $("#pref_div").show();
+    $("#settings_div").hide();
+    getPref=true;
+    setPreferences($(".select-selected").eq(2).html());
 });
 // Adding accounts. Private keys can be entered individually or by the mean of the
 // master key, in which case user can chose which keys to store, mk will then be
@@ -344,6 +353,7 @@ function initializeMainMenu() {
     $("#settings_div").hide();
     $("#add_account_div .back_enabled").removeClass("back_disabled");
     manageKey=false;
+    getPref=false;
     chrome.storage.local.get(['accounts','last_account'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
@@ -372,17 +382,18 @@ function initializeMainMenu() {
 }
 
 
-function setPreferences(account) {
+function setPreferences(name) {
     chrome.storage.local.get(['no_confirm'], function(items) {
         try {
             const pref = JSON.parse(items.no_confirm);
             $("#pref").html("");
-            if (Object.keys(pref[account.name]).length == 0)
+            console.log(pref);
+            if (pref[name]==undefined||pref[name]==null||Object.keys(pref[name]).length == 0)
                 $("#pref").html("No preferences");
-            for (let obj in pref[account.name]) {
+            for (let obj in pref[name]) {
                 $("#pref").append("<h4>" + obj + "</h4>");
-                for (let sub in pref[account.name][obj]) {
-                    $("#pref").append("<div><div id='pref_name'>" + sub + "</div><img id='" + account.name + "," + obj + "," + sub + "' class='deletePref'/></div>");
+                for (let sub in pref[name][obj]) {
+                    $("#pref").append("<div><div class='pref_name'>" + sub + "</div><img id='" + name + "," + obj + "," + sub + "' class='deletePref'/></div>");
                 }
             }
 
@@ -396,7 +407,7 @@ function setPreferences(account) {
                 chrome.storage.local.set({
                     no_confirm: JSON.stringify(pref)
                 }, function() {
-                    setPreferences(account);
+                    setPreferences(name);
                 });
             });
         } catch (e) {}
@@ -405,7 +416,6 @@ function setPreferences(account) {
 
 // Display Add Copy or delete individual keys
 function manageKeys(name) {
-  console.log(name);
   let index=-1;
   let account = accounts_json.list.filter(function(obj, i) {
     if(obj.name === name){
@@ -663,9 +673,9 @@ function initiateCustomSelect() {
     x = document.getElementsByClassName("custom-select");
     console.log(x.length);
     for (i = 0; i < x.length; i++) {
-        if(i==2&&custom_created)
+        if(i==3&&custom_created)
           return;
-        if(i==2&&!custom_created)
+        if(i==3&&!custom_created)
           custom_created=true;
         selElmnt = x[i].getElementsByTagName("select")[0];
         console.log(selElmnt);
@@ -716,7 +726,7 @@ function initiateCustomSelect() {
             this.classList.toggle("select-arrow-active");
             if (this.innerHTML.includes("Add New Account")) {
                 showAddAccount();
-            } else if (!manageKey&&!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
+            } else if (!getPref&&!manageKey&&!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
                 chrome.storage.local.set({
                     last_account: this.innerHTML
                 });
@@ -728,6 +738,8 @@ function initiateCustomSelect() {
               $(".transfer_balance div").eq(1).html(steem_p);
             } else if(manageKey) {
               manageKeys(this.innerHTML);
+            } else if(getPref){
+              setPreferences(this.innerHTML);
             }
         });
     }
@@ -767,7 +779,6 @@ function loadAccount(name) {
       $(".wallet_infos").html("...");
       $("#voting_power span").eq(0).html("Voting Power: ...");
       $("#voting_power span").eq(1).html("Vote Value: ...");
-      setPreferences(account);
       steem.api.getAccounts([account.name], function(err, result) {
           if (result.length != 0) {
               $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
