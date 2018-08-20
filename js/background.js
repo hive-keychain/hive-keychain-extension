@@ -150,13 +150,14 @@ function createPopup(callback) {
         id_win = null;
     }
     //Create new window on the top right of the screen
+    chrome.windows.getCurrent(function(w) {
     chrome.windows.create({
         url: chrome.runtime.getURL("html/dialog.html"),
         type: "popup",
         height: 566,
         width: 350,
-        left: screen.availWidth - width,
-        top: 0
+        left: w.width - width+w.left,
+        top: w.top
     }, function(win) {
 
         console.log(win);
@@ -166,12 +167,13 @@ function createPopup(callback) {
           chrome.windows.update( win.id, {
               height: 566,
               width: 350,
-              top:0,
-              left: screen.availWidth - width
+              top:w.top,
+              left: w.width - width +w.left
             });
             callback();
         }, 100);
     });
+  });
 
 }
 
