@@ -1,6 +1,9 @@
-var mk = null;
-var id_win = null;
-var key = null;
+let mk = null;
+let id_win = null;
+let key = null;
+let confirmed=false;
+let tab=null;
+let request=null;
 
 //chrome.storage.local.remove("no_confirm");
 steem.api.setOptions({
@@ -23,7 +26,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             currentWindow: true
         }, function(tabs) {
             // create a window to let users confirm the transaction
+            tab=tabs[0].id;
             checkBeforeCreate(msg.request, tabs[0].id, msg.domain);
+            request=msg.request;
         });
     } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
         chrome.storage.local.get(['accounts'], function(items) { // Check user
@@ -43,7 +48,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "acceptTransaction") {
         if (msg.keep) {
             chrome.storage.local.get(['no_confirm'], function(items) {
-                var keep = (items.no_confirm == null || items.no_confirm == undefined) ? {} : JSON.parse(items.no_confirm);
+                let keep = (items.no_confirm == null || items.no_confirm == undefined) ? {} : JSON.parse(items.no_confirm);
                 if (keep[msg.data.username] == undefined) {
                     keep[msg.data.username] = {};
                 }
@@ -56,6 +61,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
             });
         }
+        confirmed=true;
         performTransaction(msg.data, msg.tab);
         // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
 
@@ -123,7 +129,7 @@ function performTransaction(data, tab) {
                 });
                 break;
             case "decode":
-                var decoded = window.decodeMemo(key, data.message);
+                let decoded = window.decodeMemo(key, data.message);
                 chrome.tabs.sendMessage(tab, {
                     command: "answerRequest",
                     msg: {
@@ -143,7 +149,8 @@ function performTransaction(data, tab) {
 }
 
 function createPopup(callback) {
-    var width = 350;
+    let width = 350;
+    confirmed=false;
     //Ensuring only one window is opened by the extension at a time.
     if (id_win != null) {
         chrome.windows.remove(id_win);
@@ -177,6 +184,13 @@ function createPopup(callback) {
 
 }
 
+chrome.windows.onRemoved.addListener(function (id){
+    console.log(confirmed,id,id_win);
+    if(id==id_win&&!confirmed){
+      sendErrors(tab, "user_cancel", "Request canceled by user!", request);
+    }
+});
+
 function checkBeforeCreate(request, tab, domain) {
     if (mk == null) { // Check if locked
         function callback() {
@@ -203,7 +217,7 @@ function checkBeforeCreate(request, tab, domain) {
                 createPopup(callback);
             } else {
                 // Check that user and wanted keys are in the wallet
-                var accounts = (items.accounts == undefined || items.accounts == {
+                let accounts = (items.accounts == undefined || items.accounts == {
                     list: []
                 }) ? null : decryptToJson(items.accounts, mk);
                 if (!accounts.list.find(function(e) {
@@ -214,11 +228,11 @@ function checkBeforeCreate(request, tab, domain) {
                     }
                     createPopup(callback);
                 } else {
-                    var account = accounts.list.find(function(e) {
+                    let account = accounts.list.find(function(e) {
                         return e.name == request.username;
                     });
-                    var typeWif = getRequiredWifType(request);
-                    var req = request;
+                    let typeWif = getRequiredWifType(request);
+                    let req = request;
                     if (req.type == "custom")
                         req.method = typeWif;
                     if (account.keys[typeWif] == undefined) {
