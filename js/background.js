@@ -208,7 +208,7 @@ function checkBeforeCreate(request, tab, domain) {
                         return e.name == request.username;
                     })) {
                     function callback() {
-                        sendErrors(tab, "no_user", "No wallet for this user!", request);
+                        sendErrors(tab, "user_cancel", "Request canceled by user!", request);
                     }
                     createPopup(callback);
                 } else {
