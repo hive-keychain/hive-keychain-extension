@@ -137,7 +137,6 @@ $("#manage").click(function(){
     manageKey=true;
     $("#manage_keys").show();
     $("#settings_div").hide();
-    console.log($(".usernames").eq(1).html());
     manageKeys($(".usernames .select-selected").eq(1).html());
 });
 // Registration confirmation
@@ -393,9 +392,9 @@ function setPreferences(name) {
                 $("#pref").html("No preferences");
             for (let obj in pref[name]) {
 								$("#pref").append("<h4>Website: " + obj + "</h4>");
-								
+
 								var display_names = {
-									'custom': 'Custom Transaction', 
+									'custom': 'Custom Transaction',
 									'decode': 'Verify Key',
 									'post': 'Post',
 									'vote': 'Vote'
@@ -406,7 +405,7 @@ function setPreferences(name) {
                 for (let sub in pref[name][obj]) {
 									site_container.append("<div><div class='pref_name'>" + display_names[sub] + "</div><img id='" + name + "," + obj + "," + sub + "' class='deletePref' src='../images/delete.png'/></div>");
 								}
-								
+
 								$("#pref").append(site_container);
             }
 
@@ -601,13 +600,23 @@ $("#stoodkev").click(function(){
 });
 
 function voteFor(name){
-  steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
-    if(err==null){
-      $("#"+name).hide();
-    }
-    if($(".witness_container:visible").length==0)
+  if(active_account.keys.hasOwnProperty("acitve")){
+    steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
+      if(err==null){
+        $("#"+name).hide();
+      }
+      if($(".witness_container:visible").length==0)
+        $("#witness_votes").hide();
+    });
+  }
+  else {
       $("#witness_votes").hide();
-  });
+      $("#main").hide();
+      $("#add_key_div").show();
+      manageKey=true;
+      manageKeys($(".usernames .select-selected").eq(1).html());
+      showError("Please enter your active key to vote for witnesses!");
+  }
 }
 
 function sendTransfer() {
