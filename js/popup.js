@@ -621,7 +621,7 @@ function voteFor(name){
       $("#main").hide();
       $("#add_key_div").show();
       manageKey=true;
-      manageKeys($(".usernames .select-selected").eq(1).html());
+      manageKeys($(".usernames .select-selected").eq(0).html());
       showError("Please enter your active key to vote for witnesses!");
   }
 }
