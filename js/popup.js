@@ -600,7 +600,7 @@ $("#stoodkev").click(function(){
 });
 
 function voteFor(name){
-  if(active_account.keys.hasOwnProperty("acitve")){
+  if(active_account.keys.hasOwnProperty("active")){
     steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
       if(err==null){
         $("#"+name).hide();
@@ -614,7 +614,7 @@ function voteFor(name){
       $("#main").hide();
       $("#add_key_div").show();
       manageKey=true;
-      manageKeys($(".usernames .select-selected").eq(1).html());
+      manageKeys($(".usernames .select-selected").eq(0).html());
       showError("Please enter your active key to vote for witnesses!");
   }
 }
