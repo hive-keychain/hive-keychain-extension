@@ -391,10 +391,22 @@ function setPreferences(name) {
             if (pref[name]==undefined||pref[name]==null||Object.keys(pref[name]).length == 0)
                 $("#pref").html("No preferences");
             for (let obj in pref[name]) {
-                $("#pref").append("<h4>" + obj + "</h4>");
+								$("#pref").append("<h4>Website: " + obj + "</h4>");
+								
+								var display_names = {
+									'custom': 'Custom Transaction', 
+									'decode': 'Verify Key',
+									'post': 'Post',
+									'vote': 'Vote'
+								}
+
+								var site_container = $('<div class="preferences-site-container"></div>');
+
                 for (let sub in pref[name][obj]) {
-                    $("#pref").append("<div><div class='pref_name'>" + sub + "</div><img id='" + name + "," + obj + "," + sub + "' class='deletePref'/></div>");
-                }
+									site_container.append("<div><div class='pref_name'>" + display_names[sub] + "</div><img id='" + name + "," + obj + "," + sub + "' class='deletePref' src='../images/delete.png'/></div>");
+								}
+								
+								$("#pref").append(site_container);
             }
 
             $(".deletePref").click(function() {

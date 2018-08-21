@@ -9,7 +9,8 @@
 <body>
     <div class="cloud"></div>
     <div class="modal-content">
-        <h2 id="dialog_header"></h2>
+				<h2 id="dialog_header"></h2>
+				<h3 class="dialog-message" id="dialog_message" style="display: none;"></h3>
         <div class="modal-body-error">
             <div class="error" id="error_dialog"></div>
             <button id="error-ok">Ok</button>
@@ -24,9 +25,9 @@
             </div>
         </div>
         <div id="modal-body-msg">
-            <h3 class="decode vote post custom transfer">Username</h3>
+            <h3 class="decode vote post custom transfer">Account</h3>
             <div class="decode vote post custom transfer" id="username"></div>
-            <h3 class="decode">WIF used</h3>
+            <h3 class="decode">Key</h3>
             <div class="decode" id="wif"></div>
             <h3 class="vote">Author</h3>
             <div class="vote" id="author"></div>
@@ -34,12 +35,10 @@
             <div class="vote" id="perm"></div>
             <h3 class="vote">Weight</h3>
             <div class="vote" id="weight"></div>
-            <h3 class="custom">Type</h3>
-            <div class="custom" id="custom_type"></div>
-            <h3 class="custom">Private key</h3>
+            <h3 class="custom">Key</h3>
             <div class="custom" id="custom_key"></div>
-            <h3 class="custom">Custom JSON</h3>
-            <div class="custom" id="custom_json"></div>
+            <h3 class="custom" id="custom_data">Data <span class="small">(click to show)</span></h3>
+            <div class="" id="custom_json"></div>
             <h3 class="transfer">To</h3>
             <div class="transfer" id="to"></div>
             <h3 class="transfer">Amount</h3>

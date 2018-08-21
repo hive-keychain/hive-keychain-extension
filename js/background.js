@@ -149,7 +149,7 @@ function performTransaction(data, tab) {
 }
 
 function createPopup(callback) {
-    let width = 350;
+    let width = 360;
     confirmed=false;
     //Ensuring only one window is opened by the extension at a time.
     if (id_win != null) {
@@ -161,8 +161,8 @@ function createPopup(callback) {
     chrome.windows.create({
         url: chrome.runtime.getURL("html/dialog.html"),
         type: "popup",
-        height: 566,
-        width: 350,
+        height: 580,
+        width: width,
         left: w.width - width+w.left,
         top: w.top
     }, function(win) {
@@ -172,8 +172,8 @@ function createPopup(callback) {
         setTimeout(function() {
           // Window create fails to take into account window size so it s updated afterwhile.
           chrome.windows.update( win.id, {
-              height: 566,
-              width: 350,
+              height: 580,
+              width: width,
               top:w.top,
               left: w.width - width +w.left
             });
@@ -202,6 +202,7 @@ chrome.windows.onRemoved.addListener(function (id){
 });
 
 function checkBeforeCreate(request, tab, domain) {
+	console.log(request);
     if (mk == null) { // Check if locked
         function callback() {
             chrome.runtime.sendMessage({
@@ -212,7 +213,7 @@ function checkBeforeCreate(request, tab, domain) {
                     result: null,
                     data: request,
                     message: "The wallet is locked!",
-                    display_msg: "The current website is requesting a " + request.type + " transaction from account @" + request.username + ". Please unlock the wallet to continue."
+                    display_msg: "The current website is trying to send a request to the Steem Wallet browser extension. Please enter your password below to unlock the wallet and continue."
                 },
                 tab: tab,
                 domain: domain
@@ -235,7 +236,7 @@ function checkBeforeCreate(request, tab, domain) {
                         return e.name == request.username;
                     })) {
                     function callback() {
-                        sendErrors(tab, "user_cancel", "Request was canceled by the user.", "This site has requested to send a " + request.type + " transaction from account @" + request.username + " which has not been added to the Steem Wallet.", request);
+                        sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Wallet browser extension for account @" + request.username + " which has not been added to the wallet.", request);
                     }
                     createPopup(callback);
                 } else {
@@ -248,7 +249,7 @@ function checkBeforeCreate(request, tab, domain) {
                         req.method = typeWif;
                     if (account.keys[typeWif] == undefined) {
                         function callback() {
-                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "This site has requested to send a " + request.type + " transaction from account @" + request.username + " using the " + typeWif + " key, which has not been added to the Steem Wallet.", request);
+                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Wallet browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
                         }
                         createPopup(callback);
                     } else {
