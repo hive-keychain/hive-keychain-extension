@@ -587,8 +587,8 @@ $("#send_transfer").click(function() {
 });
 
 // Witness Votes
-$("#close_witness").click(function(){
-    $("#witness_votes").hide();
+$("#witness_toggle").click(function() {
+  $("#witness_votes").animate({ top: ($("#witness_votes").css('top') == '555px') ? 505 : 555 }, 500);
 });
 
 $("#yabapmatt").click(function(){
@@ -600,13 +600,20 @@ $("#stoodkev").click(function(){
 });
 
 function voteFor(name){
-  if(active_account.keys.hasOwnProperty("acitve")){
+  if(active_account.keys.hasOwnProperty("active")){
+    $('#' + name + ' img').attr('src', '../images/loading.gif');
+
     steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
       if(err==null){
-        $("#"+name).hide();
+        setTimeout(function() { 
+          $("#"+name).hide(); 
+
+          if($(".witness_container:visible").length==0)
+            $("#witness_votes").animate({ opacity: 0 }, 500, function() { $("#witness_votes").hide(); });
+        }, 1000);
+
+        $('#' + name + ' img').attr('src', '../images/icon_witness-vote.svg');
       }
-      if($(".witness_container:visible").length==0)
-        $("#witness_votes").hide();
     });
   }
   else {
@@ -845,7 +852,6 @@ function loadAccount(name) {
                       showUserData(result);
                   });
 
-              $("#witness_votes").hide();
               $(".witness_container").hide();
               if(!result[0].witness_votes.includes("stoodkev")||!result[0].witness_votes.includes("yabapmatt")){
                   if(!result[0].witness_votes.includes("stoodkev"))
@@ -854,9 +860,11 @@ function loadAccount(name) {
                       $("#yabapmatt").show();
 
                   setTimeout(function(){
-                    console.log("b");
                       $("#witness_votes").show();
+                      $("#witness_votes").animate({ opacity: 1 }, 500);
                   },2000);
+              } else {
+                $("#witness_votes").animate({ opacity: 0 }, 500, function() { $("#witness_votes").hide(); });
               }
           }
     });

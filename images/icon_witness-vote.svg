@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #1fbf8f;
+      }
+    </style>
+  </defs>
+  <g id="icon_witness-vote" transform="translate(-41 -517)">
+    <path id="icon_witness-vote-2" data-name="icon_witness-vote" class="cls-1" d="M10,20A10,10,0,0,1,2.929,2.929,10,10,0,1,1,17.071,17.071,9.934,9.934,0,0,1,10,20Zm.225-11.454h0l4.229,4.23a.779.779,0,0,0,1.1-1.1l-4.78-4.78a.778.778,0,0,0-1.1,0l-4.78,4.78a.779.779,0,0,0,1.1,1.1l4.229-4.23Z" transform="translate(41 517)"/>
+  </g>
+</svg>
