@@ -185,8 +185,9 @@ function createPopup(callback) {
 }
 
 chrome.windows.onRemoved.addListener(function (id){
-    console.log(confirmed,id,id_win);
+    console.log(confirmed,id,id_win,tab,request);
     if(id==id_win&&!confirmed){
+      console.log("canceled by user");
       sendErrors(tab, "user_cancel", "Request canceled by user!", request);
     }
 });

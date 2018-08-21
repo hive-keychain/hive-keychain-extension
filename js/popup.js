@@ -9,6 +9,7 @@ steem.api.setOptions({
 });
 
 $("#copied").hide();
+$("#witness_votes").hide();
 
 // Ask background if it is unlocked
 chrome.runtime.sendMessage({
@@ -574,6 +575,29 @@ $("#send_transfer").click(function() {
     sendTransfer();
 });
 
+// Witness Votes
+$("#close_witness").click(function(){
+    $("#witness_votes").hide();
+});
+
+$("#yabapmatt").click(function(){
+  voteFor("yabapmatt");
+});
+
+$("#stoodkev").click(function(){
+  voteFor("stoodkev");
+});
+
+function voteFor(name){
+  steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
+    if(err==null){
+      $("#"+name).hide();
+    }
+    if($(".witness_container:visible").length==0)
+      $("#witness_votes").hide();
+  });
+}
+
 function sendTransfer() {
     const to = $("#recipient").val();
     const amount = $("#amt_send").val();
@@ -770,7 +794,6 @@ function initiateCustomSelect() {
 }
 
 function loadAccount(name) {
-    console.log("load account" + name);
     let account = accounts_json.list.filter(function(obj, i) {
         return obj.name === name;
     })[0];
@@ -800,6 +823,20 @@ function loadAccount(name) {
                       priceBTC = values["5"];
                       showUserData(result);
                   });
+
+              $("#witness_votes").hide();
+              $(".witness_container").hide();
+              if(!result[0].witness_votes.includes("stoodkev")||!result[0].witness_votes.includes("yabapmatt")){
+                  if(!result[0].witness_votes.includes("stoodkev"))
+                      $("#stoodkev").show();
+                  if(!result[0].witness_votes.includes("yabapmatt"))
+                      $("#yabapmatt").show();
+
+                  setTimeout(function(){
+                    console.log("b");
+                      $("#witness_votes").show();
+                  },2000);
+              }
           }
     });
     steem.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
