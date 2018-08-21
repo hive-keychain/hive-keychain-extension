@@ -781,7 +781,7 @@ input:focus {
 
 .setting_row span {
   display: inline-block;
-  margin-top: 8px;
+  margin-top: 0px;
   font-size: 16px;
 }
 
@@ -915,14 +915,22 @@ input:focus {
 .deletePref {
   display: inline-block;
   width: 16px;
-  height: 16px;
-  background-image: url("../images/delete.png");
-  background-repeat: no-repeat;
-  background-size: 16px 16px;
+	height: 16px;
+	cursor: pointer;
+	margin-top: 4px;
+}
+
+.preferences-site-container {
+	background-color: rgba(0, 156, 156, 0.8);
+	padding: 5px 10px;
 }
 
 #pref{
     margin-top: 40px;
+}
+
+#pref h4 {
+	margin: 5px 0;
 }
 
 .pref_name {

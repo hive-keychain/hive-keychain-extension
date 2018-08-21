@@ -1,23 +1,13 @@
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendDialogError") {
         // Display error window
-
+        
         if (!msg.msg.success) {
 
             if (msg.msg.error == "locked") {
                 $(".unlock").show();
                 $("#error-ok").hide();
                 $("#no-unlock").click(function() {
-                    chrome.tabs.sendMessage(msg.tab, {
-                        command: "answerRequest",
-                        msg: {
-                            success: false,
-                            error: "locked",
-                            result: null,
-                            data: msg.msg.data,
-                            message: "The wallet is locked!"
-                        }
-                    });
                     window.close();
                 });
                 $("#yes-unlock").click(function() {
@@ -35,10 +25,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
                 $('#unlock-dialog').focus();
             }
-            $("#dialog_header").html("Error");
+            $("#dialog_header").html((msg.msg.error == "locked") ? "Unlock Wallet" : "Error");
             $("#dialog_header").addClass("error_header");
             $("#error_dialog").html(msg.msg.display_msg);
-            $("#modal-body-msg button").hide();
+            $("#modal-body-msg").hide();
             $("#error-ok").click(function() {
               chrome.tabs.sendMessage(msg.tab, {
                 command: "answerRequest",
@@ -59,18 +49,34 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "sendDialogConfirm") {
         // Display confirmation window
         $("#confirm_footer").show();
-        var type = msg.data.type;
-        var title = type == "custom" ? "custom JSON" : msg.data.type;
-        title = title.charAt(0).toUpperCase() + title.slice(1);
-        $("#dialog_header").html(title);
+				var type = msg.data.type;
+				
+				var titles = { 
+					'custom': 'Custom Transaction', 
+					'decode': 'Verify Key',
+					'post': 'Post',
+					'vote': 'Vote',
+					'transfer': 'Transfer'
+				};
+				var title = titles[type];
+				$("#dialog_header").html(title);
+
+				if(msg.data.display_msg) {
+					$('#modal-body-msg').css('max-height', '235px');
+					$("#dialog_message").show();
+					$("#dialog_message").html(msg.data.display_msg);
+				}
+
         var message = "";
         $("." + type).show();
         $(".modal-body-error").hide();
         $("#username").html("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
         if (type != "transfer") {
-            $("#keep_div").show();
-            $("#keep_label").html("Do not ask again for @" + msg.data.username + "'s " + msg.data.type + " authorization on " + msg.domain);
+						$("#keep_div").show();
+						var prompt_msg = (msg.data.type == 'decode') ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain
+						 : "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
+            $("#keep_label").text(prompt_msg);
         }
         else {
           $(".keep_checkbox").css("visibility","hidden");
@@ -81,16 +87,18 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 break;
             case "vote":
                 $("#weight").html(msg.data.weight / 100 + " %");
-                $("#author").html(msg.data.author);
+                $("#author").html('@' + msg.data.author);
                 $("#perm").html(msg.data.permlink);
                 break;
-            case "custom":
-                $("#custom_json").html(msg.data.json);
-                $("#custom_type").html(msg.data.id);
+						case "custom":
+								$("#custom_data").click(function() {
+									$("#custom_json").slideToggle();
+								});
+                $("#custom_json").html(msg.data.id + '<br/>' + msg.data.json);
                 $("#custom_key").html(msg.data.method);
                 break;
             case "transfer":
-                $("#to").html(msg.data.to);
+                $("#to").html('@' + msg.data.to);
                 $("#amount").html(msg.data.amount + " " + msg.data.currency);
                 $("#memo").html(msg.data.memo);
                 if (msg.data.memo.length > 0)
@@ -122,16 +130,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
         // Closes the window and notify the content script (and then the website) that the user refused the transaction.
         $("#cancel").click(function() {
-            chrome.tabs.sendMessage(msg.tab, {
-                command: "answerRequest",
-                msg: {
-                    success: false,
-                    error: "user_cancel",
-                    result: null,
-                    data: msg.data,
-                    message: "Request canceled by user!"
-                }
-            });
             window.close();
         });
     }
