@@ -591,23 +591,13 @@ $("#witness_toggle").click(function() {
   $("#witness_votes").animate({ top: ($("#witness_votes").css('top') == '555px') ? 505 : 555 }, 500);
 });
 
-$("#yabapmatt").click(function(){
-  voteFor("yabapmatt");
-});
-
-$("#stoodkev").click(function(){
-  voteFor("stoodkev");
-});
-
 function voteFor(name){
   if(active_account.keys.hasOwnProperty("active")){
     $('#' + name + ' img').attr('src', '../images/loading.gif');
 
     steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
       if(err==null){
-        setTimeout(function() { 
-          $("#"+name).hide(); 
-
+        setTimeout(function() {
           if($(".witness_container:visible").length==0)
             $("#witness_votes").animate({ opacity: 0 }, 500, function() { $("#witness_votes").hide(); });
         }, 1000);
@@ -852,12 +842,19 @@ function loadAccount(name) {
                       showUserData(result);
                   });
 
-              $(".witness_container").hide();
-              if(!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt"))) {
-                  if(!result[0].witness_votes.includes("stoodkev"))
-                      $("#stoodkev").show();
-                  if(!result[0].witness_votes.includes("yabapmatt"))
-                      $("#yabapmatt").show();
+              if(!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {
+                $('#stoodkev img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("stoodkev") ? '' : '_default') + '.svg');
+                $('#yabapmatt img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("yabapmatt") ? '' : '_default') + '.svg');
+                $('#aggroed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("aggroed") ? '' : '_default') + '.svg');
+
+                if(!result[0].witness_votes.includes("yabapmatt"))
+                  $("#yabapmatt").click(function() { voteFor("yabapmatt"); });
+                
+                if(!result[0].witness_votes.includes("stoodkev"))
+                  $("#stoodkev").click(function() { voteFor("stoodkev"); });
+                
+                if(!result[0].witness_votes.includes("aggroed"))
+                  $("#aggroed").click(function() { voteFor("aggroed"); });
 
                   setTimeout(function(){
                       $("#witness_votes").show();

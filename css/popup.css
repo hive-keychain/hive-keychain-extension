@@ -925,7 +925,11 @@ input:focus {
 }
 
 #pref{
-    margin-top: 40px;
+  margin-top: 20px;
+  max-height: 240px;
+  overflow: auto;
+  background-color: rgba(0, 156, 156,0.8);
+  padding: 10px;
 }
 
 #pref h4 {
@@ -950,7 +954,7 @@ input:focus {
     bottom: 0;
     z-index: 4;
     width: 100%;
-    padding: 4px 20px 0 20px;
+    padding: 4px;
     color: white;
     box-sizing: border-box;
     font-size: 14px;
@@ -962,16 +966,17 @@ input:focus {
 
 #witness_toggle {
   cursor: pointer;
+  padding: 0 20px;
 }
 
 .witness_container {
   position: relative;
   display: inline-block;
-  width: 136px;
+  width: 108px;
   margin-top: 10px;
 }
 .witness_container button{
-    width: 136px;
+    width: 107px;
     height: 32px;
     border: none;
     border-radius: 5px;
@@ -980,7 +985,8 @@ input:focus {
     color:#1E8CA7;
     font-size: 12px;
     outline: inherit;
-    padding: 0;
+    padding-left: 28px;
+    text-align: left;
 }
 
 .witness_container button:hover{
@@ -990,14 +996,10 @@ input:focus {
 .witness_container img {
     position: absolute;
     top: 6px;
-    left: 9px;
+    left: 5px;
     width: 20px;
     height: 20px;
     cursor: pointer;
-}
-
-#yabapmatt {
-  margin-right: 10px;
 }
 
 #close_witness {
@@ -1015,4 +1017,15 @@ input:focus {
 
 .loader img {
   width: 30px;
+}
+
+#pref_div .info {
+  background-color: rgba(0, 156, 156, 0.4);
+  display: flex;
+  align-items: center;
+  height: 60px;
+  width: 100%;
+  margin: 20px -32px 0px -32px;
+  padding: 10px 32px 10px 32px;
+  vertical-align: middle;
 }
