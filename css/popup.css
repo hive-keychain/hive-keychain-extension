@@ -1008,3 +1008,11 @@ input:focus {
   top:12px;
   right:12px;
 }
+
+.loader {
+  text-align: center;
+}
+
+.loader img {
+  width: 30px;
+}

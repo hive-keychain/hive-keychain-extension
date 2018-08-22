@@ -633,8 +633,8 @@ function sendTransfer() {
     console.log(currency,active_account);
     const memo = $("#memo_send").val();
     if (to != "" && amount != "" && amount >= 0.001) {
-        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
-            $("#send_loader").hide();
+        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {          
+          $("#send_loader").hide();
             if (err == null){
                 $(".error_div").hide();
                 $(".success_div").html("Transfer successful!").show();
@@ -643,7 +643,7 @@ function sendTransfer() {
                 $(".success_div").hide();
                 $(".error_div").html("Something went wrong! Please try again!").show();
             }
-            $("#send_transfer").show();
+            $("#send_transfer").show();            
         });
     }
     else {
@@ -853,7 +853,7 @@ function loadAccount(name) {
                   });
 
               $(".witness_container").hide();
-              if(!result[0].witness_votes.includes("stoodkev")||!result[0].witness_votes.includes("yabapmatt")){
+              if(!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt"))) {
                   if(!result[0].witness_votes.includes("stoodkev"))
                       $("#stoodkev").show();
                   if(!result[0].witness_votes.includes("yabapmatt"))
