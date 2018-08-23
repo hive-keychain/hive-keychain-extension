@@ -135,20 +135,36 @@ function performTransaction(data, tab) {
                     });
                 });
                 break;
-            case "decode":
-                let decoded = window.decodeMemo(key, data.message);
-                chrome.tabs.sendMessage(tab, {
-                    command: "answerRequest",
-                    msg: {
-                        success: true,
-                        error: null,
-                        result: decoded,
-                        data: data,
-                        message: "Success!",
+						case "decode":
+							try {
+								let decoded = window.decodeMemo(key, data.message);
+
+								chrome.tabs.sendMessage(tab, {
+										command: "answerRequest",
+										msg: {
+												success: true,
+												error: null,
+												result: decoded,
+												data: data,
+												message: "Success!",
 												request_id: request_id
-                    }
-                });
-                break;
+										}
+								});
+							} catch(err) {
+								chrome.tabs.sendMessage(tab, {
+									command: "answerRequest",
+									msg: {
+											success: false,
+											error: 'decode_error',
+											result: null,
+											data: data,
+											message: "Could not verify key.",
+											request_id: request_id
+									}
+								});
+							}
+
+              break;
         }
         key = null;
     } catch (e) {
