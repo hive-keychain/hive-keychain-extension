@@ -1,23 +1,32 @@
 // Content script interfacing the website and the extension
+function setupInjection () {
+  try {
+    var scriptTag = document.createElement('script')
+    scriptTag.src = chrome.runtime.getURL("js/steem_wallet.js");
+    var container = document.head || document.documentElement
+    container.insertBefore(scriptTag, container.children[0])
+  } catch (e) {
+    console.error('Steem Wallet injection failed.', e)
+  }
+}
+setupInjection();
 
 // Answering the handshakes
 document.addEventListener('swHandshake', function(request) {
-    location.href = "javascript:onGetHandshake(); void 0";
+    location.href = "javascript:steem_wallet.onGetHandshake(); void 0";
 });
 
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
-    var req = request.detail;
+		var req = request.detail;
+		
     // If all information are filled, send the request to the background, if not notify an error
-    if (req != null && req != undefined && req.type != undefined && req.type != null && ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
-            (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
-            (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) ||
-                (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
-                (req.type == "transfer" && isFilled(req.username) && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))))) {
+    if (validate(req)) {
         chrome.runtime.sendMessage({
             command: "sendRequest",
             request: req,
-            domain: window.location.hostname
+						domain: window.location.hostname,
+						request_id: req.request_id
         }, function(response) {});
     } else {
         var response = {
@@ -25,7 +34,8 @@ document.addEventListener('swRequest', function(request) {
             error: "incomplete",
             result: null,
             message: "Incomplete data or wrong format",
-            data: req
+						data: req,
+						request_id: req.request_id
         };
         sendResponse(response);
     }
@@ -39,8 +49,17 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
 });
 
 function sendResponse(response) {
-    location.href = "javascript:onGetResponse(" + JSON.stringify(response) + "); void 0";
+    location.href = "javascript:steem_wallet.onGetResponse(" + JSON.stringify(response) + "); void 0";
 }
+
+function validate(req) {
+	return req != null && req != undefined && req.type != undefined && req.type != null && ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
+				(req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
+				(req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) ||
+				(req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
+				(req.type == "transfer" && isFilled(req.username) && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))));
+}
+
 
 // Functions used to check the incoming data
 function isFilled(obj) {

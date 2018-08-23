@@ -4,6 +4,7 @@ let key = null;
 let confirmed=false;
 let tab=null;
 let request=null;
+let request_id = null;
 
 //chrome.storage.local.remove("no_confirm");
 steem.api.setOptions({
@@ -20,7 +21,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }, function(response) {});
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
-    } else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
+		} else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
+				console.log(msg.request_id);
         chrome.tabs.query({
             active: true,
             currentWindow: true
@@ -28,7 +30,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             // create a window to let users confirm the transaction
             tab=tabs[0].id;
             checkBeforeCreate(msg.request, tabs[0].id, msg.domain);
-            request=msg.request;
+						request=msg.request;
+						request_id = msg.request_id;
         });
     } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
         chrome.storage.local.get(['accounts'], function(items) { // Check user
@@ -81,7 +84,8 @@ function performTransaction(data, tab) {
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Success!" : "Transaction error!"
+                            message: err == null ? "Success!" : "Transaction error!",
+														request_id: request_id
                         }
                     });
                 });
@@ -95,7 +99,8 @@ function performTransaction(data, tab) {
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Success!" : "Transaction error!"
+                            message: err == null ? "Success!" : "Transaction error!",
+														request_id: request_id
                         }
                     });
                 });
@@ -109,7 +114,8 @@ function performTransaction(data, tab) {
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Success!" : "Transaction error!"
+                            message: err == null ? "Success!" : "Transaction error!",
+														request_id: request_id
                         }
                     });
                 });
@@ -123,7 +129,8 @@ function performTransaction(data, tab) {
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Success!" : "Transaction error!"
+                            message: err == null ? "Success!" : "Transaction error!",
+														request_id: request_id
                         }
                     });
                 });
@@ -137,7 +144,8 @@ function performTransaction(data, tab) {
                         error: null,
                         result: decoded,
                         data: data,
-                        message: "Success!"
+                        message: "Success!",
+												request_id: request_id
                     }
                 });
                 break;
@@ -185,7 +193,7 @@ function createPopup(callback) {
 }
 
 chrome.windows.onRemoved.addListener(function (id){
-    console.log(confirmed,id,id_win);
+    console.log('Request ID: ' + request_id);
 
     if(id==id_win&&!confirmed){
       chrome.tabs.sendMessage(tab, {
@@ -195,7 +203,8 @@ chrome.windows.onRemoved.addListener(function (id){
             error: "user_cancel",
             result: null,
             data: request,
-            message: "Request was canceled by the user."
+            message: "Request was canceled by the user.",
+						request_id: request_id
         }
       });
     }
@@ -293,7 +302,8 @@ function sendErrors(tab, error, message, display_msg, request) {
             result: null,
             data: request,
             message: message,
-            display_msg: display_msg
+						display_msg: display_msg,
+						request_id: request_id
         },
         tab: tab
     });

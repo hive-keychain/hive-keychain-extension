@@ -16,7 +16,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                         data: msg.msg.data,
                         tab: msg.tab,
                         mk: $("#unlock-dialog").val(),
-                        domain: msg.domain
+                        domain: msg.domain,
+												request_id: msg.request_id
                     });
                 });
                 $('#unlock-dialog').keypress(function(e) {
@@ -29,20 +30,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             $("#dialog_header").addClass("error_header");
             $("#error_dialog").html(msg.msg.display_msg);
             $("#modal-body-msg").hide();
-            $("#error-ok").click(function() {
-              chrome.tabs.sendMessage(msg.tab, {
-                command: "answerRequest",
-                msg: {
-                    success: false,
-                    error: msg.msg.error,
-                    result: null,
-                    data: msg.msg.data,
-                    message: msg.msg.message
-                }
-              });
-
-              window.close();
-            });
+            $("#error-ok").click(function() { window.close(); });
         }
     } else if (msg.command == "wrongMk") {
         $("#error-mk").html("Wrong password!");

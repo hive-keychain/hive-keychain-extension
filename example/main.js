@@ -1,91 +1,46 @@
 // Send Handshake event
 $("#sw-handshake").click(function() {
-    dispatchCustomEvent("swHandshake", "")
+    steem_wallet.requestHandshake(function() { console.log('Handshake received!'); });
 });
 
 // All transactions are sent via a swRequest event.
+
 // Send decryption request
 $("#send_decode").click(function() {
-    var request = {
-        type: "decode",
-        username: $("#decode_user").val(),
-        message: $("#decode_message").val(), //must start by #
-        method: $("#decode_method option:selected").text()
-    };
-    dispatchCustomEvent("swRequest", request);
+	steem_wallet.requestVerifyKey($("#decode_user").val(), $("#decode_message").val(), $("#decode_method option:selected").text(), function(response) {
+		console.log('main js response - verify key');
+		console.log(response);
+	});
 });
 
 // Send post request
 $("#send_post").click(function() {
-    var request = {
-        type: "post",
-        username: $("#post_username").val(),
-        title: $("#post_title").val(),
-        body: $("#post_body").val(),
-        parent_perm: $("#post_pp").val(),
-        parent_username: $("#post_pu").val(), //optional
-        json_metadata: $("#post_json").val(),
-        permlink: $("#post_perm").val()
-    };
-    dispatchCustomEvent("swRequest", request);
+	steem_wallet.requestPost($("#post_username").val(), $("#post_title").val(), $("#post_body").val(), $("#post_pp").val(), $("#post_pu").val(), $("#post_json").val(), $("#post_perm").val(), function(response) {
+		console.log('main js response - post');
+		console.log(response);
+	});
 });
 
 // Send vote request
 $("#send_vote").click(function() {
-    var request = {
-        type: "vote",
-        username: $("#vote_username").val(),
-        permlink: $("#vote_perm").val(),
-        author: $("#vote_author").val(),
-        weight: $("#vote_weight").val()
-    };
-    dispatchCustomEvent("swRequest", request);
+	steem_wallet.requestVote($("#vote_username").val(), $("#vote_perm").val(), $("#vote_author").val(), $("#vote_weight").val(), function(callback) {
+		console.log('main js response - vote');
+		console.log(response);
+	});
 });
 
 // Send Custom JSON request
 $("#send_custom").click(function() {
-    var request = {
-        type: "custom",
-        username: $("#custom_username").val(),
-        id: $("#custom_id").val(), //can be "custom", "follow", "reblog" etc.
-        method: $("#custom_method option:selected").text(), // Posting key is used by default, active can be specified for id=custom .
-				json: $("#custom_json").val(), //content of your json
-				display_msg: $('#custom_message').val()
-		};
-		
-		console.log(request);
-    dispatchCustomEvent("swRequest", request);
+	steem_wallet.requestCustomJson($("#custom_username").val(), $("#custom_id").val(), $("#custom_method option:selected").text(), $("#custom_json").val(), $('#custom_message').val(), function(response) {
+		console.log('main js response - custom JSON');
+		console.log(response);
+	});
 });
 
 // Send transfer request
 $("#send_tra").click(function() {
-    var request = {
-        type: "transfer",
-        username: $("#transfer_from").val(),
-        to: $("#transfer_to").val(),
-        amount: $("#transfer_val").val(), // must contain 3 decimals
-        memo: $("#transfer_memo").val(), // optional
-        currency: $("#transfer_currency option:selected").text()
-    };
-    dispatchCustomEvent("swRequest", request);
+	steem_wallet.requestTransfer($("#transfer_from").val(), $("#transfer_to").val(), $("#transfer_val").val(), $("#transfer_memo").val(), $("#transfer_currency option:selected").text(), function(response) {
+		console.log('main js response - transfer');
+		console.log(response);
+	});
 });
-
-//Send the customEvent
-function dispatchCustomEvent(name, data) {
-    var event = new CustomEvent(name, {
-        detail: data
-    });
-    document.dispatchEvent(event);
-}
-
-// Listener for Handshake response
-function onGetHandshake() {
-    //TODO: do what you want after receiving handshake.
-    console.log("Handshake received from Steem Wallet!");
-}
-
-// Listener for transactions response
-function onGetResponse(json) {
-    //TODO: do what you want after receiving response from SW
-    console.log(json);
-}
