@@ -71,7 +71,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }
         switch (type) {
             case "decode":
-                $("#wif").html(msg.data.method);
+								$("#wif").html(msg.data.method);
+								$('#modal-body-msg').css('max-height', '235px');
+								$("#dialog_message").show();
+								$("#dialog_message").html('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
                 break;
             case "vote":
                 $("#weight").html(msg.data.weight / 100 + " %");
