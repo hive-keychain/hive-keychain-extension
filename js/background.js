@@ -291,7 +291,9 @@ function checkBeforeCreate(request, tab, domain) {
                             createPopup(callback);
                             // Send the request to confirmation window
                         } else {
-                            chrome.windows.remove(id_win);
+														if(id_win != null)
+															chrome.windows.remove(id_win);
+															
                             performTransaction(req, tab);
                         }
                     }
