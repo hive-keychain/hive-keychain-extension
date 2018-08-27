@@ -22,7 +22,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
 		} else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
-				console.log(msg.request_id);
+				console.log(msg.request);
         chrome.tabs.query({
             active: true,
             currentWindow: true
@@ -34,7 +34,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 						request_id = msg.request_id;
         });
     } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
-        chrome.storage.local.get(['accounts'], function(items) { // Check user
+        chrome.storage.local.get(['accounts'], function(items) { // Check
+            console.log(msg);
             if (items.accounts == null || items.accounts == undefined) {
                 sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
             } else {
@@ -202,7 +203,7 @@ function createPopup(callback) {
               left: w.width - width +w.left
             });
             callback();
-        }, 100);
+        }, 200);
     });
   });
 
@@ -293,7 +294,7 @@ function checkBeforeCreate(request, tab, domain) {
                         } else {
 														if(id_win != null)
 															chrome.windows.remove(id_win);
-															
+
                             performTransaction(req, tab);
                         }
                     }
