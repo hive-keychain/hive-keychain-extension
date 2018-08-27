@@ -925,12 +925,13 @@ input:focus {
 }
 
 #pref{
-  margin-top: 20px;
   max-height: 240px;
   overflow: auto;
   background-color: rgba(0, 156, 156,0.8);
-  padding: 10px;
+  margin: 0 -32px 0 -32px;
+  padding: 10px 32px;
 }
+
 
 #pref h4 {
 	margin: 5px 0;

@@ -189,7 +189,7 @@ function performTransaction(data, tab) {
 }
 
 function createPopup(callback) {
-    let width = 360;
+    let width = 350;
     confirmed=false;
     //Ensuring only one window is opened by the extension at a time.
     if (id_win != null) {
@@ -201,7 +201,7 @@ function createPopup(callback) {
     chrome.windows.create({
         url: chrome.runtime.getURL("html/dialog.html"),
         type: "popup",
-        height: 580,
+        height: 566,
         width: width,
         left: w.width - width+w.left,
         top: w.top
@@ -212,7 +212,7 @@ function createPopup(callback) {
         setTimeout(function() {
           // Window create fails to take into account window size so it s updated afterwhile.
           chrome.windows.update( win.id, {
-              height: 580,
+              height: 566,
               width: width,
               top:w.top,
               left: w.width - width +w.left
