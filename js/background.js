@@ -161,8 +161,10 @@ function performTransaction(data, tab) {
 												data: data,
 												message: "Memo decoded succesfully",
 												request_id: request_id
-										}
-								};
+                    }};
+                  
+                  chrome.tabs.sendMessage(tab, message);
+                  chrome.runtime.sendMessage(message);
 							} catch(err) {
 								let message= {
 									command: "answerRequest",
@@ -173,17 +175,16 @@ function performTransaction(data, tab) {
 											data: data,
 											message: "Could not verify key.",
 											request_id: request_id
-									}
-								};
+                  }};
+
+                chrome.tabs.sendMessage(tab, message);
+                chrome.runtime.sendMessage(message);
 							}
-
-              chrome.tabs.sendMessage(tab, message);
-              chrome.runtime.sendMessage(message);
-
               break;
         }
         key = null;
     } catch (e) {
+      console.log(e);
         sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
     }
 }
