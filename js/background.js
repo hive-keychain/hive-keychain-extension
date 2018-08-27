@@ -78,81 +78,93 @@ function performTransaction(data, tab) {
         switch (data.type) {
             case "vote":
                 steem.broadcast.vote(key, data.username, data.author, data.permlink, parseInt(data.weight), function(err, result) {
-                    chrome.tabs.sendMessage(tab, {
-                        command: "answerRequest",
-                        msg: {
-                            success: err == null,
-                            error: err,
-                            result: result,
-                            data: data,
-                            message: err == null ? "Success!" : "Transaction error!",
-														request_id: request_id
-                        }
-                    });
+                  const message={
+                      command: "answerRequest",
+                      msg: {
+                          success: err == null,
+                          error: err,
+                          result: result,
+                          data: data,
+                          message: err == null ? "Your vote has been sent" : "Your vote could not be sent",
+                          request_id: request_id
+                      }
+                  };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
                 });
                 break;
             case "custom":
                 steem.broadcast.customJson(key, data.method.toLowerCase() == "active" ? [data.username] : null, data.method.toLowerCase() == "posting" ? [data.username] : null, data.id, data.json, function(err, result) {
-                    chrome.tabs.sendMessage(tab, {
+                    const message= {
                         command: "answerRequest",
                         msg: {
                             success: err == null,
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Success!" : "Transaction error!",
+                            message: err == null ? "Custom JSON succesfully broadcasted" : "The JSON could not be broadcasted",
 														request_id: request_id
                         }
-                    });
+                    };
+
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
                 });
+
                 break;
             case "transfer":
                 steem.broadcast.transfer(key, data.username, data.to, data.amount + " " + data.currency, data.memo, function(err, result) {
-                    chrome.tabs.sendMessage(tab, {
+                    const message= {
                         command: "answerRequest",
                         msg: {
                             success: err == null,
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Success!" : "Transaction error!",
+                            message: err == null ? "Transfer succesful" : "An error occured and the transfer was canceled",
 														request_id: request_id
                         }
-                    });
+                    };
+
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
                 });
                 break;
             case "post":
                 steem.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
-                    chrome.tabs.sendMessage(tab, {
+                    const message= {
                         command: "answerRequest",
                         msg: {
                             success: err == null,
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Success!" : "Transaction error!",
+                            message: err == null ? "Post succesfully added to the blockchain" : "The post could not be added to the blockchain!",
 														request_id: request_id
                         }
-                    });
+                    };
+
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
                 });
                 break;
 						case "decode":
 							try {
 								let decoded = window.decodeMemo(key, data.message);
 
-								chrome.tabs.sendMessage(tab, {
+								let message= {
 										command: "answerRequest",
 										msg: {
 												success: true,
 												error: null,
 												result: decoded,
 												data: data,
-												message: "Success!",
+												message: "Memo decoded succesfully",
 												request_id: request_id
 										}
-								});
+								};
 							} catch(err) {
-								chrome.tabs.sendMessage(tab, {
+								let message= {
 									command: "answerRequest",
 									msg: {
 											success: false,
@@ -162,8 +174,11 @@ function performTransaction(data, tab) {
 											message: "Could not verify key.",
 											request_id: request_id
 									}
-								});
+								};
 							}
+
+              chrome.tabs.sendMessage(tab, message);
+              chrome.runtime.sendMessage(message);
 
               break;
         }

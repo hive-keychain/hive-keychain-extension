@@ -1,7 +1,9 @@
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
+  console.log("b",msg);
+
     if (msg.command == "sendDialogError") {
         // Display error window
-        
+
         if (!msg.msg.success) {
 
             if (msg.msg.error == "locked") {
@@ -30,6 +32,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             $("#dialog_header").addClass("error_header");
             $("#error_dialog").html(msg.msg.display_msg);
             $("#modal-body-msg").hide();
+            $(".modal-body-error").show();
+            $(".dialog-message").hide();
             $("#error-ok").click(function() { window.close(); });
         }
     } else if (msg.command == "wrongMk") {
@@ -38,9 +42,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         // Display confirmation window
         $("#confirm_footer").show();
 				var type = msg.data.type;
-				
-				var titles = { 
-					'custom': 'Custom Transaction', 
+
+				var titles = {
+					'custom': 'Custom Transaction',
 					'decode': 'Verify Key',
 					'post': 'Post',
 					'vote': 'Vote',
@@ -116,12 +120,22 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 domain: msg.domain,
                 keep: $("#keep").is(':checked')
             });
-            window.close();
+            $("#confirm_footer").hide();
+            $("#modal-body-msg").hide();
+            $(".dialog-message").hide();
+
         });
 
         // Closes the window and notify the content script (and then the website) that the user refused the transaction.
         $("#cancel").click(function() {
             window.close();
         });
+    }
+    else if(msg.command=="answerRequest"){
+        console.log("a",msg);
+        $("#dialog_header").html((msg.msg.success == true) ? "Success!" : "Error!");
+        $("#error_dialog").html(msg.msg.message);
+        $(".modal-body-error").show();
+        $("#error-ok").click(function() { window.close(); });
     }
 });
