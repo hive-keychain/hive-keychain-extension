@@ -85,7 +85,7 @@ function performTransaction(data, tab) {
                           error: err,
                           result: result,
                           data: data,
-                          message: err == null ? "Your vote has been sent" : "Your vote could not be sent",
+                          message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
                           request_id: request_id
                       }
                   };
@@ -102,7 +102,7 @@ function performTransaction(data, tab) {
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Custom JSON succesfully broadcasted" : "The JSON could not be broadcasted",
+                            message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
 														request_id: request_id
                         }
                     };
@@ -121,7 +121,7 @@ function performTransaction(data, tab) {
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Transfer succesful" : "An error occured and the transfer was canceled",
+                            message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
 														request_id: request_id
                         }
                     };
@@ -139,7 +139,7 @@ function performTransaction(data, tab) {
                             error: err,
                             result: result,
                             data: data,
-                            message: err == null ? "Post succesfully added to the blockchain" : "The post could not be added to the blockchain!",
+                            message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
 														request_id: request_id
                         }
                     };

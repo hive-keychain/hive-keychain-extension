@@ -120,10 +120,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 domain: msg.domain,
                 keep: $("#keep").is(':checked')
             });
-            $("#confirm_footer").hide();
-            $("#modal-body-msg").hide();
-            $(".dialog-message").hide();
-
+            if(type == 'decode')
+              window.close();
+            else {
+              $("#confirm_footer").hide();
+              $("#modal-body-msg").hide();
+              $(".dialog-message").hide();
+              $('#tx_loading').show();
+            }
         });
 
         // Closes the window and notify the content script (and then the website) that the user refused the transaction.
@@ -133,6 +137,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     }
     else if(msg.command=="answerRequest"){
         console.log("a",msg);
+        $('#tx_loading').hide();
         $("#dialog_header").html((msg.msg.success == true) ? "Success!" : "Error!");
         $("#error_dialog").html(msg.msg.message);
         $(".modal-body-error").show();

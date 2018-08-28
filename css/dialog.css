@@ -297,3 +297,11 @@ width: 138px;
   line-height: 16px;
   text-transform: none;
 }
+
+#tx_loading {
+  text-align: center;
+}
+
+#tx_loading img {
+  width: 50px;
+}
