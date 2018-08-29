@@ -797,6 +797,17 @@ input:focus {
     margin-bottom: 30px;
 }
 
+#about_div .about-content {
+	background-color: rgba(0, 156, 156,0.8);
+	padding: 20px 40px;
+	position: absolute;
+	left: 0;
+}
+
+#about_div .about-content a {
+	color: white;
+}
+
 #manage_keys .back_pref {
     margin-bottom: 44px;
 }
