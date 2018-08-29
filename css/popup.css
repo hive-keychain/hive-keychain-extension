@@ -41,8 +41,7 @@ body {
 }
 
 .logo-white {
-    width: 286px;
-    height: 43.38px;
+    height: 60px;
 }
 
 #register,
@@ -385,10 +384,10 @@ input:focus {
     height: 30px;
 }
 
-.main_header img:first-of-type {
-    width: 41.21px;
-    height: 100%;
-    float: left;
+.main_header img.icon {
+    height: 40px;
+		float: left;
+		margin-top: -5px;
 }
 
 .main_header span {
@@ -406,6 +405,7 @@ input:focus {
 }
 
 #lock {
+	float: left;
     margin-right: 19.8px;
     margin-left: 168.29px;
 }

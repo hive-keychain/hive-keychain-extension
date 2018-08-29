@@ -1,11 +1,11 @@
 {
-  "name": "Steem Wallet",
+  "name": "Steem Keychain",
   "version": "0.1",
   "description": "Secure Steem Wallet Extension.",
   "permissions": ["activeTab", "declarativeContent", "storage","tabs","https://*/*","notifications"],
   "browser_action": {
     "default_popup": "html/popup.html",
-    "default_icon": "images/logo2.png"},
+    "default_icon": "images/keychain_icon_small.png"},
   "background": {
     "scripts": ["vendor/cryptojs.min.js","vendor/md5.min.js","js/encrypt.js","vendor/steemjs.js","vendor/decode.min.js","js/background.js"],
     "persistent": true
