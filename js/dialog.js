@@ -41,6 +41,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "sendDialogConfirm") {
         // Display confirmation window
         $("#confirm_footer").show();
+        $('#modal-body-msg').show();
 				var type = msg.data.type;
 
 				var titles = {

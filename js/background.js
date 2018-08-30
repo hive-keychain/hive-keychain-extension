@@ -210,6 +210,7 @@ function createPopup(callback) {
 
         console.log(win);
         id_win = win.id;
+        
         setTimeout(function() {
           // Window create fails to take into account window size so it s updated afterwhile.
           chrome.windows.update( win.id, {
@@ -219,7 +220,7 @@ function createPopup(callback) {
               left: w.width - width +w.left
             });
             callback();
-        }, 200);
+        }, 300);
     });
   });
 
