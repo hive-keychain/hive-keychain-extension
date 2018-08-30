@@ -10,7 +10,7 @@
     "scripts": ["vendor/cryptojs.min.js","vendor/md5.min.js","js/encrypt.js","vendor/steemjs.js","vendor/decode.min.js","js/background.js"],
     "persistent": true
   },
-  "web_accessible_resources":["/images/logo.png","html/dialog.html", "js/steem_wallet.js"],
+  "web_accessible_resources":["/images/logo.png","html/dialog.html", "js/steem_keychain.js"],
   "content_scripts": [
     {
       "matches": ["https://*/*","http://0.0.0.0:1337/*","http://*/*"],

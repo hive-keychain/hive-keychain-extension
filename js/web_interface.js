@@ -2,18 +2,18 @@
 function setupInjection () {
   try {
     var scriptTag = document.createElement('script')
-    scriptTag.src = chrome.runtime.getURL("js/steem_wallet.js");
+    scriptTag.src = chrome.runtime.getURL("js/steem_keychain.js");
     var container = document.head || document.documentElement
     container.insertBefore(scriptTag, container.children[0])
   } catch (e) {
-    console.error('Steem Wallet injection failed.', e)
+    console.error('Steem Keychain injection failed.', e)
   }
 }
 setupInjection();
 
 // Answering the handshakes
 document.addEventListener('swHandshake', function(request) {
-    location.href = "javascript:steem_wallet.onGetHandshake(); void 0";
+    location.href = "javascript:steem_keychain.onGetHandshake(); void 0";
 });
 
 // Answering the requests
@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
 });
 
 function sendResponse(response) {
-    location.href = "javascript:steem_wallet.onGetResponse(" + JSON.stringify(response) + "); void 0";
+    location.href = "javascript:steem_keychain.onGetResponse(" + JSON.stringify(response) + "); void 0";
 }
 
 function validate(req) {

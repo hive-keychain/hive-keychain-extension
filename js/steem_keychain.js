@@ -1,5 +1,5 @@
 // Content script interfacing the website and the extension
-var steem_wallet = {
+var steem_keychain = {
 	current_id: 1,
 	requests: {},
 	handshake_callback: null,
@@ -82,9 +82,6 @@ var steem_wallet = {
 	},
 
 	onGetResponse: function(response) {
-		console.log('Got Response!');
-		console.log(response);
-
 		if(response && response.request_id) {
 			if(this.requests[response.request_id]) {
 				this.requests[response.request_id](response);
@@ -94,8 +91,6 @@ var steem_wallet = {
 	},
 
 	onGetHandshake: function() {
-		console.log("Handshake received from Steem Wallet!");
-
 		if(this.handshake_callback)
 			this.handshake_callback();
 	}

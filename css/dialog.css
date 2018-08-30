@@ -276,7 +276,7 @@ button {
     bottom:0;
     background-color: rgba(0, 156, 156,0.8);
     margin-left: -32px;
-    padding: 20px 32px 0 32px;
+    padding: 10px 32px 0 32px;
 }
 
 #confirm_footer button {

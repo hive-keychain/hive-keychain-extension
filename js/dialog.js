@@ -71,7 +71,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             $("#keep_label").text(prompt_msg);
         }
         else {
-          $(".keep_checkbox").css("visibility","hidden");
+          $(".keep_checkbox").css("display","none");
         }
         switch (type) {
             case "decode":
