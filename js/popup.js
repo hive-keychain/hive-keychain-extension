@@ -155,7 +155,7 @@ $("#submit_master_pwd").click(function() {
             $(".error_div").show();
         }
     } else {
-        $(".error_div").html("Please use a stronger password!");
+        $(".error_div").html("Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter, a digit, and a special character.");
         $(".error_div").show();
     }
 });

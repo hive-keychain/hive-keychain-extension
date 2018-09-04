@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Steem Wallet</title>
+    <title>Steem Keychain</title>
     <link rel="stylesheet" type="text/css" href="../css/popup.css">
 </head>
 
@@ -10,11 +10,11 @@
     <div class="cloud"></div>
     <div id="register">
         <img src="../images/keychain_logo.png" class="logo-white" />
-        <p>Steem Wallet is a better way to access your STEEM accounts. Simple. Lightweight.
-            Secure. <br><br> Let's start by creating a Steem Wallet password. You
+        <p>Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight.
+            Secure. <br><br> Let's start by creating a Keychain password. You
             will need this password to access or make changes to your account(s).</p>
         <div class="input_container">
-            <input type="password" id="master_pwd" placeholder="Password" />
+            <input type="password" id="master_pwd" placeholder="New Password" />
             <img src="../images/lock.png" class="input_img" />
         </div>
         <div class="input_container">
@@ -94,11 +94,13 @@
       <div id="transfer_rows"></div>
     </div>
     <div id="add_account_div">
-        <div class="back_menu back_enabled">Set up</div>
-        <p>Your Master Key is used to retrieve your posting, active, and memo keys.
-            The Master Key will NOT be saved. Private Keys may later be disabled
-            in your settings. <br><br>NOTE: You may enter any key, however Master
-            Key is recommended.</p>
+				<div class="back_menu back_enabled">Set up</div>
+				<p>Enter your Steem account name and either the master password or the private posting or active key for that account below.
+					Your master password will NOT be saved and will only be used to generate your private keys.
+					<br/><br/>
+					You may add / remove Steem accounts or keys at any time. If you need to create a new Steem account, you can do so at 
+					<a href="https://signup.steemit.com/" target="_blank" style="text-decoration: underline; color: white;">https://signup.steemit.com/</a>.
+				</p>
 
         <div class="input_container">
             <input type="text" id="username" placeholder="Username"></input>
@@ -113,7 +115,7 @@
     <div id="master_check">
         <div class="back_add_key back_enabled">Import Keys</div>
         <p>Import successful! <br><br>Please select the Keys you wish to store with
-            Steem Wallet!</p>
+            Steem Keychain:</p>
         <div class="key_checkbox">
             <label for="posting_key" class="checkbox_container">
               <div>Posting Key</div>
@@ -261,7 +263,7 @@
     </div>
     <div id="witness_votes">
       <img src="../images/delete.png" id="close_witness" style="display: none;"/>
-      <div id="witness_toggle">Click here to support Steem Wallet development by casting your witness votes for the creators!</div>
+      <div id="witness_toggle">Click here to support Steem Keychain development by casting your witness votes for the creators!</div>
       <div class="witness_container" id="yabapmatt">
           <button>@yabapmatt</button>
           <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit" />

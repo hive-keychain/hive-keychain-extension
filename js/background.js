@@ -256,7 +256,7 @@ function checkBeforeCreate(request, tab, domain) {
                     result: null,
                     data: request,
                     message: "The wallet is locked!",
-                    display_msg: "The current website is trying to send a request to the Steem Wallet browser extension. Please enter your password below to unlock the wallet and continue."
+                    display_msg: "The current website is trying to send a request to the Steem Keychain browser extension. Please enter your password below to unlock the wallet and continue."
                 },
                 tab: tab,
                 domain: domain
@@ -279,7 +279,7 @@ function checkBeforeCreate(request, tab, domain) {
                         return e.name == request.username;
                     })) {
                     function callback() {
-                        sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Wallet browser extension for account @" + request.username + " which has not been added to the wallet.", request);
+                        sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " which has not been added to the wallet.", request);
                     }
                     createPopup(callback);
                 } else {
@@ -292,7 +292,7 @@ function checkBeforeCreate(request, tab, domain) {
                         req.method = typeWif;
                     if (account.keys[typeWif] == undefined) {
                         function callback() {
-                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Wallet browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
+                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
                         }
                         createPopup(callback);
                     } else {

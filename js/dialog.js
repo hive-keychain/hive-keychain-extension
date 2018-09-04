@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
                 $('#unlock-dialog').focus();
             }
-            $("#dialog_header").html((msg.msg.error == "locked") ? "Unlock Wallet" : "Error");
+            $("#dialog_header").html((msg.msg.error == "locked") ? "Unlock Keychain" : "Error");
             $("#dialog_header").addClass("error_header");
             $("#error_dialog").html(msg.msg.display_msg);
             $("#modal-body-msg").hide();
