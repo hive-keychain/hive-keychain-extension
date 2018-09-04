@@ -70,8 +70,9 @@ h2 {
 h2::before {
   content: "";
   width: 41.21px;
-  height: 30px;
-  background-image: url("../images/icon_white.png");
+	height: 30px;
+	opacity: 0.8;
+  background-image: url("../images/keychain_icon2.png");
   background-repeat: no-repeat;
   background-size: 41.21px 30px;
   padding-right: 60px;
