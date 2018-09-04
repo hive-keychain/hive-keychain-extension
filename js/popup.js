@@ -173,7 +173,6 @@ $(".input_img_right_eye").click(function() {
 });
 
 $(".back_menu").click(function() {
-  console.log("back");
     initializeMainMenu();
 });
 $("#change_pwd").click(function(){
@@ -184,7 +183,6 @@ $("#change_pwd").click(function(){
 $("#confirm_change_pwd").click(function(){
     if(mk===$("#old_pwd").val()){
       if($("#new_pwd").val()===$("#confirm_new_pwd").val()){
-        console.log($("#new_pwd").val());
         if(!$("#new_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)){
           mk=$("#new_pwd").val();
           updateAccount();
@@ -365,7 +363,6 @@ function initializeMainMenu() {
               let last=accounts_json.list.filter(function(o,i){return o.name==items.last_account;});
               accounts_json.list=accounts_json.list.filter(function(o,i){return o.name!=items.last_account;});
               accounts_json.list.unshift(last[0]);
-              console.log(accounts_json);
             }
             $(".usernames").html("<select></select>");
             for (account of accounts_json.list) {
@@ -387,7 +384,6 @@ function setPreferences(name) {
         try {
             const pref = JSON.parse(items.no_confirm);
             $("#pref").html("");
-            console.log(pref);
             if (pref[name]==undefined||pref[name]==null||Object.keys(pref[name]).length == 0)
                 $("#pref").html("No preferences");
             for (let obj in pref[name]) {
@@ -480,7 +476,6 @@ function manageKeys(name) {
               clearTimeout(timeout);
             $("#copied").hide();
             $("#fake_input").val($(this).html());
-            console.log($("#fake_input").val());
             $("#fake_input").select();
             document.execCommand("copy");
             $("#copied").slideDown(600);
@@ -620,7 +615,6 @@ function sendTransfer() {
     const to = $("#recipient").val();
     const amount = $("#amt_send").val();
     const currency = $("#currency_send .select-selected").html();
-    console.log(currency,active_account);
     const memo = $("#memo_send").val();
     if (to != "" && amount != "" && amount >= 0.001) {
         steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {          
@@ -713,14 +707,14 @@ function showAddAccount() {
 function initiateCustomSelect() {
     /*look for any elements with the class "custom-select":*/
     x = document.getElementsByClassName("custom-select");
-    console.log(x.length);
+
     for (i = 0; i < x.length; i++) {
         if(i==3&&custom_created)
           return;
         if(i==3&&!custom_created)
           custom_created=true;
         selElmnt = x[i].getElementsByTagName("select")[0];
-        console.log(selElmnt);
+
         /*for each element, create a new DIV that will act as the selected item:*/
         a = document.createElement("DIV");
         a.setAttribute("class", "select-selected");
@@ -900,7 +894,6 @@ function showUserData(result) {
     showBalances(result, dynamicProp);
     $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
     $("#voting_power span").eq(1).html("Vote Value: $ " + getVotingDollarsPerAccount(100, result["0"]));
-    console.log(priceSBD, priceSteem, priceBTC, steem_p, sbd, sp);
     $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)))
 }
 

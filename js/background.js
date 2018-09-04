@@ -22,7 +22,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
 		} else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
-				console.log(msg.request);
         chrome.tabs.query({
             active: true,
             currentWindow: true
@@ -35,7 +34,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
     } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
         chrome.storage.local.get(['accounts'], function(items) { // Check
-            console.log(msg);
             if (items.accounts == null || items.accounts == undefined) {
                 sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
             } else {
@@ -207,8 +205,6 @@ function createPopup(callback) {
         left: w.width - width+w.left,
         top: w.top
     }, function(win) {
-
-        console.log(win);
         id_win = win.id;
         
         setTimeout(function() {
@@ -227,8 +223,6 @@ function createPopup(callback) {
 }
 
 chrome.windows.onRemoved.addListener(function (id){
-    console.log('Request ID: ' + request_id);
-
     if(id==id_win&&!confirmed){
       chrome.tabs.sendMessage(tab, {
         command: "answerRequest",
@@ -245,7 +239,6 @@ chrome.windows.onRemoved.addListener(function (id){
 });
 
 function checkBeforeCreate(request, tab, domain) {
-	console.log(request);
     if (mk == null) { // Check if locked
         function callback() {
             chrome.runtime.sendMessage({

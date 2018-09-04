@@ -1,6 +1,4 @@
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
-  console.log("b",msg);
-
     if (msg.command == "sendDialogError") {
         // Display error window
 
@@ -137,7 +135,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
     }
     else if(msg.command=="answerRequest"){
-        console.log("a",msg);
         $('#tx_loading').hide();
         $("#dialog_header").html((msg.msg.success == true) ? "Success!" : "Error!");
         $("#error_dialog").html(msg.msg.message);
