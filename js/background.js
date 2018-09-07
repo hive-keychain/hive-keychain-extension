@@ -5,6 +5,7 @@ let confirmed=false;
 let tab=null;
 let request=null;
 let request_id = null;
+let accounts=null;
 
 //chrome.storage.local.remove("no_confirm");
 steem.api.setOptions({
@@ -111,7 +112,12 @@ function performTransaction(data, tab) {
 
                 break;
             case "transfer":
-                steem.broadcast.transfer(key, data.username, data.to, data.amount + " " + data.currency, data.memo, function(err, result) {
+
+                let ac=accounts.list.find(function(e){return e.name==data.username});
+                  console.log(ac);
+                  let key_transfer=ac.keys.active;
+                console.log(key_transfer, data.username, data.to, data.amount + " " + data.currency, data.memo);
+                steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, data.memo, function(err, result) {
                     const message= {
                         command: "answerRequest",
                         msg: {
@@ -160,7 +166,7 @@ function performTransaction(data, tab) {
 												message: "Memo decoded succesfully",
 												request_id: request_id
                     }};
-                  
+
                   chrome.tabs.sendMessage(tab, message);
                   chrome.runtime.sendMessage(message);
 							} catch(err) {
@@ -181,6 +187,7 @@ function performTransaction(data, tab) {
               break;
         }
         key = null;
+        accounts=null;
     } catch (e) {
       console.log(e);
         sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
@@ -206,7 +213,7 @@ function createPopup(callback) {
         top: w.top
     }, function(win) {
         id_win = win.id;
-        
+
         setTimeout(function() {
           // Window create fails to take into account window size so it s updated afterwhile.
           chrome.windows.update( win.id, {
@@ -265,10 +272,10 @@ function checkBeforeCreate(request, tab, domain) {
                 createPopup(callback);
             } else {
                 // Check that user and wanted keys are in the wallet
-                let accounts = (items.accounts == undefined || items.accounts == {
+                accounts = (items.accounts == undefined || items.accounts == {
                     list: []
                 }) ? null : decryptToJson(items.accounts, mk);
-                if (!accounts.list.find(function(e) {
+                if (request.username!=undefined&&!accounts.list.find(function(e) {
                         return e.name == request.username;
                     })) {
                     function callback() {
@@ -276,37 +283,62 @@ function checkBeforeCreate(request, tab, domain) {
                     }
                     createPopup(callback);
                 } else {
-                    let account = accounts.list.find(function(e) {
-                        return e.name == request.username;
-                    });
-                    let typeWif = getRequiredWifType(request);
-                    let req = request;
-                    if (req.type == "custom")
-                        req.method = typeWif;
-                    if (account.keys[typeWif] == undefined) {
-                        function callback() {
-                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
-                        }
-                        createPopup(callback);
-                    } else {
-                        key = account.keys[typeWif];
-                        if (!hasNoConfirm(items.no_confirm, req, domain)) {
-                            function callback() {
-                                chrome.runtime.sendMessage({
-                                    command: "sendDialogConfirm",
-                                    data: req,
-                                    domain: domain,
-                                    tab: tab
-                                });
-                            }
-                            createPopup(callback);
-                            // Send the request to confirmation window
-                        } else {
-														if(id_win != null)
-															chrome.windows.remove(id_win);
+                    if(request.type!="transfer"){
+                      let account = accounts.list.find(function(e) {
+                          return e.name == request.username;
+                      });
+                      let typeWif = getRequiredWifType(request);
+                      let req = request;
+                      if (req.type == "custom")
+                          req.method = typeWif;
+                      if (account.keys[typeWif] == undefined) {
+                          function callback() {
+                              sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
+                          }
+                          createPopup(callback);
+                      } else {
+                          key = account.keys[typeWif];
+                          if (!hasNoConfirm(items.no_confirm, req, domain)) {
+                              function callback() {
+                                  chrome.runtime.sendMessage({
+                                      command: "sendDialogConfirm",
+                                      data: req,
+                                      domain: domain,
+                                      tab: tab
+                                  });
+                              }
+                              createPopup(callback);
+                              // Send the request to confirmation window
+                          } else {
+  														if(id_win != null)
+  															chrome.windows.remove(id_win);
 
-                            performTransaction(req, tab);
-                        }
+                              performTransaction(req, tab);
+                          }
+                      }
+                    }
+                    else {
+                      let tr_accounts = accounts.list.filter(function(e) {
+                          return e.keys.hasOwnProperty("active");
+                      });
+                      if(tr_accounts.length==0){
+                          function callback() {
+                              sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
+                          }
+                      }
+                      else {
+                         function callback() {
+                             chrome.runtime.sendMessage({
+                                 command: "sendDialogConfirm",
+                                 data: request,
+                                 domain: domain,
+                                 accounts:tr_accounts,
+                                 tab: tab
+                             });
+                         }
+                         createPopup(callback);
+                      }
+
                     }
                 }
             }
@@ -336,6 +368,8 @@ function sendErrors(tab, error, message, display_msg, request) {
         },
         tab: tab
     });
+    key = null;
+    accounts=null;
 }
 
 // Get the key needed for each type of transaction

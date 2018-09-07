@@ -6,6 +6,7 @@ var steem_keychain = {
 
 	requestHandshake: function(callback) {
 		this.handshake_callback = callback;
+		console.log("a");
 		this.dispatchCustomEvent("swHandshake", "");
 	},
 

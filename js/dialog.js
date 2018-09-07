@@ -57,7 +57,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 					$("#dialog_message").show();
 					$("#dialog_message").html(msg.data.display_msg);
 				}
-
+        if(type=="transfer"){
+          console.log(msg.accounts)
+          for (acc of msg.accounts){
+            $("#select_transfer").append("<option>"+acc.name+"</option>");
+          }
+        }
         var message = "";
         $("." + type).show();
         $(".modal-body-error").hide();
@@ -112,9 +117,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
         // Closes the window and launch the transaction in background
         $("#proceed").click(function() {
+            let data=msg.data;
+            if(data.type=="transfer")
+              data.username=$("#select_transfer option:selected").val();
+              console.log(data);
             chrome.runtime.sendMessage({
                 command: "acceptTransaction",
-                data: msg.data,
+                data: data,
                 tab: msg.tab,
                 domain: msg.domain,
                 keep: $("#keep").is(':checked')

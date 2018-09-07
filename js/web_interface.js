@@ -19,7 +19,7 @@ document.addEventListener('swHandshake', function(request) {
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
 		var req = request.detail;
-		
+
     // If all information are filled, send the request to the background, if not notify an error
     if (validate(req)) {
         chrome.runtime.sendMessage({
@@ -57,7 +57,7 @@ function validate(req) {
 				(req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
 				(req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) ||
 				(req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
-				(req.type == "transfer" && isFilled(req.username) && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))));
+				(req.type == "transfer"&& isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))));
 }
 
 
