@@ -58,9 +58,21 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 					$("#dialog_message").html(msg.data.display_msg);
 				}
         if(type=="transfer"){
-          console.log(msg.accounts)
-          for (acc of msg.accounts){
-            $("#select_transfer").append("<option>"+acc.name+"</option>");
+          let accounts=msg.accounts;
+          console.log(accounts,msg.data);
+          if(msg.data.username!==undefined){
+            let  i=msg.accounts.findIndex(function(elt){return elt.name==msg.data.username;});
+
+            let first=[accounts[i]];
+            delete accounts[i];
+            console.log(first,accounts);
+            accounts=first.concat(accounts);
+
+            console.log(accounts);
+          }
+          for (acc of accounts){
+            if(acc!=undefined)
+              $("#select_transfer").append("<option>"+acc.name+"</option>");
           }
           initiateCustomSelect();
         }

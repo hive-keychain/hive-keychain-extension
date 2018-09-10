@@ -53,6 +53,7 @@ function sendResponse(response) {
 }
 
 function validate(req) {
+  console.log(req);
 	return req != null && req != undefined && req.type != undefined && req.type != null && ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
 				(req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
 				(req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) ||

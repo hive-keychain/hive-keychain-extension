@@ -63,6 +63,7 @@ var steem_keychain = {
 	requestTransfer: function(account, to, amount, memo, currency, callback) {
 		var request = {
 			type: "transfer",
+			username:account,
 			to: to,
 			amount: amount,
 			memo: memo,

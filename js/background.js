@@ -321,7 +321,7 @@ function checkBeforeCreate(request, tab, domain) {
                       let tr_accounts = accounts.list.filter(function(e) {
                           return e.keys.hasOwnProperty("active");
                       });
-                      if(tr_accounts.length==0){
+                      if(tr_accounts.length==0||(request.username!==undefined&&!tr_accounts.includes(request.username))){
                           function callback() {
                               sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
                           }
