@@ -53,11 +53,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 				$("#dialog_header").html(title);
 
 				if(msg.data.display_msg) {
-					$('#modal-body-msg').css('max-height', '235px');
+					$('#modal-body-msg .msg-data').css('max-height', '245px');
 					$("#dialog_message").show();
 					$("#dialog_message").html(msg.data.display_msg);
 				}
+
         if(type=="transfer"){
+					$('#modal-body-msg .msg-data').css('max-height', '200px');
           let accounts=msg.accounts;
           console.log(accounts,msg.data);
           if(msg.data.username!==undefined){

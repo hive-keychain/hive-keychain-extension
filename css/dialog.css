@@ -94,8 +94,9 @@ h3 .small {
 	cursor: pointer;
 }
 
-#modal-body-msg>div,
-#modal-body-msg>h3 {
+#modal-body-msg .msg-data>div,
+#modal-body-msg .msg-data>h3,
+#transfer_acct_list  {
     display: none;
 }
 
@@ -159,8 +160,13 @@ button {
 .unlock {
     display: none;
 }
+
 #modal-body-msg {
-  max-height: 285px;
+  
+}
+
+#modal-body-msg .msg-data {
+	max-height: 285px;
 	overflow-y: scroll;
 	background-color: rgba(0, 156, 156,0.8);
 	padding: 10px;
@@ -182,7 +188,7 @@ button {
   margin: 0 0 5px 0;
 }
 
-#modal-body-msg div:not(.custom-select):not(.select-selected) {
+#modal-body-msg .msg-data div {
   font-size: 16px;
   line-height: 16px;
   font-style: italic;
@@ -382,7 +388,6 @@ width: 138px;
 
 .select-items div{
   margin-bottom: 0;
-  line-height: unset;
 }
 
 

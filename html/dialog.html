@@ -30,7 +30,13 @@
           <img src="/images/loading.gif"/>
         </div>
 
-        <div id="modal-body-msg" style="display: none;">
+				<div id="modal-body-msg" style="display: none;">
+					<div id="transfer_acct_list" class="custom-select custom-select-main transfer">
+						<select  id="select_transfer">
+						</select>
+					</div>
+
+					<div class="msg-data">
             <h3 class="decode vote post custom ">Account</h3>
             <div class="decode vote post custom " id="username"></div>
             <h3 class="decode">Key</h3>
@@ -45,10 +51,6 @@
             <div class="custom" id="custom_key"></div>
             <h3 class="custom" id="custom_data">Data <span class="small">(click to show)</span></h3>
             <div class="" id="custom_json"></div>
-            <div class="custom-select custom-select-main transfer">
-              <select  id="select_transfer">
-              </select>
-            </div>
             <h3 class="transfer">To</h3>
             <div class="transfer" id="to"></div>
             <h3 class="transfer">Amount</h3>
@@ -66,7 +68,8 @@
             <h3 class="post">Parent Username</h3>
             <div class="post" id="parent_username"></div>
             <h3 class="post">Parent Permlink</h3>
-            <div class="post" id="parent_url"></div>
+						<div class="post" id="parent_url"></div>
+					</div>
         </div>
         <div id= "confirm_footer">
           <div class="keep_checkbox">
