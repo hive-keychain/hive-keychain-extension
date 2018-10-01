@@ -6,12 +6,25 @@ let tab=null;
 let request=null;
 let request_id = null;
 let accounts=null;
+const LOCK_AFTER_SECONDS_IDLE=10*60;
+// Lock after the browser is idle for more than 10 minutes
 
 //chrome.storage.local.remove("no_confirm");
 steem.api.setOptions({
     url: 'https://api.steemit.com'
 });
 
+
+// Lock if the browser goes isDisabled
+chrome.idle.setDetectionInterval(LOCK_AFTER_SECONDS_IDLE);
+
+chrome.idle.onStateChanged.addListener(
+    function (state) {
+        if (state === "idle" || state==="locked"){
+          mk=null;
+        }
+    }
+);
 //Listen to the other parts of the extension
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     // Send mk upon request from the extension popup.
@@ -273,7 +286,7 @@ function checkBeforeCreate(request, tab, domain) {
 
 					if(request.type == "transfer") {
 						let tr_accounts = accounts.list.filter(a => a.keys.hasOwnProperty("active"));
-						
+
 						// If a username is specified, check that its active key has been added to the wallet
 						if(request.username && !tr_accounts.find(a => a.name == request.username)) {
 							createPopup(function() { sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request); });
@@ -299,10 +312,10 @@ function checkBeforeCreate(request, tab, domain) {
 							let account = accounts.list.find(function(e) { return e.name == request.username; });
 							let typeWif = getRequiredWifType(request);
 							let req = request;
-							
+
 							if (req.type == "custom")
 								req.method = typeWif;
-									
+
 							if (account.keys[typeWif] == undefined) {
 								createPopup(function() { sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request); });
 							} else {
