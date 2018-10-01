@@ -90,6 +90,7 @@ $("#submit_unlock").click(function() {
     });
 });
 
+
 // Use "Enter" as confirmation button for unlocking and registration
 
 $('#unlock_pwd').keypress(function(e) {
@@ -617,7 +618,7 @@ function sendTransfer() {
     const currency = $("#currency_send .select-selected").html();
     const memo = $("#memo_send").val();
     if (to != "" && amount != "" && amount >= 0.001) {
-        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {          
+        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
           $("#send_loader").hide();
             if (err == null){
                 $(".error_div").hide();
@@ -627,7 +628,7 @@ function sendTransfer() {
                 $(".success_div").hide();
                 $(".error_div").html("Something went wrong! Please try again!").show();
             }
-            $("#send_transfer").show();            
+            $("#send_transfer").show();
         });
     }
     else {
@@ -699,9 +700,14 @@ function showAccountInfo(account, that) {
     $(".account_info").show();
 }
 
+$("#add_new_account").click(function(){
+  showAddAccount();
+});
+
 function showAddAccount() {
     $("#add_account_div").css("display", "block");
     $("#main").css("display", "none");
+    $("#settings_div").css("display", "none");
 }
 
 function initiateCustomSelect() {
@@ -843,10 +849,10 @@ function loadAccount(name) {
 
                 if(!result[0].witness_votes.includes("yabapmatt"))
                   $("#yabapmatt").click(function() { voteFor("yabapmatt"); });
-                
+
                 if(!result[0].witness_votes.includes("stoodkev"))
                   $("#stoodkev").click(function() { voteFor("stoodkev"); });
-                
+
                 if(!result[0].witness_votes.includes("aggroed"))
                   $("#aggroed").click(function() { voteFor("aggroed"); });
 
