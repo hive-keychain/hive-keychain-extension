@@ -38,16 +38,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             }
         );
     } else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function(tabs) {
             // create a window to let users confirm the transaction
-            tab = tabs[0].id;
-            checkBeforeCreate(msg.request, tabs[0].id, msg.domain);
+            tab = sender.tab.id;
+            checkBeforeCreate(msg.request, tab, msg.domain);
             request = msg.request;
             request_id = msg.request_id;
-        });
+
     } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
         chrome.storage.local.get(['accounts'], function(items) { // Check
             if (items.accounts == null || items.accounts == undefined) {
@@ -120,7 +116,7 @@ function performTransaction(data, tab) {
                             request_id: request_id
                         }
                     };
-
+                    console.log(tab,message);
                     chrome.tabs.sendMessage(tab, message);
                     chrome.runtime.sendMessage(message);
                 });
