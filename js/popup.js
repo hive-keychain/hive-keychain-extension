@@ -1,9 +1,9 @@
 let accounts_json = null,
     mk = null;
-let active_account,priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
+let active_account, priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerReserveRate, totalSteem, totalVests, rewardBalance, recentClaims, steemPrice, dynamicProp = null;
 const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
-let custom_created=false;
-let manageKey,getPref=false;
+let custom_created = false;
+let manageKey, getPref = false;
 steem.api.setOptions({
     url: 'https://api.steemit.com'
 });
@@ -19,13 +19,13 @@ chrome.runtime.sendMessage({
 
 // Check if autolock and set it to background
 chrome.storage.local.get(['autolock'], function(items) {
-  if(items!=undefined){
-    $(".autolock input").prop("checked",false);
-    $("#"+JSON.parse(items.autolock).type).prop("checked",true);
-    $("#mn").val(JSON.parse(items.autolock).mn);
-    setAutolock(items.autolock);
-    $("#mn").css('visibility', JSON.parse(items.autolock).type=="idle"?'visible':'hidden');
-  }
+    if (items != undefined) {
+        $(".autolock input").prop("checked", false);
+        $("#" + JSON.parse(items.autolock).type).prop("checked", true);
+        $("#mn").val(JSON.parse(items.autolock).mn);
+        setAutolock(items.autolock);
+        $("#mn").css('visibility', JSON.parse(items.autolock).type == "idle" ? 'visible' : 'hidden');
+    }
 });
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
@@ -47,28 +47,31 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
 // Send new autolock to background;
 
-function setAutolock(autolock){
-  chrome.runtime.sendMessage({
-      command: "sendAutolock",
-      autolock: autolock
-  });
+function setAutolock(autolock) {
+    chrome.runtime.sendMessage({
+        command: "sendAutolock",
+        autolock: autolock
+    });
 }
 
 // Save autolock
-$(".autolock").click(function(){
-  $(".autolock input").prop("checked",false);
-  $(this).find("input").prop("checked","true");
-  $("#mn").css('visibility', $(this).find("input").attr("id")=="idle"?'visible':'hidden');
+$(".autolock").click(function() {
+    $(".autolock input").prop("checked", false);
+    $(this).find("input").prop("checked", "true");
+    $("#mn").css('visibility', $(this).find("input").attr("id") == "idle" ? 'visible' : 'hidden');
 
 });
 
-$("#save_autolock").click(function(){
-  const autolock=JSON.stringify({"type":$(".autolock input:checkbox:checked").eq(0).attr("id")||"default","mn":$("#mn").val()||10});
-  chrome.storage.local.set({
-      autolock: autolock
-  });
-  setAutolock(autolock);
-  initializeMainMenu();
+$("#save_autolock").click(function() {
+    const autolock = JSON.stringify({
+        "type": $(".autolock input:checkbox:checked").eq(0).attr("id") || "default",
+        "mn": $("#mn").val() || 10
+    });
+    chrome.storage.local.set({
+        autolock: autolock
+    });
+    setAutolock(autolock);
+    initializeMainMenu();
 });
 
 // Lock the wallet and destroy traces of the mk
@@ -85,19 +88,19 @@ $("#lock").click(function() {
             accounts: encryptJson(accounts_json, mk)
         });
     }
-    $("#back_forgot_settings").attr("id","back_forgot");
+    $("#back_forgot_settings").attr("id", "back_forgot");
     mk = null;
     showUnlock();
 });
 
-$("#settings").click(function(){
-  $("#settings_div").show();
-  $("#main").hide();
+$("#settings").click(function() {
+    $("#settings_div").show();
+    $("#main").hide();
 });
 
-$("#about").click(function(){
-  $("#about_div").show();
-  $("#settings_div").hide();
+$("#about").click(function() {
+    $("#about_div").show();
+    $("#settings_div").hide();
 });
 
 // Show forgot password
@@ -152,27 +155,27 @@ $("#forgot_div button").click(function() {
 
 $("#back_forgot").click(function() {
     $("#forgot_div").hide();
-    if($(this).attr("id")=="back_forgot_settings")
-      $("#settings_div").show();
+    if ($(this).attr("id") == "back_forgot_settings")
+        $("#settings_div").show();
     else
-      $("#unlock").show();
+        $("#unlock").show();
 });
 
-$("#add_key_div .back_enabled").click(function(){
-  $("#add_key_div").hide();
-  $("#manage_keys").show();
-  $(".error_div").hide();
+$("#add_key_div .back_enabled").click(function() {
+    $("#add_key_div").hide();
+    $("#manage_keys").show();
+    $(".error_div").hide();
 });
 
-$(".back_pref").click(function(){
+$(".back_pref").click(function() {
     $(".settings_child").hide();
     $("#settings_div").show();
-    manageKey=false;
-    getPref=false;
+    manageKey = false;
+    getPref = false;
 });
 
-$("#manage").click(function(){
-    manageKey=true;
+$("#manage").click(function() {
+    manageKey = true;
     $("#manage_keys").show();
     $("#settings_div").hide();
     manageKeys($(".usernames .select-selected").eq(1).html());
@@ -213,37 +216,34 @@ $(".input_img_right_eye").click(function() {
 $(".back_menu").click(function() {
     initializeMainMenu();
 });
-$("#change_pwd").click(function(){
-  $("#settings_div").hide();
-  $("#change_password").show();
+$("#change_pwd").click(function() {
+    $("#settings_div").hide();
+    $("#change_password").show();
 });
 
-$("#confirm_change_pwd").click(function(){
-    if(mk===$("#old_pwd").val()){
-      if($("#new_pwd").val()===$("#confirm_new_pwd").val()){
-        if(!$("#new_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)){
-          mk=$("#new_pwd").val();
-          updateAccount();
-          chrome.runtime.sendMessage({
-              command: "sendMk",
-              mk: mk
-          }, function(response) {});
-          $("#settings_div").show();
-          $("#change_password").hide();
-          $(".error_div").hide();
-        }
-          else showError("Please use a stronger password!");
-      }
-        else showError("The new passwords do not match!");
-    }
-    else
-      showError("Wrong current password");
+$("#confirm_change_pwd").click(function() {
+    if (mk === $("#old_pwd").val()) {
+        if ($("#new_pwd").val() === $("#confirm_new_pwd").val()) {
+            if (!$("#new_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)) {
+                mk = $("#new_pwd").val();
+                updateAccount();
+                chrome.runtime.sendMessage({
+                    command: "sendMk",
+                    mk: mk
+                }, function(response) {});
+                $("#settings_div").show();
+                $("#change_password").hide();
+                $(".error_div").hide();
+            } else showError("Please use a stronger password!");
+        } else showError("The new passwords do not match!");
+    } else
+        showError("Wrong current password");
 });
 
-$("#preferences").click(function(){
+$("#preferences").click(function() {
     $("#pref_div").show();
     $("#settings_div").hide();
-    getPref=true;
+    getPref = true;
     setPreferences($(".select-selected").eq(2).html());
 });
 // Adding accounts. Private keys can be entered individually or by the mean of the
@@ -317,10 +317,10 @@ $(".back_add_key").click(function() {
     $("#add_account_div").show();
 });
 
-$("#clear").click(function(){
+$("#clear").click(function() {
     $("#settings_div").hide();
     $("#forgot_div").show();
-    $("#back_forgot").attr("id","back_forgot_settings");
+    $("#back_forgot").attr("id", "back_forgot_settings");
 });
 
 // If master key was entered, handle which keys to save.
@@ -389,19 +389,23 @@ function initializeMainMenu() {
     $("#send_div").hide();
     $("#settings_div").hide();
     $("#add_account_div .back_enabled").removeClass("back_disabled");
-    manageKey=false;
-    getPref=false;
-    chrome.storage.local.get(['accounts','last_account'], function(items) {
+    manageKey = false;
+    getPref = false;
+    chrome.storage.local.get(['accounts', 'last_account'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
-        if (accounts_json != null&&accounts_json.list.length!=0) {
+        if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
             $("#main").show();
-            if(items.last_account!=undefined&&items.last_account!=null){
-              let last=accounts_json.list.filter(function(o,i){return o.name==items.last_account;});
-              accounts_json.list=accounts_json.list.filter(function(o,i){return o.name!=items.last_account;});
-              accounts_json.list.unshift(last[0]);
+            if (items.last_account != undefined && items.last_account != null) {
+                let last = accounts_json.list.filter(function(o, i) {
+                    return o.name == items.last_account;
+                });
+                accounts_json.list = accounts_json.list.filter(function(o, i) {
+                    return o.name != items.last_account;
+                });
+                accounts_json.list.unshift(last[0]);
             }
             $(".usernames").html("<select></select>");
             for (account of accounts_json.list) {
@@ -423,25 +427,25 @@ function setPreferences(name) {
         try {
             const pref = JSON.parse(items.no_confirm);
             $("#pref").html("");
-            if (pref[name]==undefined||pref[name]==null||Object.keys(pref[name]).length == 0)
+            if (pref[name] == undefined || pref[name] == null || Object.keys(pref[name]).length == 0)
                 $("#pref").html("No preferences");
             for (let obj in pref[name]) {
-								$("#pref").append("<h4>Website: " + obj + "</h4>");
+                $("#pref").append("<h4>Website: " + obj + "</h4>");
 
-								var display_names = {
-									'custom': 'Custom Transaction',
-									'decode': 'Verify Key',
-									'post': 'Post',
-									'vote': 'Vote'
-								}
+                var display_names = {
+                    'custom': 'Custom Transaction',
+                    'decode': 'Verify Key',
+                    'post': 'Post',
+                    'vote': 'Vote'
+                }
 
-								var site_container = $('<div class="preferences-site-container"></div>');
+                var site_container = $('<div class="preferences-site-container"></div>');
 
                 for (let sub in pref[name][obj]) {
-									site_container.append("<div><div class='pref_name'>" + display_names[sub] + "</div><img id='" + name + "," + obj + "," + sub + "' class='deletePref' src='../images/delete.png'/></div>");
-								}
+                    site_container.append("<div><div class='pref_name'>" + display_names[sub] + "</div><img id='" + name + "," + obj + "," + sub + "' class='deletePref' src='../images/delete.png'/></div>");
+                }
 
-								$("#pref").append(site_container);
+                $("#pref").append(site_container);
             }
 
             $(".deletePref").click(function() {
@@ -463,129 +467,129 @@ function setPreferences(name) {
 
 // Display Add Copy or delete individual keys
 function manageKeys(name) {
-  let index=-1;
-  let account = accounts_json.list.filter(function(obj, i) {
-    if(obj.name === name){
-      index = i;
-      return obj;
-    }
-  })[0];
-        const keys = account.keys;
-        $(".public_key").html("");
-        $(".private_key").html("");
-        for (keyName in keys) {
-            if (keyName.includes("posting")) {
-              $(".img_add_key").eq(0).hide();
-              $(".remove_key").eq(0).show();
-              if(keyName.includes("Pubkey"))
+    let index = -1;
+    let account = accounts_json.list.filter(function(obj, i) {
+        if (obj.name === name) {
+            index = i;
+            return obj;
+        }
+    })[0];
+    const keys = account.keys;
+    $(".public_key").html("");
+    $(".private_key").html("");
+    for (keyName in keys) {
+        if (keyName.includes("posting")) {
+            $(".img_add_key").eq(0).hide();
+            $(".remove_key").eq(0).show();
+            if (keyName.includes("Pubkey"))
                 $(".public_key").eq(0).html(account.keys[keyName]);
-              else
+            else
                 $(".private_key").eq(0).html(account.keys[keyName]);
-            } else if (keyName.includes("active")) {
-              $(".img_add_key").eq(1).hide();
-              $(".remove_key").eq(1).show();
-              if(keyName.includes("Pubkey"))
+        } else if (keyName.includes("active")) {
+            $(".img_add_key").eq(1).hide();
+            $(".remove_key").eq(1).show();
+            if (keyName.includes("Pubkey"))
                 $(".public_key").eq(1).html(account.keys[keyName]);
-              else
+            else
                 $(".private_key").eq(1).html(account.keys[keyName]);
-            } else if (keyName.includes("memo")) {
-              $(".remove_key").eq(2).show();
-              $(".img_add_key").eq(2).hide();
-              if(keyName.includes("Pubkey"))
+        } else if (keyName.includes("memo")) {
+            $(".remove_key").eq(2).show();
+            $(".img_add_key").eq(2).hide();
+            if (keyName.includes("Pubkey"))
                 $(".public_key").eq(2).html(account.keys[keyName]);
-              else
+            else
                 $(".private_key").eq(2).html(account.keys[keyName]);
-            }
         }
-        if($(".private_key").eq(0).html()===""){
-            $(".img_add_key").eq(0).show();
-            $(".remove_key").eq(0).hide();
-        }
-        if($(".private_key").eq(1).html()===""){
-          $(".img_add_key").eq(1).show();
-          $(".remove_key").eq(1).hide();
-        }
-        if($(".private_key").eq(2).html()===""){
-          $(".img_add_key").eq(2).show();
-          $(".remove_key").eq(2).hide();
-        }
-        let timeout=null;
-        $(".private_key, .public_key").click(function() {
-            if(timeout!=null)
-              clearTimeout(timeout);
-            $("#copied").hide();
-            $("#fake_input").val($(this).html());
-            $("#fake_input").select();
-            document.execCommand("copy");
-            $("#copied").slideDown(600);
-            timeout=setTimeout(function(){$("#copied").slideUp(600);},6000);
-        });
+    }
+    if ($(".private_key").eq(0).html() === "") {
+        $(".img_add_key").eq(0).show();
+        $(".remove_key").eq(0).hide();
+    }
+    if ($(".private_key").eq(1).html() === "") {
+        $(".img_add_key").eq(1).show();
+        $(".remove_key").eq(1).hide();
+    }
+    if ($(".private_key").eq(2).html() === "") {
+        $(".img_add_key").eq(2).show();
+        $(".remove_key").eq(2).hide();
+    }
+    let timeout = null;
+    $(".private_key, .public_key").click(function() {
+        if (timeout != null)
+            clearTimeout(timeout);
+        $("#copied").hide();
+        $("#fake_input").val($(this).html());
+        $("#fake_input").select();
+        document.execCommand("copy");
+        $("#copied").slideDown(600);
+        timeout = setTimeout(function() {
+            $("#copied").slideUp(600);
+        }, 6000);
+    });
 
-        $(".remove_key").unbind("click").click(function() {
-            delete accounts_json.list[index].keys[$(this).attr("id")];
-            delete accounts_json.list[index].keys[$(this).attr("id") + "Pubkey"];
-            if (Object.keys(accounts_json.list[index].keys).length==0)
-            {
-                deleteAccount(index);
-                $(".settings_child").hide();
-                $("#settings_div").show();
-            }
-            else {
-                updateAccount();
-                manageKeys(name);
-            }
-
-        });
-        // Delete account and all its keys
-        $("#delete_account").unbind("click").click(function() {
+    $(".remove_key").unbind("click").click(function() {
+        delete accounts_json.list[index].keys[$(this).attr("id")];
+        delete accounts_json.list[index].keys[$(this).attr("id") + "Pubkey"];
+        if (Object.keys(accounts_json.list[index].keys).length == 0) {
             deleteAccount(index);
-        });
-        $(".img_add_key").unbind("click").click(function() {
-            $("#manage_keys").hide();
-            $("#add_key_div").show();
-        });
+            $(".settings_child").hide();
+            $("#settings_div").show();
+        } else {
+            updateAccount();
+            manageKeys(name);
+        }
 
-        // Try to add the new key
-        $('#add_new_key').unbind("click").click(function() {
-            const keys = accounts_json.list[index].keys;
-            const pwd = $("#new_key").val();
-            if (steem.auth.isWif(pwd)) {
-                steem.api.getAccounts([name], function(err, result) {
-                    if (result.length != 0) {
-                        const pub_active = result["0"].active.key_auths["0"]["0"];
-                        const pub_posting = result["0"].posting.key_auths["0"]["0"];
-                        const pub_memo = result["0"].memo_key;
-                        if (isMemoWif(pwd, pub_memo)) {
-                            if (keys.hasOwnProperty("memo"))
-                                showError("You already entered your memo key!");
-                            else
-                                addKeys(index, "memo", pwd, pub_memo,name);
-                        } else if (isPostingWif(pwd, pub_posting)) {
-                            if (keys.hasOwnProperty("posting"))
-                                showError("You already entered your posting key!");
-                            else
-                                addKeys(index, "posting", pwd, pub_posting,name);
-                        } else if (isActiveWif(pwd, pub_active)) {
-                            if (keys.hasOwnProperty("active"))
-                                showError("You already entered your active key!");
-                            else
-                                addKeys(index, "active", pwd, pub_active,name);
-                        } else
-                            showError("This is not one of your keys!");
-                    }
-                });
-            } else
-                showError("Not a private WIF!");
-        });
+    });
+    // Delete account and all its keys
+    $("#delete_account").unbind("click").click(function() {
+        deleteAccount(index);
+    });
+    $(".img_add_key").unbind("click").click(function() {
+        $("#manage_keys").hide();
+        $("#add_key_div").show();
+    });
+
+    // Try to add the new key
+    $('#add_new_key').unbind("click").click(function() {
+        const keys = accounts_json.list[index].keys;
+        const pwd = $("#new_key").val();
+        if (steem.auth.isWif(pwd)) {
+            steem.api.getAccounts([name], function(err, result) {
+                if (result.length != 0) {
+                    const pub_active = result["0"].active.key_auths["0"]["0"];
+                    const pub_posting = result["0"].posting.key_auths["0"]["0"];
+                    const pub_memo = result["0"].memo_key;
+                    if (isMemoWif(pwd, pub_memo)) {
+                        if (keys.hasOwnProperty("memo"))
+                            showError("You already entered your memo key!");
+                        else
+                            addKeys(index, "memo", pwd, pub_memo, name);
+                    } else if (isPostingWif(pwd, pub_posting)) {
+                        if (keys.hasOwnProperty("posting"))
+                            showError("You already entered your posting key!");
+                        else
+                            addKeys(index, "posting", pwd, pub_posting, name);
+                    } else if (isActiveWif(pwd, pub_active)) {
+                        if (keys.hasOwnProperty("active"))
+                            showError("You already entered your active key!");
+                        else
+                            addKeys(index, "active", pwd, pub_active, name);
+                    } else
+                        showError("This is not one of your keys!");
+                }
+            });
+        } else
+            showError("Not a private WIF!");
+    });
 }
 // Show add a new key
 $('#add_key').click(function() {
     $('#add_key_div').show();
 });
 
-function showError(message){
-  $(".error_div").html(message);
-  $(".error_div").show();
+function showError(message) {
+    $(".error_div").html(message);
+    $(".error_div").show();
 }
 $("#account_value_header").click(function() {
     $('#main').hide();
@@ -598,7 +602,7 @@ $("#autolock").click(function() {
 });
 
 // Add the new keys to the display and the encrypted storage
-function addKeys(i, key, priv, pub,name) {
+function addKeys(i, key, priv, pub, name) {
     accounts_json.list[i].keys[key] = priv;
     accounts_json.list[i].keys[key + "Pubkey"] = pub;
     updateAccount();
@@ -609,12 +613,12 @@ function addKeys(i, key, priv, pub,name) {
     $("#manage_keys").show();
 }
 
-$("#send").click(function(){
+$("#send").click(function() {
     $("#send_div").show();
     $("#main").hide();
 });
 
-$("#history").click(function(){
+$("#history").click(function() {
     $("#acc_transfers").show();
     $("#main").hide();
 });
@@ -627,32 +631,37 @@ $("#send_transfer").click(function() {
 
 // Witness Votes
 $("#witness_toggle").click(function() {
-  $("#witness_votes").animate({ top: ($("#witness_votes").css('top') == '555px') ? 505 : 555 }, 500);
+    $("#witness_votes").animate({
+        top: ($("#witness_votes").css('top') == '555px') ? 505 : 555
+    }, 500);
 });
 
-function voteFor(name){
-  if(active_account.keys.hasOwnProperty("active")){
-    $('#' + name + ' img').attr('src', '../images/loading.gif');
+function voteFor(name) {
+    if (active_account.keys.hasOwnProperty("active")) {
+        $('#' + name + ' img').attr('src', '../images/loading.gif');
 
-    steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
-      if(err==null){
-        setTimeout(function() {
-          if($(".witness_container:visible").length==0)
-            $("#witness_votes").animate({ opacity: 0 }, 500, function() { $("#witness_votes").hide(); });
-        }, 1000);
+        steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, name, true, function(err, result) {
+            if (err == null) {
+                setTimeout(function() {
+                    if ($(".witness_container:visible").length == 0)
+                        $("#witness_votes").animate({
+                            opacity: 0
+                        }, 500, function() {
+                            $("#witness_votes").hide();
+                        });
+                }, 1000);
 
-        $('#' + name + ' img').attr('src', '../images/icon_witness-vote.svg');
-      }
-    });
-  }
-  else {
-      $("#witness_votes").hide();
-      $("#main").hide();
-      $("#add_key_div").show();
-      manageKey=true;
-      manageKeys($(".usernames .select-selected").eq(0).html());
-      showError("Please enter your active key to vote for witnesses!");
-  }
+                $('#' + name + ' img').attr('src', '../images/icon_witness-vote.svg');
+            }
+        });
+    } else {
+        $("#witness_votes").hide();
+        $("#main").hide();
+        $("#add_key_div").show();
+        manageKey = true;
+        manageKeys($(".usernames .select-selected").eq(0).html());
+        showError("Please enter your active key to vote for witnesses!");
+    }
 }
 
 function sendTransfer() {
@@ -662,22 +671,20 @@ function sendTransfer() {
     const memo = $("#memo_send").val();
     if (to != "" && amount != "" && amount >= 0.001) {
         steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
-          $("#send_loader").hide();
-            if (err == null){
+            $("#send_loader").hide();
+            if (err == null) {
                 $(".error_div").hide();
                 $(".success_div").html("Transfer successful!").show();
-            }
-            else {
+            } else {
                 $(".success_div").hide();
                 $(".error_div").html("Something went wrong! Please try again!").show();
             }
             $("#send_transfer").show();
         });
-    }
-    else {
-      $(".error_div").html("Please fill the fields!").show();
-      $("#send_loader").hide();
-      $("#send_transfer").show();
+    } else {
+        $(".error_div").html("Please fill the fields!").show();
+        $("#send_loader").hide();
+        $("#send_transfer").show();
     }
 }
 
@@ -743,8 +750,8 @@ function showAccountInfo(account, that) {
     $(".account_info").show();
 }
 
-$("#add_new_account").click(function(){
-  showAddAccount();
+$("#add_new_account").click(function() {
+    showAddAccount();
 });
 
 function showAddAccount() {
@@ -758,10 +765,10 @@ function initiateCustomSelect() {
     x = document.getElementsByClassName("custom-select");
 
     for (i = 0; i < x.length; i++) {
-        if(i==3&&custom_created)
-          return;
-        if(i==3&&!custom_created)
-          custom_created=true;
+        if (i == 3 && custom_created)
+            return;
+        if (i == 3 && !custom_created)
+            custom_created = true;
         selElmnt = x[i].getElementsByTagName("select")[0];
 
         /*for each element, create a new DIV that will act as the selected item:*/
@@ -800,8 +807,8 @@ function initiateCustomSelect() {
             b.appendChild(c);
         }
         x[i].appendChild(b);
-        if(i==0)
-          loadAccount(a.innerHTML);
+        if (i == 0)
+            loadAccount(a.innerHTML);
         a.addEventListener("click", function(e) {
             /*when the select box is clicked, close any other select boxes,
             and open/close the current select box:*/
@@ -811,21 +818,21 @@ function initiateCustomSelect() {
             this.classList.toggle("select-arrow-active");
             if (this.innerHTML.includes("Add New Account")) {
                 showAddAccount();
-            } else if (!getPref&&!manageKey&&!this.classList.contains("select-arrow-active")&&this.innerHTML!="SBD"&&this.innerHTML!="STEEM") {
+            } else if (!getPref && !manageKey && !this.classList.contains("select-arrow-active") && this.innerHTML != "SBD" && this.innerHTML != "STEEM") {
                 chrome.storage.local.set({
                     last_account: this.innerHTML
                 });
                 loadAccount(this.innerHTML);
-            } else if(this.innerHTML=="SBD"){
-              $(".transfer_balance div").eq(0).text('SBD Balance');
-              $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
-            } else if(this.innerHTML=="STEEM"){
-              $(".transfer_balance div").eq(0).text('STEEM Balance');
-              $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
-            } else if(manageKey) {
-              manageKeys(this.innerHTML);
-            } else if(getPref){
-              setPreferences(this.innerHTML);
+            } else if (this.innerHTML == "SBD") {
+                $(".transfer_balance div").eq(0).text('SBD Balance');
+                $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+            } else if (this.innerHTML == "STEEM") {
+                $(".transfer_balance div").eq(0).text('STEEM Balance');
+                $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+            } else if (manageKey) {
+                manageKeys(this.innerHTML);
+            } else if (getPref) {
+                setPreferences(this.innerHTML);
             }
         });
     }
@@ -858,85 +865,97 @@ function loadAccount(name) {
     let account = accounts_json.list.filter(function(obj, i) {
         return obj.name === name;
     })[0];
-    if(account!=null&&account!=undefined){
-      active_account=account;
-      $("#send").toggle(account.keys.hasOwnProperty("active"));
-      $(".wallet_infos").html("...");
-      $("#voting_power span").eq(0).html("Voting Power: ...");
-      $("#voting_power span").eq(1).html("Vote Value: ...");
-      steem.api.getAccounts([account.name], function(err, result) {
-          if (result.length != 0) {
-              $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
-              if (totalSteem != null)
-                  showUserData(result);
-              else
-                  Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
-                  .then(function(values) {
-                      votePowerReserveRate = values["0"].vote_power_reserve_rate;
-                      totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
-                      totalVests = Number(values["0"].total_vesting_shares.split(' ')[0]);
-                      rewardBalance = parseFloat(values["2"].reward_balance.replace(" STEEM", ""));
-                      recentClaims = values["2"].recent_claims;
-                      steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
-                      dynamicProp = values[0];
-                      priceSBD = values["3"];
-                      priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
-                      priceBTC = values["5"];
-                      showUserData(result);
-                  });
+    if (account != null && account != undefined) {
+        active_account = account;
+        $("#send").toggle(account.keys.hasOwnProperty("active"));
+        $(".wallet_infos").html("...");
+        $("#voting_power span").eq(0).html("Voting Power: ...");
+        $("#voting_power span").eq(1).html("Vote Value: ...");
+        steem.api.getAccounts([account.name], function(err, result) {
+            if (result.length != 0) {
+                $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
+                if (totalSteem != null)
+                    showUserData(result);
+                else
+                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
+                    .then(function(values) {
+                        votePowerReserveRate = values["0"].vote_power_reserve_rate;
+                        totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
+                        totalVests = Number(values["0"].total_vesting_shares.split(' ')[0]);
+                        rewardBalance = parseFloat(values["2"].reward_balance.replace(" STEEM", ""));
+                        recentClaims = values["2"].recent_claims;
+                        steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
+                        dynamicProp = values[0];
+                        priceSBD = values["3"];
+                        priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
+                        priceBTC = values["5"];
+                        showUserData(result);
+                    });
 
-              if(!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {
-                $('#stoodkev img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("stoodkev") ? '' : '_default') + '.svg');
-                $('#yabapmatt img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("yabapmatt") ? '' : '_default') + '.svg');
-                $('#aggroed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("aggroed") ? '' : '_default') + '.svg');
+                if (!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {
+                    $('#stoodkev img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("stoodkev") ? '' : '_default') + '.svg');
+                    $('#yabapmatt img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("yabapmatt") ? '' : '_default') + '.svg');
+                    $('#aggroed img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("aggroed") ? '' : '_default') + '.svg');
 
-                if(!result[0].witness_votes.includes("yabapmatt"))
-                  $("#yabapmatt").click(function() { voteFor("yabapmatt"); });
+                    if (!result[0].witness_votes.includes("yabapmatt"))
+                        $("#yabapmatt").click(function() {
+                            voteFor("yabapmatt");
+                        });
 
-                if(!result[0].witness_votes.includes("stoodkev"))
-                  $("#stoodkev").click(function() { voteFor("stoodkev"); });
+                    if (!result[0].witness_votes.includes("stoodkev"))
+                        $("#stoodkev").click(function() {
+                            voteFor("stoodkev");
+                        });
 
-                if(!result[0].witness_votes.includes("aggroed"))
-                  $("#aggroed").click(function() { voteFor("aggroed"); });
+                    if (!result[0].witness_votes.includes("aggroed"))
+                        $("#aggroed").click(function() {
+                            voteFor("aggroed");
+                        });
 
-                  setTimeout(function(){
-                      $("#witness_votes").show();
-                      $("#witness_votes").animate({ opacity: 1 }, 500);
-                  },2000);
-              } else {
-                $("#witness_votes").animate({ opacity: 0 }, 500, function() { $("#witness_votes").hide(); });
-              }
-          }
-    });
-    steem.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
-        $("#acc_transfers div").eq(1).empty();
-        if (result != null) {
-            let transfers = result.filter(tx => tx[1].op[0] === 'transfer');
-            transfers = transfers.slice(-10).reverse();
-            if (transfers.length != 0) {
-                for (transfer of transfers) {
-                    let memo = transfer[1].op[1].memo;
-                    let timestamp=transfer[1].timestamp;
-                    let date=new Date(timestamp);
-                    timestamp=(date.getMonth() + 1) + '/' + date.getDate() + '/' +  date.getFullYear();
-                    if (memo[0] == "#") {
-                        if (active_account.keys.hasOwnProperty("memo"))
-                            memo = window.decodeMemo(active_account.keys.memo, memo);
-                        else
-                            memo = "Add your private memo key to read this memo";
-                    }
-                    $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date'>"+timestamp+"</span><span class='transfer_val'>" + (transfer[1].op[1].from == active_account.name ? "-": "+")+" "+transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from)
-                    +"</span><span class='transfer_cur'>"+transfer[1].op[1].amount.split(" ")[1]+"</span><div class='memo'>" + memo + "</div></div>");
+                    setTimeout(function() {
+                        $("#witness_votes").show();
+                        $("#witness_votes").animate({
+                            opacity: 1
+                        }, 500);
+                    }, 2000);
+                } else {
+                    $("#witness_votes").animate({
+                        opacity: 0
+                    }, 500, function() {
+                        $("#witness_votes").hide();
+                    });
                 }
-                $(".transfer_row").click(function() {
-                    $(".memo").eq(($(this).index())).slideToggle();
-                });
+            }
+        });
+        steem.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
+            $("#acc_transfers div").eq(1).empty();
+            if (result != null) {
+                let transfers = result.filter(tx => tx[1].op[0] === 'transfer');
+                transfers = transfers.slice(-10).reverse();
+                if (transfers.length != 0) {
+                    for (transfer of transfers) {
+                        let memo = transfer[1].op[1].memo;
+                        let timestamp = transfer[1].timestamp;
+                        let date = new Date(timestamp);
+                        timestamp = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+                        if (memo[0] == "#") {
+                            if (active_account.keys.hasOwnProperty("memo"))
+                                memo = window.decodeMemo(active_account.keys.memo, memo);
+                            else
+                                memo = "Add your private memo key to read this memo";
+                        }
+                        $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date'>" + timestamp + "</span><span class='transfer_val'>" + (transfer[1].op[1].from == active_account.name ? "-" : "+") + " " + transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from) +
+                            "</span><span class='transfer_cur'>" + transfer[1].op[1].amount.split(" ")[1] + "</span><div class='memo'>" + memo + "</div></div>");
+                    }
+                    $(".transfer_row").click(function() {
+                        $(".memo").eq(($(this).index())).slideToggle();
+                    });
+                } else
+                    $("#acc_transfers div").eq(1).append("No recent transfers");
             } else
-                $("#acc_transfers div").eq(1).append("No recent transfers");
-        } else
-            $("#acc_transfers div").eq(1).append("Something went wrong! Please try again later!");
-    });
-  }
+                $("#acc_transfers div").eq(1).append("Something went wrong! Please try again later!");
+        });
+    }
 }
 
 function showUserData(result) {

@@ -10,7 +10,7 @@ html {
     margin: 0 !important;
     padding: 0 !important;
     background-image: linear-gradient(328deg, #3df9b4, #00d3cc, #a779ff) !important;
-    background-repeat:no-repeat;
+    background-repeat: no-repeat;
     background-attachment: fixed;
     top: 0;
     left: 0;
@@ -41,8 +41,8 @@ body {
 }
 
 .logo-white {
-		height: 60px;
-		opacity: 0.8;
+    height: 60px;
+    opacity: 0.8;
 }
 
 #register,
@@ -207,7 +207,16 @@ input:focus {
     margin-bottom: 12.57px;
 }
 
-#change_password button:hover,#submit_master_pwd:hover,#submit_unlock:hover, #check_add_account:hover,#save_master:hover,#save_autolock:hover,#send:hover,#history:hover, #forgot_div button:hover, #add_new_key:hover {
+#change_password button:hover,
+#submit_master_pwd:hover,
+#submit_unlock:hover,
+#check_add_account:hover,
+#save_master:hover,
+#save_autolock:hover,
+#send:hover,
+#history:hover,
+#forgot_div button:hover,
+#add_new_key:hover {
     background-color: #917FC6;
     border: solid 1px #917FC6;
 }
@@ -218,7 +227,7 @@ input:focus {
 }
 
 #confirm_change_pwd {
-  margin-top: 40px;
+    margin-top: 40px;
 }
 
 #forgot {
@@ -261,7 +270,8 @@ input:focus {
     content: none;
 }
 
-.error_div, .success_div {
+.error_div,
+.success_div {
     display: none;
     position: absolute;
     background-color: rgba(201, 53, 53, 0.74);
@@ -278,7 +288,7 @@ input:focus {
 }
 
 .success_div {
-  background-color: rgba(0, 156, 156, 0.74);
+    background-color: rgba(0, 156, 156, 0.74);
 }
 
 #forgot_div,
@@ -305,8 +315,14 @@ input:focus {
     margin-top: 22px;
 }
 
-.red { color:red; }
-.green { color:green; }
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
 .key_checkbox {
     display: block;
     height: 32px;
@@ -392,9 +408,9 @@ input:focus {
 
 .main_header img.icon {
     height: 40px;
-		float: left;
-		margin-top: -5px;
-		opacity: 0.8;
+    float: left;
+    margin-top: -5px;
+    opacity: 0.8;
 }
 
 .main_header span {
@@ -412,7 +428,7 @@ input:focus {
 }
 
 #lock {
-	float: left;
+    float: left;
     margin-right: 19.8px;
     margin-left: 168.29px;
 }
@@ -482,8 +498,8 @@ input:focus {
     padding: 9px 0px 8px 65px;
     border: 1px solid transparent;
     /*border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;*/
-		cursor: pointer;
-		border-radius: 3px;
+    cursor: pointer;
+    border-radius: 3px;
 }
 
 /*style items (options):*/
@@ -533,17 +549,19 @@ input:focus {
     /*height: 100% !important;*/
     margin-top: 0px;
     background-color: rgba(33, 172, 204, 0.75);
-    height:48px;
+    height: 48px;
     margin-bottom: 1px;
 }
 
-#currency_send .select-items div::before, #currency_send .select-selected::before {
+#currency_send .select-items div::before,
+#currency_send .select-selected::before {
     content: none;
     padding: 0;
 }
 
-#currency_send .select-items div, #currency_send .select-selected {
-  padding-left: 10px !important;
+#currency_send .select-items div,
+#currency_send .select-selected {
+    padding-left: 10px !important;
 }
 
 
@@ -610,7 +628,7 @@ input:focus {
     font-size: 16px;
     text-align: center;
     width: 100%;
-    pointer-events:none;
+    pointer-events: none;
 }
 
 #account_value_header::after {
@@ -623,7 +641,7 @@ input:focus {
     width: 12.25px;
     vertical-align: 8%;
     margin-left: 7px;
-    pointer-events:auto;
+    pointer-events: auto;
     cursor: pointer;
 }
 
@@ -661,26 +679,26 @@ input:focus {
 }
 
 #recipient {
-  padding-left: 65px !important;
+    padding-left: 65px !important;
 }
 
 .transfer_balance {
-  margin: 25px -32px 25px -32px;
-  padding: 18px 0px 15.21px 0px;
-  background-color: rgba(0, 156, 156,0.4);
-  box-sizing: border-box;
-  text-align: center;
+    margin: 25px -32px 25px -32px;
+    padding: 18px 0px 15.21px 0px;
+    background-color: rgba(0, 156, 156, 0.4);
+    box-sizing: border-box;
+    text-align: center;
 }
 
 .transfer_balance div:first-of-type {
-  margin-bottom: 12px;
-  font-size: 16px;
-  line-height: 22px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    line-height: 22px;
 }
 
 .transfer_balance div:last-of-type {
-  font-size: 20px;
-  line-height: 28px;
+    font-size: 20px;
+    line-height: 28px;
 }
 
 .memo {
@@ -693,6 +711,7 @@ input:focus {
     margin-right: 7px;
     text-align: right;
 }
+
 #send_transfer {
     display: block;
     padding: 0 20px 0 20px;
@@ -705,99 +724,108 @@ input:focus {
 
 #acc_transfers {
     width: 100%;
-    height: 100%;;
+    height: 100%;
+    ;
 }
 
-#transfer_rows{
-  height: 460px;
-  overflow-y: scroll;
-  margin-left:  -32px;
-  margin-right:  -32px;
-  box-sizing: border-box;
-  font-size: 16px;
-  line-height: 22px;
+#transfer_rows {
+    height: 460px;
+    overflow-y: scroll;
+    margin-left: -32px;
+    margin-right: -32px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 22px;
 }
 
 .memo {
-  margin-top: 6px;
-  font-style: italic;
+    margin-top: 6px;
+    font-style: italic;
 }
+
 ::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
+    width: 0px;
+    /* remove scrollbar space */
+    background: transparent;
+    /* optional: just make scrollbar invisible */
 }
+
 /* optional: show position indicator in red */
+
 ::-webkit-scrollbar-thumb {
     background: #FF0000;
 }
 
 
 .transfer_row {
-  padding:11px 32px 11px 32px;
+    padding: 11px 32px 11px 32px;
 }
 
 .transfer_row:nth-child(odd) {
-  background-color: rgba(0, 156, 156,0.4);
+    background-color: rgba(0, 156, 156, 0.4);
 }
 
 .transfer_row:nth-child(even) {
-  background-color: rgba(0, 156, 156,0.8);
+    background-color: rgba(0, 156, 156, 0.8);
 }
 
 .transfer_row span {
-  display: inline-block;
+    display: inline-block;
 }
 
 .transfer_row span:nth-child(odd) {
-  width: 186px;
+    width: 186px;
 }
 
-.transfer_date, .transfer_val {
-  margin-bottom: 6px;
+.transfer_date,
+.transfer_val {
+    margin-bottom: 6px;
 }
 
 .transfer_row span:nth-child(even) {
-  width: 100px;
-  text-align: right;
+    width: 100px;
+    text-align: right;
 }
 
 #settings_div {
-  display: none;
-  width: 100%;
+    display: none;
+    width: 100%;
 }
 
 .setting_row {
-  display: flex;
-  align-items: center;
-  height:60px;
-  width: 100%;
-  margin:0px -32px 0px -32px;
-  padding: 0 32px 0 32px;
-  vertical-align: middle;
-  cursor:pointer;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    width: 100%;
+    margin: 0px -32px 0px -32px;
+    padding: 0 32px 0 32px;
+    vertical-align: middle;
+    cursor: pointer;
 }
 
 #settings_div div:first-of-type {
-  margin-bottom: 46px;
+    margin-bottom: 46px;
 }
 
 .setting_row img {
-  height:20.6px;
-  margin-right: 35.8px;
+    height: 20.6px;
+    margin-right: 35.8px;
 }
 
 .setting_row span {
-  display: inline-block;
-  margin-top: 0px;
-  font-size: 16px;
+    display: inline-block;
+    margin-top: 0px;
+    font-size: 16px;
 }
 
-.setting_row:nth-child(odd), .keys_info:nth-child(odd) {
-  background-color: rgba(0, 156, 156,0.8);
+.setting_row:nth-child(odd),
+.keys_info:nth-child(odd) {
+    background-color: rgba(0, 156, 156, 0.8);
 }
 
-.setting_row:nth-child(even), .keys_info:nth-child(even)  {
-  background-color: rgba(0, 156, 156,0.4);
+.setting_row:nth-child(even),
+.keys_info:nth-child(even) {
+    background-color: rgba(0, 156, 156, 0.4);
 }
 
 #about_div div:first-of-type {
@@ -805,14 +833,14 @@ input:focus {
 }
 
 #about_div .about-content {
-	background-color: rgba(0, 156, 156,0.8);
-	padding: 20px 40px;
-	position: absolute;
-	left: 0;
+    background-color: rgba(0, 156, 156, 0.8);
+    padding: 20px 40px;
+    position: absolute;
+    left: 0;
 }
 
 #about_div .about-content a {
-	color: white;
+    color: white;
 }
 
 #manage_keys .back_pref {
@@ -820,62 +848,66 @@ input:focus {
 }
 
 #manage_keys .usernames {
-  margin-bottom: 24.6px;
+    margin-bottom: 24.6px;
 }
 
 .keys_info {
-  position: relative;
-  min-height: 80px;
-  margin:0px -32px 0px -32px;
-  padding: 11px 32px 10px 32px;
-  box-sizing: border-box;
+    position: relative;
+    min-height: 80px;
+    margin: 0px -32px 0px -32px;
+    padding: 11px 32px 10px 32px;
+    box-sizing: border-box;
 }
 
 .keys_info div {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-size: 10px;
-  line-height: 10px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 10px;
+    line-height: 10px;
 }
+
 .keys_info span {
-  font-size: 16px;
-  line-height: 16px;
+    font-size: 16px;
+    line-height: 16px;
 }
+
 .keys_info span:first-of-type {
-  width:186px;
-  float: left;
-  display: inline-block;
+    width: 186px;
+    float: left;
+    display: inline-block;
 }
+
 .remove_key {
-  cursor: pointer;
-  display: inline-block;
-  width: 100px;;
-  color:#c93535;
-  text-align: right;
+    cursor: pointer;
+    display: inline-block;
+    width: 100px;
+    ;
+    color: #c93535;
+    text-align: right;
 }
 
 .private_key {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  cursor: pointer;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
 }
 
 .public_key {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .img_add_key {
-  display: none;
-  position: absolute;
-  top: 0;
-  width: 270px;
-  height: 100%;
-  padding-right: 32px;
-  background-image: url('../images/plus_key.png');
-  background-repeat: no-repeat;
-  background-size: 32px 32px;
-  background-position: center center;
-  cursor: pointer;
+    display: none;
+    position: absolute;
+    top: 0;
+    width: 270px;
+    height: 100%;
+    padding-right: 32px;
+    background-image: url('../images/plus_key.png');
+    background-repeat: no-repeat;
+    background-size: 32px 32px;
+    background-position: center center;
+    cursor: pointer;
 }
 
 #delete_account {
@@ -883,24 +915,24 @@ input:focus {
     background-color: #8e0000;
 }
 
-#estimation_info div:first-of-type{
+#estimation_info div:first-of-type {
     margin-bottom: 46px;
 }
 
 #copied {
-  width: 100%;
-  height:34px;
-  background-color: black;
-  color:#88f7fb;
-  padding: 0px 32px 0 32px;
-  font-size: 16px;
-  line-height: 22px;
-  display: flex;
-  align-items:  center;
-  justify-content: center;
+    width: 100%;
+    height: 34px;
+    background-color: black;
+    color: #88f7fb;
+    padding: 0px 32px 0 32px;
+    font-size: 16px;
+    line-height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-#copied div::before{
+#copied div::before {
     content: "";
     display: inline-block;
     height: 10.6px;
@@ -911,64 +943,64 @@ input:focus {
     padding-right: 25px;
 }
 
-#copied div{
-  width: 100%;
+#copied div {
+    width: 100%;
 }
 
 #fake_input {
-  position: absolute;
-        left: -9999px;
+    position: absolute;
+    left: -9999px;
 }
 
 #add_key_div p {
-  display: inline-block;
-  margin-top: 40px;
-  margin-bottom: 50px;
+    display: inline-block;
+    margin-top: 40px;
+    margin-bottom: 50px;
 }
 
 #add_key_div input {
-  padding-left: 65px;
+    padding-left: 65px;
 }
 
 .deletePref {
-  display: inline-block;
-  width: 16px;
-	height: 16px;
-	cursor: pointer;
-	margin-top: 4px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin-top: 4px;
 }
 
 .preferences-site-container {
-	padding: 5px 10px;
+    padding: 5px 10px;
 }
 
-#pref{
-  max-height: 240px;
-  overflow: auto;
-  background-color: rgba(0, 156, 156,0.8);
-  margin: 0 -32px 0 -32px;
-  padding: 10px 32px;
+#pref {
+    max-height: 240px;
+    overflow: auto;
+    background-color: rgba(0, 156, 156, 0.8);
+    margin: 0 -32px 0 -32px;
+    padding: 10px 32px;
 }
 
 
 #pref h4 {
-	margin: 5px 0;
+    margin: 5px 0;
 }
 
 .pref_name {
-  width:150px;
-  display: inline-block;
-  float: left;
+    width: 150px;
+    display: inline-block;
+    float: left;
 }
 
 #pref_div .back_pref {
-  margin-bottom: 40px;
+    margin-bottom: 40px;
 }
 
 #witness_votes {
     display: block;
     height: 114px;
-    background-color: rgba(0, 96, 96,0.9);
+    background-color: rgba(0, 96, 96, 0.9);
     position: absolute;
     bottom: 0;
     z-index: 4;
@@ -984,31 +1016,32 @@ input:focus {
 }
 
 #witness_toggle {
-  cursor: pointer;
-  padding: 0 20px;
+    cursor: pointer;
+    padding: 0 20px;
 }
 
 .witness_container {
-  position: relative;
-  display: inline-block;
-  width: 108px;
-  margin-top: 10px;
+    position: relative;
+    display: inline-block;
+    width: 108px;
+    margin-top: 10px;
 }
-.witness_container button{
+
+.witness_container button {
     width: 107px;
     height: 32px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     background-color: white;
-    color:#1E8CA7;
+    color: #1E8CA7;
     font-size: 12px;
     outline: inherit;
     padding-left: 28px;
     text-align: left;
 }
 
-.witness_container button:hover{
+.witness_container button:hover {
     background-color: white !important;
 }
 
@@ -1022,38 +1055,38 @@ input:focus {
 }
 
 #close_witness {
-  width: 20px;
-  cursor: pointer;
-  height: 20px;
-  position: absolute;
-  top:12px;
-  right:12px;
+    width: 20px;
+    cursor: pointer;
+    height: 20px;
+    position: absolute;
+    top: 12px;
+    right: 12px;
 }
 
 .loader {
-  text-align: center;
+    text-align: center;
 }
 
 .loader img {
-  width: 30px;
+    width: 30px;
 }
 
 #pref_div .info {
-  background-color: rgba(0, 156, 156, 0.4);
-  display: flex;
-  align-items: center;
-  height: 60px;
-  width: 100%;
-  margin: 20px -32px 0px -32px;
-  padding: 10px 32px 10px 32px;
-  vertical-align: middle;
+    background-color: rgba(0, 156, 156, 0.4);
+    display: flex;
+    align-items: center;
+    height: 60px;
+    width: 100%;
+    margin: 20px -32px 0px -32px;
+    padding: 10px 32px 10px 32px;
+    vertical-align: middle;
 }
 
 #autolock_div .back_pref {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
 
 #mn {
-  margin-top: 10px;
-  margin-bottom: 50px;
+    margin-top: 10px;
+    margin-bottom: 50px;
 }

@@ -1,13 +1,13 @@
 // Content script interfacing the website and the extension
-function setupInjection () {
-  try {
-    var scriptTag = document.createElement('script')
-    scriptTag.src = chrome.runtime.getURL("js/steem_keychain.js");
-    var container = document.head || document.documentElement
-    container.insertBefore(scriptTag, container.children[0])
-  } catch (e) {
-    console.error('Steem Keychain injection failed.', e)
-  }
+function setupInjection() {
+    try {
+        var scriptTag = document.createElement('script')
+        scriptTag.src = chrome.runtime.getURL("js/steem_keychain.js");
+        var container = document.head || document.documentElement
+        container.insertBefore(scriptTag, container.children[0])
+    } catch (e) {
+        console.error('Steem Keychain injection failed.', e)
+    }
 }
 setupInjection();
 
@@ -18,15 +18,15 @@ document.addEventListener('swHandshake', function(request) {
 
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
-		var req = request.detail;
+    var req = request.detail;
 
     // If all information are filled, send the request to the background, if not notify an error
     if (validate(req)) {
         chrome.runtime.sendMessage({
             command: "sendRequest",
             request: req,
-						domain: window.location.hostname,
-						request_id: req.request_id
+            domain: window.location.hostname,
+            request_id: req.request_id
         }, function(response) {});
     } else {
         var response = {
@@ -34,8 +34,8 @@ document.addEventListener('swRequest', function(request) {
             error: "incomplete",
             result: null,
             message: "Incomplete data or wrong format",
-						data: req,
-						request_id: req.request_id
+            data: req,
+            request_id: req.request_id
         };
         sendResponse(response);
     }
@@ -53,11 +53,11 @@ function sendResponse(response) {
 }
 
 function validate(req) {
-	return req != null && req != undefined && req.type != undefined && req.type != null && ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
-				(req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
-				(req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) ||
-				(req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
-				(req.type == "transfer"&& isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))));
+    return req != null && req != undefined && req.type != undefined && req.type != null && ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
+        (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
+        (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) ||
+            (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
+            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))));
 }
 
 

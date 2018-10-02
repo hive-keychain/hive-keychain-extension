@@ -17,7 +17,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                         tab: msg.tab,
                         mk: $("#unlock-dialog").val(),
                         domain: msg.domain,
-												request_id: msg.request_id
+                        request_id: msg.request_id
                     });
                 });
                 $('#unlock-dialog').keypress(function(e) {
@@ -32,7 +32,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             $("#modal-body-msg").hide();
             $(".modal-body-error").show();
             $(".dialog-message").hide();
-            $("#error-ok").click(function() { window.close(); });
+            $("#error-ok").click(function() {
+                window.close();
+            });
         }
     } else if (msg.command == "wrongMk") {
         $("#error-mk").html("Wrong password!");
@@ -40,43 +42,45 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         // Display confirmation window
         $("#confirm_footer").show();
         $('#modal-body-msg').show();
-				var type = msg.data.type;
+        var type = msg.data.type;
 
-				var titles = {
-					'custom': 'Custom Transaction',
-					'decode': 'Verify Key',
-					'post': 'Post',
-					'vote': 'Vote',
-					'transfer': 'Transfer'
-				};
-				var title = titles[type];
-				$("#dialog_header").html(title);
+        var titles = {
+            'custom': 'Custom Transaction',
+            'decode': 'Verify Key',
+            'post': 'Post',
+            'vote': 'Vote',
+            'transfer': 'Transfer'
+        };
+        var title = titles[type];
+        $("#dialog_header").html(title);
 
-				if(msg.data.display_msg) {
-					$('#modal-body-msg .msg-data').css('max-height', '245px');
-					$("#dialog_message").show();
-					$("#dialog_message").html(msg.data.display_msg);
-				}
+        if (msg.data.display_msg) {
+            $('#modal-body-msg .msg-data').css('max-height', '245px');
+            $("#dialog_message").show();
+            $("#dialog_message").html(msg.data.display_msg);
+        }
 
-        if(type=="transfer"){
-					$('#modal-body-msg .msg-data').css('max-height', '200px');
-          let accounts=msg.accounts;
-          console.log(accounts,msg.data);
-          if(msg.data.username!==undefined){
-            let  i=msg.accounts.findIndex(function(elt){return elt.name==msg.data.username;});
+        if (type == "transfer") {
+            $('#modal-body-msg .msg-data').css('max-height', '200px');
+            let accounts = msg.accounts;
+            console.log(accounts, msg.data);
+            if (msg.data.username !== undefined) {
+                let i = msg.accounts.findIndex(function(elt) {
+                    return elt.name == msg.data.username;
+                });
 
-            let first=[accounts[i]];
-            delete accounts[i];
-            console.log(first,accounts);
-            accounts=first.concat(accounts);
+                let first = [accounts[i]];
+                delete accounts[i];
+                console.log(first, accounts);
+                accounts = first.concat(accounts);
 
-            console.log(accounts);
-          }
-          for (acc of accounts){
-            if(acc!=undefined)
-              $("#select_transfer").append("<option>"+acc.name+"</option>");
-          }
-          initiateCustomSelect();
+                console.log(accounts);
+            }
+            for (acc of accounts) {
+                if (acc != undefined)
+                    $("#select_transfer").append("<option>" + acc.name + "</option>");
+            }
+            initiateCustomSelect();
         }
         var message = "";
         $("." + type).show();
@@ -84,30 +88,29 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#username").html("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
         if (type != "transfer") {
-						$("#keep_div").show();
-						var prompt_msg = (msg.data.type == 'decode') ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain
-						 : "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
+            $("#keep_div").show();
+            var prompt_msg = (msg.data.type == 'decode') ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
+                "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
             $("#keep_label").text(prompt_msg);
-        }
-        else {
-          $(".keep_checkbox").css("display","none");
+        } else {
+            $(".keep_checkbox").css("display", "none");
         }
         switch (type) {
             case "decode":
-								$("#wif").html(msg.data.method);
-								$('#modal-body-msg').css('max-height', '235px');
-								$("#dialog_message").show();
-								$("#dialog_message").html('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
+                $("#wif").html(msg.data.method);
+                $('#modal-body-msg').css('max-height', '235px');
+                $("#dialog_message").show();
+                $("#dialog_message").html('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
                 break;
             case "vote":
                 $("#weight").html(msg.data.weight / 100 + " %");
                 $("#author").html('@' + msg.data.author);
                 $("#perm").html(msg.data.permlink);
                 break;
-						case "custom":
-								$("#custom_data").click(function() {
-									$("#custom_json").slideToggle();
-								});
+            case "custom":
+                $("#custom_data").click(function() {
+                    $("#custom_json").slideToggle();
+                });
                 $("#custom_json").html(msg.data.id + '<br/>' + msg.data.json);
                 $("#custom_key").html(msg.data.method);
                 break;
@@ -132,10 +135,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
         // Closes the window and launch the transaction in background
         $("#proceed").click(function() {
-            let data=msg.data;
-            if(data.type=="transfer")
-              data.username=$("#select_transfer option:selected").val();
-              console.log(data);
+            let data = msg.data;
+            if (data.type == "transfer")
+                data.username = $("#select_transfer option:selected").val();
+            console.log(data);
             chrome.runtime.sendMessage({
                 command: "acceptTransaction",
                 data: data,
@@ -143,13 +146,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 domain: msg.domain,
                 keep: $("#keep").is(':checked')
             });
-            if(type == 'decode')
-              window.close();
+            if (type == 'decode')
+                window.close();
             else {
-              $("#confirm_footer").hide();
-              $("#modal-body-msg").hide();
-              $(".dialog-message").hide();
-              $('#tx_loading').show();
+                $("#confirm_footer").hide();
+                $("#modal-body-msg").hide();
+                $(".dialog-message").hide();
+                $('#tx_loading').show();
             }
         });
 
@@ -157,13 +160,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#cancel").click(function() {
             window.close();
         });
-    }
-    else if(msg.command=="answerRequest"){
+    } else if (msg.command == "answerRequest") {
         $('#tx_loading').hide();
         $("#dialog_header").html((msg.msg.success == true) ? "Success!" : "Error!");
         $("#error_dialog").html(msg.msg.message);
         $(".modal-body-error").show();
-        $("#error-ok").click(function() { window.close(); });
+        $("#error-ok").click(function() {
+            window.close();
+        });
     }
 });
 

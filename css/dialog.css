@@ -5,14 +5,14 @@
 }
 
 html {
-    width:350px;
-    height:566px ;
+    width: 350px;
+    height: 566px;
     overflow: hidden;
     border-radius: 1px;
     margin: 0 !important;
     padding: 0 !important;
     background-image: linear-gradient(328deg, #3df9b4, #00d3cc, #a779ff) !important;
-    background-repeat:no-repeat;
+    background-repeat: no-repeat;
     background-attachment: fixed;
     top: 0;
     left: 0;
@@ -68,45 +68,45 @@ h2 {
 }
 
 h2::before {
-  content: "";
-  width: 41.21px;
-	height: 30px;
-	opacity: 0.8;
-  background-image: url("../images/keychain_icon2.png");
-  background-repeat: no-repeat;
-  background-size: 41.21px 30px;
-  padding-right: 60px;
-  vertical-align: 0%;
-  background-size: contain;
+    content: "";
+    width: 41.21px;
+    height: 30px;
+    opacity: 0.8;
+    background-image: url("../images/keychain_icon2.png");
+    background-repeat: no-repeat;
+    background-size: 41.21px 30px;
+    padding-right: 60px;
+    vertical-align: 0%;
+    background-size: contain;
 }
 
 h3.dialog-message {
-	text-align: center;
-	margin-top: 0;
-	margin-bottom: 10px;
-	background-color: rgba(0, 156, 156,0.4);
-	padding: 5px 0 10px 0;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 10px;
+    background-color: rgba(0, 156, 156, 0.4);
+    padding: 5px 0 10px 0;
 }
 
 h3 .small {
-	text-transform: none;
-	font-size: 80%;
-	cursor: pointer;
+    text-transform: none;
+    font-size: 80%;
+    cursor: pointer;
 }
 
 #modal-body-msg .msg-data>div,
 #modal-body-msg .msg-data>h3,
-#transfer_acct_list  {
+#transfer_acct_list {
     display: none;
 }
 
 #error_dialog {
-  margin-bottom: 40px;
+    margin-bottom: 40px;
 }
 
 .modal-body-error {
-  width: 100%;
-  box-sizing: border-box;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .input_container {
@@ -154,45 +154,47 @@ button {
 }
 
 #yes-unlock {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .unlock {
     display: none;
 }
 
-#modal-body-msg {
-  
-}
+#modal-body-msg {}
 
 #modal-body-msg .msg-data {
-	max-height: 285px;
-	overflow-y: scroll;
-	background-color: rgba(0, 156, 156,0.8);
-	padding: 10px;
+    max-height: 285px;
+    overflow-y: scroll;
+    background-color: rgba(0, 156, 156, 0.8);
+    padding: 10px;
 }
 
 ::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
+    width: 0px;
+    /* remove scrollbar space */
+    background: transparent;
+    /* optional: just make scrollbar invisible */
 }
+
 /* optional: show position indicator in red */
+
 ::-webkit-scrollbar-thumb {
     background: #FF0000;
 }
 
 #modal-body-msg h3 {
-  font-size: 16px;
-  line-height: 16px;
-  text-transform: uppercase;
-  margin: 0 0 5px 0;
+    font-size: 16px;
+    line-height: 16px;
+    text-transform: uppercase;
+    margin: 0 0 5px 0;
 }
 
 #modal-body-msg .msg-data div {
-  font-size: 16px;
-  line-height: 16px;
-  font-style: italic;
-  margin-bottom: 20px;
+    font-size: 16px;
+    line-height: 16px;
+    font-style: italic;
+    margin-bottom: 20px;
 }
 
 .keep_checkbox {
@@ -275,42 +277,42 @@ button {
 }
 
 #confirm_footer {
-    display: none ;
+    display: none;
     width: 100%;
     height: 169px;
     position: absolute;
     box-sizing: border-box;
-    bottom:0;
-    background-color: rgba(0, 156, 156,0.8);
+    bottom: 0;
+    background-color: rgba(0, 156, 156, 0.8);
     margin-left: -32px;
     padding: 10px 32px 0 32px;
 }
 
 #confirm_footer button {
-width: 138px;
+    width: 138px;
 }
 
 #confirm_footer button:first-of-type {
-  margin-right: 6px;
-  background-color: #006060;
+    margin-right: 6px;
+    background-color: #006060;
 }
 
 #proceed:hover {
-  background-color: #917FC6;
+    background-color: #917FC6;
 }
 
 #keep_label {
-  font-size: 16px;
-  line-height: 16px;
-  text-transform: none;
+    font-size: 16px;
+    line-height: 16px;
+    text-transform: none;
 }
 
 #tx_loading {
-  text-align: center;
+    text-align: center;
 }
 
 #tx_loading img {
-  width: 50px;
+    width: 50px;
 }
 
 
@@ -370,8 +372,8 @@ width: 138px;
     padding: 9px 0px 8px 20px;
     border: 1px solid transparent;
     /*border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;*/
-		cursor: pointer;
-		border-radius: 3px;
+    cursor: pointer;
+    border-radius: 3px;
 }
 
 /*style items (options):*/
@@ -386,8 +388,8 @@ width: 138px;
     z-index: 99;
 }
 
-.select-items div{
-  margin-bottom: 0;
+.select-items div {
+    margin-bottom: 0;
 }
 
 
