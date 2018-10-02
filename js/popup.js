@@ -11,11 +11,22 @@ steem.api.setOptions({
 $("#copied").hide();
 $("#witness_votes").hide();
 
+
 // Ask background if it is unlocked
 chrome.runtime.sendMessage({
     command: "getMk"
 });
 
+// Check if autolock and set it to background
+chrome.storage.local.get(['autolock'], function(items) {
+  if(items!=undefined){
+    $(".autolock input").prop("checked",false);
+    $("#"+JSON.parse(items.autolock).type).prop("checked",true);
+    $("#mn").val(JSON.parse(items.autolock).mn);
+    setAutolock(items.autolock);
+    $("#mn").css('visibility', JSON.parse(items.autolock).type=="idle"?'visible':'hidden');
+  }
+});
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
@@ -32,6 +43,32 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             }
         });
     }
+});
+
+// Send new autolock to background;
+
+function setAutolock(autolock){
+  chrome.runtime.sendMessage({
+      command: "sendAutolock",
+      autolock: autolock
+  });
+}
+
+// Save autolock
+$(".autolock").click(function(){
+  $(".autolock input").prop("checked",false);
+  $(this).find("input").prop("checked","true");
+  $("#mn").css('visibility', $(this).find("input").attr("id")=="idle"?'visible':'hidden');
+
+});
+
+$("#save_autolock").click(function(){
+  const autolock=JSON.stringify({"type":$(".autolock input:checkbox:checked").eq(0).attr("id")||"default","mn":$("#mn").val()||10});
+  chrome.storage.local.set({
+      autolock: autolock
+  });
+  setAutolock(autolock);
+  initializeMainMenu();
 });
 
 // Lock the wallet and destroy traces of the mk
@@ -328,6 +365,7 @@ function initializeMainMenu() {
     $(".error_div").hide();
     $(".success_div").hide();
     $("#master_check").hide();
+    $("#autolock_div").hide();
     $("#username").val("");
     $("#pwd").val("");
     $("#acc_transfers").hide();
@@ -552,6 +590,11 @@ function showError(message){
 $("#account_value_header").click(function() {
     $('#main').hide();
     $("#estimation_info").show();
+});
+
+$("#autolock").click(function() {
+    $('#settings_div').hide();
+    $("#autolock_div").show();
 });
 
 // Add the new keys to the display and the encrypted storage

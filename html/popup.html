@@ -160,6 +160,10 @@
         <img src="../images/plus.png"  />
         <span>Add Account</span>
       </div>
+      <div class="setting_row" id="autolock">
+        <img src="../images/password.png"  />
+        <span>Auto Lock</span>
+      </div>
       <div class="setting_row" id="about">
         <img src="../images/info.png"  />
         <span>About Steem Keychain</span>
@@ -168,11 +172,41 @@
         <img src="../images/clear.png"  />
         <span>Clear All Data</span>
       </div>
-
+    </div>
+    <div id="autolock_div" class="settings_child">
+      <div class="back_enabled back_pref">Autolock</div>
+      <div class="key_checkbox autolock">
+        <label for="default" class="checkbox_container">
+          <div>Default</div>
+          <div>Lock the wallet manually or by closing the browser.</div>
+          <input type="checkbox" checked=true id="default"/>
+          <span class="checkmark"/>
+        </label>
+      </div>
+      <div class="key_checkbox autolock">
+        <label for="locked" class="checkbox_container">
+          <div>Locked</div>
+          <div>Auto-lock when the computer locks.</div>
+          <input type="checkbox"  id="locked"/>
+          <span class="checkmark"/>
+        </label>
+      </div>
+      <div class="key_checkbox autolock">
+        <label for="idle" class="checkbox_container">
+          <div>Idle</div>
+          <div>Auto-lock after x minutes.</div>
+          <input type="checkbox" id="idle"/>
+          <span class="checkmark"/>
+        </label>
+      </div>
+      <div class="input_container">
+          <input type="number" id="mn"placeholder="10"></input>
+      </div>
+      <button id="save_autolock">Save</button>
     </div>
     <div id="about_div" class="settings_child">
         <div class="back_enabled back_pref">About</div>
-        <div class="about-content">The overall idea and concept for the Steem Keychain browser extension was created by <a href="https://steemit.com/@yabapmatt" target="_blank">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href="https://steemit.com/@stoodkev" target="_blank">@stoodkev</a> who is also a Steem developer and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Steem Monsters, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href="https://steemmonsters.com" target="_blank">steemmonsters.com</a>!</div>
+        <div class="about-content">The overall idea and concept for the Steem Keychain browser extension was created by <a href="https://steemit.com/@yabapmatt" target="_blank">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href="https://steemit.com/@stoodkev" target="_blank">@stoodkev</a> who is also a Steem developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Steem Monsters, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href="https://steemmonsters.com" target="_blank">steemmonsters.com</a>!</div>
     </div>
     <div id="manage_keys"class="settings_child">
       <div class="back_enabled back_pref">Manage Accounts</div>

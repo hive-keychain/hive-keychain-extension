@@ -6,7 +6,7 @@ let tab=null;
 let request=null;
 let request_id = null;
 let accounts=null;
-const LOCK_AFTER_SECONDS_IDLE=10*60;
+const LOCK_AFTER_SECONDS_IDLE=15;
 // Lock after the browser is idle for more than 10 minutes
 
 //chrome.storage.local.remove("no_confirm");
@@ -14,17 +14,6 @@ steem.api.setOptions({
     url: 'https://api.steemit.com'
 });
 
-
-// Lock if the browser goes isDisabled
-chrome.idle.setDetectionInterval(LOCK_AFTER_SECONDS_IDLE);
-
-chrome.idle.onStateChanged.addListener(
-    function (state) {
-        if (state === "idle" || state==="locked"){
-          mk=null;
-        }
-    }
-);
 //Listen to the other parts of the extension
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     // Send mk upon request from the extension popup.
@@ -35,6 +24,19 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }, function(response) {});
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
+		}else if (msg.command == "sendAutolock") { //Receive autolock from the popup (upon registration or unlocking)
+        autolock = JSON.parse(msg.autolock);
+        console.log(autolock);
+        if(autolock.type=="default")
+          return;
+        chrome.idle.setDetectionInterval(autolock.mn*60);
+        chrome.idle.onStateChanged.addListener(
+            function (state) {
+                if ((autolock.type=="idle"&&state === "idle") || state==="locked"){
+                  mk=null;
+                }
+            }
+        );
 		} else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
         chrome.tabs.query({
             active: true,

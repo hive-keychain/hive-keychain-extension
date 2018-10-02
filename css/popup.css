@@ -146,7 +146,8 @@ input:focus {
 #add_account_div input,
 #send_div input,
 #add_key_div input,
-#change_password input {
+#change_password input,
+#autolock_div input {
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
@@ -161,13 +162,15 @@ input:focus {
 
 #unlock input,
 #add_account_div input,
-#change_password input {
+#change_password input,
+#autolock_div input {
     padding-left: 65px;
 }
 
 #register input::placeholder,
 #unlock input::placeholder,
-#add_account_div input::placeholder {
+#add_account_div input::placeholder,
+#autolock_div input::placeholder {
     color: #72B7C1;
     text-transform: uppercase;
     font-family: Futura;
@@ -184,7 +187,8 @@ input:focus {
 #main button,
 #delete_account,
 #add_key_div button,
-#change_password button {
+#change_password button,
+#autolock_div button {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -203,7 +207,7 @@ input:focus {
     margin-bottom: 12.57px;
 }
 
-#change_password button:hover,#submit_master_pwd:hover,#submit_unlock:hover, #check_add_account:hover,#save_master:hover,#send:hover,#history:hover, #forgot_div button:hover, #add_new_key:hover {
+#change_password button:hover,#submit_master_pwd:hover,#submit_unlock:hover, #check_add_account:hover,#save_master:hover,#save_autolock:hover,#send:hover,#history:hover, #forgot_div button:hover, #add_new_key:hover {
     background-color: #917FC6;
     border: solid 1px #917FC6;
 }
@@ -292,7 +296,8 @@ input:focus {
 .settings_child,
 #pref_div,
 #estimation_info,
-#change_password {
+#change_password,
+#autolock_div {
     display: none;
 }
 
@@ -1042,4 +1047,13 @@ input:focus {
   margin: 20px -32px 0px -32px;
   padding: 10px 32px 10px 32px;
   vertical-align: middle;
+}
+
+#autolock_div .back_pref {
+  margin-bottom: 60px;
+}
+
+#mn {
+  margin-top: 10px;
+  margin-bottom: 50px;
 }
