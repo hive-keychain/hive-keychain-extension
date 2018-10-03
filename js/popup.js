@@ -871,9 +871,10 @@ function loadAccount(name) {
         $(".wallet_infos").html("...");
         $("#voting_power span").eq(0).html("Voting Power: ...");
         $("#voting_power span").eq(1).html("Vote Value: ...");
-        steem.api.getAccounts([account.name], function(err, result) {
+        steem.api.getAccounts([account.name], async function(err, result) {
             if (result.length != 0) {
-                $("#voting_power span").eq(0).html("Voting Power: " + (getVotingPower(result[0]) == 10000 ? 100 : getVotingPower(result[0]) / 100).toFixed(2) + "%");
+                const vm= await getVotingMana(result[0]);
+                $("#voting_power span").eq(0).html("Voting Power: " + vm + "%");
                 if (totalSteem != null)
                     showUserData(result);
                 else
@@ -958,42 +959,14 @@ function loadAccount(name) {
     }
 }
 
-function showUserData(result) {
+async function showUserData(result) {
     showBalances(result, dynamicProp);
+    const vd =await getVotingDollarsPerAccount(100, result["0"],rewardBalance, recentClaims, steemPrice, votePowerReserveRate, false);
+    console.log(vd);
     $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
-    $("#voting_power span").eq(1).html("Vote Value: $ " + getVotingDollarsPerAccount(100, result["0"]));
+    $("#voting_power span").eq(1).html("Vote Value: $ " + vd);
     $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)))
 }
-
-function getVotingPower(account) {
-    const voting_power = account.voting_power;
-    const last_vote_time = new Date((account.last_vote_time) + 'Z');
-    const elapsed_seconds = (new Date() - last_vote_time) / 1000;
-    const regenerated_power = Math.round((10000 * elapsed_seconds) / STEEMIT_VOTE_REGENERATION_SECONDS);
-    const current_power = Math.min(voting_power + regenerated_power, 10000);
-    return current_power;
-};
-
-function getVotingDollarsPerAccount(voteWeight, account) {
-    const effective_vesting_shares = Math.round(getEffectiveVestingSharesPerAccount(account) * 1000000);
-    const weight = voteWeight * 100;
-    const current_power = getVotingPower(account);
-    const max_vote_denom = votePowerReserveRate * STEEMIT_VOTE_REGENERATION_SECONDS / (60 * 60 * 24);
-    let used_power = Math.round((current_power * weight) / 10000);
-    used_power = Math.round((used_power + max_vote_denom - 1) / max_vote_denom);
-    const rshares = Math.round((effective_vesting_shares * used_power) / (10000))
-    const voteValue = rshares *
-        rewardBalance / recentClaims *
-        steemPrice;
-    return voteValue.toFixed(3);
-}
-
-function getEffectiveVestingSharesPerAccount(account) {
-    const effective_vesting_shares = parseFloat(account.vesting_shares.replace(" VESTS", "")) +
-        parseFloat(account.received_vesting_shares.replace(" VESTS", "")) -
-        parseFloat(account.delegated_vesting_shares.replace(" VESTS", ""));
-    return effective_vesting_shares;
-};
 
 function showBalances(result, res) {
     sbd = result["0"].sbd_balance.replace("SBD", "");
@@ -1006,61 +979,4 @@ function showBalances(result, res) {
     $("#wallet_amt div").eq(1).html(numberWithCommas(sbd));
     $("#wallet_amt div").eq(2).html(numberWithCommas(sp.toFixed(3)));
     $("#balance_loader").hide();
-}
-
-function getPriceSteemAsync() {
-    return new Promise(function(resolve, reject) {
-        $.ajax({
-            type: "GET",
-            beforeSend: function(xhttp) {
-                xhttp.setRequestHeader("Content-type", "application/json");
-                xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
-            },
-            url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM',
-            success: function(response) {
-                resolve(response.result['Bid']);
-            },
-            error: function(msg) {
-                resolve(msg);
-            }
-        });
-    });
-}
-
-function getBTCPriceAsync() {
-    return new Promise(function(resolve, reject) {
-        $.ajax({
-            type: "GET",
-            beforeSend: function(xhttp) {
-                xhttp.setRequestHeader("Content-type", "application/json");
-                xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
-            },
-            url: 'https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC',
-            success: function(response) {
-                resolve(response.result['Bid']);
-            },
-            error: function(msg) {
-                resolve(msg);
-            }
-        });
-    });
-}
-
-function getPriceSBDAsync() {
-    return new Promise(function(resolve, reject) {
-        $.ajax({
-            type: "GET",
-            beforeSend: function(xhttp) {
-                xhttp.setRequestHeader("Content-type", "application/json");
-                xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
-            },
-            url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-SBD',
-            success: function(response) {
-                resolve(response.result['Bid']);
-            },
-            error: function(msg) {
-                resolve(msg);
-            }
-        });
-    });
 }
