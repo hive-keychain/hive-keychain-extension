@@ -869,12 +869,14 @@ function loadAccount(name) {
         active_account = account;
         $("#send").toggle(account.keys.hasOwnProperty("active"));
         $(".wallet_infos").html("...");
-        $("#voting_power span").eq(0).html("Voting Power: ...");
-        $("#voting_power span").eq(1).html("Vote Value: ...");
+        $("#voting_power span").eq(0).html("VM: ...");
+        $("#voting_power span").eq(1).html("RC: ...");
         steem.api.getAccounts([account.name], async function(err, result) {
             if (result.length != 0) {
                 const vm= await getVotingMana(result[0]);
-                $("#voting_power span").eq(0).html("Voting Power: " + vm + "%");
+                $("#voting_power span").eq(0).html("VM: " + vm + "%");
+                $("#voting_power span").eq(0).attr("title","Full in: " + getTimeBeforeFull(vm*100));
+
                 if (totalSteem != null)
                     showUserData(result);
                 else
@@ -961,11 +963,18 @@ function loadAccount(name) {
 
 async function showUserData(result) {
     showBalances(result, dynamicProp);
-    const vd =await getVotingDollarsPerAccount(100, result["0"],rewardBalance, recentClaims, steemPrice, votePowerReserveRate, false);
-    console.log(vd);
+    const [vd,rc] = [await getVotingDollarsPerAccount(100, result["0"],rewardBalance, recentClaims, steemPrice, votePowerReserveRate, false),
+                  await getRC(result["0"].name)];
+    console.log(vd,rc);
     $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
-    $("#voting_power span").eq(1).html("Vote Value: $ " + vd);
-    $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)))
+    $("#voting_power span").eq(0).html($("#voting_power span").eq(0).html()+" ($"+vd+")");
+
+    $("#voting_power span").eq(1).html("RC: " + rc.estimated_pct+"%");
+    $("#voting_power span").eq(1).attr("title","Full in: " + rc.fullin);
+
+    $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)));
+
+    console.log(rc);
 }
 
 function showBalances(result, res) {
