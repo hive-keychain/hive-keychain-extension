@@ -73,6 +73,16 @@ var steem_keychain = {
         this.dispatchCustomEvent("swRequest", request, callback);
     },
 
+    requestDelegation: function(username, delegatee, sp, callback) {
+        var request = {
+            type: "delegation",
+            username: username,
+            delegatee: delegatee,
+            sp: sp
+        };
+        this.dispatchCustomEvent("swRequest", request, callback);
+    },
+
     // Send the customEvent
     dispatchCustomEvent: function(name, data, callback) {
         this.requests[this.current_id] = callback;

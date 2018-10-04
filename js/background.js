@@ -26,7 +26,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         mk = msg.mk;
     } else if (msg.command == "sendAutolock") { //Receive autolock from the popup (upon registration or unlocking)
         autolock = JSON.parse(msg.autolock);
-        console.log(autolock);
         if (autolock.type == "default")
             return;
         chrome.idle.setDetectionInterval(autolock.mn * 60);
@@ -78,8 +77,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         confirmed = true;
         performTransaction(msg.data, msg.tab);
         // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
-
-
     }
 });
 
@@ -101,6 +98,8 @@ function performTransaction(data, tab) {
                     };
                     chrome.tabs.sendMessage(tab, message);
                     chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
                 });
                 break;
             case "custom":
@@ -116,9 +115,10 @@ function performTransaction(data, tab) {
                             request_id: request_id
                         }
                     };
-                    console.log(tab,message);
                     chrome.tabs.sendMessage(tab, message);
                     chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
                 });
 
                 break;
@@ -127,9 +127,7 @@ function performTransaction(data, tab) {
                 let ac = accounts.list.find(function(e) {
                     return e.name == data.username
                 });
-                console.log(ac);
                 let key_transfer = ac.keys.active;
-                console.log(key_transfer, data.username, data.to, data.amount + " " + data.currency, data.memo);
                 steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, data.memo, function(err, result) {
                     const message = {
                         command: "answerRequest",
@@ -145,6 +143,8 @@ function performTransaction(data, tab) {
 
                     chrome.tabs.sendMessage(tab, message);
                     chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
                 });
                 break;
             case "post":
@@ -160,11 +160,39 @@ function performTransaction(data, tab) {
                             request_id: request_id
                         }
                     };
-
                     chrome.tabs.sendMessage(tab, message);
                     chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
                 });
                 break;
+            case "delegation":
+              steem.api.getDynamicGlobalPropertiesAsync().then((res)=>
+               {
+                   const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
+                   const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
+                   let delegated_vest = parseFloat(data.sp) * totalVests / totalSteem;
+                   delegated_vest=delegated_vest.toFixed(6);
+                   delegated_vest=delegated_vest.toString()+' VESTS';
+                steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
+                    const message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: error == null,
+                            error: error,
+                            result: result,
+                            data: data,
+                            message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                });
+              });
+              break;
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
@@ -180,9 +208,10 @@ function performTransaction(data, tab) {
                             request_id: request_id
                         }
                     };
-
                     chrome.tabs.sendMessage(tab, message);
                     chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
                 } catch (err) {
                     let message = {
                         command: "answerRequest",
@@ -195,14 +224,13 @@ function performTransaction(data, tab) {
                             request_id: request_id
                         }
                     };
-
                     chrome.tabs.sendMessage(tab, message);
                     chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
                 }
                 break;
         }
-        key = null;
-        accounts = null;
     } catch (e) {
         console.log(e);
         sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
@@ -289,7 +317,6 @@ function checkBeforeCreate(request, tab, domain) {
                 accounts = (items.accounts == undefined || items.accounts == {
                     list: []
                 }) ? null : decryptToJson(items.accounts, mk);
-
                 if (request.type == "transfer") {
                     let tr_accounts = accounts.list.filter(a => a.keys.hasOwnProperty("active"));
 
@@ -397,6 +424,9 @@ function getRequiredWifType(request) {
             return (request.method == null || request.method == undefined) ? "posting" : request.method.toLowerCase();
             break;
         case "transfer":
+            return "active";
+            break;
+        case "delegation":
             return "active";
             break;
     }

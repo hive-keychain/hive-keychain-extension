@@ -4,6 +4,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
         if (!msg.msg.success) {
 
+          $("#tx_loading").hide();
             if (msg.msg.error == "locked") {
                 $(".unlock").show();
                 $("#error-ok").hide();
@@ -49,7 +50,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'decode': 'Verify Key',
             'post': 'Post',
             'vote': 'Vote',
-            'transfer': 'Transfer'
+            'transfer': 'Transfer',
+            'delegation':'Delegation'
         };
         var title = titles[type];
         $("#dialog_header").html(title);
@@ -87,7 +89,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $(".modal-body-error").hide();
         $("#username").html("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
-        if (type != "transfer") {
+        if (type != "transfer" && type!= "delegation") {
             $("#keep_div").show();
             var prompt_msg = (msg.data.type == 'decode') ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
                 "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
@@ -130,6 +132,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#parent_username").html(msg.data.parent_username);
                 if (msg.data.parent_username == null || msg.data.parent_username == undefined)
                     $("#parent_username").hide();
+                break;
+            case "delegation":
+                $("#delegatee").html("@"+msg.data.delegatee);
+                $("#amt_sp").html(msg.data.sp+" SP");
                 break;
         }
 

@@ -27,7 +27,7 @@ document.addEventListener('swRequest', function(request) {
             request: req,
             domain: window.location.hostname,
             request_id: req.request_id
-        }, function(response) {});
+        });
     } else {
         var response = {
             success: false,
@@ -56,8 +56,9 @@ function validate(req) {
     return req != null && req != undefined && req.type != undefined && req.type != null && ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
         (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
         (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) ||
-            (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
-            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))));
+        (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
+        (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req.sp)) ||
+        (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency))));
 }
 
 
@@ -76,6 +77,10 @@ function isFilledJSON(obj) {
 
 function isFilledAmt(obj) {
     return isFilled(obj) && !isNaN(obj) && obj > 0 && countDecimals(obj) == 3;
+}
+
+function isFilledAmtSP(obj) {
+    return isFilled(obj) && !isNaN(obj)  && countDecimals(obj) == 3;
 }
 
 function isFilledWeight(obj) {
