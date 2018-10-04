@@ -19,7 +19,7 @@ chrome.runtime.sendMessage({
 
 // Check if autolock and set it to background
 chrome.storage.local.get(['autolock'], function(items) {
-    if (items != undefined) {
+    if (items.autolock != undefined) {
         $(".autolock input").prop("checked", false);
         $("#" + JSON.parse(items.autolock).type).prop("checked", true);
         $("#mn").val(JSON.parse(items.autolock).mn);
@@ -690,7 +690,7 @@ function sendTransfer() {
 
 // Delete account (and encrypt the rest)
 function deleteAccount(i) {
-    accounts_json.list.splice(i, 1);
+    delete accounts_json.list[i];
     chrome.storage.local.set({
         accounts: encryptJson(accounts_json, mk)
     }, function() {
