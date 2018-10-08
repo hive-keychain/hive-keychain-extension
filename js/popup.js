@@ -690,7 +690,17 @@ function sendTransfer() {
 
 // Delete account (and encrypt the rest)
 function deleteAccount(i) {
+    console.log(accounts_json);
     delete accounts_json.list[i];
+    console.log(accounts_json);
+    let newlist=[];
+    for(let acc of accounts_json.list){
+      if(acc!=undefined){
+        newlist.push(acc);
+      }
+    }
+    accounts_json.list=newlist;
+    console.log(accounts_json);
     chrome.storage.local.set({
         accounts: encryptJson(accounts_json, mk)
     }, function() {
