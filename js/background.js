@@ -148,6 +148,7 @@ function performTransaction(data, tab) {
                 });
                 break;
             case "post":
+              if(data.comment_options==""){
                 steem.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
                     const message = {
                         command: "answerRequest",
@@ -165,6 +166,43 @@ function performTransaction(data, tab) {
                     key = null;
                     accounts = null;
                 });
+              }
+              else {
+                const operations = [
+                			   ['comment',
+                			     {
+                			       parent_author: data.parent_username,
+                			       parent_permlink: data.parent_perm,
+                			       author: data.username,
+                			       permlink:data.permlink,
+                			       title: data.title,
+                			       body: data.body,
+                			       json_metadata : data.json_metadata
+                			     }
+                			   ],
+                				   ['comment_options',
+                           JSON.parse(data.comment_options)]
+                         ];
+                   steem.broadcast.send({ operations, extensions: [] },
+			              { posting: key }, function(err, result){
+                      const message = {
+                          command: "answerRequest",
+                          msg: {
+                              success: err == null,
+                              error: err,
+                              result: result,
+                              data: data,
+                              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                              request_id: request_id
+                          }
+                      };
+                      chrome.tabs.sendMessage(tab, message);
+                      chrome.runtime.sendMessage(message);
+                      key = null;
+                      accounts = null;
+                  });
+
+              }
                 break;
             case "delegation":
               steem.api.getDynamicGlobalPropertiesAsync().then((res)=>

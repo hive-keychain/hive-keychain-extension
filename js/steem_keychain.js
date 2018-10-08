@@ -19,8 +19,8 @@ var steem_keychain = {
 
         this.dispatchCustomEvent("swRequest", request, callback);
     },
-
-    requestPost: function(account, title, body, parent_perm, parent_account, json_metadata, permlink, callback) {
+    // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
+    requestPost: function(account, title, body, parent_perm, parent_account, json_metadata, permlink,comment_options, callback) {
         var request = {
             type: "post",
             username: account,
@@ -29,8 +29,10 @@ var steem_keychain = {
             parent_perm: parent_perm,
             parent_username: parent_account,
             json_metadata: json_metadata,
-            permlink: permlink
+            permlink: permlink,
+            comment_options:comment_options
         };
+        console.log(request);
 
         this.dispatchCustomEvent("swRequest", request, callback);
     },

@@ -124,14 +124,39 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                     $(".transfer_memo").show();
                 break;
             case "post":
+                $("#body_toggle").click(function() {
+                    $("#body").slideToggle();
+                });
+                $("#options_toggle").click(function() {
+                    $("#options").slideToggle();
+                });
                 $("#title").html(msg.data.title);
                 $("#permlink").html(msg.data.permlink);
                 $("#body").html(msg.data.body);
                 $("#json_metadata").html(msg.data.json_metadata);
                 $("#parent_url").html(msg.data.parent_perm);
                 $("#parent_username").html(msg.data.parent_username);
-                if (msg.data.parent_username == null || msg.data.parent_username == undefined)
+                if(msg.data.comment_options!=""){
+                  let options=JSON.parse(msg.data.comment_options);
+                  $("#max_payout").html(options.max_accepted_payout);
+                  $("#percent_sbd").html(options.percent_steem_dollars);
+                  $("#allow_votes").html(options.allow_votes);
+                  $("#allow_curation_rewards").html(options.allow_curation_rewards);
+                  let beneficiaries="";
+                  for (benef of options.extensions[0][1].beneficiaries){
+                    beneficiaries+="@"+benef.account+" ("+(benef.weight/100).toFixed(2)+"%) ";
+                  }
+                  if(beneficiaries!="")
+                    $("#beneficiaries").html(beneficiaries);
+                  else
+                    $("#beneficiaries_div").hide();
+                }
+                else $("#options_toggle").hide();
+                if (msg.data.parent_username == "" ||msg.data.parent_username == null || msg.data.parent_username == undefined){
                     $("#parent_username").hide();
+                    console.log("hideee");
+                    $("#parent_username_title").hide();
+                  }
                 break;
             case "delegation":
                 $("#delegatee").html("@"+msg.data.delegatee);

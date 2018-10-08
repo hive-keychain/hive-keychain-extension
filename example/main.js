@@ -17,7 +17,7 @@ $("#send_decode").click(function() {
 
 // Send post request
 $("#send_post").click(function() {
-    steem_keychain.requestPost($("#post_username").val(), $("#post_title").val(), $("#post_body").val(), $("#post_pp").val(), $("#post_pu").val(), $("#post_json").val(), $("#post_perm").val(), function(response) {
+    steem_keychain.requestPost($("#post_username").val(), $("#post_title").val(), $("#post_body").val(), $("#post_pp").val(), $("#post_pu").val(), $("#post_json").val(), $("#post_perm").val(), $("#comment_options").val(), function(response) {
         console.log('main js response - post');
         console.log(response);
     });
