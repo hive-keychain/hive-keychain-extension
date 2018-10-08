@@ -124,11 +124,11 @@ $("#submit_unlock").click(function() {
             $("#unlock_pwd").val("");
             initializeMainMenu();
         } else {
-            $(".error_div").html("Wrong password!");
-            $(".error_div").show();
+            showError("Wrong password!");
         }
     });
 });
+
 
 
 // Use "Enter" as confirmation button for unlocking and registration
@@ -192,12 +192,10 @@ $("#submit_master_pwd").click(function() {
             initializeMainMenu();
             $(".error_div").hide();
         } else {
-            $(".error_div").html("Your passwords do not match!");
-            $(".error_div").show();
+          showError("Your passwords do not match!");
         }
     } else {
-        $(".error_div").html("Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter, a digit, and a special character.");
-        $(".error_div").show();
+        showError("Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter, a digit, and a special character.");
     }
 });
 
@@ -257,8 +255,7 @@ $("#check_add_account").click(function() {
         if (accounts_json && accounts_json.list.find(function(element) {
                 return element.name == username
             })) {
-            $(".error_div").html("You already registered an account for @" + username + "!");
-            $(".error_div").show();
+            showError("You already registered an account for @" + username + "!");
         } else
             steem.api.getAccounts([username], function(err, result) {
                 if (result.length != 0) {
@@ -297,18 +294,15 @@ $("#check_add_account").click(function() {
                             $("#add_account_div").hide();
                             $("#master_check").show();
                         } else {
-                            $(".error_div").html("Incorrect private key or password.");
-                            $(".error_div").show();
+                            showError("Incorrect private key or password.");
                         }
                     }
                 } else {
-                    $(".error_div").html("Please check the username and try again.");
-                    $(".error_div").show();
+                    showError("Please check the username and try again.");
                 }
             });
     } else {
-        $(".error_div").html("Please fill the fields.");
-        $(".error_div").show();
+        showError("Please fill the fields.");
     }
 });
 
@@ -590,6 +584,9 @@ $('#add_key').click(function() {
 function showError(message) {
     $(".error_div").html(message);
     $(".error_div").show();
+    setTimeout(function(){
+      $(".error_div").hide();
+    },5000);
 }
 $("#account_value_header").click(function() {
     $('#main').hide();
@@ -677,12 +674,12 @@ function sendTransfer() {
                 $(".success_div").html("Transfer successful!").show();
             } else {
                 $(".success_div").hide();
-                $(".error_div").html("Something went wrong! Please try again!").show();
+                showError("Something went wrong! Please try again!");
             }
             $("#send_transfer").show();
         });
     } else {
-        $(".error_div").html("Please fill the fields!").show();
+        showError("Please fill the fields!");
         $("#send_loader").hide();
         $("#send_transfer").show();
     }
