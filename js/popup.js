@@ -337,6 +337,16 @@ $("#save_master").click(function() {
 
 // Add new account to Chrome local storage (encrypted with AES)
 function addAccount(account) {
+  console.log(accounts_json);
+  if(accounts_json!=null){
+    let newlist=[];
+    for(let acc of accounts_json.list){
+      if(acc!=undefined){
+        newlist.push(acc);
+      }
+    }
+    accounts_json.list=newlist;
+  }
     let saved_accounts = accounts_json;
     if (saved_accounts == undefined || saved_accounts == null || saved_accounts.list == 0)
         accounts = {
@@ -389,6 +399,7 @@ function initializeMainMenu() {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
+        console.log(accounts_json);
         if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
             $("#main").show();
