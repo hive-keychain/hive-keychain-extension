@@ -399,18 +399,19 @@ function initializeMainMenu() {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
-        console.log(accounts_json);
+				
         if (accounts_json != null && accounts_json.list.length != 0) {
+						// Remove any deleted accounts from the list
+						accounts_json.list = accounts_json.list.filter(a => a);
             $("#accounts").empty();
             $("#main").show();
             if (items.last_account != undefined && items.last_account != null) {
-                let last = accounts_json.list.filter(function(o, i) {
-                    return o.name == items.last_account;
-                });
-                accounts_json.list = accounts_json.list.filter(function(o, i) {
-                    return o.name != items.last_account;
-                });
-                accounts_json.list.unshift(last[0]);
+								let last = accounts_json.list.find(a => a.name == items.last_account);
+								
+								if(last) {
+									accounts_json.list.splice(accounts_json.list.indexOf(last), 1);
+									accounts_json.list.unshift(last);
+								}
             }
             $(".usernames").html("<select></select>");
             for (account of accounts_json.list) {
@@ -698,17 +699,8 @@ function sendTransfer() {
 
 // Delete account (and encrypt the rest)
 function deleteAccount(i) {
-    console.log(accounts_json);
-    delete accounts_json.list[i];
-    console.log(accounts_json);
-    let newlist=[];
-    for(let acc of accounts_json.list){
-      if(acc!=undefined){
-        newlist.push(acc);
-      }
-    }
-    accounts_json.list=newlist;
-    console.log(accounts_json);
+		accounts_json.list.splice(i, 1);
+
     chrome.storage.local.set({
         accounts: encryptJson(accounts_json, mk)
     }, function() {
