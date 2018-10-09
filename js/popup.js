@@ -193,7 +193,7 @@ $("#submit_master_pwd").click(function() {
             initializeMainMenu();
             $(".error_div").hide();
         } else {
-          showError("Your passwords do not match!");
+            showError("Your passwords do not match!");
         }
     } else {
         showError("Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter, a digit, and a special character.");
@@ -338,16 +338,16 @@ $("#save_master").click(function() {
 
 // Add new account to Chrome local storage (encrypted with AES)
 function addAccount(account) {
-  console.log(accounts_json);
-  if(accounts_json!=null){
-    let newlist=[];
-    for(let acc of accounts_json.list){
-      if(acc!=undefined){
-        newlist.push(acc);
-      }
+    console.log(accounts_json);
+    if (accounts_json != null) {
+        let newlist = [];
+        for (let acc of accounts_json.list) {
+            if (acc != undefined) {
+                newlist.push(acc);
+            }
+        }
+        accounts_json.list = newlist;
     }
-    accounts_json.list=newlist;
-  }
     let saved_accounts = accounts_json;
     if (saved_accounts == undefined || saved_accounts == null || saved_accounts.list == 0)
         accounts = {
@@ -403,17 +403,17 @@ function initializeMainMenu() {
 
         if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
-						$("#main").show();
+            $("#main").show();
 
-						// Add the last account selected to the front of the account list.
+            // Add the last account selected to the front of the account list.
             if (items.last_account) {
-								let last = accounts_json.list.find(a => a.name == items.last_account);
+                let last = accounts_json.list.find(a => a.name == items.last_account);
 
-								if(last) {
-									accounts_json.list.splice(accounts_json.list.indexOf(last), 1);
-									accounts_json.list.unshift(last);
-								}
-						}
+                if (last) {
+                    accounts_json.list.splice(accounts_json.list.indexOf(last), 1);
+                    accounts_json.list.unshift(last);
+                }
+            }
 
             $(".usernames").html("<select></select>");
             for (account of accounts_json.list) {
@@ -598,9 +598,9 @@ $('#add_key').click(function() {
 function showError(message) {
     $(".error_div").html(message);
     $(".error_div").show();
-    setTimeout(function(){
-      $(".error_div").hide();
-    },5000);
+    setTimeout(function() {
+        $(".error_div").hide();
+    }, 5000);
 }
 $("#account_value_header").click(function() {
     $('#main').hide();
@@ -701,7 +701,7 @@ function sendTransfer() {
 
 // Delete account (and encrypt the rest)
 function deleteAccount(i) {
-		accounts_json.list.splice(i, 1);
+    accounts_json.list.splice(i, 1);
 
     chrome.storage.local.set({
         accounts: encryptJson(accounts_json, mk)
@@ -885,9 +885,9 @@ function loadAccount(name) {
         $("#voting_power span").eq(1).html("RC: ...");
         steem.api.getAccounts([account.name], async function(err, result) {
             if (result.length != 0) {
-                const vm= await getVotingMana(result[0]);
+                const vm = await getVotingMana(result[0]);
                 $("#voting_power span").eq(0).html("VM: " + vm + "%");
-                $("#voting_power span").eq(0).attr("title","Full in: " + getTimeBeforeFull(vm*100));
+                $("#voting_power span").eq(0).attr("title", "Full in: " + getTimeBeforeFull(vm * 100));
 
                 if (totalSteem != null)
                     showUserData(result);
@@ -975,14 +975,15 @@ function loadAccount(name) {
 
 async function showUserData(result) {
     showBalances(result, dynamicProp);
-    const [vd,rc] = [await getVotingDollarsPerAccount(100, result["0"],rewardBalance, recentClaims, steemPrice, votePowerReserveRate, false),
-                  await getRC(result["0"].name)];
-    console.log(vd,rc);
+    const [vd, rc] = [await getVotingDollarsPerAccount(100, result["0"], rewardBalance, recentClaims, steemPrice, votePowerReserveRate, false),
+        await getRC(result["0"].name)
+    ];
+    console.log(vd, rc);
     $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
-    $("#voting_power span").eq(0).html($("#voting_power span").eq(0).html()+" ($"+vd+")");
+    $("#voting_power span").eq(0).html($("#voting_power span").eq(0).html() + " ($" + vd + ")");
 
-    $("#voting_power span").eq(1).html("RC: " + rc.estimated_pct+"%");
-    $("#voting_power span").eq(1).attr("title","Full in: " + rc.fullin);
+    $("#voting_power span").eq(1).html("RC: " + rc.estimated_pct + "%");
+    $("#voting_power span").eq(1).attr("title", "Full in: " + rc.fullin);
 
     $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)));
 

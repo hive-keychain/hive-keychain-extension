@@ -4,7 +4,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
         if (!msg.msg.success) {
 
-          $("#tx_loading").hide();
+            $("#tx_loading").hide();
             if (msg.msg.error == "locked") {
                 $(".unlock").show();
                 $("#error-ok").hide();
@@ -51,7 +51,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'post': 'Post',
             'vote': 'Vote',
             'transfer': 'Transfer',
-            'delegation':'Delegation'
+            'delegation': 'Delegation'
         };
         var title = titles[type];
         $("#dialog_header").html(title);
@@ -89,7 +89,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $(".modal-body-error").hide();
         $("#username").html("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
-        if (type != "transfer" && type!= "delegation") {
+        if (type != "transfer" && type != "delegation") {
             $("#keep_div").show();
             var prompt_msg = (msg.data.type == 'decode') ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
                 "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
@@ -136,31 +136,30 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#json_metadata").html(msg.data.json_metadata);
                 $("#parent_url").html(msg.data.parent_perm);
                 $("#parent_username").html(msg.data.parent_username);
-                if(msg.data.comment_options!=""){
-                  let options=JSON.parse(msg.data.comment_options);
-                  $("#max_payout").html(options.max_accepted_payout);
-                  $("#percent_sbd").html(options.percent_steem_dollars);
-                  $("#allow_votes").html(options.allow_votes);
-                  $("#allow_curation_rewards").html(options.allow_curation_rewards);
-                  let beneficiaries="";
-                  for (benef of options.extensions[0][1].beneficiaries){
-                    beneficiaries+="@"+benef.account+" ("+(benef.weight/100).toFixed(2)+"%) ";
-                  }
-                  if(beneficiaries!="")
-                    $("#beneficiaries").html(beneficiaries);
-                  else
-                    $("#beneficiaries_div").hide();
-                }
-                else $("#options_toggle").hide();
-                if (msg.data.parent_username == "" ||msg.data.parent_username == null || msg.data.parent_username == undefined){
+                if (msg.data.comment_options != "") {
+                    let options = JSON.parse(msg.data.comment_options);
+                    $("#max_payout").html(options.max_accepted_payout);
+                    $("#percent_sbd").html(options.percent_steem_dollars);
+                    $("#allow_votes").html(options.allow_votes);
+                    $("#allow_curation_rewards").html(options.allow_curation_rewards);
+                    let beneficiaries = "";
+                    for (benef of options.extensions[0][1].beneficiaries) {
+                        beneficiaries += "@" + benef.account + " (" + (benef.weight / 100).toFixed(2) + "%) ";
+                    }
+                    if (beneficiaries != "")
+                        $("#beneficiaries").html(beneficiaries);
+                    else
+                        $("#beneficiaries_div").hide();
+                } else $("#options_toggle").hide();
+                if (msg.data.parent_username == "" || msg.data.parent_username == null || msg.data.parent_username == undefined) {
                     $("#parent_username").hide();
                     console.log("hideee");
                     $("#parent_username_title").hide();
-                  }
+                }
                 break;
             case "delegation":
-                $("#delegatee").html("@"+msg.data.delegatee);
-                $("#amt_sp").html(msg.data.sp+" SP");
+                $("#delegatee").html("@" + msg.data.delegatee);
+                $("#amt_sp").html(msg.data.sp + " SP");
                 break;
         }
 

@@ -23,7 +23,7 @@ function decryptToJson(msg, pwd) {
             return null;
         }
     } catch (e) {
-      console.log("sthwrong");
+        console.log("sthwrong");
         return null;
     }
 }

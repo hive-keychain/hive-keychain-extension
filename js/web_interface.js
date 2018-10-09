@@ -53,13 +53,13 @@ function sendResponse(response) {
 }
 
 function validate(req) {
-		return req != null && req != undefined && req.type != undefined && req.type != null && 
-			((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
-       (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
-			 (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req))||
-			 (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
-       (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req.sp)) ||
-       (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency)));
+    return req != null && req != undefined && req.type != undefined && req.type != null &&
+        ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
+            (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
+            (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req)) ||
+            (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
+            (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req.sp)) ||
+            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency)));
 }
 
 
@@ -81,7 +81,7 @@ function isFilledAmt(obj) {
 }
 
 function isFilledAmtSP(obj) {
-    return isFilled(obj) && !isNaN(obj)  && countDecimals(obj) == 3;
+    return isFilled(obj) && !isNaN(obj) && countDecimals(obj) == 3;
 }
 
 function isFilledWeight(obj) {
@@ -95,18 +95,20 @@ function isFilledCurrency(obj) {
 function isFilledKey(obj) {
     return isFilled(obj) && (obj == "Memo" || obj == "Active" || obj == "Posting");
 }
-function isCustomOptions(obj){
-  if(obj.comment_options=="")
-  return true;
-  let comment_options=JSON.parse(obj.comment_options);
-  if(comment_options.author!=obj.username||comment_options.permlink!=obj.permlink)
-   return false;
-  return comment_options.hasOwnProperty("max_accepted_payout")
-    &&comment_options.hasOwnProperty("percent_steem_dollars")
-    &&comment_options.hasOwnProperty("allow_votes")
-    &&comment_options.hasOwnProperty("allow_curation_rewards")
-    &&comment_options.hasOwnProperty("extensions");
+
+function isCustomOptions(obj) {
+    if (obj.comment_options == "")
+        return true;
+    let comment_options = JSON.parse(obj.comment_options);
+    if (comment_options.author != obj.username || comment_options.permlink != obj.permlink)
+        return false;
+    return comment_options.hasOwnProperty("max_accepted_payout") &&
+        comment_options.hasOwnProperty("percent_steem_dollars") &&
+        comment_options.hasOwnProperty("allow_votes") &&
+        comment_options.hasOwnProperty("allow_curation_rewards") &&
+        comment_options.hasOwnProperty("extensions");
 }
+
 function countDecimals(nb) {
     return nb.toString().split(".")[1] == undefined ? 0 : (nb.toString().split(".")[1].length || 0);
 }

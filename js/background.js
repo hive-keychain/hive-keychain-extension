@@ -37,11 +37,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             }
         );
     } else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
-            // create a window to let users confirm the transaction
-            tab = sender.tab.id;
-            checkBeforeCreate(msg.request, tab, msg.domain);
-            request = msg.request;
-            request_id = msg.request_id;
+        // create a window to let users confirm the transaction
+        tab = sender.tab.id;
+        checkBeforeCreate(msg.request, tab, msg.domain);
+        request = msg.request;
+        request_id = msg.request_id;
 
     } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
         chrome.storage.local.get(['accounts'], function(items) { // Check
@@ -148,89 +148,92 @@ function performTransaction(data, tab) {
                 });
                 break;
             case "post":
-              if(data.comment_options==""){
-                steem.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
-                    const message = {
-                        command: "answerRequest",
-                        msg: {
-                            success: err == null,
-                            error: err,
-                            result: result,
-                            data: data,
-                            message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                            request_id: request_id
-                        }
-                    };
-                    chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
-                    key = null;
-                    accounts = null;
-                });
-              }
-              else {
-                const operations = [
-                			   ['comment',
-                			     {
-                			       parent_author: data.parent_username,
-                			       parent_permlink: data.parent_perm,
-                			       author: data.username,
-                			       permlink:data.permlink,
-                			       title: data.title,
-                			       body: data.body,
-                			       json_metadata : data.json_metadata
-                			     }
-                			   ],
-                				   ['comment_options',
-                           JSON.parse(data.comment_options)]
-                         ];
-                   steem.broadcast.send({ operations, extensions: [] },
-			              { posting: key }, function(err, result){
-                      const message = {
-                          command: "answerRequest",
-                          msg: {
-                              success: err == null,
-                              error: err,
-                              result: result,
-                              data: data,
-                              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                              request_id: request_id
-                          }
-                      };
-                      chrome.tabs.sendMessage(tab, message);
-                      chrome.runtime.sendMessage(message);
-                      key = null;
-                      accounts = null;
-                  });
+                if (data.comment_options == "") {
+                    steem.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
+                        const message = {
+                            command: "answerRequest",
+                            msg: {
+                                success: err == null,
+                                error: err,
+                                result: result,
+                                data: data,
+                                message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                                request_id: request_id
+                            }
+                        };
+                        chrome.tabs.sendMessage(tab, message);
+                        chrome.runtime.sendMessage(message);
+                        key = null;
+                        accounts = null;
+                    });
+                } else {
+                    const operations = [
+                        ['comment',
+                            {
+                                parent_author: data.parent_username,
+                                parent_permlink: data.parent_perm,
+                                author: data.username,
+                                permlink: data.permlink,
+                                title: data.title,
+                                body: data.body,
+                                json_metadata: data.json_metadata
+                            }
+                        ],
+                        ['comment_options',
+                            JSON.parse(data.comment_options)
+                        ]
+                    ];
+                    steem.broadcast.send({
+                        operations,
+                        extensions: []
+                    }, {
+                        posting: key
+                    }, function(err, result) {
+                        const message = {
+                            command: "answerRequest",
+                            msg: {
+                                success: err == null,
+                                error: err,
+                                result: result,
+                                data: data,
+                                message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                                request_id: request_id
+                            }
+                        };
+                        chrome.tabs.sendMessage(tab, message);
+                        chrome.runtime.sendMessage(message);
+                        key = null;
+                        accounts = null;
+                    });
 
-              }
+                }
                 break;
             case "delegation":
-              steem.api.getDynamicGlobalPropertiesAsync().then((res)=>
-               {
-                   const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
-                   const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
-                   let delegated_vest = parseFloat(data.sp) * totalVests / totalSteem;
-                   delegated_vest=delegated_vest.toFixed(6);
-                   delegated_vest=delegated_vest.toString()+' VESTS';
-                steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
-                    const message = {
-                        command: "answerRequest",
-                        msg: {
-                            success: error == null,
-                            error: error,
-                            result: result,
-                            data: data,
-                            message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                            request_id: request_id
-                        }
-                    };
-                    chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
-                    key = null;
-                    accounts = null;
+                steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
+                    const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
+                    const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
+                    let delegated_vest = parseFloat(data.sp) * totalVests / totalSteem;
+                    delegated_vest = delegated_vest.toFixed(6);
+                    delegated_vest = delegated_vest.toString() + ' VESTS';
+                    steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
+                        const message = {
+                            command: "answerRequest",
+                            msg: {
+                                success: error == null,
+                                error: error,
+                                result: result,
+                                data: data,
+                                message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                                request_id: request_id
+                            }
+                        };
+                        chrome.tabs.sendMessage(tab, message);
+                        chrome.runtime.sendMessage(message);
+                        key = null;
+                        accounts = null;
+                    });
                 });
-              });
-              break;
+                break;
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
