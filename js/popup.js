@@ -401,18 +401,19 @@ function initializeMainMenu() {
         }) ? null : decryptToJson(items.accounts, mk);
 				
         if (accounts_json != null && accounts_json.list.length != 0) {
-						// Remove any deleted accounts from the list
-						accounts_json.list = accounts_json.list.filter(a => a);
             $("#accounts").empty();
-            $("#main").show();
-            if (items.last_account != undefined && items.last_account != null) {
+						$("#main").show();
+						
+						// Add the last account selected to the front of the account list.
+            if (items.last_account) {
 								let last = accounts_json.list.find(a => a.name == items.last_account);
 								
 								if(last) {
 									accounts_json.list.splice(accounts_json.list.indexOf(last), 1);
 									accounts_json.list.unshift(last);
 								}
-            }
+						}
+						
             $(".usernames").html("<select></select>");
             for (account of accounts_json.list) {
                 $(".usernames select").append("<option>" + account.name + "</option>");
