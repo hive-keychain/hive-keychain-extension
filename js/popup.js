@@ -100,6 +100,7 @@ $("#settings").click(function() {
 
 $("#about").click(function() {
     $("#about_div").show();
+    $("#about_div h3").html(chrome.runtime.getManifest().name + chrome.runtime.getManifest().version);
     $("#settings_div").hide();
 });
 
@@ -399,21 +400,21 @@ function initializeMainMenu() {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
-				
+
         if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
 						$("#main").show();
-						
+
 						// Add the last account selected to the front of the account list.
             if (items.last_account) {
 								let last = accounts_json.list.find(a => a.name == items.last_account);
-								
+
 								if(last) {
 									accounts_json.list.splice(accounts_json.list.indexOf(last), 1);
 									accounts_json.list.unshift(last);
 								}
 						}
-						
+
             $(".usernames").html("<select></select>");
             for (account of accounts_json.list) {
                 $(".usernames select").append("<option>" + account.name + "</option>");
