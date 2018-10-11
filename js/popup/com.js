@@ -9,8 +9,8 @@ function setAutolock(autolock) {
 }
 
 // get MK from background
-function getMK(){
-  chrome.runtime.sendMessage({
-      command: "getMk"
-  });
+function getMK() {
+    chrome.runtime.sendMessage({
+        command: "getMk"
+    });
 }

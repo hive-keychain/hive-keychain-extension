@@ -1,36 +1,36 @@
 // All functions and events regarding the visibility and navigation
 
 // Visibility state on the main menu
-function initializeVisibility(){
-  $("#accounts").html("");
-  $("#add_account_div").hide();
-  $(".error_div").hide();
-  $(".success_div").hide();
-  $("#master_check").hide();
-  $("#autolock_div").hide();
-  $("#username").val("");
-  $("#pwd").val("");
-  $("#acc_transfers").hide();
-  $(".error_div").html("");
-  $("#posting_key").prop("checked", true);
-  $("#active_key").prop("checked", true);
-  $("#memo_key").prop("checked", true);
-  $(".account_info").hide();
-  $(".account_info_content").hide();
-  $(".account_info_menu").removeClass("rotate180");
-  $("#transfer_to").hide();
-  $("#add_key_div").hide();
-  $("#estimation_info").hide();
-  $("#new_key").val("");
-  $("#keys_info").empty();
-  $("#balance_steem").html("");
-  $("#balance_sbd").html("");
-  $("#balance_sp").html("");
-  $("#register").hide();
-  $("#unlock").hide();
-  $("#send_div").hide();
-  $("#settings_div").hide();
-  $("#add_account_div .back_enabled").removeClass("back_disabled");
+function initializeVisibility() {
+    $("#accounts").html("");
+    $("#add_account_div").hide();
+    $(".error_div").hide();
+    $(".success_div").hide();
+    $("#master_check").hide();
+    $("#autolock_div").hide();
+    $("#username").val("");
+    $("#pwd").val("");
+    $("#acc_transfers").hide();
+    $(".error_div").html("");
+    $("#posting_key").prop("checked", true);
+    $("#active_key").prop("checked", true);
+    $("#memo_key").prop("checked", true);
+    $(".account_info").hide();
+    $(".account_info_content").hide();
+    $(".account_info_menu").removeClass("rotate180");
+    $("#transfer_to").hide();
+    $("#add_key_div").hide();
+    $("#estimation_info").hide();
+    $("#new_key").val("");
+    $("#keys_info").empty();
+    $("#balance_steem").html("");
+    $("#balance_sbd").html("");
+    $("#balance_sp").html("");
+    $("#register").hide();
+    $("#unlock").hide();
+    $("#send_div").hide();
+    $("#settings_div").hide();
+    $("#add_account_div .back_enabled").removeClass("back_disabled");
 }
 
 // Use "Enter" as confirmation button for unlocking and registration
