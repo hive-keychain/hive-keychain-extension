@@ -510,7 +510,9 @@ input:focus {
     top: 100%;
     left: 0;
     right: 0;
-    z-index: 99;
+		z-index: 99;
+		max-height: 350px;
+    overflow: auto;
 }
 
 .custom-select-main .select-items div:last-of-type {
