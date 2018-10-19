@@ -49,7 +49,7 @@ $("#send_tra").click(function() {
 
 // Send delegation
 $("#send_delegation").click(function() {
-    steem_keychain.requestDelegation($("#delegation_username").val(), $("#delegation_delegatee").val(), $("#delegation_sp").val(), function(response) {
+    steem_keychain.requestDelegation($("#delegation_username").val(), $("#delegation_delegatee").val(), $("#delegation_sp").val(),$("#delegation_unit option:selected").text(), function(response) {
         console.log('main js response - delegation');
         console.log(response);
     });

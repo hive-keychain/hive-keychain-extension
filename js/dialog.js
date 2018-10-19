@@ -159,7 +159,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 break;
             case "delegation":
                 $("#delegatee").html("@" + msg.data.delegatee);
-                $("#amt_sp").html(msg.data.sp + " SP");
+                $("#amt_sp").html(msg.data.amount +" "+ msg.data.unit);
                 break;
         }
 

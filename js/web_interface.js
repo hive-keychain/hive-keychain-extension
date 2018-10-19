@@ -58,7 +58,7 @@ function validate(req) {
             (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
             (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req)) ||
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
-            (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req.sp)) ||
+            (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req) && isFilledDelegationMethod(req.unit)) ||
             (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency)));
 }
 
@@ -68,6 +68,9 @@ function isFilled(obj) {
     return obj != undefined && obj != null && obj != "";
 }
 
+function isFilledDelegationMethod(obj){
+  return obj=="VESTS"||obj=="SP";
+}
 function isFilledJSON(obj) {
     try {
         return isFilled(obj) && JSON.parse(obj).hasOwnProperty("requiredAuths") && JSON.parse(obj).hasOwnProperty("requiredPostingAuths") && JSON.parse(obj).hasOwnProperty("id") && JSON.parse(obj).hasOwnProperty("json");
@@ -81,7 +84,9 @@ function isFilledAmt(obj) {
 }
 
 function isFilledAmtSP(obj) {
-    return isFilled(obj) && !isNaN(obj) && countDecimals(obj) == 3;
+  console.log(obj);
+    console.log(isFilled(obj.amount) , !isNaN(obj.amount) , (countDecimals(obj.amount) == 3&&obj.unit=="SP"),(countDecimals(obj.amount)==6&&obj.unit=="VESTS"));
+    return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3&&obj.unit=="SP")||(countDecimals(obj.amount)==6&&obj.unit=="VESTS"));
 }
 
 function isFilledWeight(obj) {
