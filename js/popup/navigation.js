@@ -26,6 +26,8 @@ function initializeVisibility() {
     $("#balance_steem").html("");
     $("#balance_sbd").html("");
     $("#balance_sp").html("");
+    $(".checkbox_memo").hide();
+    $("#encrypt_memo").prop("checked",false);
     $("#register").hide();
     $("#unlock").hide();
     $("#send_div").hide();
@@ -147,6 +149,9 @@ $("#autolock").click(function() {
 // Show transaction window
 $("#send").click(function() {
     $("#send_div").show();
+    if(active_account.keys.hasOwnProperty("memo")){
+      $(".checkbox_memo").show();
+    }
     $("#main").hide();
 });
 

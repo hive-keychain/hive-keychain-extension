@@ -205,11 +205,16 @@ function voteFor(name) {
 }
 
 // Send a transfer
-function sendTransfer() {
+async function sendTransfer() {
     const to = $("#recipient").val();
     const amount = $("#amt_send").val();
     const currency = $("#currency_send .select-selected").html();
-    const memo = $("#memo_send").val();
+    let memo = $("#memo_send").val();
+    if(memo!=""&&$("#encrypt_memo").prop("checked")){
+      const receiver=await  steem.api.getAccountsAsync([to]);
+      const memoReceiver=receiver["0"].memo_key;
+      memo = window.encodeMemo(active_account.keys.memo, memoReceiver, "#"+memo);
+    }
     if (to != "" && amount != "" && amount >= 0.001) {
         steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
             $("#send_loader").hide();

@@ -323,12 +323,21 @@ input:focus {
     color: green;
 }
 
-.key_checkbox {
+.key_checkbox, .checkbox_memo {
     display: block;
     height: 32px;
     margin-bottom: 35px;
 }
 
+.checkbox_memo .checkbox_container div {
+  font-size: 20px;
+  padding-top: 10px;
+  color:#009C9C;
+}
+
+.checkbox_memo {
+  display: none;
+}
 /* The container */
 
 .checkbox_container {
