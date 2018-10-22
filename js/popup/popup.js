@@ -211,16 +211,27 @@ async function sendTransfer() {
     const currency = $("#currency_send .select-selected").html();
     let memo = $("#memo_send").val();
     if(memo!=""&&$("#encrypt_memo").prop("checked")){
-      const receiver=await  steem.api.getAccountsAsync([to]);
-      const memoReceiver=receiver["0"].memo_key;
-      memo = window.encodeMemo(active_account.keys.memo, memoReceiver, "#"+memo);
+      try{
+        const receiver=await  steem.api.getAccountsAsync([to]);
+        const memoReceiver=receiver["0"].memo_key;
+        memo = window.encodeMemo(active_account.keys.memo, memoReceiver, "#"+memo);}
+      catch(e){console.log(e);}
     }
     if (to != "" && amount != "" && amount >= 0.001) {
-        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, function(err, result) {
+        steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, async function(err, result) {
             $("#send_loader").hide();
             if (err == null) {
+                const sender=await  steem.api.getAccountsAsync([active_account.name]);
+                sbd=sender["0"].sbd_balance.replace("SBD", "");
+                steem_p=sender["0"].balance.replace("STEEM", "");
+                if (currency == "SBD") {
+                   $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+                 } else if (currency == "STEEM") {
+                   $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+                 }
                 $(".error_div").hide();
                 $(".success_div").html("Transfer successful!").show();
+                setTimeout(function(){$(".success_div").hide();},5000);
             } else {
                 $(".success_div").hide();
                 showError("Something went wrong! Please try again!");
