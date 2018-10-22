@@ -1,6 +1,7 @@
 const STEEMIT_100_PERCENT = 10000;
 const STEEM_VOTING_MANA_REGENERATION_SECONDS = 432000;
 
+// get VM only
 var getVotingMana = function(account) {
     return new Promise(function(fulfill, reject) {
         const mana = getVotingManaData(account);
@@ -8,8 +9,8 @@ var getVotingMana = function(account) {
     });
 };
 
+// get all information regarding VM
 var getVotingManaData = function(account) {
-
     const estimated_max = getEffectiveVestingSharesPerAccount(account) * 1000000;
     const current_mana = parseFloat(account.voting_manabar.current_mana);
     const last_update_time = account.voting_manabar.last_update_time;
@@ -27,6 +28,7 @@ var getVotingManaData = function(account) {
     };
 }
 
+// get SP + received delegations - delegations sent
 var getEffectiveVestingSharesPerAccount = function(account) {
     var effective_vesting_shares = parseFloat(account.vesting_shares.replace(" VESTS", "")) +
         parseFloat(account.received_vesting_shares.replace(" VESTS", "")) -
@@ -34,6 +36,7 @@ var getEffectiveVestingSharesPerAccount = function(account) {
     return effective_vesting_shares;
 };
 
+// get SP of the account
 var getSteemPowerPerAccount = function(account, totalVestingFund, totalVestingShares) {
     if (totalVestingFund && totalVestingShares) {
         var vesting_shares = getEffectiveVestingSharesPerAccount(account);
@@ -42,6 +45,8 @@ var getSteemPowerPerAccount = function(account, totalVestingFund, totalVestingSh
     }
 };
 
+// get the voting dollars of a vote for a certain account, if full is set
+// to true, the VM will be set to 100%, otherwise it will use the current VM
 var getVotingDollarsPerAccount = async function(voteWeight, account, rewardBalance, recentClaims, steemPrice, votePowerReserveRate, full) {
     const vm = await getVotingMana(account) * 100;
     return new Promise(function(fulfill, reject) {
@@ -61,6 +66,7 @@ var getVotingDollarsPerAccount = async function(voteWeight, account, rewardBalan
     });
 };
 
+// get Resource Credits
 var getRC = function(name) {
     let data = {
         "jsonrpc": "2.0",
@@ -103,6 +109,7 @@ var getRC = function(name) {
     });
 }
 
+// get in which time the VM will be full
 function getTimeBeforeFull(votingPower) {
     var fullInString;
     var remainingPowerToGet = 100.0 - votingPower / 100;
@@ -122,6 +129,7 @@ function getTimeBeforeFull(votingPower) {
     return fullInString;
 }
 
+// Get STEEM price from Bittrex
 function getPriceSteemAsync() {
     return new Promise(function(resolve, reject) {
         $.ajax({
@@ -141,6 +149,7 @@ function getPriceSteemAsync() {
     });
 }
 
+// Get BTC price from Bittrex
 function getBTCPriceAsync() {
     return new Promise(function(resolve, reject) {
         $.ajax({
@@ -160,6 +169,7 @@ function getBTCPriceAsync() {
     });
 }
 
+// Get SBD price from Bittrex
 function getPriceSBDAsync() {
     return new Promise(function(resolve, reject) {
         $.ajax({
@@ -177,4 +187,132 @@ function getPriceSBDAsync() {
             }
         });
     });
+}
+
+// Show errors
+function showError(message) {
+    $(".error_div").html(message);
+    $(".error_div").show();
+    setTimeout(function() {
+        $(".error_div").hide();
+    }, 5000);
+}
+
+// Custom select dropdown
+function initiateCustomSelect() {
+    /*look for any elements with the class "custom-select":*/
+    x = document.getElementsByClassName("custom-select");
+
+    for (i = 0; i < x.length; i++) {
+        if (i == 3 && custom_created)
+            return;
+        if (i == 3 && !custom_created)
+            custom_created = true;
+        selElmnt = x[i].getElementsByTagName("select")[0];
+
+        /*for each element, create a new DIV that will act as the selected item:*/
+        a = document.createElement("DIV");
+        a.setAttribute("class", "select-selected");
+        a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+        x[i].appendChild(a);
+        /*for each element, create a new DIV that will contain the option list:*/
+        b = document.createElement("DIV");
+        b.setAttribute("class", "select-items select-hide");
+        for (j = 0; j < selElmnt.length; j++) {
+            /*for each option in the original select element,
+            create a new DIV that will act as an option item:*/
+            c = document.createElement("DIV");
+            c.innerHTML = selElmnt.options[j].innerHTML;
+            c.addEventListener("click", function(e) {
+                /*when an item is clicked, update the original select box,
+                and the selected item:*/
+                var y, i, k, s, h;
+                s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                h = this.parentNode.previousSibling;
+                for (i = 0; i < s.length; i++) {
+                    if (s.options[i].innerHTML == this.innerHTML) {
+                        s.selectedIndex = i;
+                        h.innerHTML = this.innerHTML;
+                        y = this.parentNode.getElementsByClassName("same-as-selected");
+                        for (k = 0; k < y.length; k++) {
+                            y[k].removeAttribute("class");
+                        }
+                        this.setAttribute("class", "same-as-selected");
+                        break;
+                    }
+                }
+                h.click();
+            });
+            b.appendChild(c);
+        }
+        x[i].appendChild(b);
+        if (i == 0)
+            loadAccount(a.innerHTML);
+        a.addEventListener("click", function(e) {
+            /*when the select box is clicked, close any other select boxes,
+            and open/close the current select box:*/
+            e.stopPropagation();
+            closeAllSelect(this);
+            this.nextSibling.classList.toggle("select-hide");
+            this.classList.toggle("select-arrow-active");
+            if (this.innerHTML.includes("Add New Account")) {
+                showAddAccount();
+            } else if (!getPref && !manageKey && !this.classList.contains("select-arrow-active") && this.innerHTML != "SBD" && this.innerHTML != "STEEM") {
+                chrome.storage.local.set({
+                    last_account: this.innerHTML
+                });
+                loadAccount(this.innerHTML);
+            } else if (this.innerHTML == "SBD") {
+                $(".transfer_balance div").eq(0).text('SBD Balance');
+                $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+            } else if (this.innerHTML == "STEEM") {
+                $(".transfer_balance div").eq(0).text('STEEM Balance');
+                $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+            } else if (manageKey) {
+                manageKeys(this.innerHTML);
+            } else if (getPref) {
+                setPreferences(this.innerHTML);
+            }
+        });
+    }
+
+    function closeAllSelect(elmnt) {
+        /*a function that will close all select boxes in the document,
+        except the current select box:*/
+        var x, y, i, arrNo = [];
+        x = document.getElementsByClassName("select-items");
+        y = document.getElementsByClassName("select-selected");
+        for (i = 0; i < y.length; i++) {
+            if (elmnt == y[i]) {
+                arrNo.push(i)
+            } else {
+                y[i].classList.remove("select-arrow-active");
+            }
+        }
+        for (i = 0; i < x.length; i++) {
+            if (arrNo.indexOf(i)) {
+                x[i].classList.add("select-hide");
+            }
+        }
+    }
+    /*if the user clicks anywhere outside the select box,
+    then close all select boxes:*/
+    document.addEventListener("click", closeAllSelect);
+}
+
+//Check WIF validity
+function isActiveWif(pwd, active) {
+    return steem.auth.wifToPublic(pwd) == active;
+}
+
+function isPostingWif(pwd, posting) {
+    return steem.auth.wifToPublic(pwd) == posting;
+}
+
+function isMemoWif(pwd, memo) {
+    return steem.auth.wifToPublic(pwd) == memo;
+}
+
+let numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
