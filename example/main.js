@@ -41,10 +41,10 @@ $("#send_custom").click(function() {
 
 // Send transfer request
 $("#send_tra").click(function() {
-    steem_keychain.requestTransfer($("#transfer_username").val(), $("#transfer_to").val(), $("#transfer_val").val(), $("#transfer_memo").val(), $("#transfer_currency option:selected").text(),$("#transfer_enforce").is(":checked"), function(response) {
+    steem_keychain.requestTransfer($("#transfer_username").val(), $("#transfer_to").val(), $("#transfer_val").val(), $("#transfer_memo").val(), $("#transfer_currency option:selected").text(), function(response) {
         console.log('main js response - transfer');
         console.log(response);
-    });
+    },$("#transfer_enforce").is(":checked"));
 });
 
 // Send delegation

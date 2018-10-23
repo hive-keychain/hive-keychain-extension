@@ -82,8 +82,11 @@ function loadAccount(name) {
                         let date = new Date(timestamp);
                         timestamp = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
                         if (memo[0] == "#") {
-                            if (active_account.keys.hasOwnProperty("memo"))
+                            if (active_account.keys.hasOwnProperty("memo")){
+                                try{
                                 memo = window.decodeMemo(active_account.keys.memo, memo);
+                              }catch(e){console.log(e);}
+                            }
                             else
                                 memo = "Add your private memo key to read this memo";
                         }

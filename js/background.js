@@ -123,11 +123,22 @@ function performTransaction(data, tab) {
 
                 break;
             case "transfer":
-
                 let ac = accounts.list.find(function(e) {
                     return e.name == data.username
                 });
+                let memo=data.memo||"";
                 let key_transfer = ac.keys.active;
+                if(data.memo&&data.memo.length>0&&data.memo[0]=="#"){
+                  try{
+                    memo=encryptMemo(memo);
+                  }
+                  catch(e){console.log(e);}
+                  async function encryptMemo(memo){
+                    const receiver=await  steem.api.getAccountsAsync([data.to]);
+                    const memoReceiver=receiver["0"].memo_key;
+                    return window.encodeMemo(active_account.keys.memo, memoReceiver, memo);
+                  }
+                }
                 steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, data.memo, function(err, result) {
                     const message = {
                         command: "answerRequest",
@@ -364,18 +375,24 @@ function checkBeforeCreate(request, tab, domain) {
                 accounts = (items.accounts == undefined || items.accounts == {
                     list: []
                 }) ? null : decryptToJson(items.accounts, mk);
+                let account =null;
                 if (request.type == "transfer") {
                     let tr_accounts = accounts.list.filter(a => a.keys.hasOwnProperty("active"));
-
+                    const encode=(request.memo!=undefined&&request.memo.length>0&&request.memo[0]=="#");
+                    const enforce=request.enforce||encode;
+                    if(encode)
+                      account = accounts.list.find(function(e) {
+                        return e.name == request.username;
+                      });
                     // If a username is specified, check that its active key has been added to the wallet
-                    if (request.username && !tr_accounts.find(a => a.name == request.username)) {
+                    if (enforce && request.username && !tr_accounts.find(a => a.name == request.username)) {
                         createPopup(function() {
                             sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
                         });
                     }
-                    else if(request.memo!=""&&request.memo[0]=="#"&&account.keys[memo] == undefined){
+                    else if(encode&&!account.keys.hasOwnProperty("memo")){
                       createPopup(function() {
-                          sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
+                          sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
                       });
                     }
                     else {
@@ -397,7 +414,7 @@ function checkBeforeCreate(request, tab, domain) {
                         }
                         createPopup(callback);
                     } else {
-                        let account = accounts.list.find(function(e) {
+                         account = accounts.list.find(function(e) {
                             return e.name == request.username;
                         });
                         let typeWif = getRequiredWifType(request);

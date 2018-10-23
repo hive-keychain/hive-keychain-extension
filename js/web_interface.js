@@ -19,6 +19,7 @@ document.addEventListener('swHandshake', function(request) {
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
     var req = request.detail;
+    console.log(req);
     // If all information are filled, send the request to the background, if not notify an error
     if (validate(req)) {
         chrome.runtime.sendMessage({
@@ -58,11 +59,21 @@ function validate(req) {
             (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req)) ||
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
             (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req) && isFilledDelegationMethod(req.unit)) ||
-            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency)));
+            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)));
 }
 
 
 // Functions used to check the incoming data
+
+function hasTransferInfo(req){
+  if (req.enforce)
+    return isFilled(req.username);
+  else if(isFilled(req.memo)&&req.memo[0]=="#")
+    return isFilled(req.username);
+  else
+    return true;
+}
+
 function isFilled(obj) {
     return obj != undefined && obj != null && obj != "";
 }
