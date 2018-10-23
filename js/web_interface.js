@@ -19,7 +19,6 @@ document.addEventListener('swHandshake', function(request) {
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
     var req = request.detail;
-    console.log(request);
     // If all information are filled, send the request to the background, if not notify an error
     if (validate(req)) {
         chrome.runtime.sendMessage({
