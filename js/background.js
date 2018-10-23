@@ -80,7 +80,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     }
 });
 
-function performTransaction(data, tab) {
+async function performTransaction(data, tab) {
     try {
         switch (data.type) {
             case "vote":
@@ -130,16 +130,13 @@ function performTransaction(data, tab) {
                 let key_transfer = ac.keys.active;
                 if(data.memo&&data.memo.length>0&&data.memo[0]=="#"){
                   try{
-                    memo=encryptMemo(memo);
+                      const receiver=await  steem.api.getAccountsAsync([data.to]);
+                      const memoReceiver=receiver["0"].memo_key;
+                      memo= window.encodeMemo(ac.keys.memo, memoReceiver, memo);
                   }
                   catch(e){console.log(e);}
-                  async function encryptMemo(memo){
-                    const receiver=await  steem.api.getAccountsAsync([data.to]);
-                    const memoReceiver=receiver["0"].memo_key;
-                    return window.encodeMemo(active_account.keys.memo, memoReceiver, memo);
-                  }
                 }
-                steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, data.memo, function(err, result) {
+                steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, memo, function(err, result) {
                     const message = {
                         command: "answerRequest",
                         msg: {
