@@ -11,21 +11,23 @@ const RPCs=[
 "https://rpc.steemliberator.com",
 "https://rpc.steemviz.com",
 "https://steemd.minnowsupportproject.org",
-"https://steemd.privex.io"];
+"https://steemd.privex.io",
+"https://steemplus.app"];
 
-function loadRPC(localRPCS){
+function loadRPC(local,current_rpc){
     $("#custom_select_rpc select").html("");
-    if(localRPCS!=undefined){
-      for (localRPC of localRPCs){
-        $("#custom_select_rpc select").append("<option>"+localRPC+"</option>")
-      }
-    }
-    for (RPC of RPCs){
-      $("#custom_select_rpc select").append("<option>"+RPC+"</option>")
-    }
+    let listRPC=[];
+    listRPC=local!=undefined?JSON.parse(local).concat(RPCs):RPCs;
+    console.log(listRPC);
+    console.log(RPCs);
+    const currentrpc =current_rpc ==undefined?"https://api.steemit.com":current_rpc;
+    listRPC=listRPC.sort(function(x,y){ return x == currentrpc ? -1 : y == currentrpc ? 1 : 0; });
+    $("#custom_select_rpc select").html(listRPC.reduce((acc,val)=>{return acc+"<option>"+val+"</option>";},""));
+
 }
 
 function switchRPC(rpc){
+  console.log(rpc);
   steem.api.setOptions({
       url: rpc
   });

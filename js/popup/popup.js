@@ -4,9 +4,6 @@ let active_account, priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerR
 const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 let custom_created = false;
 let manageKey, getPref = false;
-steem.api.setOptions({
-    url: 'https://api.steemit.com'
-});
 
 $("#copied").hide();
 $("#witness_votes").hide();
@@ -28,10 +25,14 @@ chrome.storage.local.get(['autolock'], function(items) {
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
-        chrome.storage.local.get(['accounts'], function(items) {
+        chrome.storage.local.get(['accounts','current_rpc'], function(items) {
+            steem.api.setOptions({
+                url: items.current_rpc||'https://api.steemit.com'
+            });
             if (msg.mk == null || msg.mk == undefined) {
-                if (items.accounts == null || items.accounts == undefined)
+                if (items.accounts == null || items.accounts == undefined){
                     showRegister();
+                }
                 else {
                     showUnlock();
                 }
@@ -137,11 +138,11 @@ function initializeMainMenu() {
     initializeVisibility();
     manageKey = false;
     getPref = false;
-    chrome.storage.local.get(['accounts', 'last_account','rpc'], function(items) {
+    chrome.storage.local.get(['accounts', 'last_account','rpc','current_rpc'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
-        loadRPC(items.rpc);
+        loadRPC(items.rpc,items.current_rpc);
         if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
             $("#main").show();
