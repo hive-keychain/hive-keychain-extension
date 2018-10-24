@@ -273,7 +273,13 @@ function initiateCustomSelect() {
             } else if (getPref&&$(this).parent().attr("id")!="custom_select_rpc") {
                 setPreferences(this.innerHTML);
             } else if(getPref&&$(this).parent().attr("id")=="custom_select_rpc"){
-                switchRPC(this.innerHTML);
+                if(this.innerHTML!="ADD RPC")
+                  switchRPC(this.innerHTML);
+                else {
+                  showCustomRPC();
+                  $("#pref_div").hide();
+                  $("#add_rpc_div").show();
+                }
             }
         });
     }

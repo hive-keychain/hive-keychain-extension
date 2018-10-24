@@ -21,6 +21,8 @@ function initializeVisibility() {
     $("#transfer_to").hide();
     $("#add_key_div").hide();
     $("#estimation_info").hide();
+    $("#pref_div").hide();
+    $("#add_rpc_div").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
     $("#balance_steem").html("");
@@ -60,6 +62,15 @@ $("#add_key_div .back_enabled").click(function() {
     $("#add_key_div").hide();
     $("#manage_keys").show();
     $(".error_div").hide();
+});
+
+$("#add_rpc_div .back_enabled").click(function() {
+  chrome.storage.local.get(["rpc","current_rpc"],function(items){
+    loadRPC(items.rpc,items.current_rpc);
+    initiateCustomSelect();
+      $("#add_rpc_div").hide();
+      $("#pref_div").show();
+  });
 });
 
 // Clicking back from the preferences menu
@@ -179,6 +190,10 @@ $(".input_img_right_eye").click(function() {
         $(".input_img_right_eye").prop("src", "../images/hide.png");
         $(".input_img_right_eye").height("29.93px");
     }
+});
+
+$("#add_new_rpc").click(function(){
+    addNewRPC($("#new_rpc").val());
 });
 
 // Handle pages visibility
