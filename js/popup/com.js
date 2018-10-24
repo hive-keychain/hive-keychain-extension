@@ -14,3 +14,11 @@ function getMK() {
         command: "getMk"
     });
 }
+
+// setRPC in the background
+function setRPC(rpc) {
+    chrome.runtime.sendMessage({
+        command: "setRPC",
+        rpc:rpc
+    });
+}

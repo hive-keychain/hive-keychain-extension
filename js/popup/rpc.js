@@ -21,7 +21,7 @@ function loadRPC(local,current_rpc){
     console.log(listRPC);
     console.log(RPCs);
     const currentrpc =current_rpc ==undefined?"https://api.steemit.com":current_rpc;
-    listRPC=listRPC.sort(function(x,y){ return x == currentrpc ? -1 : y == currentrpc ? 1 : 0; });
+    listRPC=[current_rpc].concat(listRPC.filter((e)=>{ return e!=current_rpc }));
     $("#custom_select_rpc select").html(listRPC.reduce((acc,val)=>{return acc+"<option>"+val+"</option>";},""));
 
 }
@@ -31,5 +31,6 @@ function switchRPC(rpc){
   steem.api.setOptions({
       url: rpc
   });
+  setRPC(rpc);
   chrome.storage.local.set({current_rpc:rpc});
 }

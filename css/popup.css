@@ -577,7 +577,10 @@ input:focus {
     padding-left: 10px !important;
 }
 
-
+#custom_select_rpc .select-items {
+  max-height: 250px;
+  overflow-x: hidden;
+}
 
 #wallet_amt,
 #wallet_currency {

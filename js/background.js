@@ -10,8 +10,10 @@ const LOCK_AFTER_SECONDS_IDLE = 15;
 // Lock after the browser is idle for more than 10 minutes
 
 //chrome.storage.local.remove("no_confirm");
-steem.api.setOptions({
-    url: 'https://api.steemit.com'
+chrome.storage.local.get(['current_rpc'], function(items) {
+  steem.api.setOptions({
+      url: items.current_rpc||'https://api.steemit.com'
+  });
 });
 
 //Listen to the other parts of the extension
@@ -22,7 +24,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             command: "sendBackMk",
             mk: mk
         }, function(response) {});
-    } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
+    } else if (msg.command == "setRPC") {
+      steem.api.setOptions({
+          url: msg.rpc||'https://api.steemit.com'
+      });
+    }
+      else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
     } else if (msg.command == "sendAutolock") { //Receive autolock from the popup (upon registration or unlocking)
         autolock = JSON.parse(msg.autolock);
