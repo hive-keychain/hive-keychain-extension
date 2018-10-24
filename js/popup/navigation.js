@@ -109,7 +109,7 @@ $("#change_pwd").click(function() {
 });
 
 // Navigate to preferences
-$("#preferences").click(function() {
+$("#preferences").click(async function() {
     $("#pref_div").show();
     $("#settings_div").hide();
     getPref = true;

@@ -204,9 +204,9 @@ function initiateCustomSelect() {
     x = document.getElementsByClassName("custom-select");
 
     for (i = 0; i < x.length; i++) {
-        if (i == 3 && custom_created)
+        if (i == 4 && custom_created)
             return;
-        if (i == 3 && !custom_created)
+        if (i == 4 && !custom_created)
             custom_created = true;
         selElmnt = x[i].getElementsByTagName("select")[0];
 
@@ -270,8 +270,10 @@ function initiateCustomSelect() {
                 $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
             } else if (manageKey) {
                 manageKeys(this.innerHTML);
-            } else if (getPref) {
+            } else if (getPref&&$(this).parent().attr("id")!="custom_select_rpc") {
                 setPreferences(this.innerHTML);
+            } else if(getPref&&$(this).parent().attr("id")=="custom_select_rpc"){
+                switchRPC(this.innerHTML);
             }
         });
     }

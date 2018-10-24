@@ -137,11 +137,11 @@ function initializeMainMenu() {
     initializeVisibility();
     manageKey = false;
     getPref = false;
-    chrome.storage.local.get(['accounts', 'last_account'], function(items) {
+    chrome.storage.local.get(['accounts', 'last_account','rpc'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
-
+        loadRPC(items.rpc);
         if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
             $("#main").show();

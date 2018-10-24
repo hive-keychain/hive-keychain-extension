@@ -160,7 +160,7 @@
         </div>
         <div class="setting_row" id="preferences">
             <img src="../images/preferences.png" />
-            <span>Notification Preferences</span>
+            <span>Preferences</span>
         </div>
         <div class="setting_row" id="autolock">
             <img src="../images/autolock.png" />
@@ -247,7 +247,13 @@
         <button id="delete_account">DELETE THIS ACCOUNT</button>
     </div>
     <div id="pref_div" class="settings_child">
-        <div class="back_enabled back_pref" style="font-size: 18px;">Notification Preferences</div>
+        <div class="back_enabled back_pref" style="font-size: 18px;">Preferences</div>
+        <h3>Select an RPC node</h1>
+        <div class="custom-select no-img" id="custom_select_rpc">
+            <select>
+            </select>
+        </div>
+        <h3>Notification Preferences</h1>
         <div class="custom-select usernames" id="custom_select_pref">
             <select>
             </select>
@@ -343,6 +349,7 @@
     <script src="../vendor/cryptojs.min.js"></script>
     <script src="../js/encrypt.js"></script>
     <script src="../js/popup/com.js"></script>
+    <script src="../js/popup/rpc.js"></script>
     <script src="../js/popup/accounts.js"></script>
     <script src="../js/popup/utils.js"></script>
     <script src="../js/popup/navigation.js"></script>

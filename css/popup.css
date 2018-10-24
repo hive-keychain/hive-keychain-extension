@@ -564,14 +564,16 @@ input:focus {
     margin-bottom: 1px;
 }
 
-#currency_send .select-items div::before,
-#currency_send .select-selected::before {
+#currency_send .select-items div::before, #custom_select_rpc .select-items div::before,
+#currency_send .select-selected::before, #custom_select_rpc .select-selected::before {
     content: none;
     padding: 0;
 }
 
 #currency_send .select-items div,
-#currency_send .select-selected {
+#currency_send .select-selected,
+#custom_select_rpc .select-items div,
+#custom_select_rpc .select-selected {
     padding-left: 10px !important;
 }
 
