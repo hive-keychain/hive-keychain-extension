@@ -13,7 +13,11 @@ setupInjection();
 
 // Answering the handshakes
 document.addEventListener('swHandshake', function(request) {
-    location.href = "javascript:steem_keychain.onGetHandshake(); void 0";
+    const req=JSON.stringify(request.detail);
+    if(request.detail.extension)
+      chrome.runtime.sendMessage(request.detail.extension,req );
+    else
+      location.href = "javascript:steem_keychain.onGetHandshake(); void 0";
 });
 
 // Answering the requests
@@ -25,7 +29,7 @@ document.addEventListener('swRequest', function(request) {
         chrome.runtime.sendMessage({
             command: "sendRequest",
             request: req,
-            domain: window.location.hostname,
+            domain: req.extensionName||window.location.hostname,
             request_id: req.request_id
         });
     } else {
@@ -49,6 +53,9 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
 });
 
 function sendResponse(response) {
+  if(response.data.extension&&response.data.extensionName)
+      chrome.runtime.sendMessage(response.data.extension,JSON.stringify(response));
+  else
     location.href = "javascript:steem_keychain.onGetResponse(" + JSON.stringify(response) + "); void 0";
 }
 
