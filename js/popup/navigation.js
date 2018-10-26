@@ -124,7 +124,7 @@ $("#preferences").click(async function() {
     $("#pref_div").show();
     $("#settings_div").hide();
     getPref = true;
-    setPreferences($(".select-selected").eq(2).html());
+    setPreferences($(".select-selected").eq(3).html());
 });
 
 // After checking master key, go back to Add Account Page
