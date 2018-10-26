@@ -23,7 +23,6 @@ document.addEventListener('swHandshake', function(request) {
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
     var req = request.detail;
-    console.log(req);
     // If all information are filled, send the request to the background, if not notify an error
     if (validate(req)) {
         chrome.runtime.sendMessage({
@@ -101,8 +100,6 @@ function isFilledAmt(obj) {
 }
 
 function isFilledAmtSP(obj) {
-  console.log(obj);
-    console.log(isFilled(obj.amount) , !isNaN(obj.amount) , (countDecimals(obj.amount) == 3&&obj.unit=="SP"),(countDecimals(obj.amount)==6&&obj.unit=="VESTS"));
     return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3&&obj.unit=="SP")||(countDecimals(obj.amount)==6&&obj.unit=="VESTS"));
 }
 
