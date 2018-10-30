@@ -11,8 +11,7 @@ const RPCs=[
 "https://rpc.steemliberator.com",
 "https://rpc.steemviz.com",
 "https://steemd.minnowsupportproject.org",
-"https://steemd.privex.io",
-"https://steemplus.app"];
+"https://steemd.privex.io"];
 
 function loadRPC(local,current_rpc){
     $("#custom_select_rpc").html("<select></select>");
@@ -20,10 +19,8 @@ function loadRPC(local,current_rpc){
     $("#pref_div .usernames .select-items").remove();
     let listRPC=[];
     listRPC=local!=undefined?JSON.parse(local).concat(RPCs):RPCs;
-    console.log(listRPC);
-    console.log(RPCs);
-    const currentrpc =current_rpc ==undefined?"https://api.steemit.com":current_rpc;
-    listRPC=[current_rpc].concat(listRPC.filter((e)=>{ return e!=current_rpc }));
+    const currentrpc =current_rpc||"https://api.steemit.com";
+    listRPC=[currentrpc].concat(listRPC.filter((e)=>{ return e!=currentrpc }));
     $("#custom_select_rpc select").html(listRPC.reduce((acc,val)=>{return acc+"<option>"+val+"</option>";},""));
     $("#custom_select_rpc select").append("<option>ADD RPC</option>");
 }
