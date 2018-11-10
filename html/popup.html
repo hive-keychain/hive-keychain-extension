@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Steem Keychain</title>
+    <link rel="stylesheet" type="text/css" href="../css/popup.css">
+</head>
+
+<body>
+    <div class="cloud"></div>
+    <div id="register">
+        <img src="../images/keychain_logo.png" class="logo-white" />
+        <p>Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight.
+            Secure. <br><br> Let's start by creating a Keychain password. You will
+            need this password to access or make changes to your account(s).</p>
+        <div class="input_container">
+            <input type="password" id="master_pwd" placeholder="New Password" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="password" id="confirm_master_pwd" placeholder="Confirm" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <button id="submit_master_pwd">Submit</button>
+    </div>
+    <div id="unlock">
+        <img src="../images/keychain_logo.png" class="logo-white" />
+        <p>It's a better way to access your STEEM accounts. Simple. Lightweight. Secure.<br/><br/>Be
+            Free and Steem On.</p>
+        <div class="input_container">
+            <input type="password" id="unlock_pwd" placeholder="Password" />
+            <img src="../images/lock.png" class="input_img" />
+            <img src="../images/hide.png" class="input_img_right_eye" />
+        </div>
+        <div class="input_container">
+            <button id="submit_unlock">Sign In</button>
+            <img src="../images/submit.png" class="input_img_right_submit" />
+        </div>
+        <a href="#" id="forgot">Forgot Password?</a>
+    </div>
+    <div id="forgot_div">
+        <div class="back_enabled" id="back_forgot">Reset account</div>
+        <p>If you forgot your password, you can clear your data but will have to enter
+            all your keys again.</p>
+        <button>Confirm</button>
+    </div>
+    <div class="error_div"></div>
+    <div class="success_div"></div>
+    <div id="main">
+        <div class="main_header">
+            <img class="icon" src="../images/keychain_icon2.png" />
+            <span>
+              <img src="../images/lock_wallet.png" id="lock"/>
+              <img src="../images/squares.png" id="settings"/>
+            </span>
+        </div>
+        <div class="custom-select custom-select-main usernames">
+            <select>
+            </select>
+        </div>
+        <div id="voting_power">
+            <span>VM: ...</span>
+            <span>RC: ...</span>
+        </div>
+        <div id="wallet">
+            <div id="wallet_amt">
+                <div class="wallet_infos">...</div>
+                <div class="wallet_infos">...</div>
+                <div class="wallet_infos">...</div>
+            </div>
+            <div id="wallet_currency">
+                <div>STEEM</div>
+                <div>SBD</div>
+                <div>SP</div>
+            </div>
+        </div>
+        <div id="account_value">
+            <div id="account_value_header">Estimated Account Value</div>
+            <div id="account_value_amt" class="wallet_infos">...</div>
+            <div id="account_value_currency">USD</div>
+        </div>
+        <button id="send">Send</button>
+        <button id="history">Wallet History</button>
+    </div>
+    <div id="estimation_info">
+        <div class="back_menu back_enabled">account value</div>
+        <div>
+            The estimated account value is a ballpark idea of what your funds are worth in USD.<br><br>            Please note that the value does not take into account pending market
+            trades, transfers, or transactions.
+        </div>
+    </div>
+    <div id="acc_transfers">
+        <div class="back_menu back_enabled">Wallet History</div>
+        <div id="transfer_rows"></div>
+    </div>
+    <div id="add_account_div">
+        <div class="back_menu back_enabled">Set up</div>
+        <p>Enter your Steem account name and either the master password or the private
+            posting or active key for that account below. Your master password will
+            NOT be saved and will only be used to generate your private keys.
+            <br/><br/> You may add / remove Steem accounts or keys at any time. If
+            you need to create a new Steem account, you can do so at
+            <a href="https://signup.steemit.com/" target="_blank" style="text-decoration: underline; color: white;">https://signup.steemit.com/</a>.
+        </p>
+
+        <div class="input_container">
+            <input type="text" id="username" placeholder="Username"></input>
+            <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="password" id="pwd" placeholder="Private key"></input>
+            <img src="../images/key.png" class="input_img" />
+        </div>
+        <button id="check_add_account">Import keys</button>
+    </div>
+    <div id="master_check">
+        <div class="back_add_key back_enabled">Import Keys</div>
+        <p>Import successful! <br><br>Please select the Keys you wish to store with
+            Steem Keychain:</p>
+        <div class="key_checkbox">
+            <label for="posting_key" class="checkbox_container">
+              <div>Posting Key</div>
+              <div>For posting and voting</div>
+              <input type="checkbox" checked="checked" id="posting_key"/>
+              <span class="checkmark"/>
+            </label>
+        </div>
+        <div class="key_checkbox">
+            <label for="active_key" class="checkbox_container">
+            <div>Active Key</div>
+            <div>For making transfers and orders</div>
+          <input type="checkbox" checked=true id="active_key"/>
+          <span class="checkmark"/>
+        </label>
+        </div>
+        <div class="key_checkbox">
+            <label for="memo_key" class="checkbox_container">
+            <div>Memo Key</div>
+            <div>For sending and reading memos</div>
+          <input type="checkbox" checked=true id="memo_key"/>
+          <span class="checkmark"/>
+        </label>
+        </div>
+        <button id="save_master">Save</button>
+    </div>
+    <div id="settings_div">
+        <div class="back_enabled back_menu">Settings</div>
+
+        <div class="setting_row" id="add_new_account">
+            <img src="../images/add_account.png" />
+            <span>Add Account</span>
+        </div>
+        <div class="setting_row" id="manage">
+            <img src="../images/accounts.png" />
+            <span>Manage Accounts</span>
+        </div>
+        <div class="setting_row" id="change_pwd">
+            <img src="../images/password.png" />
+            <span>Change Password</span>
+        </div>
+        <div class="setting_row" id="preferences">
+            <img src="../images/preferences.png" />
+            <span>Notification Preferences</span>
+        </div>
+        <div class="setting_row" id="autolock">
+            <img src="../images/autolock.png" />
+            <span>Auto Lock</span>
+        </div>
+        <div class="setting_row" id="about">
+            <img src="../images/info.png" />
+            <span>About Steem Keychain</span>
+        </div>
+        <div class="setting_row" id="clear">
+            <img src="../images/clear.png" />
+            <span>Clear All Data</span>
+        </div>
+    </div>
+    <div id="autolock_div" class="settings_child">
+        <div class="back_enabled back_pref">Autolock</div>
+        <div class="key_checkbox autolock">
+            <label for="default" class="checkbox_container">
+          <div>Default</div>
+          <div>Lock the keychain manually or when the browser is closed.</div>
+          <input type="checkbox" checked=true id="default"/>
+          <span class="checkmark"/>
+        </label>
+        </div>
+        <div class="key_checkbox autolock">
+            <label for="locked" class="checkbox_container">
+          <div>Device Lock</div>
+          <div>Auto-lock the keychain when the device locks.</div>
+          <input type="checkbox"  id="locked"/>
+          <span class="checkmark"/>
+        </label>
+        </div>
+        <div class="key_checkbox autolock">
+            <label for="idle" class="checkbox_container">
+          <div>Idle Lock</div>
+          <div>Auto-lock the keychain after the browser window is idle for the specified number of minutes.</div>
+          <input type="checkbox" id="idle"/>
+          <span class="checkmark"/>
+        </label>
+        </div>
+        <div class="input_container">
+            <input type="number" id="mn" placeholder="10"></input>
+        </div>
+        <button id="save_autolock">Save</button>
+    </div>
+    <div id="about_div" class="settings_child">
+        <div class="back_enabled back_pref">About</div>
+        <h3></h3>
+        <div class="about-content">The overall idea and concept for the Steem Keychain browser extension was
+            created by <a href="https://steemit.com/@yabapmatt" target="_blank">@yabapmatt</a>            who is a developer and witness on the Steem blockchain. It was primarily
+            developed by <a href="https://steemit.com/@stoodkev" target="_blank">@stoodkev</a>            who is also a Steem developer (SteemPlus) and witness. The design and
+            development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt
+            through their joint business Steem Monsters, which is a blockchain-based
+            collectible trading card game built on top of the Steem blockchain. Be
+            sure to check it out at <a href="https://steemmonsters.com" target="_blank">steemmonsters.com</a>!</div>
+    </div>
+    <div id="manage_keys" class="settings_child">
+        <div class="back_enabled back_pref">Manage Accounts</div>
+        <div class="custom-select usernames" id="custom_select_keys">
+            <select>
+          </select>
+        </div>
+        <div class="keys_info">
+            <span>POSTING KEY</span>
+            <span id="posting" class="remove_key">REMOVE</span>
+            <div class="private_key"></div>
+            <div class="public_key"></div>
+            <div class="img_add_key"></div>
+        </div>
+        <div class="keys_info">
+            <span>ACTIVE KEY</span>
+            <span id="active" class="remove_key">REMOVE</span>
+            <div class="private_key"></div>
+            <div class="public_key"></div>
+            <div class="img_add_key"></div>
+        </div>
+        <div class="keys_info">
+            <span>MEMO KEY</span>
+            <span id="memo" class="remove_key">REMOVE</span>
+            <div class="private_key"></div>
+            <div class="public_key"></div>
+            <div class="img_add_key"></div>
+        </div>
+        <button id="delete_account">DELETE THIS ACCOUNT</button>
+    </div>
+    <div id="pref_div" class="settings_child">
+        <div class="back_enabled back_pref" style="font-size: 18px;">Notification Preferences</div>
+        <div class="custom-select usernames" id="custom_select_pref">
+            <select>
+            </select>
+        </div>
+        <div class="info">View and update the websites and transaction types for which you have opted
+            not to recieve a confirmation prompt.</div>
+        <div id="pref">No preferences</div>
+    </div>
+    <div id="add_key_div">
+        <div class="back_enabled">Add Key</div>
+        <p>Add Private keys to your account, you cannot add the Master Key here.</p>
+        <div class="input_container">
+            <input type="password" id="new_key" placeholder="Private Key"></input>
+            <img src="../images/key.png" class="input_img" />
+        </div>
+        <button id="add_new_key">Import key</button>
+    </div>
+    <div id="copied">
+        <div>Key copied to clipboard!</div>
+    </div>
+    <input id="fake_input" />
+    <div id="change_password" class="settings_child">
+        <div class="back_enabled back_pref">Change Password</div>
+        <p>Input your old password for confirmation, then chose a new password.</p>
+        <div class="input_container">
+            <input type="password" id="old_pwd" placeholder="Old Password" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="password" id="new_pwd" placeholder="New Password" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="password" id="confirm_new_pwd" placeholder="Confirm" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <button id="confirm_change_pwd">Confirm</button>
+    </div>
+    <div id="send_div">
+        <div class="back_menu back_enabled">Transfer Funds</div>
+        <div class="transfer_balance">
+            <div>STEEM Balance</div>
+            <div></div>
+        </div>
+        <div class="input_container">
+            <input type="text" id="recipient" placeholder="USERNAME" />
+            <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <input type="number" id="amt_send" placeholder="0.000" />
+        <div class="custom-select" id="currency_send">
+            <select>
+          <option value="STEEM">STEEM</option>
+            <option value="SBD">SBD</option>
+          </select>
+        </div>
+        <input type="text" placeholder="MEMO (optional)" id="memo_send" />
+        <button id="send_transfer">Send Now</button>
+        <div class="loader" id="send_loader" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
+    </div>
+    <div id="witness_votes">
+        <img src="../images/delete.png" id="close_witness" style="display: none;" />
+        <div id="witness_toggle">Click here to support Steem Keychain development by casting your witness
+            votes for the creators!</div>
+        <div class="witness_container" id="yabapmatt">
+            <button>@yabapmatt</button>
+            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
+            />
+        </div>
+        <div class="witness_container" id="stoodkev">
+            <button>@stoodkev</button>
+            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
+            />
+        </div>
+        <div class="witness_container" id="aggroed">
+            <button>@aggroed</button>
+            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
+            />
+        </div>
+    </div>
+    <script src="../vendor/jquery.js"></script>
+    <script src="../vendor/decode.min.js"></script>
+    <script src="../vendor/steemjs.js"></script>
+    <script src="../vendor/md5.min.js"></script>
+    <script src="../vendor/cryptojs.min.js"></script>
+    <script src="../js/encrypt.js"></script>
+    <script src="../js/utils.js"></script>
+    <script src="../js/popup.js"></script>
+</body>
+
+</html>

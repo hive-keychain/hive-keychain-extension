@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 31 31" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <filter id="c" x="-.36" y="-.36" width="1.72" height="1.72" color-interpolation-filters="sRGB">
+   <feGaussianBlur stdDeviation="2.46429"/>
+  </filter>
+  <linearGradient id="d" x1="131.75" x2="111.82" y1="738.97" y2="716.11" gradientUnits="userSpaceOnUse">
+   <stop stop-color="#bb2c29" offset="0"/>
+   <stop stop-color="#f55d4f" offset="1"/>
+  </linearGradient>
+ </defs>
+ <g transform="matrix(.90129 0 0 .90129 -98.276 -646.24)">
+  <path transform="translate(4.6429 7.1429)" d="m137.5 727.18a15.893 15.893 0 1 1 -31.786 0 15.893 15.893 0 1 1 31.786 0z" fill="url(#d)" fill-rule="evenodd" stroke="#7b0000" stroke-width="1.6643"/>
+  <path transform="matrix(1.3957 0 0 1.3064 -34.447 -210.22)" d="m122.14 721.65a8.2143 8.2143 0 1 1 -16.429 0 8.2143 8.2143 0 1 1 16.429 0z" fill="#ff1300" fill-opacity=".75" fill-rule="evenodd" filter="url(#c)"/>
+  <path d="m120.06 724.62-3.25 3.25 6.0312 6.0313-6.0312 6 3.2188 3.25 6.0312-6.0313 6 6 3.25-3.2188-6-6 6.0312-6.0313-3.25-3.25-6.0312 6.0312-6-6.0312z" opacity=".43"/>
+  <path d="m132.44 725.47-6.0312 6.0313-6-6-3.25 3.25 6 6-6 6.0312 3.25 3.25 6-6.0312 6.0312 6.0312 3.25-3.25-6.0312-6.0313 6.0312-6-3.25-3.2813z" fill="#fff"/>
+ </g>
+</svg>
