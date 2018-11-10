@@ -10,8 +10,10 @@ const LOCK_AFTER_SECONDS_IDLE = 15;
 // Lock after the browser is idle for more than 10 minutes
 
 //chrome.storage.local.remove("no_confirm");
-steem.api.setOptions({
-    url: 'https://api.steemit.com'
+chrome.storage.local.get(['current_rpc'], function(items) {
+  steem.api.setOptions({
+      url: items.current_rpc||'https://api.steemit.com'
+  });
 });
 
 //Listen to the other parts of the extension
@@ -22,7 +24,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             command: "sendBackMk",
             mk: mk
         }, function(response) {});
-    } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
+    } else if (msg.command == "setRPC") {
+      steem.api.setOptions({
+          url: msg.rpc||'https://api.steemit.com'
+      });
+    }
+      else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
     } else if (msg.command == "sendAutolock") { //Receive autolock from the popup (upon registration or unlocking)
         autolock = JSON.parse(msg.autolock);
@@ -80,7 +87,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     }
 });
 
-function performTransaction(data, tab) {
+async function performTransaction(data, tab) {
     try {
         switch (data.type) {
             case "vote":
@@ -123,12 +130,20 @@ function performTransaction(data, tab) {
 
                 break;
             case "transfer":
-
                 let ac = accounts.list.find(function(e) {
                     return e.name == data.username
                 });
+                let memo=data.memo||"";
                 let key_transfer = ac.keys.active;
-                steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, data.memo, function(err, result) {
+                if(data.memo&&data.memo.length>0&&data.memo[0]=="#"){
+                  try{
+                      const receiver=await  steem.api.getAccountsAsync([data.to]);
+                      const memoReceiver=receiver["0"].memo_key;
+                      memo= window.encodeMemo(ac.keys.memo, memoReceiver, memo);
+                  }
+                  catch(e){console.log(e);}
+                }
+                steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, memo, function(err, result) {
                     const message = {
                         command: "answerRequest",
                         msg: {
@@ -443,15 +458,27 @@ function checkBeforeCreate(request, tab, domain) {
                 accounts = (items.accounts == undefined || items.accounts == {
                     list: []
                 }) ? null : decryptToJson(items.accounts, mk);
+                let account =null;
                 if (request.type == "transfer") {
                     let tr_accounts = accounts.list.filter(a => a.keys.hasOwnProperty("active"));
-
+                    const encode=(request.memo!=undefined&&request.memo.length>0&&request.memo[0]=="#");
+                    const enforce=request.enforce||encode;
+                    if(encode)
+                      account = accounts.list.find(function(e) {
+                        return e.name == request.username;
+                      });
                     // If a username is specified, check that its active key has been added to the wallet
-                    if (request.username && !tr_accounts.find(a => a.name == request.username)) {
+                    if (enforce && request.username && !tr_accounts.find(a => a.name == request.username)) {
                         createPopup(function() {
                             sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
                         });
-                    } else {
+                    }
+                    else if(encode&&!account.keys.hasOwnProperty("memo")){
+                      createPopup(function() {
+                          sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
+                      });
+                    }
+                    else {
                         function callback() {
                             chrome.runtime.sendMessage({
                                 command: "sendDialogConfirm",
@@ -470,7 +497,7 @@ function checkBeforeCreate(request, tab, domain) {
                         }
                         createPopup(callback);
                     } else {
-                        let account = accounts.list.find(function(e) {
+                         account = accounts.list.find(function(e) {
                             return e.name == request.username;
                         });
                         let typeWif = getRequiredWifType(request);

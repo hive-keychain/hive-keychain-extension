@@ -13,19 +13,22 @@ setupInjection();
 
 // Answering the handshakes
 document.addEventListener('swHandshake', function(request) {
-    location.href = "javascript:steem_keychain.onGetHandshake(); void 0";
+    const req=JSON.stringify(request.detail);
+    if(request.detail.extension)
+      chrome.runtime.sendMessage(request.detail.extension,req );
+    else
+      location.href = "javascript:steem_keychain.onGetHandshake(); void 0";
 });
 
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
     var req = request.detail;
-    console.log(request);
     // If all information are filled, send the request to the background, if not notify an error
     if (validate(req)) {
         chrome.runtime.sendMessage({
             command: "sendRequest",
             request: req,
-            domain: window.location.hostname,
+            domain: req.extensionName||window.location.hostname,
             request_id: req.request_id
         });
     } else {
@@ -49,6 +52,9 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
 });
 
 function sendResponse(response) {
+  if(response.data.extension&&response.data.extensionName)
+      chrome.runtime.sendMessage(response.data.extension,JSON.stringify(response));
+  else
     location.href = "javascript:steem_keychain.onGetResponse(" + JSON.stringify(response) + "); void 0";
 }
 
@@ -61,11 +67,21 @@ function validate(req) {
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
             (req.type == "broadcast" && isFilled(req.operations) && isFilled(req.method)) ||
             (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req) && isFilledDelegationMethod(req.unit)) ||
-            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency)));
+            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)));
 }
 
 
 // Functions used to check the incoming data
+
+function hasTransferInfo(req){
+  if (req.enforce)
+    return isFilled(req.username);
+  else if(isFilled(req.memo)&&req.memo[0]=="#")
+    return isFilled(req.username);
+  else
+    return true;
+}
+
 function isFilled(obj) {
     return obj != undefined && obj != null && obj != "";
 }
@@ -86,8 +102,6 @@ function isFilledAmt(obj) {
 }
 
 function isFilledAmtSP(obj) {
-  console.log(obj);
-    console.log(isFilled(obj.amount) , !isNaN(obj.amount) , (countDecimals(obj.amount) == 3&&obj.unit=="SP"),(countDecimals(obj.amount)==6&&obj.unit=="VESTS"));
     return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3&&obj.unit=="SP")||(countDecimals(obj.amount)==6&&obj.unit=="VESTS"));
 }
 

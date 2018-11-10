@@ -58,7 +58,8 @@ body {
 #pref_div,
 #estimation_info,
 #add_key_div,
-#change_password {
+#change_password,
+#add_rpc_div {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -147,7 +148,8 @@ input:focus {
 #send_div input,
 #add_key_div input,
 #change_password input,
-#autolock_div input {
+#autolock_div input,
+#add_rpc_div input {
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
@@ -165,6 +167,10 @@ input:focus {
 #change_password input,
 #autolock_div input {
     padding-left: 65px;
+}
+
+#add_rpc_div input {
+    padding-left: 30px;
 }
 
 #register input::placeholder,
@@ -188,7 +194,8 @@ input:focus {
 #delete_account,
 #add_key_div button,
 #change_password button,
-#autolock_div button {
+#autolock_div button,
+#add_rpc_div button {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -307,7 +314,8 @@ input:focus {
 #pref_div,
 #estimation_info,
 #change_password,
-#autolock_div {
+#autolock_div,
+#add_rpc_div {
     display: none;
 }
 
@@ -323,12 +331,21 @@ input:focus {
     color: green;
 }
 
-.key_checkbox {
+.key_checkbox, .checkbox_memo {
     display: block;
     height: 32px;
     margin-bottom: 35px;
 }
 
+.checkbox_memo .checkbox_container div {
+  font-size: 20px;
+  padding-top: 10px;
+  color:#009C9C;
+}
+
+.checkbox_memo {
+  display: none;
+}
 /* The container */
 
 .checkbox_container {
@@ -555,18 +572,23 @@ input:focus {
     margin-bottom: 1px;
 }
 
-#currency_send .select-items div::before,
-#currency_send .select-selected::before {
+#currency_send .select-items div::before, #custom_select_rpc .select-items div::before,
+#currency_send .select-selected::before, #custom_select_rpc .select-selected::before {
     content: none;
     padding: 0;
 }
 
 #currency_send .select-items div,
-#currency_send .select-selected {
+#currency_send .select-selected,
+#custom_select_rpc .select-items div,
+#custom_select_rpc .select-selected {
     padding-left: 10px !important;
 }
 
-
+#custom_select_rpc .select-items {
+  max-height: 250px;
+  overflow-x: hidden;
+}
 
 #wallet_amt,
 #wallet_currency {
@@ -964,12 +986,18 @@ input:focus {
     padding-left: 65px;
 }
 
-.deletePref {
+.deletePref, .deleteCustomRPC {
     display: inline-block;
     width: 16px;
     height: 16px;
     cursor: pointer;
     margin-top: 4px;
+}
+
+#custom_rpc {
+  height:250px;
+  margin-top: 20px;
+  overflow-y: scroll;
 }
 
 .preferences-site-container {

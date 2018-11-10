@@ -40,6 +40,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "wrongMk") {
         $("#error-mk").html("Wrong password!");
     } else if (msg.command == "sendDialogConfirm") {
+
+        let enforce = null;
+        let encode=null;
         // Display confirmation window
         $("#confirm_footer").show();
         $('#modal-body-msg').show();
@@ -128,6 +131,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#custom_key").html(msg.data.method);
                 break;
             case "transfer":
+                encode=(msg.data.memo!=undefined&&msg.data.memo.length>0&&msg.data.memo[0]=="#");
+                enforce=msg.data.enforce||encode;
+                console.log(encode,enforce,msg.data);
+                if(enforce){
+                  $("#username").show();
+                  $("#username").prev().show();
+                  $("#transfer_acct_list").hide();
+                }
                 $("#to").html('@' + msg.data.to);
                 $("#amount").html(msg.data.amount + " " + msg.data.currency);
                 $("#memo").html(msg.data.memo);
@@ -177,7 +188,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         // Closes the window and launch the transaction in background
         $("#proceed").click(function() {
             let data = msg.data;
-            if (data.type == "transfer")
+            if (data.type == "transfer"&&!enforce)
                 data.username = $("#select_transfer option:selected").val();
             console.log(data);
             chrome.runtime.sendMessage({

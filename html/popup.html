@@ -160,7 +160,7 @@
         </div>
         <div class="setting_row" id="preferences">
             <img src="../images/preferences.png" />
-            <span>Notification Preferences</span>
+            <span>Preferences</span>
         </div>
         <div class="setting_row" id="autolock">
             <img src="../images/autolock.png" />
@@ -247,7 +247,13 @@
         <button id="delete_account">DELETE THIS ACCOUNT</button>
     </div>
     <div id="pref_div" class="settings_child">
-        <div class="back_enabled back_pref" style="font-size: 18px;">Notification Preferences</div>
+        <div class="back_enabled back_pref" style="font-size: 18px;">Preferences</div>
+        <h3>Select an RPC node</h1>
+        <div class="custom-select no-img" id="custom_select_rpc">
+            <select>
+            </select>
+        </div>
+        <h3>Notification Preferences</h1>
         <div class="custom-select usernames" id="custom_select_pref">
             <select>
             </select>
@@ -255,6 +261,15 @@
         <div class="info">View and update the websites and transaction types for which you have opted
             not to recieve a confirmation prompt.</div>
         <div id="pref">No preferences</div>
+    </div>
+    <div id="add_rpc_div">
+        <div class="back_enabled">Add RPC</div>
+        <p>Add your RPC node here:</p>
+        <div class="input_container">
+            <input type="text" id="new_rpc" placeholder="RPC Node"></input>
+        </div>
+        <button id="add_new_rpc">Add RPC</button>
+        <div id="custom_rpc"></div>
     </div>
     <div id="add_key_div">
         <div class="back_enabled">Add Key</div>
@@ -304,6 +319,13 @@
           </select>
         </div>
         <input type="text" placeholder="MEMO (optional)" id="memo_send" />
+        <div class='checkbox_memo'>
+            <label for='encrypt_memo' class='checkbox_container'>
+            <div>Encrypt Memo</div>
+              <input type='checkbox' id='encrypt_memo'/>
+              <span class='checkmark'/>
+            </label>
+        </div>
         <button id="send_transfer">Send Now</button>
         <div class="loader" id="send_loader" style="display:none">
             <div><img src="../images/loading.gif" /></div>
@@ -335,8 +357,13 @@
     <script src="../vendor/md5.min.js"></script>
     <script src="../vendor/cryptojs.min.js"></script>
     <script src="../js/encrypt.js"></script>
-    <script src="../js/utils.js"></script>
-    <script src="../js/popup.js"></script>
+    <script src="../js/popup/com.js"></script>
+    <script src="../js/popup/rpc.js"></script>
+    <script src="../js/popup/accounts.js"></script>
+    <script src="../js/popup/utils.js"></script>
+    <script src="../js/popup/navigation.js"></script>
+    <script src="../js/popup/settings.js"></script>
+    <script src="../js/popup/popup.js"></script>
 </body>
 
 </html>
