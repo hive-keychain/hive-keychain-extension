@@ -225,22 +225,6 @@ async function performTransaction(data, tab) {
                 break;
             case "broadcast":
                     const operations = data.operations;
-                    /*[
-                        ['comment',
-                            {
-                                parent_author: data.parent_username,
-                                parent_permlink: data.parent_perm,
-                                author: data.username,
-                                permlink: data.permlink,
-                                title: data.title,
-                                body: data.body,
-                                json_metadata: data.json_metadata
-                            }
-                        ],
-                        ['comment_options',
-                            JSON.parse(data.comment_options)
-                        ]
-                    ];*/
                     const keys = {};
                     keys[data.typeWif] = key;
                     steem.broadcast.send({
