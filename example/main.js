@@ -54,3 +54,10 @@ $("#send_delegation").click(function() {
         console.log(response);
     });
 });
+
+$("#send_signature").click(function(){
+  steem_keychain.signBuffer($("#sign_username").val(), $("#sign_message").val(), $("#sign_method option:selected").text(), function(response) {
+      console.log('main js response - sign');
+      console.log(response);
+  });
+});
