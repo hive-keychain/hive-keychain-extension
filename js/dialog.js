@@ -27,9 +27,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
                 $('#unlock-dialog').focus();
             }
-            $("#dialog_header").html((msg.msg.error == "locked") ? "Unlock Keychain" : "Error");
+            $("#dialog_header").text((msg.msg.error == "locked") ? "Unlock Keychain" : "Error");
             $("#dialog_header").addClass("error_header");
-            $("#error_dialog").html(msg.msg.display_msg);
+            $("#error_dialog").text(msg.msg.display_msg);
             $("#modal-body-msg").hide();
             $(".modal-body-error").show();
             $(".dialog-message").hide();
@@ -64,13 +64,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         if (msg.data.display_msg) {
             $('#modal-body-msg .msg-data').css('max-height', '245px');
             $("#dialog_message").show();
-            $("#dialog_message").html(msg.data.display_msg);
+            $("#dialog_message").text(msg.data.display_msg);
         }
 
         if (type == "transfer") {
             $('#modal-body-msg .msg-data').css('max-height', '200px');
             let accounts = msg.accounts;
-            console.log(accounts, msg.data);
             if (msg.data.username !== undefined) {
                 let i = msg.accounts.findIndex(function(elt) {
                     return elt.name == msg.data.username;
@@ -78,10 +77,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
                 let first = [accounts[i]];
                 delete accounts[i];
-                console.log(first, accounts);
                 accounts = first.concat(accounts);
-
-                console.log(accounts);
             }
             for (acc of accounts) {
                 if (acc != undefined)
@@ -92,7 +88,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         var message = "";
         $("." + type).show();
         $(".modal-body-error").hide();
-        $("#username").html("@" + msg.data.username);
+        $("#username").text("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
         const keyVerifyAction = msg.data.type == 'decode' || msg.data.type == 'signBuffer';
         if (type != "transfer" && type != "delegation") {
@@ -109,7 +105,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#wif").html(msg.data.method);
                 $('#modal-body-msg').css('max-height', '235px');
                 $("#dialog_message").show();
-                $("#dialog_message").html('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
+                $("#dialog_message").text('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
                 break;
             case "broadcast":
                 $("#custom_data").click(function() {
@@ -119,29 +115,29 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#custom_key").html(msg.data.method);
                 break;
             case "vote":
-                $("#weight").html(msg.data.weight / 100 + " %");
-                $("#author").html('@' + msg.data.author);
-                $("#perm").html(msg.data.permlink);
+                $("#weight").text(msg.data.weight / 100 + " %");
+                $("#author").text('@' + msg.data.author);
+                $("#perm").text(msg.data.permlink);
                 break;
             case "custom":
                 $("#custom_data").click(function() {
                     $("#custom_json").slideToggle();
                 });
-                $("#custom_json").html(msg.data.id + '<br/>' + msg.data.json);
-                $("#custom_key").html(msg.data.method);
+                $("#custom_json div").eq(0).text(msg.data.id );
+                $("#custom_json div").eq(1).text(msg.data.json);
+                $("#custom_key").text(msg.data.method);
                 break;
             case "transfer":
                 encode=(msg.data.memo!=undefined&&msg.data.memo.length>0&&msg.data.memo[0]=="#");
                 enforce=msg.data.enforce||encode;
-                console.log(encode,enforce,msg.data);
                 if(enforce){
                   $("#username").show();
                   $("#username").prev().show();
                   $("#transfer_acct_list").hide();
                 }
-                $("#to").html('@' + msg.data.to);
-                $("#amount").html(msg.data.amount + " " + msg.data.currency);
-                $("#memo").html(msg.data.memo);
+                $("#to").text('@' + msg.data.to);
+                $("#amount").text(msg.data.amount + " " + msg.data.currency);
+                $("#memo").text(msg.data.memo);
                 if (msg.data.memo.length > 0)
                     $(".transfer_memo").show();
                 break;
@@ -152,36 +148,35 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#options_toggle").click(function() {
                     $("#options").slideToggle();
                 });
-                $("#title").html(msg.data.title);
-                $("#permlink").html(msg.data.permlink);
-                $("#body").html(msg.data.body);
-                $("#json_metadata").html(msg.data.json_metadata);
-                $("#parent_url").html(msg.data.parent_perm);
-                $("#parent_username").html(msg.data.parent_username);
+                $("#title").text(msg.data.title);
+                $("#permlink").text(msg.data.permlink);
+                $("#body").text(msg.data.body);
+                $("#json_metadata").text(msg.data.json_metadata);
+                $("#parent_url").text(msg.data.parent_perm);
+                $("#parent_username").text(msg.data.parent_username);
                 if (msg.data.comment_options != "") {
                     let options = JSON.parse(msg.data.comment_options);
-                    $("#max_payout").html(options.max_accepted_payout);
-                    $("#percent_sbd").html(options.percent_steem_dollars);
-                    $("#allow_votes").html(options.allow_votes);
-                    $("#allow_curation_rewards").html(options.allow_curation_rewards);
+                    $("#max_payout").text(options.max_accepted_payout);
+                    $("#percent_sbd").text(options.percent_steem_dollars);
+                    $("#allow_votes").text(options.allow_votes);
+                    $("#allow_curation_rewards").text(options.allow_curation_rewards);
                     let beneficiaries = "";
                     for (benef of options.extensions[0][1].beneficiaries) {
                         beneficiaries += "@" + benef.account + " (" + (benef.weight / 100).toFixed(2) + "%) ";
                     }
                     if (beneficiaries != "")
-                        $("#beneficiaries").html(beneficiaries);
+                        $("#beneficiaries").text(beneficiaries);
                     else
                         $("#beneficiaries_div").hide();
                 } else $("#options_toggle").hide();
                 if (msg.data.parent_username == "" || msg.data.parent_username == null || msg.data.parent_username == undefined) {
                     $("#parent_username").hide();
-                    console.log("hideee");
                     $("#parent_username_title").hide();
                 }
                 break;
             case "delegation":
-                $("#delegatee").html("@" + msg.data.delegatee);
-                $("#amt_sp").html(msg.data.amount +" "+ msg.data.unit);
+                $("#delegatee").text("@" + msg.data.delegatee);
+                $("#amt_sp").text(msg.data.amount +" "+ msg.data.unit);
                 break;
         }
 
@@ -190,7 +185,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             let data = msg.data;
             if (data.type == "transfer"&&!enforce)
                 data.username = $("#select_transfer option:selected").val();
-            console.log(data);
             chrome.runtime.sendMessage({
                 command: "acceptTransaction",
                 data: data,
@@ -214,8 +208,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
     } else if (msg.command == "answerRequest") {
         $('#tx_loading').hide();
-        $("#dialog_header").html((msg.msg.success == true) ? "Success!" : "Error!");
-        $("#error_dialog").html(msg.msg.message);
+        $("#dialog_header").text((msg.msg.success == true) ? "Success!" : "Error!");
+        $("#error_dialog").text(msg.msg.message);
         $(".modal-body-error").show();
         $("#error-ok").click(function() {
             window.close();

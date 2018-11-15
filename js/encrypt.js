@@ -19,11 +19,9 @@ function decryptToJson(msg, pwd) {
         if (decrypted.hash != null && decrypted.hash == md5(decrypted.list))
             return decrypted;
         else {
-            console.log("wrong_hash");
             return null;
         }
     } catch (e) {
-        console.log("sthwrong");
         return null;
     }
 }
