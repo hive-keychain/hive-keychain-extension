@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             });
         }
     } else if (msg.command == "wrongMk") {
-        $("#error-mk").text("Wrong password!");
+        $("#error-mk").html("Wrong password!");
     } else if (msg.command == "sendDialogConfirm") {
 
         let enforce = null;
@@ -57,7 +57,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'delegation': 'Delegation'
         };
         var title = titles[type];
-        $("#dialog_header").text(title);
+        $("#dialog_header").html(title);
 
         if (msg.data.display_msg) {
             $('#modal-body-msg .msg-data').css('max-height', '245px');
@@ -112,7 +112,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#custom_data").click(function() {
                     $("#custom_json").slideToggle();
                 });
-                $("#custom_json").text(msg.data.id + '<br/>' + msg.data.json);
+                $("#custom_json div").eq(0).text(msg.data.id );
+                $("#custom_json div").eq(1).text(msg.data.json);
                 $("#custom_key").text(msg.data.method);
                 break;
             case "transfer":
