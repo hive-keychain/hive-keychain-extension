@@ -51,6 +51,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         var titles = {
             'custom': 'Custom Transaction',
             'decode': 'Verify Key',
+            'signBuffer': 'Sign Message',
+            'broadcast': 'Broadcast',
             'post': 'Post',
             'vote': 'Vote',
             'transfer': 'Transfer',
@@ -88,9 +90,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $(".modal-body-error").hide();
         $("#username").text("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
+        const keyVerifyAction = msg.data.type == 'decode' || msg.data.type == 'signBuffer';
         if (type != "transfer" && type != "delegation") {
             $("#keep_div").show();
-            var prompt_msg = (msg.data.type == 'decode') ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
+            var prompt_msg = keyVerifyAction ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
                 "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
             $("#keep_label").text(prompt_msg);
         } else {
@@ -98,10 +101,18 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }
         switch (type) {
             case "decode":
-                $("#wif").text(msg.data.method);
+            case "signBuffer":
+                $("#wif").html(msg.data.method);
                 $('#modal-body-msg').css('max-height', '235px');
                 $("#dialog_message").show();
                 $("#dialog_message").text('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
+                break;
+            case "broadcast":
+                $("#custom_data").click(function() {
+                    $("#custom_json").slideToggle();
+                });
+                $("#custom_json").html(JSON.stringify(msg.data.operations));
+                $("#custom_key").html(msg.data.method);
                 break;
             case "vote":
                 $("#weight").text(msg.data.weight / 100 + " %");
@@ -181,7 +192,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 domain: msg.domain,
                 keep: $("#keep").is(':checked')
             });
-            if (type == 'decode')
+            if (type == 'decode' || type == 'signBuffer')
                 window.close();
             else {
                 $("#confirm_footer").hide();

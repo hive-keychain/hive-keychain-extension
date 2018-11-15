@@ -31,8 +31,10 @@ function setPreferences(name) {
             for (let obj in pref[name]) {
                 $("#pref").append("<h4>Website: " + obj + "</h4>");
                 var display_names = {
+                    'broadcast': 'Broadcast',
                     'custom': 'Custom Transaction',
                     'decode': 'Verify Key',
+                    'signBuffer': 'Sign',
                     'post': 'Post',
                     'vote': 'Vote'
                 }
