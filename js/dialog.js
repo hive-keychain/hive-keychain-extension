@@ -68,7 +68,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         if (type == "transfer") {
             $('#modal-body-msg .msg-data').css('max-height', '200px');
             let accounts = msg.accounts;
-            console.log(accounts, msg.data);
             if (msg.data.username !== undefined) {
                 let i = msg.accounts.findIndex(function(elt) {
                     return elt.name == msg.data.username;
@@ -76,10 +75,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
                 let first = [accounts[i]];
                 delete accounts[i];
-                console.log(first, accounts);
                 accounts = first.concat(accounts);
-
-                console.log(accounts);
             }
             for (acc of accounts) {
                 if (acc != undefined)
@@ -122,7 +118,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             case "transfer":
                 encode=(msg.data.memo!=undefined&&msg.data.memo.length>0&&msg.data.memo[0]=="#");
                 enforce=msg.data.enforce||encode;
-                console.log(encode,enforce,msg.data);
                 if(enforce){
                   $("#username").show();
                   $("#username").prev().show();
@@ -164,7 +159,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 } else $("#options_toggle").hide();
                 if (msg.data.parent_username == "" || msg.data.parent_username == null || msg.data.parent_username == undefined) {
                     $("#parent_username").hide();
-                    console.log("hideee");
                     $("#parent_username_title").hide();
                 }
                 break;
@@ -179,7 +173,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             let data = msg.data;
             if (data.type == "transfer"&&!enforce)
                 data.username = $("#select_transfer option:selected").val();
-            console.log(data);
             chrome.runtime.sendMessage({
                 command: "acceptTransaction",
                 data: data,

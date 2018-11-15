@@ -32,8 +32,6 @@ var steem_keychain = {
             permlink: permlink,
             comment_options: comment_options
         };
-        console.log(request);
-
         this.dispatchCustomEvent("swRequest", request, callback);
     },
 

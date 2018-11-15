@@ -27,7 +27,6 @@ chrome.storage.local.get(['autolock'], function(items) {
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
         chrome.storage.local.get(['accounts','current_rpc'], function(items) {
-            console.log(items.current_rpc||'https://api.steemit.com');
             steem.api.setOptions({
                 url: items.current_rpc||'https://api.steemit.com'
             });

@@ -110,7 +110,6 @@ async function showUserData(result) {
     const [vd, rc] = [await getVotingDollarsPerAccount(100, result["0"], rewardBalance, recentClaims, steemPrice, votePowerReserveRate, false),
         await getRC(result["0"].name)
     ];
-    console.log(vd, rc);
     $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
     $("#voting_power span").eq(0).html($("#voting_power span").eq(0).html() + " ($" + vd + ")");
 
@@ -118,8 +117,6 @@ async function showUserData(result) {
     $("#voting_power span").eq(1).attr("title", "Full in: " + rc.fullin);
 
     $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)));
-
-    console.log(rc);
 }
 
 // Adding accounts. Private keys can be entered individually or by the mean of the
@@ -204,7 +201,6 @@ $("#save_master").click(function() {
 
 // Add new account to Chrome local storage (encrypted with AES)
 function addAccount(account) {
-    console.log(accounts_json);
     if (accounts_json != null) {
         let newlist = [];
         for (let acc of accounts_json.list) {
