@@ -27,9 +27,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
                 $('#unlock-dialog').focus();
             }
-            $("#dialog_header").html((msg.msg.error == "locked") ? "Unlock Keychain" : "Error");
+            $("#dialog_header").text((msg.msg.error == "locked") ? "Unlock Keychain" : "Error");
             $("#dialog_header").addClass("error_header");
-            $("#error_dialog").html(msg.msg.display_msg);
+            $("#error_dialog").text(msg.msg.display_msg);
             $("#modal-body-msg").hide();
             $(".modal-body-error").show();
             $(".dialog-message").hide();
@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             });
         }
     } else if (msg.command == "wrongMk") {
-        $("#error-mk").html("Wrong password!");
+        $("#error-mk").text("Wrong password!");
     } else if (msg.command == "sendDialogConfirm") {
 
         let enforce = null;
@@ -57,12 +57,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'delegation': 'Delegation'
         };
         var title = titles[type];
-        $("#dialog_header").html(title);
+        $("#dialog_header").text(title);
 
         if (msg.data.display_msg) {
             $('#modal-body-msg .msg-data').css('max-height', '245px');
             $("#dialog_message").show();
-            $("#dialog_message").html(msg.data.display_msg);
+            $("#dialog_message").text(msg.data.display_msg);
         }
 
         if (type == "transfer") {
@@ -86,7 +86,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         var message = "";
         $("." + type).show();
         $(".modal-body-error").hide();
-        $("#username").html("@" + msg.data.username);
+        $("#username").text("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
         if (type != "transfer" && type != "delegation") {
             $("#keep_div").show();
@@ -98,22 +98,22 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }
         switch (type) {
             case "decode":
-                $("#wif").html(msg.data.method);
+                $("#wif").text(msg.data.method);
                 $('#modal-body-msg').css('max-height', '235px');
                 $("#dialog_message").show();
-                $("#dialog_message").html('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
+                $("#dialog_message").text('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
                 break;
             case "vote":
-                $("#weight").html(msg.data.weight / 100 + " %");
-                $("#author").html('@' + msg.data.author);
-                $("#perm").html(msg.data.permlink);
+                $("#weight").text(msg.data.weight / 100 + " %");
+                $("#author").text('@' + msg.data.author);
+                $("#perm").text(msg.data.permlink);
                 break;
             case "custom":
                 $("#custom_data").click(function() {
                     $("#custom_json").slideToggle();
                 });
-                $("#custom_json").html(msg.data.id + '<br/>' + msg.data.json);
-                $("#custom_key").html(msg.data.method);
+                $("#custom_json").text(msg.data.id + '<br/>' + msg.data.json);
+                $("#custom_key").text(msg.data.method);
                 break;
             case "transfer":
                 encode=(msg.data.memo!=undefined&&msg.data.memo.length>0&&msg.data.memo[0]=="#");
@@ -123,9 +123,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                   $("#username").prev().show();
                   $("#transfer_acct_list").hide();
                 }
-                $("#to").html('@' + msg.data.to);
-                $("#amount").html(msg.data.amount + " " + msg.data.currency);
-                $("#memo").html(msg.data.memo);
+                $("#to").text('@' + msg.data.to);
+                $("#amount").text(msg.data.amount + " " + msg.data.currency);
+                $("#memo").text(msg.data.memo);
                 if (msg.data.memo.length > 0)
                     $(".transfer_memo").show();
                 break;
@@ -136,24 +136,24 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#options_toggle").click(function() {
                     $("#options").slideToggle();
                 });
-                $("#title").html(msg.data.title);
-                $("#permlink").html(msg.data.permlink);
-                $("#body").html(msg.data.body);
-                $("#json_metadata").html(msg.data.json_metadata);
-                $("#parent_url").html(msg.data.parent_perm);
-                $("#parent_username").html(msg.data.parent_username);
+                $("#title").text(msg.data.title);
+                $("#permlink").text(msg.data.permlink);
+                $("#body").text(msg.data.body);
+                $("#json_metadata").text(msg.data.json_metadata);
+                $("#parent_url").text(msg.data.parent_perm);
+                $("#parent_username").text(msg.data.parent_username);
                 if (msg.data.comment_options != "") {
                     let options = JSON.parse(msg.data.comment_options);
-                    $("#max_payout").html(options.max_accepted_payout);
-                    $("#percent_sbd").html(options.percent_steem_dollars);
-                    $("#allow_votes").html(options.allow_votes);
-                    $("#allow_curation_rewards").html(options.allow_curation_rewards);
+                    $("#max_payout").text(options.max_accepted_payout);
+                    $("#percent_sbd").text(options.percent_steem_dollars);
+                    $("#allow_votes").text(options.allow_votes);
+                    $("#allow_curation_rewards").text(options.allow_curation_rewards);
                     let beneficiaries = "";
                     for (benef of options.extensions[0][1].beneficiaries) {
                         beneficiaries += "@" + benef.account + " (" + (benef.weight / 100).toFixed(2) + "%) ";
                     }
                     if (beneficiaries != "")
-                        $("#beneficiaries").html(beneficiaries);
+                        $("#beneficiaries").text(beneficiaries);
                     else
                         $("#beneficiaries_div").hide();
                 } else $("#options_toggle").hide();
@@ -163,8 +163,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 }
                 break;
             case "delegation":
-                $("#delegatee").html("@" + msg.data.delegatee);
-                $("#amt_sp").html(msg.data.amount +" "+ msg.data.unit);
+                $("#delegatee").text("@" + msg.data.delegatee);
+                $("#amt_sp").text(msg.data.amount +" "+ msg.data.unit);
                 break;
         }
 
@@ -196,8 +196,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
     } else if (msg.command == "answerRequest") {
         $('#tx_loading').hide();
-        $("#dialog_header").html((msg.msg.success == true) ? "Success!" : "Error!");
-        $("#error_dialog").html(msg.msg.message);
+        $("#dialog_header").text((msg.msg.success == true) ? "Success!" : "Error!");
+        $("#error_dialog").text(msg.msg.message);
         $(".modal-body-error").show();
         $("#error-ok").click(function() {
             window.close();
