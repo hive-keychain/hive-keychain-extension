@@ -115,7 +115,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#custom_data").click(function() {
                     $("#custom_json").slideToggle();
                 });
-                $("#custom_json").text(msg.data.operations);
+                $("#custom_json").html(JSON.stringify(msg.data.operations));
                 $("#custom_key").text(msg.data.method);
                 break;
             case "vote":
