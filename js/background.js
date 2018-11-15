@@ -231,6 +231,7 @@ async function performTransaction(data, tab) {
                         operations,
                         extensions: []
                     }, keys, function(err, result) {
+                        console.log(err,result);
                         const message = {
                             command: "answerRequest",
                             msg: {
@@ -489,7 +490,7 @@ function checkBeforeCreate(request, tab, domain) {
 
                         if (req.type == "custom")
                             req.method = typeWif;
-                        
+
                         if (req.type == "broadcast") {
                             req.typeWif = typeWif;
                         }

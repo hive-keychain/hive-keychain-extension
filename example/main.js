@@ -56,8 +56,15 @@ $("#send_delegation").click(function() {
 });
 
 $("#send_signature").click(function(){
-  steem_keychain.signBuffer($("#sign_username").val(), $("#sign_message").val(), $("#sign_method option:selected").text(), function(response) {
+  steem_keychain.requestSignBuffer($("#sign_username").val(), $("#sign_message").val(), $("#sign_method option:selected").text(), function(response) {
       console.log('main js response - sign');
+      console.log(response);
+  });
+});
+
+$("#send_broadcast").click(function(){
+  steem_keychain.requestBroadcast($("#broadcast_username").val(), $("#broadcast_operations").val(), $("#broadcast_method option:selected").text(), function(response) {
+      console.log('main js response - broadcast');
       console.log(response);
   });
 });
