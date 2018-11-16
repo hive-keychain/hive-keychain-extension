@@ -66,6 +66,7 @@ function validate(req) {
             (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req)) ||
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
             (req.type == "broadcast" && isFilled(req.operations) && isFilled(req.method)) ||
+            (req.type == "signedCall" && isFilled(req.method) && isFilled(req.json) && isFilled(req.typeWif)) ||
             (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req) && isFilledDelegationMethod(req.unit)) ||
             (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)));
 }

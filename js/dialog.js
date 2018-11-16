@@ -53,6 +53,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'decode': 'Verify Key',
             'signBuffer': 'Sign Message',
             'broadcast': 'Broadcast',
+            'signedCall': 'Signed Call',
             'post': 'Post',
             'vote': 'Vote',
             'transfer': 'Transfer',
@@ -110,13 +111,22 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
               $("#dialog_message").show();
               $("#dialog_message").text('The website ' + msg.domain + ' would like you to sign a message using the ' + msg.data.method + ' key for the account: @' + msg.data.username);
               $("#message_sign").text(msg.data.message);
-            break;
+                break;
             case "broadcast":
                 $("#custom_data").click(function() {
                     $("#custom_json").slideToggle();
                 });
                 $("#custom_json").html(JSON.stringify(msg.data.operations));
                 $("#custom_key").text(msg.data.method);
+                break;
+            case "signedCall":
+                $("#custom_data").click(function() {
+                    $("#custom_json").slideToggle();
+                });
+                $("#custom_json div").eq(0).text(msg.data.method);
+                $("#custom_json div").eq(1).text(msg.data.json);
+
+                $("#custom_key").text(msg.data.typeWif);
                 break;
             case "vote":
                 $("#weight").text(msg.data.weight / 100 + " %");
