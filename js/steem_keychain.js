@@ -47,7 +47,7 @@ var steem_keychain = {
             type: "signedCall",
             username: account,
             method,
-            json: params,
+            params,
             typeWif: key,
         };
 

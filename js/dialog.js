@@ -124,7 +124,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                     $("#custom_json").slideToggle();
                 });
                 $("#custom_json div").eq(0).text(msg.data.method);
-                $("#custom_json div").eq(1).text(JSON.stringify(msg.data.json));
+                $("#custom_json div").eq(1).text(JSON.stringify(msg.data.params));
 
                 $("#custom_key").text(msg.data.typeWif);
                 break;

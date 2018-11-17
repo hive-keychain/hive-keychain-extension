@@ -252,7 +252,7 @@ async function performTransaction(data, tab) {
             case "signedCall":
                 window.signedCall(
                     data.method,
-                    data.json,
+                    data.params,
                     data.username,
                     key,
                     function(err, result) {
@@ -589,7 +589,6 @@ function getRequiredWifType(request) {
             return "posting";
             break;
         case "custom":
-        case "broadcast":
             return (request.method == null || request.method == undefined) ? "posting" : request.method.toLowerCase();
             break;
         case "broadcast":
