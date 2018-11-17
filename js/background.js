@@ -225,12 +225,12 @@ async function performTransaction(data, tab) {
                 break;
             case "broadcast":
                 const operations = data.operations;
-                const keys = {};
-                keys[data.typeWif] = key;
+                const broadcastKeys = {};
+                broadcastKeys[data.typeWif] = key;
                 steem.broadcast.send({
                     operations,
                     extensions: []
-                }, keys, function(err, result) {
+                }, broadcastKeys, function(err, result) {
                     console.log(err,result);
                     const message = {
                         command: "answerRequest",
@@ -250,13 +250,11 @@ async function performTransaction(data, tab) {
                 });
                 break;
             case "signedCall":
-                const keys = {};
-                keys[data.typeWif] = key;
                 window.signedCall(
                     data.method,
                     data.json,
                     data.username,
-                    keys,
+                    key,
                     function(err, result) {
                         console.log(err,result);
                         const message = {
