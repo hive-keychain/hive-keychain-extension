@@ -70,7 +70,7 @@ $("#send_broadcast").click(function(){
 });
 
 $("#send_signed_call").click(function(){
-  steem_keychain.requestSignedCall($("#signed_call_username").val(), $("#signed_call_method").val(), $("#signed_call_params").val(), $("#signed_call_key_type option:selected").text(), function(response) {
+  steem_keychain.requestSignedCall($("#signed_call_username").val(), $("#signed_call_method").val(), JSON.parse($("#signed_call_params").val()), $("#signed_call_key_type option:selected").text(), function(response) {
       console.log('main js response - signed call');
       console.log(response);
   });
