@@ -224,13 +224,38 @@ async function performTransaction(data, tab) {
                 }
                 break;
             case "broadcast":
-                    const operations = data.operations;
-                    const keys = {};
-                    keys[data.typeWif] = key;
-                    steem.broadcast.send({
-                        operations,
-                        extensions: []
-                    }, keys, function(err, result) {
+                const operations = data.operations;
+                const broadcastKeys = {};
+                broadcastKeys[data.typeWif] = key;
+                steem.broadcast.send({
+                    operations,
+                    extensions: []
+                }, broadcastKeys, function(err, result) {
+                    console.log(err,result);
+                    const message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: err == null,
+                            error: err,
+                            result: result,
+                            data: data,
+                            message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                });
+                break;
+            case "signedCall":
+                window.signedCall(
+                    data.method,
+                    data.params,
+                    data.username,
+                    key,
+                    function(err, result) {
                         console.log(err,result);
                         const message = {
                             command: "answerRequest",
@@ -248,76 +273,76 @@ async function performTransaction(data, tab) {
                         key = null;
                         accounts = null;
                     });
-                    break;
-          case "delegation":
-              steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
-                  let delegated_vest=null;
-                  if(data.unit=="SP"){
-                    const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
-                    const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
-                    delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
-                    delegated_vest = delegated_vest.toFixed(6);
-                    delegated_vest = delegated_vest.toString() + ' VESTS';
-                  }
-                  else {
-                    delegated_vest = data.amount + ' VESTS';
-                  }
-                  steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
-                      const message = {
-                          command: "answerRequest",
-                          msg: {
-                              success: error == null,
-                              error: error,
-                              result: result,
-                              data: data,
-                              message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                              request_id: request_id
-                          }
-                      };
-                      chrome.tabs.sendMessage(tab, message);
-                      chrome.runtime.sendMessage(message);
-                      key = null;
-                      accounts = null;
-                  });
-              });
-              break;
-          case "decode":
-              try {
-                  let decoded = window.decodeMemo(key, data.message);
+                break;
+            case "delegation":
+                steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
+                    let delegated_vest=null;
+                    if(data.unit=="SP"){
+                      const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
+                      const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
+                      delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
+                      delegated_vest = delegated_vest.toFixed(6);
+                      delegated_vest = delegated_vest.toString() + ' VESTS';
+                    }
+                    else {
+                      delegated_vest = data.amount + ' VESTS';
+                    }
+                    steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
+                        const message = {
+                            command: "answerRequest",
+                            msg: {
+                                success: error == null,
+                                error: error,
+                                result: result,
+                                data: data,
+                                message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                                request_id: request_id
+                            }
+                        };
+                        chrome.tabs.sendMessage(tab, message);
+                        chrome.runtime.sendMessage(message);
+                        key = null;
+                        accounts = null;
+                    });
+                });
+                break;
+            case "decode":
+                try {
+                    let decoded = window.decodeMemo(key, data.message);
 
-                  let message = {
-                      command: "answerRequest",
-                      msg: {
-                          success: true,
-                          error: null,
-                          result: decoded,
-                          data: data,
-                          message: "Memo decoded succesfully",
-                          request_id: request_id
-                      }
-                  };
-                  chrome.tabs.sendMessage(tab, message);
-                  chrome.runtime.sendMessage(message);
-                  key = null;
-                  accounts = null;
-              } catch (err) {
-                  let message = {
-                      command: "answerRequest",
-                      msg: {
-                          success: false,
-                          error: 'decode_error',
-                          result: null,
-                          data: data,
-                          message: "Could not verify key.",
-                          request_id: request_id
-                      }
-                  };
-                  chrome.tabs.sendMessage(tab, message);
-                  chrome.runtime.sendMessage(message);
-                  key = null;
-                  accounts = null;
-              }
-              break;
+                    let message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: true,
+                            error: null,
+                            result: decoded,
+                            data: data,
+                            message: "Memo decoded succesfully",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                } catch (err) {
+                    let message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: false,
+                            error: 'decode_error',
+                            result: null,
+                            data: data,
+                            message: "Could not verify key.",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                }
+                break;
             case "signBuffer":
                 try {
                     let signed = window.signBuffer(data.message, key);
@@ -564,9 +589,12 @@ function getRequiredWifType(request) {
             return "posting";
             break;
         case "custom":
-        case "broadcast":
             return (request.method == null || request.method == undefined) ? "posting" : request.method.toLowerCase();
             break;
+        case "broadcast":
+            return request.method.toLowerCase();
+        case "signedCall":
+            return request.typeWif.toLowerCase();
         case "transfer":
             return "active";
             break;

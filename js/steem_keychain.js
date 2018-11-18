@@ -42,6 +42,18 @@ var steem_keychain = {
         this.dispatchCustomEvent("swRequest", request, callback);
     },
 
+    requestSignedCall: function(account, method, params, key, callback) {
+        var request = {
+            type: "signedCall",
+            username: account,
+            method,
+            params,
+            typeWif: key,
+        };
+
+        this.dispatchCustomEvent("swRequest", request, callback);
+    },
+
     // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
     requestPost: function(account, title, body, parent_perm, parent_account, json_metadata, permlink, comment_options, callback) {
         var request = {

@@ -35,6 +35,7 @@ function setPreferences(name) {
                     'custom': 'Custom Transaction',
                     'decode': 'Verify Key',
                     'signBuffer': 'Sign',
+                    'signedCall': 'Signed Call',
                     'post': 'Post',
                     'vote': 'Vote'
                 }
