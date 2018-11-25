@@ -3,6 +3,7 @@
 // Visibility state on the main menu
 function initializeVisibility() {
     $("#accounts").html("");
+    $("#claim").hide();
     $("#add_account_div").hide();
     $(".error_div").hide();
     $(".success_div").hide();
@@ -27,6 +28,7 @@ function initializeVisibility() {
     $("#keys_info").empty();
     $("#balance_steem").html("");
     $("#balance_sbd").html("");
+    $("#witness_div").hide();
     $("#balance_sp").html("");
     $(".checkbox_memo").hide();
     $("#encrypt_memo").prop("checked",false);
@@ -177,6 +179,18 @@ $("#witness_toggle").click(function() {
     $("#witness_votes").animate({
         top: ($("#witness_votes").css('top') == '555px') ? 505 : 555
     }, 500);
+});
+
+$("#witness").click(function(){
+  $("#main").hide();
+  $("#witness_div").show();
+});
+
+$("#witness_div button").click(function(){
+  $("#witness_div button").removeClass("active_wit");
+  $(this).addClass("active_wit");
+  $(".sub_wit").hide();
+  $("#"+$(this).id+"_div").show();
 });
 
 // Show / hide password

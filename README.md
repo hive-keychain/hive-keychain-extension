@@ -110,8 +110,3 @@ steem_keychain.requestCustomJson(account_name, custom_json_id, key_type, json, d
 ```
 
 Where "key_type" can be "Posting" or "Active" and "display_name" is a user-friendly name of the operation to be shown to the user so they know what operation is being broadcast (ex. "Steem Monsters Card Transfer").
-
-## Related Projects
-
-* [ngx-steem-keychain](https://github.com/steeveproject/ngx-steem-keychain) -
-  Native [Angular](https://angular.io) framework integration.

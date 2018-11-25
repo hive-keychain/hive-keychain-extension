@@ -1,7 +1,7 @@
 // All functions regarding the handling of a particular account
-
 // Load account information
 function loadAccount(name) {
+  console.log("Load account "+name);
     let account = accounts_json.list.filter(function(obj, i) {
         return obj.name === name;
     })[0];
@@ -9,18 +9,25 @@ function loadAccount(name) {
         active_account = account;
         $("#send").toggle(account.keys.hasOwnProperty("active"));
         $(".wallet_infos").html("...");
-        $("#voting_power span").eq(0).html("VM: ...");
-        $("#voting_power span").eq(1).html("RC: ...");
+        $("#vm").html("...");
+        $("#rc").html("...");
         steem.api.getAccounts([account.name], async function(err, result) {
             if (result.length != 0) {
+              console.log(result);
+                witness_votes=result[0].witness_votes;
+                proxy=result[0].proxy;
                 const vm = await getVotingMana(result[0]);
-                $("#voting_power span").eq(0).html("VM: " + vm + "%");
-                $("#voting_power span").eq(0).attr("title", "Full in: " + getTimeBeforeFull(vm * 100));
+                $("#vm").html(vm + "%");
+                const full=(vm==100?"":'Full in ')+getTimeBeforeFull(vm * 100);
+                $("#vm_info").attr("title", full );
 
-                if (totalSteem != null)
+                if (totalSteem != null){
                     showUserData(result);
+                    claimRewards(result);
+                    prepareWitnessDiv();
+                }
                 else
-                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync()])
+                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync(),getWitnessRanks()])
                     .then(function(values) {
                         votePowerReserveRate = values["0"].vote_power_reserve_rate;
                         totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
@@ -29,10 +36,13 @@ function loadAccount(name) {
                         recentClaims = values["2"].recent_claims;
                         steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
                         dynamicProp = values[0];
-                        priceSBD = values["3"];
-                        priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
+                        priceSBD = values["4"];
+                        priceSteem = values["3"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
                         priceBTC = values["5"];
+                        witness_ranks=values["6"];
+                        claimRewards(result);
                         showUserData(result);
+                        prepareWitnessDiv();
                     });
 
                 if (!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {
@@ -111,12 +121,18 @@ async function showUserData(result) {
         await getRC(result["0"].name)
     ];
     $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
-    $("#voting_power span").eq(0).html($("#voting_power span").eq(0).html() + " ($" + vd + ")");
+    $("#vm").html($("#vm").html() + " ($" + vd + ")");
 
-    $("#voting_power span").eq(1).html("RC: " + rc.estimated_pct + "%");
-    $("#voting_power span").eq(1).attr("title", "Full in: " + rc.fullin);
+    $("#rc").html(rc.estimated_pct + "%");
+    const full=(rc.estimated_pct==100?"":'Full in ')+rc.fullin;
+    $("#rc_info").attr("title", full);
+    console.log(priceSBD*priceBTC,priceSteem*priceBTC);
+    console.log(parseInt(sbd),sp,steem_p);
+    console.log(priceBTC*priceSBD,parseInt(sbd),priceBTC*priceSBD * parseInt(sbd));
+    console.log(priceBTC* priceSteem * (parseInt(sp) + parseInt(steem_p)));
+    $("#account_value_amt").html(numberWithCommas("$ "+((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2))+"\t  USD");
 
-    $("#account_value_amt").html(numberWithCommas(((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)));
+    console.log(rc);
 }
 
 // Adding accounts. Private keys can be entered individually or by the mean of the
@@ -386,4 +402,41 @@ function updateAccount() {
     chrome.storage.local.set({
         accounts: encryptJson(accounts_json, mk)
     });
+}
+
+function claimRewards(result){
+  console.log("Check claim rewards for "+active_account.name);
+  const reward_sbd=result[0].reward_sbd_balance;
+  const reward_vests=result[0].reward_vesting_balance;
+  const reward_sp=steem.formatter.vestToSteem(reward_vests, dynamicProp.total_vesting_shares, dynamicProp.total_vesting_fund_steem).toFixed(3)+" SP";
+  const reward_steem=result[0].reward_steem_balance;
+  if(hasReward(reward_sbd,reward_sp,reward_steem)){
+    $("#claim").show();
+      $("#claim").unbind("click").click(function(){
+          $("#claim_rewards").show();
+          let rewardText="You have Rewards ready to redeem in the amount of:<br>";
+          if(getValFromString(reward_sp)!=0)
+            rewardText+=(reward_sp+" / ");
+          if(getValFromString(reward_sbd)!=0)
+            rewardText+=(reward_sbd+" / ");
+          if(getValFromString(reward_steem)!=0)
+            rewardText+=(reward_steem+" / ");
+            rewardText=rewardText.slice(0,-3);
+          $("#claim_rewards p").html(rewardText);
+          $("#redeem_rewards").unbind("click").click(function(){
+          $("#claim_rewards button").prop("disabled",true);
+            if(active_account.keys.posting)
+              steem.broadcast.claimRewardBalance(active_account.keys.posting, active_account.name, reward_steem, reward_sbd, reward_vests, function(err, result) {
+                $("#claim_rewards").hide();
+                $("#claim_rewards button").prop("disabled",false);
+                initializeMainMenu();
+              });
+            else showError("You need to enter your private Posting key to claim rewards!");
+          });
+          $(".close_claim").unbind("click").click(function(){
+              $("#claim_rewards").hide();
+          });
+      });
+  }
+  else $("#claim").hide();
 }
