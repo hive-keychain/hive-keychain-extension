@@ -29,8 +29,8 @@ function loadAccount(name) {
                         recentClaims = values["2"].recent_claims;
                         steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
                         dynamicProp = values[0];
-                        priceSBD = values["3"];
-                        priceSteem = values["4"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
+                        priceSBD = values["4"];
+                        priceSteem = values["3"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
                         priceBTC = values["5"];
                         showUserData(result);
                     });
