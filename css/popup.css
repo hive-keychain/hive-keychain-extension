@@ -844,10 +844,6 @@ input:focus {
 
 /* optional: show position indicator in red */
 
-::-webkit-scrollbar-thumb {
-    background: #FF0000;
-}
-
 
 .transfer_row {
     padding: 11px 32px 11px 32px;
@@ -1336,4 +1332,78 @@ input:focus {
         pointer-events: auto;
         padding-top: 1px;
         cursor: pointer;
+}
+
+.no_active::after{
+    background-image: none !important;
+}
+
+#proxy{
+  display: none;
+}
+
+#list_wit,#top100_div {
+  max-height: 290px;
+  margin-top: 16px;
+  margin-left: -32px;
+  margin-right: -32px;
+  overflow: visible scroll;
+}
+.witness-row{
+  padding:  12px 32px 12px 32px;
+  font-size: 16px;
+}
+
+.witness-row:nth-of-type(odd){
+  background-color: rgba(0,156,156,0.4);
+}
+
+.witness-row:nth-of-type(odd){
+  background-color: rgba(0,156,156,0.8);
+}
+
+.isActive {
+  display: inline-block;
+  text-transform: uppercase;
+}
+
+.witName {
+  display: inline-block;
+  width: 190px;
+}
+
+.sub_wit{
+  display: none;
+}
+
+#voted_div{
+  display: block;
+}
+
+.wit-voted::after, .wit-not-voted::after {
+  content: "";
+  background-image: url("../images/voted.png");
+  background-size: 18px 18px;
+  display: inline-block;
+  background-repeat: no-repeat;
+  height: 18px;
+  width: 18px;
+  text-align: right;
+  float: right;
+  pointer-events: auto;
+  padding-top: 1px;
+  cursor: pointer;
+}
+
+.wit-not-voted::after {
+  opacity: 0.3;
+}
+
+.wit-rank{
+  display: inline-block;
+  width: 30px;
+}
+
+.no_posting::after{
+  cursor: default;
 }

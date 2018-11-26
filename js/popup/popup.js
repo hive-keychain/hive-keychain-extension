@@ -4,7 +4,6 @@ let active_account, priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerR
 const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 let custom_created = false;
 let manageKey, getPref = false;
-let witness_ranks=null;
 //chrome.storage.local.remove("rpc");
 
 $("#copied").hide();
