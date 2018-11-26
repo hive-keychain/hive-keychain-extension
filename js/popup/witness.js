@@ -15,11 +15,12 @@ function prepareWitnessDiv(){
   else
     $("#proxy div").removeClass("no_active");
 
-
+$("#list_wit").empty();
   for(wit of witness_votes){
     const isActive=(witness_ranks.filter((e)=>{return e.name==wit}).length==1)?"active":"disabled";
     $("#list_wit").append("<div class='witness-row'><span class='witName'>@"+wit+"</span><span class='isActive'>"+isActive+"</span></div>");
   }
+  $("#top100_div").empty();
 
   let i=0;
   for(wit of witness_ranks){
@@ -30,7 +31,7 @@ function prepareWitnessDiv(){
   }
 
 
-    if(!active_account.keys.hasOwnProperty("posting"))
+    if(!active_account.keys.hasOwnProperty("active"))
       $('.wit-vote').addClass("no_posting");
     else
       $(".wit-vote").removeClass("no_posting");
@@ -39,6 +40,30 @@ function prepareWitnessDiv(){
     $("#proxy").hide();
     steem.broadcast.accountWitnessProxy(active_account.keys.active, active_account.name, "", function(err, result) {
       console.log(err, result);
+    });
+  });
+
+  $(".wit-vote").click(function(){
+    const voted_wit=$(this).hasClass("wit-voted");
+    const that=this;
+
+    console.log(voted_wit);
+    steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, $(this).prev().html().replace("@",""), $(this).hasClass("wit-voted")?0:1, function(err, result) {
+      console.log(err, result);
+      if(err==null){
+        if(voted_wit){
+          console.log("unvoted");
+          $(that).removeClass("wit-voted");
+          $(that).addClass("wit-not-voted");
+          $("#votes_remaining span").html(parseInt($("#votes_remaining span").html())+1);
+        }
+        else {
+          console.log("voted");
+            $(that).removeClass("wit-not-voted");
+            $(that).addClass("wit-voted");
+            $("#votes_remaining span").html(parseInt($("#votes_remaining span").html())-1);
+        }
+      }
     });
   });
 }

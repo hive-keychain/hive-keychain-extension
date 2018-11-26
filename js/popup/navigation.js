@@ -190,7 +190,6 @@ $("#witness_div button").click(function(){
   $("#witness_div button").removeClass("active_wit");
   $(this).addClass("active_wit");
   $(".sub_wit").hide();
-  console.log("#"+$(this).attr("id")+"_div");
   $("#"+$(this).attr("id")+"_div").show();
 });
 
