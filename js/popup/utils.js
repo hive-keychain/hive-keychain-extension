@@ -224,6 +224,14 @@ function showError(message) {
     }, 5000);
 }
 
+function showConfirm(message) {
+    $(".success_div").html(message);
+    $(".success_div").show();
+    setTimeout(function() {
+        $(".success_div").hide();
+    }, 5000);
+}
+
 // Custom select dropdown
 function initiateCustomSelect() {
     /*look for any elements with the class "custom-select":*/

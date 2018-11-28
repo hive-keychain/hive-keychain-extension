@@ -36,14 +36,14 @@ $("#list_wit").empty();
     else
       $(".wit-vote").removeClass("no_posting");
 
-  $("#proxy div").click(function(){
+  $("#proxy div").unbind("click").click(function(){
     $("#proxy").hide();
     steem.broadcast.accountWitnessProxy(active_account.keys.active, active_account.name, "", function(err, result) {
       console.log(err, result);
     });
   });
 
-  $(".wit-vote").click(function(){
+  $(".wit-vote").unbind("click").click(function(){
     const voted_wit=$(this).hasClass("wit-voted");
     const that=this;
 
@@ -67,20 +67,24 @@ $("#list_wit").empty();
     });
   });
 
-  $("#vote_wit").click(function(){
+  $("#vote_wit").unbind("click").click(function(){
     //console.log($("#witness_div select option:selected").val());
     if($("#witness_div select option:selected").val()=="Wit"){
       steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, $("#wit-username").val(), 1, function(err, result) {
         if(err==null){
+            showConfirm("Succesfully voted for @"+active_account.name);
             loadAccount(active_account.name);
         }
+        else showError("Something went wrong! Please try again!");
       });
     }
     else {
       steem.broadcast.accountWitnessProxy(active_account.keys.active, active_account.name, $("#wit-username").val(), function(err, result) {
         if(err==null){
-            loadAccount(active_account.name);
+          showConfirm("Succesfully chose @"+active_account.name+" for proxy");
+          loadAccount(active_account.name);
         }
+        else showError("Something went wrong! Please try again!");
       });
     }
   });
