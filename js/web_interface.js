@@ -107,7 +107,7 @@ function isFilledAmtSP(obj) {
 }
 
 function isFilledWeight(obj) {
-    return isFilled(obj) && !isNaN(obj) && obj >= 0 && obj <= 10000 && countDecimals(obj) == 0;
+    return isFilled(obj) && !isNaN(obj) && obj >= -10000 && obj <= 10000 && countDecimals(obj) == 0;
 }
 
 function isFilledCurrency(obj) {
