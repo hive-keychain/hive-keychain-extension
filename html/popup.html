@@ -362,15 +362,28 @@
       <div class="back_enabled back_menu">Witness Voting</div>
       <span id="wit_disclaimer">You may vote for up to 30 witnesses.</span>
       <div id="votes_remaining">Votes remaining: <span>30</span></div>
-      <button id="voted" class="active_wit">Voted</button>
-      <button id="top100">Top 100</button>
-      <button id="add_wit">Add</button>
+      <button class="wit-menu"id="voted" class="active_wit">Voted</button>
+      <button class="wit-menu"id="top100">Top 100</button>
+      <button class="wit-menu"id="add_wit">Add</button>
       <div class="sub_wit" id="voted_div">
         <div id="proxy"><div></div></div>
         <div id="list_wit"></div>
       </div>
       <div class="sub_wit" id="top100_div"></div>
-      <div class="sub_wit" id="add_wit_div"></div>
+      <div class="sub_wit" id="add_wit_div">
+        <p>You may manually enter a user to vote for Witness or to set as Proxy.</p>
+        <div class="input_container">
+            <input type="text" id="wit-username" placeholder="Username"></input>
+            <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <div class="custom-select" id="custom_select_wit">
+          <select>
+            <option value="Wit">Vote for Witness</option>
+            <option value="Proxy">Chose Proxy</option>
+          </select>
+        </div>
+        <button id="vote_wit">Submit</button>
+      </div>
 
     </div>
     <div id="witness_votes">

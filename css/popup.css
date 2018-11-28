@@ -150,7 +150,8 @@ input:focus {
 #add_key_div input,
 #change_password input,
 #autolock_div input,
-#add_rpc_div input {
+#add_rpc_div input,
+#witness_div input {
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
@@ -166,7 +167,8 @@ input:focus {
 #unlock input,
 #add_account_div input,
 #change_password input,
-#autolock_div input {
+#autolock_div input,
+#witness_div input {
     padding-left: 65px;
 }
 
@@ -177,7 +179,8 @@ input:focus {
 #register input::placeholder,
 #unlock input::placeholder,
 #add_account_div input::placeholder,
-#autolock_div input::placeholder {
+#autolock_div input::placeholder,
+#witness_div input::placeholder {
     color: #72B7C1;
     text-transform: uppercase;
     font-family: Futura;
@@ -1292,7 +1295,7 @@ input:focus {
   margin-bottom: 29.5px;
 }
 
-#witness_div button {
+.wit-menu {
   width: 90px !important;
 }
 
@@ -1406,4 +1409,22 @@ input:focus {
 
 .no_posting::after{
   cursor: default;
+}
+
+#custom_select_wit .select-selected::before{
+  background: none !important;
+}
+
+#custom_select_wit .select-selected{
+  padding-left: 20px;
+  background-color: rgba(0,96,96,0.68) !important;
+}
+
+#custom_select_wit {
+  margin-top: 0 !important;
+}
+
+#vote_wit {
+  width: 100% !important;
+  margin-top: 40px;
 }

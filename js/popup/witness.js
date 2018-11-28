@@ -66,4 +66,22 @@ $("#list_wit").empty();
       }
     });
   });
+
+  $("#vote_wit").click(function(){
+    //console.log($("#witness_div select option:selected").val());
+    if($("#witness_div select option:selected").val()=="Wit"){
+      steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, $("#wit-username").val(), 1, function(err, result) {
+        if(err==null){
+            loadAccount(active_account.name);
+        }
+      });
+    }
+    else {
+      steem.broadcast.accountWitnessProxy(active_account.keys.active, active_account.name, $("#wit-username").val(), function(err, result) {
+        if(err==null){
+            loadAccount(active_account.name);
+        }
+      });
+    }
+  });
 }

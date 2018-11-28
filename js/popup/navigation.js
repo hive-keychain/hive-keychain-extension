@@ -186,7 +186,7 @@ $("#witness").click(function(){
   $("#witness_div").show();
 });
 
-$("#witness_div button").click(function(){
+$(".wit-menu").click(function(){
   $("#witness_div button").removeClass("active_wit");
   $(this).addClass("active_wit");
   $(".sub_wit").hide();
