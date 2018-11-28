@@ -553,11 +553,14 @@ function checkBeforeCreate(request, tab, domain) {
 
 function hasNoConfirm(arr, data, domain) {
     try {
-      if(req.method=="active")
+      if(data.method=="active"){
+        console.log("active");
         return false;
+      }
       else
         return JSON.parse(arr)[data.username][domain][data.type] == true;
     } catch (e) {
+      console.log(e);
         return false;
     }
 }
