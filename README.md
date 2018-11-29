@@ -111,6 +111,51 @@ steem_keychain.requestCustomJson(account_name, custom_json_id, key_type, json, d
 
 Where "key_type" can be "Posting" or "Active" and "display_name" is a user-friendly name of the operation to be shown to the user so they know what operation is being broadcast (ex. "Steem Monsters Card Transfer").
 
+### Sign
+
+Sites can request that the extension sign messages:
+
+```
+steem_keychain.requestSignBuffer(account_name, message, key_type, function(response) {
+        console.log(response);
+});
+```
+
+Where "message" is any string and "key_type" can be "Posting" or "Active". This is equivalent to
+
+```Signature.signBufferSha256(hash.sha256(message), wif).toHex();```
+
+### Broadcast
+
+Sites can request that the extension sign and broadcast general operations allowed by the `steem-js` library:
+
+```
+steem_keychain.requestBroadcast(account_name, operations, key_type, function(response) {
+        console.log(response);
+});
+```
+
+Where "operations" is the list of operations and "key_type" can be "Posting" or "Active". This is
+roughly equivalent to
+
+```
+broadcast.send({ extensions: [], operations }, keys, errorCallback);
+```
+
+### Signed Call
+
+Sites can request that per sign RPCs using steem authorities as specified in https://github.com/steemit/rpc-auth
+and implemented in the `steem-js` library method signedCall:
+
+```
+steem_keychain.requestSignedCall(account_name, method, params, key_type, function(response) {
+        console.log(response);
+});
+```
+
+Where "method" is the method name, e.g. `conveyor.get_feature_flags`, "params" are the method parameters,
+and "key_type" can be "Posting" or "Active".
+
 ## Related Projects
 
 * [ngx-steem-keychain](https://github.com/steeveproject/ngx-steem-keychain) -
