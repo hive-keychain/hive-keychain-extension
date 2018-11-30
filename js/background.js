@@ -553,7 +553,7 @@ function checkBeforeCreate(request, tab, domain) {
 
 function hasNoConfirm(arr, data, domain) {
     try {
-      if(data.method=="active")
+      if(data.method=="active") {
         return false;
       }
       else
