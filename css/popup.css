@@ -60,7 +60,9 @@ body {
 #add_key_div,
 #change_password,
 #add_rpc_div,
-#witness_div {
+#witness_div,
+#delegation_div,
+#tokens_div {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -151,7 +153,8 @@ input:focus {
 #change_password input,
 #autolock_div input,
 #add_rpc_div input,
-#witness_div input {
+#witness_div input,
+#delegation_div input {
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
@@ -199,7 +202,8 @@ input:focus {
 #change_password button,
 #autolock_div button,
 #add_rpc_div button,
-#witness_div button {
+#witness_div button,
+#delegation_div button {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -320,7 +324,9 @@ input:focus {
 #change_password,
 #autolock_div,
 #add_rpc_div,
-#witness_div {
+#witness_div,
+#delegation_div,
+#tokens_div {
     display: none;
 }
 
@@ -737,6 +743,7 @@ input:focus {
   color: white;
   font-size: 20px;
   line-height: 25px;
+  cursor: pointer;
   text-transform: uppercase;
   border: 1px transparent;
   border-radius: 5px;
@@ -1427,4 +1434,21 @@ input:focus {
 #vote_wit {
   width: 100% !important;
   margin-top: 40px;
+}
+
+#delegation_values div {
+  margin-left: -32px;
+  margin-right: -32px;
+  padding-left: 32px;
+  background-color:  rgba(0,96,96,0.68);
+}
+
+#delegation_values .del_left {
+  display: inline-block;
+  width: 120px;
+}
+
+#delegation_values .del_right {
+  text-align: right;
+  width: 100%;
 }

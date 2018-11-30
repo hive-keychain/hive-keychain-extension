@@ -23,6 +23,8 @@ function initializeVisibility() {
     $("#add_key_div").hide();
     $("#estimation_info").hide();
     $("#pref_div").hide();
+    $("#tokens_div").hide();
+    $("#delegation_div").hide();
     $("#add_rpc_div").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
@@ -171,6 +173,11 @@ $("#send").click(function() {
 // Show transaction history window
 $("#history").click(function() {
     $("#acc_transfers").show();
+    $("#main").hide();
+});
+
+$("#tokens").click(function(){
+    $("#tokens_div").show();
     $("#main").hide();
 });
 
