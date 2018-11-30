@@ -555,9 +555,11 @@ function hasNoConfirm(arr, data, domain) {
     try {
       if(data.method=="active")
         return false;
+      }
       else
         return JSON.parse(arr)[data.username][domain][data.type] == true;
     } catch (e) {
+      console.log(e);
         return false;
     }
 }

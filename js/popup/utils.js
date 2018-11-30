@@ -141,6 +141,8 @@ function getPriceSteemAsync() {
             url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM',
             success: function(response) {
                 resolve(response.result['Bid']);
+                console.log(response.result['Bid']);
+
             },
             error: function(msg) {
                 resolve(msg);
@@ -161,6 +163,8 @@ function getBTCPriceAsync() {
             url: 'https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC',
             success: function(response) {
                 resolve(response.result['Bid']);
+                console.log(response.result['Bid']);
+
             },
             error: function(msg) {
                 resolve(msg);
@@ -168,6 +172,7 @@ function getBTCPriceAsync() {
         });
     });
 }
+
 
 // Get SBD price from Bittrex
 function getPriceSBDAsync() {
@@ -180,7 +185,28 @@ function getPriceSBDAsync() {
             },
             url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-SBD',
             success: function(response) {
+                console.log(response.result['Bid']);
                 resolve(response.result['Bid']);
+            },
+            error: function(msg) {
+                resolve(msg);
+            }
+        });
+    });
+}
+
+// get Witness Ranks from SteemPlus API
+function getWitnessRanks() {
+    return new Promise(function(resolve, reject) {
+        $.ajax({
+            type: "GET",
+            beforeSend: function(xhttp) {
+                xhttp.setRequestHeader("Content-type", "application/json");
+                xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+            },
+            url: 'https://api.steemplus.app/witnesses-ranks',
+            success: function(response) {
+                resolve(response);
             },
             error: function(msg) {
                 resolve(msg);
@@ -195,6 +221,14 @@ function showError(message) {
     $(".error_div").show();
     setTimeout(function() {
         $(".error_div").hide();
+    }, 5000);
+}
+
+function showConfirm(message) {
+    $(".success_div").html(message);
+    $(".success_div").show();
+    setTimeout(function() {
+        $(".success_div").hide();
     }, 5000);
 }
 
@@ -308,6 +342,15 @@ function initiateCustomSelect() {
     document.addEventListener("click", closeAllSelect);
 }
 
+// Check if there is a reward to claim
+
+function hasReward(reward_sbd,reward_sp,reward_steem){
+  return (getValFromString(reward_sbd)!=0||getValFromString(reward_sp)!=0||getValFromString(reward_steem)!=0);
+}
+
+function getValFromString(string){
+  return parseFloat(string.split(" ")[0]);
+}
 //Check WIF validity
 function isActiveWif(pwd, active) {
     return steem.auth.wifToPublic(pwd) == active;

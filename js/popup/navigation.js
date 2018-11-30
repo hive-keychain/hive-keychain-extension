@@ -3,6 +3,7 @@
 // Visibility state on the main menu
 function initializeVisibility() {
     $("#accounts").html("");
+    $("#claim").hide();
     $("#add_account_div").hide();
     $(".error_div").hide();
     $(".success_div").hide();
@@ -22,11 +23,14 @@ function initializeVisibility() {
     $("#add_key_div").hide();
     $("#estimation_info").hide();
     $("#pref_div").hide();
+    $("#tokens_div").hide();
+    $("#delegation_div").hide();
     $("#add_rpc_div").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
     $("#balance_steem").html("");
     $("#balance_sbd").html("");
+    $("#witness_div").hide();
     $("#balance_sp").html("");
     $(".checkbox_memo").hide();
     $("#encrypt_memo").prop("checked",false);
@@ -172,11 +176,28 @@ $("#history").click(function() {
     $("#main").hide();
 });
 
+$("#tokens").click(function(){
+    $("#tokens_div").show();
+    $("#main").hide();
+});
+
 // Toggle witness votes div
 $("#witness_toggle").click(function() {
     $("#witness_votes").animate({
         top: ($("#witness_votes").css('top') == '555px') ? 505 : 555
     }, 500);
+});
+
+$("#witness").click(function(){
+  $("#main").hide();
+  $("#witness_div").show();
+});
+
+$(".wit-menu").click(function(){
+  $("#witness_div button").removeClass("active_wit");
+  $(this).addClass("active_wit");
+  $(".sub_wit").hide();
+  $("#"+$(this).attr("id")+"_div").show();
 });
 
 // Show / hide password
