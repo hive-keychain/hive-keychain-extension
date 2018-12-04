@@ -1281,7 +1281,7 @@ input:focus {
   margin-bottom: 7.5px;
 }
 
-#wit_disclaimer::after{
+/*#wit_disclaimer::after{
       content: "";
       background-image: url("../images/icon_info_white.png");
       background-size: 12.25px 12.25px;
@@ -1293,7 +1293,7 @@ input:focus {
       margin-left: 7px;
       pointer-events: auto;
       cursor: pointer;
-}
+}*/
 
 #votes_remaining {
   font-size: 29px;
