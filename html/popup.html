@@ -49,9 +49,10 @@
     <div id="main">
         <div class="main_header">
             <img class="icon" src="../images/keychain_icon2.png" />
-            <span>
-              <img src="../images/lock_wallet.png" id="lock"/>
-              <img src="../images/squares.png" id="settings"/>
+            <span >
+              <div class="dash-button" id="claim"></div>
+              <img  src="../images/lock_wallet.png" id="lock"/>
+              <img  src="../images/squares.png" id="settings"/>
             </span>
         </div>
         <div class="custom-select custom-select-main usernames">
@@ -59,9 +60,27 @@
             </select>
         </div>
         <div id="voting_power">
-            <span>VM: ...</span>
-            <span>RC: ...</span>
+          <div id="voting_power_inner">
+            <div id="vm_div">
+              <div>
+                <span>Voting Mana</span>
+                <img id="vm_info" src="../images/icon_info_white.png"/>
+              </div>
+              <div id="vm">...
+              </div>
+            </div>
+            <div>
+              <div>
+                <span>Resource credits</span>
+                <img id="rc_info" src="../images/icon_info_white.png"/>
+              </div>
+              <div id="rc">...
+              </div>
+            </div>
+          </div>
         </div>
+        <img src="../images/bg_voting.png"id="bg_voting" />
+        <img src="../images/bg_rc.png"id="bg_rc"/>
         <div id="wallet">
             <div id="wallet_amt">
                 <div class="wallet_infos">...</div>
@@ -77,10 +96,11 @@
         <div id="account_value">
             <div id="account_value_header">Estimated Account Value</div>
             <div id="account_value_amt" class="wallet_infos">...</div>
-            <div id="account_value_currency">USD</div>
         </div>
-        <button id="send">Send</button>
-        <button id="history">Wallet History</button>
+        <button class="dash-button main-button" id="send">Send</button>
+        <button class="dash-button main-button" id="history">History</button>
+        <button class="dash-button main-button" id="tokens">Tokens</button>
+        <button class="dash-button main-button" id="witness">Witness</button>
     </div>
     <div id="estimation_info">
         <div class="back_menu back_enabled">account value</div>
@@ -331,6 +351,53 @@
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
+    <div id="claim_rewards">
+      <img src="../images/delete.png"class="close_claim"id="close_claim"/>
+      <img src="../images/rewards.png" id="gift"/>
+      <p></p>
+      <button class="close_claim">Not Now</button>
+      <button id="redeem_rewards">Redeem</button>
+    </div>
+    <div id="witness_div">
+      <div class="back_enabled back_menu">Witness Voting</div>
+      <span id="wit_disclaimer">You may vote for up to 30 witnesses.</span>
+      <div id="votes_remaining">Votes remaining: <span>30</span></div>
+      <button class="wit-menu"id="voted" class="active_wit">Voted</button>
+      <button class="wit-menu"id="top100">Top 100</button>
+      <button class="wit-menu"id="add_wit">Add</button>
+      <div class="sub_wit" id="voted_div">
+        <div id="proxy"><div></div></div>
+        <div id="list_wit"></div>
+      </div>
+      <div class="sub_wit" id="top100_div"></div>
+      <div class="sub_wit" id="add_wit_div">
+        <p>You may manually enter a user to vote for Witness or to set as Proxy.</p>
+        <div class="input_container">
+            <input type="text" id="wit-username" placeholder="Username"></input>
+            <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <div class="custom-select" id="custom_select_wit">
+          <select>
+            <option value="Wit">Vote for Witness</option>
+            <option value="Proxy">Chose Proxy</option>
+          </select>
+        </div>
+        <button id="vote_wit">Submit</button>
+      </div>
+    </div>
+    <div id="tokens_div">
+      <div class="back_enabled back_menu">Tokens</div>
+      <p>Coming soon.</p>
+    </div>
+    <div id="delegation_div">
+      <div class="back_enabled back_menu">Delegations</div>
+      <p>You may delegate your Steem Power (SP) to another user. Click on the Outgoing amount to review or make changes.</p>
+      <div class="delegation_values">
+        <div><span class="del_left">Incoming</span><span class="del_right" id="incoming_del"></span></div>
+        <div><span class="del_left">Outgoing</span><span class="del_right" id="outgoing_del"></span></div>
+        <div><span class="del_left">AVAILABLE</span><span class="del_right" id="available_del"></span></div>
+      </div>
+    </div>
     <div id="witness_votes">
         <img src="../images/delete.png" id="close_witness" style="display: none;" />
         <div id="witness_toggle">Click here to support Steem Keychain development by casting your witness
@@ -351,6 +418,7 @@
             />
         </div>
     </div>
+
     <script src="../vendor/jquery.js"></script>
     <script src="../vendor/decode.min.js"></script>
     <script src="../vendor/steemjs.js"></script>
@@ -363,6 +431,7 @@
     <script src="../js/popup/utils.js"></script>
     <script src="../js/popup/navigation.js"></script>
     <script src="../js/popup/settings.js"></script>
+    <script src="../js/popup/witness.js"></script>
     <script src="../js/popup/popup.js"></script>
 </body>
 
