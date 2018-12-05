@@ -18,7 +18,7 @@ function prepareWitnessDiv(){
 $("#list_wit").empty();
   for(wit of witness_votes){
     const isActive=(witness_ranks.filter((e)=>{return e.name==wit}).length==1)?"active":"disabled";
-    $("#list_wit").append("<div class='witness-row'><span class='witName'>@"+wit+"</span><span class='isActive'>"+isActive+"</span></div>");
+    $("#list_wit").append("<div class='witness-row'><span class='witName'>@"+wit+"</span><span class='isActive'>"+isActive+"</span><img src='../images/delete.png'></span></div>");
   }
   $("#top100_div").empty();
 
@@ -67,12 +67,23 @@ $("#list_wit").empty();
     });
   });
 
+  $(".witness-row img").unbind("click").click(function(){
+    const acc=$(this).parent().find('.witName').html().replace("@","");
+    steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, acc,0, function(err, result) {
+      if(err==null){
+          showConfirm("Succesfully unvoted @"+acc);
+          loadAccount(active_account.name);
+      }
+      else showError("Something went wrong! Please try again!");
+    });
+  });
+
   $("#vote_wit").unbind("click").click(function(){
     //console.log($("#witness_div select option:selected").val());
     if($("#witness_div select option:selected").val()=="Wit"){
       steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, $("#wit-username").val(), 1, function(err, result) {
         if(err==null){
-            showConfirm("Succesfully voted for @"+active_account.name);
+            showConfirm("Succesfully voted for @"+$("#wit-username").val());
             loadAccount(active_account.name);
         }
         else showError("Something went wrong! Please try again!");
@@ -81,7 +92,7 @@ $("#list_wit").empty();
     else {
       steem.broadcast.accountWitnessProxy(active_account.keys.active, active_account.name, $("#wit-username").val(), function(err, result) {
         if(err==null){
-          showConfirm("Succesfully chose @"+active_account.name+" for proxy");
+          showConfirm("Succesfully chose @"+$("#wit-username").val()+" for proxy");
           loadAccount(active_account.name);
         }
         else showError("Something went wrong! Please try again!");

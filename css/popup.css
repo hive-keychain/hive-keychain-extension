@@ -1281,19 +1281,6 @@ input:focus {
   margin-bottom: 7.5px;
 }
 
-/*#wit_disclaimer::after{
-      content: "";
-      background-image: url("../images/icon_info_white.png");
-      background-size: 12.25px 12.25px;
-      display: inline-block;
-      background-repeat: no-repeat;
-      height: 12.25px;
-      width: 12.25px;
-      vertical-align: -8%;
-      margin-left: 7px;
-      pointer-events: auto;
-      cursor: pointer;
-}*/
 
 #votes_remaining {
   font-size: 29px;
@@ -1375,11 +1362,20 @@ input:focus {
 .isActive {
   display: inline-block;
   text-transform: uppercase;
+  text-align: left;
+  width: 75px;
 }
 
 .witName {
   display: inline-block;
   width: 190px;
+}
+
+#list_wit img {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
 }
 
 .sub_wit{
