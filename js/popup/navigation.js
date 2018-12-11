@@ -253,3 +253,10 @@ function showAddAccount() {
     $("#main").css("display", "none");
     $("#settings_div").css("display", "none");
 }
+
+$(".wallet_currency").click(function(){
+  $(".wallet_currency").not(this).removeClass('dropdown-open');
+  $(".dropdown").not($(this).next()).hide();
+  $(this).toggleClass('dropdown-open');
+  $(this).next().toggle();
+});

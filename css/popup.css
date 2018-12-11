@@ -643,18 +643,62 @@ input:focus {
 }
 
 #wallet_amt div:last-of-type,
-#wallet_currency div:last-of-type {
+#wallet_sp{
     color: #006060;
     margin-bottom: 0px !important;
 }
 
 #wallet_currency {
-    width: 72px;
+    width:100px;
     margin-left: 5px;
 }
 
+.currency-section{
+    position:sticky;
+}
+
+.wallet_currency::after {
+      content: "";
+      background-image: url("../images/downarrow.png");
+      background-size: 20.6px 10.25px;
+      display: inline-block;
+      background-repeat: no-repeat;
+      height: 10.25px;
+      width: 20.6px;
+      vertical-align: -8%;
+      margin-left: 18px;
+      pointer-events: auto;
+      cursor: pointer;
+}
+
+.dropdown-open::after {
+  background-image: url("../images/uparrow.png") !important;
+}
+
+.dropdown{
+  position: absolute;
+  top:30px;
+  right:0px;
+  color: #FFFFFF !important;
+  font-size: 15px;
+  line-height: 21px;
+  display: none;
+}
+
+.dropdown div{
+  width: 160px;
+  height: 35px;
+  background:rgba(	0, 62, 77,0.75);
+  text-align: left;
+  padding-top: 12px
+}
+
+.dropdown div:hover{
+  background-color: #1E8CA7;
+}
+
 #wallet_amt {
-    width: 209px;
+    width: 181px;
     float: left;
     padding-left: 32px;
 }

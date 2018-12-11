@@ -7,7 +7,7 @@ function loadAccount(name) {
     })[0];
     if (account != null && account != undefined) {
         active_account = account;
-        $("#send").toggle(account.keys.hasOwnProperty("active"));
+        //$("#send").toggle(account.keys.hasOwnProperty("active"));
         $(".wallet_infos").html("...");
         $("#vm").html("...");
         $("#rc").html("...");
