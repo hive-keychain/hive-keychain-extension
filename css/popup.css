@@ -638,7 +638,7 @@ input:focus {
 }
 
 #wallet_amt div,
-#wallet_currency div{
+.wallet_currency{
     margin-bottom: 20px;
 }
 
@@ -654,7 +654,7 @@ input:focus {
 }
 
 .currency-section{
-    position:sticky;
+    position:relative;
 }
 
 .wallet_currency::after {
@@ -675,8 +675,16 @@ input:focus {
   background-image: url("../images/uparrow.png") !important;
 }
 
+.dropdown img {
+  height: 18px;
+  width: 18px;
+  padding-left: 17px;
+  padding-right: 14px;
+}
+
 .dropdown{
   position: absolute;
+  z-index: 1;
   top:30px;
   right:0px;
   color: #FFFFFF !important;
