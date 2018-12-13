@@ -128,18 +128,24 @@ var steem_keychain = {
         }));
         this.current_id++;
     },
+}
 
-    onGetResponse: function(response) {
+window.addEventListener("message", function(event) {
+    // We only accept messages from ourselves
+    if (event.source != window)
+        return;
+
+    if (event.data.type && (event.data.type == "steem_keychain_response")) {
+        const response = event.data.response;
         if (response && response.request_id) {
-            if (this.requests[response.request_id]) {
-                this.requests[response.request_id](response);
-                delete this.requests[response.request_id];
+            if (steem_keychain.requests[response.request_id]) {
+                steem_keychain.requests[response.request_id](response);
+                delete steem_keychain.requests[response.request_id];
             }
         }
-    },
-
-    onGetHandshake: function() {
-        if (this.handshake_callback)
-            this.handshake_callback();
+    } else if (event.data.type && (event.data.type == "steem_keychain_handshake")) {
+        if (steem_keychain.handshake_callback) {
+            steem_keychain.handshake_callback();
+        }
     }
-}
+}, false);
