@@ -104,7 +104,7 @@
                 <div class='currency-section'>
                   <div class="wallet_currency" id="wallet_sp">SP</div>
                   <div class="dropdown">
-                    <div id="delegate"><img src="../images/powerup.png"/>Delegate</div>
+                    <div id="delegate"><img src="../images/delegate.png"/>Delegate</div>
                     <div id="powerdown"><img src="../images/powerdown.png"/>Power down</div>
                   </div>
                 </div>
@@ -349,29 +349,32 @@
             <div>STEEM Balance</div>
             <div></div>
         </div>
-        <div class="input_container">
-            <input type="text" id="recipient" placeholder="USERNAME" />
-            <img src="../images/arobase.png" class="input_img" />
+        <div id="send_form">
+          <div class="input_container">
+              <input type="text" id="recipient" placeholder="USERNAME" />
+              <img src="../images/arobase.png" class="input_img" />
+          </div>
+          <input type="number" id="amt_send" placeholder="0.000" />
+          <div class="custom-select" id="currency_send">
+              <select>
+            <option value="STEEM">STEEM</option>
+              <option value="SBD">SBD</option>
+            </select>
+          </div>
+          <input type="text" placeholder="MEMO (optional)" id="memo_send" />
+          <div class='checkbox_memo'>
+              <label for='encrypt_memo' class='checkbox_container'>
+              <div>Encrypt Memo</div>
+                <input type='checkbox' id='encrypt_memo'/>
+                <span class='checkmark'/>
+              </label>
+          </div>
+          <button id="send_transfer">Send Now</button>
+          <div class="loader" id="send_loader" style="display:none">
+              <div><img src="../images/loading.gif" /></div>
+          </div>
         </div>
-        <input type="number" id="amt_send" placeholder="0.000" />
-        <div class="custom-select" id="currency_send">
-            <select>
-          <option value="STEEM">STEEM</option>
-            <option value="SBD">SBD</option>
-          </select>
-        </div>
-        <input type="text" placeholder="MEMO (optional)" id="memo_send" />
-        <div class='checkbox_memo'>
-            <label for='encrypt_memo' class='checkbox_container'>
-            <div>Encrypt Memo</div>
-              <input type='checkbox' id='encrypt_memo'/>
-              <span class='checkmark'/>
-            </label>
-        </div>
-        <button id="send_transfer">Send Now</button>
-        <div class="loader" id="send_loader" style="display:none">
-            <div><img src="../images/loading.gif" /></div>
-        </div>
+        <div id="show_add_active">Please add an active key to send STEEM or SBD.</div>
     </div>
     <div id="claim_rewards">
       <img src="../images/delete.png"class="close_claim"id="close_claim"/>
@@ -409,6 +412,14 @@
     </div>
     <div id="tokens_div">
       <div class="back_enabled back_menu">Tokens</div>
+      <p>Coming soon.</p>
+    </div>
+    <div id="powerup_div">
+      <div class="back_enabled back_menu">Power Up</div>
+      <p>Coming soon.</p>
+    </div>
+    <div id="powerdown_div">
+      <div class="back_enabled back_menu">Power Down</div>
       <p>Coming soon.</p>
     </div>
     <div id="delegation_div">

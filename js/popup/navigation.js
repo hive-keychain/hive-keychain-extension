@@ -9,6 +9,8 @@ function initializeVisibility() {
     $(".success_div").hide();
     $("#master_check").hide();
     $("#autolock_div").hide();
+    $("#powerup_div").hide();
+    $("#powerdown_div").hide();
     $("#username").val("");
     $("#pwd").val("");
     $("#acc_transfers").hide();
@@ -259,4 +261,43 @@ $(".wallet_currency").click(function(){
   $(".dropdown").not($(this).next()).hide();
   $(this).toggleClass('dropdown-open');
   $(this).next().toggle();
+});
+
+$("#powerup").click(function(){
+  $("#powerup_div").show();
+  $("#main").hide();
+  $(".wallet_currency").removeClass('dropdown-open');
+  $(".dropdown").hide();
+});
+
+$("#powerdown").click(function(){
+  $("#powerdown_div").show();
+  $("#main").hide();
+  $(".wallet_currency").removeClass('dropdown-open');
+  $(".dropdown").hide();
+});
+
+$("#send_steem").click(function(){
+  $("#send_div").show();
+  $("#main").hide();
+  $(".wallet_currency").removeClass('dropdown-open');
+  $(".dropdown").hide();
+  $("#currency_send .select-selected").html("STEEM");
+  $(".transfer_balance div").eq(0).text('STEEM Balance');
+  $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+});
+
+$("#send_sbd").click(function(){
+  $("#send_div").show();
+  $("#main").hide();
+  $(".wallet_currency").removeClass('dropdown-open');
+  $(".dropdown").hide();
+  $("#currency_send .select-selected").html("SBD");
+  $(".transfer_balance div").eq(0).text('SBD Balance');
+  $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+});
+
+$("#delegate").click(function(){
+  $("#main").hide();
+  $("#delegation_div").show();
 });

@@ -62,7 +62,9 @@ body {
 #add_rpc_div,
 #witness_div,
 #delegation_div,
-#tokens_div {
+#tokens_div,
+#powerup_div,
+#powerdown_div {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -697,6 +699,7 @@ input:focus {
   width: 160px;
   height: 35px;
   background:rgba(	0, 62, 77,0.75);
+  cursor: pointer;
   text-align: left;
   padding-top: 12px
 }
@@ -1462,8 +1465,9 @@ input:focus {
   width: 30px;
 }
 
-.no_posting::after{
-  cursor: default;
+.no_cursor::after,.no_cursor{
+  cursor: default !important;
+  pointer-events:none;
 }
 
 #custom_select_wit .select-selected::before{

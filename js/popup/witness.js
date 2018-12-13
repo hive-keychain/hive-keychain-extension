@@ -18,7 +18,7 @@ function prepareWitnessDiv(){
 $("#list_wit").empty();
   for(wit of witness_votes){
     const isActive=(witness_ranks.filter((e)=>{return e.name==wit}).length==1)?"active":"disabled";
-    $("#list_wit").append("<div class='witness-row'><span class='witName'>@"+wit+"</span><span class='isActive'>"+isActive+"</span><img src='../images/delete.png'></span></div>");
+    $("#list_wit").append("<div class='witness-row'><span class='witName'>@"+wit+"</span><span class='isActive'>"+isActive+"</span><img class='"+(!active_account.keys.hasOwnProperty("active")?"no_cursor":"")+"' src='../images/delete.png'></span></div>");
   }
   $("#top100_div").empty();
 
@@ -32,9 +32,9 @@ $("#list_wit").empty();
 
 
     if(!active_account.keys.hasOwnProperty("active"))
-      $('.wit-vote').addClass("no_posting");
+      $('.wit-vote').addClass("no_cursor");
     else
-      $(".wit-vote").removeClass("no_posting");
+      $(".wit-vote").removeClass("no_cursor");
 
   $("#proxy div").unbind("click").click(function(){
     $("#proxy").hide();
