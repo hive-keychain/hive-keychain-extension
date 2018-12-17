@@ -328,7 +328,9 @@ input:focus {
 #add_rpc_div,
 #witness_div,
 #delegation_div,
-#tokens_div {
+#tokens_div,
+#powerup_div,
+#powerdown_div {
     display: none;
 }
 
@@ -1488,19 +1490,44 @@ input:focus {
   margin-top: 40px;
 }
 
-#delegation_values div {
-  margin-left: -32px;
-  margin-right: -32px;
-  padding-left: 32px;
-  background-color:  rgba(0,96,96,0.68);
-}
-
 #delegation_values .del_left {
   display: inline-block;
   width: 120px;
 }
 
 #delegation_values .del_right {
+  display: inline-block;
   text-align: right;
-  width: 100%;
+  width: 165px;
+}
+
+#delegation_values {
+  background-color: rgba(0,156,156,0.4);
+  margin-left: -32px;
+  margin-right: -32px;
+  padding-left: 32px;
+  padding-right: 32px;
+}
+
+#delegation_values div {
+  font-size: 20px;
+  line-height: 28px;
+  color: white;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+#delegation_values div:last-of-type {
+  font-size: 18px;
+  line-height: 25px;
+  color: #006060;
+}
+
+#outgoing_del:after {
+    content: '';
+    height: 1px;
+    background: white;
+    display:block;
+    margin-top: 1.5px;
+}
 }
