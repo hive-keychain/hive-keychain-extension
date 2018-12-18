@@ -36,6 +36,12 @@ function prepareDelegationTab(){
 
             steem.broadcast.delegateVestingShares(active_account.keys.active, active_account.name, $("#username_del").val(), delegated_vest, function(err, result) {
               console.log(err, result);
+              if(err){
+                showError("Something went wrong! Please try again!");
+              }
+              else{
+                showConfirm("Your delegation was succesful!");
+              }
             });
           });
   });
