@@ -1530,4 +1530,36 @@ input:focus {
     display:block;
     margin-top: 1.5px;
 }
+
+#sp_del {
+    display: inline-block;
+    width: 108px !important;
+    background-color: rgba(33, 172, 204, 0.75);
+    padding-top: 15px;
+    padding-bottom: 11px;
+    text-align: center;
+    font-size: 20px;
+    border-radius:6px;
+}
+
+#username_del {
+  margin-top:32px;
+}
+#amt_del {
+    width: 167px !important;
+    margin-right: 7px;
+    text-align: right;
+}
+#delegation_div .input_img {
+    position: absolute;
+    bottom: 30.07px;
+    left: 20.41px;
+    width: 30px;
+    height: 30px;
+}
+#delegation_div input::-webkit-input-placeholder{
+  color:#1E8CA7;
+}
+#send_del{
+  background-color: #1E8CA7 !important;
 }

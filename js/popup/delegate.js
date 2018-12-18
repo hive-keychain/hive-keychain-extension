@@ -26,7 +26,18 @@ function prepareDelegationTab(){
               elt.sp=steem.formatter.vestToSteem(elt.vesting_shares, totalVests, totalSteem).toFixed(3);
               return elt;
             });
+          if(!active_account.keys.hasOwnProperty("active"));
+            $("#send_del").addClass("disabled");
           displayDelegationMain(delegators,delegatees);
+          $("#send_del").unbind("click").click(function(){
+            let delegated_vest = parseFloat($("#amt_del").val()) * totalVests / totalSteem;
+            delegated_vest = delegated_vest.toFixed(6);
+            delegated_vest = delegated_vest.toString() + ' VESTS';
+
+            steem.broadcast.delegateVestingShares(active_account.keys.active, active_account.name, $("#username_del").val(), delegated_vest, function(err, result) {
+              console.log(err, result);
+            });
+          });
   });
 }
 
