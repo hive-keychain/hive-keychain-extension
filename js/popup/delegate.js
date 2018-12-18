@@ -26,8 +26,12 @@ function prepareDelegationTab(){
               elt.sp=steem.formatter.vestToSteem(elt.vesting_shares, totalVests, totalSteem).toFixed(3);
               return elt;
             });
-          if(!active_account.keys.hasOwnProperty("active"));
+          if(!active_account.keys.hasOwnProperty("active")){
             $("#send_del").addClass("disabled");
+            $("#wrap_send_del").attr("title","Please add your active key to send delegations!");
+          }
+          else
+            $("#send_del").removeClass("disabled");
           displayDelegationMain(delegators,delegatees);
           $("#send_del").unbind("click").click(function(){
             let delegated_vest = parseFloat($("#amt_del").val()) * totalVests / totalSteem;
@@ -41,6 +45,7 @@ function prepareDelegationTab(){
               }
               else{
                 showConfirm("Your delegation was succesful!");
+                loadAccount(active_account.name);
               }
             });
           });

@@ -1563,3 +1563,13 @@ input:focus {
 #send_del{
   background-color: #1E8CA7 !important;
 }
+
+#delegation_div .disabled{
+  background-color: #dddddd !important;
+  color:#1E8CA7 !important;
+  pointer-events: none;
+}
+
+#wrap_send_del{
+  cursor: not-allowed !important;
+}
