@@ -64,7 +64,8 @@ body {
 #delegation_div,
 #tokens_div,
 #powerup_div,
-#powerdown_div {
+#powerdown_div,
+#outgoing_del_div {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -330,7 +331,8 @@ input:focus {
 #delegation_div,
 #tokens_div,
 #powerup_div,
-#powerdown_div {
+#powerdown_div,
+#outgoing_del_div {
     display: none;
 }
 
@@ -1531,6 +1533,10 @@ input:focus {
     margin-top: 1.5px;
 }
 
+#outgoing_del {
+  cursor: pointer;
+}
+
 #sp_del {
     display: inline-block;
     width: 108px !important;
@@ -1572,4 +1578,59 @@ input:focus {
 
 #wrap_send_del{
   cursor: not-allowed !important;
+}
+
+#total_outgoing {
+  font-size: 20px;
+  line-height: 28px;
+  margin-top: 47px;
+}
+
+#total_outgoing span:last-of-type{
+display: inline-block;
+float: right;
+text-align: right;
+}
+
+#list_outgoing{
+  margin-top: 54px;
+  margin-left: -32px;
+  margin-right: -32px;
+  color: white;
+  font-size: 16px;
+  line-height: 22px;
+  height: 357px;
+  overflow-y: scroll;
+}
+
+.line_outgoing {
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-top:11px;
+  padding-bottom:11px;
+}
+
+#list_outgoing div:nth-of-type(even){
+  background-color: rgba(0, 156, 156, 0.8);
+}
+
+#list_outgoing div:nth-of-type(odd){
+  background-color: rgba(0, 156, 156, 0.4);
+}
+
+.line_outgoing span:first-of-type {
+  display: inline-block;
+  width: 150px;
+}
+.line_outgoing span:last-of-type {
+  display: inline-block;
+  width: 95px;
+  text-align: right;
+  margin-right: 23px;
+}
+#list_outgoing img {
+  height: 18px;
+  width: 18px;
+  vertical-align: middle;
+  cursor: pointer;
 }

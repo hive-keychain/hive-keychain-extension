@@ -12,6 +12,7 @@ function initializeVisibility() {
     $("#powerup_div").hide();
     $("#powerdown_div").hide();
     $("#username").val("");
+    $("#outgoing_del_div").hide();
     $("#pwd").val("");
     $("#acc_transfers").hide();
     $(".error_div").html("");
@@ -300,4 +301,14 @@ $("#send_sbd").click(function(){
 $("#delegate").click(function(){
   $("#main").hide();
   $("#delegation_div").show();
+});
+
+$("#outgoing_del").click(function(){
+  $("#outgoing_del_div").show();
+  $("#delegation_div").hide();
+});
+
+$("#outgoing_del_div .back_enabled").click(function(){
+    $("#outgoing_del_div").hide();
+    $("#delegation_div").show();
 });
