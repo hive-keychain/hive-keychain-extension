@@ -65,7 +65,8 @@ body {
 #tokens_div,
 #powerup_div,
 #powerdown_div,
-#outgoing_del_div {
+#outgoing_del_div ,
+#incoming_del_div {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -332,7 +333,8 @@ input:focus {
 #tokens_div,
 #powerup_div,
 #powerdown_div,
-#outgoing_del_div {
+#outgoing_del_div,
+#incoming_del_div {
     display: none;
 }
 
@@ -1533,7 +1535,7 @@ input:focus {
     margin-top: 1.5px;
 }
 
-#outgoing_del {
+#outgoing_del,#incoming_del {
   cursor: pointer;
 }
 
@@ -1580,19 +1582,19 @@ input:focus {
   cursor: not-allowed !important;
 }
 
-#total_outgoing {
+#total_outgoing, #total_incoming {
   font-size: 20px;
   line-height: 28px;
   margin-top: 47px;
 }
 
-#total_outgoing span:last-of-type{
+#total_outgoing span:last-of-type, #total_incoming span:last-of-type{
 display: inline-block;
 float: right;
 text-align: right;
 }
 
-#list_outgoing{
+#list_outgoing,#list_incoming{
   margin-top: 54px;
   margin-left: -32px;
   margin-right: -32px;
@@ -1603,18 +1605,18 @@ text-align: right;
   overflow-y: scroll;
 }
 
-.line_outgoing {
+.line_outgoing,.line_incoming {
   padding-left: 32px;
   padding-right: 32px;
   padding-top:11px;
   padding-bottom:11px;
 }
 
-#list_outgoing div:nth-of-type(even){
+#list_outgoing div:nth-of-type(even),#list_incoming div:nth-of-type(even){
   background-color: rgba(0, 156, 156, 0.8);
 }
 
-#list_outgoing div:nth-of-type(odd){
+#list_outgoing div:nth-of-type(odd),#list_incoming div:nth-of-type(odd){
   background-color: rgba(0, 156, 156, 0.4);
 }
 
@@ -1628,6 +1630,17 @@ text-align: right;
   text-align: right;
   margin-right: 23px;
 }
+
+.line_incoming span:first-of-type {
+  display: inline-block;
+  width: 161px;
+}
+.line_incoming span:last-of-type {
+  display: inline-block;
+  width: 125px;
+  text-align: right;
+}
+
 #list_outgoing img {
   height: 18px;
   width: 18px;

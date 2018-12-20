@@ -13,6 +13,7 @@ function initializeVisibility() {
     $("#powerdown_div").hide();
     $("#username").val("");
     $("#outgoing_del_div").hide();
+    $("#incoming_del_div").hide();
     $("#pwd").val("");
     $("#acc_transfers").hide();
     $(".error_div").html("");
@@ -42,6 +43,8 @@ function initializeVisibility() {
     $("#send_div").hide();
     $("#settings_div").hide();
     $("#add_account_div .back_enabled").removeClass("back_disabled");
+    $(".wallet_currency").removeClass('dropdown-open');
+    $(".dropdown").hide();
 }
 
 // Use "Enter" as confirmation button for unlocking and registration
@@ -301,6 +304,8 @@ $("#send_sbd").click(function(){
 $("#delegate").click(function(){
   $("#main").hide();
   $("#delegation_div").show();
+  $(".wallet_currency").removeClass('dropdown-open');
+  $(".dropdown").hide();
 });
 
 $("#outgoing_del").click(function(){
@@ -310,5 +315,15 @@ $("#outgoing_del").click(function(){
 
 $("#outgoing_del_div .back_enabled").click(function(){
     $("#outgoing_del_div").hide();
+    $("#delegation_div").show();
+});
+
+$("#incoming_del").click(function(){
+  $("#incoming_del_div").show();
+  $("#delegation_div").hide();
+});
+
+$("#incoming_del_div .back_enabled").click(function(){
+    $("#incoming_del_div").hide();
     $("#delegation_div").show();
 });

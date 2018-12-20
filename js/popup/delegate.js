@@ -32,8 +32,11 @@ function prepareDelegationTab(){
           }
           else
             $("#send_del").removeClass("disabled");
+
           displayDelegationMain(delegators,delegatees);
           displayOutgoingDelegations(delegatees);
+          displayIncomingDelegations(delegators);
+
           $("#send_del").unbind("click").click(function(){
             let delegated_vest = parseFloat($("#amt_del").val()) * totalVests / totalSteem;
             delegated_vest = delegated_vest.toFixed(6);
@@ -71,6 +74,16 @@ function prepareDelegationTab(){
     $("#list_outgoing").empty();
     for(delegatee of delegatees){
       $("#list_outgoing").append("<div class='line_outgoing'><span>@"+delegatee.delegatee+"</span><span>"+numberWithCommas(delegatee.sp)+"</span><img src='../images/edit.png'/></div>");
+    }
+  }
+
+  function displayIncomingDelegations(delegators){
+    const sumIncoming=getSumIncoming(delegators);
+    delegators=delegators.sort(function(a,b){return b.sp-a.sp;});
+    $("#total_incoming span").eq(1).html(numberWithCommas(sumIncoming.toFixed(3))+" SP");
+    $("#list_incoming").empty();
+    for(delegator of delegators){
+      $("#list_incoming").append("<div class='line_incoming'><span>@"+delegator.delegator+"</span><span>"+numberWithCommas(delegator.sp)+"</span></div>");
     }
   }
 
