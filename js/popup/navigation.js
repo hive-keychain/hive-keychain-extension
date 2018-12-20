@@ -30,6 +30,7 @@ function initializeVisibility() {
     $("#tokens_div").hide();
     $("#delegation_div").hide();
     $("#add_rpc_div").hide();
+    $("#edit_del_div").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
     $("#balance_steem").html("");
@@ -326,4 +327,9 @@ $("#incoming_del").click(function(){
 $("#incoming_del_div .back_enabled").click(function(){
     $("#incoming_del_div").hide();
     $("#delegation_div").show();
+});
+
+$("#edit_del_div .back_enabled").click(function(){
+    $("#edit_del_div").hide();
+    $("#outgoing_del_div").show();
 });

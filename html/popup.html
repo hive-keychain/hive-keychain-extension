@@ -436,7 +436,7 @@
             <img src="../images/arobase.png" class="input_img" />
         </div>
         <input type="number" id="amt_del" placeholder="0.000"></input>
-        <div  id="sp_del">
+        <div  class="sp_del">
           SP
         </div>
         <div id="wrap_send_del"><button id="send_del">Delegate to user</button></div>
@@ -459,6 +459,23 @@
       </div>
       <div id="list_incoming">
       </div>
+    </div>
+    <div id="edit_del_div">
+      <div class="back_enabled">Edit Delegation</div>
+      <p>You are changing the amount delegated to this user. Edit the amount and save your change.</p>
+      <div id="edit_delegation_values">
+        <div><span class="del_left">Available</span><span class="del_right" id="this_available_del"></span></div>
+        <div><span class="del_left">Current amount</span><span class="del_right" id="this_outgoing_del"></span></div>
+      </div>
+      <div id="username_del">
+        <img src="../images/arobase_white.png"/>
+        <span></span>
+      </div>
+      <input type="number" id="amt_edit_del" placeholder="0.000"></input>
+      <div class="sp_del">
+        SP
+      </div>
+      <div id="wrap_edit_del"><button id="edit_del">Save change</button></div>
     </div>
     <div id="witness_votes">
         <img src="../images/delete.png" id="close_witness" style="display: none;" />

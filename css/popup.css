@@ -66,7 +66,8 @@ body {
 #powerup_div,
 #powerdown_div,
 #outgoing_del_div ,
-#incoming_del_div {
+#incoming_del_div,
+#edit_del_div {
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -158,7 +159,8 @@ input:focus {
 #autolock_div input,
 #add_rpc_div input,
 #witness_div input,
-#delegation_div input {
+#delegation_div input,
+#edit_del_div input{
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
@@ -207,7 +209,8 @@ input:focus {
 #autolock_div button,
 #add_rpc_div button,
 #witness_div button,
-#delegation_div button {
+#delegation_div button,
+#edit_del_div button {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -334,7 +337,8 @@ input:focus {
 #powerup_div,
 #powerdown_div,
 #outgoing_del_div,
-#incoming_del_div {
+#incoming_del_div,
+#edit_del_div {
     display: none;
 }
 
@@ -1494,23 +1498,29 @@ input:focus {
   margin-top: 40px;
 }
 
-#delegation_values .del_left {
+.del_left {
   display: inline-block;
   width: 120px;
 }
 
-#delegation_values .del_right {
+.del_right {
   display: inline-block;
   text-align: right;
   width: 165px;
 }
 
-#delegation_values {
+#delegation_values, #edit_delegation_values {
   background-color: rgba(0,156,156,0.4);
   margin-left: -32px;
   margin-right: -32px;
   padding-left: 32px;
   padding-right: 32px;
+}
+
+#edit_delegation_values{
+  margin-top: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 #delegation_values div {
@@ -1519,6 +1529,14 @@ input:focus {
   color: white;
   padding-top: 9px;
   padding-bottom: 9px;
+}
+
+#edit_delegation_values div {
+ font-size: 16px;
+ line-height: 18px;
+ color: white;
+ padding-top: 6px;
+ padding-bottom: 6px;
 }
 
 #delegation_values div:last-of-type {
@@ -1539,7 +1557,7 @@ input:focus {
   cursor: pointer;
 }
 
-#sp_del {
+.sp_del {
     display: inline-block;
     width: 108px !important;
     background-color: rgba(33, 172, 204, 0.75);
@@ -1553,11 +1571,14 @@ input:focus {
 #username_del {
   margin-top:32px;
 }
-#amt_del {
+
+#amt_del, #amt_edit_del {
+    padding-left: 0px !important;
     width: 167px !important;
     margin-right: 7px;
     text-align: right;
 }
+
 #delegation_div .input_img {
     position: absolute;
     bottom: 30.07px;
@@ -1572,13 +1593,14 @@ input:focus {
   background-color: #1E8CA7 !important;
 }
 
-#delegation_div .disabled{
+#delegation_div .disabled, #edit_del_div .disabled{
   background-color: #dddddd !important;
+  border-color: #dddddd !important;
   color:#1E8CA7 !important;
   pointer-events: none;
 }
 
-#wrap_send_del{
+#wrap_send_del,#wrap_edit_del{
   cursor: not-allowed !important;
 }
 
@@ -1646,4 +1668,20 @@ text-align: right;
   width: 18px;
   vertical-align: middle;
   cursor: pointer;
+}
+
+#username_del {
+  margin-bottom:16px;
+}
+#username_del img{
+  width: 30px;
+  height: 30px;
+  margin-right: 15px;
+  vertical-align: middle;
+}
+
+#username_del span {
+  font-size: 20px;
+  line-height: 28px;
+  text-transform: uppercase;
 }
