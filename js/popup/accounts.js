@@ -46,6 +46,7 @@ function loadAccount(name) {
                         showUserData(result);
                         prepareWitnessDiv();
                         prepareDelegationTab();
+                        preparePowerUpDown();
                     });
 
                 if (!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {

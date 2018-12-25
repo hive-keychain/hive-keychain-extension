@@ -416,11 +416,29 @@
     </div>
     <div id="powerup_div">
       <div class="back_enabled back_menu">Power Up</div>
-      <p>Coming soon.</p>
+      <div class="power">
+        <div><span class="power_left">Available</span><span class="power_right power_steem"></span></div>
+        <div><span class="power_left">Current</span><span class="power_right power_sp"></span></div>
+      </div>
+      <p>Power Up your STEEM to transform it in Steem Power.</p>
+      <input type="number" id="amt_pu" placeholder="0.000"></input>
+      <div  class="sp_del">
+        STEEM
+      </div>
+      <div id="wrap_power_up"><button id="power_up">Power Up</button></div>
     </div>
     <div id="powerdown_div">
       <div class="back_enabled back_menu">Power Down</div>
-      <p>Coming soon.</p>
+      <div class="power">
+        <div><span class="power_left">Current</span><span class="power_right power_steem"></span></div>
+        <div><span class="power_left">Available</span><span class="power_right power_sp"></span></div>
+      </div>
+      <p>Power Down your Steem Power to get liquid STEEM. The entire Power Down process will take 13 weeks.</p>
+      <input type="number" id="amt_pd" placeholder="0.000"></input>
+      <div  class="sp_del">
+        SP
+      </div>
+      <div id="wrap_power_down"><button id="power_down">Power Down</button></div>
     </div>
     <div id="delegation_div">
       <div class="back_enabled back_menu">Delegations</div>
@@ -512,6 +530,7 @@
     <script src="../js/popup/settings.js"></script>
     <script src="../js/popup/witness.js"></script>
     <script src="../js/popup/delegate.js"></script>
+    <script src="../js/popup/power.js"></script>
     <script src="../js/popup/popup.js"></script>
 </body>
 

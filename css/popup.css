@@ -160,7 +160,9 @@ input:focus {
 #add_rpc_div input,
 #witness_div input,
 #delegation_div input,
-#edit_del_div input{
+#edit_del_div input,
+#powerup_div input,
+#powerdown_div input{
     width: 100%;
     box-sizing: border-box;
     height: 48.43px;
@@ -210,7 +212,9 @@ input:focus {
 #add_rpc_div button,
 #witness_div button,
 #delegation_div button,
-#edit_del_div button {
+#edit_del_div button,
+#powerup_div button,
+#powerdown_div button {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -238,7 +242,13 @@ input:focus {
 #send:hover,
 #history:hover,
 #forgot_div button:hover,
-#add_new_key:hover {
+#add_new_key:hover,
+#powerdown_div button:hover,
+#powerup_div button:hover,
+#delegation_div button:hover,
+#edit_del:hover,
+#vote_wit:hover
+ {
     background-color: #917FC6;
     border: solid 1px #917FC6;
 }
@@ -1498,18 +1508,18 @@ input:focus {
   margin-top: 40px;
 }
 
-.del_left {
+.del_left,.power_left {
   display: inline-block;
   width: 120px;
 }
 
-.del_right {
+.del_right,.power_right {
   display: inline-block;
   text-align: right;
   width: 165px;
 }
 
-#delegation_values, #edit_delegation_values {
+#delegation_values, #edit_delegation_values,.power {
   background-color: rgba(0,156,156,0.4);
   margin-left: -32px;
   margin-right: -32px;
@@ -1593,7 +1603,7 @@ input:focus {
   background-color: #1E8CA7 !important;
 }
 
-#delegation_div .disabled, #edit_del_div .disabled{
+#delegation_div .disabled, #edit_del_div .disabled, #powerup_div .disabled, #powerdown_div .disabled{
   background-color: #dddddd !important;
   border-color: #dddddd !important;
   color:#1E8CA7 !important;
@@ -1684,4 +1694,31 @@ text-align: right;
   font-size: 20px;
   line-height: 28px;
   text-transform: uppercase;
+}
+
+.power {
+margin-top: 30px;
+margin-bottom: 30px;
+}
+
+.power div {
+  font-size: 20px;
+  line-height: 28px;
+  color: white;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+#amt_pu, #amt_pd {
+    padding-left: 0px !important;
+    width: 167px !important;
+    margin-right: 7px;
+    text-align: right;
+}
+
+#powerup_div p,#powerdown_div p {
+  display: inline-block;
+  margin-top: 20px;
+  margin-bottom: 40px;
+  font-size: 18px;
 }
