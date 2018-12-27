@@ -46,10 +46,11 @@ $("#list_wit").empty();
   $(".wit-vote").unbind("click").click(function(){
     const voted_wit=$(this).hasClass("wit-voted");
     const that=this;
-
     console.log(voted_wit);
+    $(that).addClass("wit-loading");
     steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, $(this).prev().html().replace("@",""), $(this).hasClass("wit-voted")?0:1, function(err, result) {
       console.log(err, result);
+      $(that).removeClass("wit-loading");
       if(err==null){
         if(voted_wit){
           console.log("unvoted");
@@ -69,7 +70,10 @@ $("#list_wit").empty();
 
   $(".witness-row img").unbind("click").click(function(){
     const acc=$(this).parent().find('.witName').html().replace("@","");
+    const that=this;
+    $(that).attr("src","../images/loading.gif");
     steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, acc,0, function(err, result) {
+      $(that).attr("src","../images/delete.png");
       if(err==null){
           showConfirm("Succesfully unvoted @"+acc);
           loadAccount(active_account.name);
@@ -79,9 +83,12 @@ $("#list_wit").empty();
   });
 
   $("#vote_wit").unbind("click").click(function(){
-    //console.log($("#witness_div select option:selected").val());
+    $("#vote_wit").hide();
+    $("#wit_loading").show();
     if($("#witness_div select option:selected").val()=="Wit"){
       steem.broadcast.accountWitnessVote(active_account.keys.active, active_account.name, $("#wit-username").val(), 1, function(err, result) {
+        $("#vote_wit").show();
+        $("#wit_loading").hide();
         if(err==null){
             showConfirm("Succesfully voted for @"+$("#wit-username").val());
             loadAccount(active_account.name);

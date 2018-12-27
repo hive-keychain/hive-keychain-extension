@@ -1480,6 +1480,10 @@ input:focus {
   opacity: 0.3;
 }
 
+.wit-loading::after {
+  background-image: url("../images/loading.gif") !important;
+}
+
 .wit-rank{
   display: inline-block;
   width: 30px;

@@ -198,6 +198,7 @@ $("#witness_toggle").click(function() {
 $("#witness").click(function(){
   $("#main").hide();
   $("#witness_div").show();
+  $("#voted").addClass("active_wit");
 });
 
 $(".wit-menu").click(function(){
