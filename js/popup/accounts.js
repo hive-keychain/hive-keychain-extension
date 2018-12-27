@@ -27,6 +27,7 @@ function loadAccount(name) {
                     claimRewards(result);
                     prepareWitnessDiv();
                     prepareDelegationTab();
+                    preparePowerUpDown(result);
                 }
                 else
                     Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync(),getWitnessRanks()])
@@ -46,7 +47,7 @@ function loadAccount(name) {
                         showUserData(result);
                         prepareWitnessDiv();
                         prepareDelegationTab();
-                        preparePowerUpDown();
+                        preparePowerUpDown(result);
                     });
 
                 if (!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {

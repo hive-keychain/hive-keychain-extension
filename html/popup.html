@@ -426,6 +426,9 @@
         STEEM
       </div>
       <div id="wrap_power_up"><button id="power_up">Power Up</button></div>
+      <div class="loader" id="powerup_loading" style="display:none">
+          <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="powerdown_div">
       <div class="back_enabled back_menu">Power Down</div>
@@ -434,11 +437,18 @@
         <div><span class="power_left">Available</span><span class="power_right power_sp"></span></div>
       </div>
       <p>Power Down your Steem Power to get liquid STEEM. The entire Power Down process will take 13 weeks.</p>
+      <div class="power" id="powering_down_div">
+        <div>Powering Down</div>
+        <div><span  id="powering_down"></span></div>
+      </div>
       <input type="number" id="amt_pd" placeholder="0.000"></input>
       <div  class="sp_del">
         SP
       </div>
       <div id="wrap_power_down"><button id="power_down">Power Down</button></div>
+      <div class="loader" id="powerdown_loading" style="display:none">
+          <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="delegation_div">
       <div class="back_enabled back_menu">Delegations</div>
@@ -458,6 +468,9 @@
           SP
         </div>
         <div id="wrap_send_del"><button id="send_del">Delegate to user</button></div>
+        <div class="loader" id="del_loading" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
     </div>
   </div>
     <div id="outgoing_del_div">
@@ -494,6 +507,9 @@
         SP
       </div>
       <div id="wrap_edit_del"><button id="edit_del">Save change</button></div>
+      <div class="loader" id="edit_del_loading" style="display:none">
+          <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="witness_votes">
         <img src="../images/delete.png" id="close_witness" style="display: none;" />

@@ -50,9 +50,12 @@ function prepareDelegationTab(){
             let delegated_vest = parseFloat($("#amt_del").val()) * totalVests / totalSteem;
             delegated_vest = delegated_vest.toFixed(6);
             delegated_vest = delegated_vest.toString() + ' VESTS';
-
+            $("#send_del").hide();
+            $("#del_loading").show();
             steem.broadcast.delegateVestingShares(active_account.keys.active, active_account.name, $("#username_del").val(), delegated_vest, function(err, result) {
               console.log(err, result);
+              $("#send_del").show();
+              $("#del_loading").hide();
               if(err){
                 showError("Something went wrong! Please try again!");
               }
@@ -102,11 +105,15 @@ function prepareDelegationTab(){
     $("#this_available_del").html(numberWithCommas((parseFloat($("#available_del").html().replace(",",""))+parseFloat(delegatee.sp)).toFixed(3))+" SP");
     $("#username_del span").html(delegatee.delegatee);
     $("#edit_del").unbind("click").click(function(){
+      $("#edit_del").hide();
+      $("#edit_del_loading").show();
       let delegated_vest = parseFloat($("#amt_edit_del").val()) * globalProperties.totalVests / globalProperties.totalSteem;
       delegated_vest = delegated_vest.toFixed(6);
       delegated_vest = delegated_vest.toString() + ' VESTS';
       steem.broadcast.delegateVestingShares(active_account.keys.active, active_account.name, delegatee.delegatee, delegated_vest, function(err, result) {
         console.log(err, result);
+        $("#edit_del").show();
+        $("#edit_del_loading").hide();
         if(err){
           showError("Something went wrong! Please try again!");
         }
