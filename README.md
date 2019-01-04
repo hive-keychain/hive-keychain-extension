@@ -8,11 +8,14 @@ On Ethereum, you never have to enter your private key into a website to use a dA
 
 Steem Keychain aims to bring the security and ease-of-use of Metamask to the Steem blockchain platform.
 
+## Installation
+You can download and install the latest published version of the extension from the Chrome Web Store for the Google Chrome or Brave browsers here: [https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm](https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm)
+
 ## Features
 The Steem Keychain extension includes the following features:
 - Store an unlimited number of Steem account keys, encrypted with AES
-- View balances, transaction history, voting power, and more
-- Send STEEM and SBD transfers right from the extension
+- View balances, transaction history, voting power, and resource credits
+- Send STEEM and SBD transfers, manage witness votes, and update SP delegation right from the extension
 - Securely interact with Steem-based websites that have integrated with Steem Keychain
 - Manage transaction confirmation preferences by account and by website
 - Locks automatically on browser shutdown or manually using the lock button
