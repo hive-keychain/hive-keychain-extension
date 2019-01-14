@@ -415,7 +415,16 @@
     </div>
     <div id="tokens_div">
       <div class="back_enabled back_menu">Tokens</div>
-      <p>Coming soon.</p>
+      <img src="../images/settings.png" id="settings_tokens"/>
+      <p>Displays every non-null token balance. You can hide some balances and check information about the tokens by clicking the Settings wheel.</p>
+      <div id="tokens_list">
+      </div>
+    </div>
+    <div id="tokens_settings_div">
+      <div class="back_enabled ">Tokens Properties and Settings</div>
+      <p>Check settings information and chose which token balances to display.</p>
+      <div id="existing_tokens">
+      </div>
     </div>
     <div id="powerup_div">
       <div class="back_enabled back_menu">Power Up</div>
@@ -540,6 +549,8 @@
     <script src="../vendor/steemjs.js"></script>
     <script src="../vendor/md5.min.js"></script>
     <script src="../vendor/cryptojs.min.js"></script>
+    <script src="../vendor/axios.min.js"></script>
+    <script src="../vendor/sscjs.js"></script>
     <script src="../js/encrypt.js"></script>
     <script src="../js/popup/com.js"></script>
     <script src="../js/popup/rpc.js"></script>
@@ -550,6 +561,7 @@
     <script src="../js/popup/witness.js"></script>
     <script src="../js/popup/delegate.js"></script>
     <script src="../js/popup/power.js"></script>
+    <script src="../js/popup/tokens.js"></script>
     <script src="../js/popup/popup.js"></script>
 </body>
 

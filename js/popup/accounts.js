@@ -28,6 +28,7 @@ function loadAccount(name) {
                     prepareWitnessDiv();
                     prepareDelegationTab();
                     preparePowerUpDown(result);
+                    showTokenBalances(result[0]);
                 }
                 else
                     Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync(),getWitnessRanks()])
@@ -48,6 +49,7 @@ function loadAccount(name) {
                         prepareWitnessDiv();
                         prepareDelegationTab();
                         preparePowerUpDown(result);
+                        showTokenBalances(result[0]);
                     });
 
                 if (!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {

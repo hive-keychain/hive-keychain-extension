@@ -28,6 +28,7 @@ function initializeVisibility() {
     $("#estimation_info").hide();
     $("#pref_div").hide();
     $("#tokens_div").hide();
+    $("#tokens_settings_div").hide();
     $("#delegation_div").hide();
     $("#add_rpc_div").hide();
     $("#edit_del_div").hide();
@@ -333,4 +334,14 @@ $("#incoming_del_div .back_enabled").click(function(){
 $("#edit_del_div .back_enabled").click(function(){
     $("#edit_del_div").hide();
     $("#outgoing_del_div").show();
+});
+
+$("#settings_tokens").click(function(){
+  $("#tokens_div").hide();
+  $("#tokens_settings_div").show();
+});
+
+$("#tokens_settings_div .back_enabled").click(function(){
+  $("#tokens_div").show();
+  $("#tokens_settings_div").hide();
 });

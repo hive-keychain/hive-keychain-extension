@@ -63,6 +63,7 @@ body {
 #witness_div,
 #delegation_div,
 #tokens_div,
+#tokens_settings_div,
 #powerup_div,
 #powerdown_div,
 #outgoing_del_div ,
@@ -344,6 +345,7 @@ input:focus {
 #witness_div,
 #delegation_div,
 #tokens_div,
+#tokens_settings_div,
 #powerup_div,
 #powerdown_div,
 #outgoing_del_div,
@@ -1735,4 +1737,53 @@ margin-bottom: 30px;
 #powering_down_div div {
   padding-top: 3px;
   padding-bottom: 3px;
+}
+
+#tokens_div .back_enabled{
+  width: 80%;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+#settings_tokens{
+  float: right;
+  width: 30px;
+  vertical-align: bottom;
+  margin-top: 15px;
+}
+
+#tokens_list{
+  margin-top: 30px;
+  margin-left: -32px;
+  margin-right: -32px;
+}
+
+#tokens_list div:nth-of-type(even),#list_incoming div:nth-of-type(even){
+  background-color: rgba(0, 156, 156, 0.8);
+}
+
+#tokens_list div:nth-of-type(odd),#list_incoming div:nth-of-type(odd){
+  background-color: rgba(0, 156, 156, 0.4);
+}
+
+.row_token_balance span:first-of-type {
+  display: inline-block;
+  width: 145px;
+}
+.row_token_balance span:last-of-type {
+  display: inline-block;
+  width: 80px;
+  text-align: right;
+}
+
+.row_token_balance img {
+  width: 20px;
+  padding-left: 20px;
+  vertical-align: -15%;
+}
+
+.row_token_balance {
+  padding-left: 32px;
+  padding-right: 32px;
+  padding-top:11px;
+  padding-bottom:11px;
 }
