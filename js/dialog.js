@@ -110,7 +110,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             case "signBuffer":
               $("#dialog_message").show();
               $("#dialog_message").text('The website ' + msg.domain + ' would like you to sign a message using the ' + msg.data.method + ' key for the account: @' + msg.data.username);
-              $("#message_sign").text(msg.data.message);
+              let truncatedMessage = msg.data.message.substring(0, 200);
+              if (msg.data.message.length > 200) {
+                  truncatedMessage += '...';
+              }
+              $("#message_sign").text(truncatedMessage);
                 break;
             case "broadcast":
                 $("#custom_data").click(function() {
