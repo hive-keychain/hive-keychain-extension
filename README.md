@@ -128,6 +128,11 @@ Where "message" is any string and "key_type" can be "Posting" or "Active". This 
 
 ```Signature.signBufferSha256(hash.sha256(message), wif).toHex();```
 
+You can also pass in a JSON-stringified Node.js Buffer object. For example, if `buffer` is a Node.js Buffer
+to be signed, you can pass `JSON.stringify(buffer)` as `message`, then this method becomes equivalent to
+
+```Signature.signBufferSha256(hash.sha256(buffer), wif).toHex();```
+
 ### Broadcast
 
 Sites can request that the extension sign and broadcast general operations allowed by the `steem-js` library:
