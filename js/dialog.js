@@ -110,11 +110,22 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             case "signBuffer":
               $("#dialog_message").show();
               $("#dialog_message").text('The website ' + msg.domain + ' would like you to sign a message using the ' + msg.data.method + ' key for the account: @' + msg.data.username);
-              let truncatedMessage = msg.data.message.substring(0, 200);
-              if (msg.data.message.length > 200) {
-                  truncatedMessage += '...';
+              const fullMessage = msg.data.message;
+              let truncatedMessage = fullMessage.substring(0, 200);
+              if (fullMessage.length > 200) {
+                  truncatedMessage += '...(click to expand)';
               }
+              let expanded = false;
               $("#message_sign").text(truncatedMessage);
+              $("#message_sign").click(function() {
+                  if (expanded) {
+                      $("#message_sign").text(truncatedMessage);
+                      expanded = false;
+                  } else {
+                      $("#message_sign").text(fullMessage);
+                      expanded = true;
+                  }
+              });
                 break;
             case "broadcast":
                 $("#custom_data").click(function() {
