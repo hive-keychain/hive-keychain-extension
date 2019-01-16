@@ -416,14 +416,29 @@
     <div id="tokens_div">
       <div class="back_enabled back_menu">Tokens</div>
       <img src="../images/settings.png" id="settings_tokens"/>
-      <p>Displays every non-null token balance. You can hide some balances and check information about the tokens by clicking the Settings wheel.</p>
+      <p></p>
       <div id="tokens_list">
       </div>
     </div>
     <div id="tokens_settings_div">
-      <div class="back_enabled ">Tokens Properties and Settings</div>
+      <div class="back_enabled ">Tokens Available</div>
       <p>Check settings information and chose which token balances to display.</p>
       <div id="existing_tokens">
+      </div>
+    </div>
+    <div id="token_send_div">
+      <div class="back_enabled "></div>
+      <div class="token_available">
+        <div><span class="token_left">Available</span><span class="token_right"></span></div>
+      </div>
+      <input type="text" placeholder="Recipient" id="send_tok_to" />
+      <input type="number" id="amt_tok" placeholder="0.000"></input>
+      <div  id="tok">
+      </div>
+      <div id="wrap_tok"><button id="send_tok">Send</button></div>
+      <div class="loader" id="tok_loading" style="display:none">
+          <div><img src="../images/loading.gif" /></div>
+      </div>
       </div>
     </div>
     <div id="powerup_div">

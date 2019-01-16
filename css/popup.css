@@ -64,6 +64,7 @@ body {
 #delegation_div,
 #tokens_div,
 #tokens_settings_div,
+#token_send_div,
 #powerup_div,
 #powerdown_div,
 #outgoing_del_div ,
@@ -163,6 +164,7 @@ input:focus {
 #delegation_div input,
 #edit_del_div input,
 #powerup_div input,
+#token_send_div input,
 #powerdown_div input{
     width: 100%;
     box-sizing: border-box;
@@ -180,7 +182,7 @@ input:focus {
 #add_account_div input,
 #change_password input,
 #autolock_div input,
-#witness_div input {
+#witness_div input{
     padding-left: 65px;
 }
 
@@ -192,6 +194,7 @@ input:focus {
 #unlock input::placeholder,
 #add_account_div input::placeholder,
 #autolock_div input::placeholder,
+#token_send_div input::placeholder,
 #witness_div input::placeholder {
     color: #72B7C1;
     text-transform: uppercase;
@@ -214,6 +217,7 @@ input:focus {
 #witness_div button,
 #delegation_div button,
 #edit_del_div button,
+#token_send_div button,
 #powerup_div button,
 #powerdown_div button {
     border-radius: 5px;
@@ -248,7 +252,8 @@ input:focus {
 #powerup_div button:hover,
 #delegation_div button:hover,
 #edit_del:hover,
-#vote_wit:hover
+#vote_wit:hover,
+#token_send_div button:hover
  {
     background-color: #917FC6;
     border: solid 1px #917FC6;
@@ -345,6 +350,7 @@ input:focus {
 #witness_div,
 #delegation_div,
 #tokens_div,
+#token_send_div,
 #tokens_settings_div,
 #powerup_div,
 #powerdown_div,
@@ -1514,18 +1520,18 @@ input:focus {
   margin-top: 40px;
 }
 
-.del_left,.power_left {
+.del_left,.power_left,.token_left {
   display: inline-block;
   width: 120px;
 }
 
-.del_right,.power_right {
+.del_right,.power_right,.token_right {
   display: inline-block;
   text-align: right;
   width: 165px;
 }
 
-#delegation_values, #edit_delegation_values,.power {
+#delegation_values, #edit_delegation_values,.power, .token_available {
   background-color: rgba(0,156,156,0.4);
   margin-left: -32px;
   margin-right: -32px;
@@ -1609,7 +1615,7 @@ input:focus {
   background-color: #1E8CA7 !important;
 }
 
-#delegation_div .disabled, #edit_del_div .disabled, #powerup_div .disabled, #powerdown_div .disabled{
+#delegation_div .disabled, #edit_del_div .disabled, #powerup_div .disabled, #powerdown_div .disabled, #token_send_div .disabled{
   background-color: #dddddd !important;
   border-color: #dddddd !important;
   color:#1E8CA7 !important;
@@ -1702,12 +1708,12 @@ text-align: right;
   text-transform: uppercase;
 }
 
-.power {
+.power,.token_available {
 margin-top: 30px;
 margin-bottom: 30px;
 }
 
-.power div {
+.power div,.token_available div {
   font-size: 20px;
   line-height: 28px;
   color: white;
@@ -1786,4 +1792,53 @@ margin-bottom: 30px;
   padding-right: 32px;
   padding-top:11px;
   padding-bottom:11px;
+}
+
+#tokens_div img {
+cursor: pointer;
+}
+
+.row_existing_tokens span{
+  display: inline-block;
+}
+
+.name_token {
+  font-size: 18px;
+  width: 100%;
+  font-weight: bold;
+}
+
+.symbol_token,.supply_token,.issuer_token {
+  width: 100%;
+  font-size: 16px;
+}
+
+#token_send_div input {
+  padding-left: 20px;
+}
+
+#tok {
+      display: inline-block;
+      width: 108px !important;
+      background-color: rgba(33, 172, 204, 0.75);
+      padding-top: 15px;
+      padding-bottom: 11px;
+      text-align: center;
+      font-size: 20px;
+      border-radius:6px;
+}
+
+#amt_tok {
+    width: 167px !important;
+    margin-right: 7px;
+    text-align: right;
+}
+
+.token_available {
+  margin-bottom: 60px;
+  margin-top: 60px;
+}
+
+#send_tok {
+  margin-top: 30px;
 }
