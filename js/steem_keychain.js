@@ -116,6 +116,14 @@ var steem_keychain = {
         };
         this.dispatchCustomEvent("swRequest", request, callback);
     },
+    requestWitnessVote: function(username, vote, callback) {
+        var request = {
+            type: "witnessVote",
+            username: username,
+            vote: vote
+        };
+        this.dispatchCustomEvent("swRequest", request, callback);
+    },
 
     // Send the customEvent
     dispatchCustomEvent: function(name, data, callback) {
