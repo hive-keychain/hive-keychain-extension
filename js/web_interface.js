@@ -63,7 +63,7 @@ function validate(req) {
         ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
             (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
             (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
-            (req.type == "post" && isFilled(req.username) && isFilled(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req)) ||
+            (req.type == "post" && isFilled(req.username) && isFilledOrEmpty(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req)) ||
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
             (req.type == "broadcast" && isFilled(req.operations) && isFilled(req.method)) ||
             (req.type == "signedCall" && isFilled(req.method) && isFilled(req.params) && isFilled(req.typeWif)) ||
@@ -85,6 +85,10 @@ function hasTransferInfo(req){
 
 function isFilled(obj) {
     return obj != undefined && obj != null && obj != "";
+}
+
+function isFilledOrEmpty(obj) {
+    return obj != undefined && obj != null;
 }
 
 function isFilledDelegationMethod(obj){
