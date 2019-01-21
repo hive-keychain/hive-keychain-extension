@@ -2,26 +2,64 @@ let tokens=[];
 let accountTokenBalances=[];
 const urlSSC=[
   "https://steemsmartcontracts.tk",
-  "https://testapi.steem-engine.com:5000"
+  "https://testapi.steem-engine.com"
 ];
 const ssc = new SSC(urlSSC[1]);
+let hidden_tokens=[];
+
+//chrome.storage.local.set({hidden_tokens:JSON.stringify([])});
+  chrome.storage.local.get(['hidden_tokens'], function(items) {
+    if(items.hidden_tokens)
+        hidden_tokens=JSON.parse(items.hidden_tokens||[]);
+  });
 
 getTokens().then(function(tok){
   tokens=tok;
   console.log(tokens);
   for (token of tokens){
-    $("#existing_tokens").append("<div class='row_existing_tokens'>\
-    <span class='name_token'>"+token.name+"</span>\
-    <span class='symbol_token'>"+token.symbol+"</span>\
-    <span class='issuer_token'>by @"+token.issuer+"</span>\
-    <spanclass='supply_token'>Supply: "+numberWithCommas(token.supply)+"</span>\
+    let html="<div class='row_existing_tokens'>\
     <div class='key_checkbox'>\
-      <input type='checkbox' checked=true/>\
+    <label class='checkbox_container'>\
+    <span class='name_token'>"+token.name+"</span>";
+    if(token.url)
+    html+="<a target='_blank' href='"+token.url+"'><img src='../images/link.png' class='img_token'/></a>";
+    html+="<span class='symbol_token'>"+token.symbol+"</span>\
+    <span class='issuer_token'>by @"+token.issuer+"</span>\
+    <div class='supply_token'>Supply: "+numberWithCommas(nFormatter(token.supply,3))+"/"+numberWithCommas(nFormatter(token.maxSupply,3))+"</div>\
+      <input type='checkbox' checked=true class='check_row_token'/>\
       <span class='checkmark'/>\
     </label>\
     </div>\
-    ");
+    ";
+
+    $("#existing_tokens").append(html);
   }
+    for(token of $(".symbol_token")){
+     if(hidden_tokens.includes($(token).html())){
+       $(token).nextAll(".check_row_token").attr("checked",false);
+     }
+    }
+
+    $(".check_row_token").unbind("change").change(function(){
+      const nameToken=$(this).prevAll(".symbol_token").html();
+      console.log(hidden_tokens);
+            if($(this).is(':checked')){
+              hidden_tokens=hidden_tokens.filter(function(value, index, arr){
+                return value !=nameToken;
+              });
+            }
+            else{
+              hidden_tokens.push(nameToken);
+            }
+            for (symbol of $(".symbol_owned_token")){
+              if(hidden_tokens.includes($(symbol).html()))
+                $(symbol).parent().toggle();
+            }
+            console.log(hidden_tokens);
+            chrome.storage.local.set({
+                hidden_tokens:JSON.stringify(hidden_tokens)
+            });
+    });
 });
 
 function showTokenBalances(account){
@@ -33,9 +71,15 @@ function showTokenBalances(account){
     for(token of tokenBalances){
       $("#tokens_list").append("<div class='row_token_balance'>\
       <span>"+numberWithCommas(token.balance)+"</span>\
-      <span>"+token.symbol+"</span>\
+      <span class='symbol_owned_token'>"+token.symbol+"</span>\
       <img src='../images/transfer.png' class='send_token_icon'/>\
       </div>");
+    }
+
+    for (symbol of $(".symbol_owned_token")){
+      if(hidden_tokens.includes($(symbol).html()))
+        $(symbol).parent().hide();
+
     }
 
     if(tokenBalances.length){
@@ -95,7 +139,7 @@ function sendToken(account_to,token,amount){
      }
    };
   $("#tok_loading").show();
-steem.broadcast.customJson(active_account.keys.active, [active_account.name], null, id, JSON.stringify(json), function(err, result) {
+  steem.broadcast.customJson(active_account.keys.active, [active_account.name], null, id, JSON.stringify(json), function(err, result) {
     $("#tok_loading").hide();
     if(err)
       showError("Something went wrong! Please try again!");

@@ -346,16 +346,6 @@ $("#tokens_settings_div .back_enabled").click(function(){
   $("#tokens_settings_div").hide();
 });
 
-$(".send_token_icon").click(function(){
-console.log("symbol");
-  const symbol=$(this).prev();
-  console.log(symbol);
-  $("#token_send_div .back_enabled").html("Send "+symbol);
-  $("#tok").html(symbol);
-  $("#token_send_div").show();
-  $("#tokens_div").hide();
-});
-
 $("#token_send_div .back_enabled").click(function(){
   $("#token_send_div").hide();
   $("#tokens_div").show();

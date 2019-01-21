@@ -1804,13 +1804,8 @@ cursor: pointer;
 
 .name_token {
   font-size: 18px;
-  width: 100%;
+  width:90%;
   font-weight: bold;
-}
-
-.symbol_token,.supply_token,.issuer_token {
-  width: 100%;
-  font-size: 16px;
 }
 
 #token_send_div input {
@@ -1841,4 +1836,18 @@ cursor: pointer;
 
 #send_tok {
   margin-top: 30px;
+}
+
+.issuer_token {
+  display: inline-block;
+  margin-left: 30px;
+}
+
+.issuer_token, .symbol_token,.supply_token {
+  font-size: 15px;
+}
+
+.img_token{
+  width: 18px;
+  float: right;
 }
