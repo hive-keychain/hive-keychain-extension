@@ -327,7 +327,10 @@ function manageKeys(name) {
     $("#delete_account").unbind("click").click(function() {
         deleteAccount(index);
     });
+    let adding_key=null;
     $(".img_add_key").unbind("click").click(function() {
+        adding_key=$(this).prevAll(".keys_info_type").html().split(" ")[0].toLowerCase();
+        $("#add_key_div p span").html(adding_key);
         $("#manage_keys").hide();
         $("#add_key_div").show();
     });
@@ -336,33 +339,55 @@ function manageKeys(name) {
     $('#add_new_key').unbind("click").click(function() {
         const keys = accounts_json.list[index].keys;
         const pwd = $("#new_key").val();
-        if (steem.auth.isWif(pwd)) {
-            steem.api.getAccounts([name], function(err, result) {
-                if (result.length != 0) {
-                    const pub_active = result["0"].active.key_auths["0"]["0"];
-                    const pub_posting = result["0"].posting.key_auths["0"]["0"];
-                    const pub_memo = result["0"].memo_key;
-                    if (isMemoWif(pwd, pub_memo)) {
+
+      steem.api.getAccounts([name], function(err, result) {
+          if (result.length != 0) {
+              const pub_active = result["0"].active.key_auths["0"]["0"];
+              const pub_posting = result["0"].posting.key_auths["0"]["0"];
+              const pub_memo = result["0"].memo_key;
+                if (steem.auth.isWif(pwd)) {
+                    if (adding_key=="memo"&&isMemoWif(pwd, pub_memo)) {
                         if (keys.hasOwnProperty("memo"))
                             showError("You already entered your memo key!");
                         else
                             addKeys(index, "memo", pwd, pub_memo, name);
-                    } else if (isPostingWif(pwd, pub_posting)) {
+                    } else if (adding_key=="posting"&&isPostingWif(pwd, pub_posting)) {
                         if (keys.hasOwnProperty("posting"))
                             showError("You already entered your posting key!");
                         else
                             addKeys(index, "posting", pwd, pub_posting, name);
-                    } else if (isActiveWif(pwd, pub_active)) {
+                    } else if (adding_key=="active"&&isActiveWif(pwd, pub_active)) {
                         if (keys.hasOwnProperty("active"))
                             showError("You already entered your active key!");
                         else
                             addKeys(index, "active", pwd, pub_active, name);
                     } else
-                        showError("This is not one of your keys!");
+                        showError("This is not your "+adding_key+" key!");
+                } else {
+                  const keys = steem.auth.getPrivateKeys(name, pwd, ["posting", "active", "memo"]);
+                  console.log(keys);
+                  if (keys.activePubkey == pub_active && keys.postingPubkey == pub_posting && keys.memoPubkey == pub_memo) {
+                    let pub=null;
+                    let prKey=null;
+                    switch (adding_key) {
+                      case "memo":
+                        pub=pub_memo;
+                    break;
+                    case "active":
+                      pub=pub_active;
+                    break;
+                    case "posting":
+                      pub=pub_posting;
+                    break;
                 }
-            });
-        } else
-            showError("Not a private WIF!");
+                    addKeys(index, adding_key, keys[adding_key], pub, name);
+                  }
+                  else  showError("Not a private WIF!");
+                }
+        } else {
+          showError("Please try again later!");
+        }
+      });
     });
 }
 
