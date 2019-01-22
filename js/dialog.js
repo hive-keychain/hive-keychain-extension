@@ -57,7 +57,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'post': 'Post',
             'vote': 'Vote',
             'transfer': 'Transfer',
-            'delegation': 'Delegation'
+            'delegation': 'Delegation',
+            'witnessVote':'Witness Vote'
         };
         var title = titles[type];
         $("#dialog_header").html(title);
@@ -92,7 +93,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#username").text("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
         const keyVerifyAction = msg.data.type == 'decode' || msg.data.type == 'signBuffer';
-        if (type != "transfer" && type != "delegation") {
+        if (type != "transfer" && type != "delegation" && type != "witnessVote") {
             $("#keep_div").show();
             var prompt_msg = keyVerifyAction ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
                 "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
@@ -206,6 +207,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             case "delegation":
                 $("#delegatee").text("@" + msg.data.delegatee);
                 $("#amt_sp").text(msg.data.amount +" "+ msg.data.unit);
+                break;
+            case "witnessVote":
+              console.log(msg.data);
+                $("#witness").html(msg.data.witness);
+                $("#voteWit").html(JSON.stringify(msg.data.vote));
                 break;
         }
 

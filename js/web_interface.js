@@ -67,7 +67,7 @@ function validate(req) {
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
             (req.type == "broadcast" && isFilled(req.operations) && isFilled(req.method)) ||
             (req.type == "signedCall" && isFilled(req.method) && isFilled(req.params) && isFilled(req.typeWif)) ||
-            (req.type == "witnessVote" && isBoolean(req.vote)) ||
+            (req.type == "witnessVote" && isFilled(req.username) && isFilled(req.witness) && isBoolean(req.vote)) ||
             (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req) && isFilledDelegationMethod(req.unit)) ||
             (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)));
 }

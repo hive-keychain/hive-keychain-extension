@@ -274,38 +274,57 @@ async function performTransaction(data, tab) {
                         accounts = null;
                     });
                 break;
-            case "delegation":
-                steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
-                    let delegated_vest=null;
-                    if(data.unit=="SP"){
-                      const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
-                      const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
-                      delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
-                      delegated_vest = delegated_vest.toFixed(6);
-                      delegated_vest = delegated_vest.toString() + ' VESTS';
-                    }
-                    else {
-                      delegated_vest = data.amount + ' VESTS';
-                    }
-                    steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
-                        const message = {
-                            command: "answerRequest",
-                            msg: {
-                                success: error == null,
-                                error: error,
-                                result: result,
-                                data: data,
-                                message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                                request_id: request_id
-                            }
-                        };
-                        chrome.tabs.sendMessage(tab, message);
-                        chrome.runtime.sendMessage(message);
-                        key = null;
-                        accounts = null;
+                case "delegation":
+                    steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
+                        let delegated_vest=null;
+                        if(data.unit=="SP"){
+                          const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
+                          const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
+                          delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
+                          delegated_vest = delegated_vest.toFixed(6);
+                          delegated_vest = delegated_vest.toString() + ' VESTS';
+                        }
+                        else {
+                          delegated_vest = data.amount + ' VESTS';
+                        }
+                        steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
+                            const message = {
+                                command: "answerRequest",
+                                msg: {
+                                    success: error == null,
+                                    error: error,
+                                    result: result,
+                                    data: data,
+                                    message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                                    request_id: request_id
+                                }
+                            };
+                            chrome.tabs.sendMessage(tab, message);
+                            chrome.runtime.sendMessage(message);
+                            key = null;
+                            accounts = null;
+                        });
                     });
-                });
-                break;
+                    break;
+                  case "witnessVote":
+                          steem.broadcast.accountWitnessVote(key, data.username, data.witness, data.vote?1:0, function(error, result) {
+                              const message = {
+                                  command: "answerRequest",
+                                  msg: {
+                                      success: error == null,
+                                      error: error,
+                                      result: result,
+                                      data: data,
+                                      message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                                      request_id: request_id
+                                  }
+                              };
+                              chrome.tabs.sendMessage(tab, message);
+                              chrome.runtime.sendMessage(message);
+                              key = null;
+                              accounts = null;
+                          });
+                      break;
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
@@ -604,6 +623,9 @@ function getRequiredWifType(request) {
             return "active";
             break;
         case "delegation":
+            return "active";
+            break;
+        case "witnessVote":
             return "active";
             break;
     }

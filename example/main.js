@@ -77,7 +77,7 @@ $("#send_signed_call").click(function(){
 });
 
 $("#send_witness_vote").click(function(){
-  steem_keychain.requestWitnessVote($("#witness_username").val(), $("#vote_wit").is(":checked"), function(response) {
+  steem_keychain.requestWitnessVote($("#witness_username").val(),$("#witness").val(), $("#vote_wit").is(":checked"), function(response) {
       console.log('main js response - witness vote');
       console.log(response);
   });
