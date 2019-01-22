@@ -19,6 +19,6 @@ function getMK() {
 function setRPC(rpc) {
     chrome.runtime.sendMessage({
         command: "setRPC",
-        rpc:rpc
+        rpc: rpc
     });
 }

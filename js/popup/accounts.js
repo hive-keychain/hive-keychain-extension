@@ -1,7 +1,7 @@
 // All functions regarding the handling of a particular account
 // Load account information
 function loadAccount(name) {
-  console.log("Load account "+name);
+    console.log("Load account " + name);
     let account = accounts_json.list.filter(function(obj, i) {
         return obj.name === name;
     })[0];
@@ -14,24 +14,23 @@ function loadAccount(name) {
         $("#rc").html("...");
         steem.api.getAccounts([account.name], async function(err, result) {
             if (result.length != 0) {
-              console.log(result);
-                witness_votes=result[0].witness_votes;
-                proxy=result[0].proxy;
+                console.log(result);
+                witness_votes = result[0].witness_votes;
+                proxy = result[0].proxy;
                 const vm = await getVotingMana(result[0]);
                 $("#vm").html(vm + "%");
-                const full=(vm==100?"":'Full in ')+getTimeBeforeFull(vm * 100);
-                $("#vm_info").attr("title", full );
+                const full = (vm == 100 ? "" : 'Full in ') + getTimeBeforeFull(vm * 100);
+                $("#vm_info").attr("title", full);
 
-                if (totalSteem != null){
+                if (totalSteem != null) {
                     showUserData(result);
                     claimRewards(result);
                     prepareWitnessDiv();
                     prepareDelegationTab();
                     preparePowerUpDown(result);
                     showTokenBalances(result[0]);
-                }
-                else
-                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync(),getWitnessRanks()])
+                } else
+                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync(), getWitnessRanks()])
                     .then(function(values) {
                         votePowerReserveRate = values["0"].vote_power_reserve_rate;
                         totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
@@ -43,7 +42,7 @@ function loadAccount(name) {
                         priceSBD = values["4"];
                         priceSteem = values["3"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
                         priceBTC = values["5"];
-                        witness_ranks=values["6"];
+                        witness_ranks = values["6"];
                         claimRewards(result);
                         showUserData(result);
                         prepareWitnessDiv();
@@ -99,12 +98,11 @@ function loadAccount(name) {
                         let date = new Date(timestamp);
                         timestamp = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
                         if (memo[0] == "#") {
-                            if (active_account.keys.hasOwnProperty("memo")){
-                                try{
-                                memo = window.decodeMemo(active_account.keys.memo, memo);
-                              }catch(e){}
-                            }
-                            else
+                            if (active_account.keys.hasOwnProperty("memo")) {
+                                try {
+                                    memo = window.decodeMemo(active_account.keys.memo, memo);
+                                } catch (e) {}
+                            } else
                                 memo = "Add your private memo key to read this memo";
                         }
                         $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date'>" + timestamp + "</span><span class='transfer_val'>" + (transfer[1].op[1].from == active_account.name ? "-" : "+") + " " + transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from) +
@@ -131,13 +129,13 @@ async function showUserData(result) {
     $("#vm").html($("#vm").html() + " ($" + vd + ")");
 
     $("#rc").html(rc.estimated_pct + "%");
-    const full=(rc.estimated_pct==100?"":'Full in ')+rc.fullin;
+    const full = (rc.estimated_pct == 100 ? "" : 'Full in ') + rc.fullin;
     $("#rc_info").attr("title", full);
-    console.log(priceSBD*priceBTC,priceSteem*priceBTC);
-    console.log(parseInt(sbd),sp,steem_p);
-    console.log(priceBTC*priceSBD,parseInt(sbd),priceBTC*priceSBD * parseInt(sbd));
-    console.log(priceBTC* priceSteem * (parseInt(sp) + parseInt(steem_p)));
-    $("#account_value_amt").html(numberWithCommas("$ "+((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2))+"\t  USD");
+    console.log(priceSBD * priceBTC, priceSteem * priceBTC);
+    console.log(parseInt(sbd), sp, steem_p);
+    console.log(priceBTC * priceSBD, parseInt(sbd), priceBTC * priceSBD * parseInt(sbd));
+    console.log(priceBTC * priceSteem * (parseInt(sp) + parseInt(steem_p)));
+    $("#account_value_amt").html(numberWithCommas("$ " + ((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)) + "\t  USD");
 
     console.log(rc);
 }
@@ -327,9 +325,9 @@ function manageKeys(name) {
     $("#delete_account").unbind("click").click(function() {
         deleteAccount(index);
     });
-    let adding_key=null;
+    let adding_key = null;
     $(".img_add_key").unbind("click").click(function() {
-        adding_key=$(this).prevAll(".keys_info_type").html().split(" ")[0].toLowerCase();
+        adding_key = $(this).prevAll(".keys_info_type").html().split(" ")[0].toLowerCase();
         $("#add_key_div p span").html(adding_key);
         $("#manage_keys").hide();
         $("#add_key_div").show();
@@ -340,54 +338,53 @@ function manageKeys(name) {
         const keys = accounts_json.list[index].keys;
         const pwd = $("#new_key").val();
 
-      steem.api.getAccounts([name], function(err, result) {
-          if (result.length != 0) {
-              const pub_active = result["0"].active.key_auths["0"]["0"];
-              const pub_posting = result["0"].posting.key_auths["0"]["0"];
-              const pub_memo = result["0"].memo_key;
+        steem.api.getAccounts([name], function(err, result) {
+            if (result.length != 0) {
+                const pub_active = result["0"].active.key_auths["0"]["0"];
+                const pub_posting = result["0"].posting.key_auths["0"]["0"];
+                const pub_memo = result["0"].memo_key;
                 if (steem.auth.isWif(pwd)) {
-                    if (adding_key=="memo"&&isMemoWif(pwd, pub_memo)) {
+                    if (adding_key == "memo" && isMemoWif(pwd, pub_memo)) {
                         if (keys.hasOwnProperty("memo"))
                             showError("You already entered your memo key!");
                         else
                             addKeys(index, "memo", pwd, pub_memo, name);
-                    } else if (adding_key=="posting"&&isPostingWif(pwd, pub_posting)) {
+                    } else if (adding_key == "posting" && isPostingWif(pwd, pub_posting)) {
                         if (keys.hasOwnProperty("posting"))
                             showError("You already entered your posting key!");
                         else
                             addKeys(index, "posting", pwd, pub_posting, name);
-                    } else if (adding_key=="active"&&isActiveWif(pwd, pub_active)) {
+                    } else if (adding_key == "active" && isActiveWif(pwd, pub_active)) {
                         if (keys.hasOwnProperty("active"))
                             showError("You already entered your active key!");
                         else
                             addKeys(index, "active", pwd, pub_active, name);
                     } else
-                        showError("This is not your "+adding_key+" key!");
+                        showError("This is not your " + adding_key + " key!");
                 } else {
-                  const keys = steem.auth.getPrivateKeys(name, pwd, ["posting", "active", "memo"]);
-                  console.log(keys);
-                  if (keys.activePubkey == pub_active && keys.postingPubkey == pub_posting && keys.memoPubkey == pub_memo) {
-                    let pub=null;
-                    let prKey=null;
-                    switch (adding_key) {
-                      case "memo":
-                        pub=pub_memo;
-                    break;
-                    case "active":
-                      pub=pub_active;
-                    break;
-                    case "posting":
-                      pub=pub_posting;
-                    break;
+                    const keys = steem.auth.getPrivateKeys(name, pwd, ["posting", "active", "memo"]);
+                    console.log(keys);
+                    if (keys.activePubkey == pub_active && keys.postingPubkey == pub_posting && keys.memoPubkey == pub_memo) {
+                        let pub = null;
+                        let prKey = null;
+                        switch (adding_key) {
+                            case "memo":
+                                pub = pub_memo;
+                                break;
+                            case "active":
+                                pub = pub_active;
+                                break;
+                            case "posting":
+                                pub = pub_posting;
+                                break;
+                        }
+                        addKeys(index, adding_key, keys[adding_key], pub, name);
+                    } else showError("Not a private WIF!");
                 }
-                    addKeys(index, adding_key, keys[adding_key], pub, name);
-                  }
-                  else  showError("Not a private WIF!");
-                }
-        } else {
-          showError("Please try again later!");
-        }
-      });
+            } else {
+                showError("Please try again later!");
+            }
+        });
     });
 }
 
@@ -436,39 +433,38 @@ function updateAccount() {
     });
 }
 
-function claimRewards(result){
-  console.log("Check claim rewards for "+active_account.name);
-  const reward_sbd=result[0].reward_sbd_balance;
-  const reward_vests=result[0].reward_vesting_balance;
-  const reward_sp=steem.formatter.vestToSteem(reward_vests, dynamicProp.total_vesting_shares, dynamicProp.total_vesting_fund_steem).toFixed(3)+" SP";
-  const reward_steem=result[0].reward_steem_balance;
-  if(hasReward(reward_sbd,reward_sp,reward_steem)){
-    $("#claim").show();
-      $("#claim").unbind("click").click(function(){
-          $("#claim_rewards").show();
-          let rewardText="You have Rewards ready to redeem in the amount of:<br>";
-          if(getValFromString(reward_sp)!=0)
-            rewardText+=(reward_sp+" / ");
-          if(getValFromString(reward_sbd)!=0)
-            rewardText+=(reward_sbd+" / ");
-          if(getValFromString(reward_steem)!=0)
-            rewardText+=(reward_steem+" / ");
-            rewardText=rewardText.slice(0,-3);
-          $("#claim_rewards p").html(rewardText);
-          $("#redeem_rewards").unbind("click").click(function(){
-          $("#claim_rewards button").prop("disabled",true);
-            if(active_account.keys.posting)
-              steem.broadcast.claimRewardBalance(active_account.keys.posting, active_account.name, reward_steem, reward_sbd, reward_vests, function(err, result) {
+function claimRewards(result) {
+    console.log("Check claim rewards for " + active_account.name);
+    const reward_sbd = result[0].reward_sbd_balance;
+    const reward_vests = result[0].reward_vesting_balance;
+    const reward_sp = steem.formatter.vestToSteem(reward_vests, dynamicProp.total_vesting_shares, dynamicProp.total_vesting_fund_steem).toFixed(3) + " SP";
+    const reward_steem = result[0].reward_steem_balance;
+    if (hasReward(reward_sbd, reward_sp, reward_steem)) {
+        $("#claim").show();
+        $("#claim").unbind("click").click(function() {
+            $("#claim_rewards").show();
+            let rewardText = "You have Rewards ready to redeem in the amount of:<br>";
+            if (getValFromString(reward_sp) != 0)
+                rewardText += (reward_sp + " / ");
+            if (getValFromString(reward_sbd) != 0)
+                rewardText += (reward_sbd + " / ");
+            if (getValFromString(reward_steem) != 0)
+                rewardText += (reward_steem + " / ");
+            rewardText = rewardText.slice(0, -3);
+            $("#claim_rewards p").html(rewardText);
+            $("#redeem_rewards").unbind("click").click(function() {
+                $("#claim_rewards button").prop("disabled", true);
+                if (active_account.keys.posting)
+                    steem.broadcast.claimRewardBalance(active_account.keys.posting, active_account.name, reward_steem, reward_sbd, reward_vests, function(err, result) {
+                        $("#claim_rewards").hide();
+                        $("#claim_rewards button").prop("disabled", false);
+                        initializeMainMenu();
+                    });
+                else showError("You need to enter your private Posting key to claim rewards!");
+            });
+            $(".close_claim").unbind("click").click(function() {
                 $("#claim_rewards").hide();
-                $("#claim_rewards button").prop("disabled",false);
-                initializeMainMenu();
-              });
-            else showError("You need to enter your private Posting key to claim rewards!");
-          });
-          $(".close_claim").unbind("click").click(function(){
-              $("#claim_rewards").hide();
-          });
-      });
-  }
-  else $("#claim").hide();
+            });
+        });
+    } else $("#claim").hide();
 }

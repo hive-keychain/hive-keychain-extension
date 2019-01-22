@@ -13,11 +13,13 @@ setupInjection();
 
 // Answering the handshakes
 document.addEventListener('swHandshake', function(request) {
-    const req=JSON.stringify(request.detail);
-    if(request.detail.extension)
-      chrome.runtime.sendMessage(request.detail.extension,req );
+    const req = JSON.stringify(request.detail);
+    if (request.detail.extension)
+        chrome.runtime.sendMessage(request.detail.extension, req);
     else
-      window.postMessage({ type: "steem_keychain_handshake" }, window.location.origin);
+        window.postMessage({
+            type: "steem_keychain_handshake"
+        }, window.location.origin);
 });
 
 // Answering the requests
@@ -28,7 +30,7 @@ document.addEventListener('swRequest', function(request) {
         chrome.runtime.sendMessage({
             command: "sendRequest",
             request: req,
-            domain: req.extensionName||window.location.hostname,
+            domain: req.extensionName || window.location.hostname,
             request_id: req.request_id
         });
     } else {
@@ -52,10 +54,13 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
 });
 
 function sendResponse(response) {
-  if(response.data.extension&&response.data.extensionName)
-      chrome.runtime.sendMessage(response.data.extension,JSON.stringify(response));
-  else
-    window.postMessage({ type: "steem_keychain_response", response }, window.location.origin);
+    if (response.data.extension && response.data.extensionName)
+        chrome.runtime.sendMessage(response.data.extension, JSON.stringify(response));
+    else
+        window.postMessage({
+            type: "steem_keychain_response",
+            response
+        }, window.location.origin);
 }
 
 function validate(req) {
@@ -75,30 +80,31 @@ function validate(req) {
 
 // Functions used to check the incoming data
 
-function hasTransferInfo(req){
-  if (req.enforce)
-    return isFilled(req.username);
-  else if(isFilled(req.memo)&&req.memo[0]=="#")
-    return isFilled(req.username);
-  else
-    return true;
+function hasTransferInfo(req) {
+    if (req.enforce)
+        return isFilled(req.username);
+    else if (isFilled(req.memo) && req.memo[0] == "#")
+        return isFilled(req.username);
+    else
+        return true;
 }
 
 function isFilled(obj) {
     return obj != undefined && obj != null && obj != "";
 }
 
-function isBoolean(obj){
-  return typeof obj == typeof true;
+function isBoolean(obj) {
+    return typeof obj == typeof true;
 }
 
 function isFilledOrEmpty(obj) {
     return obj != undefined && obj != null;
 }
 
-function isFilledDelegationMethod(obj){
-  return obj=="VESTS"||obj=="SP";
+function isFilledDelegationMethod(obj) {
+    return obj == "VESTS" || obj == "SP";
 }
+
 function isFilledJSON(obj) {
     try {
         return isFilled(obj) && JSON.parse(obj).hasOwnProperty("requiredAuths") && JSON.parse(obj).hasOwnProperty("requiredPostingAuths") && JSON.parse(obj).hasOwnProperty("id") && JSON.parse(obj).hasOwnProperty("json");
@@ -112,7 +118,7 @@ function isFilledAmt(obj) {
 }
 
 function isFilledAmtSP(obj) {
-    return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3&&obj.unit=="SP")||(countDecimals(obj.amount)==6&&obj.unit=="VESTS"));
+    return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3 && obj.unit == "SP") || (countDecimals(obj.amount) == 6 && obj.unit == "VESTS"));
 }
 
 function isFilledWeight(obj) {

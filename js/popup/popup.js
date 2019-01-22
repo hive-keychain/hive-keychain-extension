@@ -26,15 +26,14 @@ chrome.storage.local.get(['autolock'], function(items) {
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
-        chrome.storage.local.get(['accounts','current_rpc'], function(items) {
+        chrome.storage.local.get(['accounts', 'current_rpc'], function(items) {
             steem.api.setOptions({
-                url: items.current_rpc||'https://api.steemit.com'
+                url: items.current_rpc || 'https://api.steemit.com'
             });
             if (msg.mk == null || msg.mk == undefined) {
-                if (items.accounts == null || items.accounts == undefined){
+                if (items.accounts == null || items.accounts == undefined) {
                     showRegister();
-                }
-                else {
+                } else {
                     showUnlock();
                 }
             } else {
@@ -139,11 +138,11 @@ function initializeMainMenu() {
     initializeVisibility();
     manageKey = false;
     getPref = false;
-    chrome.storage.local.get(['accounts', 'last_account','rpc','current_rpc'], function(items) {
+    chrome.storage.local.get(['accounts', 'last_account', 'rpc', 'current_rpc'], function(items) {
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
-        loadRPC(items.rpc,items.current_rpc);
+        loadRPC(items.rpc, items.current_rpc);
         if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
             $("#main").show();
@@ -212,28 +211,32 @@ async function sendTransfer() {
     const amount = $("#amt_send").val();
     const currency = $("#currency_send .select-selected").html();
     let memo = $("#memo_send").val();
-    if(memo!=""&&$("#encrypt_memo").prop("checked")){
-      try{
-        const receiver=await  steem.api.getAccountsAsync([to]);
-        const memoReceiver=receiver["0"].memo_key;
-        memo = window.encodeMemo(active_account.keys.memo, memoReceiver, "#"+memo);}
-      catch(e){console.log(e);}
+    if (memo != "" && $("#encrypt_memo").prop("checked")) {
+        try {
+            const receiver = await steem.api.getAccountsAsync([to]);
+            const memoReceiver = receiver["0"].memo_key;
+            memo = window.encodeMemo(active_account.keys.memo, memoReceiver, "#" + memo);
+        } catch (e) {
+            console.log(e);
+        }
     }
     if (to != "" && amount != "" && amount >= 0.001) {
         steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, async function(err, result) {
             $("#send_loader").hide();
             if (err == null) {
-                const sender=await  steem.api.getAccountsAsync([active_account.name]);
-                sbd=sender["0"].sbd_balance.replace("SBD", "");
-                steem_p=sender["0"].balance.replace("STEEM", "");
+                const sender = await steem.api.getAccountsAsync([active_account.name]);
+                sbd = sender["0"].sbd_balance.replace("SBD", "");
+                steem_p = sender["0"].balance.replace("STEEM", "");
                 if (currency == "SBD") {
-                   $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
-                 } else if (currency == "STEEM") {
-                   $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
-                 }
+                    $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+                } else if (currency == "STEEM") {
+                    $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+                }
                 $(".error_div").hide();
                 $(".success_div").html("Transfer successful!").show();
-                setTimeout(function(){$(".success_div").hide();},5000);
+                setTimeout(function() {
+                    $(".success_div").hide();
+                }, 5000);
             } else {
                 $(".success_div").hide();
                 showError("Something went wrong! Please try again!");

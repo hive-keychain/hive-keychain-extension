@@ -44,41 +44,41 @@ $("#send_tra").click(function() {
     steem_keychain.requestTransfer($("#transfer_username").val(), $("#transfer_to").val(), $("#transfer_val").val(), $("#transfer_memo").val(), $("#transfer_currency option:selected").text(), function(response) {
         console.log('main js response - transfer');
         console.log(response);
-    },$("#transfer_enforce").is(":checked"));
+    }, $("#transfer_enforce").is(":checked"));
 });
 
 // Send delegation
 $("#send_delegation").click(function() {
-    steem_keychain.requestDelegation($("#delegation_username").val(), $("#delegation_delegatee").val(), $("#delegation_sp").val(),$("#delegation_unit option:selected").text(), function(response) {
+    steem_keychain.requestDelegation($("#delegation_username").val(), $("#delegation_delegatee").val(), $("#delegation_sp").val(), $("#delegation_unit option:selected").text(), function(response) {
         console.log('main js response - delegation');
         console.log(response);
     });
 });
 
-$("#send_signature").click(function(){
-  steem_keychain.requestSignBuffer($("#sign_username").val(), $("#sign_message").val(), $("#sign_method option:selected").text(), function(response) {
-      console.log('main js response - sign');
-      console.log(response);
-  });
+$("#send_signature").click(function() {
+    steem_keychain.requestSignBuffer($("#sign_username").val(), $("#sign_message").val(), $("#sign_method option:selected").text(), function(response) {
+        console.log('main js response - sign');
+        console.log(response);
+    });
 });
 
-$("#send_broadcast").click(function(){
-  steem_keychain.requestBroadcast($("#broadcast_username").val(), $("#broadcast_operations").val(), $("#broadcast_method option:selected").text(), function(response) {
-      console.log('main js response - broadcast');
-      console.log(response);
-  });
+$("#send_broadcast").click(function() {
+    steem_keychain.requestBroadcast($("#broadcast_username").val(), $("#broadcast_operations").val(), $("#broadcast_method option:selected").text(), function(response) {
+        console.log('main js response - broadcast');
+        console.log(response);
+    });
 });
 
-$("#send_signed_call").click(function(){
-  steem_keychain.requestSignedCall($("#signed_call_username").val(), $("#signed_call_method").val(), JSON.parse($("#signed_call_params").val()), $("#signed_call_key_type option:selected").text(), function(response) {
-      console.log('main js response - signed call');
-      console.log(response);
-  });
+$("#send_signed_call").click(function() {
+    steem_keychain.requestSignedCall($("#signed_call_username").val(), $("#signed_call_method").val(), JSON.parse($("#signed_call_params").val()), $("#signed_call_key_type option:selected").text(), function(response) {
+        console.log('main js response - signed call');
+        console.log(response);
+    });
 });
 
-$("#send_witness_vote").click(function(){
-  steem_keychain.requestWitnessVote($("#witness_username").val(),$("#witness").val(), $("#vote_wit").is(":checked"), function(response) {
-      console.log('main js response - witness vote');
-      console.log(response);
-  });
+$("#send_witness_vote").click(function() {
+    steem_keychain.requestWitnessVote($("#witness_username").val(), $("#witness").val(), $("#vote_wit").is(":checked"), function(response) {
+        console.log('main js response - witness vote');
+        console.log(response);
+    });
 });

@@ -11,9 +11,9 @@ const LOCK_AFTER_SECONDS_IDLE = 15;
 
 //chrome.storage.local.remove("no_confirm");
 chrome.storage.local.get(['current_rpc'], function(items) {
-  steem.api.setOptions({
-      url: items.current_rpc||'https://api.steemit.com'
-  });
+    steem.api.setOptions({
+        url: items.current_rpc || 'https://api.steemit.com'
+    });
 });
 
 //Listen to the other parts of the extension
@@ -25,11 +25,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             mk: mk
         }, function(response) {});
     } else if (msg.command == "setRPC") {
-      steem.api.setOptions({
-          url: msg.rpc||'https://api.steemit.com'
-      });
-    }
-      else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
+        steem.api.setOptions({
+            url: msg.rpc || 'https://api.steemit.com'
+        });
+    } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
     } else if (msg.command == "sendAutolock") { //Receive autolock from the popup (upon registration or unlocking)
         autolock = JSON.parse(msg.autolock);
@@ -133,15 +132,16 @@ async function performTransaction(data, tab) {
                 let ac = accounts.list.find(function(e) {
                     return e.name == data.username
                 });
-                let memo=data.memo||"";
+                let memo = data.memo || "";
                 let key_transfer = ac.keys.active;
-                if(data.memo&&data.memo.length>0&&data.memo[0]=="#"){
-                  try{
-                      const receiver=await  steem.api.getAccountsAsync([data.to]);
-                      const memoReceiver=receiver["0"].memo_key;
-                      memo= window.encodeMemo(ac.keys.memo, memoReceiver, memo);
-                  }
-                  catch(e){console.log(e);}
+                if (data.memo && data.memo.length > 0 && data.memo[0] == "#") {
+                    try {
+                        const receiver = await steem.api.getAccountsAsync([data.to]);
+                        const memoReceiver = receiver["0"].memo_key;
+                        memo = window.encodeMemo(ac.keys.memo, memoReceiver, memo);
+                    } catch (e) {
+                        console.log(e);
+                    }
                 }
                 steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, memo, function(err, result) {
                     const message = {
@@ -231,7 +231,7 @@ async function performTransaction(data, tab) {
                     operations,
                     extensions: []
                 }, broadcastKeys, function(err, result) {
-                    console.log(err,result);
+                    console.log(err, result);
                     const message = {
                         command: "answerRequest",
                         msg: {
@@ -256,7 +256,7 @@ async function performTransaction(data, tab) {
                     data.username,
                     key,
                     function(err, result) {
-                        console.log(err,result);
+                        console.log(err, result);
                         const message = {
                             command: "answerRequest",
                             msg: {
@@ -274,57 +274,56 @@ async function performTransaction(data, tab) {
                         accounts = null;
                     });
                 break;
-                case "delegation":
-                    steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
-                        let delegated_vest=null;
-                        if(data.unit=="SP"){
-                          const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
-                          const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
-                          delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
-                          delegated_vest = delegated_vest.toFixed(6);
-                          delegated_vest = delegated_vest.toString() + ' VESTS';
-                        }
-                        else {
-                          delegated_vest = data.amount + ' VESTS';
-                        }
-                        steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
-                            const message = {
-                                command: "answerRequest",
-                                msg: {
-                                    success: error == null,
-                                    error: error,
-                                    result: result,
-                                    data: data,
-                                    message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                                    request_id: request_id
-                                }
-                            };
-                            chrome.tabs.sendMessage(tab, message);
-                            chrome.runtime.sendMessage(message);
-                            key = null;
-                            accounts = null;
-                        });
+            case "delegation":
+                steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
+                    let delegated_vest = null;
+                    if (data.unit == "SP") {
+                        const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
+                        const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
+                        delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
+                        delegated_vest = delegated_vest.toFixed(6);
+                        delegated_vest = delegated_vest.toString() + ' VESTS';
+                    } else {
+                        delegated_vest = data.amount + ' VESTS';
+                    }
+                    steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
+                        const message = {
+                            command: "answerRequest",
+                            msg: {
+                                success: error == null,
+                                error: error,
+                                result: result,
+                                data: data,
+                                message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                                request_id: request_id
+                            }
+                        };
+                        chrome.tabs.sendMessage(tab, message);
+                        chrome.runtime.sendMessage(message);
+                        key = null;
+                        accounts = null;
                     });
-                    break;
-                  case "witnessVote":
-                          steem.broadcast.accountWitnessVote(key, data.username, data.witness, data.vote?1:0, function(error, result) {
-                              const message = {
-                                  command: "answerRequest",
-                                  msg: {
-                                      success: error == null,
-                                      error: error,
-                                      result: result,
-                                      data: data,
-                                      message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                                      request_id: request_id
-                                  }
-                              };
-                              chrome.tabs.sendMessage(tab, message);
-                              chrome.runtime.sendMessage(message);
-                              key = null;
-                              accounts = null;
-                          });
-                      break;
+                });
+                break;
+            case "witnessVote":
+                steem.broadcast.accountWitnessVote(key, data.username, data.witness, data.vote ? 1 : 0, function(error, result) {
+                    const message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: error == null,
+                            error: error,
+                            result: result,
+                            data: data,
+                            message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                });
+                break;
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
@@ -487,27 +486,25 @@ function checkBeforeCreate(request, tab, domain) {
                 accounts = (items.accounts == undefined || items.accounts == {
                     list: []
                 }) ? null : decryptToJson(items.accounts, mk);
-                let account =null;
+                let account = null;
                 if (request.type == "transfer") {
                     let tr_accounts = accounts.list.filter(a => a.keys.hasOwnProperty("active"));
-                    const encode=(request.memo!=undefined&&request.memo.length>0&&request.memo[0]=="#");
-                    const enforce=request.enforce||encode;
-                    if(encode)
-                      account = accounts.list.find(function(e) {
-                        return e.name == request.username;
-                      });
+                    const encode = (request.memo != undefined && request.memo.length > 0 && request.memo[0] == "#");
+                    const enforce = request.enforce || encode;
+                    if (encode)
+                        account = accounts.list.find(function(e) {
+                            return e.name == request.username;
+                        });
                     // If a username is specified, check that its active key has been added to the wallet
                     if (enforce && request.username && !tr_accounts.find(a => a.name == request.username)) {
                         createPopup(function() {
                             sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
                         });
-                    }
-                    else if(encode&&!account.keys.hasOwnProperty("memo")){
-                      createPopup(function() {
-                          sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
-                      });
-                    }
-                    else {
+                    } else if (encode && !account.keys.hasOwnProperty("memo")) {
+                        createPopup(function() {
+                            sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
+                        });
+                    } else {
                         function callback() {
                             chrome.runtime.sendMessage({
                                 command: "sendDialogConfirm",
@@ -526,7 +523,7 @@ function checkBeforeCreate(request, tab, domain) {
                         }
                         createPopup(callback);
                     } else {
-                         account = accounts.list.find(function(e) {
+                        account = accounts.list.find(function(e) {
                             return e.name == request.username;
                         });
                         let typeWif = getRequiredWifType(request);
@@ -572,13 +569,12 @@ function checkBeforeCreate(request, tab, domain) {
 
 function hasNoConfirm(arr, data, domain) {
     try {
-      if(data.method=="active") {
-        return false;
-      }
-      else
-        return JSON.parse(arr)[data.username][domain][data.type] == true;
+        if (data.method == "active") {
+            return false;
+        } else
+            return JSON.parse(arr)[data.username][domain][data.type] == true;
     } catch (e) {
-      console.log(e);
+        console.log(e);
         return false;
     }
 }

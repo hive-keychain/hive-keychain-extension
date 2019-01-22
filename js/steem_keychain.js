@@ -94,33 +94,33 @@ var steem_keychain = {
 
         this.dispatchCustomEvent("swRequest", request, callback);
     },
-    requestTransfer: function(account, to, amount, memo, currency, callback,enforce=false) {
+    requestTransfer: function(account, to, amount, memo, currency, callback, enforce = false) {
         var request = {
             type: "transfer",
             username: account,
             to: to,
             amount: amount,
             memo: memo,
-            enforce:enforce,
+            enforce: enforce,
             currency: currency
         };
         this.dispatchCustomEvent("swRequest", request, callback);
     },
-    requestDelegation: function(username, delegatee, amount,unit, callback) {
+    requestDelegation: function(username, delegatee, amount, unit, callback) {
         var request = {
             type: "delegation",
             username: username,
             delegatee: delegatee,
             amount: amount,
-            unit:unit
+            unit: unit
         };
         this.dispatchCustomEvent("swRequest", request, callback);
     },
-    requestWitnessVote: function(username, witness,vote, callback) {
+    requestWitnessVote: function(username, witness, vote, callback) {
         var request = {
             type: "witnessVote",
             username: username,
-            witness:witness,
+            witness: witness,
             vote: vote
         };
         this.dispatchCustomEvent("swRequest", request, callback);

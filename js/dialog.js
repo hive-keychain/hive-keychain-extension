@@ -42,7 +42,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "sendDialogConfirm") {
 
         let enforce = null;
-        let encode=null;
+        let encode = null;
         // Display confirmation window
         $("#confirm_footer").show();
         $('#modal-body-msg').show();
@@ -58,7 +58,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'vote': 'Vote',
             'transfer': 'Transfer',
             'delegation': 'Delegation',
-            'witnessVote':'Witness Vote'
+            'witnessVote': 'Witness Vote'
         };
         var title = titles[type];
         $("#dialog_header").html(title);
@@ -109,24 +109,24 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#dialog_message").text('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
                 break;
             case "signBuffer":
-              $("#dialog_message").show();
-              $("#dialog_message").text('The website ' + msg.domain + ' would like you to sign a message using the ' + msg.data.method + ' key for the account: @' + msg.data.username);
-              const fullMessage = msg.data.message;
-              let truncatedMessage = fullMessage.substring(0, 200);
-              if (fullMessage.length > 200) {
-                  truncatedMessage += '...(click to expand)';
-              }
-              let expanded = false;
-              $("#message_sign").text(truncatedMessage);
-              $("#message_sign").click(function() {
-                  if (expanded) {
-                      $("#message_sign").text(truncatedMessage);
-                      expanded = false;
-                  } else {
-                      $("#message_sign").text(fullMessage);
-                      expanded = true;
-                  }
-              });
+                $("#dialog_message").show();
+                $("#dialog_message").text('The website ' + msg.domain + ' would like you to sign a message using the ' + msg.data.method + ' key for the account: @' + msg.data.username);
+                const fullMessage = msg.data.message;
+                let truncatedMessage = fullMessage.substring(0, 200);
+                if (fullMessage.length > 200) {
+                    truncatedMessage += '...(click to expand)';
+                }
+                let expanded = false;
+                $("#message_sign").text(truncatedMessage);
+                $("#message_sign").click(function() {
+                    if (expanded) {
+                        $("#message_sign").text(truncatedMessage);
+                        expanded = false;
+                    } else {
+                        $("#message_sign").text(fullMessage);
+                        expanded = true;
+                    }
+                });
                 break;
             case "broadcast":
                 $("#custom_data").click(function() {
@@ -153,17 +153,17 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 $("#custom_data").click(function() {
                     $("#custom_json").slideToggle();
                 });
-                $("#custom_json div").eq(0).text(msg.data.id );
+                $("#custom_json div").eq(0).text(msg.data.id);
                 $("#custom_json div").eq(1).text(msg.data.json);
                 $("#custom_key").text(msg.data.method);
                 break;
             case "transfer":
-                encode=(msg.data.memo!=undefined&&msg.data.memo.length>0&&msg.data.memo[0]=="#");
-                enforce=msg.data.enforce||encode;
-                if(enforce){
-                  $("#username").show();
-                  $("#username").prev().show();
-                  $("#transfer_acct_list").hide();
+                encode = (msg.data.memo != undefined && msg.data.memo.length > 0 && msg.data.memo[0] == "#");
+                enforce = msg.data.enforce || encode;
+                if (enforce) {
+                    $("#username").show();
+                    $("#username").prev().show();
+                    $("#transfer_acct_list").hide();
                 }
                 $("#to").text('@' + msg.data.to);
                 $("#amount").text(msg.data.amount + " " + msg.data.currency);
@@ -206,10 +206,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 break;
             case "delegation":
                 $("#delegatee").text("@" + msg.data.delegatee);
-                $("#amt_sp").text(msg.data.amount +" "+ msg.data.unit);
+                $("#amt_sp").text(msg.data.amount + " " + msg.data.unit);
                 break;
             case "witnessVote":
-              console.log(msg.data);
+                console.log(msg.data);
                 $("#witness").html(msg.data.witness);
                 $("#voteWit").html(JSON.stringify(msg.data.vote));
                 break;
@@ -218,7 +218,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         // Closes the window and launch the transaction in background
         $("#proceed").click(function() {
             let data = msg.data;
-            if (data.type == "transfer"&&!enforce)
+            if (data.type == "transfer" && !enforce)
                 data.username = $("#select_transfer option:selected").val();
             chrome.runtime.sendMessage({
                 command: "acceptTransaction",

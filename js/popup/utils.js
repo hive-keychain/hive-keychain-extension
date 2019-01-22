@@ -304,15 +304,15 @@ function initiateCustomSelect() {
                 $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
             } else if (manageKey) {
                 manageKeys(this.innerHTML);
-            } else if (getPref&&$(this).parent().attr("id")!="custom_select_rpc") {
+            } else if (getPref && $(this).parent().attr("id") != "custom_select_rpc") {
                 setPreferences(this.innerHTML);
-            } else if(getPref&&$(this).parent().attr("id")=="custom_select_rpc"){
-                if(this.innerHTML!="ADD RPC")
-                  switchRPC(this.innerHTML);
+            } else if (getPref && $(this).parent().attr("id") == "custom_select_rpc") {
+                if (this.innerHTML != "ADD RPC")
+                    switchRPC(this.innerHTML);
                 else {
-                  showCustomRPC();
-                  $("#pref_div").hide();
-                  $("#add_rpc_div").show();
+                    showCustomRPC();
+                    $("#pref_div").hide();
+                    $("#add_rpc_div").show();
                 }
             }
         });
@@ -344,12 +344,12 @@ function initiateCustomSelect() {
 
 // Check if there is a reward to claim
 
-function hasReward(reward_sbd,reward_sp,reward_steem){
-  return (getValFromString(reward_sbd)!=0||getValFromString(reward_sp)!=0||getValFromString(reward_steem)!=0);
+function hasReward(reward_sbd, reward_sp, reward_steem) {
+    return (getValFromString(reward_sbd) != 0 || getValFromString(reward_sp) != 0 || getValFromString(reward_steem) != 0);
 }
 
-function getValFromString(string){
-  return parseFloat(string.split(" ")[0]);
+function getValFromString(string) {
+    return parseFloat(string.split(" ")[0]);
 }
 //Check WIF validity
 function isActiveWif(pwd, active) {
@@ -369,21 +369,41 @@ let numberWithCommas = (x) => {
 }
 
 function nFormatter(num, digits) {
-  var si = [
-    { value: 1, symbol: "" },
-    { value: 1E3, symbol: "k" },
-    { value: 1E6, symbol: "M" },
-    { value: 1E9, symbol: "G" },
-    { value: 1E12, symbol: "T" },
-    { value: 1E15, symbol: "P" },
-    { value: 1E18, symbol: "E" }
-  ];
-  var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  var i;
-  for (i = si.length - 1; i > 0; i--) {
-    if (num >= si[i].value) {
-      break;
+    var si = [{
+            value: 1,
+            symbol: ""
+        },
+        {
+            value: 1E3,
+            symbol: "k"
+        },
+        {
+            value: 1E6,
+            symbol: "M"
+        },
+        {
+            value: 1E9,
+            symbol: "G"
+        },
+        {
+            value: 1E12,
+            symbol: "T"
+        },
+        {
+            value: 1E15,
+            symbol: "P"
+        },
+        {
+            value: 1E18,
+            symbol: "E"
+        }
+    ];
+    var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
+    var i;
+    for (i = si.length - 1; i > 0; i--) {
+        if (num >= si[i].value) {
+            break;
+        }
     }
-  }
-  return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
+    return (num / si[i].value).toFixed(digits).replace(rx, "$1") + si[i].symbol;
 }

@@ -39,7 +39,7 @@ function initializeVisibility() {
     $("#witness_div").hide();
     $("#balance_sp").html("");
     $(".checkbox_memo").hide();
-    $("#encrypt_memo").prop("checked",false);
+    $("#encrypt_memo").prop("checked", false);
     $("#register").hide();
     $("#unlock").hide();
     $("#send_div").hide();
@@ -77,12 +77,12 @@ $("#add_key_div .back_enabled").click(function() {
 });
 
 $("#add_rpc_div .back_enabled").click(function() {
-  chrome.storage.local.get(["rpc","current_rpc"],function(items){
-    loadRPC(items.rpc,items.current_rpc);
-    initiateCustomSelect();
-      $("#add_rpc_div").hide();
-      $("#pref_div").show();
-  });
+    chrome.storage.local.get(["rpc", "current_rpc"], function(items) {
+        loadRPC(items.rpc, items.current_rpc);
+        initiateCustomSelect();
+        $("#add_rpc_div").hide();
+        $("#pref_div").show();
+    });
 });
 
 // Clicking back from the preferences menu
@@ -172,8 +172,8 @@ $("#autolock").click(function() {
 // Show transaction window
 $("#send").click(function() {
     $("#send_div").show();
-    if(active_account.keys.hasOwnProperty("memo")){
-      $(".checkbox_memo").show();
+    if (active_account.keys.hasOwnProperty("memo")) {
+        $(".checkbox_memo").show();
     }
     $("#main").hide();
 });
@@ -184,7 +184,7 @@ $("#history").click(function() {
     $("#main").hide();
 });
 
-$("#tokens").click(function(){
+$("#tokens").click(function() {
     $("#tokens_div").show();
     $("#main").hide();
 });
@@ -196,17 +196,17 @@ $("#witness_toggle").click(function() {
     }, 500);
 });
 
-$("#witness").click(function(){
-  $("#main").hide();
-  $("#witness_div").show();
-  $("#voted").addClass("active_wit");
+$("#witness").click(function() {
+    $("#main").hide();
+    $("#witness_div").show();
+    $("#voted").addClass("active_wit");
 });
 
-$(".wit-menu").click(function(){
-  $("#witness_div button").removeClass("active_wit");
-  $(this).addClass("active_wit");
-  $(".sub_wit").hide();
-  $("#"+$(this).attr("id")+"_div").show();
+$(".wit-menu").click(function() {
+    $("#witness_div button").removeClass("active_wit");
+    $(this).addClass("active_wit");
+    $(".sub_wit").hide();
+    $("#" + $(this).attr("id") + "_div").show();
 });
 
 // Show / hide password
@@ -222,7 +222,7 @@ $(".input_img_right_eye").click(function() {
     }
 });
 
-$("#add_new_rpc").click(function(){
+$("#add_new_rpc").click(function() {
     addNewRPC($("#new_rpc").val());
 });
 
@@ -263,90 +263,90 @@ function showAddAccount() {
     $("#settings_div").css("display", "none");
 }
 
-$(".wallet_currency").click(function(){
-  $(".wallet_currency").not(this).removeClass('dropdown-open');
-  $(".dropdown").not($(this).next()).hide();
-  $(this).toggleClass('dropdown-open');
-  $(this).next().toggle();
+$(".wallet_currency").click(function() {
+    $(".wallet_currency").not(this).removeClass('dropdown-open');
+    $(".dropdown").not($(this).next()).hide();
+    $(this).toggleClass('dropdown-open');
+    $(this).next().toggle();
 });
 
-$("#powerup").click(function(){
-  $("#powerup_div").show();
-  $("#main").hide();
-  $(".wallet_currency").removeClass('dropdown-open');
-  $(".dropdown").hide();
+$("#powerup").click(function() {
+    $("#powerup_div").show();
+    $("#main").hide();
+    $(".wallet_currency").removeClass('dropdown-open');
+    $(".dropdown").hide();
 });
 
-$("#powerdown").click(function(){
-  $("#powerdown_div").show();
-  $("#main").hide();
-  $(".wallet_currency").removeClass('dropdown-open');
-  $(".dropdown").hide();
+$("#powerdown").click(function() {
+    $("#powerdown_div").show();
+    $("#main").hide();
+    $(".wallet_currency").removeClass('dropdown-open');
+    $(".dropdown").hide();
 });
 
-$("#send_steem").click(function(){
-  $("#send_div").show();
-  $("#main").hide();
-  $(".wallet_currency").removeClass('dropdown-open');
-  $(".dropdown").hide();
-  $("#currency_send .select-selected").html("STEEM");
-  $(".transfer_balance div").eq(0).text('STEEM Balance');
-  $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+$("#send_steem").click(function() {
+    $("#send_div").show();
+    $("#main").hide();
+    $(".wallet_currency").removeClass('dropdown-open');
+    $(".dropdown").hide();
+    $("#currency_send .select-selected").html("STEEM");
+    $(".transfer_balance div").eq(0).text('STEEM Balance');
+    $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
 });
 
-$("#send_sbd").click(function(){
-  $("#send_div").show();
-  $("#main").hide();
-  $(".wallet_currency").removeClass('dropdown-open');
-  $(".dropdown").hide();
-  $("#currency_send .select-selected").html("SBD");
-  $(".transfer_balance div").eq(0).text('SBD Balance');
-  $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+$("#send_sbd").click(function() {
+    $("#send_div").show();
+    $("#main").hide();
+    $(".wallet_currency").removeClass('dropdown-open');
+    $(".dropdown").hide();
+    $("#currency_send .select-selected").html("SBD");
+    $(".transfer_balance div").eq(0).text('SBD Balance');
+    $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
 });
 
-$("#delegate").click(function(){
-  $("#main").hide();
-  $("#delegation_div").show();
-  $(".wallet_currency").removeClass('dropdown-open');
-  $(".dropdown").hide();
+$("#delegate").click(function() {
+    $("#main").hide();
+    $("#delegation_div").show();
+    $(".wallet_currency").removeClass('dropdown-open');
+    $(".dropdown").hide();
 });
 
-$("#outgoing_del").click(function(){
-  $("#outgoing_del_div").show();
-  $("#delegation_div").hide();
+$("#outgoing_del").click(function() {
+    $("#outgoing_del_div").show();
+    $("#delegation_div").hide();
 });
 
-$("#outgoing_del_div .back_enabled").click(function(){
+$("#outgoing_del_div .back_enabled").click(function() {
     $("#outgoing_del_div").hide();
     $("#delegation_div").show();
 });
 
-$("#incoming_del").click(function(){
-  $("#incoming_del_div").show();
-  $("#delegation_div").hide();
+$("#incoming_del").click(function() {
+    $("#incoming_del_div").show();
+    $("#delegation_div").hide();
 });
 
-$("#incoming_del_div .back_enabled").click(function(){
+$("#incoming_del_div .back_enabled").click(function() {
     $("#incoming_del_div").hide();
     $("#delegation_div").show();
 });
 
-$("#edit_del_div .back_enabled").click(function(){
+$("#edit_del_div .back_enabled").click(function() {
     $("#edit_del_div").hide();
     $("#outgoing_del_div").show();
 });
 
-$("#settings_tokens").click(function(){
-  $("#tokens_div").hide();
-  $("#tokens_settings_div").show();
+$("#settings_tokens").click(function() {
+    $("#tokens_div").hide();
+    $("#tokens_settings_div").show();
 });
 
-$("#tokens_settings_div .back_enabled").click(function(){
-  $("#tokens_div").show();
-  $("#tokens_settings_div").hide();
+$("#tokens_settings_div .back_enabled").click(function() {
+    $("#tokens_div").show();
+    $("#tokens_settings_div").hide();
 });
 
-$("#token_send_div .back_enabled").click(function(){
-  $("#token_send_div").hide();
-  $("#tokens_div").show();
+$("#token_send_div .back_enabled").click(function() {
+    $("#token_send_div").hide();
+    $("#tokens_div").show();
 });
