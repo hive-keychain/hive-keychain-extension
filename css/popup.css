@@ -1830,10 +1830,14 @@ cursor: pointer;
 }
 
 .token_available {
-  margin-bottom: 60px;
+  margin-bottom: 30px;
   margin-top: 60px;
 }
-
+#token_send_div p{
+  display: inline-block;
+  margin-bottom: 30px;
+  margin-top: 0px;
+}
 #send_tok {
   margin-top: 30px;
 }

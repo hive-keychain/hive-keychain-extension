@@ -4,7 +4,7 @@ const urlSSC=[
   "https://steemsmartcontracts.tk",
   "https://testapi.steem-engine.com"
 ];
-const ssc = new SSC(urlSSC[1]);
+const ssc = new SSC(urlSSC[0]);
 let hidden_tokens=[];
 
 //chrome.storage.local.set({hidden_tokens:JSON.stringify([])});
@@ -67,7 +67,6 @@ function showTokenBalances(account){
     console.log(tokenBalances);
     accountTokenBalances=tokenBalances;
       $("#tokens_list").empty();
-      //const tokenBalances=[{balance:1000,symbol:"SMTT"},{balance:1500000,symbol:"SPP"}];
     for(token of tokenBalances){
       $("#tokens_list").append("<div class='row_token_balance'>\
       <span>"+numberWithCommas(token.balance)+"</span>\
@@ -140,11 +139,39 @@ function sendToken(account_to,token,amount){
    };
   $("#tok_loading").show();
   steem.broadcast.customJson(active_account.keys.active, [active_account.name], null, id, JSON.stringify(json), function(err, result) {
-    $("#tok_loading").hide();
-    if(err)
+    if(err){
+      $("#tok_loading").hide();
       showError("Something went wrong! Please try again!");
-    else
-      showConfirm("Transaction broadcasted succesfully! Please double check that the tokens have been sent.");
+    }
+    else {
+      tryConfirmTransaction(result.id).then(function(confirmed){
+        $("#tok_loading").hide();
+          if(confirmed)
+            showConfirm("Tokens sent succesfully!");
+          else
+            showError("We could not confirm that your tokens were sent. However, double check manually before sending again.");
+      });
+    }
+  });
+}
+
+function tryConfirmTransaction(trxId){
+  let result;
+  return new Promise(async function(fulfill,reject){
+    for(let i=0;i<20;i++){
+        result=await getDelayedTransactionInfo(trxId);
+        if(result!=null)
+          break;
+    }
+    fulfill(result!=null);
+  });
+}
+
+function getDelayedTransactionInfo(trxID){
+  return new Promise(function(fulfill,reject){
+    setTimeout(async function(){
+      fulfill(ssc.getTransactionInfo(trxID));
+    },1000);
   });
 }
 
