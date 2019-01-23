@@ -24,7 +24,7 @@ body {
     font-family: Futura !important;
     font-weight: 400;
     padding: 0 !important;
-    width: 100%;
+    width: 350px;
     margin: 0 !important;
     overflow: hidden;
 }
@@ -70,7 +70,7 @@ body {
 #outgoing_del_div,
 #incoming_del_div,
 #edit_del_div {
-    width: 100%;
+    width: 350px;
     height: 100%;
     box-sizing: border-box;
     position: absolute;

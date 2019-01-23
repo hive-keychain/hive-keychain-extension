@@ -34,11 +34,15 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         autolock = JSON.parse(msg.autolock);
         if (autolock.type == "default")
             return;
-        chrome.idle.setDetectionInterval(autolock.mn * 60);
+            console.log(autolock);
+            console.log(parseInt(autolock.mn) * 60,autolock.mn * 60);
+        chrome.idle.setDetectionInterval(parseInt(autolock.mn) * 60);
         chrome.idle.onStateChanged.addListener(
             function(state) {
+                console.log(state,autolock.type);
                 if ((autolock.type == "idle" && state === "idle") || state === "locked") {
                     mk = null;
+                    console.log("lock");
                 }
             }
         );
