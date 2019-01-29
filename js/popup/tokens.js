@@ -6,8 +6,8 @@ const urlSSC = [
 ];
 const ssc = new SSC(urlSSC[0]);
 let hidden_tokens = [];
+const steemEngine="https://testaccounts.steem-engine.com";
 
-//chrome.storage.local.set({hidden_tokens:JSON.stringify([])});
 chrome.storage.local.get(['hidden_tokens'], function(items) {
     if (items.hidden_tokens)
         hidden_tokens = JSON.parse(items.hidden_tokens || []);
@@ -70,6 +70,7 @@ function showTokenBalances(account) {
             $("#tokens_list").append("<div class='row_token_balance'>\
       <span>" + addCommas(token.balance) + "</span>\
       <span class='symbol_owned_token'>" + token.symbol + "</span>\
+      <img src='../images/history.png' class='history_token_icon'/>\
       <img src='../images/transfer.png' class='send_token_icon'/>\
       </div>");
         }
@@ -104,6 +105,36 @@ function showTokenBalances(account) {
             $(".token_right").html(addCommas(balance));
             $("#token_send_div").show();
             $("#tokens_div").hide();
+        });
+
+        $(".history_token_icon").unbind("click").click(function() {
+            $("#history_tokens_rows").empty();
+            const symbol = $(this).prev().html();
+            $("#token_history_div .back_enabled").html(symbol+" History");
+            $("#token_history_div").show();
+            $("#tokens_div").hide();
+            $("#loading_history_token").show();
+            getTokenHistory(active_account.name,20,0,symbol).then(function(history){
+              for (elt of history){
+                const date = new Date(elt.timestamp);
+                const timestamp = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+                console.log(elt.memo)
+                $("#history_tokens_rows").append(
+                  "<div class='history_tokens_row "+(elt.memo!=null?"history_row_memo":"")+"'>\
+                    <span class='history_date ' title='"+elt.timestamp+"'>" + timestamp + "</span>\
+                    <span class='history_val'>" + (elt.from == active_account.name ? "-" : "+") + " " + elt.quantity + "</span>\
+                    <span class='history_name'>" + (elt.from == active_account.name ? "TO: @" + elt.to : "FROM: @" + elt.from) +"</span>\
+                    <span class='history_cur'>" + elt.symbol + "</span>\
+                    <div class='history_memo'>" + elt.memo + "</div>\
+                  </div>"
+                );
+              }
+              $("#loading_history_token").hide();
+              $(".history_tokens_row").unbind("click").click(function(){
+                  if($(this).find(".history_memo").html()!="null")
+                    $(this).find(".history_memo").toggle();
+              });
+            });
         });
     });
 }
@@ -206,18 +237,22 @@ function checkAccountExists(account){
   });
 }
 
-function addCommas(nStr, currency) {
-	nStr += '';
-	x = nStr.split('.');
-	x1 = x[0];
-	x2 = x.length > 1 ? '.' + x[1] : ''
-	var rgx = /(\d+)(\d{3})/;
-	while (rgx.test(x1)) {
-			x1 = x1.replace(rgx, '$1' + ',' + '$2');
-	}
-
-	if (x2 == '' && currency == 1)
-			x2 = '.00';
-
-	return x1 + x2;
+function getTokenHistory(account,limit,offset,currency){
+  return new Promise(function(fulfill,reject){
+    $.ajax({
+        type: "GET",
+        beforeSend: function(xhttp) {
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+        },
+        url: steemEngine+"/history?account="+account+"&limit="+limit+"&offset="+offset+"&type=user&symbol="+currency,
+        success: function(tokenHistory) {
+            fulfill(tokenHistory);
+        },
+        error: function(msg) {
+            console.log(msg);
+            reject(msg);
+        }
+    });
+  });
 }

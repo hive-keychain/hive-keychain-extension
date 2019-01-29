@@ -69,7 +69,8 @@ body {
 #powerdown_div,
 #outgoing_del_div,
 #incoming_del_div,
-#edit_del_div {
+#edit_del_div,
+#token_history_div {
     width: 350px;
     height: 100%;
     box-sizing: border-box;
@@ -355,7 +356,8 @@ input:focus {
 #powerdown_div,
 #outgoing_del_div,
 #incoming_del_div,
-#edit_del_div {
+#edit_del_div,
+#token_history_div {
     display: none;
 }
 
@@ -1825,7 +1827,7 @@ input:focus {
 
 .row_token_balance span:first-of-type {
     display: inline-block;
-    width: 145px;
+    width: 112px;
 }
 
 .row_token_balance span:last-of-type {
@@ -1911,4 +1913,61 @@ input:focus {
 .img_token {
     width: 18px;
     float: right;
+}
+
+#history_tokens_rows {
+    height: 460px;
+    overflow-y: scroll;
+    margin-left: -32px;
+    margin-right: -32px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 22px;
+}
+
+.memo {
+    margin-top: 6px;
+    font-style: italic;
+}
+
+.history_tokens_row {
+    padding: 11px 32px 11px 32px;
+}
+
+.history_tokens_row:nth-child(odd) {
+    background-color: rgba(0, 156, 156, 0.4);
+}
+
+.history_tokens_row:nth-child(even) {
+    background-color: rgba(0, 156, 156, 0.8);
+}
+
+.history_tokens_row span {
+    display: inline-block;
+}
+
+.history_tokens_row span:nth-child(odd) {
+    width: 180px;
+}
+
+.transfer_date,
+.transfer_val {
+    margin-bottom: 6px;
+}
+
+.history_tokens_row span:nth-child(even) {
+    width: 100px;
+    text-align: right;
+}
+
+#token_history_div .back_enabled{
+  margin-bottom: 26px;
+}
+
+.history_memo {
+  display: none;
+}
+
+.history_row_memo{
+  cursor: pointer;
 }

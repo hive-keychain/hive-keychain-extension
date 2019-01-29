@@ -11,6 +11,7 @@ function initializeVisibility() {
     $("#autolock_div").hide();
     $("#powerup_div").hide();
     $("#powerdown_div").hide();
+    $("#token_history_div").hide();
     $("#username").val("");
     $("#outgoing_del_div").hide();
     $("#incoming_del_div").hide();
@@ -348,5 +349,10 @@ $("#tokens_settings_div .back_enabled").click(function() {
 
 $("#token_send_div .back_enabled").click(function() {
     $("#token_send_div").hide();
+    $("#tokens_div").show();
+});
+
+$("#token_history_div .back_enabled").click(function() {
+    $("#token_history_div").hide();
     $("#tokens_div").show();
 });
