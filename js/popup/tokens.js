@@ -68,7 +68,7 @@ function showTokenBalances(account) {
         $("#tokens_list").empty();
         for (token of tokenBalances) {
             $("#tokens_list").append("<div class='row_token_balance'>\
-      <span>" + numberWithCommas(token.balance) + "</span>\
+      <span>" + addCommas(token.balance) + "</span>\
       <span class='symbol_owned_token'>" + token.symbol + "</span>\
       <img src='../images/transfer.png' class='send_token_icon'/>\
       </div>");
@@ -81,9 +81,9 @@ function showTokenBalances(account) {
         }
 
         if (tokenBalances.length) {
-            $("#tokens_div p").html("Displays every non-null token balance. You can hide some balances and check information about the tokens by clicking the Settings wheel.");
+            $("#tokens_div p").html("View your custom token balances. You can hide certain tokens and see more information by clicking the settings wheel.");
         } else {
-            $("#tokens_div p").html("You currently don't have any token, click on the settings wheel to get information about the tokens available.");
+            $("#tokens_div p").html("You currently don't have any custom tokens. Click on the settings wheel to get information about the tokens available.");
         }
 
         if (!active_account.keys.hasOwnProperty("active")) {
@@ -101,7 +101,7 @@ function showTokenBalances(account) {
             })[0].balance;
             $("#token_send_div .back_enabled").html("Send " + symbol);
             $("#tok").html(symbol);
-            $(".token_right").html(numberWithCommas(balance));
+            $(".token_right").html(addCommas(balance));
             $("#token_send_div").show();
             $("#tokens_div").hide();
         });
@@ -139,12 +139,15 @@ function sendToken(account_to, token, amount) {
             $("#tok_loading").hide();
             showError("Something went wrong! Please try again!");
         } else {
-            tryConfirmTransaction(result.id).then(function(confirmed) {
+            tryConfirmTransaction(result.id).then(function(res) {
                 $("#tok_loading").hide();
-                if (confirmed)
-                    showConfirm("Tokens sent succesfully!");
-                else
-                    showError("We could not confirm that your tokens were sent. However, double check manually before sending again.");
+                if (res && res.confirmed) {
+									if(res.error)
+										showError('Transaction error: ' + res.error);
+									else
+										showConfirm("Tokens sent succesfully!");
+								} else
+                  showError("Transaction timed out without response. Please double check your token balance before trying to send again.");
             });
         }
     });
@@ -157,8 +160,17 @@ function tryConfirmTransaction(trxId) {
             result = await getDelayedTransactionInfo(trxId);
             if (result != null)
                 break;
-        }
-        fulfill(result != null);
+				}
+
+				var error = null;
+				if(result && result.logs) {
+					var logs = JSON.parse(result.logs);
+
+					if(logs.errors && logs.errors.length > 0)
+						error = logs.errors[0];
+				}
+				
+        fulfill({ confirmed: result != null, error: error });
     });
 }
 
@@ -173,3 +185,19 @@ function getDelayedTransactionInfo(trxID) {
 $("#send_tok").click(function() {
     sendToken($("#send_tok_to").val(), $("#tok").html(), $("#amt_tok").val());
 });
+
+function addCommas(nStr, currency) {
+	nStr += '';
+	x = nStr.split('.');
+	x1 = x[0];
+	x2 = x.length > 1 ? '.' + x[1] : ''
+	var rgx = /(\d+)(\d{3})/;
+	while (rgx.test(x1)) {
+			x1 = x1.replace(rgx, '$1' + ',' + '$2');
+	}
+
+	if (x2 == '' && currency == 1)
+			x2 = '.00';
+
+	return x1 + x2;
+}
