@@ -150,8 +150,11 @@ async function sendToken(account_to, token, amount,memo) {
                 if (res && res.confirmed) {
 									if(res.error)
 										showError('Transaction error: ' + res.error);
-									else
+									else{
 										showConfirm("Tokens sent succesfully!");
+                    $("#token_send_div").hide();
+                    $("#tokens_div").show();
+                  }
 								} else
                   showError("Transaction timed out without response. Please double check your token balance before trying to send again.");
             });
@@ -189,7 +192,7 @@ function getDelayedTransactionInfo(trxID) {
 }
 
 $("#send_tok").click(function() {
-    sendToken($("#send_tok_to").val(), $("#tok").html(), $("#amt_tok").val());
+    sendToken($("#send_tok_to").val(), $("#tok").html(), $("#amt_tok").val(),$("#memo_tok").val());
 });
 
 function checkAccountExists(account){
