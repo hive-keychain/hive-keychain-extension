@@ -122,7 +122,7 @@ function getAccountBalances(account) {
         });
 }
 
-function sendToken(account_to, token, amount) {
+async function sendToken(account_to, token, amount,memo) {
     const id = "ssc-00000000000000000002";
     const json = {
         "contractName": "tokens",
@@ -130,10 +130,16 @@ function sendToken(account_to, token, amount) {
         "contractPayload": {
             "symbol": token,
             "to": account_to,
-            "quantity": parseFloat(amount)
+            "quantity": parseFloat(amount),
+            "memo":memo
         }
     };
     $("#tok_loading").show();
+    if(!await checkAccountExists(account_to)){
+      showError("This username is not registered on the blockchain!");
+      $("#tok_loading").hide();
+      return;
+    }
     steem.broadcast.customJson(active_account.keys.active, [active_account.name], null, id, JSON.stringify(json), function(err, result) {
         if (err) {
             $("#tok_loading").hide();
@@ -141,8 +147,12 @@ function sendToken(account_to, token, amount) {
         } else {
             tryConfirmTransaction(result.id).then(function(confirmed) {
                 $("#tok_loading").hide();
-                if (confirmed)
+                if (confirmed){
                     showConfirm("Tokens sent succesfully!");
+                    loadAccount(active_account.name);
+                    $("#tokens_div").show();
+                    $("#token_send_div").hide();
+                }
                 else
                     showError("We could not confirm that your tokens were sent. However, double check manually before sending again.");
             });
@@ -171,5 +181,16 @@ function getDelayedTransactionInfo(trxID) {
 }
 
 $("#send_tok").click(function() {
-    sendToken($("#send_tok_to").val(), $("#tok").html(), $("#amt_tok").val());
+    sendToken($("#send_tok_to").val(), $("#tok").html(), $("#amt_tok").val(),$("#memo_tok").val());
 });
+
+function checkAccountExists(account){
+  return new Promise(function(fulfill,reject){
+     steem.api.getAccounts([account],function(err,res){
+       if(err)
+          reject(err);
+       else
+          fulfill(res[0]);
+     });
+  });
+}
