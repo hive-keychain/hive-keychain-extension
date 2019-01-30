@@ -328,6 +328,36 @@ async function performTransaction(data, tab) {
                     accounts = null;
                 });
                 break;
+            case "sendToken":
+                const id = "ssc-00000000000000000002";
+                const json = {
+                    "contractName": "tokens",
+                    "contractAction": "transfer",
+                    "contractPayload": {
+                        "symbol": data.currency,
+                        "to": data.to,
+                        "quantity": parseFloat(data.amount),
+                        "memo":data.memo
+                    }
+                };
+                steem.broadcast.customJson(key, [data.username], null, id, JSON.stringify(json), function(error, result) {
+                  const message = {
+                      command: "answerRequest",
+                      msg: {
+                          success: error == null,
+                          error: error,
+                          result: result,
+                          data: data,
+                          message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                          request_id: request_id
+                      }
+                  };
+                  chrome.tabs.sendMessage(tab, message);
+                  chrome.runtime.sendMessage(message);
+                  key = null;
+                  accounts = null;
+                });
+                break;
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
@@ -620,6 +650,9 @@ function getRequiredWifType(request) {
         case "signedCall":
             return request.typeWif.toLowerCase();
         case "transfer":
+            return "active";
+            break;
+        case "sendToken":
             return "active";
             break;
         case "delegation":

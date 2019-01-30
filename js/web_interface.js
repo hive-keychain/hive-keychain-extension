@@ -64,6 +64,7 @@ function sendResponse(response) {
 }
 
 function validate(req) {
+  console.log(req);
     return req != null && req != undefined && req.type != undefined && req.type != null &&
         ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
             (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
@@ -74,7 +75,9 @@ function validate(req) {
             (req.type == "signedCall" && isFilled(req.method) && isFilled(req.params) && isFilled(req.typeWif)) ||
             (req.type == "witnessVote" && isFilled(req.username) && isFilled(req.witness) && isBoolean(req.vote)) ||
             (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req) && isFilledDelegationMethod(req.unit)) ||
-            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)));
+            (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)) ||
+            (req.type == "sendToken" && isFilledAmt(req.amount) && isFilled(req.to) && isFilled(req.currency))
+          );
 }
 
 

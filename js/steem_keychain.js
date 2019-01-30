@@ -106,6 +106,17 @@ var steem_keychain = {
         };
         this.dispatchCustomEvent("swRequest", request, callback);
     },
+    requestSendToken: function(account, to, amount, memo, currency, callback) {
+        var request = {
+            type: "sendToken",
+            username: account,
+            to: to,
+            amount: amount,
+            memo: memo,
+            currency: currency
+        };
+        this.dispatchCustomEvent("swRequest", request, callback);
+    },
     requestDelegation: function(username, delegatee, amount, unit, callback) {
         var request = {
             type: "delegation",

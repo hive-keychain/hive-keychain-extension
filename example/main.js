@@ -41,10 +41,19 @@ $("#send_custom").click(function() {
 
 // Send transfer request
 $("#send_tra").click(function() {
+  console.log("transfer");
     steem_keychain.requestTransfer($("#transfer_username").val(), $("#transfer_to").val(), $("#transfer_val").val(), $("#transfer_memo").val(), $("#transfer_currency option:selected").text(), function(response) {
         console.log('main js response - transfer');
         console.log(response);
     }, $("#transfer_enforce").is(":checked"));
+});
+
+// Send tokens request
+$("#sendTokens").click(function() {
+    steem_keychain.requestSendToken($("#tokens_username").val(), $("#tokens_to").val(), $("#tokens_qt").val(), $("#tokens_memo").val(), $("#tokens_unit").val(), function(response) {
+        console.log('main js response - tokens');
+        console.log(response);
+    });
 });
 
 // Send delegation

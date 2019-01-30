@@ -4,7 +4,7 @@ const urlSSC = [
     "https://steemsmartcontracts.tk",
     "https://testapi.steem-engine.com"
 ];
-const ssc = new SSC(urlSSC[0]);
+const ssc = new SSC(urlSSC[1]);
 let hidden_tokens = [];
 const steemEngine="https://testaccounts.steem-engine.com";
 
