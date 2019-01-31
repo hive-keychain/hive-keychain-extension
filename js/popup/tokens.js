@@ -1,12 +1,11 @@
 let tokens = [];
 let accountTokenBalances = [];
 const urlSSC = [
-    "https://steemsmartcontracts.tk",
-    "https://testapi.steem-engine.com"
+    "https://api.steem-engine.com/rpc"
 ];
 const ssc = new SSC(urlSSC[1]);
 let hidden_tokens = [];
-const steemEngine="https://testaccounts.steem-engine.com";
+const steemEngine="https://api.steem-engine.com/accounts";
 
 chrome.storage.local.get(['hidden_tokens'], function(items) {
     if (items.hidden_tokens)
@@ -71,7 +70,7 @@ function showTokenBalances(account) {
       <span>" + addCommas(token.balance) + "</span>\
       <span class='symbol_owned_token'>" + token.symbol + "</span>\
       <img src='../images/history.png' class='history_token_icon'/>\
-      <img src='../images/transfer.png' class='send_token_icon'/>\
+      <img src='../images/transfer.png' class='send_token_icon' symbol='" + token.symbol + "'/>\
       </div>");
         }
 
@@ -96,10 +95,8 @@ function showTokenBalances(account) {
         }
 
         $(".send_token_icon").unbind("click").click(function() {
-            const symbol = $(this).prev().html();
-            const balance = accountTokenBalances.filter((e) => {
-                return e.symbol == symbol;
-            })[0].balance;
+            const symbol = $(this).attr('symbol');
+            const balance = accountTokenBalances.find(e => e.symbol == symbol).balance;
             $("#token_send_div .back_enabled").html("Send " + symbol);
             $("#tok").html(symbol);
             $(".token_right").html(addCommas(balance));
@@ -154,7 +151,7 @@ function getAccountBalances(account) {
 }
 
 async function sendToken(account_to, token, amount,memo) {
-    const id = "ssc-00000000000000000002";
+    const id = "ssc-mainnet1";
     const json = {
         "contractName": "tokens",
         "contractAction": "transfer",
