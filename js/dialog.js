@@ -52,6 +52,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'custom': 'Custom Transaction',
             'decode': 'Verify Key',
             'signBuffer': 'Sign Message',
+            'addAccountAuthority': 'Add Account Authority',
+            'removeAccountAuthority': 'Remove Account Authority',
             'broadcast': 'Broadcast',
             'signedCall': 'Signed Call',
             'post': 'Post',
@@ -94,7 +96,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#username").text("@" + msg.data.username);
         $("#modal-content").css("align-items", "flex-start");
         const keyVerifyAction = msg.data.type == 'decode' || msg.data.type == 'signBuffer';
-        if (type != "transfer" && type != "delegation" && type != "witnessVote" && type != "sendToken") {
+        if (type != "transfer" && type != "delegation" && type != "witnessVote" && type != "sendToken" &&
+            type != "addAccountAuthority" && type != "removeAccountAuthority") {
             $("#keep_div").show();
             var prompt_msg = keyVerifyAction ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
                 "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
@@ -128,6 +131,15 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                         expanded = true;
                     }
                 });
+                break;
+            case "addAccountAuthority":
+                $("#authorized_account").text(msg.data.authorizedUsername);
+                $("#role").text(msg.data.role);
+                $("#weight").text(msg.data.weight);
+                break;
+            case "removeAccountAuthority":
+                $("#authorized_account").text(msg.data.authorizedUsername);
+                $("#role").text(msg.data.role);
                 break;
             case "broadcast":
                 $("#custom_data").click(function() {

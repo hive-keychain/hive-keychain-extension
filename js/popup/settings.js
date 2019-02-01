@@ -32,6 +32,8 @@ function setPreferences(name) {
                 $("#pref").append("<h4>Website: " + obj + "</h4>");
                 var display_names = {
                     'broadcast': 'Broadcast',
+                    'addAccountAuthority': 'Add Account Authority',
+                    'removeAccountAuthority': 'Remove Account Authority',
                     'custom': 'Custom Transaction',
                     'decode': 'Verify Key',
                     'signBuffer': 'Sign',
