@@ -3,7 +3,7 @@ let accountTokenBalances = [];
 const urlSSC = [
     "https://api.steem-engine.com/rpc"
 ];
-const ssc = new SSC(urlSSC[1]);
+const ssc = new SSC(urlSSC[0]);
 let hidden_tokens = [];
 const steemEngine="https://api.steem-engine.com/accounts";
 
