@@ -52,6 +52,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'custom': 'Custom Transaction',
             'decode': 'Verify Key',
             'signBuffer': 'Sign Message',
+            'addAccountAuthority': 'Add Account Authority',
+            'removeAccountAuthority': 'Remove Account Authority',
             'broadcast': 'Broadcast',
             'signedCall': 'Signed Call',
             'post': 'Post',
@@ -128,6 +130,15 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                         expanded = true;
                     }
                 });
+                break;
+            case "addAccountAuthority":
+                $("#authorized_account").text(msg.data.authorizedUsername);
+                $("#role").text(msg.data.role);
+                $("#weight").text(msg.data.weight);
+                break;
+            case "removeAccountAuthority":
+                $("#authorized_account").text(msg.data.authorizedUsername);
+                $("#role").text(msg.data.role);
                 break;
             case "broadcast":
                 $("#custom_data").click(function() {
