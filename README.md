@@ -141,6 +141,7 @@ Sites can request that the extension add account authority for a given role:
 steem_keychain.requestAddAccountAuthority(account_name, authorized_account_name, role, weight, function(response) {
         console.log(response);
 });
+```
 
 where "role" can be "Posting" or "Active" or "Memo".
 
@@ -152,6 +153,7 @@ Sites can request that the extension remove account authority for a given role:
 steem_keychain.requestRemoveAccountAuthority(account_name, authorized_account_name, role, function(response) {
         console.log(response);
 });
+```
 
 where "role" can be "Posting" or "Active" or "Memo".
 
