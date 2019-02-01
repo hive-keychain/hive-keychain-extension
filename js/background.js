@@ -538,7 +538,13 @@ function checkBeforeCreate(request, tab, domain) {
                         createPopup(function() {
                             sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
                         });
-                    } else {
+                    }
+                    else if (tr_accounts.length==0){
+                      createPopup(function() {
+                        sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
+                      });
+                    }
+                    else {
                         function callback() {
                             chrome.runtime.sendMessage({
                                 command: "sendDialogConfirm",
