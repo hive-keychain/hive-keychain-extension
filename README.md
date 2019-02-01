@@ -133,6 +133,30 @@ to be signed, you can pass `JSON.stringify(buffer)` as `message`, then this meth
 
 ```Signature.signBufferSha256(hash.sha256(buffer), wif).toHex();```
 
+### Add Account Authority
+
+Sites can request that the extension add account authority for a given role:
+
+```
+steem_keychain.requestAddAccountAuthority(account_name, authorized_account_name, role, weight, function(response) {
+        console.log(response);
+});
+```
+
+where "role" can be "Posting" or "Active".
+
+### Remove Account Authority
+
+Sites can request that the extension remove account authority for a given role:
+
+```
+steem_keychain.requestRemoveAccountAuthority(account_name, authorized_account_name, role, function(response) {
+        console.log(response);
+});
+```
+
+where "role" can be "Posting" or "Active".
+
 ### Broadcast
 
 Sites can request that the extension sign and broadcast general operations allowed by the `steem-js` library:
