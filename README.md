@@ -143,7 +143,7 @@ steem_keychain.requestAddAccountAuthority(account_name, authorized_account_name,
 });
 ```
 
-where "role" can be "Posting" or "Active" or "Memo".
+where "role" can be "Posting" or "Active".
 
 ### Remove Account Authority
 
@@ -155,7 +155,7 @@ steem_keychain.requestRemoveAccountAuthority(account_name, authorized_account_na
 });
 ```
 
-where "role" can be "Posting" or "Active" or "Memo".
+where "role" can be "Posting" or "Active".
 
 ### Broadcast
 
