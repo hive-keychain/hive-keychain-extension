@@ -71,6 +71,20 @@ $("#send_signature").click(function() {
     });
 });
 
+$("#send_addauth").click(function() {
+    steem_keychain.requestAddAccountAuthority($("#addauth_username").val(), $("#addauth_authorized_username").val(), $("#addauth_role option:selected").text(), $("#addauth_weight").val(), function(response) {
+        console.log('main js response - add auth');
+        console.log(response);
+    });
+});
+
+$("#send_removeauth").click(function() {
+    steem_keychain.requestRemoveAccountAuthority($("#removeauth_username").val(), $("#removeauth_authorized_username").val(), $("#removeauth_role option:selected").text(), function(response) {
+        console.log('main js response - remove auth');
+        console.log(response);
+    });
+});
+
 $("#send_broadcast").click(function() {
     steem_keychain.requestBroadcast($("#broadcast_username").val(), $("#broadcast_operations").val(), $("#broadcast_method option:selected").text(), function(response) {
         console.log('main js response - broadcast');
