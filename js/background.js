@@ -233,7 +233,7 @@ async function performTransaction(data, tab) {
                     username: data.username,
                     authorizedUsername: data.authorizedUsername,
                     role: data.role.toLowerCase(),
-                    weight: data.weight
+                    weight: parseFloat(data.weight)
                 }, function(err, result) {
                     console.log(err, result);
                     const message = {
