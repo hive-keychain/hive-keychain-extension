@@ -19,9 +19,9 @@ async function preparePowerUpDown(account) {
 
     if (!active_account.keys.hasOwnProperty("active")) {
         $("#power_up").addClass("disabled");
-        $("#wrap_power_up").attr("title", "Please add your active key to send delegations!");
+        $("#wrap_power_up").attr("title", "Please add your active key to power up!");
         $("#power_down").addClass("disabled");
-        $("#wrap_power_down").attr("title", "Please add your active key to send delegations!");
+        $("#wrap_power_down").attr("title", "Please add your active key to power down!");
     } else {
         $("#power_up").removeClass("disabled");
         $("#power_down").removeClass("disabled");
