@@ -85,12 +85,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             });
         }
         confirmed = true;
-        performTransaction(msg.data, msg.tab);
+        performTransaction(msg.data, msg.tab,false);
         // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
     }
 });
 
-async function performTransaction(data, tab) {
+async function performTransaction(data, tab,no_confirm) {
     try {
         switch (data.type) {
             case "vote":
@@ -106,8 +106,14 @@ async function performTransaction(data, tab) {
                             request_id: request_id
                         }
                     };
+                    console.log("messageVote",message,err,result);
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 });
@@ -126,7 +132,12 @@ async function performTransaction(data, tab) {
                         }
                     };
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 });
@@ -181,7 +192,12 @@ async function performTransaction(data, tab) {
                             }
                         };
                         chrome.tabs.sendMessage(tab, message);
-                        chrome.runtime.sendMessage(message);
+                        if(no_confirm){
+                          if (id_win != null)
+                              chrome.windows.remove(id_win);
+                        }
+                        else
+                          chrome.runtime.sendMessage(message);
                         key = null;
                         accounts = null;
                     });
@@ -220,7 +236,12 @@ async function performTransaction(data, tab) {
                             }
                         };
                         chrome.tabs.sendMessage(tab, message);
-                        chrome.runtime.sendMessage(message);
+                        if(no_confirm){
+                          if (id_win != null)
+                              chrome.windows.remove(id_win);
+                        }
+                        else
+                          chrome.runtime.sendMessage(message);
                         key = null;
                         accounts = null;
                     });
@@ -248,7 +269,12 @@ async function performTransaction(data, tab) {
                         }
                     };
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 });
@@ -273,7 +299,12 @@ async function performTransaction(data, tab) {
                         }
                     };
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 });
@@ -299,7 +330,12 @@ async function performTransaction(data, tab) {
                         }
                     };
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 });
@@ -324,7 +360,12 @@ async function performTransaction(data, tab) {
                             }
                         };
                         chrome.tabs.sendMessage(tab, message);
-                        chrome.runtime.sendMessage(message);
+                        if(no_confirm){
+                          if (id_win != null)
+                              chrome.windows.remove(id_win);
+                        }
+                        else
+                          chrome.runtime.sendMessage(message);
                         key = null;
                         accounts = null;
                     });
@@ -354,7 +395,12 @@ async function performTransaction(data, tab) {
                             }
                         };
                         chrome.tabs.sendMessage(tab, message);
-                        chrome.runtime.sendMessage(message);
+                        if(no_confirm){
+                          if (id_win != null)
+                              chrome.windows.remove(id_win);
+                        }
+                        else
+                          chrome.runtime.sendMessage(message);
                         key = null;
                         accounts = null;
                     });
@@ -425,7 +471,12 @@ async function performTransaction(data, tab) {
                         }
                     };
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 } catch (err) {
@@ -462,7 +513,12 @@ async function performTransaction(data, tab) {
                         }
                     };
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 } catch (err) {
@@ -479,7 +535,12 @@ async function performTransaction(data, tab) {
                         }
                     };
                     chrome.tabs.sendMessage(tab, message);
-                    chrome.runtime.sendMessage(message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          chrome.windows.remove(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
                     key = null;
                     accounts = null;
                 }
@@ -528,6 +589,7 @@ function createPopup(callback) {
 
 chrome.windows.onRemoved.addListener(function(id) {
     if (id == id_win && !confirmed) {
+      console.log("error6");
         chrome.tabs.sendMessage(tab, {
             command: "answerRequest",
             msg: {
@@ -583,15 +645,18 @@ function checkBeforeCreate(request, tab, domain) {
                     // If a username is specified, check that its active key has been added to the wallet
                     if (enforce && request.username && !tr_accounts.find(a => a.name == request.username)) {
                         createPopup(function() {
+                            console.log("error1");
                             sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
                         });
                     } else if (encode && !account.keys.hasOwnProperty("memo")) {
                         createPopup(function() {
+                            console.log("error2");
                             sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
                         });
                     }
                     else if (tr_accounts.length==0){
                       createPopup(function() {
+                          console.log("error3");
                         sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
                       });
                     }
@@ -610,6 +675,8 @@ function checkBeforeCreate(request, tab, domain) {
                 } else {
                     if (!accounts.list.find(e => e.name == request.username)) {
                         function callback() {
+
+                              console.log("error4");
                             sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " which has not been added to the wallet.", request);
                         }
                         createPopup(callback);
@@ -629,6 +696,7 @@ function checkBeforeCreate(request, tab, domain) {
 
                         if (account.keys[typeWif] == undefined) {
                             createPopup(function() {
+                                console.log("error5");
                                 sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
                             });
                         } else {
@@ -645,10 +713,8 @@ function checkBeforeCreate(request, tab, domain) {
                                 createPopup(callback);
                                 // Send the request to confirmation window
                             } else {
-                                if (id_win != null)
-                                    chrome.windows.remove(id_win);
-
-                                performTransaction(req, tab);
+                                chrome.runtime.sendMessage({command:"broadcastingNoConfirm"});
+                                performTransaction(req, tab,true);
                             }
                         }
                     }

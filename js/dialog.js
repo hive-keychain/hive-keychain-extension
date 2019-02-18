@@ -39,6 +39,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }
     } else if (msg.command == "wrongMk") {
         $("#error-mk").html("Wrong password!");
+    } else if (msg.command == "broadcastingNoConfirm") {
+        $("#tx_loading").show();
+        $(".unlock").hide();
+        $("#dialog_header").text("Broadcasting");
+        $("#error_dialog").hide();
+
     } else if (msg.command == "sendDialogConfirm") {
 
         let enforce = null;
