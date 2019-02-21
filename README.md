@@ -28,6 +28,10 @@ Websites can currently request the Steem Keychain extension to perform the follo
 - Broadcast a vote
 - Broadcast a custom JSON operation
 - Send a transfer
+- Send Steem Engine tokens
+- Send Delegations
+- Power up/down
+- Vote for witnesses
 
 ## Example
 
@@ -56,7 +60,7 @@ Additionally, you can request a "handshake" from the extension to further ensure
 
 ```
 steem_keychain.requestHandshake(function() {
-    console.log('Handshake received!'); 
+    console.log('Handshake received!');
 });
 ```
 
@@ -67,8 +71,9 @@ Sites can request that the extension sign and broadcast a transfer operation for
 ```
 steem_keychain.requestTransfer(account_name, to_account, amount, memo, currency, function(response) {
 	console.log(response);
-});
+},enforce);
 ```
+where `memo` will be encrypted using Memo key if it is starting by `#`, and `enforce` doesn't allow the user to chose which account will make the transfer but rather enforce `account_name`.
 
 ### Decode Memo / Verify Key
 
@@ -187,6 +192,67 @@ steem_keychain.requestSignedCall(account_name, method, params, key_type, functio
 
 Where "method" is the method name, e.g. `conveyor.get_feature_flags`, "params" are the method parameters,
 and "key_type" can be "Posting" or "Active".
+
+### Send Tokens
+
+Sites can request that Keychain broadcasts a JSON with active authority to transfer tokens to another user.
+This works with tokens generated using [Steem Engine](https://steem-engine.com).
+
+```
+steem_keychain.requestSendToken(username, to,amount,memo, token, function(response) {
+    console.log(response);
+});
+```
+
+where `token` is the symbol of the said token.
+
+### Delegate
+
+Sites can request a delegation via Keychain, using the active authority :
+
+```
+steem_keychain.requestDelegation(username, delegatee, amount, unit, function(response) {
+    console.log(response);
+});
+```
+
+where `unit` can be either `VESTS` or `SP`. `amount` needs 6 decimals if the unit is `VESTS`, 3 if it is `SP`.
+
+### Vote for a Witness
+
+Sites can request that the user votes for a particular witness :
+
+```
+steem_keychain.requestWitnessVote(username, witness,vote, function(response) {
+    console.log(response);
+});
+```
+
+Where `vote` is a boolean, set to `true` for voting a witness, `false` for unvoting.
+
+### Power Up
+
+Sites can request a Power Up:
+
+```
+steem_keychain.requestPowerUp(username, to, amount, function(response) {
+    console.log(response);
+});
+```
+
+Where `to` is the recipient of the power up, and `amount` is expressed in STEEM (with 3 decimals).
+
+### Power Down
+
+Sites can request a Power Down:
+
+```
+steem_keychain.requestPowerDown(username,  amount, function(response) {
+    console.log(response);
+});
+```
+
+Where `amount` is expressed in SP for more visibility for the user.
 
 ## Related Projects
 
