@@ -733,6 +733,7 @@ function checkBeforeCreate(request, tab, domain) {
                         });
                         let typeWif = getRequiredWifType(request);
                         let req = request;
+                        req.key=typeWif;
 
                         if (req.type == "custom")
                             req.method = typeWif;

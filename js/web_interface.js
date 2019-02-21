@@ -64,8 +64,6 @@ function sendResponse(response) {
 }
 
 function validate(req) {
-    console.log(req);
-    console.log(isFilled(req.username), isFilledAmt(req.steem) ,isFilled(req.recipient));
     return req != null && req != undefined && req.type != undefined && req.type != null &&
         ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
             (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
