@@ -65,6 +65,7 @@ function sendResponse(response) {
 
 function validate(req) {
     console.log(req);
+    console.log(isFilled(req.username), isFilledAmt(req.steem) ,isFilled(req.recipient));
     return req != null && req != undefined && req.type != undefined && req.type != null &&
         ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
             (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
@@ -78,7 +79,9 @@ function validate(req) {
             (req.type == "witnessVote" && isFilled(req.username) && isFilled(req.witness) && isBoolean(req.vote)) ||
             (req.type == "delegation" && isFilled(req.username) && isFilled(req.delegatee) && isFilledAmtSP(req) && isFilledDelegationMethod(req.unit)) ||
             (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)) ||
-            (req.type == "sendToken" && isFilledAmt(req.amount) && isFilled(req.to) && isFilled(req.currency))
+            (req.type == "sendToken" && isFilledAmt(req.amount) && isFilled(req.to) && isFilled(req.currency))||
+            (req.type == "powerUp" && isFilled(req.username)&& isFilledAmt(req.steem) && isFilled(req.recipient))||
+            (req.type == "powerDown" && isFilled(req.username)&& (isFilledAmt(req.steem_power)||req.steem_power=="0.000"))
         );
 }
 

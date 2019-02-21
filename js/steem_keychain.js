@@ -161,6 +161,23 @@ var steem_keychain = {
         };
         this.dispatchCustomEvent("swRequest", request, callback);
     },
+    requestPowerUp: function(username, recipient, steem, callback) {
+        var request = {
+            type: "powerUp",
+            username: username,
+            recipient: recipient,
+            steem: steem
+        };
+        this.dispatchCustomEvent("swRequest", request, callback);
+    },
+    requestPowerDown: function(username, steem_power, callback) {
+        var request = {
+            type: "powerDown",
+            username: username,
+            steem_power: steem_power,
+        };
+        this.dispatchCustomEvent("swRequest", request, callback);
+    },
 
     // Send the customEvent
     dispatchCustomEvent: function(name, data, callback) {

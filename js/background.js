@@ -425,6 +425,53 @@ async function performTransaction(data, tab,no_confirm) {
                     accounts = null;
                 });
                 break;
+            case "powerUp":
+                steem.broadcast.transferToVesting(key, data.username, data.recipient, data.steem + " STEEM", function(error, result) {
+                    const message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: error == null,
+                            error: error,
+                            result: result,
+                            data: data,
+                            message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                });
+                break;
+            case "powerDown":
+            steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
+                let vestingShares = null;
+                const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
+                const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
+                vestingShares = parseFloat(data.steem_power) * totalVests / totalSteem;
+                vestingShares = vestingShares.toFixed(6);
+                vestingShares = vestingShares.toString() + ' VESTS';
+
+                steem.broadcast.withdrawVesting(key, data.username, vestingShares, function(error, result) {
+                    const message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: error == null,
+                            error: error,
+                            result: result,
+                            data: data,
+                            message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                  });
+                });
+                break;
             case "sendToken":
                 const id = "ssc-00000000000000000002";
                 const json = {
@@ -784,6 +831,12 @@ function getRequiredWifType(request) {
             return "active";
             break;
         case "witnessVote":
+            return "active";
+            break;
+        case "powerUp":
+            return "active";
+            break;
+        case "powerDown":
             return "active";
             break;
     }

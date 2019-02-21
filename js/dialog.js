@@ -67,7 +67,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'transfer': 'Transfer',
             'delegation': 'Delegation',
             'witnessVote': 'Witness Vote',
-            "sendToken":"Send Tokens"
+            "sendToken":"Send Tokens",
+            "powerUp":"Power Up",
+            "powerDown":"Power Down"
         };
         var title = titles[type];
         $("#dialog_header").html(title);
@@ -239,6 +241,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 if (msg.data.memo.length > 0)
                     $(".transfer_memo").show();
                 break;
+            case "powerUp":
+              $("#to").text('@' + msg.data.recipient);
+              $("#amount").text(msg.data.steem + " STEEM");
+              break;
+            case "powerDown":
+              $("#amount").text(msg.data.steem_power + " SP");
+              break;
         }
 
         // Closes the window and launch the transaction in background

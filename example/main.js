@@ -105,3 +105,17 @@ $("#send_witness_vote").click(function() {
         console.log(response);
     });
 });
+
+$("#send_pu").click(function() {
+    steem_keychain.requestPowerUp($("#pu_username").val(), $("#pu_recipient").val(), $("#pu_steem").val(), function(response) {
+        console.log('main js response - power up');
+        console.log(response);
+    });
+});
+
+$("#send_pd").click(function() {
+    steem_keychain.requestPowerDown($("#pd_username").val(),  $("#pd_sp").val(), function(response) {
+        console.log('main js response - power down');
+        console.log(response);
+    });
+});
