@@ -9,7 +9,10 @@ On Ethereum, you never have to enter your private key into a website to use a dA
 Steem Keychain aims to bring the security and ease-of-use of Metamask to the Steem blockchain platform.
 
 ## Installation
-You can download and install the latest published version of the extension from the Chrome Web Store for the Google Chrome or Brave browsers here: [https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm](https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm)
+You can download and install the latest published version of the extension for the following browsers:
+
+- Google Chrome (or Brave): [https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm](https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm)
+- Firefox: [https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/](https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/)
 
 ## Features
 The Steem Keychain extension includes the following features:
