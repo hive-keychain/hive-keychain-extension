@@ -116,7 +116,7 @@ $("#forgot_div button").click(function() {
 
 // Registration confirmation
 $("#submit_master_pwd").click(function() {
-    if (!$("#master_pwd").val().match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)) {
+    if (acceptMP($("#master_pwd").val())) {
         if ($("#master_pwd").val() == $("#confirm_master_pwd").val()) {
             mk = $("#master_pwd").val();
             chrome.runtime.sendMessage({
@@ -129,10 +129,12 @@ $("#submit_master_pwd").click(function() {
             showError("Your passwords do not match!");
         }
     } else {
-        showError("Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter, a digit, and a special character.");
+        showError("Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter and a digit or be at least 16 characters long without restriction.");
     }
 });
-
+function acceptMP(mp){
+  return mp.length>=16||(mp.length>=8&&mp.match(/.*[a-z].*/)&&mp.match(/.*[A-Z].*/)&&mp.match(/.*[0-9].*/));
+}
 // Set visibilities back to normal when coming back to main menu
 function initializeMainMenu() {
     initializeVisibility();
