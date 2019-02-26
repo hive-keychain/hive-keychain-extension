@@ -70,7 +70,8 @@ body {
 #outgoing_del_div,
 #incoming_del_div,
 #edit_del_div,
-#token_history_div {
+#token_history_div,
+#confirm_send_div {
     width: 350px;
     height: 100%;
     box-sizing: border-box;
@@ -220,7 +221,8 @@ input:focus {
 #edit_del_div button,
 #token_send_div button,
 #powerup_div button,
-#powerdown_div button {
+#powerdown_div button,
+#confirm_send_div button {
     border-radius: 5px;
     width: 100%;
     height: 48.43px;
@@ -254,7 +256,8 @@ input:focus {
 #delegation_div button:hover,
 #edit_del:hover,
 #vote_wit:hover,
-#token_send_div button:hover {
+#token_send_div button:hover,
+#confirm_send_div button:hover {
     background-color: #917FC6;
     border: solid 1px #917FC6;
 }
@@ -357,7 +360,8 @@ input:focus {
 #outgoing_del_div,
 #incoming_del_div,
 #edit_del_div,
-#token_history_div {
+#token_history_div,
+#confirm_send_div {
     display: none;
 }
 
@@ -1970,4 +1974,12 @@ input:focus {
 
 .history_row_memo{
   cursor: pointer;
+}
+
+#confirm_send_transfer {
+  margin-top: 30px;
+}
+
+#confirm_send_div .back_enabled {
+  margin-bottom: 30px;
 }

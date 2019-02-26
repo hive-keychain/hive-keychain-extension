@@ -171,9 +171,25 @@ function initializeMainMenu() {
         }
     });
 }
+// Show Confirmation window before transfer
+$("#send_transfer").click(function() {
+    confirmTransfer();
+});
+
+function confirmTransfer(){
+  $("#confirm_send_div").show();
+  $("#send_div").hide();
+  const to = $("#recipient").val();
+  const amount = $("#amt_send").val();
+  const currency = $("#currency_send .select-selected").html();
+  let memo = $("#memo_send").val();
+  $("#to_conf_transfer").text("@"+to);
+  $("#amt_conf_transfer").text(amount+" "+currency);
+  $("#memo_conf_transfer").text((memo==""?"Empty":memo)+((memo!=""&&$("#encrypt_memo").prop("checked"))?" (encrypted)":""));
+}
 
 // Send STEEM or SBD to an user
-$("#send_transfer").click(function() {
+$("#confirm_send_transfer").click(function() {
     showLoader();
     sendTransfer();
 });
@@ -229,6 +245,8 @@ async function sendTransfer() {
                 const sender = await steem.api.getAccountsAsync([active_account.name]);
                 sbd = sender["0"].sbd_balance.replace("SBD", "");
                 steem_p = sender["0"].balance.replace("STEEM", "");
+                $("#confirm_send_div").hide();
+                $("#send_div").show();
                 if (currency == "SBD") {
                     $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
                 } else if (currency == "STEEM") {

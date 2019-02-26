@@ -12,6 +12,7 @@ function initializeVisibility() {
     $("#powerup_div").hide();
     $("#powerdown_div").hide();
     $("#token_history_div").hide();
+    $("#confirm_send_div").hide();
     $("#username").val("");
     $("#outgoing_del_div").hide();
     $("#incoming_del_div").hide();
@@ -242,7 +243,7 @@ function showUnlock() {
 
 function showLoader() {
     $("#send_loader").show();
-    $("#send_transfer").hide();
+    $("#confirm_send_transfer").hide();
 }
 
 function showAccountInfo(account, that) {
@@ -355,4 +356,9 @@ $("#token_send_div .back_enabled").click(function() {
 $("#token_history_div .back_enabled").click(function() {
     $("#token_history_div").hide();
     $("#tokens_div").show();
+});
+
+$("#confirm_send_div .back_enabled").click(function() {
+    $("#confirm_send_div").hide();
+    $("#send_div").show();
 });
