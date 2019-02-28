@@ -4,11 +4,11 @@ let active_account, priceBTC, sbd, steem_p, sp, priceSBD, priceSteem, votePowerR
 const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 let custom_created = false;
 let manageKey, getPref = false;
-//chrome.storage.local.remove("rpc");
+let to_autocomplete =[];
+//chrome.storage.local.remove("transfer_to");
 
 $("#copied").hide();
 $("#witness_votes").hide();
-
 
 // Ask background if it is unlocked
 getMK();
@@ -140,7 +140,8 @@ function initializeMainMenu() {
     initializeVisibility();
     manageKey = false;
     getPref = false;
-    chrome.storage.local.get(['accounts', 'last_account', 'rpc', 'current_rpc'], function(items) {
+    chrome.storage.local.get(['accounts', 'last_account', 'rpc', 'current_rpc','transfer_to'], function(items) {
+        to_autocomplete=(items.transfer_to?JSON.parse(items.transfer_to):{});
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
         }) ? null : decryptToJson(items.accounts, mk);
@@ -241,6 +242,7 @@ async function sendTransfer() {
     if (to != "" && amount != "" && amount >= 0.001) {
         steem.broadcast.transfer(active_account.keys.active, active_account.name, to, parseFloat(amount).toFixed(3) + " " + currency, memo, async function(err, result) {
             $("#send_loader").hide();
+            $("#confirm_send_transfer").show();
             if (err == null) {
                 const sender = await steem.api.getAccountsAsync([active_account.name]);
                 sbd = sender["0"].sbd_balance.replace("SBD", "");
@@ -254,6 +256,19 @@ async function sendTransfer() {
                 }
                 $(".error_div").hide();
                 $(".success_div").html("Transfer successful!").show();
+                chrome.storage.local.get({'transfer_to':JSON.stringify({})}, function(items) {
+                  let transfer_to=JSON.parse(items.transfer_to);
+                  if(!transfer_to[active_account.name])transfer_to[active_account.name]=[];
+                  console.log(transfer_to);
+                  if(transfer_to[active_account.name].filter((elt)=>{return elt==to}).length==0)
+                    transfer_to[active_account.name].push(to);
+                    console.log(transfer_to);
+
+                  console.log(JSON.stringify(transfer_to));
+                  chrome.storage.local.set({
+                      transfer_to: JSON.stringify(transfer_to)
+                  });
+                });
                 setTimeout(function() {
                     $(".success_div").hide();
                 }, 5000);

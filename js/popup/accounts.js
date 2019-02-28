@@ -7,6 +7,11 @@ function loadAccount(name) {
     })[0];
     if (account != null && account != undefined) {
         active_account = account;
+        $( "#recipient" ).autocomplete({
+          source: to_autocomplete[active_account.name],
+          minLength: 2,
+          appendTo:"#autocomplete_container"
+        });
         $("#send_form").toggle(account.keys.hasOwnProperty("active"));
         $("#show_add_active").toggle(!account.keys.hasOwnProperty("active"));
         $(".wallet_infos").html("...");

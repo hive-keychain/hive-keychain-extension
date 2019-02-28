@@ -180,6 +180,15 @@ input:focus {
     font-size: 20px;
 }
 
+#recipient {
+  margin-bottom: 0px !important;
+}
+
+#amt_send {
+  margin-top: 20px;
+}
+
+
 #unlock input,
 #add_account_div input,
 #change_password input,
@@ -1982,4 +1991,9 @@ input:focus {
 
 #confirm_send_div .back_enabled {
   margin-bottom: 30px;
+}
+
+#autocomplete_container {
+  padding-top: -20px;
+  position: relative;
 }

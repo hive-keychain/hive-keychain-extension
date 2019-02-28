@@ -4,6 +4,7 @@
 <head>
     <title>Steem Keychain</title>
     <link rel="stylesheet" type="text/css" href="../css/popup.css">
+    <link rel="stylesheet" type="text/css" href="../vendor/jquery-autocomplete.min.css">
 </head>
 
 <body>
@@ -352,10 +353,11 @@
         </div>
         <div id="send_form">
             <div class="input_container">
-                <input type="text" id="recipient" placeholder="USERNAME" />
+                <input id="recipient" autocomplete="off" placeholder="USERNAME" />
                 <img src="../images/arobase.png" class="input_img" />
             </div>
-            <input type="number" id="amt_send" placeholder="0.000" />
+            <div id="autocomplete_container"></div>
+            <input type="number" id="amt_send" autocomplete="off" placeholder="0.000" />
             <div class="custom-select" id="currency_send">
                 <select>
             <option value="STEEM">STEEM</option>
@@ -591,6 +593,7 @@
     <script src="../vendor/cryptojs.min.js"></script>
     <script src="../vendor/axios.min.js"></script>
     <script src="../vendor/sscjs.js"></script>
+    <script src="../vendor/jquery-autocomplete.min.js"></script>
     <script src="../js/encrypt.js"></script>
     <script src="../js/popup/com.js"></script>
     <script src="../js/popup/rpc.js"></script>
