@@ -1866,6 +1866,11 @@ input:focus {
     cursor: pointer;
 }
 
+#existing_tokens{
+  height: 362px;
+  overflow-y: scroll;
+}
+
 .row_existing_tokens span {
     display: inline-block;
 }
