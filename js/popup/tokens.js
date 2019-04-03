@@ -1,11 +1,10 @@
 let tokens = [];
 let accountTokenBalances = [];
-const urlSSC = [
-    "https://api.steem-engine.com/rpc"
-];
+const urlSSC = [ "https://api.steem-engine.com/rpc" ];
 const ssc = new SSC(urlSSC[0]);
 let hidden_tokens = [];
-const steemEngine="https://api.steem-engine.com/accounts";
+const steemEngine = "https://api.steem-engine.com/accounts";
+const CHAIN_ID = "ssc-mainnet1"
 
 chrome.storage.local.get(['hidden_tokens'], function(items) {
     if (items.hidden_tokens)
@@ -151,14 +150,14 @@ function getAccountBalances(account) {
 }
 
 async function sendToken(account_to, token, amount,memo) {
-    const id = "ssc-mainnet1";
+    const id = CHAIN_ID;
     const json = {
         "contractName": "tokens",
         "contractAction": "transfer",
         "contractPayload": {
             "symbol": token,
             "to": account_to,
-            "quantity": parseFloat(amount),
+            "quantity": amount,
             "memo":memo
         }
     };

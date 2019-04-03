@@ -15,7 +15,7 @@ html {
     top: 0;
     left: 0;
     position: relative;
-    height: 566px;
+    height: 600px;
     width: 350px !important;
 }
 
@@ -85,6 +85,7 @@ body {
     white-space: normal;
     color: white;
     z-index: 2;
+    overflow: scroll;
 }
 
 
@@ -1215,8 +1216,8 @@ input:focus {
     display: block;
     height: 114px;
     background-color: rgba(0, 96, 96, 0.9);
-    position: absolute;
-    bottom: 0;
+    position: fixed;
+    bottom: -72px;
     z-index: 4;
     width: 100%;
     padding: 4px;
@@ -1224,7 +1225,6 @@ input:focus {
     box-sizing: border-box;
     font-size: 14px;
     line-height: 18px;
-    top: 555px;
     text-align: center;
     opacity: 0;
 }

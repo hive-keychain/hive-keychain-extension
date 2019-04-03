@@ -194,7 +194,7 @@ $("#tokens").click(function() {
 // Toggle witness votes div
 $("#witness_toggle").click(function() {
     $("#witness_votes").animate({
-        top: ($("#witness_votes").css('top') == '555px') ? 505 : 555
+        bottom: ($("#witness_votes").css('bottom') == '0px') ? -72 : 0
     }, 500);
 });
 
