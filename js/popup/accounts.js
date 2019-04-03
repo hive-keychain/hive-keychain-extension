@@ -1,3 +1,4 @@
+const REVEAL_PRIVATE="Click to show private key";
 // All functions regarding the handling of a particular account
 // Load account information
 function loadAccount(name) {
@@ -270,21 +271,21 @@ function manageKeys(name) {
             if (keyName.includes("Pubkey"))
                 $(".public_key").eq(0).html(account.keys[keyName]);
             else
-                $(".private_key").eq(0).html(account.keys[keyName]);
+                $(".private_key").eq(0).html(REVEAL_PRIVATE).css("font-size","12px");
         } else if (keyName.includes("active")) {
             $(".img_add_key").eq(1).hide();
             $(".remove_key").eq(1).show();
             if (keyName.includes("Pubkey"))
                 $(".public_key").eq(1).html(account.keys[keyName]);
             else
-                $(".private_key").eq(1).html(account.keys[keyName]);
+                $(".private_key").eq(1).html(REVEAL_PRIVATE).css("font-size","12px");
         } else if (keyName.includes("memo")) {
             $(".remove_key").eq(2).show();
             $(".img_add_key").eq(2).hide();
             if (keyName.includes("Pubkey"))
                 $(".public_key").eq(2).html(account.keys[keyName]);
             else
-                $(".private_key").eq(2).html(account.keys[keyName]);
+                $(".private_key").eq(2).html(REVEAL_PRIVATE).css("font-size","12px");
         }
     }
     if ($(".private_key").eq(0).html() === "") {
@@ -300,7 +301,7 @@ function manageKeys(name) {
         $(".remove_key").eq(2).hide();
     }
     let timeout = null;
-    $(".private_key, .public_key").click(function() {
+    $(".public_key").unbind("click").click(function() {
         if (timeout != null)
             clearTimeout(timeout);
         $("#copied").hide();
@@ -311,6 +312,27 @@ function manageKeys(name) {
         timeout = setTimeout(function() {
             $("#copied").slideUp(600);
         }, 6000);
+    });
+
+    $(".private_key").unbind("click").click(function() {
+        if (timeout != null)
+            clearTimeout(timeout);
+        if($(this).html()==REVEAL_PRIVATE){
+          const type=$(this).prev().attr("id");
+          const key=account.keys[type];
+          console.log(type,key);
+          $(this).html(key).css("font-size","10px");
+        }
+        else{
+          $("#copied").hide();
+          $("#fake_input").val($(this).html());
+          $("#fake_input").select();
+          document.execCommand("copy");
+          $("#copied").slideDown(600);
+          timeout = setTimeout(function() {
+              $("#copied").slideUp(600);
+          }, 6000);
+        }
     });
 
     $(".remove_key").unbind("click").click(function() {
