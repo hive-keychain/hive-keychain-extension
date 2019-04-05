@@ -22,3 +22,11 @@ function setRPC(rpc) {
         rpc: rpc
     });
 }
+
+setInterval(ping,10000);
+// ping the background to show that the extension is not idle
+function ping() {
+    chrome.runtime.sendMessage({
+        command: "ping"
+    });
+}

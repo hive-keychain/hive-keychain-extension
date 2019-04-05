@@ -14,15 +14,18 @@ $("#witness_votes").hide();
 getMK();
 
 // Check if autolock and set it to background
-chrome.storage.local.get(['autolock'], function(items) {
-    if (items.autolock != undefined) {
-        $(".autolock input").prop("checked", false);
-        $("#" + JSON.parse(items.autolock).type).prop("checked", true);
-        $("#mn").val(JSON.parse(items.autolock).mn);
-        setAutolock(items.autolock);
-        $("#mn").css('visibility', JSON.parse(items.autolock).type == "idle" ? 'visible' : 'hidden');
-    }
-});
+function sendAutolock(){
+  chrome.storage.local.get(['autolock'], function(items) {
+      if (items.autolock != undefined) {
+          $(".autolock input").prop("checked", false);
+          $("#" + JSON.parse(items.autolock).type).prop("checked", true);
+          $("#mn").val(JSON.parse(items.autolock).mn);
+          setAutolock(items.autolock);
+          $("#mn").css('visibility', JSON.parse(items.autolock).type == "idle" ? 'visible' : 'hidden');
+      }
+  });
+}
+
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
@@ -97,6 +100,7 @@ $("#submit_unlock").click(function() {
             $(".error_div").html("");
             $(".error_div").hide();
             $("#unlock_pwd").val("");
+            sendAutolock();
             initializeMainMenu();
         } else {
             showError("Wrong password!");
