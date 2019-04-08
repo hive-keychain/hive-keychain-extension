@@ -29,6 +29,7 @@ function sendAutolock(){
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
+      console.log("receive",msg.mk);
         chrome.storage.local.get(['accounts', 'current_rpc'], function(items) {
             steem.api.setOptions({
                 url: items.current_rpc || 'https://api.steemit.com'
@@ -144,7 +145,9 @@ function initializeMainMenu() {
     initializeVisibility();
     manageKey = false;
     getPref = false;
+    console.log("a");
     chrome.storage.local.get(['accounts', 'last_account', 'rpc', 'current_rpc','transfer_to'], function(items) {
+        console.log(items);
         to_autocomplete=(items.transfer_to?JSON.parse(items.transfer_to):{});
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []

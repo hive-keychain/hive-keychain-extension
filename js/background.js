@@ -11,10 +11,12 @@ let autolock=null;
 // Lock after the browser is idle for more than 10 minutes
 
 chrome.storage.local.get(['current_rpc','autolock'], function(items) {
+  if(items.autolock&&items.current_rpc){
     startAutolock(JSON.parse(items.autolock));
     steem.api.setOptions({
         url: items.current_rpc || 'https://api.steemit.com'
     });
+  }
 });
 
 
@@ -54,7 +56,7 @@ function restartIdleCounter(){
 //Listen to the other parts of the extension
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     // Send mk upon request from the extension popup.
-    if (autolock.type=="idle"&&(msg.command == "getMk"||msg.command == "setRPC"||msg.command == "sendMk"||msg.command == "sendRequest"||msg.command == "acceptTransaction"||msg.command == "ping"))
+    if (autolock!=null&&autolock.type=="idle"&&(msg.command == "getMk"||msg.command == "setRPC"||msg.command == "sendMk"||msg.command == "sendRequest"||msg.command == "acceptTransaction"||msg.command == "ping"))
       restartIdleCounter();
     if (msg.command == "getMk") {
         chrome.runtime.sendMessage({
