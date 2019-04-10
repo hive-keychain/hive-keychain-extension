@@ -68,7 +68,10 @@ function validate(req) {
         ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
             (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
             (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
-            (req.type == "post" && isFilled(req.username) && isFilledOrEmpty(req.title) && isFilled(req.body) && isFilled(req.permlink) && isFilled(req.parent_perm) && isFilled(req.json_metadata) && isCustomOptions(req)) ||
+            (req.type == "post" && isFilled(req.username) && isFilled(req.body) && 
+                ( (isFilled(req.title) && isFilledOrEmpty(req.permlink) && !isFilled(req.parent_username) && !isFilled(req.parent_perm) && isFilled(req.json_metadata)) ||
+                  (!isFilled(req.title) && isFilledOrEmpty(req.permlink) && isFilled(req.parent_username) && isFilled(req.parent_perm) && isFilledOrEmpty(req.json_metadata))
+                ) && isCustomOptions(req)) ||
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
             (req.type == "addAccountAuthority" && isFilled(req.authorizedUsername) && isFilled(req.role) && isFilled(req.weight)) ||
             (req.type == "removeAccountAuthority" && isFilled(req.authorizedUsername) && isFilled(req.role)) ||
@@ -82,7 +85,6 @@ function validate(req) {
             (req.type == "powerDown" && isFilled(req.username)&& (isFilledAmt(req.steem_power)||req.steem_power=="0.000"))
         );
 }
-
 
 // Functions used to check the incoming data
 
@@ -104,7 +106,7 @@ function isBoolean(obj) {
 }
 
 function isFilledOrEmpty(obj) {
-    return obj != undefined && obj != null;
+    return (obj != undefined && obj != null) || obj == "";
 }
 
 function isFilledDelegationMethod(obj) {
