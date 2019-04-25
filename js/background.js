@@ -6,19 +6,58 @@ let tab = null;
 let request = null;
 let request_id = null;
 let accounts = null;
-const LOCK_AFTER_SECONDS_IDLE = 15;
+let timeoutIdle=null;
+let autolock=null;
 // Lock after the browser is idle for more than 10 minutes
 
-//chrome.storage.local.remove("no_confirm");
-chrome.storage.local.get(['current_rpc'], function(items) {
+chrome.storage.local.get(['current_rpc','autolock'], function(items) {
+  if(items.autolock&&items.current_rpc){
+    startAutolock(JSON.parse(items.autolock));
     steem.api.setOptions({
         url: items.current_rpc || 'https://api.steemit.com'
     });
+  }
 });
 
+
+async function startAutolock(autoLock){
+  //Receive autolock from the popup (upon registration or unlocking)
+      autolock=autoLock;
+      console.log(autolock);
+      if(mk==null)
+        return;
+      if (autolock.type == "default")
+          return;
+      console.log("start autolock");
+      if(autolock.type == "locked"){
+      chrome.idle.setDetectionInterval(parseInt(autolock.mn) * 60);
+      chrome.idle.onStateChanged.addListener(
+          function(state) {
+              console.log(state,autolock.type);
+              if (state === "locked") {
+                  mk = null;
+                  console.log("lock");
+              }
+        });
+      }
+      else if (autolock.type=="idle"){
+        restartIdleCounter();
+      }
+}
+//Create Custom Idle Function
+function restartIdleCounter(){
+  console.log("idleCounter",new Date().toISOString());
+  clearTimeout(timeoutIdle);
+  timeoutIdle=setTimeout(function(){
+    console.log("locked",new Date().toISOString());
+    mk=null;
+  },autolock.mn*60000);
+}
 //Listen to the other parts of the extension
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     // Send mk upon request from the extension popup.
+    if (autolock!=null&&autolock.type=="idle"&&(msg.command == "getMk"||msg.command == "setRPC"||msg.command == "sendMk"||msg.command == "sendRequest"||msg.command == "acceptTransaction"||msg.command == "ping"))
+      restartIdleCounter();
     if (msg.command == "getMk") {
         chrome.runtime.sendMessage({
             command: "sendBackMk",
@@ -30,22 +69,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
-    } else if (msg.command == "sendAutolock") { //Receive autolock from the popup (upon registration or unlocking)
-        autolock = JSON.parse(msg.autolock);
-        if (autolock.type == "default")
-            return;
-        console.log(autolock);
-        console.log(parseInt(autolock.mn) * 60,autolock.mn * 60);
-        chrome.idle.setDetectionInterval(parseInt(autolock.mn) * 60);
-        chrome.idle.onStateChanged.addListener(
-            function(state) {
-                console.log(state,autolock.type);
-                if ((autolock.type == "idle" && state === "idle") || state === "locked") {
-                    mk = null;
-                    console.log("lock");
-                }
-            }
-        );
+    } else if (msg.command == "sendAutolock") {
+      startAutolock(JSON.parse(msg.autolock));
     } else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
         // create a window to let users confirm the transaction
         tab = sender.tab.id;
@@ -60,6 +85,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             } else {
                 if (decryptToJson(items.accounts, msg.mk) != null) {
                     mk = msg.mk;
+                    startAutolock(autolock);
                     checkBeforeCreate(msg.data, msg.tab, msg.domain);
                 } else {
                     chrome.runtime.sendMessage({
@@ -110,7 +136,7 @@ async function performTransaction(data, tab,no_confirm) {
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
-                          chrome.windows.remove(id_win);
+                          removeWindow(id_win);
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -133,8 +159,9 @@ async function performTransaction(data, tab,no_confirm) {
                     };
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
-                      if (id_win != null)
-                          chrome.windows.remove(id_win);
+                      if (id_win != null){
+                        removeWindow(id_win);
+                      }
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -194,7 +221,7 @@ async function performTransaction(data, tab,no_confirm) {
                         chrome.tabs.sendMessage(tab, message);
                         if(no_confirm){
                           if (id_win != null)
-                              chrome.windows.remove(id_win);
+                              removeWindow(id_win);
                         }
                         else
                           chrome.runtime.sendMessage(message);
@@ -238,7 +265,7 @@ async function performTransaction(data, tab,no_confirm) {
                         chrome.tabs.sendMessage(tab, message);
                         if(no_confirm){
                           if (id_win != null)
-                              chrome.windows.remove(id_win);
+                              removeWindow(id_win);
                         }
                         else
                           chrome.runtime.sendMessage(message);
@@ -271,7 +298,7 @@ async function performTransaction(data, tab,no_confirm) {
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
-                          chrome.windows.remove(id_win);
+                          removeWindow(id_win);
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -301,7 +328,7 @@ async function performTransaction(data, tab,no_confirm) {
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
-                          chrome.windows.remove(id_win);
+                          removeWindow(id_win);
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -332,7 +359,7 @@ async function performTransaction(data, tab,no_confirm) {
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
-                          chrome.windows.remove(id_win);
+                          removeWindow(id_win);
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -362,7 +389,7 @@ async function performTransaction(data, tab,no_confirm) {
                         chrome.tabs.sendMessage(tab, message);
                         if(no_confirm){
                           if (id_win != null)
-                              chrome.windows.remove(id_win);
+                              removeWindow(id_win);
                         }
                         else
                           chrome.runtime.sendMessage(message);
@@ -397,7 +424,7 @@ async function performTransaction(data, tab,no_confirm) {
                         chrome.tabs.sendMessage(tab, message);
                         if(no_confirm){
                           if (id_win != null)
-                              chrome.windows.remove(id_win);
+                              removeWindow(id_win);
                         }
                         else
                           chrome.runtime.sendMessage(message);
@@ -520,7 +547,7 @@ async function performTransaction(data, tab,no_confirm) {
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
-                          chrome.windows.remove(id_win);
+                          removeWindow(id_win);
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -562,7 +589,7 @@ async function performTransaction(data, tab,no_confirm) {
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
-                          chrome.windows.remove(id_win);
+                          removeWindow(id_win);
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -584,7 +611,7 @@ async function performTransaction(data, tab,no_confirm) {
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
-                          chrome.windows.remove(id_win);
+                          removeWindow(id_win);
                     }
                     else
                       chrome.runtime.sendMessage(message);
@@ -604,7 +631,7 @@ function createPopup(callback) {
     confirmed = false;
     //Ensuring only one window is opened by the extension at a time.
     if (id_win != null) {
-        chrome.windows.remove(id_win);
+        removeWindow(id_win);
         id_win = null;
     }
     //Create new window on the top right of the screen
@@ -841,4 +868,15 @@ function getRequiredWifType(request) {
             return "active";
             break;
     }
+}
+
+// check if win exists before removing it
+function removeWindow(id_win){
+  chrome.windows.getAll(function(windows){
+    const hasWin=windows.filter((win)=>{return win.id==id_win}).length;
+    if(hasWin){
+      console.log(hasWin);
+      chrome.windows.remove(id_win);
+    }
+  });
 }

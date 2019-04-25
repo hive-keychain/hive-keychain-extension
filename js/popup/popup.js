@@ -14,18 +14,22 @@ $("#witness_votes").hide();
 getMK();
 
 // Check if autolock and set it to background
-chrome.storage.local.get(['autolock'], function(items) {
-    if (items.autolock != undefined) {
-        $(".autolock input").prop("checked", false);
-        $("#" + JSON.parse(items.autolock).type).prop("checked", true);
-        $("#mn").val(JSON.parse(items.autolock).mn);
-        setAutolock(items.autolock);
-        $("#mn").css('visibility', JSON.parse(items.autolock).type == "idle" ? 'visible' : 'hidden');
-    }
-});
+function sendAutolock(){
+  chrome.storage.local.get(['autolock'], function(items) {
+      if (items.autolock != undefined) {
+          $(".autolock input").prop("checked", false);
+          $("#" + JSON.parse(items.autolock).type).prop("checked", true);
+          $("#mn").val(JSON.parse(items.autolock).mn);
+          setAutolock(items.autolock);
+          $("#mn").css('visibility', JSON.parse(items.autolock).type == "idle" ? 'visible' : 'hidden');
+      }
+  });
+}
+
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
+      console.log("receive",msg.mk);
         chrome.storage.local.get(['accounts', 'current_rpc'], function(items) {
             steem.api.setOptions({
                 url: items.current_rpc || 'https://api.steemit.com'
@@ -97,6 +101,7 @@ $("#submit_unlock").click(function() {
             $(".error_div").html("");
             $(".error_div").hide();
             $("#unlock_pwd").val("");
+            sendAutolock();
             initializeMainMenu();
         } else {
             showError("Wrong password!");
@@ -140,7 +145,9 @@ function initializeMainMenu() {
     initializeVisibility();
     manageKey = false;
     getPref = false;
+    console.log("a");
     chrome.storage.local.get(['accounts', 'last_account', 'rpc', 'current_rpc','transfer_to'], function(items) {
+        console.log(items);
         to_autocomplete=(items.transfer_to?JSON.parse(items.transfer_to):{});
         accounts_json = (items.accounts == undefined || items.accounts == {
             list: []
