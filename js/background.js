@@ -11,12 +11,14 @@ let autolock=null;
 // Lock after the browser is idle for more than 10 minutes
 
 chrome.storage.local.get(['current_rpc','autolock'], function(items) {
-  if(items.autolock&&items.current_rpc){
-    startAutolock(JSON.parse(items.autolock));
-    steem.api.setOptions({
-        url: items.current_rpc || 'https://api.steemit.com'
-    });
-  }
+  if(items.autolock)
+		startAutolock(JSON.parse(items.autolock));
+
+	steem.api.setOptions({
+			transport: 'http',
+			uri: items.current_rpc || 'https://api.steemit.com',
+			url: items.current_rpc || 'https://api.steemit.com'
+	});
 });
 
 
@@ -26,7 +28,7 @@ async function startAutolock(autoLock){
       console.log(autolock);
       if(mk==null)
         return;
-      if (autolock.type == "default")
+      if (!autolock || autolock.type == "default")
           return;
       console.log("start autolock");
       if(autolock.type == "locked"){
@@ -144,7 +146,8 @@ async function performTransaction(data, tab,no_confirm) {
                     accounts = null;
                 });
                 break;
-            case "custom":
+						case "custom":
+								console.log(steem.config);
                 steem.broadcast.customJson(key, data.method.toLowerCase() == "active" ? [data.username] : null, data.method.toLowerCase() == "posting" ? [data.username] : null, data.id, data.json, function(err, result) {
                     const message = {
                         command: "answerRequest",
