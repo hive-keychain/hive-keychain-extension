@@ -147,7 +147,6 @@ async function performTransaction(data, tab,no_confirm) {
                 });
                 break;
 						case "custom":
-								console.log(steem.config);
                 steem.broadcast.customJson(key, data.method.toLowerCase() == "active" ? [data.username] : null, data.method.toLowerCase() == "posting" ? [data.username] : null, data.id, data.json, function(err, result) {
                     const message = {
                         command: "answerRequest",
