@@ -534,28 +534,31 @@ async function performTransaction(data, tab,no_confirm) {
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
-
+                    console.log(decoded);
                     let message = {
                         command: "answerRequest",
                         msg: {
                             success: true,
                             error: null,
-                            result: decoded,
+                            result: "#"+decoded,
                             data: data,
                             message: "Memo decoded succesfully",
                             request_id: request_id
                         }
                     };
+                    console.log(no_confirm);
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
                           removeWindow(id_win);
                     }
-                    else
+                    else {
                       chrome.runtime.sendMessage(message);
+                    }
                     key = null;
                     accounts = null;
                 } catch (err) {
+                  console.log(err);
                     let message = {
                         command: "answerRequest",
                         msg: {
@@ -803,7 +806,7 @@ function checkBeforeCreate(request, tab, domain) {
 
 function hasNoConfirm(arr, data, domain) {
     try {
-        if (data.method == "active") {
+        if (data.method == "active"||arr==undefined) {
             return false;
         } else
             return JSON.parse(arr)[data.username][domain][data.type] == true;
@@ -874,10 +877,10 @@ function getRequiredWifType(request) {
 
 // check if win exists before removing it
 function removeWindow(id_win){
+  console.log(id_win);
   chrome.windows.getAll(function(windows){
     const hasWin=windows.filter((win)=>{return win.id==id_win}).length;
     if(hasWin){
-      console.log(hasWin);
       chrome.windows.remove(id_win);
     }
   });
