@@ -1,5 +1,7 @@
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
-    sendResp("received");
+  chrome.runtime.sendMessage({
+      command: "stopInterval"
+  });
     if (msg.command == "sendDialogError") {
         // Display error window
 

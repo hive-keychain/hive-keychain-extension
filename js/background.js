@@ -8,6 +8,7 @@ let request_id = null;
 let accounts = null;
 let timeoutIdle=null;
 let autolock=null;
+let interval=null;
 // Lock after the browser is idle for more than 10 minutes
 
 chrome.storage.local.get(['current_rpc','autolock'], function(items) {
@@ -65,7 +66,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             command: "sendBackMk",
             mk: mk
         }, function(response) {});
-    } else if (msg.command == "setRPC") {
+    } else if (msg.command == "stopInterval") {
+      clearInterval(interval);
+    }else if (msg.command == "setRPC") {
         steem.api.setOptions({
             url: msg.rpc || 'https://api.steemit.com'
         });
@@ -650,20 +653,18 @@ function createPopup(callback) {
             top: w.top
         }, function(win) {
             id_win = win.id;
-
-            setTimeout(function() {
-                // Window create fails to take into account window size so it s updated afterwhile.
-                chrome.windows.update(win.id, {
-                    height: 566,
-                    width: width,
-                    top: w.top,
-                    left: w.width - width + w.left
-                });
-                callback();
-            }, 300);
+            // Window create fails to take into account window size so it s updated afterwhile.
+            chrome.windows.update(win.id, {
+                height: 566,
+                width: width,
+                top: w.top,
+                left: w.width - width + w.left
+            });
+            clearInterval(interval);
+            interval=setInterval(callback,200);
+            setTimeout(function(){clearInterval(interval)},2000);
         });
     });
-
 }
 
 chrome.windows.onRemoved.addListener(function(id) {
@@ -686,6 +687,7 @@ chrome.windows.onRemoved.addListener(function(id) {
 function checkBeforeCreate(request, tab, domain) {
     if (mk == null) { // Check if locked
         function callback() {
+          console.log("locked");
             chrome.runtime.sendMessage({
                 command: "sendDialogError",
                 msg: {
@@ -817,7 +819,9 @@ function hasNoConfirm(arr, data, domain) {
 }
 // Send errors back to the content_script, it will forward it to website
 function sendErrors(tab, error, message, display_msg, request) {
-    chrome.runtime.sendMessage({
+    clearInterval(interval);
+    interval=setInterval(function(){
+      chrome.runtime.sendMessage({
         command: "sendDialogError",
         msg: {
             success: false,
@@ -830,6 +834,8 @@ function sendErrors(tab, error, message, display_msg, request) {
         },
         tab: tab
     });
+  },200);
+  setTimeout(function(){clearInterval(interval)},2000);
     key = null;
     accounts = null;
 }
