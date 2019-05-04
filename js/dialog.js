@@ -1,4 +1,5 @@
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
+    sendResp("received");
     if (msg.command == "sendDialogError") {
         // Display error window
 
@@ -177,7 +178,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
                 $("#custom_json div").eq(0).text(msg.data.id);
                 $("#custom_json div").eq(1).text(msg.data.json);
-								$("#custom_key").text(msg.data.method);
+                $("#custom_key").text(msg.data.method);
                 break;
             case "transfer":
                 encode = (msg.data.memo != undefined && msg.data.memo.length > 0 && msg.data.memo[0] == "#");
