@@ -537,19 +537,19 @@ async function performTransaction(data, tab,no_confirm) {
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
-                    console.log(decoded);
+                    
                     let message = {
                         command: "answerRequest",
                         msg: {
                             success: true,
                             error: null,
-                            result: "#"+decoded,
+                            result: decoded,
                             data: data,
                             message: "Memo decoded succesfully",
                             request_id: request_id
                         }
                     };
-                    console.log(no_confirm);
+                    
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)
