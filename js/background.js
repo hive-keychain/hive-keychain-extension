@@ -502,7 +502,7 @@ async function performTransaction(data, tab,no_confirm) {
                 });
                 break;
             case "sendToken":
-                const id = "ssc-00000000000000000002";
+                const id = config.mainNet;
                 const json = {
                     "contractName": "tokens",
                     "contractAction": "transfer",

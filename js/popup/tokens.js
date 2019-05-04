@@ -4,7 +4,7 @@ const urlSSC = [ "https://api.steem-engine.com/rpc" ];
 const ssc = new SSC(urlSSC[0]);
 let hidden_tokens = [];
 const steemEngine = "https://api.steem-engine.com/accounts";
-const CHAIN_ID = "ssc-mainnet1"
+const CHAIN_ID = config.mainNet;
 
 chrome.storage.local.get(['hidden_tokens'], function(items) {
     if (items.hidden_tokens)
