@@ -512,7 +512,7 @@ async function performTransaction(data, tab,no_confirm) {
                     "contractPayload": {
                         "symbol": data.currency,
                         "to": data.to,
-                        "quantity": parseFloat(data.amount),
+                        "quantity": data.amount,
                         "memo":data.memo
                     }
                 };
