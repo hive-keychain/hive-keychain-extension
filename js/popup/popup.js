@@ -188,6 +188,7 @@ function confirmTransfer(){
   const amount = $("#amt_send").val();
   const currency = $("#currency_send .select-selected").html();
   let memo = $("#memo_send").val();
+  $("#from_conf_transfer").text("@"+active_account.name)
   $("#to_conf_transfer").text("@"+to);
   $("#amt_conf_transfer").text(amount+" "+currency);
   $("#memo_conf_transfer").text((memo==""?"Empty":memo)+((memo!=""&&$("#encrypt_memo").prop("checked"))?" (encrypted)":""));
