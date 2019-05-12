@@ -113,17 +113,20 @@ function showTokenBalances(account) {
             getTokenHistory(active_account.name,20,0,symbol).then(function(history){
               for (elt of history){
                 const date = new Date(elt.timestamp);
-                const timestamp = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
-                console.log(elt.memo)
-                $("#history_tokens_rows").append(
-                  "<div class='history_tokens_row "+(elt.memo!=null?"history_row_memo":"")+"'>\
-                    <span class='history_date ' title='"+elt.timestamp+"'>" + timestamp + "</span>\
-                    <span class='history_val'>" + (elt.from == active_account.name ? "-" : "+") + " " + elt.quantity + "</span>\
-                    <span class='history_name'>" + (elt.from == active_account.name ? "TO: @" + elt.to : "FROM: @" + elt.from) +"</span>\
-                    <span class='history_cur'>" + elt.symbol + "</span>\
-                    <div class='history_memo'>" + elt.memo + "</div>\
-                  </div>"
-                );
+								const timestamp = (date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear();
+								
+								var history_row = $("<div class='history_tokens_row "+(elt.memo!=null?"history_row_memo":"")+"'>\
+										<span class='history_date ' title='"+elt.timestamp+"'>" + timestamp + "</span>\
+										<span class='history_val'>" + (elt.from == active_account.name ? "-" : "+") + " " + elt.quantity + "</span>\
+										<span class='history_name'>" + (elt.from == active_account.name ? "TO: @" + elt.to : "FROM: @" + elt.from) +"</span>\
+										<span class='history_cur'>" + elt.symbol + "</span>\
+									</div>");
+
+								var memo_element = $("<div class='history_memo'></div>");
+								memo_element.text(elt.memo);
+								history_row.append(memo_element)
+                
+                $("#history_tokens_rows").append(history_row);
               }
               $("#loading_history_token").hide();
               $(".history_tokens_row").unbind("click").click(function(){
