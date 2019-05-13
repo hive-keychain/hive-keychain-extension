@@ -139,7 +139,6 @@ function displayIncomingDelegations(delegators) {
 function displayDelegationMain(delegators, delegatees) {
     const sumIncoming = getSumIncoming(delegators);
     const sumOutgoing = getSumOutgoing(delegatees);
-    console.log(sumIncoming, sumOutgoing, sp - 5 - sumOutgoing);
     $("#incoming_del").html("+ " + numberWithCommas(sumIncoming.toFixed(3)));
     $("#outgoing_del").html("- " + numberWithCommas(sumOutgoing.toFixed(3)));
     $("#available_del").html(numberWithCommas((sp - 5 - sumOutgoing).toFixed(3)));
@@ -148,7 +147,6 @@ function displayDelegationMain(delegators, delegatees) {
 function getDelegatees(name) {
     return new Promise(function(fulfill, reject) {
         steem.api.getVestingDelegations(name, null, 1000, function(err, outgoingDelegations) {
-            console.log(err, outgoingDelegations);
             if (!err)
                 fulfill(outgoingDelegations);
             else

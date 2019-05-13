@@ -141,8 +141,6 @@ function getPriceSteemAsync() {
             url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM',
             success: function(response) {
                 resolve(response.result['Bid']);
-                console.log(response.result['Bid']);
-
             },
             error: function(msg) {
                 resolve(msg);
@@ -163,7 +161,6 @@ function getBTCPriceAsync() {
             url: 'https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC',
             success: function(response) {
                 resolve(response.result['Bid']);
-                console.log(response.result['Bid']);
 
             },
             error: function(msg) {
@@ -185,7 +182,6 @@ function getPriceSBDAsync() {
             },
             url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-SBD',
             success: function(response) {
-                console.log(response.result['Bid']);
                 resolve(response.result['Bid']);
             },
             error: function(msg) {

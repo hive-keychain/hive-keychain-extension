@@ -14,22 +14,26 @@ function prepareWitnessDiv() {
     else
         $("#proxy div").removeClass("no_active");
 
-    $("#list_wit").empty();
-    for (wit of witness_votes) {
-        const isActive = (witness_ranks.filter((e) => {
-            return e.name == wit
-        }).length == 1) ? "active" : "disabled";
-        $("#list_wit").append("<div class='witness-row'><span class='witName'>@" + wit + "</span><span class='isActive'>" + isActive + "</span><img class='" + (!active_account.keys.hasOwnProperty("active") ? "no_cursor" : "") + "' src='../images/delete.png'></span></div>");
-    }
+		$("#list_wit").empty();
+		
+		if(witness_votes) {
+			for (wit of witness_votes) {
+					const isActive = (witness_ranks && witness_ranks.find(e => e.name == wit)) ? "active" : "disabled";
+					$("#list_wit").append("<div class='witness-row'><span class='witName'>@" + wit + "</span><span class='isActive'>" + isActive + "</span><img class='" + (!active_account.keys.hasOwnProperty("active") ? "no_cursor" : "") + "' src='../images/delete.png'></span></div>");
+			}
+		}
+
     $("#top100_div").empty();
 
-    let i = 0;
-    for (wit of witness_ranks) {
-        const isVoted = witness_votes.includes(wit.name) ? "wit-vote wit-voted" : "wit-vote wit-not-voted";
-        i++;
-        if (i <= 100)
-            $("#top100_div").append("<div class='witness-row'><span class='wit-rank'>" + wit.rank + "</span><span class='witName'>@" + wit.name + "</span><span class='" + isVoted + "'></span></div>");
-    }
+		if(witness_ranks) {
+			let i = 0;
+			for (wit of witness_ranks) {
+					const isVoted = witness_votes.includes(wit.name) ? "wit-vote wit-voted" : "wit-vote wit-not-voted";
+					i++;
+					if (i <= 100)
+							$("#top100_div").append("<div class='witness-row'><span class='wit-rank'>" + wit.rank + "</span><span class='witName'>@" + wit.name + "</span><span class='" + isVoted + "'></span></div>");
+			}
+		}
 
 
     if (!active_account.keys.hasOwnProperty("active"))

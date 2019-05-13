@@ -35,8 +35,13 @@ function loadAccount(name) {
                     prepareDelegationTab();
                     preparePowerUpDown(result);
                     showTokenBalances(result[0]);
-                } else
-                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post"), getPriceSteemAsync(), getPriceSBDAsync(), getBTCPriceAsync(), getWitnessRanks()])
+								} else
+									try { witness_ranks = await getWitnessRanks(); } catch (err) { console.log('Error loading witness ranks: ' + err); }
+									try { priceBTC = await getBTCPriceAsync(); } catch (err) { console.log('Error loading BTC Price: ' + err); }
+									try { priceSBD = await getPriceSBDAsync(); } catch (err) { console.log('Error loading SBD Price: ' + err); }
+									try { priceSteem = await getPriceSteemAsync(); } catch (err) { console.log('Error loading Steem Price: ' + err); }
+
+                    Promise.all([steem.api.getDynamicGlobalPropertiesAsync(), steem.api.getCurrentMedianHistoryPriceAsync(), steem.api.getRewardFundAsync("post")])
                     .then(function(values) {
                         votePowerReserveRate = values["0"].vote_power_reserve_rate;
                         totalSteem = Number(values["0"].total_vesting_fund_steem.split(' ')[0]);
@@ -45,17 +50,17 @@ function loadAccount(name) {
                         recentClaims = values["2"].recent_claims;
                         steemPrice = parseFloat(values["1"].base.replace(" SBD", "")) / parseFloat(values["1"].quote.replace(" STEEM", ""));
                         dynamicProp = values[0];
-                        priceSBD = values["4"];
-                        priceSteem = values["3"]; //priceSteem is current price on Bittrex while steemPrice is the blockchain price.
-                        priceBTC = values["5"];
-                        witness_ranks = values["6"];
+
+                        //witness_ranks = values["6"];
                         claimRewards(result);
                         showUserData(result);
                         prepareWitnessDiv();
                         prepareDelegationTab();
                         preparePowerUpDown(result);
                         showTokenBalances(result[0]);
-                    });
+										});
+										
+
 
                 if (!result[0].proxy && (!result[0].witness_votes.includes("stoodkev") || !result[0].witness_votes.includes("yabapmatt") || !result[0].witness_votes.includes("aggroed"))) {
                     $('#stoodkev img').attr('src', '../images/icon_witness-vote' + (result[0].witness_votes.includes("stoodkev") ? '' : '_default') + '.svg');
@@ -110,9 +115,14 @@ function loadAccount(name) {
                                 } catch (e) {}
                             } else
                                 memo = "Add your private memo key to read this memo";
-                        }
-                        $("#acc_transfers div").eq(1).append("<div class='transfer_row'><span class='transfer_date' title='"+transfer[1].timestamp+"'>" + timestamp + "</span><span class='transfer_val'>" + (transfer[1].op[1].from == active_account.name ? "-" : "+") + " " + transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from) +
-                            "</span><span class='transfer_cur'>" + transfer[1].op[1].amount.split(" ")[1] + "</span><div class='memo'>" + memo + "</div></div>");
+												}
+												var transfers_element = $("<div class='transfer_row'><span class='transfer_date' title='"+transfer[1].timestamp+"'>" + timestamp + "</span><span class='transfer_val'>" + (transfer[1].op[1].from == active_account.name ? "-" : "+") + " " + transfer[1].op[1].amount.split(" ")[0] + "</span><span class='transfer_name'>" + (transfer[1].op[1].from == active_account.name ? "TO: @" + transfer[1].op[1].to : "FROM: @" + transfer[1].op[1].from) +
+												"</span><span class='transfer_cur'>" + transfer[1].op[1].amount.split(" ")[1] + "</span></div>");
+
+												var memo_element = $("<div class='memo'></div>");
+												memo_element.text(memo);
+												transfers_element.append(memo_element);
+                        $("#acc_transfers div").eq(1).append(transfers_element);
                     }
                     $(".transfer_row").click(function() {
                         $(".memo").eq(($(this).index())).slideToggle();
@@ -137,13 +147,7 @@ async function showUserData(result) {
     $("#rc").html(rc.estimated_pct + "%");
     const full = (rc.estimated_pct == 100 ? "" : 'Full in ') + rc.fullin;
     $("#rc_info").attr("title", full);
-    console.log(priceSBD * priceBTC, priceSteem * priceBTC);
-    console.log(parseInt(sbd), sp, steem_p);
-    console.log(priceBTC * priceSBD, parseInt(sbd), priceBTC * priceSBD * parseInt(sbd));
-    console.log(priceBTC * priceSteem * (parseInt(sp) + parseInt(steem_p)));
     $("#account_value_amt").html(numberWithCommas("$ " + ((priceSBD * parseInt(sbd) + priceSteem * (parseInt(sp) + parseInt(steem_p))) * priceBTC).toFixed(2)) + "\t  USD");
-
-    console.log(rc);
 }
 
 // Adding accounts. Private keys can be entered individually or by the mean of the
