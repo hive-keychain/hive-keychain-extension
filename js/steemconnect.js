@@ -61,10 +61,15 @@ let contentScript = {
           && anchor.href.indexOf('steemconnect.com') !== -1
           && !anchor.classList.contains('steem-keychain-checked')  // That was not checked before
         ) {
-          anchor.addEventListener('click', function(e) {
+          anchor.addEventListener('click', async function(e) {
             e.preventDefault();
             e.stopPropagation();
-            contentScript.process.convertSteemConnectUrl(this.href);
+
+            if (await contentScript.process.isSteemConnectHijackerEnabled()) {
+              contentScript.process.convertSteemConnectUrl(this.href);
+            } else {
+              window.location.href = this.href;
+            }
           });
         }
 
@@ -182,6 +187,18 @@ let contentScript = {
         request: request,
         domain: window.location.hostname,
         request_id: now
+      });
+    },
+
+    isSteemConnectHijackerEnabled: function() {
+      return new Promise(function(resolve, reject) {
+        try {
+          chrome.storage.local.get(['steemconnect_hijacker'], function(items) {
+            resolve(!items.hasOwnProperty('steemconnect_hijacker') || items.steemconnect_hijacker)
+          });
+        } catch(err) {
+          reject(err);
+        }
       });
     },
 
