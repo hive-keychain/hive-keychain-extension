@@ -171,6 +171,12 @@ $("#autolock").click(function() {
     $("#autolock_div").show();
 });
 
+// Nativate to steemconnect-hijacker menu
+$("#steemconnect-hijacker").click(function() {
+    $('#settings_div').hide();
+    $("#steemconnect_hijacker_div").show();
+});
+
 // Show transaction window
 $("#send").click(function() {
     $("#send_div").show();

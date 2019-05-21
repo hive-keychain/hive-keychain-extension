@@ -26,6 +26,17 @@ function sendAutolock(){
   });
 }
 
+function checkSteemConnectHijacker() {
+    chrome.storage.local.get(['steemconnect_hijacker'], function(items) {
+        console.log(items);
+        if (items.steemconnect_hijacker !== undefined) {
+            $(".steemconnect_hijacker input").prop("checked", items.steemconnect_hijacker);
+        } else {
+            $(".steemconnect_hijacker input").prop("checked", true);
+        }
+    });
+}
+
 // Check if we have mk or if accounts are stored to know if the wallet is locked unlocked or new.
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
@@ -52,7 +63,15 @@ $(".autolock").click(function() {
     $(".autolock input").prop("checked", false);
     $(this).find("input").prop("checked", "true");
     $("#mn").css('visibility', $(this).find("input").attr("id") == "idle" ? 'visible' : 'hidden');
+});
 
+// Save steemconnect_hijacker
+$(".steemconnect_hijacker").click(function() {
+    const steemconnect_hijacker = $(this).find("input").prop("checked");
+    $(this).find("input").prop("checked", !steemconnect_hijacker);
+    chrome.storage.local.set({
+        steemconnect_hijacker: !steemconnect_hijacker
+    });
 });
 
 // Saving autolock options
@@ -141,6 +160,7 @@ function acceptMP(mp){
 // Set visibilities back to normal when coming back to main menu
 function initializeMainMenu() {
     sendAutolock();
+    checkSteemConnectHijacker();
     initializeVisibility();
     manageKey = false;
     getPref = false;
