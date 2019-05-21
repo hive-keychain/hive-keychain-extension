@@ -129,7 +129,23 @@ let contentScript = {
           //contentScript.process.requestDelegation(null, vars.delegatee, amount, unit, null);
           window.location.href = url;
           break;
+
+        case (url.indexOf('steemconnect.com/sign/account-witness-vote') !== -1):
+          // @TODO currently Steem Keychain does not allow null voter account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
+          //contentScript.process.requestWitnessVote(null, vars.witness, vars.approve);
+          window.location.href = url;
+          break;
       }
+    },
+
+    requestWitnessVote: function(username, witness, vote) {
+      var request = {
+        type: "witnessVote",
+        username: username,
+        witness: witness,
+        vote: vote
+      };
+      contentScript.process.dispatchRequest(request);
     },
 
     requestDelegation: function(username, delegatee, amount, unit) {
