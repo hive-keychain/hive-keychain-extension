@@ -65,7 +65,7 @@ let contentScript = {
             e.preventDefault();
             e.stopPropagation();
 
-            if (await contentScript.process.isSteemConnectHijackerEnabled()) {
+            if (await contentScript.process.isKeychainifyEnabled()) {
               contentScript.process.convertSteemConnectUrl(this.href);
             } else {
               window.location.href = this.href;
@@ -190,11 +190,11 @@ let contentScript = {
       });
     },
 
-    isSteemConnectHijackerEnabled: function() {
+    isKeychainifyEnabled: function() {
       return new Promise(function(resolve, reject) {
         try {
-          chrome.storage.local.get(['steemconnect_hijacker'], function(items) {
-            resolve(!items.hasOwnProperty('steemconnect_hijacker') || items.steemconnect_hijacker)
+          chrome.storage.local.get(['steemconnect_keychainify'], function(items) {
+            resolve(!items.hasOwnProperty('steemconnect_keychainify') || items.steemconnect_hijacker)
           });
         } catch(err) {
           reject(err);

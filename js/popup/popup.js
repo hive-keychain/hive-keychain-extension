@@ -27,12 +27,12 @@ function sendAutolock(){
 }
 
 function checkSteemConnectHijacker() {
-    chrome.storage.local.get(['steemconnect_hijacker'], function(items) {
+    chrome.storage.local.get(['steemconnect_keychainify'], function(items) {
         console.log(items);
-        if (items.steemconnect_hijacker !== undefined) {
-            $(".steemconnect_hijacker input").prop("checked", items.steemconnect_hijacker);
+        if (items.steemconnect_keychainify !== undefined) {
+            $(".steemconnect_keychainify input").prop("checked", items.steemconnect_keychainify);
         } else {
-            $(".steemconnect_hijacker input").prop("checked", true);
+            $(".steemconnect_keychainify input").prop("checked", true);
         }
     });
 }
@@ -65,12 +65,12 @@ $(".autolock").click(function() {
     $("#mn").css('visibility', $(this).find("input").attr("id") == "idle" ? 'visible' : 'hidden');
 });
 
-// Save steemconnect_hijacker
-$(".steemconnect_hijacker").click(function() {
-    const steemconnect_hijacker = $(this).find("input").prop("checked");
-    $(this).find("input").prop("checked", !steemconnect_hijacker);
+// Save steemconnect_keychainify
+$(".steemconnect_keychainify").click(function() {
+    const steemconnect_keychainify = $(this).find("input").prop("checked");
+    $(this).find("input").prop("checked", !steemconnect_keychainify);
     chrome.storage.local.set({
-        steemconnect_hijacker: !steemconnect_hijacker
+        steemconnect_keychainify: !steemconnect_keychainify
     });
 });
 

@@ -209,9 +209,9 @@
             <img src="../images/autolock.png" />
             <span>Auto Lock</span>
         </div>
-        <div class="setting_row" id="steemconnect-hijacker">
-            <img src="../images/steemconnect-hijacker.png" />
-            <span>SteemConnect Link Hijacker</span>
+        <div class="setting_row" id="steemconnect_keychainify">
+            <img src="../images/steemconnect_keychainify.png" />
+            <span>Keychainify</span>
         </div>
         <div class="setting_row" id="about">
             <img src="../images/info.png" />
@@ -253,14 +253,14 @@
         </div>
         <button id="save_autolock">Save</button>
     </div>
-    <div id="steemconnect_hijacker_div" class="settings_child">
-        <div class="back_enabled back_pref">SteemConnect Hijacker</div>
-        <p>This feature allows you to trigger a SteemKeychain operation when clicking on a SteemConnect link. Instead of getting redirected to SteemConnect, it will display a SteemKeychain popup if the transaction type is supported.</p>
+    <div id="steemconnect_keychainify_div" class="settings_child">
+        <div class="back_enabled back_pref">Keychainify</div>
+        <p>This feature allows you to trigger a SteemKeychain operation when clicking on a supported link on a web page. Currently, it only supports SteemConnect transfer links, instead of getting redirected to SteemConnect, it will display a SteemKeychain transfer popup.</p>
         <div class="key_checkbox steemconnect_hijacker">
             <label for="default" class="checkbox_container">
-                <div>Hijack SteemConnect links</div>
+                <div>Keychainify</div>
                 <div>Currently only support transfer links.</div>
-                <input type="checkbox" checked=true id="hijack_steemconnect_links"/>
+                <input type="checkbox" checked=true id="keychainify_steemconnect_links"/>
                 <span class="checkmark"/>
             </label>
         </div>
