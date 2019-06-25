@@ -51,7 +51,7 @@ function initializeVisibility() {
     $(".dropdown").hide();
 }
 
-// Use "Enter" as confirmation button for unlocking and registration
+// Use "Enter" as confirmation button for unlocking, registration, and adding account/key
 $('#unlock_pwd').keypress(function(e) {
     if (e.keyCode == 13)
         $('#submit_unlock').click();
@@ -60,6 +60,16 @@ $('#unlock_pwd').keypress(function(e) {
 $('#confirm_master_pwd').keypress(function(e) {
     if (e.keyCode == 13)
         $('#submit_master_pwd').click();
+});
+
+$('#pwd').keypress(function(e) {
+    if (e.keyCode == 13)
+        $('#check_add_account').click();
+});
+
+$('#new_key').keypress(function(e) {
+    if (e.keyCode == 13)
+        $('#add_new_key').click();
 });
 
 // Clicking back after "forgot password"

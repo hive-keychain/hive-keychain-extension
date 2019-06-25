@@ -13,7 +13,6 @@ chrome.storage.local.get(['hidden_tokens'], function(items) {
 
 getTokens().then(function(tok) {
     tokens = tok;
-    console.log(tokens);
     for (token of tokens) {
         let html = "<div class='row_existing_tokens'>\
     <div class='key_checkbox'>\
@@ -61,7 +60,6 @@ getTokens().then(function(tok) {
 
 function showTokenBalances(account) {
     getAccountBalances(account.name).then((tokenBalances) => {
-        console.log(tokenBalances);
         accountTokenBalances = tokenBalances;
         $("#tokens_list").empty();
         for (token of tokenBalances) {
