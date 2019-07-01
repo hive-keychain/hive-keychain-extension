@@ -68,8 +68,8 @@ function validate(req) {
         ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
             (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
             (req.type == "vote" && isFilled(req.username) && isFilledWeight(req.weight) && isFilled(req.permlink) && isFilled(req.author)) ||
-            (req.type == "post" && isFilled(req.username) && isFilled(req.body) && 
-                ( (isFilled(req.title) && isFilledOrEmpty(req.permlink) && !isFilled(req.parent_username) && !isFilled(req.parent_perm) && isFilled(req.json_metadata)) ||
+            (req.type == "post" && isFilled(req.username) && isFilled(req.body) &&
+                ( (isFilled(req.title) && isFilledOrEmpty(req.permlink) && !isFilled(req.parent_username) && isFilled(req.parent_perm) && isFilled(req.json_metadata)) ||
                   (!isFilled(req.title) && isFilledOrEmpty(req.permlink) && isFilled(req.parent_username) && isFilled(req.parent_perm) && isFilledOrEmpty(req.json_metadata))
                 ) && isCustomOptions(req)) ||
             (req.type == "custom" && isFilled(req.username) && isFilled(req.json) && isFilled(req.id)) ||
