@@ -194,7 +194,7 @@ let contentScript = {
       return new Promise(function(resolve, reject) {
         try {
           chrome.storage.local.get(['steemconnect_keychainify'], function(items) {
-            resolve(!items.hasOwnProperty('steemconnect_keychainify') || items.steemconnect_hijacker)
+            resolve(!items.hasOwnProperty('steemconnect_keychainify') || items.steemconnect_keychainify)
           });
         } catch(err) {
           reject(err);
