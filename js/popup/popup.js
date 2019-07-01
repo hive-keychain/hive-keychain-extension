@@ -68,6 +68,7 @@ $(".autolock").click(function() {
 // Save steemconnect_keychainify
 $(".steemconnect_keychainify").click(function() {
     const steemconnect_keychainify = $(this).find("input").prop("checked");
+    console.log(steemconnect_keychainify);
     $(this).find("input").prop("checked", !steemconnect_keychainify);
     chrome.storage.local.set({
         steemconnect_keychainify: !steemconnect_keychainify
