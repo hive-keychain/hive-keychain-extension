@@ -26,9 +26,8 @@ function sendAutolock(){
   });
 }
 
-function checkSteemConnectHijacker() {
+function checkKeychainify() {
     chrome.storage.local.get(['steemconnect_keychainify'], function(items) {
-        console.log(items);
         if (items.steemconnect_keychainify !== undefined) {
             $(".steemconnect_keychainify input").prop("checked", items.steemconnect_keychainify);
         } else {
@@ -161,7 +160,7 @@ function acceptMP(mp){
 // Set visibilities back to normal when coming back to main menu
 function initializeMainMenu() {
     sendAutolock();
-    checkSteemConnectHijacker();
+    checkKeychainify();
     initializeVisibility();
     manageKey = false;
     getPref = false;
