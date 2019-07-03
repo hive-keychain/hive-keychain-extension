@@ -15,6 +15,7 @@
       "vendor/steem.min.js",
       "vendor/decode.min.js",
       "js/config.js",
+      "js/keychainify.js",
       "js/background.js"
     ],
     "persistent": true
@@ -23,7 +24,7 @@
   "content_scripts": [
     {
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-      "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/keychainify.js"]
+      "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/keychainify.js", "js/keychainify_content.js"]
     }
   ],
   "manifest_version": 2

@@ -22,118 +22,16 @@ chrome.storage.local.get(['current_rpc','autolock'], function(items) {
 	});
 });
 
-const keychainify = {
-    init: function() {
-        chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-            if(details.frameId === 0) {
-                // Fires only when details.url === currentTab.url
-                chrome.tabs.get(details.tabId, function(tab) {
-                    keychainify.run(tab);
-                });
+chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
+    if(details.frameId === 0) {
+        // Fires only when details.url === currentTab.url
+        chrome.tabs.get(details.tabId, async function(tab) {
+            if(await keychainify.isKeychainifyEnabled()) {
+                keychainify.keychainifyUrl(tab);
             }
         });
-    },
-
-    run: async function (tab) {
-        if(await keychainify.isKeychainifyEnabled()) {
-            keychainify.keychainifyUrl(tab);
-        }
-    },
-
-    isKeychainifyEnabled: function () {
-        return new Promise(function(resolve, reject) {
-            try {
-                chrome.storage.local.get(['use_keychainify'], function(items) {
-                    resolve(!items.hasOwnProperty('use_keychainify') || items.use_keychainify)
-                });
-            } catch(err) {
-                reject(err);
-            }
-        });
-    },
-
-    keychainifyUrl: function (tab) {
-        const url = tab.url;
-        const vars = keychainify.getVarsFromURL(url);
-        let payload = {},
-          defaults = {};
-
-        switch(true) {
-          /**
-           * Transfer fund
-           */
-            case (url.indexOf('steemconnect.com/sign/transfer') !== -1):
-                defaults = {
-                    from: null,
-                    to: null,
-                    amount: 0,
-                    memo: '',
-                    currency: 'STEEM'
-                };
-
-                payload = Object.assign(defaults, vars);
-
-                [payload.amount, payload.currency] = vars.amount.split(' ');
-                keychainify.requestTransfer(tab, payload.from, payload.to, payload.amount, payload.memo, payload.currency);
-                break;
-        }
-    },
-
-    requestTransfer: function(tab, account, to, amount, memo, currency, enforce = false) {
-        const request = {
-            type: "transfer",
-            username: account,
-            to: to,
-            amount: amount,
-            memo: memo,
-            enforce: enforce,
-            currency: currency
-        };
-
-        keychainify.dispatchRequest(tab, request);
-    },
-
-    dispatchRequest: function(tab, request) {
-        const now = new Date().getTime();
-
-        chromeMessageHandler(
-          {
-              command: "sendRequest",
-              request: request,
-              domain: window.location.hostname,
-              request_id: now
-          },
-          {
-              tab: tab
-          }
-        );
-    },
-
-    getVarsFromURL: function(url) {
-        const argsParsed = {};
-
-        if (url.indexOf('?') !== -1) {
-            const query = url.split('?').pop();
-            const args = query.split('&');
-            let arg, kvp, key, value;
-
-            for (let i=0; i<args.length; i++) {
-                arg = args[i];
-                if (arg.indexOf('=') === -1) {
-                    argsParsed[decodeURIComponent(arg)] = true;
-                } else {
-                    kvp = arg.split('=');
-                    key = decodeURIComponent(kvp[0]);
-                    value = decodeURIComponent(kvp[1]);
-                    argsParsed[key] = value;
-                }
-            }
-        }
-
-        return argsParsed;
     }
-};
-keychainify.init();
+});
 
 async function startAutolock(autoLock){
   //Receive autolock from the popup (upon registration or unlocking)
