@@ -34,8 +34,8 @@ const keychainify = {
         });
     },
 
-    run: function (tab) {
-        if(keychainify.isKeychainifyEnabled()) {
+    run: async function (tab) {
+        if(await keychainify.isKeychainifyEnabled()) {
             keychainify.convertSteemConnectUrl(tab);
         }
     },
