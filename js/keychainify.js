@@ -77,7 +77,7 @@ let contentScript = {
       }
     },
 
-    getVarsFromURl: function (url) {
+    getVarsFromURL: function (url) {
       const argsParsed = {};
 
       if (url.indexOf('?') !== -1) {
@@ -102,7 +102,7 @@ let contentScript = {
     },
 
     convertSteemConnectUrl: function(url) {
-      const vars = contentScript.process.getVarsFromURl(url);
+      const vars = contentScript.process.getVarsFromURL(url);
       let payload = {},
         defaults = {};
 

@@ -22,6 +22,124 @@ chrome.storage.local.get(['current_rpc','autolock'], function(items) {
 	});
 });
 
+const keychainify = {
+    init: function() {
+        chrome.tabs.onActivated.addListener(function (info) {
+            chrome.tabs.get(info.tabId, function (change) {
+                keychainify.run(change);
+            });
+        });
+
+        chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
+            if(details.frameId === 0) {
+                // Fires only when details.url === currentTab.url
+                chrome.tabs.get(details.tabId, function(tab) {
+                    keychainify.run(tab);
+                });
+            }
+        });
+    },
+
+    run: function (tab) {
+        if(keychainify.isKeychainifyEnabled()) {
+            keychainify.convertSteemConnectUrl(tab);
+        }
+    },
+
+    isKeychainifyEnabled: function () {
+        return new Promise(function(resolve, reject) {
+            try {
+                chrome.storage.local.get(['steemconnect_keychainify'], function(items) {
+                    resolve(!items.hasOwnProperty('steemconnect_keychainify') || items.steemconnect_keychainify)
+                });
+            } catch(err) {
+                reject(err);
+            }
+        });
+    },
+
+    convertSteemConnectUrl: function (tab) {
+        const url = tab.url;
+        const vars = keychainify.getVarsFromURL(url);
+        let payload = {},
+          defaults = {};
+
+        switch(true) {
+          /**
+           * Transfer fund
+           */
+            case (url.indexOf('steemconnect.com/sign/transfer') !== -1):
+                defaults = {
+                    from: null,
+                    to: null,
+                    amount: 0,
+                    memo: '',
+                    currency: 'STEEM'
+                };
+
+                payload = Object.assign(defaults, vars);
+
+                [payload.amount, payload.currency] = vars.amount.split(' ');
+                keychainify.requestTransfer(tab, payload.from, payload.to, payload.amount, payload.memo, payload.currency);
+                break;
+        }
+    },
+
+    requestTransfer: function(tab, account, to, amount, memo, currency, enforce = false) {
+        const request = {
+            type: "transfer",
+            username: account,
+            to: to,
+            amount: amount,
+            memo: memo,
+            enforce: enforce,
+            currency: currency
+        };
+
+        keychainify.dispatchRequest(tab, request);
+    },
+
+    dispatchRequest: function(tab, request) {
+        const now = new Date().getTime();
+
+        chromeMessageHandler(
+          {
+              command: "sendRequest",
+              request: request,
+              domain: window.location.hostname,
+              request_id: now
+          },
+          {
+              tab: tab
+          }
+        );
+    },
+
+    getVarsFromURL: function(url) {
+        const argsParsed = {};
+
+        if (url.indexOf('?') !== -1) {
+            const query = url.split('?').pop();
+            const args = query.split('&');
+            let arg, kvp, key, value;
+
+            for (let i=0; i<args.length; i++) {
+                arg = args[i];
+                if (arg.indexOf('=') === -1) {
+                    argsParsed[decodeURIComponent(arg)] = true;
+                } else {
+                    kvp = arg.split('=');
+                    key = decodeURIComponent(kvp[0]);
+                    value = decodeURIComponent(kvp[1]);
+                    argsParsed[key] = value;
+                }
+            }
+        }
+
+        return argsParsed;
+    }
+};
+keychainify.init();
 
 async function startAutolock(autoLock){
   //Receive autolock from the popup (upon registration or unlocking)
@@ -57,17 +175,19 @@ function restartIdleCounter(){
   },autolock.mn*60000);
 }
 //Listen to the other parts of the extension
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
+chrome.runtime.onMessage.addListener(chromeMessageHandler);
+
+function chromeMessageHandler(msg, sender, sendResp) {
     // Send mk upon request from the extension popup.
     if (autolock!=null&&autolock.type=="idle"&&(msg.command == "getMk"||msg.command == "setRPC"||msg.command == "sendMk"||msg.command == "sendRequest"||msg.command == "acceptTransaction"||msg.command == "ping"))
-      restartIdleCounter();
+        restartIdleCounter();
     if (msg.command == "getMk") {
         chrome.runtime.sendMessage({
             command: "sendBackMk",
             mk: mk
         }, function(response) {});
     } else if (msg.command == "stopInterval") {
-      clearInterval(interval);
+        clearInterval(interval);
     }else if (msg.command == "setRPC") {
         steem.api.setOptions({
             url: msg.rpc || 'https://api.steemit.com'
@@ -75,7 +195,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
     } else if (msg.command == "sendAutolock") {
-      startAutolock(JSON.parse(msg.autolock));
+        startAutolock(JSON.parse(msg.autolock));
     } else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
         // create a window to let users confirm the transaction
         tab = sender.tab.id;
@@ -119,7 +239,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         performTransaction(msg.data, msg.tab,false);
         // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
     }
-});
+}
 
 async function performTransaction(data, tab,no_confirm) {
     try {
