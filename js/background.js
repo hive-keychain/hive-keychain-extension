@@ -24,12 +24,6 @@ chrome.storage.local.get(['current_rpc','autolock'], function(items) {
 
 const keychainify = {
     init: function() {
-        chrome.tabs.onActivated.addListener(function (info) {
-            chrome.tabs.get(info.tabId, function (change) {
-                keychainify.run(change);
-            });
-        });
-
         chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
             if(details.frameId === 0) {
                 // Fires only when details.url === currentTab.url
