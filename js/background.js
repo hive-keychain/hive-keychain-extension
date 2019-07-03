@@ -36,15 +36,15 @@ const keychainify = {
 
     run: async function (tab) {
         if(await keychainify.isKeychainifyEnabled()) {
-            keychainify.convertSteemConnectUrl(tab);
+            keychainify.keychainifyUrl(tab);
         }
     },
 
     isKeychainifyEnabled: function () {
         return new Promise(function(resolve, reject) {
             try {
-                chrome.storage.local.get(['steemconnect_keychainify'], function(items) {
-                    resolve(!items.hasOwnProperty('steemconnect_keychainify') || items.steemconnect_keychainify)
+                chrome.storage.local.get(['use_keychainify'], function(items) {
+                    resolve(!items.hasOwnProperty('use_keychainify') || items.use_keychainify)
                 });
             } catch(err) {
                 reject(err);
@@ -52,7 +52,7 @@ const keychainify = {
         });
     },
 
-    convertSteemConnectUrl: function (tab) {
+    keychainifyUrl: function (tab) {
         const url = tab.url;
         const vars = keychainify.getVarsFromURL(url);
         let payload = {},

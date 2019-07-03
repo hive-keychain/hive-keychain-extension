@@ -66,7 +66,7 @@ let contentScript = {
             e.stopPropagation();
 
             if (await contentScript.process.isKeychainifyEnabled()) {
-              contentScript.process.convertSteemConnectUrl(this.href);
+              contentScript.process.keychainifyUrl(this.href);
             } else {
               window.location.href = this.href;
             }
@@ -101,7 +101,7 @@ let contentScript = {
       return argsParsed;
     },
 
-    convertSteemConnectUrl: function(url) {
+    keychainifyUrl: function(url) {
       const vars = contentScript.process.getVarsFromURL(url);
       let payload = {},
         defaults = {};
@@ -193,8 +193,8 @@ let contentScript = {
     isKeychainifyEnabled: function() {
       return new Promise(function(resolve, reject) {
         try {
-          chrome.storage.local.get(['steemconnect_keychainify'], function(items) {
-            resolve(!items.hasOwnProperty('steemconnect_keychainify') || items.steemconnect_keychainify)
+          chrome.storage.local.get(['use_keychainify'], function(items) {
+            resolve(!items.hasOwnProperty('use_keychainify') || items.use_keychainify)
           });
         } catch(err) {
           reject(err);
