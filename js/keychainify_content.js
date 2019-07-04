@@ -63,7 +63,6 @@ let contentScript = {
         ) {
           anchor.addEventListener('click', async function(e) {
             e.preventDefault();
-            e.stopPropagation();
 
             if (await keychainify.isKeychainifyEnabled()) {
               keychainify.keychainifyUrl(this.href);
