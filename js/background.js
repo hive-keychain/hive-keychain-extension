@@ -345,6 +345,7 @@ async function performTransaction(data, tab,no_confirm) {
                 const operations = data.operations;
                 const broadcastKeys = {};
                 broadcastKeys[data.typeWif] = key;
+                console.log(operations,broadcastKeys);
                 steem.broadcast.send({
                     operations,
                     extensions: []
@@ -537,7 +538,7 @@ async function performTransaction(data, tab,no_confirm) {
             case "decode":
                 try {
                     let decoded = window.decodeMemo(key, data.message);
-                    
+
                     let message = {
                         command: "answerRequest",
                         msg: {
@@ -549,7 +550,7 @@ async function performTransaction(data, tab,no_confirm) {
                             request_id: request_id
                         }
                     };
-                    
+
                     chrome.tabs.sendMessage(tab, message);
                     if(no_confirm){
                       if (id_win != null)

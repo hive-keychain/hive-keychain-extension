@@ -119,3 +119,10 @@ $("#send_pd").click(function() {
         console.log(response);
     });
 });
+
+$("#send_create_claimed").click(function() {
+    steem_keychain.requestCreateClaimedAccount($("#create_claimed_username").val(),  $("#create_claimed_new_username").val(), $("#create_claimed_owner").val(), $("#create_claimed_active").val(), $("#create_claimed_posting").val(), $("#create_claimed_memo").val(),  function(response) {
+        console.log('main js response - create claimed account');
+        console.log(response);
+    });
+});
