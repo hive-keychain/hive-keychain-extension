@@ -22,6 +22,16 @@ chrome.storage.local.get(['current_rpc','autolock'], function(items) {
 	});
 });
 
+chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
+    if(details.frameId === 0) {
+        // Fires only when details.url === currentTab.url
+        chrome.tabs.get(details.tabId, async function(tab) {
+            if(await keychainify.isKeychainifyEnabled()) {
+                keychainify.keychainifyUrl(tab);
+            }
+        });
+    }
+});
 
 async function startAutolock(autoLock){
   //Receive autolock from the popup (upon registration or unlocking)
@@ -57,17 +67,19 @@ function restartIdleCounter(){
   },autolock.mn*60000);
 }
 //Listen to the other parts of the extension
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
+chrome.runtime.onMessage.addListener(chromeMessageHandler);
+
+function chromeMessageHandler(msg, sender, sendResp) {
     // Send mk upon request from the extension popup.
     if (autolock!=null&&autolock.type=="idle"&&(msg.command == "getMk"||msg.command == "setRPC"||msg.command == "sendMk"||msg.command == "sendRequest"||msg.command == "acceptTransaction"||msg.command == "ping"))
-      restartIdleCounter();
+        restartIdleCounter();
     if (msg.command == "getMk") {
         chrome.runtime.sendMessage({
             command: "sendBackMk",
             mk: mk
         }, function(response) {});
     } else if (msg.command == "stopInterval") {
-      clearInterval(interval);
+        clearInterval(interval);
     }else if (msg.command == "setRPC") {
         steem.api.setOptions({
             url: msg.rpc || 'https://api.steemit.com'
@@ -75,7 +87,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
     } else if (msg.command == "sendAutolock") {
-      startAutolock(JSON.parse(msg.autolock));
+        startAutolock(JSON.parse(msg.autolock));
     } else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
         // create a window to let users confirm the transaction
         tab = sender.tab.id;
@@ -119,7 +131,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         performTransaction(msg.data, msg.tab,false);
         // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
     }
-});
+}
 
 async function performTransaction(data, tab,no_confirm) {
     try {
