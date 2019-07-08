@@ -82,7 +82,8 @@ function validate(req) {
             (req.type == "transfer" && isFilledAmt(req.amount) && isFilled(req.to) && isFilledCurrency(req.currency) && hasTransferInfo(req)) ||
             (req.type == "sendToken" && isFilledAmt(req.amount) && isFilled(req.to) && isFilled(req.currency))||
             (req.type == "powerUp" && isFilled(req.username)&& isFilledAmt(req.steem) && isFilled(req.recipient))||
-            (req.type == "powerDown" && isFilled(req.username)&& (isFilledAmt(req.steem_power)||req.steem_power=="0.000"))
+            (req.type == "powerDown" && isFilled(req.username)&& (isFilledAmt(req.steem_power)||req.steem_power=="0.000"))||
+            (req.type == "createClaimedAccount" && isFilled(req.username)&& isFilled(req.new_account)&& isFilled(req.owner)&& isFilled(req.active)&& isFilled(req.posting)&& isFilled(req.memo))
         );
 }
 

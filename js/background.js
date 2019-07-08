@@ -353,6 +353,42 @@ async function performTransaction(data, tab,no_confirm) {
                     accounts = null;
                 });
                 break;
+            case "createClaimedAccount":
+
+            steem.broadcast.createClaimedAccountAsync(
+                key,
+                data.username,
+                data.new_account,
+                JSON.parse(data.owner),
+                JSON.parse(data.active),
+                JSON.parse(data.posting),
+                data.memo,
+                {},
+                [])
+                .then(function(result, err) {
+                    console.log(err, result);
+                    const message = {
+                        command: "answerRequest",
+                        msg: {
+                            success: err == null,
+                            error: err,
+                            result: result,
+                            data: data,
+                            message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                            request_id: request_id
+                        }
+                    };
+                    chrome.tabs.sendMessage(tab, message);
+                    if(no_confirm){
+                      if (id_win != null)
+                          removeWindow(id_win);
+                    }
+                    else
+                      chrome.runtime.sendMessage(message);
+                    key = null;
+                    accounts = null;
+                });
+                break;
             case "broadcast":
                 const operations = data.operations;
                 const broadcastKeys = {};
@@ -889,6 +925,9 @@ function getRequiredWifType(request) {
             return "active";
             break;
         case "powerDown":
+            return "active";
+            break;
+        case "createClaimedAccount":
             return "active";
             break;
     }

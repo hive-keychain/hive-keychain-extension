@@ -180,10 +180,10 @@ var steem_keychain = {
     },
 
 
-    requestCreateClaimedAccount: function(account, new_account, owner, active, posting, memo,callback) {
+    requestCreateClaimedAccount: function(username, new_account, owner, active, posting, memo,callback) {
       const request = {
-        type: "create_claimed_account",
-        account
+        type: "createClaimedAccount",
+        username,
         new_account,
         owner,
         active,

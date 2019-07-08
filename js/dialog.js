@@ -72,7 +72,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             'witnessVote': 'Witness Vote',
             "sendToken":"Send Tokens",
             "powerUp":"Power Up",
-            "powerDown":"Power Down"
+            "powerDown":"Power Down",
+            "createClaimedAccount":"Create Claimed Account"
         };
         var title = titles[type];
         $("#dialog_header").html(title);
@@ -159,6 +160,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
                 });
                 $("#custom_json").html(JSON.stringify(msg.data.operations));
                 $("#custom_key").text(msg.data.method);
+                break;
+            case "createClaimedAccount":
+                $("#custom_data").click(function() {
+                    $("#custom_json").slideToggle();
+                });
+                $("#custom_json").html(JSON.stringify({owner:msg.data.owner,active:msg.data.active,posting:msg.data.posting,memo:msg.data.memo}));
                 break;
             case "signedCall":
                 $("#custom_data").click(function() {
