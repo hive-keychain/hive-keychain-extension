@@ -181,10 +181,10 @@ $("#autolock").click(function() {
     $("#autolock_div").show();
 });
 
-// Nativate to steemconnect_keychainify menu
-$("#steemconnect_keychainify").click(function() {
+// Nativate to keychainify_settings menu
+$("#keychainify").click(function() {
     $('#settings_div').hide();
-    $("#steemconnect_keychainify_div").show();
+    $("#keychainify_settings").show();
 });
 
 // Show transaction window
