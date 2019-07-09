@@ -210,7 +210,7 @@ function confirmTransfer(){
   $("#from_conf_transfer").text("@"+active_account.name)
   $("#to_conf_transfer").text("@"+to);
   $("#amt_conf_transfer").text(amount+" "+currency);
-  $("#memo_conf_transfer").text((memo==""?"Empty":memo)+((memo!=""&&$("#encrypt_memo").prop("checked"))?" (encrypted)":""));
+  $("#memo_conf_transfer").text((memo==""?"Empty":memo)+((memo!=""&&$("#encrypt_memo").prop("checked")||memo[0]=="#")?" (encrypted)":""));
 }
 
 // Send STEEM or SBD to an user
@@ -254,11 +254,12 @@ async function sendTransfer() {
     const amount = $("#amt_send").val();
     const currency = $("#currency_send .select-selected").html();
     let memo = $("#memo_send").val();
-    if (memo != "" && $("#encrypt_memo").prop("checked")) {
+    if (memo != "" && $("#encrypt_memo").prop("checked")||memo[0]=="#") {
         try {
             const receiver = await steem.api.getAccountsAsync([to]);
             const memoReceiver = receiver["0"].memo_key;
-            memo = window.encodeMemo(active_account.keys.memo, memoReceiver, "#" + memo);
+            memo=memo[0]=="#"?memo:("#"+memo);
+            memo = window.encodeMemo(active_account.keys.memo, memoReceiver, memo);
         } catch (e) {
             console.log(e);
         }
