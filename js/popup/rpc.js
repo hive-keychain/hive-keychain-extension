@@ -11,7 +11,8 @@ const RPCs = [
     "https://rpc.steemliberator.com",
     "https://rpc.steemviz.com",
     "https://steemd.minnowsupportproject.org",
-    "https://steemd.privex.io"
+    "https://steemd.privex.io",
+    "TESTNET"
 ];
 
 function loadRPC(local, current_rpc) {
@@ -34,6 +35,14 @@ function switchRPC(rpc) {
     steem.api.setOptions({
         url: rpc
     });
+    if (rpc === 'TESTNET') {
+        steem.api.setOptions({
+            url: 'https://testnet.steemitdev.com',
+            useAppbaseApi: true,
+        });
+        steem.config.set('address_prefix', 'TST');
+        steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+    }
     setRPC(rpc);
     chrome.storage.local.set({
         current_rpc: rpc
@@ -79,3 +88,4 @@ function showCustomRPC() {
         }
     });
 }
+
