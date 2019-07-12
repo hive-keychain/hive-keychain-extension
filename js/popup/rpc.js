@@ -29,6 +29,24 @@ function loadRPC(local, current_rpc) {
         return acc + "<option>" + val + "</option>";
     }, ""));
     $("#custom_select_rpc select").append("<option>ADD RPC</option>");
+    if (current_rpc === 'TESTNET') {
+        $("#currency_send select").children("option:first").text('TESTS');
+        $("#currency_send select").children("option:first").val('TESTS');
+        $("#currency_send select").children("option:nth-child(2)").text('TBD');
+        $("#currency_send select").children("option:nth-child(2)").val('TBD');
+        $('#wallet_currency .wallet_currency').eq(0).text('TESTS')
+        $('#wallet_currency .wallet_currency').eq(1).text('TBD')
+        $('#wallet_currency .wallet_currency').eq(2).text('TP')
+    } else {
+        $("#currency_send select").children("option:first").text('STEEM');
+        $("#currency_send select").children("option:first").val('STEEM');
+        $("#currency_send select").children("option:nth-child(2)").text('SBD');
+        $("#currency_send select").children("option:nth-child(2)").val('SBD');
+        $('#wallet_currency .wallet_currency').eq(0).text('STEEM')
+        $('#wallet_currency .wallet_currency').eq(1).text('SBD')
+        $('#wallet_currency .wallet_currency').eq(2).text('SP')
+
+    }
 }
 
 function switchRPC(rpc) {
