@@ -1,17 +1,19 @@
 const RPCs = [
-    "https://api.steemit.com",
+		"https://api.steemit.com",
+		"https://anyx.io",
+		"https://rpc.usesteem.com",
     "https://api.steemitdev.com",
-    "https://api.steemitstage.com",
     "https://api.steem.house",
-    "https://appbasetest.timcliff.com",
+    "https://steemd.minnowsupportproject.org",
+		"https://steemd.privex.io",
+
+		"https://appbasetest.timcliff.com",
     "https://appbase.buildteam.io",
     "https://gtg.steem.house:8090",
     "https://rpc.buildteam.io",
     "https://rpc.curiesteem.com",
     "https://rpc.steemliberator.com",
     "https://rpc.steemviz.com",
-    "https://steemd.minnowsupportproject.org",
-    "https://steemd.privex.io",
     "TESTNET"
 ];
 
@@ -51,7 +53,8 @@ function loadRPC(local, current_rpc) {
 
 function switchRPC(rpc) {
     steem.api.setOptions({
-        url: rpc
+      url: rpc,
+			useAppbaseApi: true
     });
     if (rpc === 'TESTNET') {
         steem.api.setOptions({

@@ -18,12 +18,13 @@ chrome.storage.local.get(['current_rpc', 'autolock'], function(items) {
 	steem.api.setOptions({
 			transport: 'http',
 			uri: items.current_rpc || 'https://api.steemit.com',
-			url: items.current_rpc || 'https://api.steemit.com'
+			url: items.current_rpc || 'https://api.steemit.com',
+			useAppbaseApi: true
 	});
     if (items.current_rpc === 'TESTNET') {
         steem.api.setOptions({
             url: 'https://testnet.steemitdev.com',
-            useAppbaseApi: true,
+            useAppbaseApi: true
         });
         steem.config.set('address_prefix', 'TST');
         steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
@@ -90,12 +91,13 @@ function chromeMessageHandler(msg, sender, sendResp) {
         clearInterval(interval);
     } else if (msg.command == "setRPC") {
         steem.api.setOptions({
-            url: msg.rpc || 'https://api.steemit.com'
+            url: msg.rpc || 'https://api.steemit.com',
+						useAppbaseApi: true
         });
         if (msg.rpc === 'TESTNET') {
             steem.api.setOptions({
                 url: 'https://testnet.steemitdev.com',
-                useAppbaseApi: true,
+                useAppbaseApi: true
             });
             steem.config.set('address_prefix', 'TST');
             steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
