@@ -11,7 +11,7 @@ let autolock=null;
 let interval=null;
 // Lock after the browser is idle for more than 10 minutes
 
-chrome.storage.local.get(['current_rpc','autolock'], function(items) {
+chrome.storage.local.get(['current_rpc', 'autolock'], function(items) {
   if(items.autolock)
 		startAutolock(JSON.parse(items.autolock));
 
@@ -20,6 +20,14 @@ chrome.storage.local.get(['current_rpc','autolock'], function(items) {
 			uri: items.current_rpc || 'https://api.steemit.com',
 			url: items.current_rpc || 'https://api.steemit.com'
 	});
+    if (items.current_rpc === 'TESTNET') {
+        steem.api.setOptions({
+            url: 'https://testnet.steemitdev.com',
+            useAppbaseApi: true,
+        });
+        steem.config.set('address_prefix', 'TST');
+        steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+    }
 });
 
 chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
@@ -80,10 +88,18 @@ function chromeMessageHandler(msg, sender, sendResp) {
         }, function(response) {});
     } else if (msg.command == "stopInterval") {
         clearInterval(interval);
-    }else if (msg.command == "setRPC") {
+    } else if (msg.command == "setRPC") {
         steem.api.setOptions({
             url: msg.rpc || 'https://api.steemit.com'
         });
+        if (msg.rpc === 'TESTNET') {
+            steem.api.setOptions({
+                url: 'https://testnet.steemitdev.com',
+                useAppbaseApi: true,
+            });
+            steem.config.set('address_prefix', 'TST');
+            steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+        }
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
     } else if (msg.command == "sendAutolock") {
@@ -787,7 +803,7 @@ function checkBeforeCreate(request, tab, domain) {
                     else if (tr_accounts.length==0){
                       createPopup(function() {
                           console.log("error3");
-                        sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
+                          sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
                       });
                     }
                     else {

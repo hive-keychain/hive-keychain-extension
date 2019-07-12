@@ -43,6 +43,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             steem.api.setOptions({
                 url: items.current_rpc || 'https://api.steemit.com'
             });
+            if (items.current_rpc === 'TESTNET') {
+                steem.api.setOptions({
+                    url: 'https://testnet.steemitdev.com',
+                    useAppbaseApi: true,
+                });
+                steem.config.set('address_prefix', 'TST');
+                steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+            }
             if (msg.mk == null || msg.mk == undefined) {
                 if (items.accounts == null || items.accounts == undefined) {
                     showRegister();

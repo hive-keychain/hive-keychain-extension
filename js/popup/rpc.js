@@ -11,7 +11,8 @@ const RPCs = [
     "https://rpc.steemliberator.com",
     "https://rpc.steemviz.com",
     "https://steemd.minnowsupportproject.org",
-    "https://steemd.privex.io"
+    "https://steemd.privex.io",
+    "TESTNET"
 ];
 
 function loadRPC(local, current_rpc) {
@@ -28,12 +29,38 @@ function loadRPC(local, current_rpc) {
         return acc + "<option>" + val + "</option>";
     }, ""));
     $("#custom_select_rpc select").append("<option>ADD RPC</option>");
+    if (current_rpc === 'TESTNET') {
+        $("#currency_send select").children("option:first").text('TESTS');
+        $("#currency_send select").children("option:first").val('TESTS');
+        $("#currency_send select").children("option:nth-child(2)").text('TBD');
+        $("#currency_send select").children("option:nth-child(2)").val('TBD');
+        $('#wallet_currency .wallet_currency').eq(0).text('TESTS')
+        $('#wallet_currency .wallet_currency').eq(1).text('TBD')
+        $('#wallet_currency .wallet_currency').eq(2).text('TP')
+    } else {
+        $("#currency_send select").children("option:first").text('STEEM');
+        $("#currency_send select").children("option:first").val('STEEM');
+        $("#currency_send select").children("option:nth-child(2)").text('SBD');
+        $("#currency_send select").children("option:nth-child(2)").val('SBD');
+        $('#wallet_currency .wallet_currency').eq(0).text('STEEM')
+        $('#wallet_currency .wallet_currency').eq(1).text('SBD')
+        $('#wallet_currency .wallet_currency').eq(2).text('SP')
+
+    }
 }
 
 function switchRPC(rpc) {
     steem.api.setOptions({
         url: rpc
     });
+    if (rpc === 'TESTNET') {
+        steem.api.setOptions({
+            url: 'https://testnet.steemitdev.com',
+            useAppbaseApi: true,
+        });
+        steem.config.set('address_prefix', 'TST');
+        steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+    }
     setRPC(rpc);
     chrome.storage.local.set({
         current_rpc: rpc
@@ -79,3 +106,4 @@ function showCustomRPC() {
         }
     });
 }
+
