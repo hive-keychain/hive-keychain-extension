@@ -6,14 +6,7 @@ const RPCs = [
     "https://api.steem.house",
     "https://steemd.minnowsupportproject.org",
 		"https://steemd.privex.io",
-
 		"https://appbasetest.timcliff.com",
-    "https://appbase.buildteam.io",
-    "https://gtg.steem.house:8090",
-    "https://rpc.buildteam.io",
-    "https://rpc.curiesteem.com",
-    "https://rpc.steemliberator.com",
-    "https://rpc.steemviz.com",
     "TESTNET"
 ];
 
