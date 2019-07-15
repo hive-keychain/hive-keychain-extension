@@ -76,7 +76,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             "createClaimedAccount":"Create Claimed Account"
         };
         var title = titles[type];
-        $("#dialog_header").html(title);
+        $("#dialog_header").html(title + msg.rpc === 'TESTNET' ? ' (TESTNET)' : '');
 
         if (msg.data.display_msg) {
             $('#modal-body-msg .msg-data').css('max-height', '245px');
