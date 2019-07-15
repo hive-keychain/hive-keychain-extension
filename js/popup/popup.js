@@ -27,11 +27,11 @@ function sendAutolock(){
 }
 
 function checkKeychainify() {
-    chrome.storage.local.get(['use_keychainify'], function(items) {
-        if (items.use_keychainify !== undefined) {
-            $(".enable_keychainify input").prop("checked", items.use_keychainify);
+    chrome.storage.local.get(['keychainify_enabled'], function(items) {
+        if (items.keychainify_enabled !== undefined) {
+            $(".enable_keychainify input").prop("checked", items.keychainify_enabled);
         } else {
-            $(".enable_keychainify input").prop("checked", true);
+            $(".enable_keychainify input").prop("checked", false);
         }
     });
 }
@@ -78,7 +78,7 @@ $(".enable_keychainify").click(function() {
     const enable_keychainify = $(this).find("input").prop("checked");
     $(this).find("input").prop("checked", !enable_keychainify);
     chrome.storage.local.set({
-        use_keychainify: !enable_keychainify
+        keychainify_enabled: !enable_keychainify
     });
 });
 
