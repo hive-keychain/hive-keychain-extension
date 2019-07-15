@@ -821,7 +821,8 @@ function checkBeforeCreate(request, tab, domain) {
                                 data: request,
                                 domain: domain,
                                 accounts: tr_accounts,
-                                tab: tab
+                                tab: tab,
+                                testnet: items.current_rpc === 'TESTNET',
                             });
                         }
                         createPopup(callback);
@@ -862,7 +863,8 @@ function checkBeforeCreate(request, tab, domain) {
                                         command: "sendDialogConfirm",
                                         data: req,
                                         domain: domain,
-                                        tab: tab
+                                        tab: tab,
+                                        testnet: items.current_rpc === 'TESTNET',
                                     });
                                 }
                                 createPopup(callback);
