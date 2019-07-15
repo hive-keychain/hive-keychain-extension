@@ -10,8 +10,9 @@ const keychainify = {
   isKeychainifyEnabled: function () {
     return new Promise(function(resolve, reject) {
       try {
-        chrome.storage.local.get(['use_keychainify'], function(items) {
-          resolve(!items.hasOwnProperty('use_keychainify') || items.use_keychainify)
+        chrome.storage.local.get(['keychainify_enabled'], function(items) {
+          const featureStatus = items.hasOwnProperty('keychainify_enabled') && items.keychainify_enabled;
+          resolve(featureStatus);
         });
       } catch(err) {
         reject(err);
