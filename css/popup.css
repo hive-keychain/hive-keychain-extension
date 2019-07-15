@@ -65,6 +65,7 @@ body {
 #tokens_div,
 #tokens_settings_div,
 #token_send_div,
+#confirm_token_send_div,
 #powerup_div,
 #powerdown_div,
 #outgoing_del_div,
@@ -230,6 +231,7 @@ input:focus {
 #delegation_div button,
 #edit_del_div button,
 #token_send_div button,
+#confirm_token_send_div button,
 #powerup_div button,
 #powerdown_div button,
 #confirm_send_div button {
@@ -364,6 +366,7 @@ input:focus {
 #delegation_div,
 #tokens_div,
 #token_send_div,
+#confirm_token_send_div,
 #tokens_settings_div,
 #powerup_div,
 #powerdown_div,
@@ -1990,7 +1993,8 @@ input:focus {
   cursor: pointer;
 }
 
-#confirm_send_transfer {
+#confirm_send_transfer,
+#confirm_send_tok {
   margin-top: 30px;
 }
 
