@@ -1,4 +1,5 @@
 // Content script interfacing the website and the extension
+let req=null;
 function setupInjection() {
     try {
         var scriptTag = document.createElement('script')
@@ -24,9 +25,20 @@ document.addEventListener('swHandshake', function(request) {
 
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
-    var req = request.detail;
+    if(req){
+      const response = {
+          success: false,
+          error: "ignored",
+          result: null,
+          message: "User ignored this transaction",
+          data: req,
+          request_id: req.request_id
+      };
+      sendResponse(response);
+    }
+    req = request.detail;
     // If all information are filled, send the request to the background, if not notify an error
-    if (validate(req)) {
+    if (validate()) {
         chrome.runtime.sendMessage({
             command: "sendRequest",
             request: req,
@@ -50,6 +62,7 @@ document.addEventListener('swRequest', function(request) {
 chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
     if (obj.command == "answerRequest") {
         sendResponse(obj.msg);
+        req=null;
     }
 });
 
@@ -63,7 +76,7 @@ function sendResponse(response) {
         }, window.location.origin);
 }
 
-function validate(req) {
+function validate() {
     return req != null && req != undefined && req.type != undefined && req.type != null &&
         ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
             (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
