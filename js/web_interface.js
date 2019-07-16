@@ -25,17 +25,7 @@ document.addEventListener('swHandshake', function(request) {
 
 // Answering the requests
 document.addEventListener('swRequest', function(request) {
-    if(req){
-      const response = {
-          success: false,
-          error: "ignored",
-          result: null,
-          message: "User ignored this transaction",
-          data: req,
-          request_id: req.request_id
-      };
-      sendResponse(response);
-    }
+    const prevReq=req;
     req = request.detail;
     // If all information are filled, send the request to the background, if not notify an error
     if (validate()) {
@@ -45,6 +35,17 @@ document.addEventListener('swRequest', function(request) {
             domain: req.extensionName || window.location.hostname,
             request_id: req.request_id
         });
+        if(prevReq){
+          const response = {
+              success: false,
+              error: "ignored",
+              result: null,
+              message: "User ignored this transaction",
+              data: req,
+              request_id: req.request_id
+          };
+          sendResponse(response);
+        }
     } else {
         var response = {
             success: false,
@@ -55,6 +56,7 @@ document.addEventListener('swRequest', function(request) {
             request_id: req.request_id
         };
         sendResponse(response);
+        req=prevReq;
     }
 });
 
