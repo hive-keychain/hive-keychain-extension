@@ -27,11 +27,11 @@ function sendAutolock(){
 }
 
 function checkKeychainify() {
-    chrome.storage.local.get(['use_keychainify'], function(items) {
-        if (items.use_keychainify !== undefined) {
-            $(".enable_keychainify input").prop("checked", items.use_keychainify);
+    chrome.storage.local.get(['keychainify_enabled'], function(items) {
+        if (items.keychainify_enabled !== undefined) {
+            $(".enable_keychainify input").prop("checked", items.keychainify_enabled);
         } else {
-            $(".enable_keychainify input").prop("checked", true);
+            $(".enable_keychainify input").prop("checked", false);
         }
     });
 }
@@ -41,8 +41,20 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.command == "sendBackMk") {
         chrome.storage.local.get(['accounts', 'current_rpc'], function(items) {
             steem.api.setOptions({
-                url: items.current_rpc || 'https://api.steemit.com'
+								url: items.current_rpc || 'https://api.steemit.com',
+								useAppbaseApi: true
             });
+            if (items.current_rpc === 'TESTNET') {
+                steem.api.setOptions({
+                    url: 'https://testnet.steemitdev.com',
+                    useAppbaseApi: true
+                });
+                steem.config.set('address_prefix', 'TST');
+                steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+            } else {
+                steem.config.set('address_prefix', 'STM');
+                steem.config.set('chain_id', '0000000000000000000000000000000000000000000000000000000000000000');
+            }
             if (msg.mk == null || msg.mk == undefined) {
                 if (items.accounts == null || items.accounts == undefined) {
                     showRegister();
@@ -69,7 +81,7 @@ $(".enable_keychainify").click(function() {
     const enable_keychainify = $(this).find("input").prop("checked");
     $(this).find("input").prop("checked", !enable_keychainify);
     chrome.storage.local.set({
-        use_keychainify: !enable_keychainify
+        keychainify_enabled: !enable_keychainify
     });
 });
 

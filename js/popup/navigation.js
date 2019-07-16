@@ -307,7 +307,7 @@ $("#send_steem").click(function() {
     $("#main").hide();
     $(".wallet_currency").removeClass('dropdown-open');
     $(".dropdown").hide();
-    $("#currency_send .select-selected").html("STEEM");
+    $("#currency_send .select-selected").html($("#currency_send select").children("option:first").text());
     $(".transfer_balance div").eq(0).text('STEEM Balance');
     $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
 });
@@ -317,7 +317,7 @@ $("#send_sbd").click(function() {
     $("#main").hide();
     $(".wallet_currency").removeClass('dropdown-open');
     $(".dropdown").hide();
-    $("#currency_send .select-selected").html("SBD");
+    $("#currency_send .select-selected").html($("#currency_send select").children("option:nth-child(2)").text());
     $(".transfer_balance div").eq(0).text('SBD Balance');
     $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
 });
