@@ -28,6 +28,9 @@ chrome.storage.local.get(['current_rpc', 'autolock'], function(items) {
         });
         steem.config.set('address_prefix', 'TST');
         steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+    } else {
+        steem.config.set('address_prefix', 'STM');
+        steem.config.set('chain_id', '0000000000000000000000000000000000000000000000000000000000000000');
     }
 });
 
@@ -101,6 +104,9 @@ function chromeMessageHandler(msg, sender, sendResp) {
             });
             steem.config.set('address_prefix', 'TST');
             steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
+        } else {
+            steem.config.set('address_prefix', 'STM');
+            steem.config.set('chain_id', '0000000000000000000000000000000000000000000000000000000000000000');
         }
     } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
         mk = msg.mk;
@@ -771,7 +777,7 @@ function checkBeforeCreate(request, tab, domain) {
         }
         createPopup(callback);
     } else {
-        chrome.storage.local.get(['accounts', 'no_confirm'], function(items) { // Check user
+        chrome.storage.local.get(['accounts', 'no_confirm', 'current_rpc'], function(items) { // Check user
             if (items.accounts == null || items.accounts == undefined) {
                 createPopup(function() {
                     sendErrors(tab, "no_wallet", "No wallet!", "", request);
@@ -815,7 +821,8 @@ function checkBeforeCreate(request, tab, domain) {
                                 data: request,
                                 domain: domain,
                                 accounts: tr_accounts,
-                                tab: tab
+                                tab: tab,
+                                testnet: items.current_rpc === 'TESTNET',
                             });
                         }
                         createPopup(callback);
@@ -850,13 +857,14 @@ function checkBeforeCreate(request, tab, domain) {
                             });
                         } else {
                             key = account.keys[typeWif];
-                            if (!hasNoConfirm(items.no_confirm, req, domain)) {
+                            if (!hasNoConfirm(items.no_confirm, req, domain, items.current_rpc)) {
                                 function callback() {
                                     chrome.runtime.sendMessage({
                                         command: "sendDialogConfirm",
                                         data: req,
                                         domain: domain,
-                                        tab: tab
+                                        tab: tab,
+                                        testnet: items.current_rpc === 'TESTNET',
                                     });
                                 }
                                 createPopup(callback);
@@ -873,9 +881,9 @@ function checkBeforeCreate(request, tab, domain) {
     }
 }
 
-function hasNoConfirm(arr, data, domain) {
+function hasNoConfirm(arr, data, domain, current_rpc) {
     try {
-        if (data.method == "active"||arr==undefined) {
+        if (data.method == "active" || arr==undefined || current_rpc === 'TESTNET') {
             return false;
         } else
             return JSON.parse(arr)[data.username][domain][data.type] == true;
