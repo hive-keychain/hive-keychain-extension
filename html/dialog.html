@@ -2,115 +2,124 @@
 <html>
 
 <head>
-    <title>Steem Keychain</title>
-    <link rel="stylesheet" type="text/css" href="../css/dialog.css">
+  <title>Steem Keychain</title>
+  <link rel="stylesheet" type="text/css" href="../css/dialog.css">
 </head>
 
 <body>
-    <div class="cloud"></div>
-    <div class="modal-content">
-        <h2 id="dialog_header"></h2>
-        <h3 class="dialog-message" id="dialog_message" style="display: none;"></h3>
-        <div class="modal-body-error" style="display: none;">
-            <div class="error" id="error_dialog"></div>
-            <button id="error-ok">Ok</button>
-            <div class="unlock">
-                <div class="input_container">
-                    <input id="unlock-dialog" type="password" />
-                    <img src="../images/lock.png" class="input_img" />
-                </div>
-                <button id="yes-unlock">Unlock</button>
-                <button id="no-unlock">Cancel</button>
-                <div id="error-mk"></div>
-            </div>
+  <div class="cloud"></div>
+  <div class="modal-content">
+    <h2 id="dialog_header"></h2>
+    <h3 class="dialog-message" id="dialog_message" style="display: none;"></h3>
+    <div class="modal-body-error" style="display: none;">
+      <div class="error" id="error_dialog"></div>
+      <button id="error-ok">Ok</button>
+      <div class="unlock">
+        <div class="input_container">
+          <input id="unlock-dialog" type="password" />
+          <img src="../images/lock.png" class="input_img" />
         </div>
-
-        <div id="tx_loading" style="display: none;">
-            Broadcasting transaction to the blockchain...<br/>
-            <img src="/images/loading.gif" />
-        </div>
-
-        <div id="modal-body-msg" style="display: none;">
-            <div id="transfer_acct_list" class="custom-select custom-select-main transfer">
-                <select id="select_transfer">
-						</select>
-            </div>
-
-            <div class="msg-data">
-                <h3 class="decode vote post custom delegation addAccountAuthority removeAccountAuthority broadcast signBuffer signedCall witnessVote powerUp powerDown">Account</h3>
-                <div class="decode vote post custom delegation addAccountAuthority removeAccountAuthority broadcast signBuffer signedCall witnessVote powerUp powerDown" id="username"></div>
-                <h3 class="decode">Key</h3>
-                <div class="decode" id="wif"></div>
-                <h3 class="vote">Author</h3>
-                <div class="vote" id="author"></div>
-                <h3 class="addAccountAuthority removeAccountAuthority">Authorized Account</h3>
-                <div class="addAccountAuthority removeAccountAuthority" id="authorized_account"></div>
-                <h3 class="addAccountAuthority removeAccountAuthority">Role</h3>
-                <div class="addAccountAuthority removeAccountAuthority" id="role"></div>
-                <h3 class="vote">Permlink</h3>
-                <div class="vote" id="perm"></div>
-                <h3 class="vote addAccountAuthority">Weight</h3>
-                <div class="vote addAccountAuthority" id="weight"></div>
-                <h3 class="custom broadcast signedCall">Key</h3>
-                <div class="custom broadcast signedCall" id="custom_key"></div>
-                <h3 class="custom broadcast signedCall createClaimedAccount" id="custom_data">Data <span class="small">(click to show)</span></h3>
-                <div class="" id="custom_json">
-                    <div></div>
-                    <div></div>
-                </div>
-                <h3 class="transfer sendToken powerUp">To</h3>
-                <div class="transfer sendToken powerUp" id="to"></div>
-                <h3 class="transfer sendToken powerUp powerDown">Amount</h3>
-                <div class="transfer sendToken powerUp powerDown" id="amount"></div>
-                <h3 class="transfer_memo sendToken">Memo</h3>
-                <div class="transfer_memo sendToken" id="memo"></div>
-                <h3 class="post">Title</h3>
-                <div class="post" id="title"></div>
-                <h3 class="post">Permlink</h3>
-                <div class="post" id="permlink"></div>
-                <h3 class="post" id="body_toggle">Body <span class="small">(click to show)</span></h3>
-                <div class="" id="body"></div>
-                <h3 class="post">JSON Metadata</h3>
-                <div class="post" id="json_metadata"></div>
-                <h3 class="post" id="parent_username_title">Parent Username</h3>
-                <div class="post" id="parent_username"></div>
-                <h3 class="post">Parent Permlink</h3>
-                <div class="post" id="parent_url"></div>
-                <h3 class="post" id="options_toggle">Options <span class="small">(click to show)</span></h3>
-                <div class="" id="options">
-                    <div>Max Accepted Payout : <span id="max_payout"></span></div>
-                    <div>Percentage SBD : <span id="percent_sbd"></span></div>
-                    <div>Allow votes : <span id="allow_votes"></span></div>
-                    <div>Allow curation : <span id="allow_curation_rewards"></span></div>
-                    <div id="beneficiaries_div">beneficiaries : <span id="beneficiaries"></span></div>
-                </div>
-                <h3 class="delegation">Delegatee</h3>
-                <div class="delegation" id="delegatee"></div>
-                <h3 class="delegation">Amount</h3>
-                <div class="delegation" id="amt_sp"></div>
-                <h3 class="signBuffer">Message</h3>
-                <div class="signBuffer" id="message_sign"></div>
-                <h3 class="witnessVote">Witness </h3>
-                <div class="witnessVote" id="witness"></div>
-                <h3 class="witnessVote">Vote </h3>
-                <div class="witnessVote" id="voteWit"></div>
-            </div>
-        </div>
-        <div id="confirm_footer">
-            <div class="keep_checkbox">
-                <label for="keep" class="checkbox_container">
-                <div id="keep_label"></div>
-                <input id="keep" type="checkbox" />
-                <span class="checkmark"/>
-              </label>
-            </div>
-            <button id="cancel">Cancel</button>
-            <button id="proceed">Confirm</button>
-        </div>
+        <button id="yes-unlock">Unlock</button>
+        <button id="no-unlock">Cancel</button>
+        <div id="error-mk"></div>
+      </div>
     </div>
+
+    <div id="tx_loading" style="display: none;">
+      Broadcasting transaction to the blockchain...<br />
+      <img src="/images/loading.gif" />
     </div>
-    <script src="../vendor/jquery.min.js"></script>
-    <script src="../js/dialog.js"></script>
+
+    <div id="modal-body-msg" style="display: none;">
+      <div id="transfer_acct_list" class="custom-select custom-select-main transfer">
+        <select id="select_transfer">
+        </select>
+      </div>
+
+      <div class="msg-data">
+        <h3 class="decode vote post custom delegation addAccountAuthority removeAccountAuthority broadcast signBuffer signedCall witnessVote powerUp powerDown createProposal">Account</h3>
+        <div class="decode vote post custom delegation addAccountAuthority removeAccountAuthority broadcast signBuffer signedCall witnessVote powerUp powerDown createProposal" id="username"></div>
+        <h3 class="decode">Key</h3>
+        <div class="decode" id="wif"></div>
+        <h3 class="vote">Author</h3>
+        <div class="vote" id="author"></div>
+        <h3 class="createProposal">Receiver</h3>
+        <div class="createProposal" id="receiver"></div>
+        <h3 class="addAccountAuthority removeAccountAuthority">Authorized Account</h3>
+        <div class="addAccountAuthority removeAccountAuthority" id="authorized_account"></div>
+        <h3 class="addAccountAuthority removeAccountAuthority">Role</h3>
+        <div class="addAccountAuthority removeAccountAuthority" id="role"></div>
+        <h3 class="vote">Permlink</h3>
+        <div class="vote" id="perm"></div>
+        <h3 class="vote addAccountAuthority">Weight</h3>
+        <div class="vote addAccountAuthority" id="weight"></div>
+        <h3 class="custom broadcast signedCall">Key</h3>
+        <div class="custom broadcast signedCall" id="custom_key"></div>
+        <h3 class="custom broadcast signedCall createClaimedAccount" id="custom_data">Data <span class="small">(click to show)</span></h3>
+        <div class="" id="custom_json">
+          <div></div>
+          <div></div>
+        </div>
+        <h3 class="transfer sendToken powerUp">To</h3>
+        <div class="transfer sendToken powerUp" id="to"></div>
+        <h3 class="transfer sendToken powerUp powerDown">Amount</h3>
+        <div class="transfer sendToken powerUp powerDown" id="amount"></div>
+        <h3 class="createProposal">Daily Pay</h3>
+        <div class="createProposal" id="daily_pay"></div>
+        <h3 class="transfer_memo sendToken">Memo</h3>
+        <div class="transfer_memo sendToken" id="memo"></div>
+        <h3 class="post createProposal">Title</h3>
+        <div class="post createProposal" id="title"></div>
+        <h3 class="post createProposal">Permlink</h3>
+        <div class="post createProposal" id="permlink"></div>
+        <h3 class="post" id="body_toggle">Body <span class="small">(click to show)</span></h3>
+        <div class="" id="body"></div>
+        <h3 class="createProposal">Period</h3>
+        <div class="createProposal" id="period_f"></div>
+        <div class="createProposal" id="period_t"></div>
+        <h3 class="createProposal">Extensions</h3>
+        <div class="createProposal" id="extensions"></div>
+        <h3 class="post">JSON Metadata</h3>
+        <div class="post" id="json_metadata"></div>
+        <h3 class="post" id="parent_username_title">Parent Username</h3>
+        <div class="post" id="parent_username"></div>
+        <h3 class="post">Parent Permlink</h3>
+        <div class="post" id="parent_url"></div>
+        <h3 class="post" id="options_toggle">Options <span class="small">(click to show)</span></h3>
+        <div class="" id="options">
+          <div>Max Accepted Payout : <span id="max_payout"></span></div>
+          <div>Percentage SBD : <span id="percent_sbd"></span></div>
+          <div>Allow votes : <span id="allow_votes"></span></div>
+          <div>Allow curation : <span id="allow_curation_rewards"></span></div>
+          <div id="beneficiaries_div">beneficiaries : <span id="beneficiaries"></span></div>
+        </div>
+        <h3 class="delegation">Delegatee</h3>
+        <div class="delegation" id="delegatee"></div>
+        <h3 class="delegation">Amount</h3>
+        <div class="delegation" id="amt_sp"></div>
+        <h3 class="signBuffer">Message</h3>
+        <div class="signBuffer" id="message_sign"></div>
+        <h3 class="witnessVote">Witness </h3>
+        <div class="witnessVote" id="witness"></div>
+        <h3 class="witnessVote">Vote </h3>
+        <div class="witnessVote" id="voteWit"></div>
+      </div>
+    </div>
+    <div id="confirm_footer">
+      <div class="keep_checkbox">
+        <label for="keep" class="checkbox_container">
+          <div id="keep_label"></div>
+          <input id="keep" type="checkbox" />
+          <span class="checkmark" />
+        </label>
+      </div>
+      <button id="cancel">Cancel</button>
+      <button id="proceed">Confirm</button>
+    </div>
+  </div>
+  </div>
+  <script src="../vendor/jquery.min.js"></script>
+  <script src="../js/dialog.js"></script>
 </body>
 
 </html>
