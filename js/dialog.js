@@ -74,7 +74,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       "powerUp": "Power Up",
       "powerDown": "Power Down",
       "createClaimedAccount": "Create Claimed Account",
-      'createProposal': 'Create Worker Proposal'
+      'createProposal': 'Create Worker Proposal',
+      'removeProposal': 'Remove Worker Proposal',
+      'updateProposalVote': 'Vote for Proposal',
     };
     var title = titles[type];
     console.log(msg);
@@ -269,6 +271,15 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $('#title').text(msg.data.subject);
         $('#permlink').text(msg.data.permlink);
         $('#daily_pay').text(msg.data.daily_pay);
+        break;
+      case 'removeProposal':
+        $('#proposal_ids').text(msg.data.proposal_ids);
+        $('#extensions').text(msg.data.extensions);
+        break;
+      case 'updateProposalVote':
+        $('#proposal_ids').text(msg.data.proposal_ids);
+        $('#extensions').text(msg.data.extensions);
+        $('#approve').text(msg.data.approve);
         break;
     }
 

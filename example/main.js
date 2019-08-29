@@ -133,3 +133,17 @@ $("#send_cp").click(function() {
     console.log(response);
   });
 });
+
+$("#send_rp").click(function() {
+  steem_keychain.requestRemoveProposal($("#rp_username").val(), $("#rp_proposal_ids").val(), $("#cp_extensions").val(), function(response) {
+    console.log('main js response - remove proposal');
+    console.log(response);
+  });
+});
+
+$("#send_vp").click(function() {
+  steem_keychain.requestUpdateProposalVote($("#vp_username").val(), $("#vp_proposal_ids").val(), $("#vp_approve").is(":checked"), $("#vp_extensions").val(), function(response) {
+    console.log('main js response - update proposal votes');
+    console.log(response);
+  });
+});

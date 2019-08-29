@@ -210,6 +210,28 @@ var steem_keychain = {
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
+
+  requestRemoveProposal: function(username, proposal_ids, extensions, callback) {
+    const request = {
+      type: "removeProposal",
+      username,
+      proposal_ids,
+      extensions
+    };
+
+    this.dispatchCustomEvent("swRequest", request, callback);
+  },
+  requestUpdateProposalVote: function(username, proposal_ids, approve, extensions, callback) {
+    const request = {
+      type: "updateProposalVote",
+      username,
+      proposal_ids,
+      approve,
+      extensions
+    };
+
+    this.dispatchCustomEvent("swRequest", request, callback);
+  },
   // Send the customEvent
   dispatchCustomEvent: function(name, data, callback) {
     this.requests[this.current_id] = callback;

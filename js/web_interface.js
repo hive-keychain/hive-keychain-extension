@@ -1,7 +1,7 @@
 // Content script interfacing the website and the extension
 let req = null;
 
-function setupInjection() {
+const setupInjection = () => {
   try {
     var scriptTag = document.createElement('script')
     scriptTag.src = chrome.runtime.getURL("js/steem_keychain.js");
@@ -69,7 +69,7 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
   }
 });
 
-function sendResponse(response) {
+const sendResponse = (response) => {
   if (response.data.extension && response.data.extensionName)
     chrome.runtime.sendMessage(response.data.extension, JSON.stringify(response));
   else
@@ -79,7 +79,7 @@ function sendResponse(response) {
     }, window.location.origin);
 }
 
-function validate() {
+const validate = () => {
   return req != null && req != undefined && req.type != undefined && req.type != null &&
     ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
       (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
@@ -100,13 +100,15 @@ function validate() {
       (req.type == "powerUp" && isFilled(req.username) && isFilledAmt(req.steem) && isFilled(req.recipient)) ||
       (req.type == "powerDown" && isFilled(req.username) && (isFilledAmt(req.steem_power) || req.steem_power == "0.000")) ||
       (req.type == "createClaimedAccount" && isFilled(req.username) && isFilled(req.new_account) && isFilled(req.owner) && isFilled(req.active) && isFilled(req.posting) && isFilled(req.memo)) ||
-      (req.type == "createProposal" && isFilled(req.username) && isFilled(req.receiver) && isFilledDate(req.start) && isFilledDate(req.end) && isFilled(req.subject) && isFilled(req.permlink) && isFilledAmtTBD(req.daily_pay))
+      (req.type == "createProposal" && isFilled(req.username) && isFilled(req.receiver) && isFilledDate(req.start) && isFilledDate(req.end) && isFilled(req.subject) && isFilled(req.permlink) && isFilledAmtTBD(req.daily_pay)) ||
+      (req.type == "removeProposal" && isFilled(req.username) && isProposalIDs(req.proposal_ids)) ||
+      (req.type == "updateProposalVote" && isFilled(req.username) && isProposalIDs(req.proposal_ids) && isBoolean(req.approve))
     );
 }
 
 // Functions used to check the incoming data
 
-function hasTransferInfo(req) {
+const hasTransferInfo = (req) => {
   if (req.enforce)
     return isFilled(req.username);
   else if (isFilled(req.memo) && req.memo[0] == "#")
@@ -115,23 +117,28 @@ function hasTransferInfo(req) {
     return true;
 }
 
-function isFilled(obj) {
+const isFilled = (obj) => {
   return obj != undefined && obj != null && obj != "";
 }
 
-function isBoolean(obj) {
+const isBoolean = (obj) => {
   return typeof obj == typeof true;
 }
 
-function isFilledOrEmpty(obj) {
-  return (obj != undefined && obj != null) || obj == "";
+const isFilledOrEmpty = (obj) => {
+  return obj || obj == "";
 }
 
-function isFilledDelegationMethod(obj) {
+const isProposalIDs = (obj) => {
+  const parsed = JSON.parse(obj);
+  return Array.isArray(parsed) && !parsed.some(isNaN);
+}
+
+const isFilledDelegationMethod = (obj) => {
   return obj == "VESTS" || obj == "SP";
 }
 
-function isFilledJSON(obj) {
+const isFilledJSON = (obj) => {
   try {
     return isFilled(obj) && JSON.parse(obj).hasOwnProperty("requiredAuths") && JSON.parse(obj).hasOwnProperty("requiredPostingAuths") && JSON.parse(obj).hasOwnProperty("id") && JSON.parse(obj).hasOwnProperty("json");
   } catch (e) {
@@ -144,31 +151,31 @@ const isFilledDate = (date) => {
   return regex.test(date);
 }
 
-function isFilledAmt(obj) {
+const isFilledAmt = (obj) => {
   return isFilled(obj) && !isNaN(obj) && obj > 0 && countDecimals(obj) == 3;
 }
 
-function isFilledAmtSP(obj) {
+const isFilledAmtSP = (obj) => {
   return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3 && obj.unit == "SP") || (countDecimals(obj.amount) == 6 && obj.unit == "VESTS"));
 }
 
-function isFilledAmtTBD(amt) {
+const isFilledAmtTBD = (amt) => {
   return amt && amt.split(' ').length == 2 && !isNaN(amt.split(' ')[0]) && parseFloat(countDecimals(amt.split(' ')[0])) == 3 && amt.split(' ')[1] == "TBD";
 }
 
-function isFilledWeight(obj) {
+const isFilledWeight = (obj) => {
   return isFilled(obj) && !isNaN(obj) && obj >= -10000 && obj <= 10000 && countDecimals(obj) == 0;
 }
 
-function isFilledCurrency(obj) {
+const isFilledCurrency = (obj) => {
   return isFilled(obj) && (obj == "STEEM" || obj == "SBD");
 }
 
-function isFilledKey(obj) {
+const isFilledKey = (obj) => {
   return isFilled(obj) && (obj == "Memo" || obj == "Active" || obj == "Posting");
 }
 
-function isCustomOptions(obj) {
+const isCustomOptions = (obj) => {
   if (obj.comment_options == "")
     return true;
   let comment_options = JSON.parse(obj.comment_options);
@@ -181,6 +188,6 @@ function isCustomOptions(obj) {
     comment_options.hasOwnProperty("extensions");
 }
 
-function countDecimals(nb) {
+const countDecimals = (nb) => {
   return nb.toString().split(".")[1] == undefined ? 0 : (nb.toString().split(".")[1].length || 0);
 }

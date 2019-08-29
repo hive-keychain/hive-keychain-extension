@@ -942,6 +942,12 @@ function getRequiredWifType(request) {
     case "createProposal":
       return "active";
       break;
+    case "removeProposal":
+      return "active";
+      break;
+    case "updateProposalVote":
+      return "active";
+      break;
   }
 }
 
