@@ -595,6 +595,141 @@ async function performTransaction(data, tab, no_confirm) {
           accounts = null;
         });
         break;
+      case "createProposal":
+        let keys = {};
+        keys[data.typeWif] = key;
+        createProposal(keys, data.username, data.receiver, data.start, data.end, data.daily_pay, data.subject, data.permlink, data.extensions)
+          .then(result => {
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: true,
+                error: null,
+                result: result,
+                data: data,
+                message: "Proposal created succesfully",
+                request_id: request_id
+              }
+            };
+
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null)
+                removeWindow(id_win);
+            } else {
+              chrome.runtime.sendMessage(message);
+            }
+            key = null;
+            accounts = null;
+          }).catch(err => {
+            console.log(err);
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: false,
+                error: 'create_proposal_error',
+                result: null,
+                data: data,
+                message: "Could not create proposal.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+          });
+        break;
+      case "updateProposalVote":
+        let voteKeys = {};
+        voteKeys[data.typeWif] = key;
+        voteForProposal(voteKeys, data.username, data.proposal_ids, data.approve, data.extensions)
+          .then(result => {
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: true,
+                error: null,
+                result: result,
+                data: data,
+                message: "Proposal voted succesfully",
+                request_id: request_id
+              }
+            };
+
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null)
+                removeWindow(id_win);
+            } else {
+              chrome.runtime.sendMessage(message);
+            }
+            key = null;
+            accounts = null;
+          }).catch(err => {
+            console.log(err);
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: false,
+                error: 'vote_proposal_error',
+                result: null,
+                data: data,
+                message: "Could not vote for proposal.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+          });
+        break;
+      case "removeProposal":
+        let removeProposalKeys = {};
+        removeProposalKeys[data.typeWif] = key;
+        removeProposal(removeProposalKeys, data.username, data.proposal_ids, data.extensions)
+          .then(result => {
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: true,
+                error: null,
+                result: result,
+                data: data,
+                message: "Proposal removed succesfully",
+                request_id: request_id
+              }
+            };
+
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null)
+                removeWindow(id_win);
+            } else {
+              chrome.runtime.sendMessage(message);
+            }
+            key = null;
+            accounts = null;
+          }).catch(err => {
+            console.log(err);
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: false,
+                error: 'remove_proposal_error',
+                result: null,
+                data: data,
+                message: "Could not remove the proposal.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+          });
+        break;
       case "decode":
         try {
           let decoded = window.decodeMemo(key, data.message);

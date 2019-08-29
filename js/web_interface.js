@@ -100,7 +100,7 @@ const validate = () => {
       (req.type == "powerUp" && isFilled(req.username) && isFilledAmt(req.steem) && isFilled(req.recipient)) ||
       (req.type == "powerDown" && isFilled(req.username) && (isFilledAmt(req.steem_power) || req.steem_power == "0.000")) ||
       (req.type == "createClaimedAccount" && isFilled(req.username) && isFilled(req.new_account) && isFilled(req.owner) && isFilled(req.active) && isFilled(req.posting) && isFilled(req.memo)) ||
-      (req.type == "createProposal" && isFilled(req.username) && isFilled(req.receiver) && isFilledDate(req.start) && isFilledDate(req.end) && isFilled(req.subject) && isFilled(req.permlink) && isFilledAmtTBD(req.daily_pay)) ||
+      (req.type == "createProposal" && isFilled(req.username) && isFilled(req.receiver) && isFilledDate(req.start) && isFilledDate(req.end) && isFilled(req.subject) && isFilled(req.permlink) && isFilledAmtSBD(req.daily_pay)) ||
       (req.type == "removeProposal" && isFilled(req.username) && isProposalIDs(req.proposal_ids)) ||
       (req.type == "updateProposalVote" && isFilled(req.username) && isProposalIDs(req.proposal_ids) && isBoolean(req.approve))
     );
@@ -159,8 +159,8 @@ const isFilledAmtSP = (obj) => {
   return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3 && obj.unit == "SP") || (countDecimals(obj.amount) == 6 && obj.unit == "VESTS"));
 }
 
-const isFilledAmtTBD = (amt) => {
-  return amt && amt.split(' ').length == 2 && !isNaN(amt.split(' ')[0]) && parseFloat(countDecimals(amt.split(' ')[0])) == 3 && amt.split(' ')[1] == "TBD";
+const isFilledAmtSBD = (amt) => {
+  return amt && amt.split(' ').length == 2 && !isNaN(amt.split(' ')[0]) && parseFloat(countDecimals(amt.split(' ')[0])) == 3 && amt.split(' ')[1] == "SBD";
 }
 
 const isFilledWeight = (obj) => {
