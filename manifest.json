@@ -1,6 +1,6 @@
 {
   "name": "Steem Keychain",
-  "version": "1.5.9",
+  "version": "1.5.11",
   "description": "Secure Steem Wallet Extension.",
   "permissions": ["activeTab", "declarativeContent", "storage", "webNavigation", "tabs", "https://*/*", "notifications", "idle"],
   "browser_action": {
@@ -17,6 +17,7 @@
       "js/config.js",
       "js/keychainify.js",
       "js/hf21.js",
+      "js/rpcs.js",
       "js/background.js"
     ],
     "persistent": true

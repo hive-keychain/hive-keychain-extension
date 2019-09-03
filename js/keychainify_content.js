@@ -58,8 +58,8 @@ let contentScript = {
 
         if (
           anchor.href
-          && anchor.href.indexOf('steemconnect.com') !== -1
           && !anchor.classList.contains('steem-keychain-checked')  // That was not checked before
+          && keychainify.isUrlSupported(anchor.href)
         ) {
           anchor.addEventListener('click', async function(e) {
             e.preventDefault();

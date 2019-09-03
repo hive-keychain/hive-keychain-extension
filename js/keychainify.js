@@ -20,6 +20,10 @@ const keychainify = {
     });
   },
 
+  isUrlSupported: function(url) {
+    return url.includes('steemconnect.com/sign/transfer')
+  },
+
   /**
    * Transform a known URL to a Keychain operation
    * @param tab
@@ -41,7 +45,7 @@ const keychainify = {
       /**
        * Transfer fund
        */
-      case (url.indexOf('steemconnect.com/sign/transfer') !== -1):
+      case (url.includes('steemconnect.com/sign/transfer')):
         defaults = {
           from: null,
           to: null,
@@ -59,14 +63,14 @@ const keychainify = {
       /**
        * Delegate Steem Power
        */
-      case (url.indexOf('steemconnect.com/sign/delegate-vesting-shares') !== -1):
+      case (url.includes('steemconnect.com/sign/delegate-vesting-shares')):
         // @TODO currently Steem Keychain does not allow null delegator account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
         //let [amount, unit] = vars.vesting_shares.split(' ');
         //keychainify.requestDelegation(null, vars.delegatee, amount, unit, null);
         window.location.href = url;
         break;
 
-      case (url.indexOf('steemconnect.com/sign/account-witness-vote') !== -1):
+      case (url.includes('steemconnect.com/sign/account-witness-vote')):
         // @TODO currently Steem Keychain does not allow null voter account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
         //keychainify.requestWitnessVote(null, vars.witness, vars.approve);
         window.location.href = url;

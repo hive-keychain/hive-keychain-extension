@@ -9,29 +9,13 @@ let accounts = null;
 let timeoutIdle = null;
 let autolock = null;
 let interval = null;
+let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
 chrome.storage.local.get(['current_rpc', 'autolock'], function(items) {
   if (items.autolock)
     startAutolock(JSON.parse(items.autolock));
-
-  steem.api.setOptions({
-    transport: 'http',
-    uri: items.current_rpc || 'https://api.steemit.com',
-    url: items.current_rpc || 'https://api.steemit.com',
-    useAppbaseApi: true
-  });
-  if (items.current_rpc === 'TESTNET') {
-    steem.api.setOptions({
-      url: 'https://testnet.steemitdev.com',
-      useAppbaseApi: true
-    });
-    steem.config.set('address_prefix', 'TST');
-    steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
-  } else {
-    steem.config.set('address_prefix', 'STM');
-    steem.config.set('chain_id', '0000000000000000000000000000000000000000000000000000000000000000');
-  }
+  rpc.setOptions(items.current_rpc);
 });
 
 chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
@@ -92,21 +76,7 @@ function chromeMessageHandler(msg, sender, sendResp) {
   } else if (msg.command == "stopInterval") {
     clearInterval(interval);
   } else if (msg.command == "setRPC") {
-    steem.api.setOptions({
-      url: msg.rpc || 'https://api.steemit.com',
-      useAppbaseApi: true
-    });
-    if (msg.rpc === 'TESTNET') {
-      steem.api.setOptions({
-        url: 'https://testnet.steemitdev.com',
-        useAppbaseApi: true
-      });
-      steem.config.set('address_prefix', 'TST');
-      steem.config.set('chain_id', '46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32');
-    } else {
-      steem.config.set('address_prefix', 'STM');
-      steem.config.set('chain_id', '0000000000000000000000000000000000000000000000000000000000000000');
-    }
+    rpc.setOptions(msg.rpc);
   } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
     mk = msg.mk;
   } else if (msg.command == "sendAutolock") {
@@ -158,6 +128,8 @@ function chromeMessageHandler(msg, sender, sendResp) {
 
 async function performTransaction(data, tab, no_confirm) {
   try {
+    if (data.rpc)
+      rpc.setOptions(data.rpc, true);
     switch (data.type) {
       case "vote":
         steem.broadcast.vote(key, data.username, data.author, data.permlink, parseInt(data.weight), function(err, result) {
@@ -181,10 +153,12 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "custom":
         steem.broadcast.customJson(key, data.method.toLowerCase() == "active" ? [data.username] : null, data.method.toLowerCase() == "posting" ? [data.username] : null, data.id, data.json, function(err, result) {
+          console.log(err, result);
           const message = {
             command: "answerRequest",
             msg: {
@@ -205,6 +179,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
 
         break;
@@ -238,6 +213,7 @@ async function performTransaction(data, tab, no_confirm) {
 
           chrome.tabs.sendMessage(tab, message);
           chrome.runtime.sendMessage(message);
+          rpc.rollback();
           key = null;
           accounts = null;
         });
@@ -264,6 +240,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         } else {
           const operations = [
@@ -307,6 +284,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
 
         }
@@ -339,6 +317,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "removeAccountAuthority":
@@ -368,6 +347,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "createClaimedAccount":
@@ -402,6 +382,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         break;
       case "broadcast":
@@ -433,6 +414,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "signedCall":
@@ -462,6 +444,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         break;
       case "delegation":
@@ -496,6 +479,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         });
         break;
@@ -516,6 +500,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "powerUp":
@@ -535,6 +520,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "powerDown":
@@ -562,6 +548,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         });
         break;
@@ -578,6 +565,7 @@ async function performTransaction(data, tab, no_confirm) {
           }
         };
         steem.broadcast.customJson(key, [data.username], null, id, JSON.stringify(json), function(error, result) {
+          console.log(error, result);
           const message = {
             command: "answerRequest",
             msg: {
@@ -593,6 +581,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "createProposal":
@@ -621,6 +610,8 @@ async function performTransaction(data, tab, no_confirm) {
             }
             key = null;
             accounts = null;
+            rpc.rollback();
+
           }).catch(err => {
             console.log(err);
             let message = {
@@ -638,6 +629,8 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
+
           });
         break;
       case "updateProposalVote":
@@ -666,6 +659,8 @@ async function performTransaction(data, tab, no_confirm) {
             }
             key = null;
             accounts = null;
+            rpc.rollback();
+
           }).catch(err => {
             console.log(err);
             let message = {
@@ -683,6 +678,8 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
+
           });
         break;
       case "removeProposal":
@@ -711,6 +708,8 @@ async function performTransaction(data, tab, no_confirm) {
             }
             key = null;
             accounts = null;
+            rpc.rollback();
+
           }).catch(err => {
             console.log(err);
             let message = {
@@ -728,6 +727,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         break;
       case "decode":
@@ -772,6 +772,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         }
         break;
       case "signBuffer":
@@ -797,6 +798,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         } catch (err) {
           console.log(err);
           let message = {
@@ -818,11 +820,13 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         }
         break;
     }
   } catch (e) {
-    console.log(e);
+    console.log('error', e);
+    rpc.rollback();
     sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
   }
 }

@@ -9,178 +9,194 @@ var steem_keychain = {
     this.dispatchCustomEvent("swHandshake", "");
   },
 
-  requestVerifyKey: function(account, message, key, callback) {
+  requestVerifyKey: function(account, message, key, callback, rpc) {
     var request = {
       type: "decode",
       username: account,
       message: message,
-      method: key
+      method: key,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestSignBuffer: function(account, message, key, callback) {
+  requestSignBuffer: function(account, message, key, callback, rpc) {
     var request = {
       type: "signBuffer",
       username: account,
       message: message,
-      method: key
+      method: key,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestAddAccountAuthority: function(account, authorizedUsername, role, weight, callback) {
+  requestAddAccountAuthority: function(account, authorizedUsername, role, weight, callback, rpc) {
     var request = {
       type: "addAccountAuthority",
       username: account,
       authorizedUsername,
       role,
       weight,
-      method: "Active"
+      method: "Active",
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestRemoveAccountAuthority: function(account, authorizedUsername, role, callback) {
+  requestRemoveAccountAuthority: function(account, authorizedUsername, role, callback, rpc) {
     var request = {
       type: "removeAccountAuthority",
       username: account,
       authorizedUsername,
       role,
-      method: "Active"
+      method: "Active",
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestBroadcast: function(account, operations, key, callback) {
+  requestBroadcast: function(account, operations, key, callback, rpc) {
     var request = {
       type: "broadcast",
       username: account,
       operations,
-      method: key
+      method: key,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestSignedCall: function(account, method, params, key, callback) {
+  requestSignedCall: function(account, method, params, key, callback, rpc) {
+    console.log('getting request');
     var request = {
       type: "signedCall",
       username: account,
       method,
       params,
       typeWif: key,
+      rpc
     };
-
+    console.log(request);
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
   // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
-  requestPost: function(account, title, body, parent_perm, parent_account, json_metadata, permlink, comment_options, callback) {
+  requestPost: function(account, title, body, parent_perm, parent_account, json_metadata, permlink, comment_options, callback, rpc) {
     var request = {
       type: "post",
       username: account,
-      title: title,
-      body: body,
-      parent_perm: parent_perm,
+      title,
+      body,
+      parent_perm,
       parent_username: parent_account,
-      json_metadata: json_metadata,
-      permlink: permlink,
-      comment_options: comment_options
+      json_metadata,
+      permlink,
+      comment_options,
+      rpc
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestVote: function(account, permlink, author, weight, callback) {
+  requestVote: function(account, permlink, author, weight, callback, rpc) {
     var request = {
       type: "vote",
       username: account,
-      permlink: permlink,
-      author: author,
-      weight: weight
+      permlink,
+      author,
+      weight,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestCustomJson: function(account, id, key, json, display_msg, callback) {
+  requestCustomJson: function(account, id, key, json, display_msg, callback, rpc) {
     var request = {
       type: "custom",
       username: account,
       id: id, //can be "custom", "follow", "reblog" etc.
       method: key, // Posting key is used by default, active can be specified for id=custom .
       json: json, //content of your json
-      display_msg: display_msg
+      display_msg: display_msg,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestTransfer: function(account, to, amount, memo, currency, callback, enforce = false) {
+  requestTransfer: function(account, to, amount, memo, currency, callback, enforce = false, rpc) {
     var request = {
       type: "transfer",
       username: account,
-      to: to,
-      amount: amount,
-      memo: memo,
-      enforce: enforce,
-      currency: currency
+      to,
+      amount,
+      memo,
+      enforce,
+      currency,
+      rpc
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestSendToken: function(account, to, amount, memo, currency, callback) {
+  requestSendToken: function(account, to, amount, memo, currency, callback, rpc) {
     var request = {
       type: "sendToken",
       username: account,
-      to: to,
-      amount: amount,
-      memo: memo,
-      currency: currency
+      to,
+      amount,
+      memo,
+      currency,
+      rpc
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestDelegation: function(username, delegatee, amount, unit, callback) {
+  requestDelegation: function(username, delegatee, amount, unit, callback, rpc) {
     var request = {
       type: "delegation",
-      username: username,
-      delegatee: delegatee,
-      amount: amount,
-      unit: unit
+      username,
+      delegatee,
+      amount,
+      unit,
+      rpc
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestWitnessVote: function(username, witness, vote, callback) {
+  requestWitnessVote: function(username, witness, vote, callback, rpc) {
     var request = {
       type: "witnessVote",
-      username: username,
-      witness: witness,
-      vote: vote
+      username,
+      witness,
+      vote,
+      rpc
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestPowerUp: function(username, recipient, steem, callback) {
+  requestPowerUp: function(username, recipient, steem, callback, rpc) {
     var request = {
       type: "powerUp",
-      username: username,
-      recipient: recipient,
-      steem: steem
+      username,
+      recipient,
+      steem,
+      rpc
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestPowerDown: function(username, steem_power, callback) {
+  requestPowerDown: function(username, steem_power, callback, rpc) {
     var request = {
       type: "powerDown",
-      username: username,
-      steem_power: steem_power,
+      username,
+      steem_power,
+      rpc
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
 
-  requestCreateClaimedAccount: function(username, new_account, owner, active, posting, memo, callback) {
+  requestCreateClaimedAccount: function(username, new_account, owner, active, posting, memo, callback, rpc) {
     const request = {
       type: "createClaimedAccount",
       username,
@@ -188,14 +204,14 @@ var steem_keychain = {
       owner,
       active,
       posting,
-      memo
+      memo,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-
   //HF21
-  requestCreateProposal: function(username, receiver, subject, permlink, daily_pay, start, end, extensions, callback) {
+  requestCreateProposal: function(username, receiver, subject, permlink, daily_pay, start, end, extensions, callback, rpc) {
     const request = {
       type: "createProposal",
       username,
@@ -205,29 +221,32 @@ var steem_keychain = {
       start,
       end,
       daily_pay,
-      extensions
+      extensions,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestRemoveProposal: function(username, proposal_ids, extensions, callback) {
+  requestRemoveProposal: function(username, proposal_ids, extensions, callback, rpc) {
     const request = {
       type: "removeProposal",
       username,
       proposal_ids,
-      extensions
+      extensions,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestUpdateProposalVote: function(username, proposal_ids, approve, extensions, callback) {
+  requestUpdateProposalVote: function(username, proposal_ids, approve, extensions, callback, rpc) {
     const request = {
       type: "updateProposalVote",
       username,
       proposal_ids,
       approve,
-      extensions
+      extensions,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
