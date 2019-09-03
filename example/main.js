@@ -36,8 +36,8 @@ $("#send_custom").click(function() {
   steem_keychain.requestCustomJson($("#custom_username").val(), $("#custom_id").val(), $("#custom_method option:selected").text(), $("#custom_json").val(), $('#custom_message').val(), function(response) {
     console.log('main js response - custom JSON');
     console.log(response);
-  });
-}, $('#custom_rpc').val());
+  }, $('#custom_rpc').val());
+});
 
 // Send transfer request
 $("#send_tra").click(function() {
