@@ -153,6 +153,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "custom":
@@ -178,6 +179,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
 
         break;
@@ -211,6 +213,7 @@ async function performTransaction(data, tab, no_confirm) {
 
           chrome.tabs.sendMessage(tab, message);
           chrome.runtime.sendMessage(message);
+          rpc.rollback();
           key = null;
           accounts = null;
         });
@@ -237,6 +240,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         } else {
           const operations = [
@@ -280,6 +284,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
 
         }
@@ -312,6 +317,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "removeAccountAuthority":
@@ -341,6 +347,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "createClaimedAccount":
@@ -375,6 +382,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         break;
       case "broadcast":
@@ -406,6 +414,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "signedCall":
@@ -435,6 +444,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         break;
       case "delegation":
@@ -469,6 +479,7 @@ async function performTransaction(data, tab, no_confirm) {
               chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         });
         break;
@@ -489,6 +500,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "powerUp":
@@ -508,6 +520,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "powerDown":
@@ -535,6 +548,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
+            rpc.rollback();
           });
         });
         break;
@@ -567,6 +581,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         });
         break;
       case "decode":
@@ -611,6 +626,7 @@ async function performTransaction(data, tab, no_confirm) {
           chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         }
         break;
       case "signBuffer":
@@ -636,6 +652,7 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         } catch (err) {
           console.log(err);
           let message = {
@@ -657,14 +674,14 @@ async function performTransaction(data, tab, no_confirm) {
             chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
+          rpc.rollback();
         }
         break;
     }
   } catch (e) {
     console.log('error', e);
-    sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
-  } finally {
     rpc.rollback();
+    sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
   }
 }
 
