@@ -180,7 +180,7 @@ async function sendToken(account_to, token, amount,memo) {
 										showError('Transaction error: ' + res.error);
 									else{
 										showConfirm("Tokens sent succesfully!");
-                    $("#token_send_div").hide();
+                    $("#confirm_token_send_div").hide();
                     $("#tokens_div").show();
                   }
 								} else
@@ -219,7 +219,26 @@ function getDelayedTransactionInfo(trxID) {
     });
 }
 
+// Show Confirmation window before transfer
 $("#send_tok").click(function() {
+    confirmTokenTransfer();
+});
+
+function confirmTokenTransfer(){
+  $("#confirm_token_send_div").show();
+  $("#token_send_div").hide();
+  const to = $("#send_tok_to").val();
+  const amount = $("#amt_tok").val();
+  const currency = $("#tok").html();
+  let memo = $("#memo_tok").val();
+  $("#from_conf_token_transfer").text("@"+active_account.name)
+  $("#to_conf_token_transfer").text("@"+to);
+  $("#amt_conf_token_transfer").text(amount+" "+currency);
+  $("#memo_conf_token_transfer").text((memo==""?"Empty":memo)); // steem engine token memo doesn't support encryption
+}
+
+// Send token to a user
+$("#confirm_send_tok").click(function() {
     sendToken($("#send_tok_to").val(), $("#tok").html(), $("#amt_tok").val(),$("#memo_tok").val());
 });
 

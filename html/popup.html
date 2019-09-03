@@ -388,6 +388,7 @@
           <input type='checkbox' id='encrypt_memo' />
           <span class='checkmark' />
         </label>
+<<<<<<< HEAD
       </div>
       <button id="send_transfer">Send</button>
     </div>
@@ -601,6 +602,378 @@
       <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit" />
     </div>
   </div>
+=======
+        </div>
+        <div class="input_container">
+            <input type="number" id="mn" placeholder="10"></input>
+        </div>
+        <button id="save_autolock">Save</button>
+    </div>
+    <div id="keychainify_settings" class="settings_child">
+        <div class="back_enabled back_pref">Keychainify</div>
+        <p>This feature allows you to trigger a SteemKeychain operation when clicking on a supported link on a web page
+            or accessing the URL directly in a browser tab.</p>
+        <div class="key_checkbox enable_keychainify">
+            <label for="default" class="checkbox_container">
+                <div>Enable Keychainify</div>
+                <div>Currently only support Steem Connect transfers URLs.</div>
+                <input type="checkbox" checked=true id="enable_keychainify"/>
+                <span class="checkmark"/>
+            </label>
+        </div>
+    </div>
+    <div id="about_div" class="settings_child">
+        <div class="back_enabled back_pref">About</div>
+        <h3></h3>
+        <div class="about-content">The overall idea and concept for the Steem Keychain browser extension was
+            created by <a href="https://steemit.com/@yabapmatt" target="_blank">@yabapmatt</a>            who is a developer and witness on the Steem blockchain. It was primarily
+            developed by <a href="https://steemit.com/@stoodkev" target="_blank">@stoodkev</a>            who is also a Steem developer (SteemPlus) and witness. The design and
+            development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt
+            through their joint business Steem Monsters, which is a blockchain-based
+            collectible trading card game built on top of the Steem blockchain. Be
+            sure to check it out at <a href="https://steemmonsters.com" target="_blank">steemmonsters.com</a>!</div>
+    </div>
+    <div id="manage_keys" class="settings_child">
+        <div class="back_enabled back_pref">Manage Accounts</div>
+        <div class="custom-select usernames" id="custom_select_keys">
+            <select>
+          </select>
+        </div>
+        <div class="keys_info">
+            <span class="keys_info_type">POSTING KEY</span>
+            <span id="posting" class="remove_key">REMOVE</span>
+            <div class="private_key"></div>
+            <div class="public_key"></div>
+            <div class="img_add_key"></div>
+        </div>
+        <div class="keys_info">
+            <span class="keys_info_type">ACTIVE KEY</span>
+            <span id="active" class="remove_key">REMOVE</span>
+            <div class="private_key"></div>
+            <div class="public_key"></div>
+            <div class="img_add_key"></div>
+        </div>
+        <div class="keys_info">
+            <span class="keys_info_type">MEMO KEY</span>
+            <span id="memo" class="remove_key">REMOVE</span>
+            <div class="private_key"></div>
+            <div class="public_key"></div>
+            <div class="img_add_key"></div>
+        </div>
+        <button id="delete_account">DELETE THIS ACCOUNT</button>
+    </div>
+    <div id="pref_div" class="settings_child">
+        <div class="back_enabled back_pref" style="font-size: 18px;">Preferences</div>
+        <h3>Select an RPC node</h3>
+            <div class="custom-select no-img" id="custom_select_rpc">
+                <select>
+                </select>
+            </div>
+        <h3>Notification Preferences</h3>
+            <div class="custom-select usernames" id="custom_select_pref">
+                <select>
+                </select>
+            </div>
+            <div class="info">View and update the websites and transaction types for which you
+                have opted not to recieve a confirmation prompt.</div>
+            <div id="pref">No preferences</div>
+    </div>
+    <div id="add_rpc_div">
+        <div class="back_enabled">Add RPC</div>
+        <p>Add your RPC node here:</p>
+        <div class="input_container">
+            <input type="text" id="new_rpc" placeholder="RPC Node"></input>
+        </div>
+        <button id="add_new_rpc">Add RPC</button>
+        <div id="custom_rpc"></div>
+    </div>
+    <div id="add_key_div">
+        <div class="back_enabled">Add Key</div>
+        <p>Add the <span></span> private key to your account. You can also add it by
+            entering your master key.</p>
+        <div class="input_container">
+            <input type="password" id="new_key" placeholder="Private Key"></input>
+            <img src="../images/key.png" class="input_img" />
+        </div>
+        <button id="add_new_key">Import key</button>
+    </div>
+    <div id="copied">
+        <div>Key copied to clipboard!</div>
+    </div>
+    <input id="fake_input" />
+    <div id="change_password" class="settings_child">
+        <div class="back_enabled back_pref">Change Password</div>
+        <p>Input your old password for confirmation, then chose a new password.</p>
+        <div class="input_container">
+            <input type="password" id="old_pwd" placeholder="Old Password" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="password" id="new_pwd" placeholder="New Password" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="password" id="confirm_new_pwd" placeholder="Confirm" />
+            <img src="../images/lock.png" class="input_img" />
+        </div>
+        <button id="confirm_change_pwd">Confirm</button>
+    </div>
+    <div id="send_div">
+        <div class="back_menu back_enabled">Transfer Funds</div>
+        <div class="transfer_balance">
+            <div>STEEM Balance</div>
+            <div></div>
+        </div>
+        <div id="send_form">
+            <div class="input_container">
+                <input id="recipient" autocomplete="off" placeholder="USERNAME" />
+                <img src="../images/arobase.png" class="input_img" />
+            </div>
+            <div id="autocomplete_container"></div>
+            <input type="number" id="amt_send" autocomplete="off" placeholder="0.000" />
+            <div class="custom-select" id="currency_send">
+                <select>
+            <option value="STEEM">STEEM</option>
+              <option value="SBD">SBD</option>
+            </select>
+            </div>
+            <input type="text" placeholder="MEMO (optional)" id="memo_send" />
+            <div class='checkbox_memo'>
+                <label for='encrypt_memo' class='checkbox_container'>
+              <div>Encrypt Memo</div>
+                <input type='checkbox' id='encrypt_memo'/>
+                <span class='checkmark'/>
+              </label>
+            </div>
+            <button id="send_transfer">Send</button>
+        </div>
+        <div id="show_add_active">Please add an active key to send STEEM or SBD.</div>
+    </div>
+    <div id="confirm_send_div">
+        <div class="back_enabled">Transfer</div>
+        <p>Please confirm your transfer.<br>This cannot be undone.</p>
+        <h3>From</h3>
+        <div id="from_conf_transfer"></div>
+        <h3>To</h3>
+        <div id="to_conf_transfer"></div>
+        <h3>Amount</h3>
+        <div id="amt_conf_transfer"></div>
+        <h3>Memo</h3>
+        <div id="memo_conf_transfer"></div>
+        <button id="confirm_send_transfer">Confirm</button>
+        <div class="loader" id="send_loader" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
+    </div>
+    <div id="claim_rewards">
+        <img src="../images/delete.png" class="close_claim" id="close_claim" />
+        <img src="../images/rewards.png" id="gift" />
+        <p></p>
+        <button class="close_claim">Not Now</button>
+        <button id="redeem_rewards">Redeem</button>
+    </div>
+    <div id="witness_div">
+        <div class="back_enabled back_menu">Witness Voting</div>
+        <span id="wit_disclaimer">You may vote for up to 30 witnesses.</span>
+        <div id="votes_remaining">Votes remaining: <span>30</span></div>
+        <button class="wit-menu" id="voted" class="active_wit">Voted</button>
+        <button class="wit-menu" id="top100">Top 100</button>
+        <button class="wit-menu" id="add_wit">Add</button>
+        <div class="sub_wit" id="voted_div">
+            <div id="proxy">
+                <div></div>
+            </div>
+            <div id="list_wit"></div>
+        </div>
+        <div class="sub_wit" id="top100_div"></div>
+        <div class="sub_wit" id="add_wit_div">
+            <p>You may manually enter a user to vote for Witness or to set as Proxy.</p>
+            <div class="input_container">
+                <input type="text" id="wit-username" placeholder="Username"></input>
+                <img src="../images/arobase.png" class="input_img" />
+            </div>
+            <div class="custom-select" id="custom_select_wit">
+                <select>
+            <option value="Wit">Vote for Witness</option>
+            <option value="Proxy">Chose Proxy</option>
+          </select>
+            </div>
+            <button id="vote_wit">Submit</button>
+            <div class="loader" id="wit_loading" style="display:none">
+                <div><img src="../images/loading.gif" /></div>
+            </div>
+        </div>
+    </div>
+    <div id="tokens_div">
+        <div class="back_enabled back_menu">Tokens</div>
+        <img src="../images/settings.png" id="settings_tokens" />
+        <p></p>
+        <div id="tokens_list">
+        </div>
+    </div>
+    <div id="tokens_settings_div">
+        <div class="back_enabled ">Tokens Available</div>
+        <p>View token information and chose which tokens to display. Learn more about custom tokens on the Steem blockchain at <a href="https://steem-engine.com" target="_blank">https://steem-engine.com</a>.</p>
+        <div id="existing_tokens">
+        </div>
+    </div>
+    <div id="token_send_div">
+        <div class="back_enabled "></div>
+        <div class="token_available">
+            <div><span class="token_left">Available</span><span class="token_right"></span></div>
+        </div>
+        <p>Sending your tokens may take up to 30 seconds to confirm, please be patient. </p>
+        <input type="text" placeholder="Recipient" id="send_tok_to" />
+        <input type="number" id="amt_tok" placeholder="0.000"></input>
+        <div id="tok">
+        </div>
+        <input type="text" placeholder="MEMO (optional)" id="memo_tok" />
+        <div id="wrap_tok"><button id="send_tok">Send</button></div>
+    </div>
+    <div id="confirm_token_send_div">
+        <div class="back_enabled">Transfer</div>
+        <p>Please confirm your transfer.<br>This cannot be undone.</p>
+        <h3>From</h3>
+        <div id="from_conf_token_transfer"></div>
+        <h3>To</h3>
+        <div id="to_conf_token_transfer"></div>
+        <h3>Amount</h3>
+        <div id="amt_conf_token_transfer"></div>
+        <h3>Memo</h3>
+        <div id="memo_conf_token_transfer"></div>
+        <button id="confirm_send_tok">Confirm</button>
+        <div class="loader" id="tok_loading" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
+    </div>
+    <div id="token_history_div">
+        <div class="back_enabled"></div>
+        <div class="loader" id="loading_history_token" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
+        <div id="history_tokens_rows"></div>
+    </div>
+    <div id="powerup_div">
+        <div class="back_enabled back_menu">Power Up</div>
+        <div class="power">
+            <div><span class="power_left">Available</span><span class="power_right power_steem"></span></div>
+            <div><span class="power_left">Current</span><span class="power_right power_sp"></span></div>
+        </div>
+        <p>Power Up your STEEM to transform it in Steem Power.</p>
+        <input type="number" id="amt_pu" placeholder="0.000"></input>
+        <div class="sp_del">
+            STEEM
+        </div>
+        <div id="wrap_power_up"><button id="power_up">Power Up</button></div>
+        <div class="loader" id="powerup_loading" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
+    </div>
+    <div id="powerdown_div">
+        <div class="back_enabled back_menu">Power Down</div>
+        <div class="power">
+            <div><span class="power_left">Current</span><span class="power_right power_steem"></span></div>
+            <div><span class="power_left">Available</span><span class="power_right power_sp"></span></div>
+        </div>
+        <p>Power Down your Steem Power to get liquid STEEM. The entire Power Down process
+            will take 13 weeks.</p>
+        <div class="power" id="powering_down_div">
+            <div>Powering Down</div>
+            <div><span id="powering_down"></span></div>
+        </div>
+        <input type="number" id="amt_pd" placeholder="0.000"></input>
+        <div class="sp_del">
+            SP
+        </div>
+        <div id="wrap_power_down"><button id="power_down">Power Down</button></div>
+        <div class="loader" id="powerdown_loading" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
+    </div>
+    <div id="delegation_div">
+        <div class="back_enabled back_menu">Delegations</div>
+        <p>You may delegate your Steem Power (SP) to another user. Click on the Outgoing
+            amount to review or make changes.</p>
+        <div id="delegation_values">
+            <div><span class="del_left">Incoming</span><span class="del_right" id="incoming_del"></span></div>
+            <div><span class="del_left">Outgoing</span><span class="del_right" id="outgoing_del"></span></div>
+            <div><span class="del_left">AVAILABLE</span><span class="del_right" id="available_del"></span></div>
+        </div>
+        <div id="new_delegation_div">
+            <div class="input_container">
+                <input type="text" id="username_del" placeholder="Username"></input>
+                <img src="../images/arobase.png" class="input_img" />
+            </div>
+            <input type="number" id="amt_del" placeholder="0.000"></input>
+            <div class="sp_del">
+                SP
+            </div>
+            <div id="wrap_send_del"><button id="send_del">Delegate to user</button></div>
+            <div class="loader" id="del_loading" style="display:none">
+                <div><img src="../images/loading.gif" /></div>
+            </div>
+        </div>
+    </div>
+    <div id="outgoing_del_div">
+        <div class="back_enabled">Outgoing SP</div>
+        <div id="total_outgoing">
+            <span>Total Outgoing</span>
+            <span></span>
+        </div>
+        <div id="list_outgoing">
+        </div>
+    </div>
+    <div id="incoming_del_div">
+        <div class="back_enabled">Incoming SP</div>
+        <div id="total_incoming">
+            <span>Total Incoming</span>
+            <span></span>
+        </div>
+        <div id="list_incoming">
+        </div>
+    </div>
+    <div id="edit_del_div">
+        <div class="back_enabled">Edit Delegation</div>
+        <p>You are changing the amount delegated to this user. Edit the amount and save
+            your change.</p>
+        <div id="edit_delegation_values">
+            <div><span class="del_left">Available</span><span class="del_right" id="this_available_del"></span></div>
+            <div><span class="del_left">Current amount</span><span class="del_right" id="this_outgoing_del"></span></div>
+        </div>
+        <div id="username_del">
+            <img src="../images/arobase_white.png" />
+            <span></span>
+        </div>
+        <input type="number" id="amt_edit_del" placeholder="0.000"></input>
+        <div class="sp_del">
+            SP
+        </div>
+        <div id="wrap_edit_del"><button id="edit_del">Save change</button></div>
+        <div class="loader" id="edit_del_loading" style="display:none">
+            <div><img src="../images/loading.gif" /></div>
+        </div>
+    </div>
+    <div id="witness_votes">
+        <img src="../images/delete.png" id="close_witness" style="display: none;" />
+        <div id="witness_toggle">Click here to support Steem Keychain development by casting your witness
+            votes for the creators!</div>
+        <div class="witness_container" id="yabapmatt">
+            <button>@yabapmatt</button>
+            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
+            />
+        </div>
+        <div class="witness_container" id="stoodkev">
+            <button>@stoodkev</button>
+            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
+            />
+        </div>
+        <div class="witness_container" id="aggroed">
+            <button>@aggroed</button>
+            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
+            />
+        </div>
+    </div>
+>>>>>>> origin/master
 
   <script src="../vendor/jquery.min.js"></script>
   <script src="../vendor/decode.min.js"></script>

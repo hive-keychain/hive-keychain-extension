@@ -30,6 +30,8 @@ function initializeVisibility() {
     $("#estimation_info").hide();
     $("#pref_div").hide();
     $("#tokens_div").hide();
+    $("#token_send_div").hide();
+    $("#confirm_token_send_div").hide();
     $("#tokens_settings_div").hide();
     $("#delegation_div").hide();
     $("#add_rpc_div").hide();
@@ -377,4 +379,9 @@ $("#token_history_div .back_enabled").click(function() {
 $("#confirm_send_div .back_enabled").click(function() {
     $("#confirm_send_div").hide();
     $("#send_div").show();
+});
+
+$("#confirm_token_send_div .back_enabled").click(function() {
+    $("#confirm_token_send_div").hide();
+    $("#token_send_div").show();
 });
