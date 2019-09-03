@@ -73,6 +73,7 @@ var steem_keychain = {
   },
 
   requestSignedCall: function(account, method, params, key, callback, rpc) {
+    console.log('getting request');
     var request = {
       type: "signedCall",
       username: account,
@@ -81,7 +82,7 @@ var steem_keychain = {
       typeWif: key,
       rpc
     };
-
+    console.log(request);
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
@@ -115,14 +116,15 @@ var steem_keychain = {
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestCustomJson: function(account, id, key, json, display_msg, callback) {
+  requestCustomJson: function(account, id, key, json, display_msg, callback, rpc) {
     var request = {
       type: "custom",
       username: account,
       id: id, //can be "custom", "follow", "reblog" etc.
       method: key, // Posting key is used by default, active can be specified for id=custom .
       json: json, //content of your json
-      display_msg: display_msg
+      display_msg: display_msg,
+      rpc
     };
 
     this.dispatchCustomEvent("swRequest", request, callback);
