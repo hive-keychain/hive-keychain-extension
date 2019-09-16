@@ -347,17 +347,30 @@ function hasReward(reward_sbd, reward_sp, reward_steem) {
 function getValFromString(string) {
     return parseFloat(string.split(" ")[0]);
 }
-//Check WIF validity
-function isActiveWif(pwd, active) {
-    return steem.auth.wifToPublic(pwd) == active;
-}
 
-function isPostingWif(pwd, posting) {
-    return steem.auth.wifToPublic(pwd) == posting;
-}
+/**
+ *
+ *
+Looks in the permission structure to determine whether a public key is really has permission sa stated in what is in the form of a perm_info structure.
 
-function isMemoWif(pwd, memo) {
-    return steem.auth.wifToPublic(pwd) == memo;
+* A "perm_info" structure has at least the following members:  weight_threshold, and key_auths.
+* A "public key" in this context is really a base58 encoded string BTC-style addres starting with "STM."
+* If no such key is found, then 0 is returned.  Otherwise the weight this key has is returned.
+
+
+// The public key could be supplied by the user or derived from the private key using steem.auth.wifToPublic().
+// The structures returned by steem.api.getAccounts() will have 'posting' and 'active' members each each of which is a perm_info structure.  These can be passed as the second parameter.  dpub will be the public key you wish to test.
+**/
+function getPubkeyWeight(dpub /* Public key string */, perm_info /*permission info structure*/) {
+    for (let n in perm_info.key_auths) {
+        let kw = perm_info.key_auths[n];
+        let lpub = kw["0"];
+        // later: maybe for multisig we should handle when weight threshold is too low by contacting the cosigner
+        if (dpub == lpub) {
+            return kw["1"];
+        }
+    } // for
+    return 0;
 }
 
 let numberWithCommas = (x) => {
