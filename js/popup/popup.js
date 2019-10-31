@@ -5,6 +5,7 @@ const STEEMIT_VOTE_REGENERATION_SECONDS = (5 * 60 * 60 * 24);
 let custom_created = false;
 let manageKey, getPref = false;
 let to_autocomplete =[];
+let initialized = false;
 //chrome.storage.local.remove("transfer_to");
 
 $("#copied").hide();
@@ -183,7 +184,32 @@ function initializeMainMenu() {
         loadRPC(items.rpc, items.current_rpc);
         if (accounts_json != null && accounts_json.list.length != 0) {
             $("#accounts").empty();
-            $("#main").show();
+
+            if (initialized === false) {
+                /** Opening sub page from query string */
+                const queryString = window.location.search;
+                const queryParamString = queryString.split('?').pop();
+                const queryParams = queryParamString.split('&');
+                const params = {};
+                for (let qi=0; qi<queryParams.length; qi++) {
+                    const queryParam = queryParams[qi];
+                    const keyValue = queryParam.split('=');
+                    params[keyValue[0]] = keyValue[1];
+                }
+
+                if (params.hasOwnProperty('page')) {
+                    $('#main').hide();
+                    $(`#${params.page}`).show();
+                    if (params.page === 'send_div' && params.hasOwnProperty('to')) {
+                        $('#recipient').val(params.to);
+                    }
+                } else {
+                    $("#main").show();
+                }
+                /** end of opening sub page */
+            } else {
+                $("#main").show();
+            }
 
             // Add the last account selected to the front of the account list.
             if (items.last_account) {
@@ -205,6 +231,8 @@ function initializeMainMenu() {
             $("#add_account_div").show();
             $("#add_account_div .back_enabled").addClass("back_disabled");
         }
+
+        initialized = true;
     });
 }
 // Show Confirmation window before transfer
