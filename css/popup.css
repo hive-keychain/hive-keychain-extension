@@ -1128,7 +1128,6 @@ input:focus {
   display: flex;
   align-items: center;
   justify-content: center;
-  visibility: hidden;
 }
 
 #copied div::before {
