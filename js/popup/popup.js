@@ -198,10 +198,11 @@ function initializeMainMenu() {
                 }
 
                 if (params.hasOwnProperty('page')) {
-                    $('#main').hide();
                     $(`#${params.page}`).show();
                     if (params.page === 'send_div' && params.hasOwnProperty('to')) {
                         $('#recipient').val(params.to);
+                    } else {
+                        $("#main").show();
                     }
                 } else {
                     $("#main").show();
