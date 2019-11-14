@@ -16,6 +16,7 @@
       "vendor/decode.min.js",
       "js/config.js",
       "js/keychainify.js",
+      "js/rpcs.js",
       "js/background.js"
     ],
     "persistent": true
