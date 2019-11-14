@@ -967,7 +967,7 @@ async function performTransaction(data, tab, no_confirm) {
   }
 }
 
-function createPopup(popupHtml = "html/dialog.html", callback) {
+function createPopup(callback, popupHtml = "html/dialog.html") {
   let width = 350;
   confirmed = false;
   //Ensuring only one window is opened by the extension at a time.
@@ -1341,7 +1341,7 @@ const contextMenus = {
           .split("@")
           .pop()
           .split("/")[0];
-        createPopup(`html/popup.html?page=send_div&to=${user}`);
+        createPopup(null, `html/popup.html?page=send_div&to=${user}`);
       }
     }
   },
