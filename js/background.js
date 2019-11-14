@@ -685,35 +685,39 @@ async function performTransaction(data, tab, no_confirm) {
   }
 }
 
-function createPopup(callback) {
-  let width = 350;
-  confirmed = false;
-  //Ensuring only one window is opened by the extension at a time.
-  if (id_win != null) {
-    removeWindow(id_win);
-    id_win = null;
-  }
-  //Create new window on the top right of the screen
-  chrome.windows.getCurrent(function(w) {
-    chrome.windows.create({
-      url: chrome.runtime.getURL("html/dialog.html"),
-      type: "popup",
-      height: 566,
-      width: width,
-      left: w.width - width + w.left,
-      top: w.top
-    }, function(win) {
-      id_win = win.id;
-      // Window create fails to take into account window size so it s updated afterwhile.
-      chrome.windows.update(win.id, {
-        height: 566,
-        width: width,
-        top: w.top,
-        left: w.width - width + w.left
-      });
-      clearInterval(interval);
-      interval = setInterval(callback, 200);
-      setTimeout(function() { clearInterval(interval) }, 2000);
+function createPopup(popupHtml = "html/dialog.html", callback) {
+    let width = 350;
+    confirmed = false;
+    //Ensuring only one window is opened by the extension at a time.
+    if (id_win != null) {
+        removeWindow(id_win);
+        id_win = null;
+    }
+    //Create new window on the top right of the screen
+    chrome.windows.getCurrent(function(w) {
+        chrome.windows.create({
+            url: chrome.runtime.getURL(popupHtml),
+            type: "popup",
+            height: 566,
+            width: width,
+            left: w.width - width + w.left,
+            top: w.top
+        }, function(win) {
+            id_win = win.id;
+            // Window create fails to take into account window size so it s updated afterwhile.
+            chrome.windows.update(win.id, {
+                height: 566,
+                width: width,
+                top: w.top,
+                left: w.width - width + w.left
+            });
+
+            if (typeof callback === 'function') {
+                clearInterval(interval);
+                interval=setInterval(callback,200);
+                setTimeout(function(){clearInterval(interval)},2000);
+            }
+        });
     });
   });
 }
@@ -945,3 +949,67 @@ function removeWindow(id_win) {
     }
   });
 }
+
+const contextMenus = {
+    menuActions: {
+        contexts: {
+            'link': {
+                'transferToUser': {
+                    description: 'Transfer STEEM/SBD to user',
+                    action: 'transferToUser'
+                },
+
+            },
+        },
+
+        'actions': {
+            transferToUser: function(url, menuAction) {
+                const user = url.split('@').pop().split('/')[0];
+                createPopup(`html/popup.html?page=send_div&to=${user}`);
+            },
+        }
+    },
+
+    init: function () {
+        // Create one test item for each context type.
+        const contexts = ["link"];
+
+        for (let i = 0; i < contexts.length; i++) {
+            const context = contexts[i];
+
+            for(let menuActionName in contextMenus.menuActions.contexts[context]) {
+                if (contextMenus.menuActions.contexts[context].hasOwnProperty(menuActionName)) {
+                    const menuAction = contextMenus.menuActions.contexts[context][menuActionName];
+
+                    const title = menuAction.description;
+                    contextMenus.menuActions.contexts[context][menuActionName].menuItemId = chrome.contextMenus.create({
+                        "title": title,
+                        "contexts": [context],
+                        "onclick": contextMenus.genericOnClick,
+                        "targetUrlPatterns": [
+                          "https://*/@*",
+                        ]
+                    });
+                }
+            }
+        }
+    },
+
+    genericOnClick: function (info, tab) {
+        for(let context in contextMenus.menuActions.contexts) {
+            if (contextMenus.menuActions.contexts.hasOwnProperty(context)) {
+                for(let menuName in contextMenus.menuActions.contexts[context]) {
+                    if (contextMenus.menuActions.contexts[context].hasOwnProperty(menuName)) {
+                        const menuAction = contextMenus.menuActions.contexts[context][menuName];
+                        if(menuAction.menuItemId === info.menuItemId) {
+                            const url = info[context+'Url'];
+                            contextMenus.menuActions.actions[menuAction.action](url, menuAction);
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+contextMenus.init();
