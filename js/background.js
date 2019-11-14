@@ -12,9 +12,8 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
-chrome.storage.local.get(['current_rpc', 'autolock'], function(items) {
-  if (items.autolock)
-    startAutolock(JSON.parse(items.autolock));
+chrome.storage.local.get(["current_rpc", "autolock"], function(items) {
+  if (items.autolock) startAutolock(JSON.parse(items.autolock));
   rpc.setOptions(items.current_rpc);
 });
 
@@ -33,21 +32,18 @@ async function startAutolock(autoLock) {
   //Receive autolock from the popup (upon registration or unlocking)
   autolock = autoLock;
   console.log(autolock);
-  if (mk == null)
-    return;
-  if (!autolock || autolock.type == "default")
-    return;
+  if (mk == null) return;
+  if (!autolock || autolock.type == "default") return;
   console.log("start autolock");
   if (autolock.type == "locked") {
     chrome.idle.setDetectionInterval(parseInt(autolock.mn) * 60);
-    chrome.idle.onStateChanged.addListener(
-      function(state) {
-        console.log(state, autolock.type);
-        if (state === "locked") {
-          mk = null;
-          console.log("lock");
-        }
-      });
+    chrome.idle.onStateChanged.addListener(function(state) {
+      console.log(state, autolock.type);
+      if (state === "locked") {
+        mk = null;
+        console.log("lock");
+      }
+    });
   } else if (autolock.type == "idle") {
     restartIdleCounter();
   }
@@ -66,30 +62,45 @@ chrome.runtime.onMessage.addListener(chromeMessageHandler);
 
 function chromeMessageHandler(msg, sender, sendResp) {
   // Send mk upon request from the extension popup.
-  if (autolock != null && autolock.type == "idle" && (msg.command == "getMk" || msg.command == "setRPC" || msg.command == "sendMk" || msg.command == "sendRequest" || msg.command == "acceptTransaction" || msg.command == "ping"))
+  if (
+    autolock != null &&
+    autolock.type == "idle" &&
+    (msg.command == "getMk" ||
+      msg.command == "setRPC" ||
+      msg.command == "sendMk" ||
+      msg.command == "sendRequest" ||
+      msg.command == "acceptTransaction" ||
+      msg.command == "ping")
+  )
     restartIdleCounter();
   if (msg.command == "getMk") {
-    chrome.runtime.sendMessage({
-      command: "sendBackMk",
-      mk: mk
-    }, function(response) {});
+    chrome.runtime.sendMessage(
+      {
+        command: "sendBackMk",
+        mk: mk
+      },
+      function(response) {}
+    );
   } else if (msg.command == "stopInterval") {
     clearInterval(interval);
   } else if (msg.command == "setRPC") {
     rpc.setOptions(msg.rpc);
-  } else if (msg.command == "sendMk") { //Receive mk from the popup (upon registration or unlocking)
+  } else if (msg.command == "sendMk") {
+    //Receive mk from the popup (upon registration or unlocking)
     mk = msg.mk;
   } else if (msg.command == "sendAutolock") {
     startAutolock(JSON.parse(msg.autolock));
-  } else if (msg.command == "sendRequest") { // Receive request (website -> content_script -> background)
+  } else if (msg.command == "sendRequest") {
+    // Receive request (website -> content_script -> background)
     // create a window to let users confirm the transaction
     tab = sender.tab.id;
     checkBeforeCreate(msg.request, tab, msg.domain);
     request = msg.request;
     request_id = msg.request_id;
-
-  } else if (msg.command == "unlockFromDialog") { // Receive unlock request from dialog
-    chrome.storage.local.get(['accounts'], function(items) { // Check
+  } else if (msg.command == "unlockFromDialog") {
+    // Receive unlock request from dialog
+    chrome.storage.local.get(["accounts"], function(items) {
+      // Check
       if (items.accounts == null || items.accounts == undefined) {
         sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
       } else {
@@ -106,8 +117,11 @@ function chromeMessageHandler(msg, sender, sendResp) {
     });
   } else if (msg.command == "acceptTransaction") {
     if (msg.keep) {
-      chrome.storage.local.get(['no_confirm'], function(items) {
-        let keep = (items.no_confirm == null || items.no_confirm == undefined) ? {} : JSON.parse(items.no_confirm);
+      chrome.storage.local.get(["no_confirm"], function(items) {
+        let keep =
+          items.no_confirm == null || items.no_confirm == undefined
+            ? {}
+            : JSON.parse(items.no_confirm);
         if (keep[msg.data.username] == undefined) {
           keep[msg.data.username] = {};
         }
@@ -128,64 +142,80 @@ function chromeMessageHandler(msg, sender, sendResp) {
 
 async function performTransaction(data, tab, no_confirm) {
   try {
-    if (data.rpc)
-      rpc.setOptions(data.rpc, true);
+    if (data.rpc) rpc.setOptions(data.rpc, true);
     switch (data.type) {
       case "vote":
-        steem.broadcast.vote(key, data.username, data.author, data.permlink, parseInt(data.weight), function(err, result) {
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: err == null,
-              error: err,
-              result: result,
-              data: data,
-              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-          console.log("messageVote", message, err, result);
-          chrome.tabs.sendMessage(tab, message);
-          if (no_confirm) {
-            if (id_win != null)
-              removeWindow(id_win);
-          } else
-            chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
+        steem.broadcast.vote(
+          key,
+          data.username,
+          data.author,
+          data.permlink,
+          parseInt(data.weight),
+          function(err, result) {
+            const message = {
+              command: "answerRequest",
+              msg: {
+                success: err == null,
+                error: err,
+                result: result,
+                data: data,
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
+                request_id: request_id
+              }
+            };
+            console.log("messageVote", message, err, result);
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null) removeWindow(id_win);
+            } else chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          }
+        );
         break;
       case "custom":
-        steem.broadcast.customJson(key, data.method.toLowerCase() == "active" ? [data.username] : null, data.method.toLowerCase() == "posting" ? [data.username] : null, data.id, data.json, function(err, result) {
-          console.log(err, result);
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: err == null,
-              error: err,
-              result: result,
-              data: data,
-              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-          chrome.tabs.sendMessage(tab, message);
-          if (no_confirm) {
-            if (id_win != null) {
-              removeWindow(id_win);
-            }
-          } else
-            chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
+        steem.broadcast.customJson(
+          key,
+          data.method.toLowerCase() == "active" ? [data.username] : null,
+          data.method.toLowerCase() == "posting" ? [data.username] : null,
+          data.id,
+          data.json,
+          function(err, result) {
+            console.log(err, result);
+            const message = {
+              command: "answerRequest",
+              msg: {
+                success: err == null,
+                error: err,
+                result: result,
+                data: data,
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null) {
+                removeWindow(id_win);
+              }
+            } else chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          }
+        );
 
         break;
       case "transfer":
         let ac = accounts.list.find(function(e) {
-          return e.name == data.username
+          return e.name == data.username;
         });
         let memo = data.memo || "";
         let key_transfer = ac.keys.active;
@@ -198,29 +228,13 @@ async function performTransaction(data, tab, no_confirm) {
             console.log(e);
           }
         }
-        steem.broadcast.transfer(key_transfer, data.username, data.to, data.amount + " " + data.currency, memo, function(err, result) {
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: err == null,
-              error: err,
-              result: result,
-              data: data,
-              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-
-          chrome.tabs.sendMessage(tab, message);
-          chrome.runtime.sendMessage(message);
-          rpc.rollback();
-          key = null;
-          accounts = null;
-        });
-        break;
-      case "post":
-        if (data.comment_options == "") {
-          steem.broadcast.comment(key, data.parent_username, data.parent_perm, data.username, data.permlink, data.title, data.body, data.json_metadata, function(err, result) {
+        steem.broadcast.transfer(
+          key_transfer,
+          data.username,
+          data.to,
+          data.amount + " " + data.currency,
+          memo,
+          function(err, result) {
             const message = {
               command: "answerRequest",
               msg: {
@@ -228,23 +242,61 @@ async function performTransaction(data, tab, no_confirm) {
                 error: err,
                 result: result,
                 data: data,
-                message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
                 request_id: request_id
               }
             };
+
             chrome.tabs.sendMessage(tab, message);
-            if (no_confirm) {
-              if (id_win != null)
-                removeWindow(id_win);
-            } else
-              chrome.runtime.sendMessage(message);
+            chrome.runtime.sendMessage(message);
+            rpc.rollback();
             key = null;
             accounts = null;
-            rpc.rollback();
-          });
+          }
+        );
+        break;
+      case "post":
+        if (data.comment_options == "") {
+          steem.broadcast.comment(
+            key,
+            data.parent_username,
+            data.parent_perm,
+            data.username,
+            data.permlink,
+            data.title,
+            data.body,
+            data.json_metadata,
+            function(err, result) {
+              const message = {
+                command: "answerRequest",
+                msg: {
+                  success: err == null,
+                  error: err,
+                  result: result,
+                  data: data,
+                  message:
+                    err == null
+                      ? "The transaction has been broadcasted successfully."
+                      : "There was an error broadcasting this transaction, please try again.",
+                  request_id: request_id
+                }
+              };
+              chrome.tabs.sendMessage(tab, message);
+              if (no_confirm) {
+                if (id_win != null) removeWindow(id_win);
+              } else chrome.runtime.sendMessage(message);
+              key = null;
+              accounts = null;
+              rpc.rollback();
+            }
+          );
         } else {
           const operations = [
-            ['comment',
+            [
+              "comment",
               {
                 parent_author: data.parent_username,
                 parent_permlink: data.parent_perm,
@@ -255,16 +307,53 @@ async function performTransaction(data, tab, no_confirm) {
                 json_metadata: data.json_metadata
               }
             ],
-            ['comment_options',
-              JSON.parse(data.comment_options)
-            ]
+            ["comment_options", JSON.parse(data.comment_options)]
           ];
-          steem.broadcast.send({
-            operations,
-            extensions: []
-          }, {
-            posting: key
-          }, function(err, result) {
+          steem.broadcast.send(
+            {
+              operations,
+              extensions: []
+            },
+            {
+              posting: key
+            },
+            function(err, result) {
+              const message = {
+                command: "answerRequest",
+                msg: {
+                  success: err == null,
+                  error: err,
+                  result: result,
+                  data: data,
+                  message:
+                    err == null
+                      ? "The transaction has been broadcasted successfully."
+                      : "There was an error broadcasting this transaction, please try again.",
+                  request_id: request_id
+                }
+              };
+              chrome.tabs.sendMessage(tab, message);
+              if (no_confirm) {
+                if (id_win != null) removeWindow(id_win);
+              } else chrome.runtime.sendMessage(message);
+              key = null;
+              accounts = null;
+              rpc.rollback();
+            }
+          );
+        }
+        break;
+      case "addAccountAuthority":
+        steem.broadcast.addAccountAuth(
+          {
+            signingKey: key,
+            username: data.username,
+            authorizedUsername: data.authorizedUsername,
+            role: data.role.toLowerCase(),
+            weight: parseInt(data.weight)
+          },
+          function(err, result) {
+            console.log(err, result);
             const message = {
               command: "answerRequest",
               msg: {
@@ -272,95 +361,70 @@ async function performTransaction(data, tab, no_confirm) {
                 error: err,
                 result: result,
                 data: data,
-                message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
                 request_id: request_id
               }
             };
             chrome.tabs.sendMessage(tab, message);
             if (no_confirm) {
-              if (id_win != null)
-                removeWindow(id_win);
-            } else
-              chrome.runtime.sendMessage(message);
+              if (id_win != null) removeWindow(id_win);
+            } else chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
             rpc.rollback();
-          });
-
-        }
-        break;
-      case "addAccountAuthority":
-        steem.broadcast.addAccountAuth({
-          signingKey: key,
-          username: data.username,
-          authorizedUsername: data.authorizedUsername,
-          role: data.role.toLowerCase(),
-          weight: parseInt(data.weight)
-        }, function(err, result) {
-          console.log(err, result);
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: err == null,
-              error: err,
-              result: result,
-              data: data,
-              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-          chrome.tabs.sendMessage(tab, message);
-          if (no_confirm) {
-            if (id_win != null)
-              removeWindow(id_win);
-          } else
-            chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
+          }
+        );
         break;
       case "removeAccountAuthority":
-        steem.broadcast.removeAccountAuth({
-          signingKey: key,
-          username: data.username,
-          authorizedUsername: data.authorizedUsername,
-          role: data.role.toLowerCase(),
-        }, function(err, result) {
-          console.log(err, result);
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: err == null,
-              error: err,
-              result: result,
-              data: data,
-              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-          chrome.tabs.sendMessage(tab, message);
-          if (no_confirm) {
-            if (id_win != null)
-              removeWindow(id_win);
-          } else
-            chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
+        steem.broadcast.removeAccountAuth(
+          {
+            signingKey: key,
+            username: data.username,
+            authorizedUsername: data.authorizedUsername,
+            role: data.role.toLowerCase()
+          },
+          function(err, result) {
+            console.log(err, result);
+            const message = {
+              command: "answerRequest",
+              msg: {
+                success: err == null,
+                error: err,
+                result: result,
+                data: data,
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null) removeWindow(id_win);
+            } else chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          }
+        );
         break;
       case "createClaimedAccount":
-
-        steem.broadcast.createClaimedAccountAsync(
+        steem.broadcast
+          .createClaimedAccountAsync(
             key,
             data.username,
             data.new_account,
             JSON.parse(data.owner),
             JSON.parse(data.active),
             JSON.parse(data.posting),
-            data.memo, {},
-            [])
+            data.memo,
+            {},
+            []
+          )
           .then(function(result, err) {
             console.log(err, result);
             const message = {
@@ -370,16 +434,17 @@ async function performTransaction(data, tab, no_confirm) {
                 error: err,
                 result: result,
                 data: data,
-                message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
                 request_id: request_id
               }
             };
             chrome.tabs.sendMessage(tab, message);
             if (no_confirm) {
-              if (id_win != null)
-                removeWindow(id_win);
-            } else
-              chrome.runtime.sendMessage(message);
+              if (id_win != null) removeWindow(id_win);
+            } else chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
             rpc.rollback();
@@ -390,32 +455,37 @@ async function performTransaction(data, tab, no_confirm) {
         const broadcastKeys = {};
         broadcastKeys[data.typeWif] = key;
         console.log(operations, broadcastKeys);
-        steem.broadcast.send({
-          operations,
-          extensions: []
-        }, broadcastKeys, function(err, result) {
-          console.log(err, result);
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: err == null,
-              error: err,
-              result: result,
-              data: data,
-              message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-          chrome.tabs.sendMessage(tab, message);
-          if (no_confirm) {
-            if (id_win != null)
-              removeWindow(id_win);
-          } else
-            chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
+        steem.broadcast.send(
+          {
+            operations,
+            extensions: []
+          },
+          broadcastKeys,
+          function(err, result) {
+            console.log(err, result);
+            const message = {
+              command: "answerRequest",
+              msg: {
+                success: err == null,
+                error: err,
+                result: result,
+                data: data,
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null) removeWindow(id_win);
+            } else chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          }
+        );
         break;
       case "signedCall":
         window.signedCall(
@@ -432,107 +502,76 @@ async function performTransaction(data, tab, no_confirm) {
                 error: err,
                 result: result,
                 data: data,
-                message: err == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                message:
+                  err == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
                 request_id: request_id
               }
             };
             chrome.tabs.sendMessage(tab, message);
             if (no_confirm) {
-              if (id_win != null)
-                removeWindow(id_win);
-            } else
-              chrome.runtime.sendMessage(message);
+              if (id_win != null) removeWindow(id_win);
+            } else chrome.runtime.sendMessage(message);
             key = null;
             accounts = null;
             rpc.rollback();
-          });
+          }
+        );
         break;
       case "delegation":
-        steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
+        steem.api.getDynamicGlobalPropertiesAsync().then(res => {
           let delegated_vest = null;
           if (data.unit == "SP") {
-            const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
-            const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
-            delegated_vest = parseFloat(data.amount) * totalVests / totalSteem;
+            const totalSteem = Number(
+              res.total_vesting_fund_steem.split(" ")[0]
+            );
+            const totalVests = Number(res.total_vesting_shares.split(" ")[0]);
+            delegated_vest =
+              (parseFloat(data.amount) * totalVests) / totalSteem;
             delegated_vest = delegated_vest.toFixed(6);
-            delegated_vest = delegated_vest.toString() + ' VESTS';
+            delegated_vest = delegated_vest.toString() + " VESTS";
           } else {
-            delegated_vest = data.amount + ' VESTS';
+            delegated_vest = data.amount + " VESTS";
           }
-          steem.broadcast.delegateVestingShares(key, data.username, data.delegatee, delegated_vest, function(error, result) {
-            const message = {
-              command: "answerRequest",
-              msg: {
-                success: error == null,
-                error: error,
-                result: result,
-                data: data,
-                message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-                request_id: request_id
-              }
-            };
-            chrome.tabs.sendMessage(tab, message);
-            if (no_confirm) {
-              if (id_win != null)
-                removeWindow(id_win);
-            } else
-              chrome.runtime.sendMessage(message);
-            key = null;
-            accounts = null;
-            rpc.rollback();
-          });
+          steem.broadcast.delegateVestingShares(
+            key,
+            data.username,
+            data.delegatee,
+            delegated_vest,
+            function(error, result) {
+              const message = {
+                command: "answerRequest",
+                msg: {
+                  success: error == null,
+                  error: error,
+                  result: result,
+                  data: data,
+                  message:
+                    error == null
+                      ? "The transaction has been broadcasted successfully."
+                      : "There was an error broadcasting this transaction, please try again.",
+                  request_id: request_id
+                }
+              };
+              chrome.tabs.sendMessage(tab, message);
+              if (no_confirm) {
+                if (id_win != null) removeWindow(id_win);
+              } else chrome.runtime.sendMessage(message);
+              key = null;
+              accounts = null;
+              rpc.rollback();
+            }
+          );
         });
         break;
       case "witnessVote":
-        steem.broadcast.accountWitnessVote(key, data.username, data.witness, data.vote ? 1 : 0, function(error, result) {
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: error == null,
-              error: error,
-              result: result,
-              data: data,
-              message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-          chrome.tabs.sendMessage(tab, message);
-          chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
-        break;
-      case "powerUp":
-        steem.broadcast.transferToVesting(key, data.username, data.recipient, data.steem + " STEEM", function(error, result) {
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: error == null,
-              error: error,
-              result: result,
-              data: data,
-              message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
-            }
-          };
-          chrome.tabs.sendMessage(tab, message);
-          chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
-        break;
-      case "powerDown":
-        steem.api.getDynamicGlobalPropertiesAsync().then((res) => {
-          let vestingShares = null;
-          const totalSteem = Number(res.total_vesting_fund_steem.split(' ')[0]);
-          const totalVests = Number(res.total_vesting_shares.split(' ')[0]);
-          vestingShares = parseFloat(data.steem_power) * totalVests / totalSteem;
-          vestingShares = vestingShares.toFixed(6);
-          vestingShares = vestingShares.toString() + ' VESTS';
-
-          steem.broadcast.withdrawVesting(key, data.username, vestingShares, function(error, result) {
+        steem.broadcast.accountWitnessVote(
+          key,
+          data.username,
+          data.witness,
+          data.vote ? 1 : 0,
+          function(error, result) {
             const message = {
               command: "answerRequest",
               msg: {
@@ -540,7 +579,177 @@ async function performTransaction(data, tab, no_confirm) {
                 error: error,
                 result: result,
                 data: data,
-                message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
+                message:
+                  error == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          }
+        );
+        break;
+      case "powerUp":
+        steem.broadcast.transferToVesting(
+          key,
+          data.username,
+          data.recipient,
+          data.steem + " STEEM",
+          function(error, result) {
+            const message = {
+              command: "answerRequest",
+              msg: {
+                success: error == null,
+                error: error,
+                result: result,
+                data: data,
+                message:
+                  error == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          }
+        );
+        break;
+      case "powerDown":
+        steem.api.getDynamicGlobalPropertiesAsync().then(res => {
+          let vestingShares = null;
+          const totalSteem = Number(res.total_vesting_fund_steem.split(" ")[0]);
+          const totalVests = Number(res.total_vesting_shares.split(" ")[0]);
+          vestingShares =
+            (parseFloat(data.steem_power) * totalVests) / totalSteem;
+          vestingShares = vestingShares.toFixed(6);
+          vestingShares = vestingShares.toString() + " VESTS";
+
+          steem.broadcast.withdrawVesting(
+            key,
+            data.username,
+            vestingShares,
+            function(error, result) {
+              const message = {
+                command: "answerRequest",
+                msg: {
+                  success: error == null,
+                  error: error,
+                  result: result,
+                  data: data,
+                  message:
+                    error == null
+                      ? "The transaction has been broadcasted successfully."
+                      : "There was an error broadcasting this transaction, please try again.",
+                  request_id: request_id
+                }
+              };
+              chrome.tabs.sendMessage(tab, message);
+              chrome.runtime.sendMessage(message);
+              key = null;
+              accounts = null;
+              rpc.rollback();
+            }
+          );
+        });
+        break;
+      case "sendToken":
+        const id = config.mainNet;
+        const json = {
+          contractName: "tokens",
+          contractAction: "transfer",
+          contractPayload: {
+            symbol: data.currency,
+            to: data.to,
+            quantity: data.amount,
+            memo: data.memo
+          }
+        };
+        steem.broadcast.customJson(
+          key,
+          [data.username],
+          null,
+          id,
+          JSON.stringify(json),
+          function(error, result) {
+            console.log(error, result);
+            const message = {
+              command: "answerRequest",
+              msg: {
+                success: error == null,
+                error: error,
+                result: result,
+                data: data,
+                message:
+                  error == null
+                    ? "The transaction has been broadcasted successfully."
+                    : "There was an error broadcasting this transaction, please try again.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          }
+        );
+        break;
+      case "createProposal":
+        let keys = {};
+        keys[data.typeWif] = key;
+        createProposal(
+          keys,
+          data.username,
+          data.receiver,
+          data.start,
+          data.end,
+          data.daily_pay,
+          data.subject,
+          data.permlink,
+          data.extensions
+        )
+          .then(result => {
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: true,
+                error: null,
+                result: result,
+                data: data,
+                message: "Proposal created succesfully",
+                request_id: request_id
+              }
+            };
+
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null) removeWindow(id_win);
+            } else {
+              chrome.runtime.sendMessage(message);
+            }
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          })
+          .catch(err => {
+            console.log(err);
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: false,
+                error: "create_proposal_error",
+                result: null,
+                data: data,
+                message: "Could not create proposal.",
                 request_id: request_id
               }
             };
@@ -550,39 +759,111 @@ async function performTransaction(data, tab, no_confirm) {
             accounts = null;
             rpc.rollback();
           });
-        });
         break;
-      case "sendToken":
-        const id = config.mainNet;
-        const json = {
-          "contractName": "tokens",
-          "contractAction": "transfer",
-          "contractPayload": {
-            "symbol": data.currency,
-            "to": data.to,
-            "quantity": data.amount,
-            "memo": data.memo
-          }
-        };
-        steem.broadcast.customJson(key, [data.username], null, id, JSON.stringify(json), function(error, result) {
-          console.log(error, result);
-          const message = {
-            command: "answerRequest",
-            msg: {
-              success: error == null,
-              error: error,
-              result: result,
-              data: data,
-              message: error == null ? "The transaction has been broadcasted successfully." : "There was an error broadcasting this transaction, please try again.",
-              request_id: request_id
+      case "updateProposalVote":
+        let voteKeys = {};
+        voteKeys[data.typeWif] = key;
+        voteForProposal(
+          voteKeys,
+          data.username,
+          data.proposal_ids,
+          data.approve,
+          data.extensions
+        )
+          .then(result => {
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: true,
+                error: null,
+                result: result,
+                data: data,
+                message: "Proposal voted succesfully",
+                request_id: request_id
+              }
+            };
+
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null) removeWindow(id_win);
+            } else {
+              chrome.runtime.sendMessage(message);
             }
-          };
-          chrome.tabs.sendMessage(tab, message);
-          chrome.runtime.sendMessage(message);
-          key = null;
-          accounts = null;
-          rpc.rollback();
-        });
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          })
+          .catch(err => {
+            console.log(err);
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: false,
+                error: "vote_proposal_error",
+                result: null,
+                data: data,
+                message: "Could not vote for proposal.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          });
+        break;
+      case "removeProposal":
+        let removeProposalKeys = {};
+        removeProposalKeys[data.typeWif] = key;
+        removeProposal(
+          removeProposalKeys,
+          data.username,
+          data.proposal_ids,
+          data.extensions
+        )
+          .then(result => {
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: true,
+                error: null,
+                result: result,
+                data: data,
+                message: "Proposal removed succesfully",
+                request_id: request_id
+              }
+            };
+
+            chrome.tabs.sendMessage(tab, message);
+            if (no_confirm) {
+              if (id_win != null) removeWindow(id_win);
+            } else {
+              chrome.runtime.sendMessage(message);
+            }
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          })
+          .catch(err => {
+            console.log(err);
+            let message = {
+              command: "answerRequest",
+              msg: {
+                success: false,
+                error: "remove_proposal_error",
+                result: null,
+                data: data,
+                message: "Could not remove the proposal.",
+                request_id: request_id
+              }
+            };
+            chrome.tabs.sendMessage(tab, message);
+            chrome.runtime.sendMessage(message);
+            key = null;
+            accounts = null;
+            rpc.rollback();
+          });
         break;
       case "decode":
         try {
@@ -602,8 +883,7 @@ async function performTransaction(data, tab, no_confirm) {
 
           chrome.tabs.sendMessage(tab, message);
           if (no_confirm) {
-            if (id_win != null)
-              removeWindow(id_win);
+            if (id_win != null) removeWindow(id_win);
           } else {
             chrome.runtime.sendMessage(message);
           }
@@ -615,7 +895,7 @@ async function performTransaction(data, tab, no_confirm) {
             command: "answerRequest",
             msg: {
               success: false,
-              error: 'decode_error',
+              error: "decode_error",
               result: null,
               data: data,
               message: "Could not verify key.",
@@ -646,10 +926,8 @@ async function performTransaction(data, tab, no_confirm) {
           };
           chrome.tabs.sendMessage(tab, message);
           if (no_confirm) {
-            if (id_win != null)
-              removeWindow(id_win);
-          } else
-            chrome.runtime.sendMessage(message);
+            if (id_win != null) removeWindow(id_win);
+          } else chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
           rpc.rollback();
@@ -659,7 +937,7 @@ async function performTransaction(data, tab, no_confirm) {
             command: "answerRequest",
             msg: {
               success: false,
-              error: 'sign_error',
+              error: "sign_error",
               result: null,
               data: data,
               message: "Could not sign.",
@@ -668,10 +946,8 @@ async function performTransaction(data, tab, no_confirm) {
           };
           chrome.tabs.sendMessage(tab, message);
           if (no_confirm) {
-            if (id_win != null)
-              removeWindow(id_win);
-          } else
-            chrome.runtime.sendMessage(message);
+            if (id_win != null) removeWindow(id_win);
+          } else chrome.runtime.sendMessage(message);
           key = null;
           accounts = null;
           rpc.rollback();
@@ -679,46 +955,57 @@ async function performTransaction(data, tab, no_confirm) {
         break;
     }
   } catch (e) {
-    console.log('error', e);
+    console.log("error", e);
     rpc.rollback();
-    sendErrors(tab, "transaction_error", "An unknown error has occurred.", "An unknown error has occurred.", data);
+    sendErrors(
+      tab,
+      "transaction_error",
+      "An unknown error has occurred.",
+      "An unknown error has occurred.",
+      data
+    );
   }
 }
 
-function createPopup(popupHtml = "html/dialog.html", callback) {
-    let width = 350;
-    confirmed = false;
-    //Ensuring only one window is opened by the extension at a time.
-    if (id_win != null) {
-        removeWindow(id_win);
-        id_win = null;
-    }
-    //Create new window on the top right of the screen
-    chrome.windows.getCurrent(function(w) {
-        chrome.windows.create({
-            url: chrome.runtime.getURL(popupHtml),
-            type: "popup",
-            height: 566,
-            width: width,
-            left: w.width - width + w.left,
-            top: w.top
-        }, function(win) {
-            id_win = win.id;
-            // Window create fails to take into account window size so it s updated afterwhile.
-            chrome.windows.update(win.id, {
-                height: 566,
-                width: width,
-                top: w.top,
-                left: w.width - width + w.left
-            });
-
-            if (typeof callback === 'function') {
-                clearInterval(interval);
-                interval=setInterval(callback,200);
-                setTimeout(function(){clearInterval(interval)},2000);
-            }
+function createPopup(callback, popupHtml = "html/dialog.html") {
+  let width = 350;
+  confirmed = false;
+  //Ensuring only one window is opened by the extension at a time.
+  if (id_win != null) {
+    removeWindow(id_win);
+    id_win = null;
+  }
+  //Create new window on the top right of the screen
+  chrome.windows.getCurrent(function(w) {
+    console.log(popupHtml);
+    chrome.windows.create(
+      {
+        url: chrome.runtime.getURL(popupHtml),
+        type: "popup",
+        height: 566,
+        width: width,
+        left: w.width - width + w.left,
+        top: w.top
+      },
+      function(win) {
+        id_win = win.id;
+        // Window create fails to take into account window size so it s updated afterwhile.
+        chrome.windows.update(win.id, {
+          height: 566,
+          width: width,
+          top: w.top,
+          left: w.width - width + w.left
         });
-    });
+
+        if (typeof callback === "function") {
+          clearInterval(interval);
+          interval = setInterval(callback, 200);
+          setTimeout(function() {
+            clearInterval(interval);
+          }, 2000);
+        }
+      }
+    );
   });
 }
 
@@ -740,7 +1027,8 @@ chrome.windows.onRemoved.addListener(function(id) {
 });
 
 function checkBeforeCreate(request, tab, domain) {
-  if (mk == null) { // Check if locked
+  if (mk == null) {
+    // Check if locked
     function callback() {
       console.log("locked");
       chrome.runtime.sendMessage({
@@ -751,7 +1039,8 @@ function checkBeforeCreate(request, tab, domain) {
           result: null,
           data: request,
           message: "The wallet is locked!",
-          display_msg: "The current website is trying to send a request to the Steem Keychain browser extension. Please enter your password below to unlock the wallet and continue."
+          display_msg:
+            "The current website is trying to send a request to the Steem Keychain browser extension. Please enter your password below to unlock the wallet and continue."
         },
         tab: tab,
         domain: domain
@@ -759,114 +1048,184 @@ function checkBeforeCreate(request, tab, domain) {
     }
     createPopup(callback);
   } else {
-    chrome.storage.local.get(['accounts', 'no_confirm', 'current_rpc'], function(items) { // Check user
-      if (items.accounts == null || items.accounts == undefined) {
-        createPopup(function() {
-          sendErrors(tab, "no_wallet", "No wallet!", "", request);
-        });
-      } else {
-        // Check that user and wanted keys are in the wallet
-        accounts = (items.accounts == undefined || items.accounts == {
-          list: []
-        }) ? null : decryptToJson(items.accounts, mk);
-        let account = null;
-        if (request.type == "transfer") {
-          let tr_accounts = accounts.list.filter(a => a.keys.hasOwnProperty("active"));
-          const encode = (request.memo != undefined && request.memo.length > 0 && request.memo[0] == "#");
-          const enforce = request.enforce || encode;
-          if (encode)
-            account = accounts.list.find(function(e) {
-              return e.name == request.username;
-            });
-          // If a username is specified, check that its active key has been added to the wallet
-          if (enforce && request.username && !tr_accounts.find(a => a.name == request.username)) {
-            createPopup(function() {
-              console.log("error1");
-              sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
-            });
-          } else if (encode && !account.keys.hasOwnProperty("memo")) {
-            createPopup(function() {
-              console.log("error2");
-              sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the memo key, which has not been added to the wallet.", request);
-            });
-          } else if (tr_accounts.length == 0) {
-            createPopup(function() {
-              console.log("error3");
-              sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" + request.username + " using the active key, which has not been added to the wallet.", request);
-            });
-          } else {
-            function callback() {
-              chrome.runtime.sendMessage({
-                command: "sendDialogConfirm",
-                data: request,
-                domain: domain,
-                accounts: tr_accounts,
-                tab: tab,
-                testnet: items.current_rpc === 'TESTNET',
-              });
-            }
-            createPopup(callback);
-          }
+    chrome.storage.local.get(
+      ["accounts", "no_confirm", "current_rpc"],
+      function(items) {
+        // Check user
+        if (items.accounts == null || items.accounts == undefined) {
+          createPopup(function() {
+            sendErrors(tab, "no_wallet", "No wallet!", "", request);
+          });
         } else {
-          if (!accounts.list.find(e => e.name == request.username)) {
-            function callback() {
-
-              console.log("error4");
-              sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " which has not been added to the wallet.", request);
-            }
-            createPopup(callback);
-          } else {
-            account = accounts.list.find(function(e) {
-              return e.name == request.username;
-            });
-            let typeWif = getRequiredWifType(request);
-            let req = request;
-            req.key = typeWif;
-
-            if (req.type == "custom")
-              req.method = typeWif;
-
-            if (req.type == "broadcast") {
-              req.typeWif = typeWif;
-            }
-
-            if (account.keys[typeWif] == undefined) {
+          // Check that user and wanted keys are in the wallet
+          accounts =
+            items.accounts == undefined ||
+            items.accounts ==
+              {
+                list: []
+              }
+              ? null
+              : decryptToJson(items.accounts, mk);
+          let account = null;
+          if (request.type == "transfer") {
+            let tr_accounts = accounts.list.filter(a =>
+              a.keys.hasOwnProperty("active")
+            );
+            const encode =
+              request.memo != undefined &&
+              request.memo.length > 0 &&
+              request.memo[0] == "#";
+            const enforce = request.enforce || encode;
+            if (encode)
+              account = accounts.list.find(function(e) {
+                return e.name == request.username;
+              });
+            // If a username is specified, check that its active key has been added to the wallet
+            if (
+              enforce &&
+              request.username &&
+              !tr_accounts.find(a => a.name == request.username)
+            ) {
               createPopup(function() {
-                console.log("error5");
-                sendErrors(tab, "user_cancel", "Request was canceled by the user.", "The current website is trying to send a request to the Steem Keychain browser extension for account @" + request.username + " using the " + typeWif + " key, which has not been added to the wallet.", request);
+                console.log("error1");
+                sendErrors(
+                  tab,
+                  "user_cancel",
+                  "Request was canceled by the user.",
+                  "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" +
+                    request.username +
+                    " using the active key, which has not been added to the wallet.",
+                  request
+                );
+              });
+            } else if (encode && !account.keys.hasOwnProperty("memo")) {
+              createPopup(function() {
+                console.log("error2");
+                sendErrors(
+                  tab,
+                  "user_cancel",
+                  "Request was canceled by the user.",
+                  "The current website is trying to send a request to the Steem Keychain browser extension for account @" +
+                    request.username +
+                    " using the memo key, which has not been added to the wallet.",
+                  request
+                );
+              });
+            } else if (tr_accounts.length == 0) {
+              createPopup(function() {
+                console.log("error3");
+                sendErrors(
+                  tab,
+                  "user_cancel",
+                  "Request was canceled by the user.",
+                  "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" +
+                    request.username +
+                    " using the active key, which has not been added to the wallet.",
+                  request
+                );
               });
             } else {
-              key = account.keys[typeWif];
-              if (!hasNoConfirm(items.no_confirm, req, domain, items.current_rpc)) {
-                function callback() {
-                  chrome.runtime.sendMessage({
-                    command: "sendDialogConfirm",
-                    data: req,
-                    domain: domain,
-                    tab: tab,
-                    testnet: items.current_rpc === 'TESTNET',
-                  });
-                }
-                createPopup(callback);
-                // Send the request to confirmation window
+              function callback() {
+                chrome.runtime.sendMessage({
+                  command: "sendDialogConfirm",
+                  data: request,
+                  domain: domain,
+                  accounts: tr_accounts,
+                  tab: tab,
+                  testnet: items.current_rpc === "TESTNET"
+                });
+              }
+              createPopup(callback);
+            }
+          } else {
+            if (!accounts.list.find(e => e.name == request.username)) {
+              function callback() {
+                console.log("error4");
+                sendErrors(
+                  tab,
+                  "user_cancel",
+                  "Request was canceled by the user.",
+                  "The current website is trying to send a request to the Steem Keychain browser extension for account @" +
+                    request.username +
+                    " which has not been added to the wallet.",
+                  request
+                );
+              }
+              createPopup(callback);
+            } else {
+              account = accounts.list.find(function(e) {
+                return e.name == request.username;
+              });
+              let typeWif = getRequiredWifType(request);
+              let req = request;
+              req.key = typeWif;
+
+              if (req.type == "custom") req.method = typeWif;
+
+              if (req.type == "broadcast") {
+                req.typeWif = typeWif;
+              }
+
+              if (account.keys[typeWif] == undefined) {
+                createPopup(function() {
+                  console.log("error5");
+                  sendErrors(
+                    tab,
+                    "user_cancel",
+                    "Request was canceled by the user.",
+                    "The current website is trying to send a request to the Steem Keychain browser extension for account @" +
+                      request.username +
+                      " using the " +
+                      typeWif +
+                      " key, which has not been added to the wallet.",
+                    request
+                  );
+                });
               } else {
-                chrome.runtime.sendMessage({ command: "broadcastingNoConfirm" });
-                performTransaction(req, tab, true);
+                key = account.keys[typeWif];
+                if (
+                  !hasNoConfirm(
+                    items.no_confirm,
+                    req,
+                    domain,
+                    items.current_rpc
+                  )
+                ) {
+                  function callback() {
+                    chrome.runtime.sendMessage({
+                      command: "sendDialogConfirm",
+                      data: req,
+                      domain: domain,
+                      tab: tab,
+                      testnet: items.current_rpc === "TESTNET"
+                    });
+                  }
+                  createPopup(callback);
+                  // Send the request to confirmation window
+                } else {
+                  chrome.runtime.sendMessage({
+                    command: "broadcastingNoConfirm"
+                  });
+                  performTransaction(req, tab, true);
+                }
               }
             }
           }
         }
       }
-    });
+    );
   }
 }
 
 function hasNoConfirm(arr, data, domain, current_rpc) {
   try {
-    if (data.method == "active" || arr == undefined || current_rpc === 'TESTNET') {
+    if (
+      data.method == "active" ||
+      arr == undefined ||
+      current_rpc === "TESTNET"
+    ) {
       return false;
-    } else
-      return JSON.parse(arr)[data.username][domain][data.type] == true;
+    } else return JSON.parse(arr)[data.username][domain][data.type] == true;
   } catch (e) {
     console.log(e);
     return false;
@@ -890,7 +1249,9 @@ function sendErrors(tab, error, message, display_msg, request) {
       tab: tab
     });
   }, 200);
-  setTimeout(function() { clearInterval(interval) }, 2000);
+  setTimeout(function() {
+    clearInterval(interval);
+  }, 2000);
   key = null;
   accounts = null;
 }
@@ -907,7 +1268,9 @@ function getRequiredWifType(request) {
       return "posting";
       break;
     case "custom":
-      return (request.method == null || request.method == undefined) ? "posting" : request.method.toLowerCase();
+      return request.method == null || request.method == undefined
+        ? "posting"
+        : request.method.toLowerCase();
       break;
     case "addAccountAuthority":
     case "removeAccountAuthority":
@@ -936,6 +1299,15 @@ function getRequiredWifType(request) {
     case "createClaimedAccount":
       return "active";
       break;
+    case "createProposal":
+      return "active";
+      break;
+    case "removeProposal":
+      return "active";
+      break;
+    case "updateProposalVote":
+      return "active";
+      break;
   }
 }
 
@@ -943,7 +1315,9 @@ function getRequiredWifType(request) {
 function removeWindow(id_win) {
   console.log(id_win);
   chrome.windows.getAll(function(windows) {
-    const hasWin = windows.filter((win) => { return win.id == id_win }).length;
+    const hasWin = windows.filter(win => {
+      return win.id == id_win;
+    }).length;
     if (hasWin) {
       chrome.windows.remove(id_win);
     }
@@ -951,65 +1325,78 @@ function removeWindow(id_win) {
 }
 
 const contextMenus = {
-    menuActions: {
-        contexts: {
-            'link': {
-                'transferToUser': {
-                    description: 'Transfer STEEM/SBD to user',
-                    action: 'transferToUser'
-                },
-
-            },
-        },
-
-        'actions': {
-            transferToUser: function(url, menuAction) {
-                const user = url.split('@').pop().split('/')[0];
-                createPopup(`html/popup.html?page=send_div&to=${user}`);
-            },
+  menuActions: {
+    contexts: {
+      link: {
+        transferToUser: {
+          description: "Transfer STEEM/SBD to user",
+          action: "transferToUser"
         }
+      }
     },
 
-    init: function () {
-        // Create one test item for each context type.
-        const contexts = ["link"];
-
-        for (let i = 0; i < contexts.length; i++) {
-            const context = contexts[i];
-
-            for(let menuActionName in contextMenus.menuActions.contexts[context]) {
-                if (contextMenus.menuActions.contexts[context].hasOwnProperty(menuActionName)) {
-                    const menuAction = contextMenus.menuActions.contexts[context][menuActionName];
-
-                    const title = menuAction.description;
-                    contextMenus.menuActions.contexts[context][menuActionName].menuItemId = chrome.contextMenus.create({
-                        "title": title,
-                        "contexts": [context],
-                        "onclick": contextMenus.genericOnClick,
-                        "targetUrlPatterns": [
-                          "https://*/@*",
-                        ]
-                    });
-                }
-            }
-        }
-    },
-
-    genericOnClick: function (info, tab) {
-        for(let context in contextMenus.menuActions.contexts) {
-            if (contextMenus.menuActions.contexts.hasOwnProperty(context)) {
-                for(let menuName in contextMenus.menuActions.contexts[context]) {
-                    if (contextMenus.menuActions.contexts[context].hasOwnProperty(menuName)) {
-                        const menuAction = contextMenus.menuActions.contexts[context][menuName];
-                        if(menuAction.menuItemId === info.menuItemId) {
-                            const url = info[context+'Url'];
-                            contextMenus.menuActions.actions[menuAction.action](url, menuAction);
-                        }
-                    }
-                }
-            }
-        }
+    actions: {
+      transferToUser: function(url, menuAction) {
+        const user = url
+          .split("@")
+          .pop()
+          .split("/")[0];
+        createPopup(null, `html/popup.html?page=send_div&to=${user}`);
+      }
     }
+  },
+
+  init: function() {
+    // Create one test item for each context type.
+    const contexts = ["link"];
+
+    for (let i = 0; i < contexts.length; i++) {
+      const context = contexts[i];
+
+      for (let menuActionName in contextMenus.menuActions.contexts[context]) {
+        if (
+          contextMenus.menuActions.contexts[context].hasOwnProperty(
+            menuActionName
+          )
+        ) {
+          const menuAction =
+            contextMenus.menuActions.contexts[context][menuActionName];
+
+          const title = menuAction.description;
+          contextMenus.menuActions.contexts[context][
+            menuActionName
+          ].menuItemId = chrome.contextMenus.create({
+            title: title,
+            contexts: [context],
+            onclick: contextMenus.genericOnClick,
+            targetUrlPatterns: ["https://*/@*"]
+          });
+        }
+      }
+    }
+  },
+
+  genericOnClick: function(info, tab) {
+    for (let context in contextMenus.menuActions.contexts) {
+      if (contextMenus.menuActions.contexts.hasOwnProperty(context)) {
+        for (let menuName in contextMenus.menuActions.contexts[context]) {
+          if (
+            contextMenus.menuActions.contexts[context].hasOwnProperty(menuName)
+          ) {
+            const menuAction =
+              contextMenus.menuActions.contexts[context][menuName];
+            if (menuAction.menuItemId === info.menuItemId) {
+              const url = info[context + "Url"];
+              contextMenus.menuActions.actions[menuAction.action](
+                url,
+                menuAction
+              );
+            }
+          }
+        }
+      }
+    }
+  }
 };
 
 contextMenus.init();

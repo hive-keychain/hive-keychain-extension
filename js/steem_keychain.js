@@ -33,7 +33,14 @@ var steem_keychain = {
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestAddAccountAuthority: function(account, authorizedUsername, role, weight, callback, rpc) {
+  requestAddAccountAuthority: function(
+    account,
+    authorizedUsername,
+    role,
+    weight,
+    callback,
+    rpc
+  ) {
     var request = {
       type: "addAccountAuthority",
       username: account,
@@ -47,7 +54,13 @@ var steem_keychain = {
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestRemoveAccountAuthority: function(account, authorizedUsername, role, callback, rpc) {
+  requestRemoveAccountAuthority: function(
+    account,
+    authorizedUsername,
+    role,
+    callback,
+    rpc
+  ) {
     var request = {
       type: "removeAccountAuthority",
       username: account,
@@ -73,7 +86,7 @@ var steem_keychain = {
   },
 
   requestSignedCall: function(account, method, params, key, callback, rpc) {
-    console.log('getting request');
+    console.log("getting request");
     var request = {
       type: "signedCall",
       username: account,
@@ -87,7 +100,18 @@ var steem_keychain = {
   },
 
   // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
-  requestPost: function(account, title, body, parent_perm, parent_account, json_metadata, permlink, comment_options, callback, rpc) {
+  requestPost: function(
+    account,
+    title,
+    body,
+    parent_perm,
+    parent_account,
+    json_metadata,
+    permlink,
+    comment_options,
+    callback,
+    rpc
+  ) {
     var request = {
       type: "post",
       username: account,
@@ -116,7 +140,15 @@ var steem_keychain = {
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-  requestCustomJson: function(account, id, key, json, display_msg, callback, rpc) {
+  requestCustomJson: function(
+    account,
+    id,
+    key,
+    json,
+    display_msg,
+    callback,
+    rpc
+  ) {
     var request = {
       type: "custom",
       username: account,
@@ -129,7 +161,16 @@ var steem_keychain = {
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestTransfer: function(account, to, amount, memo, currency, callback, enforce = false, rpc) {
+  requestTransfer: function(
+    account,
+    to,
+    amount,
+    memo,
+    currency,
+    callback,
+    enforce = false,
+    rpc
+  ) {
     var request = {
       type: "transfer",
       username: account,
@@ -142,7 +183,15 @@ var steem_keychain = {
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestSendToken: function(account, to, amount, memo, currency, callback, rpc) {
+  requestSendToken: function(
+    account,
+    to,
+    amount,
+    memo,
+    currency,
+    callback,
+    rpc
+  ) {
     var request = {
       type: "sendToken",
       username: account,
@@ -154,7 +203,14 @@ var steem_keychain = {
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestDelegation: function(username, delegatee, amount, unit, callback, rpc) {
+  requestDelegation: function(
+    username,
+    delegatee,
+    amount,
+    unit,
+    callback,
+    rpc
+  ) {
     var request = {
       type: "delegation",
       username,
@@ -195,8 +251,16 @@ var steem_keychain = {
     this.dispatchCustomEvent("swRequest", request, callback);
   },
 
-
-  requestCreateClaimedAccount: function(username, new_account, owner, active, posting, memo, callback, rpc) {
+  requestCreateClaimedAccount: function(
+    username,
+    new_account,
+    owner,
+    active,
+    posting,
+    memo,
+    callback,
+    rpc
+  ) {
     const request = {
       type: "createClaimedAccount",
       username,
@@ -210,35 +274,113 @@ var steem_keychain = {
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
+
+  //HF21
+  requestCreateProposal: function(
+    username,
+    receiver,
+    subject,
+    permlink,
+    daily_pay,
+    start,
+    end,
+    extensions,
+    callback,
+    rpc
+  ) {
+    const request = {
+      type: "createProposal",
+      username,
+      receiver,
+      subject,
+      permlink,
+      start,
+      end,
+      daily_pay,
+      extensions,
+      rpc
+    };
+
+    this.dispatchCustomEvent("swRequest", request, callback);
+  },
+
+  requestRemoveProposal: function(
+    username,
+    proposal_ids,
+    extensions,
+    callback,
+    rpc
+  ) {
+    const request = {
+      type: "removeProposal",
+      username,
+      proposal_ids,
+      extensions,
+      rpc
+    };
+
+    this.dispatchCustomEvent("swRequest", request, callback);
+  },
+  requestUpdateProposalVote: function(
+    username,
+    proposal_ids,
+    approve,
+    extensions,
+    callback,
+    rpc
+  ) {
+    const request = {
+      type: "updateProposalVote",
+      username,
+      proposal_ids,
+      approve,
+      extensions,
+      rpc
+    };
+
+    this.dispatchCustomEvent("swRequest", request, callback);
+  },
+
   // Send the customEvent
   dispatchCustomEvent: function(name, data, callback) {
     this.requests[this.current_id] = callback;
-    data = Object.assign({
-      request_id: this.current_id
-    }, data);
-    document.dispatchEvent(new CustomEvent(name, {
-      detail: data
-    }));
+    data = Object.assign(
+      {
+        request_id: this.current_id
+      },
+      data
+    );
+    document.dispatchEvent(
+      new CustomEvent(name, {
+        detail: data
+      })
+    );
     this.current_id++;
-  },
-}
+  }
+};
 
-window.addEventListener("message", function(event) {
-  // We only accept messages from ourselves
-  if (event.source != window)
-    return;
+window.addEventListener(
+  "message",
+  function(event) {
+    // We only accept messages from ourselves
+    if (event.source != window) return;
 
-  if (event.data.type && (event.data.type == "steem_keychain_response")) {
-    const response = event.data.response;
-    if (response && response.request_id) {
-      if (steem_keychain.requests[response.request_id]) {
-        steem_keychain.requests[response.request_id](response);
-        delete steem_keychain.requests[response.request_id];
+    if (event.data.type && event.data.type == "steem_keychain_response") {
+      const response = event.data.response;
+      if (response && response.request_id) {
+        if (steem_keychain.requests[response.request_id]) {
+          steem_keychain.requests[response.request_id](response);
+          delete steem_keychain.requests[response.request_id];
+        }
+      }
+    } else if (
+      event.data.type &&
+      event.data.type == "steem_keychain_handshake"
+    ) {
+      if (steem_keychain.handshake_callback) {
+        steem_keychain.handshake_callback();
       }
     }
-  } else if (event.data.type && (event.data.type == "steem_keychain_handshake")) {
-    if (steem_keychain.handshake_callback) {
-      steem_keychain.handshake_callback();
-    }
-  }
-}, false);
+  },
+  false
+);
