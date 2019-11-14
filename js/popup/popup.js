@@ -9,6 +9,7 @@ let initialized = false;
 //chrome.storage.local.remove("transfer_to");
 
 $("#copied").hide();
+$("#copied").css('visibility', 'visible');
 $("#witness_votes").hide();
 
 // Ask background if it is unlocked
@@ -166,6 +167,30 @@ $("#submit_master_pwd").click(function() {
         showError("Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter and a digit or be at least 16 characters long without restriction.");
     }
 });
+function openSubPage() {
+    /** Opening sub page from query string */
+    const queryString = window.location.search;
+    const queryParamString = queryString.split('?').pop();
+    const queryParams = queryParamString.split('&');
+    const params = {};
+    for (let qi=0; qi<queryParams.length; qi++) {
+        const queryParam = queryParams[qi];
+        const keyValue = queryParam.split('=');
+        params[keyValue[0]] = keyValue[1];
+    }
+
+    if (params.hasOwnProperty('page')) {
+        $(`#${params.page}`).show();
+        if (params.page === 'send_div' && params.hasOwnProperty('to')) {
+            $('#recipient').val(params.to);
+        } else {
+            $("#main").show();
+        }
+    } else {
+        $("#main").show();
+    }
+    /** end of opening sub page */
+}
 function acceptMP(mp){
   return mp.length>=16||(mp.length>=8&&mp.match(/.*[a-z].*/)&&mp.match(/.*[A-Z].*/)&&mp.match(/.*[0-9].*/));
 }
@@ -186,28 +211,7 @@ function initializeMainMenu() {
             $("#accounts").empty();
 
             if (initialized === false) {
-                /** Opening sub page from query string */
-                const queryString = window.location.search;
-                const queryParamString = queryString.split('?').pop();
-                const queryParams = queryParamString.split('&');
-                const params = {};
-                for (let qi=0; qi<queryParams.length; qi++) {
-                    const queryParam = queryParams[qi];
-                    const keyValue = queryParam.split('=');
-                    params[keyValue[0]] = keyValue[1];
-                }
-
-                if (params.hasOwnProperty('page')) {
-                    $(`#${params.page}`).show();
-                    if (params.page === 'send_div' && params.hasOwnProperty('to')) {
-                        $('#recipient').val(params.to);
-                    } else {
-                        $("#main").show();
-                    }
-                } else {
-                    $("#main").show();
-                }
-                /** end of opening sub page */
+                openSubPage();
             } else {
                 $("#main").show();
             }
