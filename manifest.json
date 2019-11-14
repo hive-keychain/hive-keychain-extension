@@ -1,8 +1,17 @@
 {
   "name": "Steem Keychain",
+<<<<<<< HEAD
   "version": "1.5.11",
   "description": "Secure Steem Wallet Extension.",
   "permissions": ["activeTab", "declarativeContent", "storage", "webNavigation", "tabs", "https://*/*", "notifications", "idle"],
+=======
+  "version": "1.5.14",
+  "description": "Secure Steem Wallet Extension.",
+  "permissions": [
+    "activeTab", "declarativeContent", "storage", "webNavigation", "tabs",
+    "https://*/*", "notifications", "idle", "contextMenus"
+  ],
+>>>>>>> origin/master
   "browser_action": {
     "default_popup": "html/popup.html",
     "default_icon": "images/keychain_icon_small.png"
@@ -16,7 +25,10 @@
       "vendor/decode.min.js",
       "js/config.js",
       "js/keychainify.js",
+<<<<<<< HEAD
       "js/hf21.js",
+=======
+>>>>>>> origin/master
       "js/rpcs.js",
       "js/background.js"
     ],

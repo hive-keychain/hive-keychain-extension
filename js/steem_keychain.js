@@ -210,6 +210,7 @@ var steem_keychain = {
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
+<<<<<<< HEAD
   //HF21
   requestCreateProposal: function(username, receiver, subject, permlink, daily_pay, start, end, extensions, callback, rpc) {
     const request = {
@@ -251,6 +252,8 @@ var steem_keychain = {
 
     this.dispatchCustomEvent("swRequest", request, callback);
   },
+=======
+>>>>>>> origin/master
   // Send the customEvent
   dispatchCustomEvent: function(name, data, callback) {
     this.requests[this.current_id] = callback;
@@ -276,10 +279,18 @@ window.addEventListener("message", function(event) {
         steem_keychain.requests[response.request_id](response);
         delete steem_keychain.requests[response.request_id];
       }
+<<<<<<< HEAD
     }
   } else if (event.data.type && (event.data.type == "steem_keychain_handshake")) {
     if (steem_keychain.handshake_callback) {
       steem_keychain.handshake_callback();
     }
+=======
+    }
+  } else if (event.data.type && (event.data.type == "steem_keychain_handshake")) {
+    if (steem_keychain.handshake_callback) {
+      steem_keychain.handshake_callback();
+    }
+>>>>>>> origin/master
   }
 }, false);

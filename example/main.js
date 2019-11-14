@@ -126,6 +126,7 @@ $("#send_create_claimed").click(function() {
     console.log('main js response - create claimed account');
     console.log(response);
   });
+<<<<<<< HEAD
 });
 
 $("#send_cp").click(function() {
@@ -147,4 +148,6 @@ $("#send_vp").click(function() {
     console.log('main js response - update proposal votes');
     console.log(response);
   });
+=======
+>>>>>>> origin/master
 });

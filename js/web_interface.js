@@ -1,7 +1,11 @@
 // Content script interfacing the website and the extension
 let req = null;
 
+<<<<<<< HEAD
 const setupInjection = () => {
+=======
+function setupInjection() {
+>>>>>>> origin/master
   try {
     var scriptTag = document.createElement('script')
     scriptTag.src = chrome.runtime.getURL("js/steem_keychain.js");
@@ -69,7 +73,11 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
   }
 });
 
+<<<<<<< HEAD
 const sendResponse = (response) => {
+=======
+function sendResponse(response) {
+>>>>>>> origin/master
   if (response.data.extension && response.data.extensionName)
     chrome.runtime.sendMessage(response.data.extension, JSON.stringify(response));
   else
@@ -79,7 +87,11 @@ const sendResponse = (response) => {
     }, window.location.origin);
 }
 
+<<<<<<< HEAD
 const validate = () => {
+=======
+function validate() {
+>>>>>>> origin/master
   return req != null && req != undefined && req.type != undefined && req.type != null &&
     ((req.type == "decode" && isFilled(req.username) && isFilled(req.message) && req.message[0] == "#" && isFilledKey(req.method)) ||
       (req.type == "signBuffer" && isFilled(req.username) && isFilled(req.message) && isFilledKey(req.method)) ||
@@ -99,16 +111,24 @@ const validate = () => {
       (req.type == "sendToken" && isFilledAmt(req.amount) && isFilled(req.to) && isFilled(req.currency)) ||
       (req.type == "powerUp" && isFilled(req.username) && isFilledAmt(req.steem) && isFilled(req.recipient)) ||
       (req.type == "powerDown" && isFilled(req.username) && (isFilledAmt(req.steem_power) || req.steem_power == "0.000")) ||
+<<<<<<< HEAD
       (req.type == "createClaimedAccount" && isFilled(req.username) && isFilled(req.new_account) && isFilled(req.owner) && isFilled(req.active) && isFilled(req.posting) && isFilled(req.memo)) ||
       (req.type == "createProposal" && isFilled(req.username) && isFilled(req.receiver) && isFilledDate(req.start) && isFilledDate(req.end) && isFilled(req.subject) && isFilled(req.permlink) && isFilledAmtSBD(req.daily_pay)) ||
       (req.type == "removeProposal" && isFilled(req.username) && isProposalIDs(req.proposal_ids)) ||
       (req.type == "updateProposalVote" && isFilled(req.username) && isProposalIDs(req.proposal_ids) && isBoolean(req.approve))
+=======
+      (req.type == "createClaimedAccount" && isFilled(req.username) && isFilled(req.new_account) && isFilled(req.owner) && isFilled(req.active) && isFilled(req.posting) && isFilled(req.memo))
+>>>>>>> origin/master
     );
 }
 
 // Functions used to check the incoming data
 
+<<<<<<< HEAD
 const hasTransferInfo = (req) => {
+=======
+function hasTransferInfo(req) {
+>>>>>>> origin/master
   if (req.enforce)
     return isFilled(req.username);
   else if (isFilled(req.memo) && req.memo[0] == "#")
@@ -117,6 +137,7 @@ const hasTransferInfo = (req) => {
     return true;
 }
 
+<<<<<<< HEAD
 const isFilled = (obj) => {
   return obj != undefined && obj != null && obj != "";
 }
@@ -139,11 +160,31 @@ const isFilledDelegationMethod = (obj) => {
 }
 
 const isFilledJSON = (obj) => {
+=======
+function isFilled(obj) {
+  return obj != undefined && obj != null && obj != "";
+}
+
+function isBoolean(obj) {
+  return typeof obj == typeof true;
+}
+
+function isFilledOrEmpty(obj) {
+  return (obj != undefined && obj != null) || obj == "";
+}
+
+function isFilledDelegationMethod(obj) {
+  return obj == "VESTS" || obj == "SP";
+}
+
+function isFilledJSON(obj) {
+>>>>>>> origin/master
   try {
     return isFilled(obj) && JSON.parse(obj).hasOwnProperty("requiredAuths") && JSON.parse(obj).hasOwnProperty("requiredPostingAuths") && JSON.parse(obj).hasOwnProperty("id") && JSON.parse(obj).hasOwnProperty("json");
   } catch (e) {
     return false;
   }
+<<<<<<< HEAD
 }
 
 const isFilledDate = (date) => {
@@ -189,5 +230,43 @@ const isCustomOptions = (obj) => {
 }
 
 const countDecimals = (nb) => {
+=======
+}
+
+function isFilledAmt(obj) {
+  return isFilled(obj) && !isNaN(obj) && obj > 0 && countDecimals(obj) == 3;
+}
+
+function isFilledAmtSP(obj) {
+  return isFilled(obj.amount) && !isNaN(obj.amount) && ((countDecimals(obj.amount) == 3 && obj.unit == "SP") || (countDecimals(obj.amount) == 6 && obj.unit == "VESTS"));
+}
+
+function isFilledWeight(obj) {
+  return isFilled(obj) && !isNaN(obj) && obj >= -10000 && obj <= 10000 && countDecimals(obj) == 0;
+}
+
+function isFilledCurrency(obj) {
+  return isFilled(obj) && (obj == "STEEM" || obj == "SBD");
+}
+
+function isFilledKey(obj) {
+  return isFilled(obj) && (obj == "Memo" || obj == "Active" || obj == "Posting");
+}
+
+function isCustomOptions(obj) {
+  if (obj.comment_options == "")
+    return true;
+  let comment_options = JSON.parse(obj.comment_options);
+  if (comment_options.author != obj.username || comment_options.permlink != obj.permlink)
+    return false;
+  return comment_options.hasOwnProperty("max_accepted_payout") &&
+    comment_options.hasOwnProperty("percent_steem_dollars") &&
+    comment_options.hasOwnProperty("allow_votes") &&
+    comment_options.hasOwnProperty("allow_curation_rewards") &&
+    comment_options.hasOwnProperty("extensions");
+}
+
+function countDecimals(nb) {
+>>>>>>> origin/master
   return nb.toString().split(".")[1] == undefined ? 0 : (nb.toString().split(".")[1].length || 0);
 }
