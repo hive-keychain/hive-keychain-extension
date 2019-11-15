@@ -1,10 +1,10 @@
 // All functions and events regarding the visibility and navigation
 
 // Visibility state on the main menu
-function initializeVisibility() {
+function initializeVisibility(hideAll = false) {
     $('.hide-at-start').each(function() {
         const pageId = $(this).attr('id');
-        if (pageId !== window.sk_params.page) {
+        if (hideAll || pageId !== window.sk_params.page) {
             $(this).hide();
         } else {
             $(this).show();
@@ -234,6 +234,12 @@ function showRegister() {
 }
 
 function showUnlock() {
+    if (
+      window.hasOwnProperty('sk_params')
+      && window.sk_params.hasOwnProperty('page')
+    ) {
+        $(`#${window.sk_params.page}`).hide();
+    }
     $("#main").hide();
     $("#unlock").show();
     $("#unlock_pwd").focus();
