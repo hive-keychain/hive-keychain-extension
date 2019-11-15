@@ -10,6 +10,10 @@
     "default_popup": "html/popup.html",
     "default_icon": "images/keychain_icon_small.png"
   },
+  "icons": {
+    "16": "images/keychain_icon_small.png",
+    "32": "images/keychain_icon_small.png"
+  },
   "background": {
     "scripts": [
       "vendor/crypto-js.js",
