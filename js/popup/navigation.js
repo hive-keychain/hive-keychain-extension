@@ -8,6 +8,13 @@ function initializeVisibility(hideAll = false) {
             $(this).hide();
         } else {
             $(this).show();
+            if (
+              window.sk_params.hasOwnProperty('page')
+              && window.sk_params.hasOwnProperty('noback')
+              && window.sk_params.noback
+            ) {
+              $(`#${window.sk_params.page} .back_enabled`).addClass('back_disabled');
+            }
         }
     });
 
