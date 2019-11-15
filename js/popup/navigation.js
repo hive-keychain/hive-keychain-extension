@@ -2,52 +2,32 @@
 
 // Visibility state on the main menu
 function initializeVisibility() {
+    $('.hide-at-start').each(function() {
+        const pageId = $(this).attr('id');
+        if (pageId !== window.sk_params.page) {
+            $(this).hide();
+        } else {
+            $(this).show();
+        }
+    });
+
     $("#accounts").html("");
-    $("#claim").hide();
-    $("#add_account_div").hide();
     $(".error_div").hide();
     $(".success_div").hide();
-    $("#master_check").hide();
-    $("#autolock_div").hide();
-    $("#powerup_div").hide();
-    $("#powerdown_div").hide();
-    $("#token_history_div").hide();
-    $("#confirm_send_div").hide();
     $("#username").val("");
-    $("#outgoing_del_div").hide();
-    $("#incoming_del_div").hide();
     $("#pwd").val("");
-    $("#acc_transfers").hide();
     $(".error_div").html("");
     $("#posting_key").prop("checked", true);
     $("#active_key").prop("checked", true);
     $("#memo_key").prop("checked", true);
-    $(".account_info").hide();
-    $(".account_info_content").hide();
     $(".account_info_menu").removeClass("rotate180");
-    $("#transfer_to").hide();
-    $("#add_key_div").hide();
-    $("#estimation_info").hide();
-    $("#pref_div").hide();
-    $("#tokens_div").hide();
-    $("#token_send_div").hide();
-    $("#confirm_token_send_div").hide();
-    $("#tokens_settings_div").hide();
-    $("#delegation_div").hide();
-    $("#add_rpc_div").hide();
-    $("#edit_del_div").hide();
     $("#new_key").val("");
     $("#keys_info").empty();
     $("#balance_steem").html("");
     $("#balance_sbd").html("");
-    $("#witness_div").hide();
     $("#balance_sp").html("");
     $(".checkbox_memo").hide();
     $("#encrypt_memo").prop("checked", false);
-    $("#register").hide();
-    $("#unlock").hide();
-    $("#send_div").hide();
-    $("#settings_div").hide();
     $("#add_account_div .back_enabled").removeClass("back_disabled");
     $(".wallet_currency").removeClass('dropdown-open');
     $(".dropdown").hide();
