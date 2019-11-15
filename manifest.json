@@ -25,7 +25,13 @@
       "js/keychainify.js",
       "js/hf21.js",
       "js/rpcs.js",
-      "js/background.js"
+      "js/background/init.js",
+      "js/background/autolock.js",
+      "js/background/dialog_lifecycle.js",
+      "js/background/errors.js",
+      "js/background/keychainify.js",
+      "js/background/auth.js",
+      "js/background/transactions.js"
     ],
     "persistent": true
   },
