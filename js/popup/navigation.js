@@ -11,6 +11,7 @@ function initializeVisibility(hideAll = false) {
         }
     });
 
+    $("#claim").hide();
     $("#accounts").html("");
     $(".error_div").hide();
     $(".success_div").hide();
@@ -117,6 +118,7 @@ $("#manage").click(function() {
 // Go back
 $(".back_menu").click(function() {
     initializeMainMenu();
+    initializeVisibility();
 });
 
 // Click on the change password option of the settings
