@@ -1341,7 +1341,7 @@ const contextMenus = {
           .split("@")
           .pop()
           .split("/")[0];
-        createPopup(null, `html/popup.html?page=send_div&to=${user}`);
+        createPopup(null, `html/popup.html?page=send_div&to=${user}&noback=1`);
       }
     }
   },
