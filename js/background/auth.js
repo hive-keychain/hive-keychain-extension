@@ -1,7 +1,7 @@
-function checkBeforeCreate(request, tab, domain) {
+const checkBeforeCreate = (request, tab, domain) => {
   if (mk == null) {
     // Check if locked
-    function callback() {
+    const callback = () => {
       console.log("locked");
       chrome.runtime.sendMessage({
         command: "sendDialogError",
@@ -17,7 +17,7 @@ function checkBeforeCreate(request, tab, domain) {
         tab: tab,
         domain: domain
       });
-    }
+    };
     createPopup(callback);
   } else {
     chrome.storage.local.get(
@@ -25,7 +25,7 @@ function checkBeforeCreate(request, tab, domain) {
       function(items) {
         // Check user
         if (items.accounts == null || items.accounts == undefined) {
-          createPopup(function() {
+          createPopup(() => {
             sendErrors(tab, "no_wallet", "No wallet!", "", request);
           });
         } else {
@@ -49,7 +49,7 @@ function checkBeforeCreate(request, tab, domain) {
               request.memo[0] == "#";
             const enforce = request.enforce || encode;
             if (encode)
-              account = accounts.list.find(function(e) {
+              account = accounts.list.find(e => {
                 return e.name == request.username;
               });
             // If a username is specified, check that its active key has been added to the wallet
@@ -58,7 +58,7 @@ function checkBeforeCreate(request, tab, domain) {
               request.username &&
               !tr_accounts.find(a => a.name == request.username)
             ) {
-              createPopup(function() {
+              createPopup(() => {
                 console.log("error1");
                 sendErrors(
                   tab,
@@ -71,7 +71,7 @@ function checkBeforeCreate(request, tab, domain) {
                 );
               });
             } else if (encode && !account.keys.hasOwnProperty("memo")) {
-              createPopup(function() {
+              createPopup(() => {
                 console.log("error2");
                 sendErrors(
                   tab,
@@ -84,7 +84,7 @@ function checkBeforeCreate(request, tab, domain) {
                 );
               });
             } else if (tr_accounts.length == 0) {
-              createPopup(function() {
+              createPopup(() => {
                 console.log("error3");
                 sendErrors(
                   tab,
@@ -97,7 +97,7 @@ function checkBeforeCreate(request, tab, domain) {
                 );
               });
             } else {
-              function callback() {
+              const callback = () => {
                 chrome.runtime.sendMessage({
                   command: "sendDialogConfirm",
                   data: request,
@@ -106,12 +106,12 @@ function checkBeforeCreate(request, tab, domain) {
                   tab: tab,
                   testnet: items.current_rpc === "TESTNET"
                 });
-              }
+              };
               createPopup(callback);
             }
           } else {
             if (!accounts.list.find(e => e.name == request.username)) {
-              function callback() {
+              const callback = () => {
                 console.log("error4");
                 sendErrors(
                   tab,
@@ -122,7 +122,7 @@ function checkBeforeCreate(request, tab, domain) {
                     " which has not been added to the wallet.",
                   request
                 );
-              }
+              };
               createPopup(callback);
             } else {
               account = accounts.list.find(function(e) {
@@ -139,7 +139,7 @@ function checkBeforeCreate(request, tab, domain) {
               }
 
               if (account.keys[typeWif] == undefined) {
-                createPopup(function() {
+                createPopup(() => {
                   console.log("error5");
                   sendErrors(
                     tab,
@@ -163,7 +163,7 @@ function checkBeforeCreate(request, tab, domain) {
                     items.current_rpc
                   )
                 ) {
-                  function callback() {
+                  const callback = () => {
                     chrome.runtime.sendMessage({
                       command: "sendDialogConfirm",
                       data: req,
@@ -171,7 +171,7 @@ function checkBeforeCreate(request, tab, domain) {
                       tab: tab,
                       testnet: items.current_rpc === "TESTNET"
                     });
-                  }
+                  };
                   createPopup(callback);
                   // Send the request to confirmation window
                 } else {
@@ -187,9 +187,9 @@ function checkBeforeCreate(request, tab, domain) {
       }
     );
   }
-}
+};
 
-function hasNoConfirm(arr, data, domain, current_rpc) {
+const hasNoConfirm = (arr, data, domain, current_rpc) => {
   try {
     if (
       data.method == "active" ||
@@ -202,10 +202,10 @@ function hasNoConfirm(arr, data, domain, current_rpc) {
     console.log(e);
     return false;
   }
-}
+};
 
 // Get the key needed for each type of transaction
-function getRequiredWifType(request) {
+const getRequiredWifType = request => {
   switch (request.type) {
     case "decode":
     case "signBuffer":
@@ -257,4 +257,4 @@ function getRequiredWifType(request) {
       return "active";
       break;
   }
-}
+};

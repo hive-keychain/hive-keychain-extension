@@ -1,4 +1,4 @@
-function createPopup(callback, popupHtml = "html/dialog.html") {
+const createPopup = (callback, popupHtml = "html/dialog.html") => {
   let width = 350;
   confirmed = false;
   //Ensuring only one window is opened by the extension at a time.
@@ -7,7 +7,7 @@ function createPopup(callback, popupHtml = "html/dialog.html") {
     id_win = null;
   }
   //Create new window on the top right of the screen
-  chrome.windows.getCurrent(function(w) {
+  chrome.windows.getCurrent(w => {
     console.log(popupHtml);
     chrome.windows.create(
       {
@@ -18,7 +18,7 @@ function createPopup(callback, popupHtml = "html/dialog.html") {
         left: w.width - width + w.left,
         top: w.top
       },
-      function(win) {
+      win => {
         id_win = win.id;
         // Window create fails to take into account window size so it s updated afterwhile.
         chrome.windows.update(win.id, {
@@ -31,16 +31,16 @@ function createPopup(callback, popupHtml = "html/dialog.html") {
         if (typeof callback === "function") {
           clearInterval(interval);
           interval = setInterval(callback, 200);
-          setTimeout(function() {
+          setTimeout(() => {
             clearInterval(interval);
           }, 2000);
         }
       }
     );
   });
-}
+};
 
-chrome.windows.onRemoved.addListener(function(id) {
+chrome.windows.onRemoved.addListener(id => {
   if (id == id_win && !confirmed) {
     console.log("error6");
     chrome.tabs.sendMessage(tab, {
@@ -58,9 +58,9 @@ chrome.windows.onRemoved.addListener(function(id) {
 });
 
 // check if win exists before removing it
-function removeWindow(id_win) {
+const removeWindow = id_win => {
   console.log(id_win);
-  chrome.windows.getAll(function(windows) {
+  chrome.windows.getAll(windows => {
     const hasWin = windows.filter(win => {
       return win.id == id_win;
     }).length;
@@ -68,4 +68,4 @@ function removeWindow(id_win) {
       chrome.windows.remove(id_win);
     }
   });
-}
+};

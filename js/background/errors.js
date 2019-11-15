@@ -1,7 +1,7 @@
 // Send errors back to the content_script, it will forward it to website
-function sendErrors(tab, error, message, display_msg, request) {
+const sendErrors = (tab, error, message, display_msg, request) => {
   clearInterval(interval);
-  interval = setInterval(function() {
+  interval = setInterval(() => {
     chrome.runtime.sendMessage({
       command: "sendDialogError",
       msg: {
@@ -16,9 +16,9 @@ function sendErrors(tab, error, message, display_msg, request) {
       tab: tab
     });
   }, 200);
-  setTimeout(function() {
+  setTimeout(() => {
     clearInterval(interval);
   }, 2000);
   key = null;
   accounts = null;
-}
+};

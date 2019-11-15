@@ -18,10 +18,90 @@ chrome.storage.local.get(["current_rpc", "autolock"], function(items) {
 });
 
 //Listen to the other parts of the extension
-chrome.runtime.onMessage.addListener(chromeMessageHandler);
 
-function chromeMessageHandler(msg, sender, sendResp) {
+const chromeMessageHandler = (msg, sender, sendResp) => {
   // Send mk upon request from the extension popup.
+  restartIdleCounterIfNeeded(autolock, msg);
+  switch (msg.command) {
+    case "getMk":
+      chrome.runtime.sendMessage({
+        command: "sendBackMk",
+        mk: mk
+      });
+      break;
+    case "stopInterval":
+      clearInterval(interval);
+      break;
+    case "setRPC":
+      rpc.setOptions(msg.rpc);
+      break;
+    case "sendMk":
+      //Receive mk from the popup (upon registration or unlocking)
+      mk = msg.mk;
+      break;
+    case "sendAutolock":
+      startAutolock(JSON.parse(msg.autolock));
+      break;
+    case "sendRequest":
+      // Receive request (website -> content_script -> background)
+      // create a window to let users confirm the transaction
+      tab = sender.tab.id;
+      checkBeforeCreate(msg.request, tab, msg.domain);
+      request = msg.request;
+      request_id = msg.request_id;
+      break;
+    case "unlockFromDialog":
+      // Receive unlock request from dialog
+      unlockFromDialog(msg);
+      break;
+    case "acceptTransaction":
+      if (msg.keep) saveNoConfirm(msg);
+      confirmed = true;
+      performTransaction(msg.data, msg.tab, false);
+      // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
+      break;
+  }
+};
+
+const saveNoConfirm = msg => {
+  chrome.storage.local.get(["no_confirm"], function(items) {
+    let keep =
+      items.no_confirm == null || items.no_confirm == undefined
+        ? {}
+        : JSON.parse(items.no_confirm);
+    if (keep[msg.data.username] == undefined) {
+      keep[msg.data.username] = {};
+    }
+    if (keep[msg.data.username][msg.domain] == undefined) {
+      keep[msg.data.username][msg.domain] = {};
+    }
+    keep[msg.data.username][msg.domain][msg.data.type] = true;
+    chrome.storage.local.set({
+      no_confirm: JSON.stringify(keep)
+    });
+  });
+};
+
+const unlockFromDialog = msg => {
+  chrome.storage.local.get(["accounts"], function(items) {
+    // Check
+    if (items.accounts == null || items.accounts == undefined) {
+      sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
+    } else {
+      if (decryptToJson(items.accounts, msg.mk) != null) {
+        mk = msg.mk;
+        startAutolock(autolock);
+        checkBeforeCreate(msg.data, msg.tab, msg.domain);
+      } else {
+        chrome.runtime.sendMessage({
+          command: "wrongMk"
+        });
+      }
+    }
+  });
+};
+
+const restartIdleCounterIfNeeded = (autolock, msg) => {
   if (
     autolock != null &&
     autolock.type == "idle" &&
@@ -33,69 +113,6 @@ function chromeMessageHandler(msg, sender, sendResp) {
       msg.command == "ping")
   )
     restartIdleCounter();
-  if (msg.command == "getMk") {
-    chrome.runtime.sendMessage(
-      {
-        command: "sendBackMk",
-        mk: mk
-      },
-      function(response) {}
-    );
-  } else if (msg.command == "stopInterval") {
-    clearInterval(interval);
-  } else if (msg.command == "setRPC") {
-    rpc.setOptions(msg.rpc);
-  } else if (msg.command == "sendMk") {
-    //Receive mk from the popup (upon registration or unlocking)
-    mk = msg.mk;
-  } else if (msg.command == "sendAutolock") {
-    startAutolock(JSON.parse(msg.autolock));
-  } else if (msg.command == "sendRequest") {
-    // Receive request (website -> content_script -> background)
-    // create a window to let users confirm the transaction
-    tab = sender.tab.id;
-    checkBeforeCreate(msg.request, tab, msg.domain);
-    request = msg.request;
-    request_id = msg.request_id;
-  } else if (msg.command == "unlockFromDialog") {
-    // Receive unlock request from dialog
-    chrome.storage.local.get(["accounts"], function(items) {
-      // Check
-      if (items.accounts == null || items.accounts == undefined) {
-        sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
-      } else {
-        if (decryptToJson(items.accounts, msg.mk) != null) {
-          mk = msg.mk;
-          startAutolock(autolock);
-          checkBeforeCreate(msg.data, msg.tab, msg.domain);
-        } else {
-          chrome.runtime.sendMessage({
-            command: "wrongMk"
-          });
-        }
-      }
-    });
-  } else if (msg.command == "acceptTransaction") {
-    if (msg.keep) {
-      chrome.storage.local.get(["no_confirm"], function(items) {
-        let keep =
-          items.no_confirm == null || items.no_confirm == undefined
-            ? {}
-            : JSON.parse(items.no_confirm);
-        if (keep[msg.data.username] == undefined) {
-          keep[msg.data.username] = {};
-        }
-        if (keep[msg.data.username][msg.domain] == undefined) {
-          keep[msg.data.username][msg.domain] = {};
-        }
-        keep[msg.data.username][msg.domain][msg.data.type] = true;
-        chrome.storage.local.set({
-          no_confirm: JSON.stringify(keep)
-        });
-      });
-    }
-    confirmed = true;
-    performTransaction(msg.data, msg.tab, false);
-    // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
-  }
-}
+};
+
+chrome.runtime.onMessage.addListener(chromeMessageHandler);
