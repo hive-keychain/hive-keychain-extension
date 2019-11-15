@@ -1,16 +1,24 @@
 // All functions and events regarding the visibility and navigation
 
 // Visibility state on the main menu
-function initializeVisibility() {
+function initializeVisibility(hideAll = false) {
     $('.hide-at-start').each(function() {
         const pageId = $(this).attr('id');
-        if (pageId !== window.sk_params.page) {
+        if (hideAll || pageId !== window.sk_params.page) {
             $(this).hide();
         } else {
             $(this).show();
+            if (
+              window.sk_params.hasOwnProperty('page')
+              && window.sk_params.hasOwnProperty('noback')
+              && window.sk_params.noback
+            ) {
+              $(`#${window.sk_params.page} .back_enabled`).addClass('back_disabled');
+            }
         }
     });
 
+    $("#claim").hide();
     $("#accounts").html("");
     $(".error_div").hide();
     $(".success_div").hide();
@@ -117,6 +125,7 @@ $("#manage").click(function() {
 // Go back
 $(".back_menu").click(function() {
     initializeMainMenu();
+    initializeVisibility();
 });
 
 // Click on the change password option of the settings
@@ -234,6 +243,12 @@ function showRegister() {
 }
 
 function showUnlock() {
+    if (
+      window.hasOwnProperty('sk_params')
+      && window.sk_params.hasOwnProperty('page')
+    ) {
+        $(`#${window.sk_params.page}`).hide();
+    }
     $("#main").hide();
     $("#unlock").show();
     $("#unlock_pwd").focus();
