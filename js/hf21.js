@@ -1,10 +1,22 @@
 //HF21 wrapper
 
-const createProposal = (keys, creator, receiver, start_date, end_date, daily_pay, subject, permlink, extensions = '[]') => {
+const createProposal = (
+  keys,
+  creator,
+  receiver,
+  start_date,
+  end_date,
+  daily_pay,
+  subject,
+  permlink,
+  extensions = "[]",
+  callback
+) => {
   let tx = {
-    'operations': [
+    operations: [
       [
-        'create_proposal', {
+        "create_proposal",
+        {
           creator,
           receiver,
           start_date,
@@ -16,15 +28,23 @@ const createProposal = (keys, creator, receiver, start_date, end_date, daily_pay
       ]
     ],
     extensions: JSON.parse(extensions)
-  }
-  return broadcast(tx, keys);
-}
+  };
+  return broadcast(tx, keys, callback);
+};
 
-const voteForProposal = (keys, voter, proposal_ids, approve, extensions = '[]') => {
+const voteForProposal = (
+  keys,
+  voter,
+  proposal_ids,
+  approve,
+  extensions = "[]",
+  callback
+) => {
   let tx = {
-    'operations': [
+    operations: [
       [
-        'update_proposal_votes', {
+        "update_proposal_votes",
+        {
           voter,
           proposal_ids: JSON.parse(proposal_ids),
           approve
@@ -32,32 +52,34 @@ const voteForProposal = (keys, voter, proposal_ids, approve, extensions = '[]') 
       ]
     ],
     extensions: JSON.parse(extensions)
-  }
-  return broadcast(tx, keys);
-}
+  };
+  return broadcast(tx, keys, callback);
+};
 
-const removeProposal = (keys, proposal_owner, proposal_ids, extensions = '[]') => {
+const removeProposal = (
+  keys,
+  proposal_owner,
+  proposal_ids,
+  extensions = "[]",
+  callback
+) => {
   let tx = {
-    'operations': [
+    operations: [
       [
-        'remove_proposal', {
+        "remove_proposal",
+        {
           proposal_owner,
           proposal_ids: JSON.parse(proposal_ids)
         }
       ]
     ],
     extensions: JSON.parse(extensions)
-  }
-  return broadcast(tx, keys);
-}
+  };
+  return broadcast(tx, keys, callback);
+};
 
-const broadcast = (tx, keys) => {
-  return new Promise((fulfill, reject) => {
-    steem.broadcast.send(tx, keys, (error, result) => {
-      if (!error)
-        fulfill(result);
-      else
-        reject(error);
-    });
+const broadcast = (tx, keys, callback) => {
+  steem.broadcast.send(tx, keys, (error, result) => {
+    callback(error, result);
   });
-}
+};
