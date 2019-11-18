@@ -31,7 +31,8 @@
       "js/background/errors.js",
       "js/background/keychainify.js",
       "js/background/auth.js",
-      "js/background/transactions.js"
+      "js/background/transactions.js",
+      "js/background/context_menu.js"
     ],
     "persistent": true
   },

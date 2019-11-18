@@ -21,6 +21,7 @@ const contextMenus = {
   },
 
   init: function() {
+    console.log("intiializing context menu");
     // Create one test item for each context type.
     const contexts = ["link"];
 
@@ -72,5 +73,4 @@ const contextMenus = {
     }
   }
 };
-
 contextMenus.init();
