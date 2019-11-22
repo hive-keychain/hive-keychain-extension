@@ -68,6 +68,12 @@
         <div class="transfer sendToken powerUp" id="to"></div>
         <h3 class="transfer sendToken powerUp powerDown">Amount</h3>
         <div class="transfer sendToken powerUp powerDown" id="amount"></div>
+        <h3 class="transfer sendToken  powerDown">Balance</h3>
+        <img class="transfer sendToken  powerDown balance_loading" src="/images/loading.gif" />
+        <div class="transfer sendToken  powerDown" id="balance"></div>
+        <h3 class="transfer sendToken  powerDown">Future balance</h3>
+        <img class="transfer sendToken  powerDown balance_loading" src="/images/loading.gif" />
+        <div class="transfer sendToken  powerDown" id="balance_after"></div>
         <h3 class="createProposal">Daily Pay</h3>
         <div class="createProposal" id="daily_pay"></div>
         <h3 class="transfer_memo sendToken">Memo</h3>
@@ -123,6 +129,9 @@
   </div>
   </div>
   <script src="../vendor/jquery.min.js"></script>
+  <script src="../vendor/steem.min.js"></script>
+  <script src="../vendor/axios.min.js"></script>
+  <script src="../vendor/ssc.min.js"></script>
   <script src="../js/dialog.js"></script>
 </body>
 

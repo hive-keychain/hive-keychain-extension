@@ -6,7 +6,6 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     // Display error window
 
     if (!msg.msg.success) {
-
       $("#tx_loading").hide();
       if (msg.msg.error == "locked") {
         $(".unlock").show();
@@ -24,13 +23,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             request_id: msg.request_id
           });
         });
-        $('#unlock-dialog').keypress(function(e) {
-          if (e.keyCode == 13)
-            $('#yes-unlock').click();
+        $("#unlock-dialog").keypress(function(e) {
+          if (e.keyCode == 13) $("#yes-unlock").click();
         });
-        $('#unlock-dialog').focus();
+        $("#unlock-dialog").focus();
       }
-      $("#dialog_header").text((msg.msg.error == "locked") ? "Unlock Keychain" : "Error");
+      $("#dialog_header").text(
+        msg.msg.error == "locked" ? "Unlock Keychain" : "Error"
+      );
       $("#dialog_header").addClass("error_header");
       $("#error_dialog").text(msg.msg.display_msg);
       $("#modal-body-msg").hide();
@@ -47,49 +47,47 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     $(".unlock").hide();
     $("#dialog_header").text("Broadcasting");
     $("#error_dialog").hide();
-
   } else if (msg.command == "sendDialogConfirm") {
-
     let enforce = null;
     let encode = null;
     // Display confirmation window
     $("#confirm_footer").show();
-    $('#modal-body-msg').show();
+    $("#modal-body-msg").show();
     var type = msg.data.type;
 
     var titles = {
-      'custom': 'Custom Transaction',
-      'decode': 'Verify Key',
-      'signBuffer': 'Sign Message',
-      'addAccountAuthority': 'Add Authority',
-      'removeAccountAuthority': 'Remove Authority',
-      'broadcast': 'Broadcast',
-      'signedCall': 'Signed Call',
-      'post': 'Post',
-      'vote': 'Vote',
-      'transfer': 'Transfer',
-      'delegation': 'Delegation',
-      'witnessVote': 'Witness Vote',
-      "sendToken": "Send Tokens",
-      "powerUp": "Power Up",
-      "powerDown": "Power Down",
-      "createClaimedAccount": "Create Claimed Account",
-      'createProposal': 'Create Worker Proposal',
-      'removeProposal': 'Remove Worker Proposal',
-      'updateProposalVote': 'Vote for Proposal',
+      custom: "Custom Transaction",
+      decode: "Verify Key",
+      signBuffer: "Sign Message",
+      addAccountAuthority: "Add Authority",
+      removeAccountAuthority: "Remove Authority",
+      broadcast: "Broadcast",
+      signedCall: "Signed Call",
+      post: "Post",
+      vote: "Vote",
+      transfer: "Transfer",
+      delegation: "Delegation",
+      witnessVote: "Witness Vote",
+      sendToken: "Send Tokens",
+      powerUp: "Power Up",
+      powerDown: "Power Down",
+      createClaimedAccount: "Create Claimed Account",
+      createProposal: "Create Worker Proposal",
+      removeProposal: "Remove Worker Proposal",
+      updateProposalVote: "Vote for Proposal"
     };
     var title = titles[type];
     console.log(msg);
-    $("#dialog_header").html(title + (msg.testnet ? ' (TESTNET)' : ''));
+    $("#dialog_header").html(title + (msg.testnet ? " (TESTNET)" : ""));
 
     if (msg.data.display_msg) {
-      $('#modal-body-msg .msg-data').css('max-height', '245px');
+      $("#modal-body-msg .msg-data").css("max-height", "245px");
       $("#dialog_message").show();
       $("#dialog_message").text(msg.data.display_msg);
     }
 
     if (type == "transfer") {
-      $('#modal-body-msg .msg-data').css('max-height', '200px');
+      $("#modal-body-msg .msg-data").css("max-height", "200px");
       let accounts = msg.accounts;
       if (msg.data.username !== undefined) {
         let i = msg.accounts.findIndex(function(elt) {
@@ -104,19 +102,29 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         if (acc != undefined)
           $("#select_transfer").append("<option>" + acc.name + "</option>");
       }
-      initiateCustomSelect();
+      initiateCustomSelect(msg.data);
     }
     var message = "";
     $("." + type).show();
     $(".modal-body-error").hide();
     $("#username").text("@" + msg.data.username);
     $("#modal-content").css("align-items", "flex-start");
-    const keyVerifyAction = msg.data.type == 'decode' || msg.data.type == 'signBuffer';
+    const keyVerifyAction =
+      msg.data.type == "decode" || msg.data.type == "signBuffer";
     console.log(msg.data.key);
     if (msg.data.key !== "active" && msg.data.type != "transfer") {
       $("#keep_div").show();
-      var prompt_msg = keyVerifyAction ? "Do not prompt again to verify keys for the @" + msg.data.username + " account on " + msg.domain :
-        "Do not prompt again to send " + msg.data.type + " transactions from the @" + msg.data.username + " account on " + msg.domain
+      var prompt_msg = keyVerifyAction
+        ? "Do not prompt again to verify keys for the @" +
+          msg.data.username +
+          " account on " +
+          msg.domain
+        : "Do not prompt again to send " +
+          msg.data.type +
+          " transactions from the @" +
+          msg.data.username +
+          " account on " +
+          msg.domain;
       $("#keep_label").text(prompt_msg);
     } else {
       $(".keep_checkbox").css("display", "none");
@@ -125,17 +133,31 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     switch (type) {
       case "decode":
         $("#wif").html(msg.data.method);
-        $('#modal-body-msg').css('max-height', '235px');
+        $("#modal-body-msg").css("max-height", "235px");
         $("#dialog_message").show();
-        $("#dialog_message").text('The website ' + msg.domain + ' would like to verify that you have access to the private ' + msg.data.method + ' key for the account: @' + msg.data.username);
+        $("#dialog_message").text(
+          "The website " +
+            msg.domain +
+            " would like to verify that you have access to the private " +
+            msg.data.method +
+            " key for the account: @" +
+            msg.data.username
+        );
         break;
       case "signBuffer":
         $("#dialog_message").show();
-        $("#dialog_message").text('The website ' + msg.domain + ' would like you to sign a message using the ' + msg.data.method + ' key for the account: @' + msg.data.username);
+        $("#dialog_message").text(
+          "The website " +
+            msg.domain +
+            " would like you to sign a message using the " +
+            msg.data.method +
+            " key for the account: @" +
+            msg.data.username
+        );
         const fullMessage = msg.data.message;
         let truncatedMessage = fullMessage.substring(0, 200);
         if (fullMessage.length > 200) {
-          truncatedMessage += '...(click to expand)';
+          truncatedMessage += "...(click to expand)";
         }
         let expanded = false;
         $("#message_sign").text(truncatedMessage);
@@ -169,43 +191,63 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json").html(JSON.stringify({ owner: msg.data.owner, active: msg.data.active, posting: msg.data.posting, memo: msg.data.memo }));
+        $("#custom_json").html(
+          JSON.stringify({
+            owner: msg.data.owner,
+            active: msg.data.active,
+            posting: msg.data.posting,
+            memo: msg.data.memo
+          })
+        );
         break;
       case "signedCall":
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json div").eq(0).text(msg.data.method);
-        $("#custom_json div").eq(1).text(JSON.stringify(msg.data.params));
+        $("#custom_json div")
+          .eq(0)
+          .text(msg.data.method);
+        $("#custom_json div")
+          .eq(1)
+          .text(JSON.stringify(msg.data.params));
 
         $("#custom_key").text(msg.data.typeWif);
         break;
       case "vote":
         $("#weight").text(msg.data.weight / 100 + " %");
-        $("#author").text('@' + msg.data.author);
+        $("#author").text("@" + msg.data.author);
         $("#perm").text(msg.data.permlink);
         break;
       case "custom":
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json div").eq(0).text(msg.data.id);
-        $("#custom_json div").eq(1).text(msg.data.json);
+        $("#custom_json div")
+          .eq(0)
+          .text(msg.data.id);
+        $("#custom_json div")
+          .eq(1)
+          .text(msg.data.json);
         $("#custom_key").text(msg.data.method);
         break;
       case "transfer":
-        encode = (msg.data.memo != undefined && msg.data.memo.length > 0 && msg.data.memo[0] == "#");
+        encode =
+          msg.data.memo != undefined &&
+          msg.data.memo.length > 0 &&
+          msg.data.memo[0] == "#";
+        showBalances(msg.data.username, msg.data.currency, msg.data.amount);
         enforce = msg.data.enforce || encode;
         if (enforce) {
           $("#username").show();
-          $("#username").prev().show();
+          $("#username")
+            .prev()
+            .show();
           $("#transfer_acct_list").hide();
         }
-        $("#to").text('@' + msg.data.to);
+        $("#to").text("@" + msg.data.to);
         $("#amount").text(msg.data.amount + " " + msg.data.currency);
         $("#memo").text(msg.data.memo);
-        if (msg.data.memo.length > 0)
-          $(".transfer_memo").show();
+        if (msg.data.memo.length > 0) $(".transfer_memo").show();
         break;
       case "post":
         $("#body_toggle").click(function() {
@@ -228,14 +270,21 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
           $("#allow_curation_rewards").text(options.allow_curation_rewards);
           let beneficiaries = "";
           for (benef of options.extensions[0][1].beneficiaries) {
-            beneficiaries += "@" + benef.account + " (" + (benef.weight / 100).toFixed(2) + "%) ";
+            beneficiaries +=
+              "@" +
+              benef.account +
+              " (" +
+              (benef.weight / 100).toFixed(2) +
+              "%) ";
           }
-          if (beneficiaries != "")
-            $("#beneficiaries").text(beneficiaries);
-          else
-            $("#beneficiaries_div").hide();
+          if (beneficiaries != "") $("#beneficiaries").text(beneficiaries);
+          else $("#beneficiaries_div").hide();
         } else $("#options_toggle").hide();
-        if (msg.data.parent_username == "" || msg.data.parent_username == null || msg.data.parent_username == undefined) {
+        if (
+          msg.data.parent_username == "" ||
+          msg.data.parent_username == null ||
+          msg.data.parent_username == undefined
+        ) {
           $("#parent_username").hide();
           $("#parent_username_title").hide();
         }
@@ -250,36 +299,37 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#voteWit").html(JSON.stringify(msg.data.vote));
         break;
       case "sendToken":
-        $("#to").text('@' + msg.data.to);
+        showBalances(msg.data.username, msg.data.currency, msg.data.amount);
+        $("#to").text("@" + msg.data.to);
         $("#amount").text(msg.data.amount + " " + msg.data.currency);
         $("#memo").text(msg.data.memo);
-        if (msg.data.memo.length > 0)
-          $(".transfer_memo").show();
+        if (msg.data.memo.length > 0) $(".transfer_memo").show();
         break;
       case "powerUp":
-        $("#to").text('@' + msg.data.recipient);
+        $("#to").text("@" + msg.data.recipient);
         $("#amount").text(msg.data.steem + " STEEM");
         break;
       case "powerDown":
+        showBalances(msg.data.username, "SP", msg.data.steem_power);
         $("#amount").text(msg.data.steem_power + " SP");
         break;
-      case 'createProposal':
-        $('#receiver').text(msg.data.receiver);
-        $('#extensions').text(msg.data.extensions);
-        $('#period_f').text(`From: ${msg.data.start.replace('T',' ')}`);
-        $('#period_t').text(`To: ${msg.data.end.replace('T',' ')}`);
-        $('#title').text(msg.data.subject);
-        $('#permlink').text(msg.data.permlink);
-        $('#daily_pay').text(msg.data.daily_pay);
+      case "createProposal":
+        $("#receiver").text(msg.data.receiver);
+        $("#extensions").text(msg.data.extensions);
+        $("#period_f").text(`From: ${msg.data.start.replace("T", " ")}`);
+        $("#period_t").text(`To: ${msg.data.end.replace("T", " ")}`);
+        $("#title").text(msg.data.subject);
+        $("#permlink").text(msg.data.permlink);
+        $("#daily_pay").text(msg.data.daily_pay);
         break;
-      case 'removeProposal':
-        $('#proposal_ids').text(msg.data.proposal_ids);
-        $('#extensions').text(msg.data.extensions);
+      case "removeProposal":
+        $("#proposal_ids").text(msg.data.proposal_ids);
+        $("#extensions").text(msg.data.extensions);
         break;
-      case 'updateProposalVote':
-        $('#proposal_ids').text(msg.data.proposal_ids);
-        $('#extensions').text(msg.data.extensions);
-        $('#approve').text(msg.data.approve);
+      case "updateProposalVote":
+        $("#proposal_ids").text(msg.data.proposal_ids);
+        $("#extensions").text(msg.data.extensions);
+        $("#approve").text(msg.data.approve);
         break;
     }
 
@@ -293,15 +343,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         data: data,
         tab: msg.tab,
         domain: msg.domain,
-        keep: $("#keep").is(':checked')
+        keep: $("#keep").is(":checked")
       });
-      if (type == 'decode' || type == 'signBuffer')
-        window.close();
+      if (type == "decode" || type == "signBuffer") window.close();
       else {
         $("#confirm_footer").hide();
         $("#modal-body-msg").hide();
         $(".dialog-message").hide();
-        $('#tx_loading').show();
+        $("#tx_loading").show();
       }
     });
 
@@ -310,8 +359,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       window.close();
     });
   } else if (msg.command == "answerRequest") {
-    $('#tx_loading').hide();
-    $("#dialog_header").text((msg.msg.success == true) ? "Success!" : "Error!");
+    $("#tx_loading").hide();
+    $("#dialog_header").text(msg.msg.success == true ? "Success!" : "Error!");
     $("#error_dialog").text(msg.msg.message);
     $(".modal-body-error").show();
     $("#error-ok").click(function() {
@@ -320,8 +369,55 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
   }
 });
 
-function initiateCustomSelect() {
+const showBalances = async (user, currency, amount) => {
+  let balance = 0;
+  if (["sbd", "steem", "sp"].includes(currency.toLowerCase())) {
+    const account = (await steem.api.getAccountsAsync([user]))[0];
+    switch (currency.toLowerCase()) {
+      case "steem":
+        balance = parseFloat(account.balance.split(" ")[0]);
+        break;
+      case "sbd":
+        balance = parseFloat(account.sbd_balance.split(" ")[0]);
+        break;
+      case "sp":
+        balance = await getSteemPower(account.vesting_shares);
+        break;
+    }
+  } else {
+    const tokens = await getTokens(user);
+    const token = tokens.find(e => e.symbol === currency);
+    balance = token ? parseFloat(token.balance) : 0;
+  }
+  $("#balance")
+    .text(`${balance}  ${currency}`)
+    .show();
+  const balance_after = (balance - amount).toFixed(3);
+  $("#balance_after")
+    .text(`${balance_after}  ${currency}`)
+    .show()
+    .css("color", balance_after > 0 ? "white" : "red");
+  $(".balance_loading").hide();
+};
+
+const getSteemPower = async vesting_shares => {
+  const result = await steem.api.getDynamicGlobalPropertiesAsync();
+  const total_vesting_shares = result.total_vesting_shares;
+  const total_vesting_fund = result.total_vesting_fund_steem;
+  // Handle Promises, when you’re sure the two functions were completed simply do:
+  return steem.formatter
+    .vestToSteem(vesting_shares, total_vesting_shares, total_vesting_fund)
+    .toFixed(3);
+};
+
+const getTokens = async account => {
+  const ssc = new SSC("https://api.steem-engine.com/rpc");
+  return await ssc.find("tokens", "balances", {account});
+};
+
+function initiateCustomSelect(data) {
   /*look for any elements with the class "custom-select":*/
+  let prev_username = data.username;
   x = document.getElementsByClassName("custom-select");
 
   for (i = 0; i < x.length; i++) {
@@ -368,6 +464,13 @@ function initiateCustomSelect() {
       and open/close the current select box:*/
       e.stopPropagation();
       closeAllSelect(this);
+      const username = $(this).html();
+      if (username !== prev_username) {
+        $("#balance , #balance_after").hide();
+        $("#balance_loading").show();
+        showBalances(username, data.currency, data.amount);
+        prev_username = username;
+      }
       this.nextSibling.classList.toggle("select-hide");
       this.classList.toggle("select-arrow-active");
     });
@@ -376,12 +479,15 @@ function initiateCustomSelect() {
   function closeAllSelect(elmnt) {
     /*a function that will close all select boxes in the document,
     except the current select box:*/
-    var x, y, i, arrNo = [];
+    var x,
+      y,
+      i,
+      arrNo = [];
     x = document.getElementsByClassName("select-items");
     y = document.getElementsByClassName("select-selected");
     for (i = 0; i < y.length; i++) {
       if (elmnt == y[i]) {
-        arrNo.push(i)
+        arrNo.push(i);
       } else {
         y[i].classList.remove("select-arrow-active");
       }
