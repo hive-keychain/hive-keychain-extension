@@ -1,6 +1,6 @@
 {
   "name": "Steem Keychain",
-  "version": "1.6",
+  "version": "1.6.1",
   "description": "Secure Steem Wallet Extension.",
   "permissions": [
     "activeTab", "declarativeContent", "storage", "webNavigation", "tabs",
