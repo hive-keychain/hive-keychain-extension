@@ -95,6 +95,7 @@ h3 .small {
 
 #modal-body-msg .msg-data>div,
 #modal-body-msg .msg-data>h3,
+#modal-body-msg .msg-data>img,
 #transfer_acct_list {
   display: none;
 }
