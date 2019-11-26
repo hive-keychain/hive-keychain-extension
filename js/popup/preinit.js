@@ -10,7 +10,10 @@ function parseQueryString() {
     const queryParam = queryParams[qi];
     const keyValue = queryParam.split('=');
     if (keyValue[0] && keyValue[1]) {
-      window.sk_params[keyValue[0]] = keyValue[1];
+      let value = keyValue[1];
+      value = value.replace(/\+/g, '%20');
+      value = decodeURIComponent(value);
+      window.sk_params[keyValue[0]] = value;
     }
   }
 }

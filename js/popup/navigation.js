@@ -1,5 +1,26 @@
 // All functions and events regarding the visibility and navigation
 
+function prePopulatePage(pageId) {
+    switch(pageId) {
+        case 'send_div': {
+            if (window.sk_params.hasOwnProperty('to') && typeof window.sk_params.to === 'string') {
+                $("#recipient").val(window.sk_params.to);
+                $("#amt_send").focus();
+            }
+
+            if (window.sk_params.hasOwnProperty('amount')) {
+                $("#amt_send").val(window.sk_params.amount);
+                $("#memo_send").focus();
+            }
+
+            if (window.sk_params.hasOwnProperty('memo')) {
+                $("#memo_send").val(window.sk_params.memo);
+            }
+            break;
+        }
+    }
+}
+
 // Visibility state on the main menu
 function initializeVisibility(hideAll = false) {
     $('.hide-at-start').each(function() {
@@ -8,6 +29,8 @@ function initializeVisibility(hideAll = false) {
             $(this).hide();
         } else {
             $(this).show();
+            prePopulatePage(pageId);
+
             if (
               window.sk_params.hasOwnProperty('page')
               && window.sk_params.hasOwnProperty('noback')
