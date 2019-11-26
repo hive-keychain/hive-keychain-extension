@@ -68,23 +68,27 @@ const contextMenus = {
       const context = contexts[i];
 
       for (let menuActionName in contextMenus.menuActions.contexts[context]) {
-        if (
-          contextMenus.menuActions.contexts[context].hasOwnProperty(
-            menuActionName
-          )
-        ) {
-          const menuAction =
-            contextMenus.menuActions.contexts[context][menuActionName];
-
+        if (contextMenus.menuActions.contexts[context].hasOwnProperty(menuActionName)) {
+          const menuAction = contextMenus.menuActions.contexts[context][menuActionName];
           const title = menuAction.description;
-          contextMenus.menuActions.contexts[context][
-            menuActionName
-          ].menuItemId = chrome.contextMenus.create({
-            title: title,
-            contexts: [context],
-            onclick: contextMenus.genericOnClick,
-            targetUrlPatterns: ["https://*/@*"], // @TODO make a better filter, maybe with a whitelist of known dApps
-          });
+
+          if (context === 'link') {
+            contextMenus.menuActions.contexts[context][menuActionName]
+              .menuItemId = chrome.contextMenus.create({
+              title: title,
+              contexts: [context],
+              onclick: contextMenus.genericOnClick,
+              targetUrlPatterns: ["https://*/@*"], // @TODO make a better filter, maybe with a whitelist of known dApps
+            });
+          } else if (context === 'page') {
+            contextMenus.menuActions.contexts[context][menuActionName]
+              .menuItemId = chrome.contextMenus.create({
+              title: title,
+              contexts: [context],
+              onclick: contextMenus.genericOnClick,
+              documentUrlPatterns: ["https://*/@*", "https://*/*/@*"], // @TODO make a better filter, maybe with a whitelist of known dApps
+            });
+          }
         }
       }
     }
