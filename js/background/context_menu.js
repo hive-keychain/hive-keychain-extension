@@ -3,15 +3,15 @@ const contextMenus = {
     contexts: {
       link: {
         transferToUser: {
-          description: "Transfer STEEM/SBD to this user",
+          description: "Transfer STEEM/SBD to %s",
           action: "transferToUser"
         },
         memoMessageUser: {
-          description: "Send a MEMO message to this user",
+          description: "Send a MEMO message to @%s",
           action: "memoMessageUser"
         },
         tipUser: {
-          description: "Tip this user",
+          description: "Tip @%s",
           action: "tipUser"
         }
       },
