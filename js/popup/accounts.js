@@ -16,7 +16,8 @@ function loadAccount(name) {
     $("#send_form").toggle(account.keys.hasOwnProperty("active"));
     $("#show_add_active").toggle(!account.keys.hasOwnProperty("active"));
     $(".wallet_infos").html("...");
-    $("#vm").html("...");
+    $("#vm_pct").html("...");
+    $("#vm_val").html("");
     $("#rc").html("...");
     steem.api.getAccounts([account.name], async function(err, result) {
       if (result.length != 0) {
@@ -24,7 +25,7 @@ function loadAccount(name) {
         witness_votes = result[0].witness_votes;
         proxy = result[0].proxy;
         const vm = await getVotingMana(result[0]);
-        $("#vm").html(vm + "%");
+        $("#vm_pct").html(vm + "%");
         const full =
           (vm == 100 ? "" : "Full in ") + getTimeBeforeFull(vm * 100);
         $("#vm_info").attr("title", full);
@@ -236,7 +237,7 @@ async function showUserData(result) {
   $(".transfer_balance div")
     .eq(1)
     .html(numberWithCommas(steem_p));
-  $("#vm").html($("#vm").html() + " ($" + vd + ")");
+  $("#vm_val").text(" ($" + vd + ")");
 
   $("#rc").html(rc.estimated_pct + "%");
   const full = (rc.estimated_pct == 100 ? "" : "Full in ") + rc.fullin;
