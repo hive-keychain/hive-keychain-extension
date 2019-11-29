@@ -7,12 +7,15 @@ const broadcastWitnessVote = data => {
       data.vote ? 1 : 0,
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          `Successfully ${!data.vote ? "un" : ""}voted @${
+            data.witness
+          } for witness`,
+          err_message
         );
         resolve(message);
       }

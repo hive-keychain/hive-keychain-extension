@@ -7,12 +7,13 @@ const broadcastPowerUp = data => {
       data.steem + " STEEM",
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          `Powered up ${data.steem} STEEM on @${data.recipient}`,
+          err_message
         );
         resolve(message);
       }
@@ -36,12 +37,15 @@ const broadcastPowerDown = data => {
         vestingShares,
         (err, result) => {
           console.log(result, err);
+          const err_message = beautifyErrorMessage(err);
           const message = createMessage(
             err,
             result,
             data,
-            "The transaction has been broadcasted successfully.",
-            "There was an error broadcasting this transaction, please try again."
+            vestingShares == 0
+              ? `Stopped Power Down on @${data.username}`
+              : `Started a ${data.steem_power} SP Power Down on @${data.username}`,
+            err_message
           );
           resolve(message);
         }

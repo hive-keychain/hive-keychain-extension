@@ -23,7 +23,7 @@ const broadcastSendToken = data => {
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
+          "The transaction has been broadcasted successfully. Please check your balance to confirm that it was processed succesfully.",
           "There was an error broadcasting this transaction, please try again."
         );
         resolve(message);

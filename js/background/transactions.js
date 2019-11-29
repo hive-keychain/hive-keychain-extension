@@ -98,3 +98,6 @@ const createMessage = (err, result, data, success_message, fail_message) => {
     }
   };
 };
+
+const beautifyErrorMessage = err =>
+  err ? err.message.split("xception:")[1].replace(".rethrow", ".") : "";

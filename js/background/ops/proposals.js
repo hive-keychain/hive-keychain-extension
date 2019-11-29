@@ -14,12 +14,13 @@ const broadcastCreateProposal = data => {
       data.extensions,
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          "Successfully created a new proposal.",
+          err_message
         );
         resolve(message);
       }
@@ -39,12 +40,15 @@ const broadcastUpdateProposalVote = data => {
       data.extensions,
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          `Successfully voted for proposal #${
+            JSON.parse(data.proposal_ids)[0]
+          }`,
+          err_message
         );
         resolve(message);
       }
@@ -63,12 +67,13 @@ const broadcastRemoveProposal = data => {
       data.extensions,
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          `Successfully removed proposal #${JSON.parse(data.proposal_ids)[0]}`,
+          err_message
         );
         resolve(message);
       }
