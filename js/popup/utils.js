@@ -15,52 +15,132 @@ var getVotingManaData = function(account) {
   const current_mana = parseFloat(account.voting_manabar.current_mana);
   const last_update_time = account.voting_manabar.last_update_time;
   const diff_in_seconds = Math.round(Date.now() / 1000 - last_update_time);
-  let estimated_mana = (current_mana + diff_in_seconds * estimated_max / STEEM_VOTING_MANA_REGENERATION_SECONDS);
-  if (estimated_mana > estimated_max)
-    estimated_mana = estimated_max;
-  const estimated_pct = estimated_mana / estimated_max * 100;
+  let estimated_mana =
+    current_mana +
+    (diff_in_seconds * estimated_max) / STEEM_VOTING_MANA_REGENERATION_SECONDS;
+  if (estimated_mana > estimated_max) estimated_mana = estimated_max;
+  const estimated_pct = (estimated_mana / estimated_max) * 100;
   return {
-    "current_mana": current_mana,
-    "last_update_time": last_update_time,
-    "estimated_mana": estimated_mana,
-    "estimated_max": estimated_max,
-    "estimated_pct": estimated_pct
+    current_mana: current_mana,
+    last_update_time: last_update_time,
+    estimated_mana: estimated_mana,
+    estimated_max: estimated_max,
+    estimated_pct: estimated_pct
   };
-}
+};
 
 // get SP + received delegations - delegations sent
 var getEffectiveVestingSharesPerAccount = function(account) {
-  var effective_vesting_shares = parseFloat(account.vesting_shares.replace(" VESTS", "")) +
+  var effective_vesting_shares =
+    parseFloat(account.vesting_shares.replace(" VESTS", "")) +
     parseFloat(account.received_vesting_shares.replace(" VESTS", "")) -
     parseFloat(account.delegated_vesting_shares.replace(" VESTS", ""));
   return effective_vesting_shares;
 };
 
 // get SP of the account
-var getSteemPowerPerAccount = function(account, totalVestingFund, totalVestingShares) {
+var getSteemPowerPerAccount = function(
+  account,
+  totalVestingFund,
+  totalVestingShares
+) {
   if (totalVestingFund && totalVestingShares) {
     var vesting_shares = getEffectiveVestingSharesPerAccount(account);
-    var sp = steem.formatter.vestToSteem(vesting_shares, totalVestingShares, totalVestingFund);
+    var sp = steem.formatter.vestToSteem(
+      vesting_shares,
+      totalVestingShares,
+      totalVestingFund
+    );
     return sp;
   }
 };
 
+function calculateVoteValue(
+  userEffectiveVests,
+  recentClaims,
+  rewardBalance,
+  medianPrice,
+  vp = 10000,
+  weight = 10000,
+  postRshares
+) {
+  const userVestingShares = parseInt(userEffectiveVests * 1e6, 10);
+  const userVotingPower = vp * (weight / 10000);
+  const voteEffectiveShares =
+    userVestingShares * (userVotingPower / 10000) * 0.02;
+
+  if (postRshares) {
+    // reward curve algorithm
+    const multiplier = Math.pow(10, 12);
+    const cureveConstant2s = 4 * multiplier;
+    const cureveConstant4s = 8 * multiplier;
+    const postClaims =
+      (postRshares * (postRshares + cureveConstant2s)) /
+      (postRshares + cureveConstant4s);
+
+    const postClaimsAfterVote =
+      ((postRshares + voteEffectiveShares) *
+        (postRshares + voteEffectiveShares + cureveConstant2s)) /
+      (postRshares + voteEffectiveShares + cureveConstant4s);
+
+    const voteClaim = postClaimsAfterVote - postClaims;
+
+    const proportion = voteClaim / recentClaims;
+    const fullVote = proportion * rewardBalance;
+
+    return (
+      fullVote * (parseFloat(medianPrice.base) / parseFloat(medianPrice.quote))
+    );
+  } else {
+    return (
+      (voteEffectiveShares / recentClaims) *
+      rewardBalance *
+      (parseFloat(medianPrice.base) / parseFloat(medianPrice.quote))
+    );
+  }
+}
+
 // get the voting dollars of a vote for a certain account, if full is set
 // to true, the VM will be set to 100%, otherwise it will use the current VM
-var getVotingDollarsPerAccount = async function(voteWeight, account, rewardBalance, recentClaims, steemPrice, votePowerReserveRate, full) {
-  const vm = await getVotingMana(account) * 100;
-  return new Promise(function(fulfill, reject) {
+var getVotingDollarsPerAccount = async function(
+  voteWeight,
+  account,
+  rewardBalance,
+  recentClaims,
+  steemPrice,
+  votePowerReserveRate,
+  full
+) {
+  const vm = (await getVotingMana(account)) * 100;
+  return new Promise(async function(fulfill, reject) {
     if (rewardBalance && recentClaims && steemPrice && votePowerReserveRate) {
-      var effective_vesting_shares = Math.round(getEffectiveVestingSharesPerAccount(account) * 1000000);
+      var effective_vesting_shares = Math.round(
+        getEffectiveVestingSharesPerAccount(account) * 1000000
+      );
       var current_power = full ? 10000 : vm;
       var weight = voteWeight * 100;
-      var max_vote_denom = votePowerReserveRate * STEEMIT_VOTE_REGENERATION_SECONDS / (60 * 60 * 24);
-      var used_power = Math.round((current_power * weight) / STEEMIT_100_PERCENT);
-      used_power = Math.round((used_power + max_vote_denom - 1) / max_vote_denom);
-      var rshares = Math.round((effective_vesting_shares * used_power) / (STEEMIT_100_PERCENT))
-      var voteValue = rshares *
-        rewardBalance / recentClaims *
-        steemPrice;
+      //const voteEffectiveShares =
+      //  effective_vesting_shares * ((vm * (weight / 10000)) / 10000) * 0.02;
+      // const medianPrice = await steem.api.getCurrentMedianHistoryPriceAsync();
+      // fulfill(
+      //   (voteEffectiveShares / recentClaims) *
+      //     rewardBalance *
+      //     (parseFloat(medianPrice.base) / parseFloat(medianPrice.quote))
+      // );
+
+      var max_vote_denom =
+        (votePowerReserveRate * STEEMIT_VOTE_REGENERATION_SECONDS) /
+        (60 * 60 * 24);
+      var used_power = Math.round(
+        (current_power * weight) / STEEMIT_100_PERCENT
+      );
+      used_power = Math.round(
+        (used_power + max_vote_denom - 1) / max_vote_denom
+      );
+      var rshares = Math.round(
+        (effective_vesting_shares * used_power) / STEEMIT_100_PERCENT
+      );
+      var voteValue = ((rshares * rewardBalance) / recentClaims) * steemPrice;
       fulfill(voteValue.toFixed(2));
     } else reject();
   });
@@ -69,11 +149,11 @@ var getVotingDollarsPerAccount = async function(voteWeight, account, rewardBalan
 // get Resource Credits
 var getRC = function(name) {
   let data = {
-    "jsonrpc": "2.0",
-    "id": 1,
-    "method": "rc_api.find_rc_accounts",
-    "params": {
-      "accounts": [name]
+    jsonrpc: "2.0",
+    id: 1,
+    method: "rc_api.find_rc_accounts",
+    params: {
+      accounts: [name]
     }
   };
   return new Promise(function(fulfill, reject) {
@@ -83,22 +163,32 @@ var getRC = function(name) {
       data: JSON.stringify(data),
       success: function(response) {
         const STEEM_RC_MANA_REGENERATION_SECONDS = 432000;
-        const estimated_max = parseFloat(response.result.rc_accounts["0"].max_rc);
-        const current_mana = parseFloat(response.result.rc_accounts["0"].rc_manabar.current_mana);
-        const last_update_time = parseFloat(response.result.rc_accounts["0"].rc_manabar.last_update_time);
-        const diff_in_seconds = Math.round(Date.now() / 1000 - last_update_time);
-        let estimated_mana = (current_mana + diff_in_seconds * estimated_max / STEEM_RC_MANA_REGENERATION_SECONDS);
-        if (estimated_mana > estimated_max)
-          estimated_mana = estimated_max;
+        const estimated_max = parseFloat(
+          response.result.rc_accounts["0"].max_rc
+        );
+        const current_mana = parseFloat(
+          response.result.rc_accounts["0"].rc_manabar.current_mana
+        );
+        const last_update_time = parseFloat(
+          response.result.rc_accounts["0"].rc_manabar.last_update_time
+        );
+        const diff_in_seconds = Math.round(
+          Date.now() / 1000 - last_update_time
+        );
+        let estimated_mana =
+          current_mana +
+          (diff_in_seconds * estimated_max) /
+            STEEM_RC_MANA_REGENERATION_SECONDS;
+        if (estimated_mana > estimated_max) estimated_mana = estimated_max;
 
-        const estimated_pct = estimated_mana / estimated_max * 100;
+        const estimated_pct = (estimated_mana / estimated_max) * 100;
         const res = {
-          "current_mana": current_mana,
-          "last_update_time": last_update_time,
-          "estimated_mana": estimated_mana,
-          "estimated_max": estimated_max,
-          "estimated_pct": estimated_pct.toFixed(2),
-          "fullin": getTimeBeforeFull(estimated_pct * 100)
+          current_mana: current_mana,
+          last_update_time: last_update_time,
+          estimated_mana: estimated_mana,
+          estimated_max: estimated_max,
+          estimated_pct: estimated_pct.toFixed(2),
+          fullin: getTimeBeforeFull(estimated_pct * 100)
         };
         fulfill(res);
       },
@@ -107,7 +197,7 @@ var getRC = function(name) {
       }
     });
   });
-}
+};
 
 // get in which time the VM will be full
 function getTimeBeforeFull(votingPower) {
@@ -120,11 +210,20 @@ function getTimeBeforeFull(votingPower) {
   } else {
     var fullInDays = parseInt(minutesNeeded / 1440);
     var fullInHours = parseInt((minutesNeeded - fullInDays * 1440) / 60);
-    var fullInMinutes = parseInt((minutesNeeded - fullInDays * 1440 - fullInHours * 60));
+    var fullInMinutes = parseInt(
+      minutesNeeded - fullInDays * 1440 - fullInHours * 60
+    );
 
-    fullInString = (fullInDays === 0 ? '' : fullInDays + (fullInDays > 1 ? ' days ' : 'day ')) +
-      (fullInHours === 0 ? '' : fullInHours + (fullInHours > 1 ? ' hours ' : 'hour ')) +
-      (fullInMinutes === 0 ? '' : fullInMinutes + (fullInMinutes > 1 ? ' minutes ' : 'minute'));
+    fullInString =
+      (fullInDays === 0
+        ? ""
+        : fullInDays + (fullInDays > 1 ? " days " : "day ")) +
+      (fullInHours === 0
+        ? ""
+        : fullInHours + (fullInHours > 1 ? " hours " : "hour ")) +
+      (fullInMinutes === 0
+        ? ""
+        : fullInMinutes + (fullInMinutes > 1 ? " minutes " : "minute"));
   }
   return fullInString;
 }
@@ -138,9 +237,9 @@ function getPriceSteemAsync() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM',
+      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM",
       success: function(response) {
-        resolve(response.result['Bid']);
+        resolve(response.result["Bid"]);
       },
       error: function(msg) {
         resolve(null);
@@ -158,10 +257,9 @@ function getBTCPriceAsync() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: 'https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC',
+      url: "https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC",
       success: function(response) {
-        resolve(response.result['Bid']);
-
+        resolve(response.result["Bid"]);
       },
       error: function(msg) {
         resolve(null);
@@ -169,7 +267,6 @@ function getBTCPriceAsync() {
     });
   });
 }
-
 
 // Get SBD price from Bittrex
 function getPriceSBDAsync() {
@@ -180,9 +277,9 @@ function getPriceSBDAsync() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: 'https://bittrex.com/api/v1.1/public/getticker?market=BTC-SBD',
+      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-SBD",
       success: function(response) {
-        resolve(response.result['Bid']);
+        resolve(response.result["Bid"]);
       },
       error: function(msg) {
         resolve(null);
@@ -200,7 +297,7 @@ function getWitnessRanks() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: 'https://api.steemplus.app/witnesses-ranks',
+      url: "https://api.steemplus.app/witnesses-ranks",
       success: function(response) {
         resolve(response);
       },
@@ -234,10 +331,8 @@ function initiateCustomSelect() {
   x = document.getElementsByClassName("custom-select");
 
   for (i = 0; i < x.length; i++) {
-    if (i == 4 && custom_created)
-      return;
-    if (i == 4 && !custom_created)
-      custom_created = true;
+    if (i == 4 && custom_created) return;
+    if (i == 4 && !custom_created) custom_created = true;
     selElmnt = x[i].getElementsByTagName("select")[0];
 
     /*for each element, create a new DIV that will act as the selected item:*/
@@ -276,8 +371,7 @@ function initiateCustomSelect() {
       b.appendChild(c);
     }
     x[i].appendChild(b);
-    if (i == 0)
-      loadAccount(a.innerHTML);
+    if (i == 0) loadAccount(a.innerHTML);
     a.addEventListener("click", function(e) {
       /*when the select box is clicked, close any other select boxes,
       and open/close the current select box:*/
@@ -287,24 +381,47 @@ function initiateCustomSelect() {
       this.classList.toggle("select-arrow-active");
       if (this.innerHTML.includes("Add New Account")) {
         showAddAccount();
-      } else if (!getPref && !manageKey && !this.classList.contains("select-arrow-active") && this.innerHTML != "SBD" && this.innerHTML != "STEEM") {
+      } else if (
+        !getPref &&
+        !manageKey &&
+        !this.classList.contains("select-arrow-active") &&
+        this.innerHTML != "SBD" &&
+        this.innerHTML != "STEEM"
+      ) {
         chrome.storage.local.set({
           last_account: this.innerHTML
         });
         loadAccount(this.innerHTML);
       } else if (this.innerHTML == "SBD") {
-        $(".transfer_balance div").eq(0).text('SBD Balance');
-        $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+        $(".transfer_balance div")
+          .eq(0)
+          .text("SBD Balance");
+        $(".transfer_balance div")
+          .eq(1)
+          .html(numberWithCommas(sbd));
       } else if (this.innerHTML == "STEEM") {
-        $(".transfer_balance div").eq(0).text('STEEM Balance');
-        $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+        $(".transfer_balance div")
+          .eq(0)
+          .text("STEEM Balance");
+        $(".transfer_balance div")
+          .eq(1)
+          .html(numberWithCommas(steem_p));
       } else if (manageKey) {
         manageKeys(this.innerHTML);
-      } else if (getPref && $(this).parent().attr("id") != "custom_select_rpc") {
+      } else if (
+        getPref &&
+        $(this)
+          .parent()
+          .attr("id") != "custom_select_rpc"
+      ) {
         setPreferences(this.innerHTML);
-      } else if (getPref && $(this).parent().attr("id") == "custom_select_rpc") {
-        if (this.innerHTML != "ADD RPC")
-          switchRPC(this.innerHTML);
+      } else if (
+        getPref &&
+        $(this)
+          .parent()
+          .attr("id") == "custom_select_rpc"
+      ) {
+        if (this.innerHTML != "ADD RPC") switchRPC(this.innerHTML);
         else {
           showCustomRPC();
           $("#pref_div").hide();
@@ -317,12 +434,15 @@ function initiateCustomSelect() {
   function closeAllSelect(elmnt) {
     /*a function that will close all select boxes in the document,
     except the current select box:*/
-    var x, y, i, arrNo = [];
+    var x,
+      y,
+      i,
+      arrNo = [];
     x = document.getElementsByClassName("select-items");
     y = document.getElementsByClassName("select-selected");
     for (i = 0; i < y.length; i++) {
       if (elmnt == y[i]) {
-        arrNo.push(i)
+        arrNo.push(i);
       } else {
         y[i].classList.remove("select-arrow-active");
       }
@@ -341,7 +461,11 @@ function initiateCustomSelect() {
 // Check if there is a reward to claim
 
 function hasReward(reward_sbd, reward_sp, reward_steem) {
-  return (getValFromString(reward_sbd) != 0 || getValFromString(reward_sp) != 0 || getValFromString(reward_steem) != 0);
+  return (
+    getValFromString(reward_sbd) != 0 ||
+    getValFromString(reward_sp) != 0 ||
+    getValFromString(reward_steem) != 0
+  );
 }
 
 function getValFromString(string) {
@@ -360,37 +484,38 @@ function isMemoWif(pwd, memo) {
   return steem.auth.wifToPublic(pwd) == memo;
 }
 
-let numberWithCommas = (x) => {
+let numberWithCommas = x => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+};
 
 function nFormatter(num, digits) {
-  var si = [{
+  var si = [
+    {
       value: 1,
       symbol: ""
     },
     {
-      value: 1E3,
+      value: 1e3,
       symbol: "k"
     },
     {
-      value: 1E6,
+      value: 1e6,
       symbol: "M"
     },
     {
-      value: 1E9,
+      value: 1e9,
       symbol: "G"
     },
     {
-      value: 1E12,
+      value: 1e12,
       symbol: "T"
     },
     {
-      value: 1E15,
+      value: 1e15,
       symbol: "P"
     },
     {
-      value: 1E18,
+      value: 1e18,
       symbol: "E"
     }
   ];
@@ -405,17 +530,16 @@ function nFormatter(num, digits) {
 }
 
 function addCommas(nStr, currency) {
-  nStr += '';
-  x = nStr.split('.');
+  nStr += "";
+  x = nStr.split(".");
   x1 = x[0];
-  x2 = x.length > 1 ? '.' + x[1] : ''
+  x2 = x.length > 1 ? "." + x[1] : "";
   var rgx = /(\d+)(\d{3})/;
   while (rgx.test(x1)) {
-    x1 = x1.replace(rgx, '$1' + ',' + '$2');
+    x1 = x1.replace(rgx, "$1" + "," + "$2");
   }
 
-  if (x2 == '' && currency == 1)
-    x2 = '.00';
+  if (x2 == "" && currency == 1) x2 = ".00";
 
   return x1 + x2;
 }
