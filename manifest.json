@@ -21,6 +21,7 @@
       "js/encrypt.js",
       "vendor/steem.min.js",
       "vendor/decode.min.js",
+      "vendor/jquery.min.js",
       "js/config.js",
       "js/keychainify.js",
       "js/hf21.js",

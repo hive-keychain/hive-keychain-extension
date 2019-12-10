@@ -14,7 +14,7 @@ let rpc = new Rpcs();
 
 chrome.storage.local.get(["current_rpc", "autolock"], function(items) {
   if (items.autolock) startAutolock(JSON.parse(items.autolock));
-  rpc.setOptions(items.current_rpc);
+  rpc.setOptions(items.current_rpc || "DEFAULT");
 });
 
 //Listen to the other parts of the extension
