@@ -211,7 +211,7 @@ $("#keychainify").click(function() {
 // Show transaction window
 $("#send").click(function() {
   $("#send_div").show();
-  if (active_account.keys.hasOwnProperty("memo")) {
+  if (activeAccount.hasKey("memo")) {
     $(".checkbox_memo").show();
   }
   $("#main").hide();
@@ -325,7 +325,7 @@ $(".wallet_currency").click(function() {
 
 $("#powerup").click(function() {
   $("#powerup_div").show();
-  $("#user_pu").val(active_account.name);
+  $("#user_pu").val(activeAccount.getName());
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
   $(".dropdown").hide();

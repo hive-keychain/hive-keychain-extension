@@ -1,7 +1,7 @@
 function prepareDelegationTab() {
   Promise.all([
-    getDelegatees(active_account.name),
-    getDelegators(active_account.name),
+    getDelegatees(activeAccount.getName()),
+    getDelegators(activeAccount.getName()),
     steem.api.getDynamicGlobalPropertiesAsync()
   ]).then(function(result) {
     let delegatees = result[0];
@@ -37,7 +37,7 @@ function prepareDelegationTab() {
           .toFixed(3);
         return elt;
       });
-    if (!active_account.keys.hasOwnProperty("active")) {
+    if (!activeAccount.hasKey("active")) {
       $("#send_del").addClass("disabled");
       $("#wrap_send_del").attr(
         "title",
@@ -69,8 +69,8 @@ function prepareDelegationTab() {
         $("#send_del").hide();
         $("#del_loading").show();
         steem.broadcast.delegateVestingShares(
-          active_account.keys.active,
-          active_account.name,
+          activeAccount.getKey("active"),
+          activeAccount.getName(),
           $("#username_del").val(),
           delegated_vest,
           function(err, result) {
@@ -81,7 +81,7 @@ function prepareDelegationTab() {
               showError("Something went wrong! Please try again!");
             } else {
               showConfirm("Your delegation was succesful!");
-              loadAccount(active_account.name);
+              loadAccount(activeAccount.getName());
             }
           }
         );
@@ -166,8 +166,8 @@ function showEditDiv(delegatees, globalProperties) {
       delegated_vest = delegated_vest.toFixed(6);
       delegated_vest = delegated_vest.toString() + " VESTS";
       steem.broadcast.delegateVestingShares(
-        active_account.keys.active,
-        active_account.name,
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
         delegatee.delegatee,
         delegated_vest,
         function(err, result) {
@@ -178,7 +178,7 @@ function showEditDiv(delegatees, globalProperties) {
             showError("Something went wrong! Please try again!");
           } else {
             showConfirm("Your delegation  change was succesful!");
-            loadAccount(active_account.name);
+            loadAccount(activeAccount.getName());
             $("#edit_del_div").hide();
             $("#outgoing_del_div").show();
           }

@@ -1,223 +1,216 @@
 const REVEAL_PRIVATE = "Click to show private key";
 // All functions regarding the handling of a particular account
 // Load account information
-function loadAccount(name) {
-  console.log("Load account " + name);
-  let account = accounts_json.list.filter(function(obj, i) {
-    return obj.name === name;
-  })[0];
-  if (account != null && account != undefined) {
-    active_account = account;
-    $("#recipient").autocomplete({
-      source: to_autocomplete[active_account.name],
-      minLength: 2,
-      appendTo: "#autocomplete_container"
-    });
-    $("#send_form").toggle(account.keys.hasOwnProperty("active"));
-    $("#show_add_active").toggle(!account.keys.hasOwnProperty("active"));
-    $(".wallet_infos").html("...");
-    $("#vm_pct").html("...");
-    $("#vm_val").html("");
-    $("#rc").html("...");
-    steem.api.getAccounts([account.name], async function(err, result) {
-      if (result.length != 0) {
-        console.log(result);
-        witness_votes = result[0].witness_votes;
-        proxy = result[0].proxy;
-        const vm = await getVotingMana(result[0]);
-        $("#vm_pct").html(vm + "%");
-        const full =
-          (vm == 100 ? "" : "Full in ") + getTimeBeforeFull(vm * 100);
-        $("#vm_info").attr("title", full);
+const loadAccount = async name => {
+  console.log(`Load account ${name}`);
+  activeAccount = new Account(accountsList.get(name));
+  $("#recipient").autocomplete({
+    source: to_autocomplete[activeAccount.getName()],
+    minLength: 2,
+    appendTo: "#autocomplete_container"
+  });
+  $("#send_form").toggle(activeAccount.hasKey("active"));
+  $("#show_add_active").toggle(!activeAccount.hasKey("active"));
+  $(".wallet_infos").html("...");
+  $("#vm_pct").html("...");
+  $("#vm_val").html("");
+  $("#rc").html("...");
+  steem.api.getAccounts([activeAccount.getName()], async function(err, result) {
+    if (result.length != 0) {
+      console.log(result);
+      witness_votes = result[0].witness_votes;
+      proxy = result[0].proxy;
+      const vm = await getVotingMana(result[0]);
+      $("#vm_pct").html(vm + "%");
+      const full = (vm == 100 ? "" : "Full in ") + getTimeBeforeFull(vm * 100);
+      $("#vm_info").attr("title", full);
 
-        if (totalSteem != null) {
-          showUserData(result);
-          claimRewards(result);
-          prepareWitnessDiv();
-          prepareDelegationTab();
-          preparePowerUpDown(result);
-          showTokenBalances(result[0]);
-        } else
-          try {
-            witness_ranks = await getWitnessRanks();
-          } catch (err) {
-            console.log("Error loading witness ranks: " + err);
-          }
+      if (totalSteem != null) {
+        showUserData(result);
+        claimRewards(result);
+        prepareWitnessDiv();
+        prepareDelegationTab();
+        preparePowerUpDown(result);
+        showTokenBalances(result[0]);
+      } else
         try {
-          priceBTC = await getBTCPriceAsync();
+          witness_ranks = await getWitnessRanks();
         } catch (err) {
-          console.log("Error loading BTC Price: " + err);
+          console.log("Error loading witness ranks: " + err);
         }
-        try {
-          priceSBD = await getPriceSBDAsync();
-        } catch (err) {
-          console.log("Error loading SBD Price: " + err);
-        }
-        try {
-          priceSteem = await getPriceSteemAsync();
-        } catch (err) {
-          console.log("Error loading Steem Price: " + err);
-        }
+      try {
+        priceBTC = await getBTCPriceAsync();
+      } catch (err) {
+        console.log("Error loading BTC Price: " + err);
+      }
+      try {
+        priceSBD = await getPriceSBDAsync();
+      } catch (err) {
+        console.log("Error loading SBD Price: " + err);
+      }
+      try {
+        priceSteem = await getPriceSteemAsync();
+      } catch (err) {
+        console.log("Error loading Steem Price: " + err);
+      }
 
-        Promise.all([
-          steem.api.getDynamicGlobalPropertiesAsync(),
-          steem.api.getCurrentMedianHistoryPriceAsync(),
-          steem.api.getRewardFundAsync("post")
-        ]).then(function(values) {
-          votePowerReserveRate = values["0"].vote_power_reserve_rate;
-          totalSteem = Number(
-            values["0"].total_vesting_fund_steem.split(" ")[0]
-          );
-          totalVests = Number(values["0"].total_vesting_shares.split(" ")[0]);
-          rewardBalance = parseFloat(
-            values["2"].reward_balance.replace(" STEEM", "")
-          );
-          recentClaims = values["2"].recent_claims;
-          steemPrice =
-            parseFloat(values["1"].base.replace(" SBD", "")) /
-            parseFloat(values["1"].quote.replace(" STEEM", ""));
-          dynamicProp = values[0];
+      Promise.all([
+        steem.api.getDynamicGlobalPropertiesAsync(),
+        steem.api.getCurrentMedianHistoryPriceAsync(),
+        steem.api.getRewardFundAsync("post")
+      ]).then(function(values) {
+        votePowerReserveRate = values["0"].vote_power_reserve_rate;
+        totalSteem = Number(values["0"].total_vesting_fund_steem.split(" ")[0]);
+        totalVests = Number(values["0"].total_vesting_shares.split(" ")[0]);
+        rewardBalance = parseFloat(
+          values["2"].reward_balance.replace(" STEEM", "")
+        );
+        recentClaims = values["2"].recent_claims;
+        steemPrice =
+          parseFloat(values["1"].base.replace(" SBD", "")) /
+          parseFloat(values["1"].quote.replace(" STEEM", ""));
+        dynamicProp = values[0];
 
-          //witness_ranks = values["6"];
-          claimRewards(result);
-          showUserData(result);
-          prepareWitnessDiv();
-          prepareDelegationTab();
-          preparePowerUpDown(result);
-          showTokenBalances(result[0]);
-        });
+        //witness_ranks = values["6"];
+        claimRewards(result);
+        showUserData(result);
+        prepareWitnessDiv();
+        prepareDelegationTab();
+        preparePowerUpDown(result);
+        showTokenBalances(result[0]);
+      });
 
-        if (
-          !result[0].proxy &&
-          (!result[0].witness_votes.includes("stoodkev") ||
-            !result[0].witness_votes.includes("yabapmatt") ||
-            !result[0].witness_votes.includes("aggroed"))
-        ) {
-          $("#stoodkev img").attr(
-            "src",
-            "../images/icon_witness-vote" +
-              (result[0].witness_votes.includes("stoodkev") ? "" : "_default") +
-              ".svg"
-          );
-          $("#yabapmatt img").attr(
-            "src",
-            "../images/icon_witness-vote" +
-              (result[0].witness_votes.includes("yabapmatt")
-                ? ""
-                : "_default") +
-              ".svg"
-          );
-          $("#aggroed img").attr(
-            "src",
-            "../images/icon_witness-vote" +
-              (result[0].witness_votes.includes("aggroed") ? "" : "_default") +
-              ".svg"
-          );
+      if (
+        !result[0].proxy &&
+        (!result[0].witness_votes.includes("stoodkev") ||
+          !result[0].witness_votes.includes("yabapmatt") ||
+          !result[0].witness_votes.includes("aggroed"))
+      ) {
+        $("#stoodkev img").attr(
+          "src",
+          "../images/icon_witness-vote" +
+            (result[0].witness_votes.includes("stoodkev") ? "" : "_default") +
+            ".svg"
+        );
+        $("#yabapmatt img").attr(
+          "src",
+          "../images/icon_witness-vote" +
+            (result[0].witness_votes.includes("yabapmatt") ? "" : "_default") +
+            ".svg"
+        );
+        $("#aggroed img").attr(
+          "src",
+          "../images/icon_witness-vote" +
+            (result[0].witness_votes.includes("aggroed") ? "" : "_default") +
+            ".svg"
+        );
 
-          if (!result[0].witness_votes.includes("yabapmatt"))
-            $("#yabapmatt").click(function() {
-              voteFor("yabapmatt");
-            });
+        if (!result[0].witness_votes.includes("yabapmatt"))
+          $("#yabapmatt").click(function() {
+            voteFor("yabapmatt");
+          });
 
-          if (!result[0].witness_votes.includes("stoodkev"))
-            $("#stoodkev").click(function() {
-              voteFor("stoodkev");
-            });
+        if (!result[0].witness_votes.includes("stoodkev"))
+          $("#stoodkev").click(function() {
+            voteFor("stoodkev");
+          });
 
-          if (!result[0].witness_votes.includes("aggroed"))
-            $("#aggroed").click(function() {
-              voteFor("aggroed");
-            });
+        if (!result[0].witness_votes.includes("aggroed"))
+          $("#aggroed").click(function() {
+            voteFor("aggroed");
+          });
 
-          setTimeout(function() {
-            $("#witness_votes").show();
-            $("#witness_votes").animate(
-              {
-                opacity: 1
-              },
-              500
-            );
-          }, 2000);
-        } else {
+        setTimeout(function() {
+          $("#witness_votes").show();
           $("#witness_votes").animate(
             {
-              opacity: 0
+              opacity: 1
             },
-            500,
-            function() {
-              $("#witness_votes").hide();
-            }
+            500
           );
-        }
-      }
-    });
-    steem.api.getAccountHistory(account.name, -1, 1000, function(err, result) {
-      $("#acc_transfers div")
-        .eq(1)
-        .empty();
-      if (result != null) {
-        let transfers = result.filter(tx => tx[1].op[0] === "transfer");
-        transfers = transfers.slice(-10).reverse();
-        if (transfers.length != 0) {
-          for (transfer of transfers) {
-            let memo = transfer[1].op[1].memo;
-            let timestamp = transfer[1].timestamp;
-            let date = new Date(timestamp);
-            timestamp =
-              date.getMonth() +
-              1 +
-              "/" +
-              date.getDate() +
-              "/" +
-              date.getFullYear();
-            if (memo[0] == "#") {
-              if (active_account.keys.hasOwnProperty("memo")) {
-                try {
-                  memo = window.decodeMemo(active_account.keys.memo, memo);
-                } catch (e) {}
-              } else memo = "Add your private memo key to read this memo";
-            }
-            var transfers_element = $(
-              "<div class='transfer_row'><span class='transfer_date' title='" +
-                transfer[1].timestamp +
-                "'>" +
-                timestamp +
-                "</span><span class='transfer_val'>" +
-                (transfer[1].op[1].from == active_account.name ? "-" : "+") +
-                " " +
-                transfer[1].op[1].amount.split(" ")[0] +
-                "</span><span class='transfer_name'>" +
-                (transfer[1].op[1].from == active_account.name
-                  ? "TO: @" + transfer[1].op[1].to
-                  : "FROM: @" + transfer[1].op[1].from) +
-                "</span><span class='transfer_cur'>" +
-                transfer[1].op[1].amount.split(" ")[1] +
-                "</span></div>"
-            );
-
-            var memo_element = $("<div class='memo'></div>");
-            memo_element.text(memo);
-            transfers_element.append(memo_element);
-            $("#acc_transfers div")
-              .eq(1)
-              .append(transfers_element);
+        }, 2000);
+      } else {
+        $("#witness_votes").animate(
+          {
+            opacity: 0
+          },
+          500,
+          function() {
+            $("#witness_votes").hide();
           }
-          $(".transfer_row").click(function() {
-            $(".memo")
-              .eq($(this).index())
-              .slideToggle();
-          });
-        } else
+        );
+      }
+    }
+  });
+  steem.api.getAccountHistory(activeAccount.getName(), -1, 1000, function(
+    err,
+    result
+  ) {
+    $("#acc_transfers div")
+      .eq(1)
+      .empty();
+    if (result != null) {
+      let transfers = result.filter(tx => tx[1].op[0] === "transfer");
+      transfers = transfers.slice(-10).reverse();
+      if (transfers.length != 0) {
+        for (transfer of transfers) {
+          let memo = transfer[1].op[1].memo;
+          let timestamp = transfer[1].timestamp;
+          let date = new Date(timestamp);
+          timestamp =
+            date.getMonth() +
+            1 +
+            "/" +
+            date.getDate() +
+            "/" +
+            date.getFullYear();
+          if (memo[0] == "#") {
+            if (activeAccount.hasKey("memo")) {
+              try {
+                memo = window.decodeMemo(activeAccount.getKey("memo"), memo);
+              } catch (e) {}
+            } else memo = "Add your private memo key to read this memo";
+          }
+          var transfers_element = $(
+            "<div class='transfer_row'><span class='transfer_date' title='" +
+              transfer[1].timestamp +
+              "'>" +
+              timestamp +
+              "</span><span class='transfer_val'>" +
+              (transfer[1].op[1].from == activeAccount.getName() ? "-" : "+") +
+              " " +
+              transfer[1].op[1].amount.split(" ")[0] +
+              "</span><span class='transfer_name'>" +
+              (transfer[1].op[1].from == activeAccount.getName()
+                ? "TO: @" + transfer[1].op[1].to
+                : "FROM: @" + transfer[1].op[1].from) +
+              "</span><span class='transfer_cur'>" +
+              transfer[1].op[1].amount.split(" ")[1] +
+              "</span></div>"
+          );
+
+          var memo_element = $("<div class='memo'></div>");
+          memo_element.text(memo);
+          transfers_element.append(memo_element);
           $("#acc_transfers div")
             .eq(1)
-            .append("No recent transfers");
+            .append(transfers_element);
+        }
+        $(".transfer_row").click(function() {
+          $(".memo")
+            .eq($(this).index())
+            .slideToggle();
+        });
       } else
         $("#acc_transfers div")
           .eq(1)
-          .append("Something went wrong! Please try again later!");
-    });
-  }
-}
+          .append("No recent transfers");
+    } else
+      $("#acc_transfers div")
+        .eq(1)
+        .append("Something went wrong! Please try again later!");
+  });
+};
 
 // Display all the account data
 async function showUserData(result) {
@@ -358,38 +351,14 @@ $("#save_master").click(function() {
 
 // Add new account to Chrome local storage (encrypted with AES)
 function addAccount(account) {
-  if (accounts_json != null) {
-    let newlist = [];
-    for (let acc of accounts_json.list) {
-      if (acc != undefined) {
-        newlist.push(acc);
-      }
-    }
-    accounts_json.list = newlist;
-  }
-  let saved_accounts = accounts_json;
-  if (
-    saved_accounts == undefined ||
-    saved_accounts == null ||
-    saved_accounts.list == 0
-  )
-    accounts = {
-      list: [account]
-    };
-  else {
-    saved_accounts.list.push(account);
-    accounts = saved_accounts;
-  }
-  chrome.storage.local.set({
-    accounts: encryptJson(accounts, mk)
-  });
+  accountsList.add(account).save(mk);
   initializeMainMenu();
 }
 
 // Display Add Copy or delete individual keys
 function manageKeys(name) {
   let index = -1;
-  let account = accounts_json.list.filter(function(obj, i) {
+  let account = accountsList.getList().filter(function(obj, i) {
     if (obj.name === name) {
       index = i;
       return obj;
@@ -683,7 +652,7 @@ function updateAccount() {
 }
 
 function claimRewards(result) {
-  console.log("Check claim rewards for " + active_account.name);
+  console.log(`Check claim rewards for ${activeAccount.getName()}`);
   const reward_sbd = result[0].reward_sbd_balance;
   const reward_vests = result[0].reward_vesting_balance;
   const reward_sp =
@@ -713,10 +682,10 @@ function claimRewards(result) {
           .unbind("click")
           .click(function() {
             $("#claim_rewards button").prop("disabled", true);
-            if (active_account.keys.posting)
+            if (activeAccount.hasKey("posting"))
               steem.broadcast.claimRewardBalance(
-                active_account.keys.posting,
-                active_account.name,
+                activeAccount.getKey("posting"),
+                activeAccount.getName(),
                 reward_steem,
                 reward_sbd,
                 reward_vests,

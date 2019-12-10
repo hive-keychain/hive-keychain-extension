@@ -8,8 +8,7 @@ function prepareWitnessDiv() {
     $("#proxy div").html("PROXY: @ " + proxy);
     $("#proxy").show();
   } else $("#proxy").hide();
-  if (!active_account.keys.hasOwnProperty("active"))
-    $("#proxy div").addClass("no_active");
+  if (!activeAccount.hasKey("active")) $("#proxy div").addClass("no_active");
   else $("#proxy div").removeClass("no_active");
 
   $("#list_wit").empty();
@@ -26,7 +25,7 @@ function prepareWitnessDiv() {
           "</span><span class='isActive'>" +
           isActive +
           "</span><img class='" +
-          (!active_account.keys.hasOwnProperty("active") ? "no_cursor" : "") +
+          (!activeAccount.hasKey("active") ? "no_cursor" : "") +
           "' src='../images/delete.png'></span></div>"
       );
     }
@@ -54,8 +53,7 @@ function prepareWitnessDiv() {
     }
   }
 
-  if (!active_account.keys.hasOwnProperty("active"))
-    $(".wit-vote").addClass("no_cursor");
+  if (!activeAccount.hasKey("active")) $(".wit-vote").addClass("no_cursor");
   else $(".wit-vote").removeClass("no_cursor");
 
   $("#proxy div")
@@ -63,8 +61,8 @@ function prepareWitnessDiv() {
     .click(function() {
       $("#proxy").hide();
       steem.broadcast.accountWitnessProxy(
-        active_account.keys.active,
-        active_account.name,
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
         "",
         function(err, result) {
           console.log(err, result);
@@ -80,8 +78,8 @@ function prepareWitnessDiv() {
       console.log(voted_wit);
       $(that).addClass("wit-loading");
       steem.broadcast.accountWitnessVote(
-        active_account.keys.active,
-        active_account.name,
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
         $(this)
           .prev()
           .html()
@@ -122,15 +120,15 @@ function prepareWitnessDiv() {
       const that = this;
       $(that).attr("src", "../images/loading.gif");
       steem.broadcast.accountWitnessVote(
-        active_account.keys.active,
-        active_account.name,
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
         acc,
         0,
         function(err, result) {
           $(that).attr("src", "../images/delete.png");
           if (err == null) {
             showConfirm("Succesfully unvoted @" + acc);
-            loadAccount(active_account.name);
+            loadAccount(activeAccount.getName());
           } else showError("Something went wrong! Please try again!");
         }
       );
@@ -143,8 +141,8 @@ function prepareWitnessDiv() {
       $("#wit_loading").show();
       if ($("#witness_div select option:selected").val() == "Wit") {
         steem.broadcast.accountWitnessVote(
-          active_account.keys.active,
-          active_account.name,
+          activeAccount.getKey("active"),
+          activeAccount.getName(),
           $("#wit-username").val(),
           1,
           function(err, result) {
@@ -152,21 +150,21 @@ function prepareWitnessDiv() {
             $("#wit_loading").hide();
             if (err == null) {
               showConfirm("Succesfully voted for @" + $("#wit-username").val());
-              loadAccount(active_account.name);
+              loadAccount(activeAccount.getName());
             } else showError("Something went wrong! Please try again!");
           }
         );
       } else {
         steem.broadcast.accountWitnessProxy(
-          active_account.keys.active,
-          active_account.name,
+          activeAccount.getKey("active"),
+          activeAccount.getName(),
           $("#wit-username").val(),
           function(err, result) {
             if (err == null) {
               showConfirm(
                 "Succesfully chose @" + $("#wit-username").val() + " for proxy"
               );
-              loadAccount(active_account.name);
+              loadAccount(activeAccount.getName());
             } else showError("Something went wrong! Please try again!");
           }
         );

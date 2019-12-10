@@ -30,7 +30,7 @@ async function preparePowerUpDown(account) {
       .hide();
   }
 
-  if (!active_account.keys.hasOwnProperty("active")) {
+  if (!activeAccount.hasKey("active")) {
     $("#power_up").addClass("disabled");
     $("#wrap_power_up").attr(
       "title",
@@ -54,8 +54,8 @@ async function preparePowerUpDown(account) {
       $("#power_up").hide();
       $("#powerup_loading").show();
       steem.broadcast.transferToVesting(
-        active_account.keys.active,
-        active_account.name,
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
         $("#user_pu").val(),
         amount,
         function(err, result) {
@@ -66,7 +66,7 @@ async function preparePowerUpDown(account) {
             showError("Something went wrong! Please try again!");
           } else {
             showConfirm("You succesfully powered up!");
-            loadAccount(active_account.name);
+            loadAccount(activeAccount.getName());
           }
         }
       );
@@ -83,8 +83,8 @@ async function preparePowerUpDown(account) {
       vestingShares = vestingShares.toString() + " VESTS";
 
       steem.broadcast.withdrawVesting(
-        active_account.keys.active,
-        active_account.name,
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
         vestingShares,
         function(err, result) {
           console.log(err, result);
@@ -94,7 +94,7 @@ async function preparePowerUpDown(account) {
             showError("Something went wrong! Please try again!");
           } else {
             showConfirm("You succesfully started a power down!");
-            loadAccount(active_account.name);
+            loadAccount(activeAccount.getName());
           }
         }
       );
