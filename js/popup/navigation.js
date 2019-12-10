@@ -325,6 +325,7 @@ $(".wallet_currency").click(function() {
 
 $("#powerup").click(function() {
   $("#powerup_div").show();
+  $("#user_pu").val(active_account.name);
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
   $(".dropdown").hide();
