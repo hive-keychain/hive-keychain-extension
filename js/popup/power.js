@@ -1,28 +1,22 @@
-async function preparePowerUpDown(account) {
-  const SP = numberWithCommas(sp.toFixed(3)) + "    SP";
-  const STEEM = numberWithCommas(parseFloat(steem_p).toFixed(3)) + " STEEM";
-  const dynamicProp = await steem.api.getDynamicGlobalPropertiesAsync();
-  const totalSteem = Number(dynamicProp.total_vesting_fund_steem.split(" ")[0]);
-  const totalVests = Number(dynamicProp.total_vesting_shares.split(" ")[0]);
-
+async function preparePowerUpDown() {
+  const SP = numberWithCommas(await activeAccount.getSP()) + "    SP";
+  const STEEM = numberWithCommas(await activeAccount.getSteem()) + " STEEM";
   $(".power_sp").html(SP);
   $(".power_steem").html(STEEM);
-  const withdrawn = (
-    ((account[0].withdrawn / totalVests) * totalSteem) /
-    1000000
-  ).toFixed(0);
-  const total_withdrawing = (
-    ((account[0].to_withdraw / totalVests) * totalSteem) /
-    1000000
-  ).toFixed(0);
-  if (total_withdrawing != 0) {
+  const [
+    withdrawn,
+    total_withdrawing,
+    next_vesting_withdrawal
+  ] = await activeAccount.getPowerDown();
+
+  if (total_withdrawing !== 0 && withdrawn !== total_withdrawing) {
     $("#powerdown_div .power")
       .eq(1)
       .show();
     $("#powering_down").html(withdrawn + " / " + total_withdrawing + " SP");
     $("#powering_down").attr(
       "title",
-      "Next power down on " + account[0].next_vesting_withdrawal
+      "Next power down on " + next_vesting_withdrawal
     );
   } else {
     $("#powerdown_div .power")
@@ -53,23 +47,17 @@ async function preparePowerUpDown(account) {
       const amount = parseFloat($("#amt_pu").val()).toFixed(3) + " STEEM";
       $("#power_up").hide();
       $("#powerup_loading").show();
-      steem.broadcast.transferToVesting(
-        activeAccount.getKey("active"),
-        activeAccount.getName(),
-        $("#user_pu").val(),
-        amount,
-        function(err, result) {
-          console.log(err, result);
-          $("#power_up").show();
-          $("#powerup_loading").hide();
-          if (err) {
-            showError("Something went wrong! Please try again!");
-          } else {
-            showConfirm("You succesfully powered up!");
-            loadAccount(activeAccount.getName());
-          }
+      activeAccount.powerUp(amount, $("#user_pu").val(), function(err, result) {
+        console.log(err, result);
+        $("#power_up").show();
+        $("#powerup_loading").hide();
+        if (err) {
+          showError("Something went wrong! Please try again!");
+        } else {
+          showConfirm("You succesfully powered up!");
+          loadAccount(activeAccount.getName());
         }
-      );
+      });
     });
 
   $("#power_down")
@@ -77,26 +65,18 @@ async function preparePowerUpDown(account) {
     .click(function() {
       $("#power_down").hide();
       $("#powerdown_loading").show();
-      let vestingShares =
-        (parseFloat($("#amt_pd").val()) * totalVests) / totalSteem;
-      vestingShares = vestingShares.toFixed(6);
-      vestingShares = vestingShares.toString() + " VESTS";
-
-      steem.broadcast.withdrawVesting(
-        activeAccount.getKey("active"),
-        activeAccount.getName(),
-        vestingShares,
-        function(err, result) {
-          console.log(err, result);
-          $("#power_down").show();
-          $("#powerdown_loading").hide();
-          if (err) {
-            showError("Something went wrong! Please try again!");
-          } else {
+      activeAccount.powerDown($("#amt_pd").val(), function(err, result) {
+        console.log(err, result);
+        $("#power_down").show();
+        $("#powerdown_loading").hide();
+        if (err) {
+          showError("Something went wrong! Please try again!");
+        } else {
+          if ($("#amt_pd").val() !== "0")
             showConfirm("You succesfully started a power down!");
-            loadAccount(activeAccount.getName());
-          }
+          else showConfirm("You succesfully stopped the power down!");
+          loadAccount(activeAccount.getName());
         }
-      );
+      });
     });
 }

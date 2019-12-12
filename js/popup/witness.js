@@ -1,8 +1,7 @@
-let witness_votes = [];
-let proxy = "";
 let witness_ranks = null;
 
-function prepareWitnessDiv() {
+async function prepareWitnessDiv(witness_votes, proxy) {
+  witness_ranks = await getWitnessRanks();
   $("#votes_remaining span").html(30 - witness_votes.length);
   if (proxy != "") {
     $("#proxy div").html("PROXY: @ " + proxy);

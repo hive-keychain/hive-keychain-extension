@@ -81,8 +81,8 @@ getTokens().then(function(tok) {
     });
 });
 
-function showTokenBalances(account) {
-  getAccountBalances(account.name).then(tokenBalances => {
+function showTokenBalances() {
+  getAccountBalances(activeAccount.getName()).then(tokenBalances => {
     accountTokenBalances = tokenBalances;
     $("#tokens_list").empty();
     for (token of tokenBalances) {
