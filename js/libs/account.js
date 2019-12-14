@@ -41,7 +41,6 @@ class Account {
     return [this.reward_sbd, reward_sp, this.reward_steem, rewardText];
   }
   async toSP(vests) {
-    console.log(steem, steem.formatter);
     return steem.formatter
       .vestToSteem(
         vests,
@@ -100,7 +99,6 @@ class Account {
 
   async getAccountValue() {
     const [steem, sbd] = await this.props.getPrices();
-    console.log(steem, sbd);
     return (
       numberWithCommas(
         "$ " +
