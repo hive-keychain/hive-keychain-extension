@@ -3,6 +3,8 @@ class Account {
     this.account = obj || {};
     this.info = steem.api.getAccountsAsync([this.account.name]);
     this.props = new GlobalProps();
+    this.delegatees = getDelegatees(this.account.name);
+    this.delegators = getDelegators(this.account.name);
   }
   getName() {
     return this.account.name;
@@ -168,6 +170,60 @@ class Account {
       this.getName(),
       to,
       amount,
+      callback
+    );
+  }
+
+  async getDelegatees() {
+    const that = this;
+    let delegatees = await this.delegatees;
+    delegatees = delegatees.filter(function(elt) {
+      return elt.vesting_shares != 0;
+    });
+    if (delegatees.length > 0)
+      delegatees = await Promise.all(
+        delegatees.map(async elt => {
+          elt.sp = parseFloat(
+            await this.toSP(
+              parseFloat(elt.vesting_shares.replace(" VESTS", ""))
+            )
+          ).toFixed(3);
+          return elt;
+        })
+      );
+    return delegatees;
+  }
+  async getDelegators() {
+    const that = this;
+    let delegators = await this.delegators;
+    delegators = delegators.filter(function(elt) {
+      return elt.vesting_shares != 0;
+    });
+    if (delegators.length > 0)
+      delegators = await Promise.all(
+        delegators.map(async elt => {
+          const sp = await that.toSP(elt.vesting_shares + " VESTS");
+          elt.sp = parseFloat(sp).toFixed(3);
+          return elt;
+        })
+      );
+    return delegators;
+  }
+  async delegateSP(amount, to, callback) {
+    const totalSteem = Number(
+      (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
+    );
+    const totalVests = Number(
+      (await this.props.getProp("total_vesting_shares")).split(" ")[0]
+    );
+    let delegated_vest = (parseFloat(amount) * totalVests) / totalSteem;
+    delegated_vest = delegated_vest.toFixed(6);
+    delegated_vest = delegated_vest.toString() + " VESTS";
+    steem.broadcast.delegateVestingShares(
+      activeAccount.getKey("active"),
+      activeAccount.getName(),
+      to,
+      delegated_vest,
       callback
     );
   }
