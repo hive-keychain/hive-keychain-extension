@@ -3,7 +3,8 @@ const REVEAL_PRIVATE = "Click to show private key";
 // Load account information
 const loadAccount = async name => {
   console.log(`Load account ${name}`);
-  activeAccount = new Account(accountsList.get(name));
+  activeAccount = accountsList.get(name);
+  activeAccount.init();
   $("#recipient").autocomplete({
     source: to_autocomplete[activeAccount.getName()],
     minLength: 2,
@@ -117,12 +118,7 @@ $("#check_add_account").click(function() {
   const username = $("#username").val();
   const pwd = $("#pwd").val();
   if (username !== "" && pwd !== "") {
-    if (
-      accounts_json &&
-      accounts_json.list.find(function(element) {
-        return element.name == username;
-      })
-    ) {
+    if (accountsList && accountsList.get(username)) {
       showError("You already registered an account for @" + username + "!");
     } else
       steem.api.getAccounts([username], function(err, result) {

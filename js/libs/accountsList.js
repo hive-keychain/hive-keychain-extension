@@ -18,8 +18,11 @@ class AccountsList {
   getList() {
     return this.accounts.list || [];
   }
+  getAccountsArray() {
+    return this.getList().map(e => new Account(e));
+  }
   get(name) {
-    return this.accounts.list.find(e => e.name === name);
+    return new Account(this.accounts.list.find(e => e.name === name));
   }
   save(mk) {
     chrome.storage.local.set({

@@ -1,6 +1,8 @@
 class Account {
   constructor(obj) {
     this.account = obj || {};
+  }
+  init() {
     this.info = steem.api.getAccountsAsync([this.account.name]);
     this.props = new GlobalProps();
     this.delegatees = getDelegatees(this.account.name);

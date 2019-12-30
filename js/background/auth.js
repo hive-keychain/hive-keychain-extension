@@ -23,40 +23,31 @@ const checkBeforeCreate = (request, tab, domain) => {
     chrome.storage.local.get(
       ["accounts", "no_confirm", "current_rpc"],
       function(items) {
+        const {memo, username, type, enforce} = request;
         // Check user
-        if (items.accounts == null || items.accounts == undefined) {
+        if (!items.accounts) {
           createPopup(() => {
             sendErrors(tab, "no_wallet", "No wallet!", "", request);
           });
         } else {
           // Check that user and wanted keys are in the wallet
-          accounts =
-            items.accounts == undefined ||
-            items.accounts ==
-              {
-                list: []
-              }
-              ? null
-              : decryptToJson(items.accounts, mk);
+          accountsList.init(decryptToJson(items.accounts, mk));
           let account = null;
-          if (request.type == "transfer") {
-            let tr_accounts = accounts.list.filter(a =>
-              a.keys.hasOwnProperty("active")
-            );
-            const encode =
-              request.memo != undefined &&
-              request.memo.length > 0 &&
-              request.memo[0] == "#";
-            const enforce = request.enforce || encode;
-            if (encode)
-              account = accounts.list.find(e => {
-                return e.name == request.username;
-              });
+          if (type === "transfer") {
+            let tr_accounts = accountsList
+              .getAccountsArray()
+              .filter(e => e.hasKey("active"))
+              .map(e => e.getName());
+            console.log(tr_accounts, "a");
+
+            const encode = memo && memo.length > 0 && memo[0] == "#";
+            const enforced = enforce || encode;
+            if (encode) account = accountsList.get(username);
             // If a username is specified, check that its active key has been added to the wallet
             if (
-              enforce &&
-              request.username &&
-              !tr_accounts.find(a => a.name == request.username)
+              enforced &&
+              username &&
+              !accountsList.get(username).hasKey("active")
             ) {
               createPopup(() => {
                 console.log("error1");
@@ -65,12 +56,12 @@ const checkBeforeCreate = (request, tab, domain) => {
                   "user_cancel",
                   "Request was canceled by the user.",
                   "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" +
-                    request.username +
+                    username +
                     " using the active key, which has not been added to the wallet.",
                   request
                 );
               });
-            } else if (encode && !account.keys.hasOwnProperty("memo")) {
+            } else if (encode && !account.hasKey("memo")) {
               createPopup(() => {
                 console.log("error2");
                 sendErrors(
@@ -78,7 +69,7 @@ const checkBeforeCreate = (request, tab, domain) => {
                   "user_cancel",
                   "Request was canceled by the user.",
                   "The current website is trying to send a request to the Steem Keychain browser extension for account @" +
-                    request.username +
+                    username +
                     " using the memo key, which has not been added to the wallet.",
                   request
                 );
@@ -91,43 +82,40 @@ const checkBeforeCreate = (request, tab, domain) => {
                   "user_cancel",
                   "Request was canceled by the user.",
                   "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" +
-                    request.username +
+                    username +
                     " using the active key, which has not been added to the wallet.",
                   request
                 );
               });
             } else {
+              console.log("b", tr_accounts);
               const callback = () => {
                 chrome.runtime.sendMessage({
                   command: "sendDialogConfirm",
                   data: request,
-                  domain: domain,
+                  domain,
                   accounts: tr_accounts,
-                  tab: tab,
+                  tab,
                   testnet: items.current_rpc === "TESTNET"
                 });
               };
               createPopup(callback);
             }
           } else {
-            if (!accounts.list.find(e => e.name == request.username)) {
+            if (!accountsList.get(username)) {
               const callback = () => {
                 console.log("error4");
                 sendErrors(
                   tab,
                   "user_cancel",
                   "Request was canceled by the user.",
-                  "The current website is trying to send a request to the Steem Keychain browser extension for account @" +
-                    request.username +
-                    " which has not been added to the wallet.",
+                  `The current website is trying to send a request to the Steem Keychain browser extension for account @${username} which has not been added to the wallet.`,
                   request
                 );
               };
               createPopup(callback);
             } else {
-              account = accounts.list.find(function(e) {
-                return e.name == request.username;
-              });
+              account = accountsList.get(username);
               let typeWif = getRequiredWifType(request);
               let req = request;
               req.key = typeWif;
@@ -145,16 +133,12 @@ const checkBeforeCreate = (request, tab, domain) => {
                     tab,
                     "user_cancel",
                     "Request was canceled by the user.",
-                    "The current website is trying to send a request to the Steem Keychain browser extension for account @" +
-                      request.username +
-                      " using the " +
-                      typeWif +
-                      " key, which has not been added to the wallet.",
+                    `The current website is trying to send a request to the Steem Keychain browser extension for account @${username} using the ${typeWif} key, which has not been added to the wallet.`,
                     request
                   );
                 });
               } else {
-                key = account.keys[typeWif];
+                key = account.getKey(typeWif);
                 if (
                   !hasNoConfirm(
                     items.no_confirm,
@@ -167,8 +151,8 @@ const checkBeforeCreate = (request, tab, domain) => {
                     chrome.runtime.sendMessage({
                       command: "sendDialogConfirm",
                       data: req,
-                      domain: domain,
-                      tab: tab,
+                      domain,
+                      tab,
                       testnet: items.current_rpc === "TESTNET"
                     });
                   };

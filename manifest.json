@@ -24,6 +24,8 @@
       "vendor/jquery.min.js",
       "js/config.js",
       "js/libs/keychainify.js",
+      "js/libs/account.js",
+      "js/libs/accountsList.js",
       "js/libs/hf21.js",
       "js/libs/rpcs.js",
       "js/background/init.js",

@@ -80,7 +80,7 @@ const performTransaction = async (data, tab, no_confirm) => {
       }
     } else chrome.runtime.sendMessage(message);
     key = null;
-    accounts = null;
+    accounts = new AccountsList();
     rpc.rollback();
   }
 };
