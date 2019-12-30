@@ -293,9 +293,9 @@ function showLoader() {
 }
 
 function showAccountInfo(account, that) {
-  if (account.keys.hasOwnProperty("active")) $("#transfer_to").show();
+  if (account.hasKey("active")) $("#transfer_to").show();
   $(".account_info").attr("id", "a" + $(that).index());
-  $("#account_info_name").html("@" + account.name);
+  $("#account_info_name").html("@" + account.getName());
   $("#main").hide();
   $(".account_info").show();
 }

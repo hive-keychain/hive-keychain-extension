@@ -104,7 +104,9 @@ $("#lock").click(function() {
 $("#submit_unlock").click(function() {
   chrome.storage.local.get(["accounts"], function(items) {
     const pwd = $("#unlock_pwd").val();
-    if (decryptToJson(items.accounts, pwd) != null) {
+    const accs = decryptToJson(items.accounts, pwd);
+    console.log(accs);
+    if (accs) {
       mk = pwd;
       chrome.runtime.sendMessage(
         {
@@ -186,7 +188,7 @@ function initializeMainMenu() {
         $(".usernames").html("<select></select>");
         for (account of accountsList.getList()) {
           $(".usernames select").append(
-            "<option>" + account.name + "</option>"
+            "<option>" + account.getName() + "</option>"
           );
         }
         $(".usernames select")

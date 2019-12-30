@@ -13,20 +13,26 @@ class AccountsList {
           this.accounts.list.unshift(last);
         }
       }
+      this.accounts.list = this.accounts.list.map(e => new Account(e));
     }
   }
   getList() {
     return this.accounts.list || [];
   }
-  getAccountsArray() {
-    return this.getList().map(e => new Account(e));
-  }
   get(name) {
-    return new Account(this.accounts.list.find(e => e.name === name));
+    return this.accounts.list.find(e => e.getName() === name);
+  }
+  getById(id) {
+    return this.accounts.list[id];
   }
   save(mk) {
+    const accounts = {
+      ...this.accounts,
+      list: this.accounts.list.map(e => e.getObj())
+    };
+    console.log(accounts);
     chrome.storage.local.set({
-      accounts: encryptJson(this.accounts, mk)
+      accounts: encryptJson(accounts, mk)
     });
   }
   clear() {
@@ -38,6 +44,10 @@ class AccountsList {
   add(account) {
     if (!this.accounts.list) this.accounts.list = [];
     this.accounts.list.push(account);
+    return this;
+  }
+  delete(i) {
+    this.accounts.list.splice(i, 1);
     return this;
   }
 }

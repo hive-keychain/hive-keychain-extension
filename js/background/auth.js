@@ -35,7 +35,7 @@ const checkBeforeCreate = (request, tab, domain) => {
           let account = null;
           if (type === "transfer") {
             let tr_accounts = accountsList
-              .getAccountsArray()
+              .getList()
               .filter(e => e.hasKey("active"))
               .map(e => e.getName());
             console.log(tr_accounts, "a");

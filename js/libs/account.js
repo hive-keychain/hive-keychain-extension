@@ -8,14 +8,23 @@ class Account {
     this.delegatees = getDelegatees(this.account.name);
     this.delegators = getDelegators(this.account.name);
   }
+  getObj() {
+    return this.account;
+  }
   getName() {
     return this.account.name;
+  }
+  getKeys() {
+    return this.account.keys;
   }
   getKey(key) {
     return this.account.keys[key];
   }
   hasKey(key) {
     return this.account.keys.hasOwnProperty(key);
+  }
+  setKey(key, val) {
+    this.account.keys[key] = val;
   }
   deleteKey(key) {
     delete this.account.keys[key];

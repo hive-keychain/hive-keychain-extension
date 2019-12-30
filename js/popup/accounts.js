@@ -4,6 +4,7 @@ const REVEAL_PRIVATE = "Click to show private key";
 const loadAccount = async name => {
   console.log(`Load account ${name}`);
   activeAccount = accountsList.get(name);
+  console.log(activeAccount);
   activeAccount.init();
   $("#recipient").autocomplete({
     source: to_autocomplete[activeAccount.getName()],
@@ -158,6 +159,7 @@ $("#check_add_account").click(function() {
               "active",
               "memo"
             ]);
+            console.log(keys);
             if (
               keys.activePubkey == pub_active &&
               keys.postingPubkey == pub_posting &&
@@ -198,27 +200,27 @@ $("#save_master").click(function() {
       name: $("#username").val(),
       keys: keys
     });
-    initializeMainMenu();
-    initializeVisibility();
   }
 });
 
 // Add new account to Chrome local storage (encrypted with AES)
 const addAccount = account => {
-  accountsList.add(account).save(mk);
+  accountsList.add(new Account(account)).save(mk);
+  console.log("init");
   initializeMainMenu();
+  initializeVisibility();
 };
 
 // Display Add Copy or delete individual keys
 const manageKeys = name => {
   let index = -1;
-  let account = accountsList.getList().filter(function(obj, i) {
-    if (obj.name === name) {
+  let account = accountsList.getList().filter((obj, i) => {
+    if (obj.getName() === name) {
       index = i;
       return obj;
     }
   })[0];
-  const keys = account.keys;
+  const keys = account.getKeys();
   $(".public_key").html("");
   $(".private_key").html("");
   for (keyName in keys) {
@@ -232,7 +234,7 @@ const manageKeys = name => {
       if (keyName.includes("Pubkey"))
         $(".public_key")
           .eq(0)
-          .html(account.keys[keyName]);
+          .html(account.getKey(keyName));
       else
         $(".private_key")
           .eq(0)
@@ -248,7 +250,7 @@ const manageKeys = name => {
       if (keyName.includes("Pubkey"))
         $(".public_key")
           .eq(1)
-          .html(account.keys[keyName]);
+          .html(account.getKey(keyName));
       else
         $(".private_key")
           .eq(1)
@@ -264,7 +266,7 @@ const manageKeys = name => {
       if (keyName.includes("Pubkey"))
         $(".public_key")
           .eq(2)
-          .html(account.keys[keyName]);
+          .html(account.getKey(keyName));
       else
         $(".private_key")
           .eq(2)
@@ -331,8 +333,7 @@ const manageKeys = name => {
         const type = $(this)
           .prev()
           .attr("id");
-        const key = account.keys[type];
-        console.log(type, key);
+        const key = accountsList.getById(index).getKey(type);
         $(this)
           .html(key)
           .css("font-size", "10px");
@@ -351,14 +352,12 @@ const manageKeys = name => {
   $(".remove_key")
     .unbind("click")
     .click(function() {
-      delete accounts_json.list[index].keys[$(this).attr("id")];
-      delete accounts_json.list[index].keys[$(this).attr("id") + "Pubkey"];
-      if (Object.keys(accounts_json.list[index].keys).length == 0) {
+      accountsList.getById(index).deleteKey($(this).attr("id"));
+      accountsList.getById(index).deleteKey(`${$(this).attr("id")}Pubkey`);
+      accountsList.save(mk);
+      if (!Object.keys(accountsList.getById(index).getKeys()).length) {
         deleteAccount(index);
-        $(".settings_child").hide();
-        $("#settings_div").show();
       } else {
-        updateAccount();
         manageKeys(name);
       }
     });
@@ -386,7 +385,7 @@ const manageKeys = name => {
   $("#add_new_key")
     .unbind("click")
     .click(function() {
-      const keys = accounts_json.list[index].keys;
+      const keys = accountsList.getById(index).getKeys();
       const pwd = $("#new_key").val();
 
       steem.api.getAccounts([name], function(err, result) {
@@ -448,9 +447,9 @@ const manageKeys = name => {
 
 // Add the new keys to the display and the encrypted storage
 const addKeys = (i, key, priv, pub, name) => {
-  accounts_json.list[i].keys[key] = priv;
-  accounts_json.list[i].keys[key + "Pubkey"] = pub;
-  updateAccount();
+  accountsList.getById(i).setKey(key, priv);
+  accountsList.getById(i).setKey(`${key}Pubkey`, pub);
+  accountsList.save(mk);
   manageKeys(name);
   $("#add_key_div").hide();
   $("#new_key").val("");
@@ -474,25 +473,10 @@ const showBalances = async () => {
 
 // Delete account (and encrypt the rest)
 const deleteAccount = i => {
-  accounts_json.list.splice(i, 1);
-
-  chrome.storage.local.set(
-    {
-      accounts: encryptJson(accounts_json, mk)
-    },
-    function() {
-      $(".settings_child").hide();
-      initializeMainMenu();
-      initializeVisibility();
-    }
-  );
-};
-
-// Update account (encrypted)
-const updateAccount = () => {
-  chrome.storage.local.set({
-    accounts: encryptJson(accounts_json, mk)
-  });
+  accountsList.delete(i).save(mk);
+  $(".settings_child").hide();
+  initializeMainMenu();
+  initializeVisibility();
 };
 
 const claimRewards = async () => {
