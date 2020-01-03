@@ -69,7 +69,10 @@ function initializeVisibility(hideAll = false) {
 
 // Use "Enter" as confirmation button for unlocking, registration, and adding account/key
 $("#unlock_pwd").keypress(function(e) {
-  if (e.keyCode == 13) $("#submit_unlock").click();
+  if (e.keyCode == 13) {
+    e.preventDefault();
+    $("#submit_unlock").click();
+  }
 });
 
 $("#confirm_master_pwd").keypress(function(e) {
@@ -211,7 +214,7 @@ $("#keychainify").click(function() {
 // Show transaction window
 $("#send").click(function() {
   $("#send_div").show();
-  if (active_account.keys.hasOwnProperty("memo")) {
+  if (activeAccount.hasKey("memo")) {
     $(".checkbox_memo").show();
   }
   $("#main").hide();
@@ -293,9 +296,9 @@ function showLoader() {
 }
 
 function showAccountInfo(account, that) {
-  if (account.keys.hasOwnProperty("active")) $("#transfer_to").show();
+  if (account.hasKey("active")) $("#transfer_to").show();
   $(".account_info").attr("id", "a" + $(that).index());
-  $("#account_info_name").html("@" + account.name);
+  $("#account_info_name").html("@" + account.getName());
   $("#main").hide();
   $(".account_info").show();
 }
@@ -325,7 +328,7 @@ $(".wallet_currency").click(function() {
 
 $("#powerup").click(function() {
   $("#powerup_div").show();
-  $("#user_pu").val(active_account.name);
+  $("#user_pu").val(activeAccount.getName());
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
   $(".dropdown").hide();

@@ -1,3 +1,3 @@
-let config={
-  mainNet:"ssc-mainnet1"
+let config = {
+  mainNet: "ssc-mainnet1"
 };

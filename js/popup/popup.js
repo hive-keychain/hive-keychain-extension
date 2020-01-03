@@ -1,24 +1,11 @@
-let accounts_json = null,
-  mk = null;
-let active_account,
-  priceBTC,
-  sbd,
-  steem_p,
-  sp,
-  priceSBD,
-  priceSteem,
-  votePowerReserveRate,
-  totalSteem,
-  totalVests,
-  rewardBalance,
-  recentClaims,
-  steemPrice,
-  dynamicProp = null;
+let mk = null;
+let activeAccount;
 const STEEMIT_VOTE_REGENERATION_SECONDS = 5 * 60 * 60 * 24;
 let custom_created = false;
 let manageKey,
   getPref = false;
 let to_autocomplete = [];
+let accountsList = new AccountsList();
 //chrome.storage.local.remove("transfer_to");
 
 $("#copied").hide();
@@ -94,45 +81,36 @@ $("#save_autolock").click(function() {
   chrome.storage.local.set({
     autolock: autolock
   });
+  console.log("set");
   setAutolock(autolock);
+  initializeVisibility();
   initializeMainMenu();
 });
 
 // Lock the wallet and destroy traces of the mk
 $("#lock").click(function() {
-  chrome.runtime.sendMessage(
-    {
-      command: "sendMk",
-      mk: null
-    },
-    function(response) {}
-  );
-  if (accounts_json == null) {
-    accounts_json = {
-      list: []
-    };
-    chrome.storage.local.set({
-      accounts: encryptJson(accounts_json, mk)
-    });
-  }
+  sendMk(null);
+  accountsList.save(mk);
   $("#back_forgot_settings").attr("id", "back_forgot");
   mk = null;
   showUnlock();
 });
 
+const sendMk = mk => {
+  chrome.runtime.sendMessage({
+    command: "sendMk",
+    mk
+  });
+};
 // Unlock with masterkey and show the main menu
 $("#submit_unlock").click(function() {
   chrome.storage.local.get(["accounts"], function(items) {
     const pwd = $("#unlock_pwd").val();
-    if (decryptToJson(items.accounts, pwd) != null) {
+    const accs = decryptToJson(items.accounts, pwd);
+    console.log(accs);
+    if (accs) {
       mk = pwd;
-      chrome.runtime.sendMessage(
-        {
-          command: "sendMk",
-          mk: mk
-        },
-        function(response) {}
-      );
+      sendMk(mk);
       $(".error_div").html("");
       $(".error_div").hide();
       $("#unlock_pwd").val("");
@@ -146,12 +124,10 @@ $("#submit_unlock").click(function() {
 
 // If user forgot Mk, he can reset the wallet
 $("#forgot_div button").click(function() {
-  chrome.storage.local.clear(function() {
-    accounts_json = null;
-    mk = null;
-    $("#forgot_div").hide();
-    $("#register").show();
-  });
+  accountsList.clear();
+  mk = null;
+  $("#forgot_div").hide();
+  $("#register").show();
 });
 
 // Registration confirmation
@@ -159,13 +135,7 @@ $("#submit_master_pwd").click(function() {
   if (acceptMP($("#master_pwd").val())) {
     if ($("#master_pwd").val() == $("#confirm_master_pwd").val()) {
       mk = $("#master_pwd").val();
-      chrome.runtime.sendMessage(
-        {
-          command: "sendMk",
-          mk: mk
-        },
-        function(response) {}
-      );
+      sendMk(mk);
       initializeMainMenu();
       $(".error_div").hide();
     } else {
@@ -188,6 +158,7 @@ function acceptMP(mp) {
 }
 // Set visibilities back to normal when coming back to main menu
 function initializeMainMenu() {
+  console.log("init");
   sendAutolock();
   checkKeychainify();
   manageKey = false;
@@ -196,31 +167,19 @@ function initializeMainMenu() {
     ["accounts", "last_account", "rpc", "current_rpc", "transfer_to"],
     function(items) {
       to_autocomplete = items.transfer_to ? JSON.parse(items.transfer_to) : {};
-      accounts_json =
-        items.accounts == undefined ||
-        items.accounts ==
-          {
-            list: []
-          }
-          ? null
-          : decryptToJson(items.accounts, mk);
+      if (items.accounts)
+        accountsList.init(
+          decryptToJson(items.accounts, mk),
+          items.last_account
+        );
       loadRPC(items.rpc, items.current_rpc);
-      if (accounts_json != null && accounts_json.list.length != 0) {
-        $("#accounts").empty();
 
-        // Add the last account selected to the front of the account list.
-        if (items.last_account) {
-          let last = accounts_json.list.find(a => a.name == items.last_account);
-
-          if (last) {
-            accounts_json.list.splice(accounts_json.list.indexOf(last), 1);
-            accounts_json.list.unshift(last);
-          }
-        }
+      $("#accounts").empty();
+      if (!accountsList.isEmpty()) {
         $(".usernames").html("<select></select>");
-        for (account of accounts_json.list) {
+        for (account of accountsList.getList()) {
           $(".usernames select").append(
-            "<option>" + account.name + "</option>"
+            "<option>" + account.getName() + "</option>"
           );
         }
         $(".usernames select")
@@ -247,7 +206,7 @@ function confirmTransfer() {
   const amount = $("#amt_send").val();
   const currency = $("#currency_send .select-selected").html();
   let memo = $("#memo_send").val();
-  $("#from_conf_transfer").text("@" + active_account.name);
+  $("#from_conf_transfer").text("@" + activeAccount.getName());
   $("#to_conf_transfer").text("@" + to);
   $("#amt_conf_transfer").text(amount + " " + currency);
   $("#memo_conf_transfer").text(
@@ -266,12 +225,12 @@ $("#confirm_send_transfer").click(function() {
 
 // Vote for witnesses
 function voteFor(name) {
-  if (active_account.keys.hasOwnProperty("active")) {
+  if (activeAccount.hasKey("active")) {
     $("#" + name + " img").attr("src", "../images/loading.gif");
 
     steem.broadcast.accountWitnessVote(
-      active_account.keys.active,
-      active_account.name,
+      activeAccount.getKey("active"),
+      activeAccount.getName(),
       name,
       true,
       function(err, result) {
@@ -320,15 +279,19 @@ async function sendTransfer() {
       const receiver = await steem.api.getAccountsAsync([to]);
       const memoReceiver = receiver["0"].memo_key;
       memo = memo[0] == "#" ? memo : "#" + memo;
-      memo = window.encodeMemo(active_account.keys.memo, memoReceiver, memo);
+      memo = window.encodeMemo(
+        activeAccount.getKey("memo"),
+        memoReceiver,
+        memo
+      );
     } catch (e) {
       console.log(e);
     }
   }
   if (to != "" && amount != "" && amount >= 0.001) {
     steem.broadcast.transfer(
-      active_account.keys.active,
-      active_account.name,
+      activeAccount.getKey("active"),
+      activeAccount.getName(),
       to,
       parseFloat(amount).toFixed(3) + " " + currency,
       memo,
@@ -337,7 +300,7 @@ async function sendTransfer() {
         $("#confirm_send_transfer").show();
         if (err == null) {
           const sender = await steem.api.getAccountsAsync([
-            active_account.name
+            activeAccount.getName()
           ]);
           sbd = sender["0"].sbd_balance.replace("SBD", "");
           steem_p = sender["0"].balance.replace("STEEM", "");
@@ -360,15 +323,15 @@ async function sendTransfer() {
             items
           ) {
             let transfer_to = JSON.parse(items.transfer_to);
-            if (!transfer_to[active_account.name])
-              transfer_to[active_account.name] = [];
+            if (!transfer_to[activeAccount.getName()])
+              transfer_to[activeAccount.getName()] = [];
             console.log(transfer_to);
             if (
-              transfer_to[active_account.name].filter(elt => {
+              transfer_to[activeAccount.getName()].filter(elt => {
                 return elt == to;
               }).length == 0
             )
-              transfer_to[active_account.name].push(to);
+              transfer_to[activeAccount.getName()].push(to);
             console.log(transfer_to);
 
             console.log(JSON.stringify(transfer_to));

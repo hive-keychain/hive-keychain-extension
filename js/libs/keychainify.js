@@ -7,30 +7,32 @@ const keychainify = {
    * Checks local storage for whether the feature has been disabled by the user
    * @returns {Promise}
    */
-  isKeychainifyEnabled: function () {
+  isKeychainifyEnabled: function() {
     return new Promise(function(resolve, reject) {
       try {
-        chrome.storage.local.get(['keychainify_enabled'], function(items) {
-          const featureStatus = items.hasOwnProperty('keychainify_enabled') && items.keychainify_enabled;
+        chrome.storage.local.get(["keychainify_enabled"], function(items) {
+          const featureStatus =
+            items.hasOwnProperty("keychainify_enabled") &&
+            items.keychainify_enabled;
           resolve(featureStatus);
         });
-      } catch(err) {
+      } catch (err) {
         reject(err);
       }
     });
   },
 
   isUrlSupported: function(url) {
-    return url.includes('steemconnect.com/sign/transfer')
+    return url.includes("steemconnect.com/sign/transfer");
   },
 
   /**
    * Transform a known URL to a Keychain operation
    * @param tab
    */
-  keychainifyUrl: function (tab) {
+  keychainifyUrl: function(tab) {
     let url;
-    if (typeof tab === 'string') {
+    if (typeof tab === "string") {
       url = tab;
       tab = null;
     } else {
@@ -41,36 +43,43 @@ const keychainify = {
     let payload = {},
       defaults = {};
 
-    switch(true) {
+    switch (true) {
       /**
        * Transfer fund
        */
-      case (url.includes('steemconnect.com/sign/transfer')):
+      case (url.includes("steemconnect.com/sign/transfer")):
         defaults = {
           from: null,
           to: null,
           amount: 0,
-          memo: '',
-          currency: 'STEEM'
+          memo: "",
+          currency: "STEEM"
         };
 
         payload = Object.assign(defaults, vars);
 
-        [payload.amount, payload.currency] = vars.amount.split(' ');
-        keychainify.requestTransfer(tab, payload.from, payload.to, payload.amount, payload.memo, payload.currency);
+        [payload.amount, payload.currency] = vars.amount.split(" ");
+        keychainify.requestTransfer(
+          tab,
+          payload.from,
+          payload.to,
+          payload.amount,
+          payload.memo,
+          payload.currency
+        );
         break;
 
       /**
        * Delegate Steem Power
        */
-      case (url.includes('steemconnect.com/sign/delegate-vesting-shares')):
+      case (url.includes("steemconnect.com/sign/delegate-vesting-shares")):
         // @TODO currently Steem Keychain does not allow null delegator account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
         //let [amount, unit] = vars.vesting_shares.split(' ');
         //keychainify.requestDelegation(null, vars.delegatee, amount, unit, null);
         window.location.href = url;
         break;
 
-      case (url.includes('steemconnect.com/sign/account-witness-vote')):
+      case (url.includes("steemconnect.com/sign/account-witness-vote")):
         // @TODO currently Steem Keychain does not allow null voter account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
         //keychainify.requestWitnessVote(null, vars.witness, vars.approve);
         window.location.href = url;
@@ -118,7 +127,15 @@ const keychainify = {
    * @param currency
    * @param enforce
    */
-  requestTransfer: function(tab, account, to, amount, memo, currency, enforce = false) {
+  requestTransfer: function(
+    tab,
+    account,
+    to,
+    amount,
+    memo,
+    currency,
+    enforce = false
+  ) {
     const request = {
       type: "transfer",
       username: account,
@@ -176,17 +193,17 @@ const keychainify = {
   getVarsFromURL: function(url) {
     const argsParsed = {};
 
-    if (url.indexOf('?') !== -1) {
-      const query = url.split('?').pop();
-      const args = query.split('&');
+    if (url.indexOf("?") !== -1) {
+      const query = url.split("?").pop();
+      const args = query.split("&");
       let arg, kvp, key, value;
 
-      for (let i=0; i<args.length; i++) {
+      for (let i = 0; i < args.length; i++) {
         arg = args[i];
-        if (arg.indexOf('=') === -1) {
+        if (arg.indexOf("=") === -1) {
           argsParsed[decodeURIComponent(arg)] = true;
         } else {
-          kvp = arg.split('=');
+          kvp = arg.split("=");
           key = decodeURIComponent(kvp[0]);
           value = decodeURIComponent(kvp[1]);
           argsParsed[key] = value;

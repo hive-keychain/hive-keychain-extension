@@ -5,7 +5,7 @@ let confirmed = false;
 let tab = null;
 let request = null;
 let request_id = null;
-let accounts = null;
+let accountsList = new AccountsList();
 let timeoutIdle = null;
 let autolock = null;
 let interval = null;
@@ -84,8 +84,7 @@ const saveNoConfirm = msg => {
 
 const unlockFromDialog = msg => {
   chrome.storage.local.get(["accounts"], function(items) {
-    // Check
-    if (items.accounts == null || items.accounts == undefined) {
+    if (!items.accounts) {
       sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
     } else {
       if (decryptToJson(items.accounts, msg.mk) != null) {

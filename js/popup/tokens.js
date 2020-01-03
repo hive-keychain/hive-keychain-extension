@@ -81,8 +81,8 @@ getTokens().then(function(tok) {
     });
 });
 
-function showTokenBalances(account) {
-  getAccountBalances(account.name).then(tokenBalances => {
+function showTokenBalances() {
+  getAccountBalances(activeAccount.getName()).then(tokenBalances => {
     accountTokenBalances = tokenBalances;
     $("#tokens_list").empty();
     for (token of tokenBalances) {
@@ -119,7 +119,7 @@ function showTokenBalances(account) {
       );
     }
 
-    if (!active_account.keys.hasOwnProperty("active")) {
+    if (!activeAccount.hasKey("active")) {
       $("#send_tok").addClass("disabled");
       $("#wrap_tok").attr(
         "title",
@@ -154,7 +154,7 @@ function showTokenBalances(account) {
         $("#token_history_div").show();
         $("#tokens_div").hide();
         $("#loading_history_token").show();
-        getTokenHistory(active_account.name, 20, 0, symbol).then(function(
+        getTokenHistory(activeAccount.getName(), 20, 0, symbol).then(function(
           history
         ) {
           for (elt of history) {
@@ -177,12 +177,12 @@ function showTokenBalances(account) {
                 timestamp +
                 "</span>\
 										<span class='history_val'>" +
-                (elt.from == active_account.name ? "-" : "+") +
+                (elt.from == activeAccount.getName() ? "-" : "+") +
                 " " +
                 elt.quantity +
                 "</span>\
 										<span class='history_name'>" +
-                (elt.from == active_account.name
+                (elt.from == activeAccount.getName()
                   ? "TO: @" + elt.to
                   : "FROM: @" + elt.from) +
                 "</span>\
@@ -245,8 +245,8 @@ async function sendToken(account_to, token, amount, memo) {
     return;
   }
   steem.broadcast.customJson(
-    active_account.keys.active,
-    [active_account.name],
+    activeAccount.getKey("active"),
+    [activeAccount.getName()],
     null,
     id,
     JSON.stringify(json),
@@ -310,7 +310,7 @@ function confirmTokenTransfer() {
   const amount = $("#amt_tok").val();
   const currency = $("#tok").html();
   let memo = $("#memo_tok").val();
-  $("#from_conf_token_transfer").text("@" + active_account.name);
+  $("#from_conf_token_transfer").text("@" + activeAccount.getName());
   $("#to_conf_token_transfer").text("@" + to);
   $("#amt_conf_token_transfer").text(amount + " " + currency);
   $("#memo_conf_token_transfer").text(memo == "" ? "Empty" : memo); // steem engine token memo doesn't support encryption

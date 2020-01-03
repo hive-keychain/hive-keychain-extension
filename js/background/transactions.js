@@ -80,7 +80,7 @@ const performTransaction = async (data, tab, no_confirm) => {
       }
     } else chrome.runtime.sendMessage(message);
     key = null;
-    accounts = null;
+    accounts = new AccountsList();
     rpc.rollback();
   }
 };
@@ -99,5 +99,9 @@ const createMessage = (err, result, data, success_message, fail_message) => {
   };
 };
 
-const beautifyErrorMessage = err =>
-  err ? err.message.split("xception:")[1].replace(".rethrow", ".") : "";
+const beautifyErrorMessage = err => {
+  if (!err) return null;
+  let error = err.message.split("xception:")[1].replace(".rethrow", ".");
+  if (error.replace(" ", "") === "") error = "An unknown error has occured.";
+  return error;
+};

@@ -1,10 +1,8 @@
 const broadcastTransfer = data => {
   return new Promise(async (resolve, reject) => {
-    let ac = accounts.list.find(function(e) {
-      return e.name == data.username;
-    });
+    let ac = accountsList.get(data.username);
     let memo = data.memo || "";
-    let key_transfer = ac.keys.active;
+    let key_transfer = ac.getKey("active");
     if (data.memo && data.memo.length > 0 && data.memo[0] == "#") {
       try {
         const receiver = await steem.api.getAccountsAsync([data.to]);
