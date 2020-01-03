@@ -1,1 +1,8 @@
-{}
+{
+  "keychain": {
+    "message": "Steem Keychain"
+  },
+  "description": {
+    "message": "Portefeuille sécurisé pour Steem."
+  }
+}
