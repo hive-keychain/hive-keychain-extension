@@ -126,7 +126,7 @@ const checkBeforeCreate = (request, tab, domain) => {
                 req.typeWif = typeWif;
               }
 
-              if (account.keys[typeWif] == undefined) {
+              if (!account.hasKey(typeWif)) {
                 createPopup(() => {
                   console.log("error5");
                   sendErrors(

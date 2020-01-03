@@ -81,25 +81,27 @@ $("#save_autolock").click(function() {
   chrome.storage.local.set({
     autolock: autolock
   });
+  console.log("set");
   setAutolock(autolock);
+  initializeVisibility();
   initializeMainMenu();
 });
 
 // Lock the wallet and destroy traces of the mk
 $("#lock").click(function() {
-  chrome.runtime.sendMessage(
-    {
-      command: "sendMk",
-      mk: null
-    },
-    function(response) {}
-  );
-  accountsList.save();
+  sendMk(null);
+  accountsList.save(mk);
   $("#back_forgot_settings").attr("id", "back_forgot");
   mk = null;
   showUnlock();
 });
 
+const sendMk = mk => {
+  chrome.runtime.sendMessage({
+    command: "sendMk",
+    mk
+  });
+};
 // Unlock with masterkey and show the main menu
 $("#submit_unlock").click(function() {
   chrome.storage.local.get(["accounts"], function(items) {
@@ -108,13 +110,7 @@ $("#submit_unlock").click(function() {
     console.log(accs);
     if (accs) {
       mk = pwd;
-      chrome.runtime.sendMessage(
-        {
-          command: "sendMk",
-          mk: mk
-        },
-        function(response) {}
-      );
+      sendMk(mk);
       $(".error_div").html("");
       $(".error_div").hide();
       $("#unlock_pwd").val("");
@@ -139,13 +135,7 @@ $("#submit_master_pwd").click(function() {
   if (acceptMP($("#master_pwd").val())) {
     if ($("#master_pwd").val() == $("#confirm_master_pwd").val()) {
       mk = $("#master_pwd").val();
-      chrome.runtime.sendMessage(
-        {
-          command: "sendMk",
-          mk: mk
-        },
-        function(response) {}
-      );
+      sendMk(mk);
       initializeMainMenu();
       $(".error_div").hide();
     } else {
@@ -168,6 +158,7 @@ function acceptMP(mp) {
 }
 // Set visibilities back to normal when coming back to main menu
 function initializeMainMenu() {
+  console.log("init");
   sendAutolock();
   checkKeychainify();
   manageKey = false;

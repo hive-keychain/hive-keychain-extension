@@ -69,7 +69,10 @@ function initializeVisibility(hideAll = false) {
 
 // Use "Enter" as confirmation button for unlocking, registration, and adding account/key
 $("#unlock_pwd").keypress(function(e) {
-  if (e.keyCode == 13) $("#submit_unlock").click();
+  if (e.keyCode == 13) {
+    e.preventDefault();
+    $("#submit_unlock").click();
+  }
 });
 
 $("#confirm_master_pwd").keypress(function(e) {
