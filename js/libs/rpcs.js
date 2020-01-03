@@ -40,11 +40,12 @@ class Rpcs {
       );
     } else {
       if (newRpc === "DEFAULT") {
+        let rpc;
         try {
-          const rpc = (await this.getDefaultRPC()).rpc || this.list[1];
+          rpc = (await this.getDefaultRPC()).rpc || this.list[1];
           console.log(`Using ${rpc} as default.`);
         } catch (e) {
-          const rpc = this.currentRpc;
+          rpc = this.currentRpc;
         }
         console.log("rpc", rpc);
         steem.api.setOptions({
@@ -52,6 +53,7 @@ class Rpcs {
           useAppbaseApi: true
         });
       } else {
+        console.log("a", newRpc);
         steem.api.setOptions({
           url: newRpc,
           useAppbaseApi: true
