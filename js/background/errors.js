@@ -20,5 +20,5 @@ const sendErrors = (tab, error, message, display_msg, request) => {
     clearInterval(interval);
   }, 2000);
   key = null;
-  accounts = null;
+  accounts = new AccountsList();
 };

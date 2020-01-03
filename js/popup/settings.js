@@ -10,17 +10,10 @@ $("#confirm_change_pwd").click(function() {
           .match(/^(.{0,7}|[^0-9]*|[^A-Z]*|[^a-z]*|[a-zA-Z0-9]*)$/)
       ) {
         mk = $("#new_pwd").val();
-        updateAccount();
-        chrome.runtime.sendMessage(
-          {
-            command: "sendMk",
-            mk: mk
-          },
-          function(response) {}
-        );
-        $("#settings_div").show();
-        $("#change_password").hide();
-        $(".error_div").hide();
+        accountsList.save(mk);
+        sendMk(mk);
+        initializeVisibility();
+        showConfirm("Your master password was changed succesfully");
       } else showError("Please use a stronger password!");
     } else showError("The new passwords do not match!");
   } else showError("Wrong current password");

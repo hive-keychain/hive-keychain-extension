@@ -100,7 +100,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       }
       for (acc of accounts) {
         if (acc != undefined)
-          $("#select_transfer").append("<option>" + acc.name + "</option>");
+          $("#select_transfer").append("<option>" + acc + "</option>");
       }
       initiateCustomSelect(msg.data);
     }
@@ -468,6 +468,7 @@ function initiateCustomSelect(data) {
       if (username !== prev_username) {
         $("#balance , #balance_after").hide();
         $("#balance_loading").show();
+        $("#username").text(username);
         showBalances(username, data.currency, data.amount);
         prev_username = username;
       }

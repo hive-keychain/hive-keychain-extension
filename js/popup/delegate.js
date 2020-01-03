@@ -1,93 +1,53 @@
-function prepareDelegationTab() {
-  Promise.all([
-    getDelegatees(active_account.name),
-    getDelegators(active_account.name),
-    steem.api.getDynamicGlobalPropertiesAsync()
-  ]).then(function(result) {
-    let delegatees = result[0];
-    delegatees = delegatees.filter(function(elt) {
-      return elt.vesting_shares != 0;
-    });
-    let delegators = result[1];
-    delegators = delegators.filter(function(elt) {
-      return elt.vesting_shares != 0;
-    });
-    const totalSteem = Number(
-      result["2"].total_vesting_fund_steem.split(" ")[0]
+const prepareDelegationTab = async () => {
+  const [delegatees, delegators] = [
+    await activeAccount.getDelegatees(),
+    await activeAccount.getDelegators()
+  ];
+  console.log(delegatees, delegators);
+  if (!activeAccount.hasKey("active")) {
+    $("#send_del").addClass("disabled");
+    $("#wrap_send_del").attr(
+      "title",
+      "Please add your active key to send delegations!"
     );
-    const totalVests = Number(result["2"].total_vesting_shares.split(" ")[0]);
-    let globalProperties = {};
-    globalProperties.totalSteem = totalSteem;
-    globalProperties.totalVests = totalVests;
-    if (delegatees.length > 0)
-      delegatees = delegatees.map(function(elt) {
-        elt.sp = steem.formatter
-          .vestToSteem(
-            parseFloat(elt.vesting_shares.replace(" VESTS", "")),
-            totalVests,
-            totalSteem
-          )
-          .toFixed(3);
-        return elt;
-      });
-    if (delegators.length > 0)
-      delegators = delegators.map(function(elt) {
-        elt.sp = steem.formatter
-          .vestToSteem(elt.vesting_shares, totalVests, totalSteem)
-          .toFixed(3);
-        return elt;
-      });
-    if (!active_account.keys.hasOwnProperty("active")) {
-      $("#send_del").addClass("disabled");
-      $("#wrap_send_del").attr(
-        "title",
-        "Please add your active key to send delegations!"
-      );
-      $("#edit_del").addClass("disabled");
-      $("#wrap_edit_del").attr(
-        "title",
-        "Please add your active key to send delegations!"
-      );
-    } else {
-      $("#send_del").removeClass("disabled");
-      $("#edit_del").removeClass("disabled");
-      $("#wrap_edit_del").removeAttr("title");
-      $("#wrap_send_del").removeAttr("title");
-    }
+    $("#edit_del").addClass("disabled");
+    $("#wrap_edit_del").attr(
+      "title",
+      "Please add your active key to send delegations!"
+    );
+  } else {
+    $("#send_del").removeClass("disabled");
+    $("#edit_del").removeClass("disabled");
+    $("#wrap_edit_del").removeAttr("title");
+    $("#wrap_send_del").removeAttr("title");
+  }
 
-    displayDelegationMain(delegators, delegatees);
-    displayOutgoingDelegations(delegatees, globalProperties);
-    displayIncomingDelegations(delegators);
+  displayDelegationMain(delegators, delegatees);
+  displayOutgoingDelegations(delegatees);
+  displayIncomingDelegations(delegators);
 
-    $("#send_del")
-      .unbind("click")
-      .click(function() {
-        let delegated_vest =
-          (parseFloat($("#amt_del").val()) * totalVests) / totalSteem;
-        delegated_vest = delegated_vest.toFixed(6);
-        delegated_vest = delegated_vest.toString() + " VESTS";
-        $("#send_del").hide();
-        $("#del_loading").show();
-        steem.broadcast.delegateVestingShares(
-          active_account.keys.active,
-          active_account.name,
-          $("#username_del").val(),
-          delegated_vest,
-          function(err, result) {
-            console.log(err, result);
-            $("#send_del").show();
-            $("#del_loading").hide();
-            if (err) {
-              showError("Something went wrong! Please try again!");
-            } else {
-              showConfirm("Your delegation was succesful!");
-              loadAccount(active_account.name);
-            }
+  $("#send_del")
+    .unbind("click")
+    .click(function() {
+      $("#send_del").hide();
+      $("#del_loading").show();
+      activeAccount.delegateSP(
+        $("#amt_del").val(),
+        $("#username_del").val(),
+        function(err, result) {
+          console.log(err, result);
+          $("#send_del").show();
+          $("#del_loading").hide();
+          if (err) {
+            showError("Something went wrong! Please try again!");
+          } else {
+            showConfirm("Your delegation was succesful!");
+            loadAccount(activeAccount.getName());
           }
-        );
-      });
-  });
-}
+        }
+      );
+    });
+};
 
 function getSumOutgoing(delegatees) {
   return delegatees.reduce(function(total, elt) {
@@ -101,7 +61,39 @@ function getSumIncoming(delegators) {
   }, 0);
 }
 
-function displayOutgoingDelegations(delegatees, globalProperties) {
+const displayIncomingDelegations = delegators => {
+  const sumIncoming = getSumIncoming(delegators);
+  delegators = delegators.sort(function(a, b) {
+    return b.sp - a.sp;
+  });
+  $("#total_incoming span")
+    .eq(1)
+    .html(numberWithCommas(sumIncoming.toFixed(3)) + " SP");
+  $("#list_incoming").empty();
+  for (delegator of delegators) {
+    $("#list_incoming").append(
+      "<div class='line_incoming'><span>@" +
+        delegator.delegator +
+        "</span><span>" +
+        numberWithCommas(delegator.sp) +
+        "</span></div>"
+    );
+  }
+};
+
+const displayDelegationMain = async (delegators, delegatees) => {
+  const sumIncoming = getSumIncoming(delegators);
+  const sumOutgoing = getSumOutgoing(delegatees);
+  $("#incoming_del").html("+ " + numberWithCommas(sumIncoming.toFixed(3)));
+  $("#outgoing_del").html("- " + numberWithCommas(sumOutgoing.toFixed(3)));
+  $("#available_del").html(
+    numberWithCommas(
+      ((await activeAccount.getSP()) - 5 - sumOutgoing).toFixed(3)
+    )
+  );
+};
+
+const displayOutgoingDelegations = delegatees => {
   const sumOutgoing = getSumOutgoing(delegatees);
   $("#total_outgoing span")
     .eq(1)
@@ -134,11 +126,11 @@ function displayOutgoingDelegations(delegatees, globalProperties) {
             .replace("@", "")
         );
       });
-      showEditDiv(this_delegatee, globalProperties);
+      showEditDiv(this_delegatee);
     });
-}
+};
 
-function showEditDiv(delegatees, globalProperties) {
+const showEditDiv = async delegatees => {
   const delegatee = delegatees[0];
   $("#this_outgoing_del").html(
     numberWithCommas(parseFloat(delegatee.sp)) + " SP"
@@ -160,16 +152,9 @@ function showEditDiv(delegatees, globalProperties) {
     .click(function() {
       $("#edit_del").hide();
       $("#edit_del_loading").show();
-      let delegated_vest =
-        (parseFloat($("#amt_edit_del").val()) * globalProperties.totalVests) /
-        globalProperties.totalSteem;
-      delegated_vest = delegated_vest.toFixed(6);
-      delegated_vest = delegated_vest.toString() + " VESTS";
-      steem.broadcast.delegateVestingShares(
-        active_account.keys.active,
-        active_account.name,
+      activeAccount.delegateSP(
+        $("#amt_edit_del").val(),
         delegatee.delegatee,
-        delegated_vest,
         function(err, result) {
           console.log(err, result);
           $("#edit_del").show();
@@ -178,71 +163,11 @@ function showEditDiv(delegatees, globalProperties) {
             showError("Something went wrong! Please try again!");
           } else {
             showConfirm("Your delegation  change was succesful!");
-            loadAccount(active_account.name);
+            loadAccount(activeAccount.getName());
             $("#edit_del_div").hide();
             $("#outgoing_del_div").show();
           }
         }
       );
     });
-}
-
-function displayIncomingDelegations(delegators) {
-  const sumIncoming = getSumIncoming(delegators);
-  delegators = delegators.sort(function(a, b) {
-    return b.sp - a.sp;
-  });
-  $("#total_incoming span")
-    .eq(1)
-    .html(numberWithCommas(sumIncoming.toFixed(3)) + " SP");
-  $("#list_incoming").empty();
-  for (delegator of delegators) {
-    $("#list_incoming").append(
-      "<div class='line_incoming'><span>@" +
-        delegator.delegator +
-        "</span><span>" +
-        numberWithCommas(delegator.sp) +
-        "</span></div>"
-    );
-  }
-}
-
-function displayDelegationMain(delegators, delegatees) {
-  const sumIncoming = getSumIncoming(delegators);
-  const sumOutgoing = getSumOutgoing(delegatees);
-  $("#incoming_del").html("+ " + numberWithCommas(sumIncoming.toFixed(3)));
-  $("#outgoing_del").html("- " + numberWithCommas(sumOutgoing.toFixed(3)));
-  $("#available_del").html(numberWithCommas((sp - 5 - sumOutgoing).toFixed(3)));
-}
-
-function getDelegatees(name) {
-  return new Promise(function(fulfill, reject) {
-    steem.api.getVestingDelegations(name, null, 1000, function(
-      err,
-      outgoingDelegations
-    ) {
-      if (!err) fulfill(outgoingDelegations);
-      else reject(err);
-    });
-  });
-}
-
-function getDelegators(name) {
-  return new Promise(function(fulfill, reject) {
-    $.ajax({
-      type: "GET",
-      beforeSend: function(xhttp) {
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
-      },
-      url: "https://api.steemplus.app/delegators/" + name,
-      success: function(incomingDelegations) {
-        fulfill(incomingDelegations);
-      },
-      error: function(msg) {
-        console.log(msg);
-        reject(msg);
-      }
-    });
-  });
-}
+};

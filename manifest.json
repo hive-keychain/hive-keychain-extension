@@ -18,16 +18,18 @@
     "scripts": [
       "vendor/crypto-js.js",
       "vendor/md5.min.js",
-      "js/encrypt.js",
+      "js/libs/encrypt.js",
       "vendor/steem.min.js",
       "vendor/decode.min.js",
       "vendor/jquery.min.js",
       "js/config.js",
-      "js/keychainify.js",
-      "js/hf21.js",
-      "js/rpcs.js",
-      "js/background/init.js",
+      "js/libs/keychainify.js",
+      "js/libs/account.js",
+      "js/libs/accountsList.js",
+      "js/libs/hf21.js",
+      "js/libs/rpcs.js",
       "js/background/autolock.js",
+      "js/background/init.js",
       "js/background/dialog_lifecycle.js",
       "js/background/errors.js",
       "js/background/keychainify.js",
@@ -55,7 +57,7 @@
   "web_accessible_resources": ["/images/logo.png", "js/steem_keychain.js"],
   "content_scripts": [{
     "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-    "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/keychainify.js", "js/keychainify_content.js"]
+    "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/libs/keychainify.js", "js/keychainify_content.js"]
   }],
   "manifest_version": 2
 }
