@@ -341,7 +341,7 @@ $("#powerdown").click(function() {
   $(".dropdown").hide();
 });
 
-$("#send_steem").click(function() {
+$("#send_steem").click(async function() {
   $("#send_div").show();
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
@@ -356,10 +356,10 @@ $("#send_steem").click(function() {
     .text("STEEM Balance");
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(steem_p));
+    .html(numberWithCommas(await activeAccount.getSteem()));
 });
 
-$("#send_sbd").click(function() {
+$("#send_sbd").click(async function() {
   $("#send_div").show();
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
@@ -374,7 +374,7 @@ $("#send_sbd").click(function() {
     .text("SBD Balance");
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(sbd));
+    .html(numberWithCommas(await activeAccount.getSBD()));
 });
 
 $("#delegate").click(function() {

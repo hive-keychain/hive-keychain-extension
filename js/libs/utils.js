@@ -372,7 +372,7 @@ function initiateCustomSelect() {
     }
     x[i].appendChild(b);
     if (i == 0) loadAccount(a.innerHTML);
-    a.addEventListener("click", function(e) {
+    a.addEventListener("click", async function(e) {
       /*when the select box is clicked, close any other select boxes,
       and open/close the current select box:*/
       e.stopPropagation();
@@ -398,14 +398,14 @@ function initiateCustomSelect() {
           .text("SBD Balance");
         $(".transfer_balance div")
           .eq(1)
-          .html(numberWithCommas(sbd));
+          .html(numberWithCommas(await activeAccount.getSBD()));
       } else if (this.innerHTML == "STEEM") {
         $(".transfer_balance div")
           .eq(0)
           .text("STEEM Balance");
         $(".transfer_balance div")
           .eq(1)
-          .html(numberWithCommas(steem_p));
+          .html(numberWithCommas(await activeAccount.getSteem()));
       } else if (manageKey) {
         manageKeys(this.innerHTML);
       } else if (
