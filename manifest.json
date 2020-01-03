@@ -1,7 +1,8 @@
 {
-  "name": "Steem Keychain",
-  "version": "1.6.2",
-  "description": "Secure Steem Wallet Extension.",
+  "name": "__MSG_keychain__",
+  "description": "__MSG_description__",
+  "default_locale": "en",
+  "version": "1.7",
   "permissions": [
     "activeTab", "declarativeContent", "storage", "webNavigation", "tabs",
     "https://*/*", "notifications", "idle", "contextMenus"
