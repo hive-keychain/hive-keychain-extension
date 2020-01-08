@@ -46,8 +46,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
           "0000000000000000000000000000000000000000000000000000000000000000"
         );
       }
-      if (msg.mk == null || msg.mk == undefined) {
-        if (items.accounts == null || items.accounts == undefined) {
+      if (!msg.mk) {
+        if (!items.accounts) {
           showRegister();
         } else {
           showUnlock();

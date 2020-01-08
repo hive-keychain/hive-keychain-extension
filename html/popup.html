@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Steem Keychain</title>
+    <title></title>
     <link rel="stylesheet" type="text/css" href="../css/popup.css">
     <link rel="stylesheet" type="text/css" href="../vendor/jquery-autocomplete.min.css">
 </head>
@@ -11,39 +11,35 @@
     <div class="cloud"></div>
     <div id="register" class="hide-at-start">
         <img src="../images/keychain_logo.png" class="logo-white" />
-        <p>Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight.
-            Secure. <br><br> Let's start by creating a Keychain password. You will
-            need this password to access or make changes to your account(s).</p>
+        <p></p>
         <div class="input_container">
-            <input type="password" id="master_pwd" placeholder="New Password" />
+            <input type="password" id="master_pwd"  />
             <img src="../images/lock.png" class="input_img" />
         </div>
         <div class="input_container">
-            <input type="password" id="confirm_master_pwd" placeholder="Confirm" />
+            <input type="password" id="confirm_master_pwd" />
             <img src="../images/lock.png" class="input_img" />
         </div>
-        <button id="submit_master_pwd">Submit</button>
+        <button id="submit_master_pwd"></button>
     </div>
     <div id="unlock" class="hide-at-start">
         <img src="../images/keychain_logo.png" class="logo-white" />
-        <p>It's a better way to access your STEEM accounts. Simple. Lightweight. Secure.<br/><br/>Be
-            Free and Steem On.</p>
+        <p></p>
         <div class="input_container">
-            <input type="password" id="unlock_pwd" placeholder="Password" />
+            <input type="password" id="unlock_pwd" />
             <img src="../images/lock.png" class="input_img" />
             <img src="../images/hide.png" class="input_img_right_eye" />
         </div>
         <div class="input_container">
-            <button id="submit_unlock">Sign In</button>
+            <button id="submit_unlock"></button>
             <img src="../images/submit.png" class="input_img_right_submit" />
         </div>
-        <a href="#" id="forgot">Forgot Password?</a>
+        <a href="#" id="forgot"></a>
     </div>
     <div id="forgot_div" class="hide-at-start">
-        <div class="back_enabled" id="back_forgot">Reset account</div>
-        <p>If you forgot your password, you can clear your data but will have to enter
-            all your keys again.</p>
-        <button>Confirm</button>
+        <div class="back_enabled" id="back_forgot"></div>
+        <p></p>
+        <button></button>
     </div>
     <div class="error_div"></div>
     <div class="success_div"></div>
@@ -64,7 +60,7 @@
             <div id="voting_power_inner">
                 <div id="vm_div">
                     <div>
-                        <span>Voting Mana</span>
+                        <span id="vm_title"></span>
                         <img id="vm_info" src="../images/icon_info_white.png" />
                     </div>
                     <div id="vm"><span id='vm_pct'>...</span><span id='vm_val'></span>
@@ -72,7 +68,7 @@
                 </div>
                 <div>
                     <div>
-                        <span>Resource credits</span>
+                        <span id="rc_title"></span>
                         <img id="rc_info" src="../images/icon_info_white.png" />
                     </div>
                     <div id="rc">...
@@ -92,21 +88,21 @@
                 <div class='currency-section'>
                     <div class="wallet_currency">STEEM</div>
                     <div class="dropdown">
-                        <div id="send_steem"><img src="../images/transfer.png" />Send STEEM</div>
-                        <div id="powerup"><img src="../images/powerup.png" />Power up</div>
+                        <div id="send_steem"><img src="../images/transfer.png" /></div>
+                        <div id="powerup"><img src="../images/powerup.png" /></div>
                     </div>
                 </div>
                 <div class='currency-section'>
                     <div class="wallet_currency">SBD</div>
                     <div class="dropdown">
-                        <div id="send_sbd"><img src="../images/transfer.png" />Send SBD</div>
+                        <div id="send_sbd"><img src="../images/transfer.png" /></div>
                     </div>
                 </div>
                 <div class='currency-section'>
                     <div class="wallet_currency" id="wallet_sp">SP</div>
                     <div class="dropdown">
-                        <div id="delegate"><img src="../images/delegate.png" />Delegate</div>
-                        <div id="powerdown"><img src="../images/powerdown.png" />Power down</div>
+                        <div id="delegate"><img src="../images/delegate.png" /></div>
+                        <div id="powerdown"><img src="../images/powerdown.png" /></div>
                     </div>
                 </div>
             </div>
@@ -117,133 +113,123 @@
             </div>
         </div>
         <div id="account_value">
-            <div id="account_value_header">Estimated Account Value</div>
+            <div id="account_value_header"></div>
             <div id="account_value_amt" class="wallet_infos">...</div>
         </div>
-        <button class="dash-button main-button" id="send">Send</button>
-        <button class="dash-button main-button" id="history">History</button>
-        <button class="dash-button main-button" id="tokens">Tokens</button>
-        <button class="dash-button main-button" id="witness">Witness</button>
+        <button class="dash-button main-button" id="send"></button>
+        <button class="dash-button main-button" id="history"></button>
+        <button class="dash-button main-button" id="tokens"></button>
+        <button class="dash-button main-button" id="witness"></button>
     </div>
     <div id="estimation_info" class="hide-at-start">
-        <div class="back_menu back_enabled">account value</div>
-        <div>
-            The estimated account value is a ballpark idea of what your funds are worth in USD.<br><br>            Please note that the value does not take into account pending market
-            trades, transfers, or transactions.
+        <div class="back_menu back_enabled"></div>
+        <div id="estimation_info_text">
         </div>
     </div>
     <div id="acc_transfers" class="hide-at-start">
-        <div class="back_menu back_enabled">Wallet History</div>
+        <div class="back_menu back_enabled"></div>
         <div id="transfer_rows"></div>
     </div>
     <div id="add_account_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref">Set up</div>
-        <p>Enter your Steem account name and either the master password or the private
-            posting or active key for that account below. Your master password will
-            NOT be saved and will only be used to generate your private keys.
-            <br/><br/> You may add / remove Steem accounts or keys at any time. If
-            you need to create a new Steem account, you can do so at
-            <a href="https://signup.steemit.com/" target="_blank" style="text-decoration: underline; color: white;">https://signup.steemit.com/</a>.
-        </p>
-
+        <div class="back_enabled back_pref"></div>
+        <p></p>
         <div class="input_container">
-            <input type="text" id="username" placeholder="Username"></input>
+            <input type="text" id="username"></input>
             <img src="../images/arobase.png" class="input_img" />
         </div>
         <div class="input_container">
-            <input type="password" id="pwd" placeholder="Private key"></input>
+            <input type="password" id="pwd"></input>
             <img src="../images/key.png" class="input_img" />
         </div>
-        <button id="check_add_account">Import keys</button>
+        <button id="check_add_account"></button>
     </div>
     <div id="master_check" class="hide-at-start">
-        <div class="back_add_key back_enabled">Import Keys</div>
-        <p>Import successful! <br><br>Please select the Keys you wish to store with
-            Steem Keychain:</p>
-        <div class="key_checkbox">
+        <div class="back_add_key back_enabled"></div>
+        <p id="import_success"></p>
+        <div class="key_checkbox" id="import_posting">
             <label for="posting_key" class="checkbox_container">
-              <div>Posting Key</div>
-              <div>For posting and voting</div>
+              <div class="import_key_title"></div>
+              <div class="import_key_info"></div>
               <input type="checkbox" checked="checked" id="posting_key"/>
               <span class="checkmark"/>
             </label>
         </div>
-        <div class="key_checkbox">
+        <div class="key_checkbox" id="import_active">
             <label for="active_key" class="checkbox_container">
-            <div>Active Key</div>
-            <div>For making transfers and orders</div>
+            <div class="import_key_title"></div>
+            <div class="import_key_info"></div>
           <input type="checkbox" checked=true id="active_key"/>
           <span class="checkmark"/>
         </label>
         </div>
-        <div class="key_checkbox">
+        <div class="key_checkbox" id="import_memo">
             <label for="memo_key" class="checkbox_container">
-            <div>Memo Key</div>
-            <div>For sending and reading memos</div>
+            <div class="import_key_title"></div>
+            <div class="import_key_info"></div>
           <input type="checkbox" checked=true id="memo_key"/>
           <span class="checkmark"/>
         </label>
         </div>
-        <button id="save_master">Save</button>
+        <button id="save_master"></button>
     </div>
     <div id="settings_div" class="hide-at-start">
-        <div class="back_enabled back_menu">Settings</div>
+        <div class="back_enabled back_menu"></div>
 
         <div class="setting_row" id="add_new_account">
             <img src="../images/add_account.png" />
-            <span>Add Account</span>
+            <span></span>
         </div>
         <div class="setting_row" id="manage">
             <img src="../images/accounts.png" />
-            <span>Manage Accounts</span>
+            <span></span>
         </div>
         <div class="setting_row" id="change_pwd">
             <img src="../images/password.png" />
-            <span>Change Password</span>
+            <span></span>
         </div>
         <div class="setting_row" id="preferences">
             <img src="../images/preferences.png" />
-            <span>Preferences</span>
+            <span></span>
         </div>
         <div class="setting_row" id="autolock">
             <img src="../images/autolock.png" />
-            <span>Auto Lock</span>
+            <span></span>
         </div>
         <div class="setting_row" id="keychainify">
             <img src="../images/white-link.png" />
-            <span>Keychainify</span>
+            <span></span>
         </div>
         <div class="setting_row" id="about">
             <img src="../images/info.png" />
-            <span>About Steem Keychain</span>
+            <span></span>
         </div>
         <div class="setting_row" id="clear">
             <img src="../images/clear.png" />
-            <span>Clear All Data</span>
+            <span></span>
         </div>
     </div>
     <div id="autolock_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref">Autolock</div>
+        <div class="back_enabled back_pref"></div>
         <div class="key_checkbox autolock">
-            <label for="default" class="checkbox_container">
-          <div>Default</div>
-          <div>Lock the keychain manually or when the browser is closed.</div>
+            <label for="default" class="checkbox_container"id="div_default">
+          <div class="al_title"></div>
+          <div class="al_info"></div>
           <input type="checkbox" checked=true id="default"/>
           <span class="checkmark"/>
         </label>
         </div>
-        <div class="key_checkbox autolock">
+        <div class="key_checkbox autolock"id="div_locked">
             <label for="locked" class="checkbox_container">
-          <div>Device Lock</div>
-          <div>Auto-lock the keychain when the device locks.</div>
+          <div class="al_title"></div>
+          <div class="al_info"></div>
           <input type="checkbox"  id="locked"/>
           <span class="checkmark"/>
         </label>
         </div>
-        <div class="key_checkbox autolock">
+        <div class="key_checkbox autolock" id="div_idle">
             <label for="idle" class="checkbox_container">
-          <div>Idle Lock</div>
-          <div>Auto-lock the keychain after the browser window is idle for the specified number of minutes.</div>
+          <div class="al_title"></div>
+          <div class="al_info"></div>
           <input type="checkbox" id="idle"/>
           <span class="checkmark"/>
         </label>
@@ -251,126 +237,117 @@
         <div class="input_container">
             <input type="number" id="mn" placeholder="10"></input>
         </div>
-        <button id="save_autolock">Save</button>
+        <button id="save_autolock"></button>
     </div>
     <div id="keychainify_settings" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref">Keychainify</div>
-        <p>This feature allows you to trigger a SteemKeychain operation when clicking on a supported link on a web page
-            or accessing the URL directly in a browser tab.</p>
+        <div class="back_enabled back_pref"></div>
+        <p></p>
         <div class="key_checkbox enable_keychainify">
             <label for="default" class="checkbox_container">
-                <div>Enable Keychainify</div>
-                <div>Currently only support Steem Connect transfers URLs.</div>
+                <div id="enable_keychainify_title"></div>
+                <div id="enable_keychainify_info"></div>
                 <input type="checkbox" checked=true id="enable_keychainify"/>
                 <span class="checkmark"/>
             </label>
         </div>
     </div>
     <div id="about_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref">About</div>
+        <div class="back_enabled back_pref"></div>
         <h3></h3>
-        <div class="about-content">The overall idea and concept for the Steem Keychain browser extension was
-            created by <a href="https://steemit.com/@yabapmatt" target="_blank">@yabapmatt</a>            who is a developer and witness on the Steem blockchain. It was primarily
-            developed by <a href="https://steemit.com/@stoodkev" target="_blank">@stoodkev</a>            who is also a Steem developer (SteemPlus) and witness. The design and
-            development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt
-            through their joint business Steem Monsters, which is a blockchain-based
-            collectible trading card game built on top of the Steem blockchain. Be
-            sure to check it out at <a href="https://steemmonsters.com" target="_blank">steemmonsters.com</a>!</div>
+        <div class="about-content"></div>
     </div>
     <div id="manage_keys" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref">Manage Accounts</div>
+        <div class="back_enabled back_pref"></div>
         <div class="custom-select usernames" id="custom_select_keys">
             <select>
           </select>
         </div>
         <div class="keys_info">
-            <span class="keys_info_type">POSTING KEY</span>
-            <span id="posting" class="remove_key">REMOVE</span>
+            <span class="keys_info_type" id="posting_key_title"></span>
+            <span id="posting" class="remove_key"></span>
             <div class="private_key"></div>
             <div class="public_key"></div>
             <div class="img_add_key"></div>
         </div>
         <div class="keys_info">
-            <span class="keys_info_type">ACTIVE KEY</span>
-            <span id="active" class="remove_key">REMOVE</span>
+            <span class="keys_info_type" id="active_key_title"></span>
+            <span id="active" class="remove_key"></span>
             <div class="private_key"></div>
             <div class="public_key"></div>
             <div class="img_add_key"></div>
         </div>
         <div class="keys_info">
-            <span class="keys_info_type">MEMO KEY</span>
-            <span id="memo" class="remove_key">REMOVE</span>
+            <span class="keys_info_type" id="memo_key_title"></span>
+            <span id="memo" class="remove_key"></span>
             <div class="private_key"></div>
             <div class="public_key"></div>
             <div class="img_add_key"></div>
         </div>
-        <button id="delete_account">DELETE THIS ACCOUNT</button>
+        <button id="delete_account"></button>
     </div>
     <div id="pref_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref" style="font-size: 18px;">Preferences</div>
-        <h3>Select an RPC node</h3>
+        <div class="back_enabled back_pref" style="font-size: 18px;"></div>
+        <h3 id="select_rpc"></h3>
             <div class="custom-select no-img" id="custom_select_rpc">
                 <select>
                 </select>
             </div>
-        <h3>Notification Preferences</h3>
+        <h3 id="notif_pref"></h3>
             <div class="custom-select usernames" id="custom_select_pref">
                 <select>
                 </select>
             </div>
-            <div class="info">View and update the websites and transaction types for which you
-                have opted not to recieve a confirmation prompt.</div>
-            <div id="pref">No preferences</div>
+            <div class="info"></div>
+            <div id="pref"></div>
     </div>
     <div id="add_rpc_div" class="hide-at-start">
-        <div class="back_enabled">Add RPC</div>
-        <p>Add your RPC node here:</p>
+        <div class="back_enabled"></div>
+        <p></p>
         <div class="input_container">
-            <input type="text" id="new_rpc" placeholder="RPC Node"></input>
+            <input type="text" id="new_rpc"></input>
         </div>
-        <button id="add_new_rpc">Add RPC</button>
+        <button id="add_new_rpc"></button>
         <div id="custom_rpc"></div>
     </div>
     <div id="add_key_div" class="hide-at-start">
-        <div class="back_enabled">Add Key</div>
-        <p>Add the <span></span> private key to your account. You can also add it by
-            entering your master key.</p>
+        <div class="back_enabled"></div>
+        <p></p>
         <div class="input_container">
-            <input type="password" id="new_key" placeholder="Private Key"></input>
+            <input type="password" id="new_key" ></input>
             <img src="../images/key.png" class="input_img" />
         </div>
-        <button id="add_new_key">Import key</button>
+        <button id="add_new_key"></button>
     </div>
     <div id="copied" class="hide-at-start">
-        <div>Key copied to clipboard!</div>
+        <div></div>
     </div>
     <input id="fake_input" />
     <div id="change_password" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref">Change Password</div>
-        <p>Input your old password for confirmation, then chose a new password.</p>
+        <div class="back_enabled back_pref"></div>
+        <p></p>
         <div class="input_container">
-            <input type="password" id="old_pwd" placeholder="Old Password" />
+            <input type="password" id="old_pwd" />
             <img src="../images/lock.png" class="input_img" />
         </div>
         <div class="input_container">
-            <input type="password" id="new_pwd" placeholder="New Password" />
+            <input type="password" id="new_pwd" />
             <img src="../images/lock.png" class="input_img" />
         </div>
         <div class="input_container">
-            <input type="password" id="confirm_new_pwd" placeholder="Confirm" />
+            <input type="password" id="confirm_new_pwd" />
             <img src="../images/lock.png" class="input_img" />
         </div>
-        <button id="confirm_change_pwd">Confirm</button>
+        <button id="confirm_change_pwd"></button>
     </div>
     <div id="send_div" class="hide-at-start">
-        <div class="back_menu back_enabled">Transfer Funds</div>
+        <div class="back_menu back_enabled"></div>
         <div class="transfer_balance">
-            <div>STEEM Balance</div>
-            <div>loading...</div>
+            <div id='balance'></div>
+            <div id='loading_balance'></div>
         </div>
         <div id="send_form">
             <div class="input_container">
-                <input id="recipient" autocomplete="off" placeholder="USERNAME" />
+                <input id="recipient" autocomplete="off" />
                 <img src="../images/arobase.png" class="input_img" />
             </div>
             <div id="autocomplete_container"></div>
@@ -381,7 +358,7 @@
               <option value="SBD">SBD</option>
             </select>
             </div>
-            <input type="text" placeholder="MEMO (optional)" id="memo_send" />
+            <input type="text"  id="memo_send" />
             <div class='checkbox_memo'>
                 <label for='encrypt_memo' class='checkbox_container'>
               <div>Encrypt Memo</div>
@@ -620,6 +597,7 @@
     </div>
 
     <script src="../vendor/jquery.min.js"></script>
+    <script src="../js/popup/htmlText.js"></script>
     <script src="../js/popup/navigation.js"></script>
     <script src="../js/popup/preinit.js"></script>
     <script src="../vendor/decode.min.js"></script>

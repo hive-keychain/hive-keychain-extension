@@ -1,8 +1,233 @@
 {
   "keychain": {
-    "message": "Steem Keychain"
+    "message": "Steem Keychain",
+    "description": "Extension name, night not need to translate it."
   },
   "description": {
-    "message": "Secure Steem Wallet Extension.k"
+    "message": "Secure Steem Wallet Extension.",
+    "description": "Extension description, as shown in the store."
+  },
+  "popup_html_register": {
+    "message": "Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight. Secure. <br><br> Let's start by creating a Keychain password. You will need this password to access or make changes to your account(s)."
+  },
+  "popup_html_unlock": {
+    "message": "It's a better way to access your STEEM accounts. Simple. Lightweight. Secure.<br/><br/>Be Free and Steem On."
+  },
+  "popup_html_new_password": {
+    "message": "New Password"
+  },
+  "popup_html_confirm": {
+    "message": "Confirm"
+  },
+  "popup_html_submit": {
+    "message": "Submit"
+  },
+  "popup_html_password": {
+    "message": "Password"
+  },
+  "popup_html_signin": {
+    "message": "Sign In"
+  },
+  "popup_html_forgot": {
+    "message": "Forgot Password?"
+  },
+  "popup_html_reset": {
+    "message": "Reset account"
+  },
+  "popup_html_reset_desc": {
+    "message": "If you forgot your password, you can clear your data but will have to enter all your keys again."
+  },
+  "popup_html_vm": {
+    "message": "Voting Mana"
+  },
+  "popup_html_rc": {
+    "message": "Resource credits"
+  },
+  "popup_html_send": {
+    "message": "Send $1"
+  },
+  "popup_html_pu": {
+    "message": "Power Up"
+  },
+  "popup_html_pd": {
+    "message": "Power Down"
+  },
+  "popup_html_delegate": {
+    "message": "Delegate"
+  },
+  "popup_html_estimation": {
+    "message": "Estimated Account Value"
+  },
+  "popup_html_history": {
+    "message": "History"
+  },
+  "popup_html_tokens": {
+    "message": "Tokens"
+  },
+  "popup_html_witness": {
+    "message": "Witness"
+  },
+  "popup_html_estimation_info": {
+    "message": "account value"
+  },
+  "popup_html_estimation_info_text": {
+    "message": "The estimated account value is a ballpark idea of what your funds are worth in USD.<br><br>            Please note that the value does not take into account pending market trades, transfers, or transactions."
+  },
+  "popup_html_wallet_history": {
+    "message": "Wallet History"
+  },
+  "popup_html_setup_text": {
+    "message": "Enter your Steem account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.
+        <br/><br/> You may add / remove Steem accounts or keys at any time. If you need to create a new Steem account, you can do so at <a href=\"https://signup.steemit.com/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">https://signup.steemit.com/</a>."
+  },
+  "popup_html_setup": {
+    "message": "Setup"
+  },
+  "popup_html_private_key": {
+    "message": "Private Key"
+  },
+  "popup_html_username": {
+    "message": "Username"
+  },
+  "popup_html_import_keys": {
+    "message": "Import Keys"
+  },
+  "popup_html_import_key": {
+    "message": "Import Key"
+  },
+  "popup_html_import_success": {
+    "message": "Import successful! <br><br>Please select the Keys you wish to store with Steem Keychain:"
+  },
+  "popup_html_posting": {
+    "message": "Posting Key"
+  },
+  "popup_html_active": {
+    "message": "Active Key"
+  },
+  "popup_html_memo": {
+    "message": "Memo Key"
+  },
+  "popup_html_posting_info": {
+    "message": "For posting and voting"
+  },
+  "popup_html_active_info": {
+    "message": "For making transfers and orders"
+  },
+  "popup_html_memo_info": {
+    "message": "For sending and reading memos"
+  },
+  "popup_html_save": {
+    "message": "Save"
+  },
+  "popup_html_settings": {
+    "message": "Settings"
+  },
+  "popup_html_add_account": {
+    "message": "Add Account"
+  },
+  "popup_html_manage_accounts": {
+    "message": "Manage Accounts"
+  },
+  "popup_html_change_password": {
+    "message": "Change Password"
+  },
+  "popup_html_pref": {
+    "message": "Preferences"
+  },
+  "popup_html_autolock": {
+    "message": "Auto Lock"
+  },
+  "popup_html_keychainify": {
+    "message": "Keychainify"
+  },
+  "popup_html_about": {
+    "message": "About Steem Keychain"
+  },
+  "popup_html_clear": {
+    "message": "Clear All Data"
+  },
+  "popup_html_al_default_title": {
+    "message": "Default"
+  },
+  "popup_html_al_default_info": {
+    "message": "Lock the keychain manually or when the browser is closed."
+  },
+  "popup_html_al_locked_title": {
+    "message": "Device Lock"
+  },
+  "popup_html_al_locked_info": {
+    "message": "Auto-lock the keychain when the device locks."
+  },
+  "popup_html_al_idle_title": {
+    "message": "Idle Lock"
+  },
+  "popup_html_al_idle_info": {
+    "message": "Auto-lock the keychain after the browser window is idle for the specified number of minutes."
+  },
+  "popup_html_keychainify_text": {
+    "message": "This feature allows you to trigger a Steem Keychain operation when clicking on a supported link on a web page or accessing the URL directly in a browser tab. Lock"
+  },
+  "popup_html_enable_keychainify_title": {
+    "message": "Enable Keychainify"
+  },
+  "popup_html_enable_keychainify_info": {
+    "message": "Currently only support Steem Connect transfers URLs."
+  },
+  "popup_html_about_text": {
+    "message": "The overall idea and concept for the Steem Keychain browser extension was created by <a href=\"https://steemit.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steemit.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Steem Monsters, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://steemmonsters.com\" target=\"_blank\">steemmonsters.com</a>!"
+  },
+  "popup_html_remove": {
+    "message": "Remove"
+  },
+  "popup_html_delete_account": {
+    "message": "DELETE THIS ACCOUNT"
+  },
+  "popup_html_select_rpc": {
+    "message": "Select an RPC node"
+  },
+  "popup_html_notif_pref": {
+    "message": "Notification Preferences"
+  },
+  "popup_html_pref_info": {
+    "message": "View and update the websites and transaction types for which you have opted not to recieve a confirmation prompt."
+  },
+  "popup_html_no_pref": {
+    "message": "No preferences"
+  },
+  "popup_html_add_rpc": {
+    "message": "Add RPC"
+  },
+  "popup_html_add_rpc_text": {
+    "message": "Add your RPC node here:"
+  },
+  "popup_html_rpc_node": {
+    "message": "RPC Node"
+  },
+  "popup_html_add_key": {
+    "message": "Add Key"
+  },
+  "popup_html_add_key_text": {
+    "message": "Add the <span></span> private key to your account. You can also add it by entering your master key."
+  },
+  "popup_html_copied": {
+    "message": "Key copied to clipboard!"
+  },
+  "popup_html_change_password_text": {
+    "message": "Input your old password for confirmation, then chose a new password."
+  },
+  "popup_html_old_password": {
+    "message": "Old Password"
+  },
+  "popup_html_transfer_funds": {
+    "message": "Transfer Funds"
+  },
+  "popup_html_balance": {
+    "message": "$1 Balance"
+  },
+  "popup_html_loading": {
+    "message": "Loading..."
+  },
+  "popup_html_memo_optional": {
+    "message": "MEMO (optional)"
   }
 }

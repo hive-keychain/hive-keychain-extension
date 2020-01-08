@@ -1,8 +1,13 @@
 {
   "keychain": {
-    "message": "Steem Keychain"
+    "message": "Steem Keychain",
+    "description": "Extension name, night not need to translate it."
   },
   "description": {
-    "message": "Portefeuille sécurisé pour Steem."
+    "message": "Portefeuille sécurisé pour Steem.",
+    "description": "Extension description, as shown in the store."
+  },
+  "popup_html_witness": {
+    "message": "Témoins"
   }
 }
