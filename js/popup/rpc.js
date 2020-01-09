@@ -1,5 +1,3 @@
-const rpcs = new Rpcs();
-
 function loadRPC(local, current_rpc) {
   const RPCs = rpcs.getList();
   console.log(RPCs);

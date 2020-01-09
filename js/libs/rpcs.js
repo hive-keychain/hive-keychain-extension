@@ -1,5 +1,6 @@
 class Rpcs {
   constructor() {
+    console.log("build");
     this.currentRpc = "https://api.steemit.com";
     this.awaitRollback = false;
     this.DEFAULT_RPC_API = "https://api.steemkeychain.com/rpc";
@@ -22,6 +23,7 @@ class Rpcs {
   }
 
   async setOptions(rpc, awaitRollback = false) {
+    console.log("option:", rpc);
     if (rpc === this.currentRpc) {
       console.log("Same RPC");
       return;
