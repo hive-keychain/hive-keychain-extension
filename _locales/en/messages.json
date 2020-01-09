@@ -253,5 +253,98 @@
   },
   "popup_html_transfer_memo": {
     "message": "Memo"
+  },
+  "popup_html_not_now": {
+    "message": "Not Now"
+  },
+  "popup_html_redeem": {
+    "message": "Redeem"
+  },
+  "popup_html_witness_title": {
+    "message": "Witness Voting"
+  },
+  "popup_html_witness_disclaimer": {
+    "message": "You may vote for up to 30 witnesses."
+  },
+  "popup_html_witness_remaining": {
+    "message": "Votes remaining: <span>30</span>"
+  },
+  "popup_html_witness_voted": {
+    "message": "Voted"
+  },
+  "popup_html_witness_top": {
+    "message": "Top 100"
+  },
+  "popup_html_witness_add": {
+    "message": "Add"
+  },
+  "popup_html_proxy_desc": {
+    "message": "You may manually enter a user to vote for Witness or to set as Proxy."
+  },
+  "popup_html_witness_vote": {
+    "message": "Vote for Witness"
+  },
+  "popup_html_chose_proxy": {
+    "message": "Chose Proxy"
+  },
+  "popup_html_tokens_available": {
+    "message": "Tokens Available"
+  },
+  "popup_html_tokens_settings_text": {
+    "message": "View token information and chose which tokens to display. Learn more about custom tokens on the Steem blockchain at <a href=\"https://steem-engine.com\" target=\"_blank\">https://steem-engine.com</a>."
+  },
+  "popup_html_available": {
+    "message": "Available"
+  },
+  "popup_html_tokens_send_text": {
+    "message": "Sending your tokens may take up to 30 seconds to confirm, please be patient."
+  },
+  "popup_html_recipient": {
+    "message": "Recipient"
+  },
+  "popup_html_token_confirm_text": {
+    "message": "Please confirm your transfer.<br>This cannot be undone."
+  },
+  "popup_html_current": {
+    "message": "Current"
+  },
+  "popup_html_powerup_text": {
+    "message": "Power Up your STEEM to transform it in Steem Power."
+  },
+  "popup_html_powerdown_text": {
+    "message": "Power Down your Steem Power to get liquid STEEM. The entire Power Down process will take 13 weeks."
+  },
+  "popup_html_powering_down": {
+    "message": "Powering Down"
+  },
+  "popup_html_delegations": {
+    "message": "Delegations"
+  },
+  "popup_html_delegations_text": {
+    "message": "You may delegate your Steem Power (SP) to another user. Click on the Outgoing amount to review or make changes."
+  },
+  "popup_html_incoming": {
+    "message": "Incoming $1"
+  },
+  "popup_html_outgoing": {
+    "message": "Outgoing $1"
+  },
+  "popup_html_delegate_to_user": {
+    "message": "Delegate to user"
+  },
+  "popup_html_total_outgoing": {
+    "message": "Total Outgoing"
+  },
+  "popup_html_total_incoming": {
+    "message": "Total Incoming"
+  },
+  "popup_html_edit_delegations": {
+    "message": "Edit Delegation"
+  },
+  "popup_html_edit_delegations_text": {
+    "message": "You are changing the amount delegated to this user. Edit the amount and save your change."
+  },
+  "popup_html_support": {
+    "message": "Click here to support Steem Keychain development by casting your witness votes for the creators!"
   }
 }

@@ -390,16 +390,16 @@
         <img src="../images/delete.png" class="close_claim" id="close_claim" />
         <img src="../images/rewards.png" id="gift" />
         <p></p>
-        <button class="close_claim">Not Now</button>
-        <button id="redeem_rewards">Redeem</button>
+        <button class="close_claim"></button>
+        <button id="redeem_rewards"></button>
     </div>
     <div id="witness_div" class="hide-at-start">
-        <div class="back_enabled back_menu">Witness Voting</div>
-        <span id="wit_disclaimer">You may vote for up to 30 witnesses.</span>
-        <div id="votes_remaining">Votes remaining: <span>30</span></div>
-        <button class="wit-menu" id="voted" class="active_wit">Voted</button>
-        <button class="wit-menu" id="top100">Top 100</button>
-        <button class="wit-menu" id="add_wit">Add</button>
+        <div class="back_enabled back_menu"></div>
+        <span id="wit_disclaimer"></span>
+        <div id="votes_remaining"></div>
+        <button class="wit-menu" id="voted" class="active_wit"></button>
+        <button class="wit-menu" id="top100"></button>
+        <button class="wit-menu" id="add_wit"></button>
         <div class="sub_wit" id="voted_div">
             <div id="proxy">
                 <div></div>
@@ -408,61 +408,61 @@
         </div>
         <div class="sub_wit" id="top100_div"></div>
         <div class="sub_wit" id="add_wit_div">
-            <p>You may manually enter a user to vote for Witness or to set as Proxy.</p>
+            <p></p>
             <div class="input_container">
-                <input type="text" id="wit-username" placeholder="Username"></input>
+                <input type="text" id="wit-username"></input>
                 <img src="../images/arobase.png" class="input_img" />
             </div>
             <div class="custom-select" id="custom_select_wit">
                 <select>
-            <option value="Wit">Vote for Witness</option>
-            <option value="Proxy">Chose Proxy</option>
+            <option value="Wit"></option>
+            <option value="Proxy"></option>
           </select>
             </div>
-            <button id="vote_wit">Submit</button>
+            <button id="vote_wit"></button>
             <div class="loader" id="wit_loading" style="display:none">
                 <div><img src="../images/loading.gif" /></div>
             </div>
         </div>
     </div>
     <div id="tokens_div" class="hide-at-start">
-        <div class="back_enabled back_menu">Tokens</div>
+        <div class="back_enabled back_menu"></div>
         <img src="../images/settings.png" id="settings_tokens" />
         <p></p>
         <div id="tokens_list">
         </div>
     </div>
     <div id="tokens_settings_div" class="hide-at-start">
-        <div class="back_enabled ">Tokens Available</div>
-        <p>View token information and chose which tokens to display. Learn more about custom tokens on the Steem blockchain at <a href="https://steem-engine.com" target="_blank">https://steem-engine.com</a>.</p>
+        <div class="back_enabled "></div>
+        <p></p>
         <div id="existing_tokens">
         </div>
     </div>
     <div id="token_send_div" class="hide-at-start">
         <div class="back_enabled "></div>
         <div class="token_available">
-            <div><span class="token_left">Available</span><span class="token_right"></span></div>
+            <div><span class="token_left"></span><span class="token_right"></span></div>
         </div>
-        <p>Sending your tokens may take up to 30 seconds to confirm, please be patient. </p>
-        <input type="text" placeholder="Recipient" id="send_tok_to" />
+        <p></p>
+        <input type="text" id="send_tok_to" />
         <input type="number" id="amt_tok" placeholder="0.000"></input>
         <div id="tok">
         </div>
-        <input type="text" placeholder="MEMO (optional)" id="memo_tok" />
-        <div id="wrap_tok"><button id="send_tok">Send</button></div>
+        <input type="text"  id="memo_tok" />
+        <div id="wrap_tok"><button id="send_tok"></button></div>
     </div>
     <div id="confirm_token_send_div" class="hide-at-start">
-        <div class="back_enabled">Transfer</div>
-        <p>Please confirm your transfer.<br>This cannot be undone.</p>
-        <h3>From</h3>
+        <div class="back_enabled"></div>
+        <p></p>
+        <h3></h3>
         <div id="from_conf_token_transfer"></div>
-        <h3>To</h3>
+        <h3></h3>
         <div id="to_conf_token_transfer"></div>
-        <h3>Amount</h3>
+        <h3></h3>
         <div id="amt_conf_token_transfer"></div>
-        <h3>Memo</h3>
+        <h3></h3>
         <div id="memo_conf_token_transfer"></div>
-        <button id="confirm_send_tok">Confirm</button>
+        <button id="confirm_send_tok"></button>
         <div class="loader" id="tok_loading" style="display:none">
             <div><img src="../images/loading.gif" /></div>
         </div>
@@ -475,92 +475,89 @@
         <div id="history_tokens_rows"></div>
     </div>
     <div id="powerup_div" class="hide-at-start">
-        <div class="back_enabled back_menu">Power Up</div>
+        <div class="back_enabled back_menu"></div>
         <div class="power">
-            <div><span class="power_left">Available</span><span class="power_right power_steem"></span></div>
-            <div><span class="power_left">Current</span><span class="power_right power_sp"></span></div>
+            <div><span class="power_left"></span><span class="power_right power_steem"></span></div>
+            <div><span class="power_left"></span><span class="power_right power_sp"></span></div>
         </div>
-        <p>Power Up your STEEM to transform it in Steem Power.</p>
+        <p></p>
         <input type="text" id="user_pu"></input>
         <input type="number" id="amt_pu" placeholder="0.000"></input>
         <div class="sp_del">
             STEEM
         </div>
-        <div id="wrap_power_up"><button id="power_up">Power Up</button></div>
+        <div id="wrap_power_up"><button id="power_up"></button></div>
         <div class="loader" id="powerup_loading" style="display:none">
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
     <div id="powerdown_div" class="hide-at-start">
-        <div class="back_enabled back_menu">Power Down</div>
+        <div class="back_enabled back_menu"></div>
         <div class="power">
-            <div><span class="power_left">Current</span><span class="power_right power_steem"></span></div>
-            <div><span class="power_left">Available</span><span class="power_right power_sp"></span></div>
+            <div><span class="power_left"></span><span class="power_right power_steem"></span></div>
+            <div><span class="power_left"></span><span class="power_right power_sp"></span></div>
         </div>
-        <p>Power Down your Steem Power to get liquid STEEM. The entire Power Down process
-            will take 13 weeks.</p>
+        <p></p>
         <div class="power" id="powering_down_div">
-            <div>Powering Down</div>
+            <div></div>
             <div><span id="powering_down"></span></div>
         </div>
         <input type="number" id="amt_pd" placeholder="0.000"></input>
         <div class="sp_del">
             SP
         </div>
-        <div id="wrap_power_down"><button id="power_down">Power Down</button></div>
+        <div id="wrap_power_down"><button id="power_down"></button></div>
         <div class="loader" id="powerdown_loading" style="display:none">
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
     <div id="delegation_div" class="hide-at-start">
-        <div class="back_enabled back_menu">Delegations</div>
-        <p>You may delegate your Steem Power (SP) to another user. Click on the Outgoing
-            amount to review or make changes.</p>
+        <div class="back_enabled back_menu"></div>
+        <p></p>
         <div id="delegation_values">
-            <div><span class="del_left">Incoming</span><span class="del_right" id="incoming_del"></span></div>
-            <div><span class="del_left">Outgoing</span><span class="del_right" id="outgoing_del"></span></div>
-            <div><span class="del_left">AVAILABLE</span><span class="del_right" id="available_del"></span></div>
+            <div><span class="del_left"></span><span class="del_right" id="incoming_del"></span></div>
+            <div><span class="del_left"></span><span class="del_right" id="outgoing_del"></span></div>
+            <div><span class="del_left"></span><span class="del_right" id="available_del"></span></div>
         </div>
         <div id="new_delegation_div">
             <div class="input_container">
-                <input type="text" id="username_del" placeholder="Username"></input>
+                <input type="text" id="username_del" ></input>
                 <img src="../images/arobase.png" class="input_img" />
             </div>
             <input type="number" id="amt_del" placeholder="0.000"></input>
             <div class="sp_del">
                 SP
             </div>
-            <div id="wrap_send_del"><button id="send_del">Delegate to user</button></div>
+            <div id="wrap_send_del"><button id="send_del"></button></div>
             <div class="loader" id="del_loading" style="display:none">
                 <div><img src="../images/loading.gif" /></div>
             </div>
         </div>
     </div>
     <div id="outgoing_del_div" class="hide-at-start">
-        <div class="back_enabled">Outgoing SP</div>
+        <div class="back_enabled"></div>
         <div id="total_outgoing">
-            <span>Total Outgoing</span>
+            <span></span>
             <span></span>
         </div>
         <div id="list_outgoing">
         </div>
     </div>
     <div id="incoming_del_div" class="hide-at-start">
-        <div class="back_enabled">Incoming SP</div>
+        <div class="back_enabled"></div>
         <div id="total_incoming">
-            <span>Total Incoming</span>
+            <span></span>
             <span></span>
         </div>
         <div id="list_incoming">
         </div>
     </div>
     <div id="edit_del_div" class="hide-at-start">
-        <div class="back_enabled">Edit Delegation</div>
-        <p>You are changing the amount delegated to this user. Edit the amount and save
-            your change.</p>
+        <div class="back_enabled"></div>
+        <p></p>
         <div id="edit_delegation_values">
-            <div><span class="del_left">Available</span><span class="del_right" id="this_available_del"></span></div>
-            <div><span class="del_left">Current amount</span><span class="del_right" id="this_outgoing_del"></span></div>
+            <div><span class="del_left"></span><span class="del_right" id="this_available_del"></span></div>
+            <div><span class="del_left"></span><span class="del_right" id="this_outgoing_del"></span></div>
         </div>
         <div id="username_del">
             <img src="../images/arobase_white.png" />
@@ -570,15 +567,14 @@
         <div class="sp_del">
             SP
         </div>
-        <div id="wrap_edit_del"><button id="edit_del">Save change</button></div>
+        <div id="wrap_edit_del"><button id="edit_del"></button></div>
         <div class="loader" id="edit_del_loading" style="display:none">
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
     <div id="witness_votes" class="hide-at-start">
         <img src="../images/delete.png" id="close_witness" style="display: none;" />
-        <div id="witness_toggle">Click here to support Steem Keychain development by casting your witness
-            votes for the creators!</div>
+        <div id="witness_toggle"></div>
         <div class="witness_container" id="yabapmatt">
             <button>@yabapmatt</button>
             <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"

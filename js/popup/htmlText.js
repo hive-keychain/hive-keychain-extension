@@ -218,6 +218,7 @@ $("#confirm_new_pwd").attr(
   chrome.i18n.getMessage("popup_html_confirm")
 );
 $("#confirm_change_pwd").text(chrome.i18n.getMessage("popup_html_save"));
+
 // transfers
 $("#send_div .back_enabled").text(
   chrome.i18n.getMessage("popup_html_transfer_funds")
@@ -254,3 +255,155 @@ $("#confirm_send_div h3")
   .eq(3)
   .text(chrome.i18n.getMessage("popup_html_transfer_memo"));
 $("#confirm_send_transfer").text(chrome.i18n.getMessage("popup_html_confirm"));
+
+//Claim
+$(".close_claim").html(chrome.i18n.getMessage("popup_html_not_now"));
+$("#redeem_rewards").html(chrome.i18n.getMessage("popup_html_redeem"));
+
+//witnesses
+$("#witness_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_witness_title")
+);
+$("#wit_disclaimer").text(
+  chrome.i18n.getMessage("popup_html_witness_disclaimer")
+);
+$("#votes_remaining").html(
+  chrome.i18n.getMessage("popup_html_witness_remaining")
+);
+$("#voted").text(chrome.i18n.getMessage("popup_html_witness_voted"));
+$("#top100").text(chrome.i18n.getMessage("popup_html_witness_top"));
+$("#add_wit").text(chrome.i18n.getMessage("popup_html_witness_add"));
+$("#add_wit_div p").text(chrome.i18n.getMessage("popup_html_proxy_desc"));
+$("#custom_select_wit option[value=Wit]").text(
+  chrome.i18n.getMessage("popup_html_witness_vote")
+);
+$("#custom_select_wit option[value=Proxy]").text(
+  chrome.i18n.getMessage("popup_html_chose_proxy")
+);
+$("#wit-username").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_username")
+);
+$("#vote_wit").text(chrome.i18n.getMessage("popup_html_submit"));
+
+// transfers tokens
+$("#tokens_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_tokens")
+);
+$("#tokens_settings_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_tokens_available")
+);
+$("#tokens_settings_div p").html(
+  chrome.i18n.getMessage("popup_html_tokens_settings_text")
+);
+$(".token_left").text(chrome.i18n.getMessage("popup_html_available"));
+$("#token_send_div p").html(
+  chrome.i18n.getMessage("popup_html_tokens_send_text")
+);
+$("#send_tok_to").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_recipient").toUpperCase()
+);
+$("#memo_tok").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_memo_optional")
+);
+$("#send_tok").text(chrome.i18n.getMessage("popup_html_send"));
+$("#confirm_token_send_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_transfer")
+);
+$("#confirm_token_send_div p").html(
+  chrome.i18n.getMessage("popup_html_token_confirm_text")
+);
+$("#confirm_token_send_div h3")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_transfer_from"));
+$("#confirm_token_send_div h3")
+  .eq(1)
+  .text(chrome.i18n.getMessage("popup_html_transfer_to"));
+$("#confirm_token_send_div h3")
+  .eq(2)
+  .text(chrome.i18n.getMessage("popup_html_transfer_amount"));
+$("#confirm_token_send_div h3")
+  .eq(3)
+  .text(chrome.i18n.getMessage("popup_html_transfer_memo"));
+$("#confirm_send_tok").text(chrome.i18n.getMessage("popup_html_confirm"));
+
+// Power Up
+$("#powerup_div .back_enabled").text(chrome.i18n.getMessage("popup_html_pu"));
+$("#powerup_div .power_left")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_available"));
+$("#powerup_div .power_left")
+  .eq(1)
+  .text(chrome.i18n.getMessage("popup_html_current"));
+$("#powerup_div p").text(chrome.i18n.getMessage("popup_html_powerup_text"));
+$("#power_up").text(chrome.i18n.getMessage("popup_html_pu"));
+
+//Power Down
+$("#powerdown_div .back_enabled").text(chrome.i18n.getMessage("popup_html_pd"));
+$("#powerdown_div .power_left")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_current"));
+$("#powerdown_div .power_left")
+  .eq(1)
+  .text(chrome.i18n.getMessage("popup_html_available"));
+
+$("#powerdown_div p").html(chrome.i18n.getMessage("popup_html_powerdown_text"));
+$("#powering_down").text(chrome.i18n.getMessage("popup_html_powering_down"));
+
+$("#power_down").text(chrome.i18n.getMessage("popup_html_pd"));
+
+//Delegations
+$("#delegation_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_delegations")
+);
+$("#delegation_div p").text(
+  chrome.i18n.getMessage("popup_html_delegations_text")
+);
+$("#delegation_values .del_left")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_incoming"));
+$("#delegation_values .del_left")
+  .eq(1)
+  .text(chrome.i18n.getMessage("popup_html_outgoing"));
+$("#delegation_values .del_left")
+  .eq(2)
+  .text(chrome.i18n.getMessage("popup_html_available").toUpperCase());
+$("#username_del").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_username")
+);
+$("#send_del").text(chrome.i18n.getMessage("popup_html_delegate_to_user"));
+
+//Outgoing
+$("#outgoing_del_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_outgoing", ["SP"])
+);
+$("#total_outgoing span")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_total_outgoing"));
+
+//Incoming
+$("#incoming_del_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_incoming", ["SP"])
+);
+$("#total_incoming span")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_total_incoming"));
+
+// Edit delegations
+$("#edit_del_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_edit_delegations")
+);
+$("#edit_del_div p").text(
+  chrome.i18n.getMessage("popup_html_edit_delegations_text")
+);
+$("#edit_delegation_values .del_left")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_available"));
+$("#edit_delegation_values .del_left")
+  .eq(1)
+  .text(chrome.i18n.getMessage("popup_html_current"));
+$("#edit_del").text(chrome.i18n.getMessage("popup_html_save"));
+$("#witness_toggle").text(chrome.i18n.getMessage("popup_html_support"));
