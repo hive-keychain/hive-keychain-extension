@@ -2,7 +2,7 @@ class Rpcs {
   constructor() {
     this.currentRpc = "https://api.steemit.com";
     this.awaitRollback = false;
-    this.DEFAULT_RPC_API = "https://steem-keychain.herokuapp.com/rpc";
+    this.DEFAULT_RPC_API = "https://api.steemkeychain.com/rpc";
     this.list = [
       "DEFAULT",
       "https://api.steemit.com",
