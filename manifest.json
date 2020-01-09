@@ -1,10 +1,17 @@
 {
   "name": "Steem Keychain",
-  "version": "1.6.2",
+  "version": "1.6.2.1",
   "description": "Secure Steem Wallet Extension.",
   "permissions": [
-    "activeTab", "declarativeContent", "storage", "webNavigation", "tabs",
-    "https://*/*", "notifications", "idle", "contextMenus"
+    "activeTab",
+    "declarativeContent",
+    "storage",
+    "webNavigation",
+    "tabs",
+    "https://*/*",
+    "notifications",
+    "idle",
+    "contextMenus"
   ],
   "browser_action": {
     "default_popup": "html/popup.html",
@@ -54,10 +61,16 @@
     ],
     "persistent": true
   },
-  "web_accessible_resources": ["/images/logo.png", "js/steem_keychain.js"],
-  "content_scripts": [{
-    "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-    "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/libs/keychainify.js", "js/keychainify_content.js"]
-  }],
+  "web_accessible_resources": [
+    "/images/logo.png", "js/steem_keychain.js"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*", "http://0.0.0.0:1337/*", "http://*/*"
+      ],
+      "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/libs/keychainify.js", "js/keychainify_content.js"]
+    }
+  ],
   "manifest_version": 2
 }
