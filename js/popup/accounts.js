@@ -488,6 +488,7 @@ const claimRewards = async () => {
     rewardText
   ] = await activeAccount.getAvailableRewards();
   if (hasReward(reward_sbd, reward_sp, reward_steem)) {
+    $("#claim_rewards button").prop("disabled", false);
     $("#claim").show();
     $("#claim")
       .unbind("click")

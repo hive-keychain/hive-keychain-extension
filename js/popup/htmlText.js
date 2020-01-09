@@ -232,3 +232,25 @@ $("#memo_send").attr(
   "placeholder",
   chrome.i18n.getMessage("popup_html_memo_optional")
 );
+$(".checkbox_memo div").text(chrome.i18n.getMessage("popup_html_encrypt_memo"));
+$("#send_transfer").text(chrome.i18n.getMessage("popup_html_send"));
+$("#show_add_active").text(chrome.i18n.getMessage("popup_html_add_active"));
+$("#confirm_send_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_transfer")
+);
+$("#confirm_send_div p").html(
+  chrome.i18n.getMessage("popup_html_transfer_confirm_text")
+);
+$("#confirm_send_div h3")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_transfer_from"));
+$("#confirm_send_div h3")
+  .eq(1)
+  .text(chrome.i18n.getMessage("popup_html_transfer_to"));
+$("#confirm_send_div h3")
+  .eq(2)
+  .text(chrome.i18n.getMessage("popup_html_transfer_amount"));
+$("#confirm_send_div h3")
+  .eq(3)
+  .text(chrome.i18n.getMessage("popup_html_transfer_memo"));
+$("#confirm_send_transfer").text(chrome.i18n.getMessage("popup_html_confirm"));

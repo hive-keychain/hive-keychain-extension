@@ -229,5 +229,29 @@
   },
   "popup_html_memo_optional": {
     "message": "MEMO (optional)"
+  },
+  "popup_html_encrypt_memo": {
+    "message": "Encrypt Memo"
+  },
+  "popup_html_add_active": {
+    "message": "Please add an active key to send STEEM or SBD."
+  },
+  "popup_html_transfer": {
+    "message": "Transfer"
+  },
+  "popup_html_transfer_confirm_text": {
+    "message": "Please confirm your transfer.<br>This cannot be undone."
+  },
+  "popup_html_transfer_from": {
+    "message": "From"
+  },
+  "popup_html_transfer_to": {
+    "message": "To"
+  },
+  "popup_html_transfer_amount": {
+    "message": "Amount"
+  },
+  "popup_html_transfer_memo": {
+    "message": "Memo"
   }
 }
