@@ -7,6 +7,15 @@
     "message": "Secure Steem Wallet Extension.",
     "description": "Extension description, as shown in the store."
   },
+  "memo": {
+    "message": "memo"
+  },
+  "posting": {
+    "message": "posting"
+  },
+  "active": {
+    "message": "active"
+  },
   "popup_html_register": {
     "message": "Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight. Secure. <br><br> Let's start by creating a Keychain password. You will need this password to access or make changes to your account(s)."
   },
@@ -346,5 +355,45 @@
   },
   "popup_html_support": {
     "message": "Click here to support Steem Keychain development by casting your witness votes for the creators!"
+  },
+  "popup_accounts_reveal_private": {
+    "message": "Click to show private key"
+  },
+  "popup_accounts_no_bittrex": {
+    "message": "Bittrex is unreachable"
+  },
+  "popup_accounts_add_memo": {
+    "message": "Add your private memo key to read this memo"
+  },
+  "popup_accounts_no_recent_transfers": {
+    "message": "No recent transfers"
+  },
+  "popup_accounts_already_registered": {
+    "message": "You already registered an account for @$1!"
+  },
+  "popup_accounts_incorrect_key": {
+    "message": "Incorrect private key or password."
+  },
+  "popup_accounts_incorrect_user": {
+    "message": "Please check the username and try again."
+  },
+  "popup_accounts_fill": {
+    "message": "Please fill the fields."
+  },
+  "popup_accounts_already_have_key": {
+    "message": "You already entered your $1 key!"
+  },
+  "popup_accounts_not_your_key": {
+    "message": "This is not your $1 key!"
+  },
+  "popup_accounts_not_wif": {
+    "message": "This is not a private WIF!"
+  },
+  "popup_accounts_try_again": {
+    "message": "Please try again later!"
+  },
+  "popup_accounts_err_claim": {
+    "message": "You need to enter your private posting key to claim rewards!"
   }
+
 }
