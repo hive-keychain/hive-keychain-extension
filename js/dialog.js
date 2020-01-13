@@ -89,14 +89,16 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (type == "transfer") {
       $("#modal-body-msg .msg-data").css("max-height", "200px");
       let accounts = msg.accounts;
+      console.log(accounts, msg.data.username);
       if (msg.data.username !== undefined) {
         let i = msg.accounts.findIndex(function(elt) {
-          return elt.name == msg.data.username;
+          return elt == msg.data.username;
         });
 
         let first = [accounts[i]];
         delete accounts[i];
         accounts = first.concat(accounts);
+        console.log(accounts);
       }
       for (acc of accounts) {
         if (acc != undefined)
