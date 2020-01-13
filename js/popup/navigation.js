@@ -353,7 +353,7 @@ $("#send_steem").click(async function() {
   );
   $(".transfer_balance div")
     .eq(0)
-    .text("STEEM Balance");
+    .text(chrome.i18n.getMessage("popup_html_balance", ["STEEM"]));
   $(".transfer_balance div")
     .eq(1)
     .html(numberWithCommas(await activeAccount.getSteem()));
@@ -371,7 +371,7 @@ $("#send_sbd").click(async function() {
   );
   $(".transfer_balance div")
     .eq(0)
-    .text("SBD Balance");
+    .text(chrome.i18n.getMessage("popup_html_balance", ["SBD"]));
   $(".transfer_balance div")
     .eq(1)
     .html(numberWithCommas(await activeAccount.getSBD()));

@@ -117,7 +117,7 @@ $("#submit_unlock").click(function() {
       initializeMainMenu();
       initializeVisibility();
     } else {
-      showError("Wrong password!");
+      showError(chrome.i18n.getMessage("wrong_password"));
     }
   });
 });
@@ -139,12 +139,10 @@ $("#submit_master_pwd").click(function() {
       initializeMainMenu();
       $(".error_div").hide();
     } else {
-      showError("Your passwords do not match!");
+      showError(chrome.i18n.getMessage("popup_html_estimation_info"));
     }
   } else {
-    showError(
-      "Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter and a digit or be at least 16 characters long without restriction."
-    );
+    showError(chrome.i18n.getMessage("popup_password_regex"));
   }
 });
 function acceptMP(mp) {
@@ -184,7 +182,11 @@ function initializeMainMenu() {
         }
         $(".usernames select")
           .eq(0)
-          .append("<option name='add_account'>Add New Account</option>");
+          .append(
+            `<option name='add_account'>${chrome.i18n.getMessage(
+              "popup_add_account"
+            )}</option>`
+          );
         initiateCustomSelect();
       } else {
         $("#main").hide();
@@ -194,6 +196,7 @@ function initializeMainMenu() {
     }
   );
 }
+//TODO : I stopped there
 // Show Confirmation window before transfer
 $("#send_transfer").click(function() {
   confirmTransfer();

@@ -16,6 +16,12 @@
   "active": {
     "message": "active"
   },
+  "unknown_error": {
+    "message": "Something went wrong! Please try again!"
+  },
+  "wrong_password": {
+    "message": "Wrong password!"
+  },
   "popup_html_register": {
     "message": "Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight. Secure. <br><br> Let's start by creating a Keychain password. You will need this password to access or make changes to your account(s)."
   },
@@ -394,6 +400,23 @@
   },
   "popup_accounts_err_claim": {
     "message": "You need to enter your private posting key to claim rewards!"
+  },
+  "popup_delegate_key": {
+    "message": "Please add your active key to send delegations!"
+  },
+  "popup_delegate_success": {
+    "message": "Your delegation was succesful!"
+  },
+  "popup_delegate_change_success": {
+    "message": "Your delegation change was succesful!"
+  },
+  "popup_password_mismatch": {
+    "message": "Your passwords do not match!"
+  },
+  "popup_password_regex": {
+    "message": "Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter and a digit or be at least 16 characters long without restriction."
+  },
+  "popup_add_account": {
+    "message": "Add New Account"
   }
-
 }
