@@ -20,7 +20,7 @@ class AccountsList {
     return this.accounts.list || [];
   }
   get(name) {
-    return this.accounts.list.find(e => e.getName() === name);
+    return this.getList().find(e => e.getName() === name);
   }
   getById(id) {
     return this.accounts.list[id];
