@@ -7,6 +7,9 @@
     "message": "Secure Steem Wallet Extension.",
     "description": "Extension description, as shown in the store."
   },
+  "transaction_error": {
+    "message": "Transaction error"
+  },
   "memo": {
     "message": "memo"
   },
@@ -418,5 +421,108 @@
   },
   "popup_add_account": {
     "message": "Add New Account"
+  },
+  "popup_empty": {
+    "message": "Empty"
+  },
+  "popup_encrypted": {
+    "message": "encrypted"
+  },
+  "popup_witness_key": {
+    "message": "Please add your active key to vote for witnesses!"
+  },
+  "popup_transfer_success": {
+    "message": "Transfer successful!"
+  },
+  "popup_next_powerdown": {
+    "message": "Next power down on $1"
+  },
+  "popup_pu_key": {
+    "message": "Please add your active key to power up!"
+  },
+  "popup_pd_key": {
+    "message": "Please add your active key to power down!"
+  },
+  "popup_pu_success": {
+    "message": "You succesfully powered up!"
+  },
+  "popup_pd_success": {
+    "message": "You succesfully started a power down!"
+  },
+  "popup_pd_stop": {
+    "message": "You succesfully stopped a power down!"
+  },
+  "popup_rpc_add": {
+    "message": "ADD RPC",
+    "description": "RPC stands for rpc node"
+  },
+  "popup_rpc_added": {
+    "message": "RPC added succesfully!"
+  },
+  "popup_master_changed": {
+    "message": "Your master password was changed succesfully"
+  },
+  "popup_pwd_stronger": {
+    "message": "Please use a stronger password!"
+  },
+  "popup_pwd_match": {
+    "message": "The new passwords do not match!"
+  },
+  "popup_wrong_current_pwd": {
+    "message": "Wrong current password"
+  },
+  "popup_website": {
+    "message": "Website"
+  },
+  "popup_broadcast": {
+    "message": "Broadcast"
+  },
+  "popup_add_auth": {
+    "message": "Add Account Authority"
+  },
+  "popup_remove_auth": {
+    "message": "Remove Account Authority"
+  },
+  "popup_custom": {
+    "message": "Custom Transaction"
+  },
+  "popup_decode": {
+    "message": "Verify Key"
+  },
+  "popup_sign_buffer": {
+    "message": "Sign"
+  },
+  "popup_signed_call": {
+    "message": "Signed Call"
+  },
+  "popup_post": {
+    "message": "Post"
+  },
+  "popup_vote": {
+    "message": "Vote"
+  },
+  "popup_token_issued_by": {
+    "message": "by @$1"
+  },
+  "popup_token_supply": {
+    "message": "Supply"
+  },
+  "popup_view_tokens_balance": {
+    "message": "View your custom token balances. You can hide certain tokens and see more information by clicking the settings wheel."
+  },
+  "popup_no_tokens": {
+    "message": "You currently don't have any custom tokens. Click on the settings wheel to get information about the tokens available."
+  },
+  "popup_token_key": {
+    "message": "Please add your active key to send tokens!"
+  },
+  "popup_no_such_account": {
+    "message": "This username is not registered on the blockchain!"
+  },
+  "popup_token_success": {
+    "message": "Tokens sent succesfully!"
+  },
+  "popup_token_timeout": {
+    "message": "Transaction timed out without response. Please double check your token balance before trying to send again."
   }
 }

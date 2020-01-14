@@ -16,7 +16,7 @@ async function preparePowerUpDown() {
     $("#powering_down").html(withdrawn + " / " + total_withdrawing + " SP");
     $("#powering_down").attr(
       "title",
-      "Next power down on " + next_vesting_withdrawal
+      chrome.i18n.getMessage("popup_next_powerdown", [next_vesting_withdrawal])
     );
   } else {
     $("#powerdown_div .power")
@@ -26,15 +26,9 @@ async function preparePowerUpDown() {
 
   if (!activeAccount.hasKey("active")) {
     $("#power_up").addClass("disabled");
-    $("#wrap_power_up").attr(
-      "title",
-      "Please add your active key to power up!"
-    );
+    $("#wrap_power_up").attr("title", chrome.i18n.getMessage("popup_pu_key"));
     $("#power_down").addClass("disabled");
-    $("#wrap_power_down").attr(
-      "title",
-      "Please add your active key to power down!"
-    );
+    $("#wrap_power_down").attr("title", chrome.i18n.getMessage("popup_pd_key"));
   } else {
     $("#power_up").removeClass("disabled");
     $("#power_down").removeClass("disabled");
@@ -47,14 +41,14 @@ async function preparePowerUpDown() {
       const amount = parseFloat($("#amt_pu").val()).toFixed(3) + " STEEM";
       $("#power_up").hide();
       $("#powerup_loading").show();
-      activeAccount.powerUp(amount, $("#user_pu").val(), function(err, result) {
+      activeAccount.powerUp(amount, $("#user_pu").val(), (err, result) => {
         console.log(err, result);
         $("#power_up").show();
         $("#powerup_loading").hide();
         if (err) {
-          showError("Something went wrong! Please try again!");
+          showError(chrome.i18n.getMessage("unknown_error"));
         } else {
-          showConfirm("You succesfully powered up!");
+          showConfirm(chrome.i18n.getMessage("popup_pu_success"));
           loadAccount(activeAccount.getName());
         }
       });
@@ -70,11 +64,11 @@ async function preparePowerUpDown() {
         $("#power_down").show();
         $("#powerdown_loading").hide();
         if (err) {
-          showError("Something went wrong! Please try again!");
+          showError(chrome.i18n.getMessage("unknown_error"));
         } else {
           if ($("#amt_pd").val() !== "0")
-            showConfirm("You succesfully started a power down!");
-          else showConfirm("You succesfully stopped the power down!");
+            showConfirm(chrome.i18n.getMessage("popup_pd_success"));
+          else showConfirm(chrome.i18n.getMessage("popup_pd_stop"));
           loadAccount(activeAccount.getName());
         }
       });

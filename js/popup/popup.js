@@ -196,7 +196,6 @@ function initializeMainMenu() {
     }
   );
 }
-//TODO : I stopped there
 // Show Confirmation window before transfer
 $("#send_transfer").click(function() {
   confirmTransfer();
@@ -213,9 +212,9 @@ function confirmTransfer() {
   $("#to_conf_transfer").text("@" + to);
   $("#amt_conf_transfer").text(amount + " " + currency);
   $("#memo_conf_transfer").text(
-    (memo == "" ? "Empty" : memo) +
+    (memo == "" ? chrome.i18n.getMessage("popup_empty") : memo) +
       ((memo != "" && $("#encrypt_memo").prop("checked")) || memo[0] == "#"
-        ? " (encrypted)"
+        ? ` (${chrome.i18n.getMessage("popup_encrypted")})`
         : "")
   );
 }
@@ -265,7 +264,7 @@ function voteFor(name) {
         .eq(0)
         .html()
     );
-    showError("Please enter your active key to vote for witnesses!");
+    showError(chrome.i18n.getMessage("popup_witness_key"));
   }
 }
 
@@ -320,7 +319,7 @@ async function sendTransfer() {
           }
           $(".error_div").hide();
           $(".success_div")
-            .html("Transfer successful!")
+            .html(chrome.i18n.getMessage("popup_transfer_success"))
             .show();
           chrome.storage.local.get({transfer_to: JSON.stringify({})}, function(
             items
@@ -347,13 +346,13 @@ async function sendTransfer() {
           }, 5000);
         } else {
           $(".success_div").hide();
-          showError("Something went wrong! Please try again!");
+          showError(chrome.i18n.getMessage("unknown_error"));
         }
         $("#send_transfer").show();
       }
     );
   } else {
-    showError("Please fill the fields!");
+    showError(chrome.i18n.getMessage("popup_accounts_fill"));
     $("#send_loader").hide();
     $("#send_transfer").show();
   }

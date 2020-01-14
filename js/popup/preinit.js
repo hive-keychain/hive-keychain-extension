@@ -28,8 +28,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
   if (msg.command == "sendBackMk") {
     chrome.storage.local.get(["accounts", "current_rpc"], function(items) {
       rpcs.setOptions(items.current_rpc || "DEFAULT");
-      if (msg.mk == null || msg.mk == undefined) {
-        if (items.accounts == null || items.accounts == undefined) {
+      if (!msg.mk) {
+        if (!items.accounts) {
           showRegister();
         } else {
           showUnlock();

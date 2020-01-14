@@ -17,7 +17,9 @@ function loadRPC(local, current_rpc) {
       return acc + "<option>" + val + "</option>";
     }, "")
   );
-  $("#custom_select_rpc select").append("<option>ADD RPC</option>");
+  $("#custom_select_rpc select").append(
+    `<option>${chrome.i18n.getMessage("popup_rpc_add")}</option>`
+  );
   if (current_rpc === "TESTNET") {
     $("#currency_send select")
       .children("option:first")
@@ -84,7 +86,7 @@ function addNewRPC(rpc) {
       },
       function() {
         $(".success_div")
-          .html("RPC added succesfully!")
+          .html(chrome.i18n.getMessage("popup_rpc_added"))
           .show();
         showCustomRPC();
         setTimeout(function() {
