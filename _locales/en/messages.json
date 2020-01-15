@@ -25,6 +25,24 @@
   "wrong_password": {
     "message": "Wrong password!"
   },
+  "days": {
+    "message": "days"
+  },
+  "day": {
+    "message": "day"
+  },
+  "hours": {
+    "message": "hours"
+  },
+  "hour": {
+    "message": "hour"
+  },
+  "minutes": {
+    "message": "minutes"
+  },
+  "minute": {
+    "message": "minute"
+  },
   "popup_html_register": {
     "message": "Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight. Secure. <br><br> Let's start by creating a Keychain password. You will need this password to access or make changes to your account(s)."
   },
@@ -459,6 +477,9 @@
   "popup_rpc_added": {
     "message": "RPC added succesfully!"
   },
+  "popup_rpc_default": {
+    "message": "DEFAULT"
+  },
   "popup_master_changed": {
     "message": "Your master password was changed succesfully"
   },
@@ -536,5 +557,8 @@
   },
   "popup_success_proxy": {
     "message": "Succesfully chose @$1 for proxy."
+  },
+  "popup_utils_full": {
+    "message": "Already full!"
   }
 }

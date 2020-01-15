@@ -206,7 +206,7 @@ function getTimeBeforeFull(votingPower) {
   // 1% every 72minutes
   var minutesNeeded = remainingPowerToGet * 72;
   if (minutesNeeded === 0) {
-    fullInString = "Already full!";
+    fullInString = chrome.i18n.getMessage("popup_utils_full");
   } else {
     var fullInDays = parseInt(minutesNeeded / 1440);
     var fullInHours = parseInt((minutesNeeded - fullInDays * 1440) / 60);
@@ -217,13 +217,22 @@ function getTimeBeforeFull(votingPower) {
     fullInString =
       (fullInDays === 0
         ? ""
-        : fullInDays + (fullInDays > 1 ? " days " : "day ")) +
+        : fullInDays +
+          (fullInDays > 1
+            ? ` ${chrome.i18n.getMessage("days")} `
+            : ` ${chrome.i18n.getMessage("day")} `)) +
       (fullInHours === 0
         ? ""
-        : fullInHours + (fullInHours > 1 ? " hours " : "hour ")) +
+        : fullInHours +
+          (fullInHours > 1
+            ? ` ${chrome.i18n.getMessage("hours")} `
+            : ` ${chrome.i18n.getMessage("hour")} `)) +
       (fullInMinutes === 0
         ? ""
-        : fullInMinutes + (fullInMinutes > 1 ? " minutes " : "minute"));
+        : fullInMinutes +
+          (fullInMinutes > 1
+            ? ` ${chrome.i18n.getMessage("minutes")} `
+            : ` ${chrome.i18n.getMessage("minute")} `));
   }
   return fullInString;
 }
@@ -379,7 +388,9 @@ function initiateCustomSelect() {
       closeAllSelect(this);
       this.nextSibling.classList.toggle("select-hide");
       this.classList.toggle("select-arrow-active");
-      if (this.innerHTML.includes("Add New Account")) {
+      if (
+        this.innerHTML.includes(chrome.i18n.getMessage("popup_add_account"))
+      ) {
         showAddAccount();
       } else if (
         !getPref &&
@@ -423,7 +434,8 @@ function initiateCustomSelect() {
           .parent()
           .attr("id") == "custom_select_rpc"
       ) {
-        if (this.innerHTML != "ADD RPC") switchRPC(this.innerHTML);
+        if (this.innerHTML !== chrome.i18n.getMessage("popup_rpc_add"))
+          switchRPC(this.innerHTML);
         else {
           showCustomRPC();
           $("#pref_div").hide();
