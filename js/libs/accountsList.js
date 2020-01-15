@@ -37,6 +37,7 @@ class AccountsList {
   }
   clear() {
     chrome.storage.local.clear();
+    this.accounts = {};
   }
   isEmpty() {
     return !this.accounts.list || !this.accounts.list.length;
