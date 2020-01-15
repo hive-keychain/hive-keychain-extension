@@ -524,5 +524,17 @@
   },
   "popup_token_timeout": {
     "message": "Transaction timed out without response. Please double check your token balance before trying to send again."
+  },
+  "popup_proxy": {
+    "message": "PROXY"
+  },
+  "popup_success_wit": {
+    "message": "Succesfully voted for @$1 as a witness."
+  },
+  "popup_success_unvote_wit": {
+    "message": "Succesfully unvoted @$1 as a witness."
+  },
+  "popup_success_proxy": {
+    "message": "Succesfully chose @$1 for proxy."
   }
 }

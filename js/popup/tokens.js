@@ -17,23 +17,18 @@ getTokens().then(function(tok) {
     let html = `<div class='row_existing_tokens'>
     <div class='key_checkbox'>
     <label class='checkbox_container'>
-    <span class='name_token'>
-      ${token.name}</span>`;
+    <span class='name_token'>${token.name}</span>`;
     if (token.url)
       html += `<a target='_blank' href='${token.url}'><img src='../images/link.png' class='img_token'/></a>`;
-    html += `<span class='symbol_token'>
-      ${token.symbol}
-      </span>
+    html += `<span class='symbol_token'>${token.symbol}</span>
     <span class='issuer_token'>${chrome.i18n.getMessage(
       "popup_token_issued_by",
       [token.issuer]
-    )}
-    </span>
-    <div class='supply_token'>${chrome.i18n.getMessage("popup_token_supply")}:
-      ${numberWithCommas(nFormatter(token.supply, 3))}/${numberWithCommas(
+    )}</span><div class='supply_token'>${chrome.i18n.getMessage(
+      "popup_token_supply"
+    )}: ${numberWithCommas(nFormatter(token.supply, 3))}/${numberWithCommas(
       nFormatter(token.maxSupply, 3)
-    )}
-      </div>
+    )}</div>
       <input type='checkbox' checked=true class='check_row_token'/>
       <span class='checkmark'/>
     </label>
@@ -83,16 +78,12 @@ function showTokenBalances() {
     for (token of tokenBalances) {
       $("#tokens_list").append(
         `<div class='row_token_balance'>
-      <span>
-          ${addCommas(token.balance)}
-          </span>
-      <span class='symbol_owned_token'>
-          ${token.symbol}
-          </span>
+      <span>${addCommas(token.balance)}</span>
+      <span class='symbol_owned_token'>${token.symbol}</span>
       <img src='../images/history.png' class='history_token_icon'/>
-      <img src='../images/transfer.png' class='send_token_icon' symbol='
-          ${token.symbol}
-          '/>
+      <img src='../images/transfer.png' class='send_token_icon' symbol='${
+        token.symbol
+      }'/>
       </div>`
       );
     }

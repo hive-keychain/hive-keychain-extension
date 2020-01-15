@@ -385,8 +385,10 @@ function initiateCustomSelect() {
         !getPref &&
         !manageKey &&
         !this.classList.contains("select-arrow-active") &&
-        this.innerHTML != "SBD" &&
-        this.innerHTML != "STEEM"
+        this.innerHTML !== "SBD" &&
+        this.innerHTML !== "STEEM" &&
+        this.innerHTML !== chrome.i18n.getMessage("popup_html_witness_vote") &&
+        this.innerHTML !== chrome.i18n.getMessage("popup_html_chose_proxy")
       ) {
         chrome.storage.local.set({
           last_account: this.innerHTML
