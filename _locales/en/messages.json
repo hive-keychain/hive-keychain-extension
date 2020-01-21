@@ -560,5 +560,218 @@
   },
   "popup_utils_full": {
     "message": "Already full!"
+  },
+  "dialog_ok": {
+    "message": "Ok"
+  },
+  "dialog_unlock": {
+    "message": "Unlock"
+  },
+  "dialog_cancel": {
+    "message": "Cancel"
+  },
+  "dialog_broadcasting": {
+    "message": "Broadcasting transaction to the blockchain..."
+  },
+  "dialog_account": {
+    "message": "Account"
+  },
+  "dialog_proposal_ids": {
+    "message": "Proposal IDs"
+  },
+  "dialog_approve": {
+    "message": "Approve"
+  },
+  "dialog_key": {
+    "message": "Key"
+  },
+  "dialog_author": {
+    "message": "Author"
+  },
+  "dialog_receiver": {
+    "message": "Receiver"
+  },
+  "dialog_auth_account": {
+    "message": "Authorized Account"
+  },
+  "dialog_role": {
+    "message": "Role"
+  },
+  "dialog_permlink": {
+    "message": "Permlink"
+  },
+  "dialog_weight": {
+    "message": "Weight"
+  },
+  "dialog_data": {
+    "message": "Data <span class='small'>(click to show)</span>"
+  },
+  "dialog_to": {
+    "message": "To"
+  },
+  "dialog_amount": {
+    "message": "Amount"
+  },
+  "dialog_balance": {
+    "message": "Balance"
+  },
+  "dialog_future_balance": {
+    "message": "Future balance"
+  },
+  "dialog_daily_pay": {
+    "message": "Daily Pay"
+  },
+  "dialog_memo": {
+    "message": "Memo"
+  },
+  "dialog_title": {
+    "message": "Title"
+  },
+  "dialog_body": {
+    "message": "Body <span class='small'>(click to show)</span>"
+  },
+  "dialog_period": {
+    "message": "Period"
+  },
+  "dialog_extensions": {
+    "message": "Extensions"
+  },
+  "dialog_meta": {
+    "message": "JSON Metadata"
+  },
+  "dialog_pu": {
+    "message": "Parent Username"
+  },
+  "dialog_pp": {
+    "message": "Parent Permlink"
+  },
+  "dialog_options": {
+    "message": "Options <span class='small'>(click to show)</span>"
+  },
+  "dialog_max_payout": {
+    "message": "Max Accepted Payout : "
+  },
+  "dialog_percentage_sbd": {
+    "message": "Percentage SBD : "
+  },
+  "dialog_allow_votes": {
+    "message": "Allow votes : "
+  },
+  "dialog_allow_curation": {
+    "message": "Allow curation : "
+  },
+  "dialog_beneficiaries": {
+    "message": "Beneficiaries : "
+  },
+  "dialog_delegatee": {
+    "message": "Delegatee"
+  },
+  "dialog_message": {
+    "message": "Message"
+  },
+  "dialog_witness": {
+    "message": "Witness"
+  },
+  "dialog_vote": {
+    "message": "Vote"
+  },
+  "dialog_confirm": {
+    "message": "Confirm"
+  },
+  "dialog_body_toggle": {
+    "message": "Body <span class='small'>(click to show)</span>"
+  },
+  "dialog_options_toggle": {
+    "message": "Options <span class='small'>(click to show)</span>"
+  },
+  "dialog_data_toggle": {
+    "message": "Data <span class='small'>(click to show)</span>"
+  },
+  "dialog_header_unlock": {
+    "message": "Unlock Keychain"
+  },
+  "dialog_header_error": {
+    "message": "Error"
+  },
+  "dialog_header_success": {
+    "message": "Success"
+  },
+  "dialog_header_wrong_pwd": {
+    "message": "Wrong password!"
+  },
+  "dialog_header_broadcasting": {
+    "message": "Broadcasting"
+  },
+  "dialog_title_custom": {
+    "message": "Custom Transaction"
+  },
+  "dialog_title_decode": {
+    "message": "Verify Key"
+  },
+  "dialog_title_sign": {
+    "message": "Sign Message"
+  },
+  "dialog_title_add_auth": {
+    "message": "Add Authority"
+  },
+  "dialog_title_remove_auth": {
+    "message": "Remove Authority"
+  },
+  "dialog_title_broadcast": {
+    "message": "Broadcast"
+  },
+  "dialog_title_call": {
+    "message": "Signed Call"
+  },
+  "dialog_title_post": {
+    "message": "Post"
+  },
+  "dialog_title_vote": {
+    "message": "Vote"
+  },
+  "dialog_title_transfer": {
+    "message": "Transfer"
+  },
+  "dialog_title_delegation": {
+    "message": "Delegation"
+  },
+  "dialog_title_wit": {
+    "message": "Witness Vote"
+  },
+  "dialog_title_token": {
+    "message": "Send Tokens"
+  },
+  "dialog_title_powerup": {
+    "message": "Power Up"
+  },
+  "dialog_title_powerdown": {
+    "message": "Power Down"
+  },
+  "dialog_title_create_account": {
+    "message": "Create Claimed Account"
+  },
+  "dialog_title_create_proposal": {
+    "message": "Create Worker Proposal"
+  },
+  "dialog_title_remove_proposal": {
+    "message": "Remove Worker Proposal"
+  },
+  "dialog_title_vote_proposal": {
+    "message": "Vote for Proposal"
+  },
+  "dialog_no_prompt_verify": {
+    "message": "Do not prompt again to verify keys for the @$1 account on $2"
+  },
+  "dialog_no_prompt": {
+    "message": "Do not prompt again to send $1 transactions from the @$2 account on $3"
+  },
+  "dialog_desc_verify": {
+    "message": "The website $1 would like to verify that you have access to the private $2 key for the account: @$3"
+  },
+  "dialog_desc_sign": {
+    "message": "The website $1 would like to sign a messag eusing the $2 key for the account: @$3"
+  },
+  "dialog_expand": {
+    "message": "...(click to expand)"
   }
 }
