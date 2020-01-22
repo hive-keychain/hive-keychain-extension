@@ -69,8 +69,8 @@ const performTransaction = async (data, tab, no_confirm) => {
     sendErrors(
       tab,
       e,
-      "An unknown error has occurred.",
-      "An unknown error has occurred.",
+      chrome.i18n.getMessage("unknown_error"),
+      chrome.i18n.getMessage("unknown_error"),
       data
     );
   } finally {
@@ -102,6 +102,7 @@ const createMessage = (err, result, data, success_message, fail_message) => {
 const beautifyErrorMessage = err => {
   if (!err) return null;
   let error = err.message.split("xception:")[1].replace(".rethrow", ".");
-  if (error.replace(" ", "") === "") error = "An unknown error has occured.";
+  if (error.replace(" ", "") === "")
+    error = chrome.i18n.getMessage("unknown_error");
   return error;
 };

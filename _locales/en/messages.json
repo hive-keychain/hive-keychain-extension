@@ -773,5 +773,29 @@
   },
   "dialog_expand": {
     "message": "...(click to expand)"
+  },
+  "bgd_init_no_wallet": {
+    "message": "No wallet!"
+  },
+  "bgd_lifecycle_request_canceled": {
+    "message": "Request was canceled by the user."
+  },
+  "bgd_context_transfer_user": {
+    "message": "Transfer STEEM/SBD to %s"
+  },
+  "bgd_context_memo_user": {
+    "message": "Send a MEMO message to @%s"
+  },
+  "bgd_context_tip_user": {
+    "message": "Tip @%s"
+  },
+  "bgd_context_transfer_author": {
+    "message": "Transfer STEEM/SBD to this author"
+  },
+  "bgd_context_memo_author": {
+    "message": "Send a MEMO message to this author"
+  },
+  "bgd_context_tip_author": {
+    "message": "Tip this author"
   }
 }

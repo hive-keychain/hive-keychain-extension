@@ -27,7 +27,13 @@ const checkBeforeCreate = (request, tab, domain) => {
         // Check user
         if (!items.accounts) {
           createPopup(() => {
-            sendErrors(tab, "no_wallet", "No wallet!", "", request);
+            sendErrors(
+              tab,
+              "no_wallet",
+              chrome.i18n.getMessage("bgd_init_no_wallet"),
+              "",
+              request
+            );
           });
         } else {
           // Check that user and wanted keys are in the wallet
