@@ -10,12 +10,17 @@ const broadcastAddAccountAuthority = data => {
       },
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          chrome.i18n.getMessage("bgd_ops_add_auth", [
+            data.role.toLowerCase(),
+            data.authorizedUsername,
+            data.username
+          ]),
+          err_message
         );
         resolve(message);
       }
@@ -34,12 +39,17 @@ const broadcastRemoveAccountAuthority = data => {
       },
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          chrome.i18n.getMessage("bgd_ops_remove_auth", [
+            data.role.toLowerCase(),
+            data.authorizedUsername,
+            data.username
+          ]),
+          err_message
         );
         resolve(message);
       }

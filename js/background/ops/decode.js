@@ -11,8 +11,8 @@ const decodeMessage = data => {
       error,
       decoded,
       data,
-      "Memo decoded succesfully",
-      "Could not verify key."
+      chrome.i18n.getMessage("bgd_ops_decode"),
+      chrome.i18n.getMessage("bgd_ops_decode_err")
     );
   }
 };

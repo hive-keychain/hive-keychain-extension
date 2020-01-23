@@ -4,7 +4,7 @@ const broadcastPowerUp = data => {
       key,
       data.username,
       data.recipient,
-      data.steem + " STEEM",
+      `${data.steem} STEEM`,
       (err, result) => {
         console.log(result, err);
         const err_message = beautifyErrorMessage(err);
@@ -12,7 +12,7 @@ const broadcastPowerUp = data => {
           err,
           result,
           data,
-          `Powered up ${data.steem} STEEM on @${data.recipient}`,
+          chrome.i18n.getMessage("bgd_ops_pu", [data.steem, data.recipient]),
           err_message
         );
         resolve(message);
@@ -42,9 +42,12 @@ const broadcastPowerDown = data => {
             err,
             result,
             data,
-            vestingShares == 0
-              ? `Stopped Power Down on @${data.username}`
-              : `Started a ${data.steem_power} SP Power Down on @${data.username}`,
+            parseFloat(data.steem_power) == 0
+              ? chrome.i18n.getMessage("bgd_ops_pd_stop", [data.username])
+              : chrome.i18n.getMessage("bgd_ops_pd", [
+                  data.steem_power,
+                  data.username
+                ]),
             err_message
           );
           resolve(message);

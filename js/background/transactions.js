@@ -103,6 +103,6 @@ const beautifyErrorMessage = err => {
   if (!err) return null;
   let error = err.message.split("xception:")[1].replace(".rethrow", ".");
   if (error.replace(" ", "") === "")
-    error = chrome.i18n.getMessage("unknown_error");
-  return error;
+    return chrome.i18n.getMessage("unknown_error");
+  return `${chrome.i18n.getMessage("bgd_ops_error")} : ${error}`;
 };

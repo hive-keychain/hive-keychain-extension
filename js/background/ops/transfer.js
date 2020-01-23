@@ -25,14 +25,21 @@ const broadcastTransfer = data => {
           console.log(err.data.stack[0].context.method);
           switch (err.data.stack[0].context.method) {
             case "adjust_balance":
-              err_message = `Insufficient ${data.currency} balance on account @${data.username}.`;
+              err_message = chrome.i18n.getMessage(
+                "bgd_ops_transfer_adjust_balance",
+                [data.currency]
+              );
               break;
             case "get_account":
-              err_message = `Cannot find account @${data.to}.`;
+              err_message = chrome.i18n.getMessage(
+                "bgd_ops_transfer_get_account",
+                [data.to]
+              );
               break;
             default:
-              err_message =
-                "There was an error broadcasting this transaction, please try again.";
+              err_message = chrome.i18n.getMessage(
+                "bgd_ops_error_broadcasting"
+              );
               break;
           }
         }
@@ -40,7 +47,12 @@ const broadcastTransfer = data => {
           err,
           result,
           data,
-          `Successfully transfered ${data.amount} ${data.currency} from @${data.username} to @${data.to}.`,
+          chrome.i18n.getMessage("bgd_ops_transfer_success", [
+            data.amount,
+            data.currency,
+            data.username,
+            data.to
+          ]),
           err_message
         );
         resolve(message);

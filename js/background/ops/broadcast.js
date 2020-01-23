@@ -11,12 +11,14 @@ const broadcastData = data => {
       broadcastKeys,
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
+
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          chrome.i18n.getMessage("bgd_ops_broadcast"),
+          err_message
         );
         resolve(message);
       }

@@ -23,8 +23,8 @@ const broadcastSendToken = data => {
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully. Please check your balance to confirm that it was processed succesfully.",
-          "There was an error broadcasting this transaction, please try again."
+          chrome.i18n.getMessage("bgd_ops_tokens"),
+          chrome.i18n.getMessage("bgd_ops_error_broadcasting")
         );
         resolve(message);
       }

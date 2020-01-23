@@ -797,5 +797,110 @@
   },
   "bgd_context_tip_author": {
     "message": "Tip this author"
+  },
+  "bgd_auth_locked": {
+    "message": "The wallet is locked!"
+  },
+  "bgd_auth_locked_desc": {
+    "message": "The current website is trying to send a request to the Steem Keychain browser extension. Please enter your password below to unlock the wallet and continue."
+  },
+  "bgd_auth_canceled": {
+    "message": "Request was canceled by the user."
+  },
+  "bgd_auth_transfer_no_active": {
+    "message": "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @$1 using the active key, which has not been added to the wallet."
+  },
+  "bgd_auth_transfer_no_memo": {
+    "message": "The current website is trying to send a request to the Steem Keychain browser extension for account @$1 using the memo key, which has not been added to the wallet."
+  },
+  "bgd_auth_no_account": {
+    "message": "The current website is trying to send a request to the Steem Keychain browser extension for account @$1 which has not been added to the wallet."
+  },
+  "bgd_auth_no_key": {
+    "message": "The current website is trying to send a request to the Steem Keychain browser extension for account @$1 using the $2 key, which has not been added to the wallet."
+  },
+  "bgd_ops_witness_voted": {
+    "message": "Successfully voted @$1 for witness."
+  },
+  "bgd_ops_witness_unvoted": {
+    "message": "Successfully unvoted @$1 for witness."
+  },
+  "bgd_ops_vote": {
+    "message": "Successfully voted for @$1's post $2 at $3%."
+  },
+  "bgd_ops_transfer_adjust_balance": {
+    "message": "Insufficient $1 balance on account @$2."
+  },
+  "bgd_ops_transfer_get_account": {
+    "message": "Cannot find account @$1."
+  },
+  "bgd_ops_error_broadcasting": {
+    "message": "There was an error broadcasting this transaction, please try again."
+  },
+  "bgd_ops_error": {
+    "message": "There was an error broadcasting this transaction:"
+  },
+  "bgd_ops_transfer_success": {
+    "message": "Successfully transfered $1 $2 from @$3 to @$4."
+  },
+  "bgd_ops_tokens": {
+    "message": "The transaction has been broadcasted successfully. Please check your balance to confirm that it was processed succesfully."
+  },
+  "bgd_ops_signed_call": {
+    "message": "Success!"
+  },
+  "bgd_ops_sign_success": {
+    "message": "Message signed succesfully."
+  },
+  "bgd_ops_sign_error": {
+    "message": "Could not sign."
+  },
+  "bgd_ops_proposal_create": {
+    "message": "Successfully created a new proposal."
+  },
+  "bgd_ops_proposal_remove": {
+    "message": "Successfully removed proposal #$1."
+  },
+  "bgd_ops_proposal_vote": {
+    "message": "Successfully voted for proposal #$1."
+  },
+  "bgd_ops_proposal_unvote": {
+    "message": "Successfully unvoted proposal #$1."
+  },
+  "bgd_ops_pu": {
+    "message": "Powered up $1 STEEM on @$2."
+  },
+  "bgd_ops_pd": {
+    "message": "Started a $1 SP power down on @$2."
+  },
+  "bgd_ops_pd_stop": {
+    "message": "Stopped Power Down on @$1."
+  },
+  "bgd_ops_post": {
+    "message": "The post was submitted succesfully."
+  },
+  "bgd_ops_undelegate": {
+    "message": "Succesfully stopped the delegation to @$1 from account @$2."
+  },
+  "bgd_ops_delegate": {
+    "message": "Succesfully delegated $1 SP from @$3 to @$2."
+  },
+  "bgd_ops_decode": {
+    "message": "Memo decoded succesfully."
+  },
+  "bgd_ops_decode_err": {
+    "message": "Could not verify key."
+  },
+  "bgd_ops_broadcast": {
+    "message": "The transaction has been broadcasted successfully."
+  },
+  "bgd_ops_create_account": {
+    "message": "Succesfully created account @$1."
+  },
+  "bgd_ops_add_auth": {
+    "message": "Succesfully gave $1 authority to @$2 on account @$3."
+  },
+  "bgd_ops_remove_auth": {
+    "message": "Succesfully removed $1 authority from @$2 on account @$3."
   }
 }

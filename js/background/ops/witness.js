@@ -12,9 +12,9 @@ const broadcastWitnessVote = data => {
           err,
           result,
           data,
-          `Successfully ${!data.vote ? "un" : ""}voted @${
-            data.witness
-          } for witness`,
+          data.vote
+            ? chrome.i18n.getMessage("bgd_ops_witness_voted", [data.witness])
+            : chrome.i18n.getMessage("bgd_ops_witness_unvoted", [data.witness]),
           err_message
         );
         resolve(message);

@@ -366,8 +366,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     $("#tx_loading").hide();
     $("#dialog_header").text(
       msg.msg.success == true
-        ? `${chrome.i18n.getMessage("dialog_header_success")}!`
-        : `${chrome.i18n.getMessage("dialog_header_error")}!`
+        ? `${chrome.i18n.getMessage("dialog_header_success")} !`
+        : `${chrome.i18n.getMessage("dialog_header_error")} !`
     );
     $("#error_dialog").text(msg.msg.message);
     $(".modal-body-error").show();

@@ -14,12 +14,13 @@ const broadcastPost = data => {
         data.json_metadata,
         (err, result) => {
           console.log(result, err);
+          const err_message = beautifyErrorMessage(err);
           const message = createMessage(
             err,
             result,
             data,
-            "The transaction has been broadcasted successfully.",
-            "There was an error broadcasting this transaction, please try again."
+            chrome.i18n.getMessage("bgd_ops_post"),
+            err_message
           );
           resolve(message);
         }
@@ -50,12 +51,14 @@ const broadcastPost = data => {
         },
         (err, result) => {
           console.log(result, err);
+          const err_message = beautifyErrorMessage(err);
+
           const message = createMessage(
             err,
             result,
             data,
-            "The transaction has been broadcasted successfully.",
-            "There was an error broadcasting this transaction, please try again."
+            chrome.i18n.getMessage("bgd_ops_post"),
+            err_message
           );
           resolve(message);
         }
