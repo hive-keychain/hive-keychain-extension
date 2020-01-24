@@ -113,8 +113,7 @@
     "message": "Wallet History"
   },
   "popup_html_setup_text": {
-    "message": "Enter your Steem account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.
-        <br/><br/> You may add / remove Steem accounts or keys at any time. If you need to create a new Steem account, you can do so at <a href=\"https://signup.steemit.com/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">https://signup.steemit.com/</a>."
+    "message": "Enter your Steem account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.<br/><br/> You may add / remove Steem accounts or keys at any time. If you need to create a new Steem account, you can do so at <a href=\"https://signup.steemit.com/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">https://signup.steemit.com/</a>."
   },
   "popup_html_setup": {
     "message": "Setup"
