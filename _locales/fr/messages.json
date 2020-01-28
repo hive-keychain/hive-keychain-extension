@@ -7,7 +7,905 @@
     "message": "Portefeuille sécurisé pour Steem.",
     "description": "Extension description, as shown in the store."
   },
+  "transaction_error": {
+    "message": "La transaction a échoué"
+  },
+  "memo": {
+    "message": "memo"
+  },
+  "posting": {
+    "message": "publication"
+  },
+  "active": {
+    "message": "active"
+  },
+  "unknown_error": {
+    "message": "Petit problème! Veuillez réessayer!"
+  },
+  "wrong_password": {
+    "message": "Mot de passe incorrect!"
+  },
+  "days": {
+    "message": "jours"
+  },
+  "day": {
+    "message": "jour"
+  },
+  "hours": {
+    "message": "heures"
+  },
+  "hour": {
+    "message": "heure"
+  },
+  "minutes": {
+    "message": "minutes"
+  },
+  "minute": {
+    "message": "minute"
+  },
+  "popup_html_register": {
+    "message": "Steem Keychain est le meilleur moyen d'accéder à vos comptes STEEM. Simple. Léger. Sécurisé. <br><br> Commençons par créer un mot de passe pour Keychain. Vous aurez besoin de ce mot de passe pour accéder ou apporter des modifications à votre/vos compte(s)."
+  },
+  "popup_html_unlock": {
+    "message": "C'est le meilleur moyen d'accéder à vos comptes Steem. Simple. Léger. Sécurisé.<br/><br/>Profitez de votre expérience Steem."
+  },
+  "popup_html_new_password": {
+    "message": "Nouveau mot de passe"
+  },
+  "popup_html_confirm": {
+    "message": "Confirmer"
+  },
+  "popup_html_submit": {
+    "message": "Valider"
+  },
+  "popup_html_password": {
+    "message": "Mot de passe"
+  },
+  "popup_html_signin": {
+    "message": "Connexion"
+  },
+  "popup_html_forgot": {
+    "message": "Mot de passe oublié ?"
+  },
+  "popup_html_reset": {
+    "message": "Réinitialiser le compte"
+  },
+  "popup_html_reset_desc": {
+    "message": "Si vous avez oublié votre mot de passe, vous pouvez effacer vos données mais vous devrez saisir toutes vos clés à nouveau."
+  },
+  "popup_html_vm": {
+    "message": "Mana de vote"
+  },
+  "popup_html_rc": {
+    "message": "Crédits ressource"
+  },
+  "popup_html_send": {
+    "message": "Envoyer $1"
+  },
+  "popup_html_pu": {
+    "message": "Power Up"
+  },
+  "popup_html_pd": {
+    "message": "Power Down"
+  },
+  "popup_html_delegate": {
+    "message": "Déléguer"
+  },
+  "popup_html_estimation": {
+    "message": "Valeur estimée du compte"
+  },
+  "popup_html_history": {
+    "message": "Historique"
+  },
+  "popup_html_tokens": {
+    "message": "Tokens"
+  },
   "popup_html_witness": {
     "message": "Témoins"
+  },
+  "popup_html_estimation_info": {
+    "message": "valeur du compte"
+  },
+  "popup_html_estimation_info_text": {
+    "message": "La valeur estimée du compte est un arrondi de ce que vos fonds valent en USD.<br><br>            Veuillez noter que la valeur ne prend pas en compte les trades latents sur le marché, les virements ou transactions."
+  },
+  "popup_html_wallet_history": {
+    "message": "Historique du portefeuille"
+  },
+  "popup_html_setup_text": {
+    "message": "Entrez ci-dessous le nom de votre compte Steem et le mot de passe principal ou la clé privée active ou de publication pour le compte. Votre mot de passe principal ne sera PAS sauvegardé et ne sera utilisé que pour générer vos clés privées.<br/><br/> Vous pouvez ajouter/supprimer des comptes Steem ou des clés à tout moment. Si vous devez créer un nouveau compte Steem, vous pouvez le faire sur <a href=\"https://signup.steemit.com/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">https://signup.steemit.com/</a>."
+  },
+  "popup_html_setup": {
+    "message": "Paramètres"
+  },
+  "popup_html_private_key": {
+    "message": "Clé privée"
+  },
+  "popup_html_username": {
+    "message": "Identifiant"
+  },
+  "popup_html_import_keys": {
+    "message": "Importer les clés"
+  },
+  "popup_html_import_key": {
+    "message": "Importer la clé"
+  },
+  "popup_html_import_success": {
+    "message": "Importation réussie! <br><br>Veuillez sélectionner les clés que vous souhaitez stocker sur Steem Keychain :"
+  },
+  "popup_html_posting": {
+    "message": "Clé de Publication"
+  },
+  "popup_html_active": {
+    "message": "Clé Active"
+  },
+  "popup_html_memo": {
+    "message": "Clé Mémo"
+  },
+  "popup_html_posting_info": {
+    "message": "Pour poster et voter"
+  },
+  "popup_html_active_info": {
+    "message": "Pour effectuer des transferts et des trades"
+  },
+  "popup_html_memo_info": {
+    "message": "Pour l'envoi et la lecture des mémos"
+  },
+  "popup_html_save": {
+    "message": "Enregistrer"
+  },
+  "popup_html_settings": {
+    "message": "Paramètres"
+  },
+  "popup_html_add_account": {
+    "message": "Ajouter un compte"
+  },
+  "popup_html_manage_accounts": {
+    "message": "Gestion des comptes"
+  },
+  "popup_html_change_password": {
+    "message": "Changer le mot de passe"
+  },
+  "popup_html_pref": {
+    "message": "Préférences"
+  },
+  "popup_html_autolock": {
+    "message": "Verouillage automatique"
+  },
+  "popup_html_keychainify": {
+    "message": "Keychainify"
+  },
+  "popup_html_about": {
+    "message": "À propos de Steem Keychain"
+  },
+  "popup_html_clear": {
+    "message": "Effacer les données"
+  },
+  "popup_html_al_default_title": {
+    "message": "Classique"
+  },
+  "popup_html_al_default_info": {
+    "message": "Verrouillez Keychain manuellement ou lorsque le navigateur est fermé."
+  },
+  "popup_html_al_locked_title": {
+    "message": "Verrouillage"
+  },
+  "popup_html_al_locked_info": {
+    "message": "Verrouillage automatique de Keychain lorsque l'appareil est verrouillé."
+  },
+  "popup_html_al_idle_title": {
+    "message": "Verrouillage en veille"
+  },
+  "popup_html_al_idle_info": {
+    "message": "Verrouiller automatiquement Keychain lorsque le navigateur est inactif durant le temps spécifié."
+  },
+  "popup_html_keychainify_text": {
+    "message": "Cette fonctionnalité vous permet de déclencher une opération de Steem Keychain en cliquant sur un lien d'une page Web ou en accédant directement à l'URL dans un onglet du navigateur."
+  },
+  "popup_html_enable_keychainify_title": {
+    "message": "Activer Keychainify"
+  },
+  "popup_html_enable_keychainify_info": {
+    "message": "Actuellement, seules les URL de transfert Steem Connect sont supportées."
+  },
+  "popup_html_about_text": {
+    "message": "L'idée et le concept de l'extension Steem Keychain ont été créés par <a href=\"https://steemit.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> qui est un développeur et témoin sur Steem. Il a été principalement développé par <a href=\"https://steemit.com/@stoodkev\" target=\"_blank\">@stoodkev</a> qui est également un développeur Steem (SteemPlus) et un témoin. La conception et le développement ont été financés par @aggroed (un témoin du top 20 Steem) et @yabapmatt grâce à leur entreprise commune Steem Monsters, qui est un jeu de cartes à collectionner construit sur la blockchain Steem. Jetez-y un coup d’œil sur <a href=\"https://steemmonsters.com\" target=\"_blank\">steemmonsters.com</a>!"
+  },
+  "popup_html_remove": {
+    "message": "Supprimer"
+  },
+  "popup_html_delete_account": {
+    "message": "SUPPRIMER CE COMPTE"
+  },
+  "popup_html_select_rpc": {
+    "message": "Sélectionnez un nœud RPC"
+  },
+  "popup_html_notif_pref": {
+    "message": "Préférences des notifications"
+  },
+  "popup_html_pref_info": {
+    "message": "Mettez à jour les sites Web et les types de transaction pour lesquels vous avez choisi de ne pas recevoir de message de confirmation."
+  },
+  "popup_html_no_pref": {
+    "message": "Pas de préférences"
+  },
+  "popup_html_add_rpc": {
+    "message": "Ajouter un RPC"
+  },
+  "popup_html_add_rpc_text": {
+    "message": "Ajoutez votre nœud RPC ici:"
+  },
+  "popup_html_rpc_node": {
+    "message": "Nœud RPC"
+  },
+  "popup_html_add_key": {
+    "message": "Ajouter une clé"
+  },
+  "popup_html_add_key_text": {
+    "message": "Ajoutez la clé privée <span></span> à votre compte. Vous pouvez également l'ajouter en entrant votre clé principale."
+  },
+  "popup_html_copied": {
+    "message": "Clé copiée dans le presse-papier !"
+  },
+  "popup_html_change_password_text": {
+    "message": "Entrez votre ancien mot de passe pour confirmation, puis choisissez en un nouveau."
+  },
+  "popup_html_old_password": {
+    "message": "Ancien mot de passe"
+  },
+  "popup_html_transfer_funds": {
+    "message": "Transférer des fonds"
+  },
+  "popup_html_balance": {
+    "message": "Solde $1"
+  },
+  "popup_html_loading": {
+    "message": "Chargement..."
+  },
+  "popup_html_memo_optional": {
+    "message": "MEMO (facultatif)"
+  },
+  "popup_html_encrypt_memo": {
+    "message": "Chiffrer le Mémo"
+  },
+  "popup_html_add_active": {
+    "message": "Veuillez ajouter une clé active pour transférer des STEEM ou des SBD."
+  },
+  "popup_html_transfer": {
+    "message": "Transfert"
+  },
+  "popup_html_transfer_confirm_text": {
+    "message": "Veuillez confirmer votre transfert.<br>Vous ne pourrez pas faire machine arrière."
+  },
+  "popup_html_transfer_from": {
+    "message": "De"
+  },
+  "popup_html_transfer_to": {
+    "message": "Vers"
+  },
+  "popup_html_transfer_amount": {
+    "message": "Montant"
+  },
+  "popup_html_transfer_memo": {
+    "message": "Mémo"
+  },
+  "popup_html_not_now": {
+    "message": "Plus tard"
+  },
+  "popup_html_redeem": {
+    "message": "Réclamer"
+  },
+  "popup_html_witness_title": {
+    "message": "Votes de Témoins"
+  },
+  "popup_html_witness_disclaimer": {
+    "message": "Vous pouvez voter pour un maximum de 30 témoins."
+  },
+  "popup_html_witness_remaining": {
+    "message": "Votes restants : <span>30</span>"
+  },
+  "popup_html_witness_voted": {
+    "message": "Votés"
+  },
+  "popup_html_witness_top": {
+    "message": "Top 100"
+  },
+  "popup_html_witness_add": {
+    "message": "Ajouter"
+  },
+  "popup_html_proxy_desc": {
+    "message": "Vous pouvez entrer un nom de compte manuellement pour le choisir en tant que témoin ou proxy."
+  },
+  "popup_html_witness_vote": {
+    "message": "Voter comme témoin"
+  },
+  "popup_html_chose_proxy": {
+    "message": "Choisir pour proxy"
+  },
+  "popup_html_tokens_available": {
+    "message": "Tokens disponibles"
+  },
+  "popup_html_tokens_settings_text": {
+    "message": "Afficher les informations des token et choisir lesquels afficher. En savoir plus sur les tokens personnalisés Steem sur<a href=\"https://steem-engine.com\" target=\"_blank\">https://steem-engine.com</a>."
+  },
+  "popup_html_available": {
+    "message": "Disponible"
+  },
+  "popup_html_tokens_send_text": {
+    "message": "L'envoi de vos jetons peut prendre jusqu'à 30 secondes à confirmer, merci de patienter."
+  },
+  "popup_html_recipient": {
+    "message": "Destinataire"
+  },
+  "popup_html_token_confirm_text": {
+    "message": "Veuillez confirmer votre transfert.<br>Vous ne pourrez pas faire machine arrière."
+  },
+  "popup_html_current": {
+    "message": "Solde Actuel"
+  },
+  "popup_html_powerup_text": {
+    "message": "Power Up STEEM pour le transformer en Steem Power."
+  },
+  "popup_html_powerdown_text": {
+    "message": "Power Down Steem Power pour obtenir du STEEM liquides. L'intégralité du Power Down prendra 13 semaines."
+  },
+  "popup_html_powering_down": {
+    "message": "Power Down en cours"
+  },
+  "popup_html_delegations": {
+    "message": "Délégations"
+  },
+  "popup_html_delegations_text": {
+    "message": "Vous pouvez déléguer votre Steem Power (SP) à un autre utilisateur. Cliquez sur le montant Délégué pour consulter vos délégations ou apporter des modifications."
+  },
+  "popup_html_incoming": {
+    "message": "$1 Entrants"
+  },
+  "popup_html_outgoing": {
+    "message": "$1 Sortants"
+  },
+  "popup_html_delegate_to_user": {
+    "message": "Déléguer à l'utilisateur"
+  },
+  "popup_html_total_outgoing": {
+    "message": "Total Délégué"
+  },
+  "popup_html_total_incoming": {
+    "message": "Total Reçu"
+  },
+  "popup_html_edit_delegations": {
+    "message": "Modifier la délégation"
+  },
+  "popup_html_edit_delegations_text": {
+    "message": "Vous êtes en train de modifier le montant délégué à cet utilisateur. Modifiez le montant et enregistrez votre modification."
+  },
+  "popup_html_support": {
+    "message": "Cliquez ici pour soutenir le développement de Steem Keychain en votant les créateurs pour témoins !"
+  },
+  "popup_accounts_reveal_private": {
+    "message": "Cliquez pour afficher la clé privée"
+  },
+  "popup_accounts_no_bittrex": {
+    "message": "Bittrex est inaccessible"
+  },
+  "popup_accounts_add_memo": {
+    "message": "Ajoutez votre clé de mémo privée pour lire ce mémo"
+  },
+  "popup_accounts_no_recent_transfers": {
+    "message": "Aucun transfert récent"
+  },
+  "popup_accounts_already_registered": {
+    "message": "Vous avez déjà enregistré un compte pour @$1!"
+  },
+  "popup_accounts_incorrect_key": {
+    "message": "Clé privée ou mot de passe incorrect."
+  },
+  "popup_accounts_incorrect_user": {
+    "message": "Veuillez vérifier le nom d'utilisateur et réessayer."
+  },
+  "popup_accounts_fill": {
+    "message": "Veuillez remplir les champs."
+  },
+  "popup_accounts_already_have_key": {
+    "message": "Vous avez déjà entré votre clé $1!"
+  },
+  "popup_accounts_not_your_key": {
+    "message": "Ce n'est pas votre clé $1 !"
+  },
+  "popup_accounts_not_wif": {
+    "message": "Ce n'est pas une clé privée!"
+  },
+  "popup_accounts_try_again": {
+    "message": "Veuillez réessayer plus tard!"
+  },
+  "popup_accounts_err_claim": {
+    "message": "Vous devez entrer dans votre clé privée pour réclamer vos gains!"
+  },
+  "popup_delegate_key": {
+    "message": "Veuillez ajouter votre clé active pour pouvoir déléguer du SP !"
+  },
+  "popup_delegate_success": {
+    "message": "Votre délégation a réussi!"
+  },
+  "popup_delegate_change_success": {
+    "message": "Le changement de votre délégation a réussi!"
+  },
+  "popup_password_mismatch": {
+    "message": "Vos mots de passe ne correspondent pas!"
+  },
+  "popup_password_regex": {
+    "message": "Votre mot de passe doit comporter au moins 8 caractères et inclure une lettre minuscule, une lettre majuscule et un chiffre ou faire au moins 16 caractères sans restriction."
+  },
+  "popup_add_account": {
+    "message": "Ajouter un nouveau compte"
+  },
+  "popup_empty": {
+    "message": "Vide"
+  },
+  "popup_encrypted": {
+    "message": "chiffré"
+  },
+  "popup_witness_key": {
+    "message": "Veuillez ajouter votre clé active pour voter pour les témoins !"
+  },
+  "popup_transfer_success": {
+    "message": "Transfert réussi!"
+  },
+  "popup_next_powerdown": {
+    "message": "Prochain power down le $1"
+  },
+  "popup_pu_key": {
+    "message": "Veuillez ajouter votre clé active pour Power Up !"
+  },
+  "popup_pd_key": {
+    "message": "Veuillez ajouter votre clé active pour Power Down!"
+  },
+  "popup_pu_success": {
+    "message": "Vous avez Power Up avec succès !"
+  },
+  "popup_pd_success": {
+    "message": "Vous avez démarré un Power Down avec succès!"
+  },
+  "popup_pd_stop": {
+    "message": "Vous avez arrêté votre Power Down!"
+  },
+  "popup_rpc_add": {
+    "message": "AJOUTER RPC",
+    "description": "RPC stands for rpc node"
+  },
+  "popup_rpc_added": {
+    "message": "RPC ajouté avec succès!"
+  },
+  "popup_rpc_default": {
+    "message": "DÉFAUT"
+  },
+  "popup_master_changed": {
+    "message": "Votre mot de passe a été modifié avec succès"
+  },
+  "popup_pwd_stronger": {
+    "message": "Veuillez utiliser un mot de passe plus solide!"
+  },
+  "popup_pwd_match": {
+    "message": "Les nouveaux mots de passe ne correspondent pas !"
+  },
+  "popup_wrong_current_pwd": {
+    "message": "Mot de passe actuel incorrect"
+  },
+  "popup_website": {
+    "message": "Site Web"
+  },
+  "popup_broadcast": {
+    "message": "Envoi"
+  },
+  "popup_add_auth": {
+    "message": "Ajouter une autorité"
+  },
+  "popup_remove_auth": {
+    "message": "Supprimer une autorité"
+  },
+  "popup_custom": {
+    "message": "Transaction perso."
+  },
+  "popup_decode": {
+    "message": "Vérifier la clé"
+  },
+  "popup_sign_buffer": {
+    "message": "Signer"
+  },
+  "popup_signed_call": {
+    "message": "Appel Signé"
+  },
+  "popup_post": {
+    "message": "Poster"
+  },
+  "popup_vote": {
+    "message": "Vote"
+  },
+  "popup_token_issued_by": {
+    "message": "par @$1"
+  },
+  "popup_token_supply": {
+    "message": "Provisions"
+  },
+  "popup_view_tokens_balance": {
+    "message": "Visualisez vos soldes de tokens personnalisés. Vous pouvez masquer certains tokens et voir plus d'informations en cliquant sur l'icône des paramètres."
+  },
+  "popup_no_tokens": {
+    "message": "Vous n'avez actuellement aucun token. Cliquez sur l'icône des paramètres pour obtenir des informations sur les tokens disponibles."
+  },
+  "popup_token_key": {
+    "message": "Veuillez ajouter votre clé active pour émettre des délégations !"
+  },
+  "popup_no_such_account": {
+    "message": "Ce nom d'utilisateur n'est pas enregistré sur la blockchain!"
+  },
+  "popup_token_success": {
+    "message": "Tokens envoyés avec succès!"
+  },
+  "popup_token_timeout": {
+    "message": "La transaction est restée sans réponse. Veuillez vérifier votre solde de tokens avant d'essayer d'en envoyer à nouveau."
+  },
+  "popup_proxy": {
+    "message": "PROXY"
+  },
+  "popup_success_wit": {
+    "message": "Voté avec succès pour @$1 en tant que témoin."
+  },
+  "popup_success_unvote_wit": {
+    "message": "Retiré le vote pour @$1 en tant que témoin."
+  },
+  "popup_success_proxy": {
+    "message": "A bien choisi @$1 pour proxy."
+  },
+  "popup_utils_full": {
+    "message": "Déjà plein!"
+  },
+  "dialog_ok": {
+    "message": "Ok"
+  },
+  "dialog_unlock": {
+    "message": "Déverrouiller"
+  },
+  "dialog_cancel": {
+    "message": "Annuler"
+  },
+  "dialog_broadcasting": {
+    "message": "Envoi de la transaction vers la blockchain..."
+  },
+  "dialog_account": {
+    "message": "Compte"
+  },
+  "dialog_proposal_ids": {
+    "message": "IDs des proposals"
+  },
+  "dialog_approve": {
+    "message": "Approuver"
+  },
+  "dialog_key": {
+    "message": "Clé "
+  },
+  "dialog_author": {
+    "message": "Auteur"
+  },
+  "dialog_receiver": {
+    "message": "Destinataire"
+  },
+  "dialog_auth_account": {
+    "message": "Compte autorisé"
+  },
+  "dialog_role": {
+    "message": "Rôle"
+  },
+  "dialog_permlink": {
+    "message": "Permlink"
+  },
+  "dialog_weight": {
+    "message": "Puissance de Vote"
+  },
+  "dialog_data": {
+    "message": "Données <span class='small'>(cliquez pour afficher)</span>"
+  },
+  "dialog_to": {
+    "message": "Vers"
+  },
+  "dialog_amount": {
+    "message": "Montant"
+  },
+  "dialog_balance": {
+    "message": "Solde"
+  },
+  "dialog_future_balance": {
+    "message": "Solde futur"
+  },
+  "dialog_daily_pay": {
+    "message": "Paiement Quotidien"
+  },
+  "dialog_memo": {
+    "message": "Mémo"
+  },
+  "dialog_title": {
+    "message": "Titre "
+  },
+  "dialog_body": {
+    "message": "Texte <span class='small'>(cliquez pour afficher)</span>"
+  },
+  "dialog_period": {
+    "message": "Période"
+  },
+  "dialog_extensions": {
+    "message": "Extensions"
+  },
+  "dialog_meta": {
+    "message": "Métadonnées JSON"
+  },
+  "dialog_pu": {
+    "message": "Nom d'utilisateur parent"
+  },
+  "dialog_pp": {
+    "message": "Permlink du parent"
+  },
+  "dialog_options": {
+    "message": "Options <span class='small'>(cliquez pour afficher)</span>"
+  },
+  "dialog_max_payout": {
+    "message": "Montant maximum accepté : "
+  },
+  "dialog_percentage_sbd": {
+    "message": "Pourcentage de SBD : "
+  },
+  "dialog_allow_votes": {
+    "message": "Autoriser les votes : "
+  },
+  "dialog_allow_curation": {
+    "message": "Autoriser la curation : "
+  },
+  "dialog_beneficiaries": {
+    "message": "Bénéficiaires : "
+  },
+  "dialog_delegatee": {
+    "message": "Délégué"
+  },
+  "dialog_message": {
+    "message": "Message"
+  },
+  "dialog_witness": {
+    "message": "Témoin"
+  },
+  "dialog_vote": {
+    "message": "Vote"
+  },
+  "dialog_confirm": {
+    "message": "Confirmer"
+  },
+  "dialog_body_toggle": {
+    "message": "Texte <span class='small'>(cliquer pour afficher)</span>"
+  },
+  "dialog_options_toggle": {
+    "message": "Options <span class='small'>(cliquez pour afficher)</span>"
+  },
+  "dialog_data_toggle": {
+    "message": "Données <span class='small'>(cliquez pour afficher)</span>"
+  },
+  "dialog_header_unlock": {
+    "message": "Déverrouiller Keychain"
+  },
+  "dialog_header_error": {
+    "message": "Erreur"
+  },
+  "dialog_header_success": {
+    "message": "Succès"
+  },
+  "dialog_header_wrong_pwd": {
+    "message": "Mot de passe incorrect!"
+  },
+  "dialog_header_broadcasting": {
+    "message": "Envoi en cours"
+  },
+  "dialog_title_custom": {
+    "message": "Opération personnalisée"
+  },
+  "dialog_title_decode": {
+    "message": "Vérifier la clé"
+  },
+  "dialog_title_sign": {
+    "message": "Signer le message"
+  },
+  "dialog_title_add_auth": {
+    "message": "Ajouter une autorité"
+  },
+  "dialog_title_remove_auth": {
+    "message": "Supprimer l'autorité"
+  },
+  "dialog_title_broadcast": {
+    "message": "Envoyer"
+  },
+  "dialog_title_call": {
+    "message": "Appel Signé"
+  },
+  "dialog_title_post": {
+    "message": "Poster"
+  },
+  "dialog_title_vote": {
+    "message": "Vote"
+  },
+  "dialog_title_transfer": {
+    "message": "Transfert"
+  },
+  "dialog_title_delegation": {
+    "message": "Délégation"
+  },
+  "dialog_title_wit": {
+    "message": "Vote de témoin"
+  },
+  "dialog_title_token": {
+    "message": "Transférer des tokens"
+  },
+  "dialog_title_powerup": {
+    "message": "Power Up"
+  },
+  "dialog_title_powerdown": {
+    "message": "Power Down"
+  },
+  "dialog_title_create_account": {
+    "message": "Réclamer un compte"
+  },
+  "dialog_title_create_proposal": {
+    "message": "Créer un proposal"
+  },
+  "dialog_title_remove_proposal": {
+    "message": "Retirer le proposal"
+  },
+  "dialog_title_vote_proposal": {
+    "message": "Voter pour le proposal"
+  },
+  "dialog_no_prompt_verify": {
+    "message": "Ne plus demander de vérifier les clés pour le compte @$1 sur $2"
+  },
+  "dialog_no_prompt": {
+    "message": "Ne plus demander de vérification avant d'envoyer des transactions de $1 depuis le compte @$2 sur $3"
+  },
+  "dialog_desc_verify": {
+    "message": "Le site web $1 souhaite vérifier que vous avez accès à la clé privée $2 du compte : @$3"
+  },
+  "dialog_desc_sign": {
+    "message": "Le site web $1 souhaite signer un message en utilisant la clé $2 du compte : @$3"
+  },
+  "dialog_expand": {
+    "message": "...(cliquez pour étendre)"
+  },
+  "bgd_init_no_wallet": {
+    "message": "Aucun portefeuille !"
+  },
+  "bgd_lifecycle_request_canceled": {
+    "message": "La requête a été annulée par l'utilisateur."
+  },
+  "bgd_context_transfer_user": {
+    "message": "Transférer STEEM/SBD vers %s"
+  },
+  "bgd_context_memo_user": {
+    "message": "Envoyer un message MEMO à @%s"
+  },
+  "bgd_context_tip_user": {
+    "message": "Envoyer un pourboire à @%s"
+  },
+  "bgd_context_transfer_author": {
+    "message": "Transférer STEEM/SBD à cet auteur"
+  },
+  "bgd_context_memo_author": {
+    "message": "Envoyer un message MEMO à cet auteur"
+  },
+  "bgd_context_tip_author": {
+    "message": "Envoyer un pourboire à cet auteur"
+  },
+  "bgd_auth_locked": {
+    "message": "Le portefeuille est verrouillé !"
+  },
+  "bgd_auth_locked_desc": {
+    "message": "Le site Web actuel essaie d'envoyer une requête vers Steem Keychain. Veuillez entrer votre mot de passe ci-dessous pour déverrouiller le portefeuille et continuer."
+  },
+  "bgd_auth_canceled": {
+    "message": "La requête a été annulée par l'utilisateur."
+  },
+  "bgd_auth_transfer_no_active": {
+    "message": "Le site Web actuel essaie d'envoyer une demande de transfert à Steem Keychain pour le compte @$1 en utilisant la clé active, qui n'a pas été ajoutée au portefeuille."
+  },
+  "bgd_auth_transfer_no_memo": {
+    "message": "Le site Web actuel essaie d'envoyer une demande de transfert à Steem Keychain pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
+  },
+  "bgd_auth_no_account": {
+    "message": "Le site Web actuel essaie d'envoyer une requête à Steem Keychain pour le compte @$1 qui n'a pas été ajouté au portefeuille."
+  },
+  "bgd_auth_no_key": {
+    "message": "Le site Web actuel essaie d'envoyer une requête à Steem Keychain pour le compte @$1 en utilisant la clé $2, qui n'a pas été ajoutée au portefeuille."
+  },
+  "bgd_ops_witness_voted": {
+    "message": "A voté avec succès @$1 pour témoin."
+  },
+  "bgd_ops_witness_unvoted": {
+    "message": "Retiré le vote pour @$1 en tant que témoin."
+  },
+  "bgd_ops_vote": {
+    "message": "Voté avec succès pour le poste $2 de @$1 à $3%."
+  },
+  "bgd_ops_transfer_adjust_balance": {
+    "message": "Solde insuffisant de $1 sur le compte @$2."
+  },
+  "bgd_ops_transfer_get_account": {
+    "message": "Compte @$1 introuvable."
+  },
+  "bgd_ops_error_broadcasting": {
+    "message": "Une erreur s'est produite lors de la transmission de cette transaction, veuillez réessayer."
+  },
+  "bgd_ops_error": {
+    "message": "Une erreur s'est produite lors de la transmission de cette transaction :"
+  },
+  "bgd_ops_transfer_success": {
+    "message": "Transféré avec succès $1 $2 de @$3 à @$4."
+  },
+  "bgd_ops_tokens": {
+    "message": "La transaction a été transmise avec succès. Veuillez vérifier votre solde pour confirmer qu'elle a abouti."
+  },
+  "bgd_ops_signed_call": {
+    "message": "Réussite!"
+  },
+  "bgd_ops_sign_success": {
+    "message": "Message signé avec succès."
+  },
+  "bgd_ops_sign_error": {
+    "message": "Échec de la signature."
+  },
+  "bgd_ops_proposal_create": {
+    "message": "Nouveau proposal créé avec succès."
+  },
+  "bgd_ops_proposal_remove": {
+    "message": "Le proposal #$1 a été supprimé avec succès."
+  },
+  "bgd_ops_proposal_vote": {
+    "message": "Voté avec succès pour le proposal #$1."
+  },
+  "bgd_ops_proposal_unvote": {
+    "message": "Le vote a bien été retiré du proposal #$1."
+  },
+  "bgd_ops_pu": {
+    "message": "$1 STEEM ont été Power Up sur @$2."
+  },
+  "bgd_ops_pd": {
+    "message": "Un $1 SP power down a commencé sur @$2."
+  },
+  "bgd_ops_pd_stop": {
+    "message": "Arrêt du Power Down sur @$1."
+  },
+  "bgd_ops_post": {
+    "message": "Le post a été publié avec succès."
+  },
+  "bgd_ops_undelegate": {
+    "message": "La délégation à @$1 a été arrêtée avec succès depuis le compte @$2."
+  },
+  "bgd_ops_delegate": {
+    "message": "Délégué avec succès $1 SP de @$3 vers @$2."
+  },
+  "bgd_ops_decode": {
+    "message": "Mémo décodé avec succès."
+  },
+  "bgd_ops_decode_err": {
+    "message": "Impossible de vérifier la clé."
+  },
+  "bgd_ops_broadcast": {
+    "message": "La transaction a été envoyée avec succès."
+  },
+  "bgd_ops_create_acepuiscount": {
+    "message": "Compte @$1 créé avec succès."
+  },
+  "bgd_ops_add_auth": {
+    "message": "Autorité $1 sur le compte @$3 donnée à @$2 avec succès."
+  },
+  "bgd_ops_remove_auth": {
+    "message": "L'autorité $1 de @$2 sur le compte @$3 a été retirée avec succès."
+  },
+  "popup_account_redeem": {
+    "message": "Vous avez des gains à réclamer"
+  },
+  "popup_html_send_transfer": {
+    "message": "Virements"
   }
 }

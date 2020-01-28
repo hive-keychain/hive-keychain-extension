@@ -49,7 +49,7 @@ $("#estimation_info_text").html(
 );
 
 // Main - buttons
-$("#send").text(chrome.i18n.getMessage("popup_html_send"));
+$("#send").text(chrome.i18n.getMessage("popup_html_send_transfer"));
 $("#history").text(chrome.i18n.getMessage("popup_html_history"));
 $("#tokens").text(chrome.i18n.getMessage("popup_html_tokens"));
 $("#witness").text(chrome.i18n.getMessage("popup_html_witness"));

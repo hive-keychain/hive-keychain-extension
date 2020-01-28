@@ -42,7 +42,7 @@ class Account {
     this.reward_vests = await this.getAccountInfo("reward_vesting_balance");
     const reward_sp = (await this.toSP(this.reward_vests)) + " SP";
     this.reward_steem = await this.getAccountInfo("reward_steem_balance");
-    let rewardText = "You have Rewards ready to redeem in the amount of:<br>";
+    let rewardText = chrome.i18n.getMessage("popup_account_redeem") + ":<br>";
     if (getValFromString(reward_sp) != 0) rewardText += reward_sp + " / ";
     if (getValFromString(this.reward_sbd) != 0)
       rewardText += this.reward_sbd + " / ";

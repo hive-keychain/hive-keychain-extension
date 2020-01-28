@@ -293,7 +293,7 @@
     "message": "Not Now"
   },
   "popup_html_redeem": {
-    "message": "Redeem"
+    "message": "Claim"
   },
   "popup_html_witness_title": {
     "message": "Witness Voting"
@@ -768,7 +768,7 @@
     "message": "The website $1 would like to verify that you have access to the private $2 key for the account: @$3"
   },
   "dialog_desc_sign": {
-    "message": "The website $1 would like to sign a messag eusing the $2 key for the account: @$3"
+    "message": "The website $1 would like to sign a message using the $2 key for the account: @$3"
   },
   "dialog_expand": {
     "message": "...(click to expand)"
@@ -901,5 +901,11 @@
   },
   "bgd_ops_remove_auth": {
     "message": "Succesfully removed $1 authority from @$2 on account @$3."
+  },
+  "popup_account_redeem": {
+    "message": "You have Rewards ready to redeem in the amount of"
+  },
+  "popup_html_send_transfer": {
+    "message": "Send"
   }
 }
