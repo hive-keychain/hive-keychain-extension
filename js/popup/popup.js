@@ -171,7 +171,7 @@ function initializeMainMenu() {
           items.last_account
         );
       loadRPC(items.rpc, items.current_rpc);
-
+      console.log(accountsList.getList());
       $("#accounts").empty();
       if (!accountsList.isEmpty()) {
         $(".usernames").html("<select></select>");
@@ -190,6 +190,7 @@ function initializeMainMenu() {
         initiateCustomSelect();
       } else {
         $("#main").hide();
+        $("#register").hide();
         $("#add_account_div").show();
         $("#add_account_div .back_enabled").addClass("back_disabled");
       }
