@@ -4,223 +4,223 @@
     "description": "Extension name, night not need to translate it."
   },
   "description": {
-    "message": "Extensión segura de Steem Wallet.",
+    "message": "安全 Steem 錢包擴充",
     "description": "Extension description, as shown in the store."
   },
   "transaction_error": {
-    "message": "Error de transacción",
+    "message": "交易錯誤",
     "description": "Generic error during transaction"
   },
   "memo": {
-    "message": "memo",
+    "message": "備註",
     "description": "type of key"
   },
   "posting": {
-    "message": "publicando",
+    "message": "發貼文",
     "description": "type of key"
   },
   "active": {
-    "message": "activo",
+    "message": "活躍",
     "description": "type of key"
   },
   "unknown_error": {
-    "message": "¡Algo salió mal! ¡Por favor, inténtalo de nuevo!",
+    "message": "出了些問題! 請再試一遍!",
     "description": "Generic error"
   },
   "wrong_password": {
-    "message": "¡Contraseña incorrecta!",
+    "message": "密碼錯誤 ！",
     "description": "Wrong pwd upon unlocking"
   },
   "days": {
-    "message": "días",
+    "message": "天",
     "description": "Full in x days x hours x minutes"
   },
   "day": {
-    "message": "día",
+    "message": "天",
     "description": "Full in x days x hours x minutes"
   },
   "hours": {
-    "message": "horas",
+    "message": "小時",
     "description": "Full in x days x hours x minutes"
   },
   "hour": {
-    "message": "hora",
+    "message": "小時",
     "description": "Full in x days x hours x minutes"
   },
   "minutes": {
-    "message": "minutos",
+    "message": "分鐘",
     "description": "Full in x days x hours x minutes"
   },
   "minute": {
-    "message": "minuto",
+    "message": "分鐘",
     "description": "Full in x days x hours x minutes"
   },
   "popup_html_register": {
-    "message": "Steem Keychain es la mejor manera de acceder a tus cuentas de STEEM. Simple. Liviano. Seguro.<br><br>Empecemos por crear una contraseña para Keychain. Necesitarás esta contraseña para acceder o hacer cambios en tu(s) cuenta(s).",
+    "message": "Steem Keychain 是造訪您 STEEM 帳戶最好的方法，簡單、輕便、安全。<br><br> 讓我們從創立Keychain 密碼開始。您將需要此密碼來造訪或更改您的帳戶。",
     "description": "Text on registration page"
   },
   "popup_html_unlock": {
-    "message": "Es una mejor manera de acceder a sus cuentas de STEEM. Simple. Ligero. Seguro.<br/><br/>Sea libre y disfrute Steem.",
+    "message": "是造訪您STEEM帳戶最好的方法，簡單、輕便、安全。<br> <br>請自由進入Steem。",
     "description": "Text on unlock page"
   },
   "popup_html_new_password": {
-    "message": "Nueva contraseña",
+    "message": "新密碼",
     "description": "On settings, change password"
   },
   "popup_html_confirm": {
-    "message": "Confirmar",
+    "message": "確認",
     "description": "Generic button"
   },
   "popup_html_submit": {
-    "message": "Enviar",
+    "message": "提交",
     "description": "Generic button"
   },
   "popup_html_password": {
-    "message": "Contraseña",
+    "message": "密碼",
     "description": "Placeholder in input for password"
   },
   "popup_html_signin": {
-    "message": "Inicia sesión"
+    "message": "登入"
   },
   "popup_html_forgot": {
-    "message": "¿Olvidó la contraseña?",
+    "message": "忘記密碼？",
     "description": "On unlock page"
   },
   "popup_html_reset": {
-    "message": "Resetear tu cuenta",
+    "message": "重設帳號",
     "description": "After clicking forgot password"
   },
   "popup_html_reset_desc": {
-    "message": "Si olvidaste tu contraseña, puedes borrar tus datos pero tendrás que volver a introducir todas tus claves.",
+    "message": "如果您忘記了密碼，您可以清除您的數據，但將重新再次輸入所有的密鑰。",
     "description": "text after clicking forgot password"
   },
   "popup_html_vm": {
-    "message": "Poder de Voto",
+    "message": "Mana投票",
     "description": "on Keychain popup main page"
   },
   "popup_html_rc": {
-    "message": "Créditos de recursos",
+    "message": "資源積分",
     "description": "on Keychain popup main page"
   },
   "popup_html_send": {
-    "message": "Enviar $1",
+    "message": "發送$1",
     "description": "ex: Send STEEM"
   },
   "popup_html_pu": {
-    "message": "Power up"
+    "message": "Power Up"
   },
   "popup_html_pd": {
     "message": "Power Down"
   },
   "popup_html_delegate": {
-    "message": "Delegar"
+    "message": "委託"
   },
   "popup_html_estimation": {
-    "message": "Valor aproximado de la cuenta",
+    "message": "此帳號的估價",
     "description": "on popup main page"
   },
   "popup_html_history": {
-    "message": "Historia",
+    "message": "歷史紀錄",
     "description": "on popup main page"
   },
   "popup_html_tokens": {
-    "message": "Tokens",
+    "message": "代幣",
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Witness",
+    "message": "見證人",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
-    "message": "valor de la cuenta",
+    "message": "賬戶價值",
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "El valor estimado de la cuenta es una idea aproximada del valor de sus fondos en dólares.<br><br>Tenga en cuenta que el valor no tiene en cuenta las operaciones, transferencias o transacciones de mercado que están pendientes.",
+    "message": "帳戶的預估值是您的資金以美元價值計算粗估的概念。<br> <br>請注意，該值不考慮暫掛市場交易，轉讓，或交易。",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {
-    "message": "Historial de la Billetera",
+    "message": "錢包歷史紀錄",
     "description": "Upon clicking on History"
   },
   "popup_html_setup_text": {
-    "message": "Introduce el nombre de tu cuenta Steem y la contraseña maestra o la clave privada o activa de esa cuenta a continuación. Tu contraseña maestra NO se guardará y sólo se utilizará para generar tus claves privadas.<br/><br/>Puedes añadir / eliminar cuentas o claves de Steem en cualquier momento. Si necesitas crear una nueva cuenta Steem, puedes hacerlo en <a href=\"https://signup.steemit.com/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">https://signup.steemit.com/</a>.",
+    "message": "在下面輸入您的Steem帳戶名稱以及該帳戶的主密碼或私人貼文或活躍私鑰。 您的主密碼將不會保存，只會使用於生成私鑰。<br/> <br/>您可以隨時新增/刪除Steem帳戶或私鑰。 如果您需要建立一個新的Steem帳戶，可以在<a href =“ https://signup.steemit.com/” target =“ _ blank” style =“ text-decoration：underline; color：white;”中進行。 > https://signup.steemit.com/ </a>。",
     "description": "When adding new account"
   },
   "popup_html_setup": {
-    "message": "Instalación",
+    "message": "設定",
     "description": "when adding new account"
   },
   "popup_html_private_key": {
-    "message": "Clave privada",
+    "message": "私密金鑰",
     "description": "placeholder for entering private key"
   },
   "popup_html_username": {
-    "message": "Nombre de Usuario",
+    "message": "用户名",
     "description": "placeholder for entering username"
   },
   "popup_html_import_keys": {
-    "message": "Importar Claves",
+    "message": "匯入金鑰",
     "description": "Import all keys"
   },
   "popup_html_import_key": {
-    "message": "Importar Clave",
+    "message": "匯入金鑰",
     "description": "Import one key"
   },
   "popup_html_import_success": {
-    "message": "¡Importación exitosa! <br><br>Por favor, seleccione las claves que desea almacenar con Steem Keychain:",
+    "message": "導入成功！ <br> <br>請選擇您要與Steem Keychain一起儲存的金鑰：",
     "description": "When adding an account via master key"
   },
   "popup_html_posting": {
-    "message": "Clave de publicación",
+    "message": "發佈金鑰",
     "description": "When adding an account via master key"
   },
   "popup_html_active": {
-    "message": "Clave activa",
+    "message": "啟用金鑰",
     "description": "When adding an account via master key"
   },
   "popup_html_memo": {
-    "message": "Memo key",
+    "message": "備註金鑰",
     "description": "When adding an account via master key"
   },
   "popup_html_posting_info": {
-    "message": "Para publicar y votar",
+    "message": "用於貼文和投票",
     "description": "When adding an account via master key"
   },
   "popup_html_active_info": {
-    "message": "Para hacer transferencias y órdenes",
+    "message": "用於進行轉帳與訂購",
     "description": "When adding an account via master key"
   },
   "popup_html_memo_info": {
-    "message": "Para enviar y leer memos",
+    "message": "用於發送和讀取備註",
     "description": "When adding an account via master key"
   },
   "popup_html_save": {
-    "message": "Guardar",
+    "message": "儲存",
     "description": "Generic button"
   },
   "popup_html_settings": {
-    "message": "Configuraciones",
+    "message": "設置",
     "description": "on settings page"
   },
   "popup_html_add_account": {
-    "message": "Añadir cuenta",
+    "message": "新增帳號",
     "description": "on settings page"
   },
   "popup_html_manage_accounts": {
-    "message": "Gestionar Cuentas",
+    "message": "管理帳號",
     "description": "on settings page"
   },
   "popup_html_change_password": {
-    "message": "Cambiar Contraseña",
+    "message": "變更密碼",
     "description": "on settings page"
   },
   "popup_html_pref": {
-    "message": "Preferencias",
+    "message": "偏好設定",
     "description": "on settings page"
   },
   "popup_html_autolock": {
-    "message": "Bloqueo automático",
+    "message": "自動鎖定",
     "description": "on settings page"
   },
   "popup_html_keychainify": {
@@ -228,750 +228,750 @@
     "description": "on settings page"
   },
   "popup_html_about": {
-    "message": "Acerca de Steem Keychain",
+    "message": "關於Steem Keychain",
     "description": "on settings page"
   },
   "popup_html_clear": {
-    "message": "Limpiar todos los datos",
+    "message": "清除所有數據",
     "description": "on settings page"
   },
   "popup_html_al_default_title": {
-    "message": "Predeterminado",
+    "message": "預設值",
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "Bloquea el keychain manualmente o cuando el navegador esté cerrado.",
+    "message": "手動或是在關閉瀏覽器時鎖定keychain。",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
-    "message": "Bloqueo de dispositivo",
+    "message": "裝置鎖定",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
-    "message": "Bloquea automáticamente el keychain cuando el dispositivo se bloquea.",
+    "message": "裝置鎖定時自動鎖定keychain。",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
-    "message": "Bloquear inactivo",
+    "message": "Idle 鎖",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "Bloquear automáticamente el keychain después de que la ventana del navegador esté inactiva durante el número de minutos especificado.",
+    "message": "在瀏覽器窗口閒置指定的分鐘數後，自動鎖定keychain。",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
-    "message": "Esta característica le permite activar una operación de Steem Keychain al hacer clic en un enlace soportado en una página web o acceder a la URL directamente en una pestaña de navegador.",
+    "message": "此功能使您可以在點擊網頁上受支持的連結或直接在瀏覽器選項中進入URL時啟動Steem Keychain操作。",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_title": {
-    "message": "Habilitar Keychainify",
+    "message": "啟用Keychainify",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "Actualmente sólo soporta las transferencias con URLs de Steem Connect.",
+    "message": "當前僅支持Steem Connect傳輸URL。",
     "description": "on keychainify settings"
   },
   "popup_html_about_text": {
-    "message": "La idea y el concepto general de la extensión del navegador Steem Keychain fue creada por <a href=\"https://steemit.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> que es un desarrollador y Witness en la cadena de bloques de Steem. Fue desarrollado principalmente por<a href=\"https://steemit.com/@stoodkev\" target=\"_blank\">@stoodkev</a> que también es un desarrollador de Steem (SteemPlus) y Witness. El diseño y desarrollo fueron financiados por @aggroed (uno de los 20 principales Witness de Steem) y @yabapmatt a través de su negocio conjunto Splinterlands, que es un juego de cartas coleccionables basado en la blockchain, construido sobre la blockchain de Steem. Asegúrate de comprobarlo en <a href=\"https://splinterlands.io\" target=\"_blank\">splinterlands.io</a>!",
+    "message": "SteemKeychain瀏覽器擴充功能的總體想法和概念是由<a href=\"https://steemit.com/@yabapmatt\" target=\"_blank\"> @yabapmatt </a>創建的，他是Steem區塊鏈的開發人員和見證人。它主要由<a href=\"https://steemit.com/@stoodkev\" target=\"_blank\"> @stoodkev </a>開發的，他也是Steem開發人員（SteemPlus）和見證人。設計和開發由@aggroed（Steem的前20名見證人）和@yabapmatt通過他們的聯合業務Splinterlands資助，Splinterlands是在Steem區塊鏈之上構建的基於區塊鏈的可收藏交易卡牌遊戲。請確保在<a href=\"https://splinterlands.io\" target=\"_blank\"> https://splinterlands.io </a>進行檢查！",
     "description": "on about keychain"
   },
   "popup_html_remove": {
-    "message": "Remover",
+    "message": "移除",
     "description": "on manage accounts, remove key"
   },
   "popup_html_delete_account": {
-    "message": "ELIMINAR ESTA CUENTA",
+    "message": "刪除此帳號",
     "description": "on manage accounts"
   },
   "popup_html_select_rpc": {
-    "message": "Seleccione un nodo RPC",
+    "message": "選擇一個RPC",
     "description": "on preferences"
   },
   "popup_html_notif_pref": {
-    "message": "Preferencias de Notificación",
+    "message": "通知喜好設定",
     "description": "on preferences"
   },
   "popup_html_pref_info": {
-    "message": "Vea y actualice los sitios web y los tipos de transacciones para los que ha optado por no recibir una petición de confirmación.",
+    "message": "查看和更新您已選擇不接收確認提示的網站和交易類型。",
     "description": "on preferences"
   },
   "popup_html_no_pref": {
-    "message": "Sin Preferencias",
+    "message": "無喜好設定",
     "description": "on preferences"
   },
   "popup_html_add_rpc": {
-    "message": "Añadir RPC",
+    "message": "增加RPC",
     "description": "on preferences"
   },
   "popup_html_add_rpc_text": {
-    "message": "Añade tu nodo RPC aquí:",
+    "message": "在此處添加您的RPC:",
     "description": "on preferences"
   },
   "popup_html_rpc_node": {
-    "message": "Nodo RPC",
+    "message": "RPC Node",
     "description": "on preferences"
   },
   "popup_html_add_key": {
-    "message": "Añadir Clave",
+    "message": "新增金鑰",
     "description": "on manage accounts, add a previously non stored key"
   },
   "popup_html_add_key_text": {
-    "message": "Añade la <span></span> clave privada a tu cuenta. También puedes añadirla ingresando tu clave maestra.",
+    "message": "將<span> </span>密鑰增加到您的帳戶。 您也可以通過輸入主密鑰來新增。",
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
-    "message": "¡Clave copiada al portapapeles!",
+    "message": "金鑰已複製到剪貼簿",
     "description": "on preferences when clicking on a key"
   },
   "popup_html_change_password_text": {
-    "message": "Introduce tu contraseña antigua para confirmar y luego elige una nueva contraseña.",
+    "message": "輸入您的舊密碼進行確認，然後選擇一個新密碼。",
     "description": "on change password"
   },
   "popup_html_old_password": {
-    "message": "Contraseña antigua",
+    "message": "舊密碼",
     "description": "on change password"
   },
   "popup_html_transfer_funds": {
-    "message": "Transferir fondos",
+    "message": "轉帳",
     "description": "When initiating a STEEM or SBD transfer"
   },
   "popup_html_balance": {
-    "message": "Saldo $1",
+    "message": "$1餘額",
     "description": "When initiating a STEEM or SBD transfer. $1 is a variable that will be replaced by a currency name."
   },
   "popup_html_loading": {
-    "message": "Cargando...",
+    "message": "載入中...",
     "description": "When initiating a STEEM or SBD transfer and the balance is loading."
   },
   "popup_html_memo_optional": {
-    "message": "MEMO (Opcional)",
+    "message": "備註（可選）",
     "description": "When initiating a STEEM or SBD transfer"
   },
   "popup_html_encrypt_memo": {
-    "message": "Encriptar Memo",
+    "message": "加密備忘錄",
     "description": "When initiating a STEEM or SBD transfer"
   },
   "popup_html_add_active": {
-    "message": "Por favor agregue una clave activa para enviar STEEM o SBD.",
+    "message": "請新增啟用密鑰以發送STEEM或SBD。",
     "description": "When trying to send STEEM or SBD but active key was not stored"
   },
   "popup_html_transfer": {
-    "message": "Transferir",
+    "message": "轉帳",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_confirm_text": {
-    "message": "Por favor, confirme su transferencia.<br>Esto no se puede deshacer.",
+    "message": "請確認您的轉移。此操作無法撤消。",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_from": {
-    "message": "De",
+    "message": "從",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_to": {
-    "message": "A",
+    "message": "至",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_amount": {
-    "message": "Importe",
+    "message": "金額",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_memo": {
-    "message": "Memo",
+    "message": "備註",
     "description": "On transfer confirmation page"
   },
   "popup_html_not_now": {
-    "message": "No ahora",
+    "message": "暫時不要",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
   },
   "popup_html_redeem": {
-    "message": "Reclamar",
+    "message": "領取",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
   },
   "popup_html_witness_title": {
-    "message": "Votación para Witness",
+    "message": "見證人投票",
     "description": "On witness page"
   },
   "popup_html_witness_disclaimer": {
-    "message": "Puedes votar a favor de hasta 30 witnesses.",
+    "message": "您最多可以投票給30位見證人。",
     "description": "On witness page"
   },
   "popup_html_witness_remaining": {
-    "message": "Votos restantes: <span>30</span>",
+    "message": "剩餘投票數：<span> 30 </span>",
     "description": "On witness page"
   },
   "popup_html_witness_voted": {
-    "message": "Votado",
+    "message": "已投票",
     "description": "On witness page. Tab name, keep short"
   },
   "popup_html_witness_top": {
-    "message": "Mejores 100",
+    "message": "前100名",
     "description": "On witness page. Tab name, keep short"
   },
   "popup_html_witness_add": {
-    "message": "Agregar",
+    "message": "新增",
     "description": "On witness page. Tab name, keep short"
   },
   "popup_html_proxy_desc": {
-    "message": "Puede introducir manualmente un usuario para votar por Witness o para establecer como Proxy.",
+    "message": "您可以手動輸入用戶投票見證人或將其設置為代理。",
     "description": "On witness page > Add"
   },
   "popup_html_witness_vote": {
-    "message": "Vota por un Witness",
+    "message": "見證人投票",
     "description": "On witness page > Add > Dropdown"
   },
   "popup_html_chose_proxy": {
-    "message": "Elegir proxy",
+    "message": "選擇代理",
     "description": "On witness page > Add > Dropdown"
   },
   "popup_html_tokens_available": {
-    "message": "Tokens disponibles",
+    "message": "可用代幣",
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
-    "message": "Ver información de tokens y elegir qué tokens mostrar. Aprende más sobre tokens personalizados en la blockchain de Steem en <a href=\"https://steem-engine.com\" target=\"_blank\">https://steem-engine.com</a>.",
+    "message": "查看代幣資訊並選擇要顯示的代幣。 在<a href=\"https://steem-engine.com\" target=\"_blank\"> https://steem-engine.com </a>上了解有關Steem區塊鏈上訂製代幣的更多訊息。",
     "description": "On tokens page"
   },
   "popup_html_available": {
-    "message": "Disponible",
+    "message": "可用",
     "description": "On tokens page"
   },
   "popup_html_tokens_send_text": {
-    "message": "Enviar sus tokens puede tardar hasta 30 segundos en confirmar, por favor sea paciente.",
+    "message": "發送代幣可能最多需要30秒才能確認，請耐心等待。",
     "description": "On tokens page > Send"
   },
   "popup_html_recipient": {
-    "message": "Destinatario",
+    "message": "接受者",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {
-    "message": "Por favor, confirme su transferencia.<br>Esto no se puede deshacer.",
+    "message": "請確認您的轉移。此操作無法撤消。",
     "description": "On tokens page > Send > Confirm"
   },
   "popup_html_current": {
-    "message": "Actual",
+    "message": "目前的",
     "description": "Main page > Power Up . Current SP balance"
   },
   "popup_html_powerup_text": {
-    "message": "Power Up tus STEEM para trasnformarlos en Steem Power.",
+    "message": "Power Up您的STEEM，以將其轉換為Steem Power。",
     "description": "Main page > Power Up"
   },
   "popup_html_powerdown_text": {
-    "message": "Haz Power Downs de tu Steem Power para obtener STEEM disponible. El proceso de Power Down completo tardará 13 semanas.",
+    "message": "Power Down您的Steem Power，以得到流動STEEM。 整個Power Down過程將花費13週。",
     "description": "Main page > Power Down"
   },
   "popup_html_powering_down": {
-    "message": "Haciendo un Power Down",
+    "message": "正在Power Down",
     "description": "Main page > Power Down. When a power down has been started"
   },
   "popup_html_delegations": {
-    "message": "Delegaciones",
+    "message": "委託",
     "description": "Main page > Delegate"
   },
   "popup_html_delegations_text": {
-    "message": "Puede delegar su Steem Power (SP) a otro usuario. Haga clic en el importe de Salida para revisar o hacer cambios.",
+    "message": "您可以將Steem Power（SP）委託給另一個用戶。 點擊支付金額以查看或進行更改。",
     "description": "Main page > Delegate"
   },
   "popup_html_incoming": {
-    "message": "Entrando $1",
+    "message": "傳入$1",
     "description": "Main page > Delegate. Incoming delegations ($1 is a variable, should be SP)"
   },
   "popup_html_outgoing": {
-    "message": "Saliendo $1",
+    "message": "傳出$1",
     "description": "Main page > Delegate. Outgoing delegation ($1=SP)"
   },
   "popup_html_delegate_to_user": {
-    "message": "Delegar al usuario",
+    "message": "委託給用戶",
     "description": "Main page > Delegate. Confirm a delegation"
   },
   "popup_html_total_outgoing": {
-    "message": "Total saliente",
+    "message": "總支出",
     "description": "Main page > Delegate > Click on Outgoing"
   },
   "popup_html_total_incoming": {
-    "message": "Total entrante",
+    "message": "總收入",
     "description": "Main page > Delegate > Click on Incoming"
   },
   "popup_html_edit_delegations": {
-    "message": "Editar Delegación",
+    "message": "編輯委託",
     "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
   },
   "popup_html_edit_delegations_text": {
-    "message": "Estás cambiando la cantidad delegada a este usuario. Edita la cantidad y guarda tu cambio.",
+    "message": "您正在更改委託給該用戶的金額。 編輯金額並保存更改。",
     "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
   },
   "popup_html_support": {
-    "message": "¡Haz clic aquí para apoyar el desarrollo de Steem Keychain emitiendo tus votos de witness para los creadores!",
+    "message": "點擊此處，通過為創立者見證人投票來支持SteemKeychain開發！",
     "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
   },
   "popup_accounts_reveal_private": {
-    "message": "Haga clic para mostrar la clave privada",
+    "message": "點擊顯示私鑰",
     "description": "On manage accounts"
   },
   "popup_accounts_no_bittrex": {
-    "message": "Bittrex es inaccesible",
+    "message": "無法連接至Bittrex",
     "description": "instead of estimated value, if cant reach bittrex api"
   },
   "popup_accounts_add_memo": {
-    "message": "Añade tu clave privada de memo para leer este memo",
+    "message": "添加您的私人備忘錄密鑰以瀏覽此備忘錄",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
   },
   "popup_accounts_no_recent_transfers": {
-    "message": "No hay transferencias recientes",
+    "message": "近期無交易",
     "description": "if history is empty"
   },
   "popup_accounts_already_registered": {
-    "message": "¡Ya has registrado una cuenta por @$1!",
+    "message": "您已經註冊了@$1的帳戶！",
     "description": "when trying to add an account already saved on keychain"
   },
   "popup_accounts_incorrect_key": {
-    "message": "Clave privada o contraseña incorrecta.",
+    "message": "私鑰或密碼不正確。",
     "description": "when adding new account with incorrect key"
   },
   "popup_accounts_incorrect_user": {
-    "message": "Por favor, comprueba el nombre de usuario y vuelve a intentarlo.",
+    "message": "請檢查用戶名，然後再試一次。",
     "description": "when adding new account but the username doesnt exist"
   },
   "popup_accounts_fill": {
-    "message": "Por favor, rellene los campos.",
+    "message": "請輸入所有欄位。",
     "description": "when adding new account but not filling all fields"
   },
   "popup_accounts_already_have_key": {
-    "message": "¡Ya ha introducido su clave $1!",
+    "message": "您已經輸入了$1的金鑰！",
     "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
   },
   "popup_accounts_not_your_key": {
-    "message": "¡Esta no es su clave $1!",
+    "message": "這不是您的$1私鑰！",
     "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
   },
   "popup_accounts_not_wif": {
-    "message": "¡Esto no es un Wi-Fi privado!",
+    "message": "這不是私人WIF！",
     "description": "not a private key"
   },
   "popup_accounts_try_again": {
-    "message": "¡Por favor, inténtalo de nuevo más tarde!",
+    "message": "請稍後再試。",
     "description": "Generic unknown error, user is invited to try again"
   },
   "popup_accounts_err_claim": {
-    "message": "¡Necesitas introducir tu clave privada de publicación para reclamar recompensas!",
+    "message": "您需要輸入私人posting金鑰才能領取獎勵！",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
   "popup_delegate_key": {
-    "message": "¡Por favor, añade tu clave activa para enviar delegaciones!",
+    "message": "請新增您的活躍金密鑰以發送委託！",
     "description": "When trying to send delegation but user doenst have a stored active key"
   },
   "popup_delegate_success": {
-    "message": "¡Su delegación ha sido exitosa!",
+    "message": "您的委託成功了！",
     "description": "Main menu > Delegate"
   },
   "popup_delegate_change_success": {
-    "message": "¡Su cambio de delegación fue exitoso!",
+    "message": "您的委託更改成功！",
     "description": "After editing a delegation"
   },
   "popup_password_mismatch": {
-    "message": "¡Sus contraseñas no coinciden!",
+    "message": "您的密碼不符！",
     "description": "when registering a password on keychain"
   },
   "popup_password_regex": {
-    "message": "Tu contraseña debe tener al menos 8 caracteres e incluir una letra minúscula, una letra mayúscula y un dígito o tener al menos 16 caracteres sin restricciones.",
+    "message": "您的密碼必須至少8個字符長，並且包含小寫字母，大寫字母和數字，或者至少16個字符長且不受限制。",
     "description": "when registering the master pwd on keychain"
   },
   "popup_add_account": {
-    "message": "Añadir nueva cuenta",
+    "message": "新增帳號",
     "description": "From accounts list dropdown"
   },
   "popup_empty": {
-    "message": "Vacío",
+    "message": "清空",
     "description": "On send STEEM/SBD confirmation page, when memo is empty"
   },
   "popup_encrypted": {
-    "message": "encriptado",
+    "message": "已加密",
     "description": "On send STEEM/SBD confirmation page, when memo is encrypted"
   },
   "popup_witness_key": {
-    "message": "¡Por favor, añade tu clave activa para votar por los witness!",
+    "message": "請新增您的活躍金鑰以投票給見證人！",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
   "popup_transfer_success": {
-    "message": "¡Transferencia exitosa!",
+    "message": "轉賬成功",
     "description": "after sending a transfer"
   },
   "popup_next_powerdown": {
-    "message": "El próximo power down en $1",
+    "message": "下次power down$1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
   "popup_pu_key": {
-    "message": "¡Por favor, añade tu clave activa para hacer un power up!",
+    "message": "請新增您的活躍金鑰以power up！",
     "description": "When wanting to powerup but no active key stored"
   },
   "popup_pd_key": {
-    "message": "¡Por favor, añade tu clave activa para hacer un power down!",
+    "message": "請新增您的活躍金鑰以power down！",
     "description": "When wanting to power down but no active key stored"
   },
   "popup_pu_success": {
-    "message": "¡Hiciste un power up con éxito!",
+    "message": "您已成功power up！",
     "description": "After powering up"
   },
   "popup_pd_success": {
-    "message": "¡Has empezado con éxito un power down!",
+    "message": "您已成功啟動power down！",
     "description": "After powering down"
   },
   "popup_pd_stop": {
-    "message": "¡Has detenido con éxito un power down!",
+    "message": "您已成功停止power down！",
     "description": "After powering down 0SP"
   },
   "popup_rpc_add": {
-    "message": "AGREGAR RPC",
+    "message": "增加RPC",
     "description": "On preferences, rpc dropdown. RPC stands for rpc node"
   },
   "popup_rpc_added": {
-    "message": "¡RPC agregado exitosamente!",
+    "message": "新增RPC成功！",
     "description": "On preferences >Add RPC "
   },
   "popup_rpc_default": {
-    "message": "POR DEFECTO",
+    "message": "默認",
     "description": "On preferences, rpc dropdown."
   },
   "popup_master_changed": {
-    "message": "Su contraseña maestra fue cambiada con éxito",
+    "message": "您的主密碼已成功更改",
     "description": "When changing pwd from settings"
   },
   "popup_pwd_stronger": {
-    "message": "¡Por favor, utiliza una contraseña más fuerte!",
+    "message": "請使用更強的密碼！",
     "description": "When changing pwd from settings"
   },
   "popup_pwd_match": {
-    "message": "¡Las nuevas contraseñas no coinciden!",
+    "message": "新密碼不符！",
     "description": "When changing pwd from settings"
   },
   "popup_wrong_current_pwd": {
-    "message": "Contraseña actual incorrecta",
+    "message": "當前密碼錯誤",
     "description": "When changing pwd from settings"
   },
   "popup_website": {
-    "message": "Sitio Web",
+    "message": "網站",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_broadcast": {
-    "message": "Transmitir",
+    "message": "播送",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_add_auth": {
-    "message": "Añadir Autoridad de Cuenta",
+    "message": "新增帳戶授權",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_remove_auth": {
-    "message": "Eliminar Autoridad de Cuenta",
+    "message": "移除帳戶授權",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_custom": {
-    "message": "Transacción personalizada",
+    "message": "自訂交易",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_decode": {
-    "message": "Verificar Clave",
+    "message": "驗證碼",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_sign_buffer": {
-    "message": "Firmar",
+    "message": "簽署",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_signed_call": {
-    "message": "Llamada Firmada",
+    "message": "簽署要求",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_post": {
-    "message": "Publicar",
+    "message": "貼文",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_vote": {
-    "message": "Votar",
+    "message": "投票",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_token_issued_by": {
-    "message": "por @$1",
+    "message": "從@$1",
     "description": "tokens > setting wheel"
   },
   "popup_token_supply": {
-    "message": "Suministro",
+    "message": "提供",
     "description": "tokens > setting wheel"
   },
   "popup_view_tokens_balance": {
-    "message": "Ver tus saldos de tokens personalizado. Puedes ocultar ciertos tokens y ver más información haciendo clic en la rueda de ajustes.",
+    "message": "查看您的自定代幣餘額。 您可以隱藏某些代幣並通過點擊設定來查看更多資訊。",
     "description": "on tokens page "
   },
   "popup_no_tokens": {
-    "message": "Actualmente no tienes ningun token personalizado. Haz clic en la rueda de configuración para obtener información sobre los tokens disponibles.",
+    "message": "查看您的自定代幣餘額。 您可以隱藏某些代幣並通過點擊設定來查看更多資訊。",
     "description": "on tokens page when you dont have any"
   },
   "popup_token_key": {
-    "message": "¡Por favor, añade tu clave activa para enviar tokens!",
+    "message": "請新增您的活躍金鑰以發送代幣！",
     "description": "on tokens when trying to send tokens without having an active key registed "
   },
   "popup_no_such_account": {
-    "message": "¡Este nombre de usuario no está registrado en el blockchain!",
+    "message": "該用戶名未在區塊鏈上註冊！",
     "description": "on tokens page when trying to send tokens to a non existing user"
   },
   "popup_token_success": {
-    "message": "¡Tokens enviados con éxito!",
+    "message": "代幣已成功發送！",
     "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
-    "message": "La transacción ha expirado sin respuesta. Por favor, comprueba el saldo de tu token antes de intentar enviarlo de nuevo.",
+    "message": "交易超時無回應。 請再次檢查您的代幣餘額，然後再嘗試發送。",
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
-    "message": "PROXY",
+    "message": "代理",
     "description": "on witness page "
   },
   "popup_success_wit": {
-    "message": "Votó con éxito por @$1 como un witness.",
+    "message": "成功投票通過@$1作為見證人。",
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Removió su voto exitosamente @$1 como un witness.",
+    "message": "成功未投票@$1作見證人。",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_proxy": {
-    "message": "Eligió exitosamente @$1 para proxy.",
+    "message": "成功選擇@$1作為代理。",
     "description": "on tokens page when chosing a proxy"
   },
   "popup_utils_full": {
-    "message": "¡Ya está lleno!",
+    "message": "已經滿了！",
     "description": "on main page, when rc or mana is full "
   },
   "dialog_ok": {
-    "message": "Ok",
+    "message": "確定",
     "description": "Ok button"
   },
   "dialog_unlock": {
-    "message": "Desbloquear",
+    "message": "解鎖",
     "description": "Unlock button"
   },
   "dialog_cancel": {
-    "message": "Cancelar",
+    "message": "取消",
     "description": "Cancel button"
   },
   "dialog_broadcasting": {
-    "message": "Transmitiendo la transacción al blockchain...",
+    "message": "將交易播送到區塊鏈...",
     "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
-    "message": "Cuenta",
+    "message": "帳號",
     "description": "When website request a transaction"
   },
   "dialog_proposal_ids": {
-    "message": "IDs de propuesta",
+    "message": "提議IDs",
     "description": "When website request a proposal vote"
   },
   "dialog_approve": {
-    "message": "Aprobar",
+    "message": "核准",
     "description": "When website request a witness vote"
   },
   "dialog_key": {
-    "message": "Clave",
+    "message": "私鑰",
     "description": "When website request to decode with a certain key"
   },
   "dialog_author": {
-    "message": "Autor",
+    "message": "開發者",
     "description": "When website request a post"
   },
   "dialog_receiver": {
-    "message": "Receptor",
+    "message": "接收器",
     "description": "When website request a transfer"
   },
   "dialog_auth_account": {
-    "message": "Cuenta autorizada",
+    "message": "授權帳戶",
     "description": "When website request to add authority to an account"
   },
   "dialog_role": {
-    "message": "Rol",
+    "message": "身份",
     "description": "When website request to add authority to an account"
   },
   "dialog_permlink": {
-    "message": "Enlace Permanente",
+    "message": "固定連結",
     "description": "When website request a post"
   },
   "dialog_weight": {
-    "message": "Peso",
+    "message": "强度",
     "description": "When website request a vote"
   },
   "dialog_data": {
-    "message": "Datos <span class='small'>(clic para mostrar)</span>",
+    "message": "數據<span class ='small'>（點擊以顯示）</span>",
     "description": "When website request a custom json"
   },
   "dialog_to": {
-    "message": "A",
+    "message": "至",
     "description": "When website request a transfer"
   },
   "dialog_amount": {
-    "message": "Importe",
+    "message": "金額",
     "description": "When website request a transfer"
   },
   "dialog_balance": {
-    "message": "Balance",
+    "message": "餘額",
     "description": "When website request a transfer"
   },
   "dialog_future_balance": {
-    "message": "Balance futuro",
+    "message": "終值",
     "description": "When website request a transfer"
   },
   "dialog_daily_pay": {
-    "message": "Pago Diario",
+    "message": "日常開支",
     "description": "When website request a proposal creation"
   },
   "dialog_memo": {
-    "message": "Memo",
+    "message": "備註",
     "description": "When website request a transfer"
   },
   "dialog_title": {
-    "message": "Título",
+    "message": "標題",
     "description": "When website request a post"
   },
   "dialog_body": {
-    "message": "Cuerpo <span class='small'>(clic para mostrar)</span>",
+    "message": "數據<span class ='small'>（點擊以顯示）</span>",
     "description": "When website request a post"
   },
   "dialog_period": {
-    "message": "Periodo",
+    "message": "期間",
     "description": "When website request a proposal creation"
   },
   "dialog_extensions": {
-    "message": "Extensiones",
+    "message": "附加元件管理員",
     "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
-    "message": "Metadatos JSON",
+    "message": "JSON元資料",
     "description": "When website request a post"
   },
   "dialog_pu": {
-    "message": "Usuario Padre",
+    "message": "母用戶名",
     "description": "When website request a post"
   },
   "dialog_pp": {
-    "message": "Permlink Padre",
+    "message": "母固定連結",
     "description": "When website request a post"
   },
   "dialog_options": {
-    "message": "Opciones <span class='small'>(clic para mostrar)</span>",
+    "message": "數據<span class ='small'>（點擊以顯示）</span>",
     "description": "When website request a post"
   },
   "dialog_max_payout": {
-    "message": "Máximo Pago Aceptado : ",
+    "message": "最高接受付款： ",
     "description": "When website request a post"
   },
   "dialog_percentage_sbd": {
-    "message": "Porcentaje de SBD : ",
+    "message": "SBD百分比： ",
     "description": "When website request a post"
   },
   "dialog_allow_votes": {
-    "message": "Permitir votos : ",
+    "message": "允許投票：",
     "description": "When website request a post"
   },
   "dialog_allow_curation": {
-    "message": "Permitir curación : ",
+    "message": "允許策展：",
     "description": "When website request a post"
   },
   "dialog_beneficiaries": {
-    "message": "Beneficiarios : ",
+    "message": "受益人：",
     "description": "When website request a post"
   },
   "dialog_delegatee": {
-    "message": "Delegado",
+    "message": "委託",
     "description": "When website request a delegation"
   },
   "dialog_message": {
-    "message": "Mensaje",
+    "message": "訊息",
     "description": "When website request a custom json"
   },
   "dialog_witness": {
-    "message": "Witness",
+    "message": "見證人",
     "description": "When website request a witness vote"
   },
   "dialog_vote": {
-    "message": "Votar",
+    "message": "投票",
     "description": "When website request a witness vote"
   },
   "dialog_confirm": {
-    "message": "Confirmar"
+    "message": "確認"
   },
   "dialog_body_toggle": {
-    "message": "Cuerpo <span class='small'>(clic para mostrar)</span>"
+    "message": "內文<span class ='small'>（點擊以顯示）</span>"
   },
   "dialog_options_toggle": {
-    "message": "Opciones <span class='small'>(clic para mostrar)</span>"
+    "message": "選項<span class ='small'>（點擊以顯示）</span>"
   },
   "dialog_data_toggle": {
-    "message": "Datos <span class='small'>(clic para mostrar)</span>"
+    "message": "數據<span class ='small'>（點擊以顯示）</span>"
   },
   "dialog_header_unlock": {
-    "message": "Desbloquear llavero",
+    "message": "解鎖Keychain",
     "description": "When website request a transaction but keychain is locked"
   },
   "dialog_header_error": {
-    "message": "Error",
+    "message": "錯誤",
     "description": "Generic error"
   },
   "dialog_header_success": {
-    "message": "Éxito",
+    "message": "成功",
     "description": "Generic success message"
   },
   "dialog_header_wrong_pwd": {
-    "message": "¡Contraseña incorrecta!"
+    "message": "密碼錯誤 ！"
   },
   "dialog_header_broadcasting": {
-    "message": "Transmisión",
+    "message": "播送",
     "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
-    "message": "Transacción Personalizada",
+    "message": "自訂交易",
     "description": "Website request title"
   },
   "dialog_title_decode": {
-    "message": "Verificar Clave",
+    "message": "驗證碼",
     "description": "Website request title"
   },
   "dialog_title_sign": {
-    "message": "Firmar Mensaje",
+    "message": "簽署訊息",
     "description": "Website request title"
   },
   "dialog_title_add_auth": {
-    "message": "Añadir Autoridad",
+    "message": "新增權限",
     "description": "Website request title"
   },
   "dialog_title_remove_auth": {
-    "message": "Eliminar Autoridad",
+    "message": "移除權限",
     "description": "Website request title"
   },
   "dialog_title_broadcast": {
-    "message": "Transmitir",
+    "message": "播送",
     "description": "Website request title"
   },
   "dialog_title_call": {
-    "message": "Llamada Firmada",
+    "message": "簽署要求",
     "description": "Website request title"
   },
   "dialog_title_post": {
-    "message": "Publicar",
+    "message": "貼文",
     "description": "Website request title"
   },
   "dialog_title_vote": {
-    "message": "Votar",
+    "message": "投票",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
-    "message": "Transferir",
+    "message": "轉帳",
     "description": "Website request title"
   },
   "dialog_title_delegation": {
-    "message": "Delegación",
+    "message": "委託",
     "description": "Website request title"
   },
   "dialog_title_wit": {
-    "message": "Votar al Witness",
+    "message": "見證人投票",
     "description": "Website request title"
   },
   "dialog_title_token": {
-    "message": "Enviar Tokens",
+    "message": "發送代幣",
     "description": "Website request title"
   },
   "dialog_title_powerup": {
@@ -979,187 +979,187 @@
     "description": "Website request title"
   },
   "dialog_title_powerdown": {
-    "message": "Hacer Power Down",
+    "message": "Power Down",
     "description": "Website request title"
   },
   "dialog_title_create_account": {
-    "message": "Crear una cuenta reclamada",
+    "message": "建立聲明的帳戶",
     "description": "Website request title"
   },
   "dialog_title_create_proposal": {
-    "message": "Crear propuesta de trabajador",
+    "message": "建立工作者提議",
     "description": "Website request title"
   },
   "dialog_title_remove_proposal": {
-    "message": "Eliminar Propuesta de Trabajador",
+    "message": "移除工作者提議",
     "description": "Website request title"
   },
   "dialog_title_vote_proposal": {
-    "message": "Votar por propuesta",
+    "message": "投標提議",
     "description": "Website request title"
   },
   "dialog_no_prompt_verify": {
-    "message": "No volver a pedir que verifique las claves de la cuenta @$1 en $2",
+    "message": "不要再次提示驗證$2上@$1帳戶的密鑰",
     "description": "When a website request a verification using posting key and you dont want it to pop all the time"
   },
   "dialog_no_prompt": {
-    "message": "No volver a pedir que se envíen transacciones $1 desde la cuenta @$2 el $3",
+    "message": "不要再次提示從$3上的@$2帳戶發送$1交易",
     "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
   },
   "dialog_desc_verify": {
-    "message": "El sitio web $1 quiere verificar que tiene acceso a la clave privada $2 para la cuenta: @$3",
+    "message": "網站$1想驗證您是否有權限訪問帳戶的$2私鑰：@$3",
     "description": "key verification message"
   },
   "dialog_desc_sign": {
-    "message": "El sitio web $1 quiere firmar un mensaje usando la clave $2 para la cuenta: @$3",
+    "message": "網站$1想使用帳戶的$2密鑰簽名訊息：@$3",
     "description": "Sign message"
   },
   "dialog_expand": {
-    "message": "...(haga clic para expandir)",
+    "message": "...（點擊展開）",
     "description": "Toggle"
   },
   "bgd_init_no_wallet": {
-    "message": "¡No hay billetera!",
+    "message": "沒有錢包！",
     "description": "when user didnt create a wallet yet"
   },
   "bgd_lifecycle_request_canceled": {
-    "message": "La solicitud fue cancelada por el usuario.",
+    "message": "用戶已取消請求。",
     "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
   },
   "bgd_context_transfer_user": {
-    "message": "Transferir STEEM/SBD a %s",
+    "message": "將STEEM / SBD轉移到%s",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_memo_user": {
-    "message": "Enviar un mensaje de MEMO a @%s",
+    "message": "發送備註訊息到@%s",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_tip_user": {
-    "message": "Dar propina a @%s",
+    "message": "提示 @%s",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_transfer_author": {
-    "message": "Transferir STEEM/SBD a este autor",
+    "message": "將STEEM / SBD轉移給該創辦者",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_memo_author": {
-    "message": "Enviar un mensaje de MEMO a este autor",
+    "message": "給該創辦者發送一條備註訊息",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_tip_author": {
-    "message": "Dar propina a este autor",
+    "message": "給創辦者提示",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_auth_locked": {
-    "message": "¡La cartera está bloqueada!"
+    "message": "錢包已上鎖！"
   },
   "bgd_auth_locked_desc": {
-    "message": "El sitio web actual está tratando de enviar una solicitud a la extensión del navegador Steem Keychain. Por favor, introduzca su contraseña a continuación para desbloquear la cartera y continuar."
+    "message": "目前網站正在嘗試向Steem Keychain瀏覽器擴充功能發送請求。 請在下面輸入密碼以解鎖錢包並繼續。"
   },
   "bgd_auth_canceled": {
-    "message": "La solicitud fue cancelada por el usuario."
+    "message": "用戶已取消請求。"
   },
   "bgd_auth_transfer_no_active": {
-    "message": "El sitio web actual está tratando de enviar una solicitud de transferencia a la extensión del navegador Steem Keychain para la cuenta @$1 usando la clave activa, que no se ha añadido a la cartera."
+    "message": "目前網站正嘗試使用活躍金鑰向帳戶@$1的Steem Keychain瀏覽器擴充功能發送轉移請求，該鑰尚未新增到錢包中。"
   },
   "bgd_auth_transfer_no_memo": {
-    "message": "El sitio web actual está intentando enviar una solicitud a la extensión del navegador Steem Keychain para la cuenta @$1 usando la clave de memo, que no se ha añadido a la cartera."
+    "message": "目前網站正嘗試使用備註金鑰向帳戶@$1的Steem Keychain瀏覽器擴充功能發送轉移請求，該鑰尚未新增到錢包中。"
   },
   "bgd_auth_no_account": {
-    "message": "El sitio web actual está tratando de enviar una solicitud a la extensión del navegador Steem Keychain para la cuenta @$1 que no ha sido añadida a la cartera."
+    "message": "目前網站正嘗試Steem Keychain瀏覽器擴充功能發送請求，該帳戶@$1尚未新增到錢包。"
   },
   "bgd_auth_no_key": {
-    "message": "El sitio web actual está tratando de enviar una solicitud a la extensión del navegador Steem Keychain para la cuenta @$1 usando la clave $2, que no se ha añadido a la cartera."
+    "message": "目前網站正嘗試使用$2金鑰向帳戶@$1的Steem Keychain瀏覽器擴充功能發送轉移請求，該鑰尚未新增到錢包中。"
   },
   "bgd_ops_witness_voted": {
-    "message": "Votado con éxito @$1 por Witness."
+    "message": "成功投票通過@$1作為見證人。"
   },
   "bgd_ops_witness_unvoted": {
-    "message": "Exitosamente no votado @$1 por witness."
+    "message": "成功未投票@$1作見證人。"
   },
   "bgd_ops_vote": {
-    "message": "Votado con éxito por @$1's posteo $2 a $3%."
+    "message": "已成功以@3％的價格投票給@$1的貼文$2。"
   },
   "bgd_ops_transfer_adjust_balance": {
-    "message": "Insuficiente $1 balance en cuenta @$2."
+    "message": "$2帳戶中的餘額不足$1。"
   },
   "bgd_ops_transfer_get_account": {
-    "message": "No se puede encontrar cuenta @$1."
+    "message": "找不到帳戶@$1。"
   },
   "bgd_ops_error_broadcasting": {
-    "message": "Hubo un error al emitir esta transacción, por favor, inténtelo de nuevo."
+    "message": "播送此交易時出錯，請稍後再試。"
   },
   "bgd_ops_error": {
-    "message": "Hubo un error en la transmisión de esta transacción:"
+    "message": "播送此交易時出錯："
   },
   "bgd_ops_transfer_success": {
-    "message": "Transferido exitosamente $1 $2 from @$3 to @$4."
+    "message": "已成功將$1 $2從@$3轉移到@$4。"
   },
   "bgd_ops_tokens": {
-    "message": "La transacción ha sido transmitida con éxito. Por favor, compruebe su saldo para confirmar que ha sido procesada con éxito."
+    "message": "交易已成功播送。 請檢查您的餘額以確認過程是否已成功。"
   },
   "bgd_ops_signed_call": {
-    "message": "¡Todo ha ido bien!"
+    "message": "成功!"
   },
   "bgd_ops_sign_success": {
-    "message": "Mensaje firmado con éxito."
+    "message": "訊息簽署已成功。"
   },
   "bgd_ops_sign_error": {
-    "message": "No se pudo firmar."
+    "message": "無法簽署。"
   },
   "bgd_ops_proposal_create": {
-    "message": "Se ha creado con éxito una nueva propuesta."
+    "message": "成功創立一個新提議。"
   },
   "bgd_ops_proposal_remove": {
-    "message": "Se eliminó con éxito la propuesta #$1."
+    "message": "已成功刪除提議#$1。"
   },
   "bgd_ops_proposal_vote": {
-    "message": "Votó con éxito a favor de la propuesta #$1."
+    "message": "成功為提議#$1投票。"
   },
   "bgd_ops_proposal_unvote": {
-    "message": "Removio su voto exitosamente por la propuesta #$1."
+    "message": "未投票提議#$1成功。"
   },
   "bgd_ops_pu": {
-    "message": "Hizo Power Up $1 STEEM en @$2."
+    "message": "在@$2上Powered up$1 STEEM。"
   },
   "bgd_ops_pd": {
-    "message": "Inició un $1 SP power down en @$2."
+    "message": "在@$2上啟動$1 SP power down。"
   },
   "bgd_ops_pd_stop": {
-    "message": "Se detuvo el Power Down en @$1."
+    "message": "在@$1上停止Power Down。"
   },
   "bgd_ops_post": {
-    "message": "La publicación fue enviada con éxito."
+    "message": "該貼文已成功提交。"
   },
   "bgd_ops_undelegate": {
-    "message": "Se detuvo con éxito la delegación a @$1 de la cuenta @$2."
+    "message": "成功停止從帳戶@$2到@$1的委託。"
   },
   "bgd_ops_delegate": {
-    "message": "$1 SP delegado con éxito de @$3 a @$2."
+    "message": "成功將$1 SP從@$3授權給@$2。"
   },
   "bgd_ops_decode": {
-    "message": "Memo decodificado exitosamente."
+    "message": "備忘錄已成功解碼。"
   },
   "bgd_ops_decode_err": {
-    "message": "No se pudo verificar la clave."
+    "message": "無法驗證密鑰。"
   },
   "bgd_ops_broadcast": {
-    "message": "La transacción ha sido transmitida con éxito."
+    "message": "交易已成功播送。"
   },
   "bgd_ops_create_account": {
-    "message": "Cuenta @$1 creada correctamente."
+    "message": "已成功建立帳戶@$1。"
   },
   "bgd_ops_add_auth": {
-    "message": "Dio con éxito la autoridad de $1 a @$2 en la cuenta @$3."
+    "message": "已成功將$1的權限授予帳戶@$3的@$2。"
   },
   "bgd_ops_remove_auth": {
-    "message": "Se ha eliminado con éxito $1 autoridad de @$2 en la cuenta @$3."
+    "message": "已成功從帳戶@$3的@$2中刪除了$1授權。"
   },
   "popup_account_redeem": {
-    "message": "Tienes recompensas listas para canjear en la cantidad de",
+    "message": "您已準備好兌換一定數量的獎勵",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
   },
   "popup_html_send_transfer": {
-    "message": "Enviar"
+    "message": "送出"
   }
 }
