@@ -5,6 +5,8 @@ class AccountsList {
   init(accounts, last_account) {
     if (accounts) {
       this.accounts = accounts;
+      // Sort the accounts by name
+      this.account.list.sort((a,b) => a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0)      
       // Add the last account selected to the front of the account list.
       if (last_account) {
         let last = this.accounts.list.find(a => a.name == last_account);
