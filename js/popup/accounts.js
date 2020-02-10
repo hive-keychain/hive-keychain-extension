@@ -120,7 +120,7 @@ const getAccountHistory = async () => {
   } else
     $("#acc_transfers div")
       .eq(1)
-      .append(NO_RECENT_TRANSFERS);
+      .append(`<div class="transfer_row">${NO_RECENT_TRANSFERS}</div>`);
 };
 // Adding accounts. Private keys can be entered individually or by the mean of the
 // master key, in which case user can chose which keys to store, mk will then be

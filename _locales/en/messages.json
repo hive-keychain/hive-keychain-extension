@@ -516,7 +516,7 @@
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
   },
   "popup_accounts_no_recent_transfers": {
-    "message": "No recent transfers",
+    "message": "No recent transfer",
     "description": "if history is empty"
   },
   "popup_accounts_already_registered": {
