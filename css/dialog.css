@@ -271,13 +271,13 @@ button {
 #confirm_footer {
   display: none;
   width: 100%;
-  height: 169px;
+  min-height: 169px;
   position: absolute;
   box-sizing: border-box;
   bottom: 0;
   background-color: rgba(0, 156, 156, 0.8);
   margin-left: -32px;
-  padding: 10px 32px 0 32px;
+  padding: 10px 32px 60px 32px;
 }
 
 #confirm_footer button {
