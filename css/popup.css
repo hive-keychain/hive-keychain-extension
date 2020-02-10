@@ -1058,8 +1058,6 @@ input:focus {
 }
 
 .keys_info div {
-  text-overflow: ellipsis;
-  overflow: hidden;
   font-size: 10px;
   line-height: 10px;
 }

@@ -408,14 +408,14 @@ function initiateCustomSelect() {
       } else if (this.innerHTML == "SBD") {
         $(".transfer_balance div")
           .eq(0)
-          .text("SBD Balance");
+          .text(chrome.i18n.getMessage("popup_html_balance", ["SBD"]));
         $(".transfer_balance div")
           .eq(1)
           .html(numberWithCommas(await activeAccount.getSBD()));
       } else if (this.innerHTML == "STEEM") {
         $(".transfer_balance div")
           .eq(0)
-          .text("STEEM Balance");
+          .text(chrome.i18n.getMessage("popup_html_balance", ["STEEM"]));
         $(".transfer_balance div")
           .eq(1)
           .html(numberWithCommas(await activeAccount.getSteem()));
