@@ -392,8 +392,8 @@ const manageKeys = name => {
     .click(function() {
       adding_key = $(this)
         .prevAll(".keys_info_type")
-        .html()
-        .split(" ")[0]
+        .attr("id")
+        .split("_")[0]
         .toLowerCase();
       $("#add_key_div p span").html(adding_key);
       $("#manage_keys").hide();
@@ -440,12 +440,21 @@ const manageKeys = name => {
                   ])
                 );
               else addKeys(index, "active", pwd, pub_active, name);
-            } else
+            } else {
+              console.log(adding_key);
+              console.log(
+                adding_key,
+                chrome.i18n.getMessage(adding_key),
+                chrome.i18n.getMessage("popup_accounts_not_your_key", [
+                  chrome.i18n.getMessage(adding_key)
+                ])
+              );
               showError(
                 chrome.i18n.getMessage("popup_accounts_not_your_key", [
                   chrome.i18n.getMessage(adding_key)
                 ])
               );
+            }
           } else {
             const keys = steem.auth.getPrivateKeys(name, pwd, [
               "posting",
