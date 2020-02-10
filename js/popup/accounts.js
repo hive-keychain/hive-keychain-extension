@@ -52,7 +52,13 @@ const showUserData = async () => {
   ];
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getSteem()));
+    .html(
+      numberWithCommas(
+        $("#currency_send .select-selected").text() === "STEEM"
+          ? await activeAccount.getSteem()
+          : await activeAccount.getSBD()
+      )
+    );
   $("#vm_val").text(" ($" + vd + ")");
 
   $("#rc").html(rc.estimated_pct + "%");
