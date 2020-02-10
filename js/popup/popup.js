@@ -139,7 +139,7 @@ $("#submit_master_pwd").click(function() {
       initializeMainMenu();
       $(".error_div").hide();
     } else {
-      showError(chrome.i18n.getMessage("popup_html_estimation_info"));
+      showError(chrome.i18n.getMessage("popup_password_mismatch"));
     }
   } else {
     showError(chrome.i18n.getMessage("popup_password_regex"));
