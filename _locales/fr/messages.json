@@ -25,6 +25,10 @@
   "wrong_password": {
     "message": "Mot de passe incorrect!"
   },
+  "full_in": {
+    "message": "Plein dans $1",
+    "description": "Full in x days x hours x minutes"
+  },
   "days": {
     "message": "jours"
   },

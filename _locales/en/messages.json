@@ -31,8 +31,8 @@
     "message": "Wrong password!",
     "description": "Wrong pwd upon unlocking"
   },
-  "days": {
-    "message": "Full in",
+  "full_in": {
+    "message": "Full in $1",
     "description": "Full in x days x hours x minutes"
   },
   "days": {

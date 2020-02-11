@@ -62,7 +62,7 @@ const showUserData = async () => {
   $("#vm_val").text(" ($" + vd + ")");
 
   $("#rc").html(rc.estimated_pct + "%");
-  const full = (rc.estimated_pct == 100 ? "" : "Full in ") + rc.fullin;
+  const full = rc.fullin;
   $("#rc_info").attr("title", full);
   const accountValue = await activeAccount.getAccountValue();
   if (accountValue) {

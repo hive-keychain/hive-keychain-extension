@@ -206,7 +206,7 @@ function getTimeBeforeFull(votingPower) {
   // 1% every 72minutes
   var minutesNeeded = remainingPowerToGet * 72;
   if (minutesNeeded === 0) {
-    fullInString = chrome.i18n.getMessage("popup_utils_full");
+    return chrome.i18n.getMessage("popup_utils_full");
   } else {
     var fullInDays = parseInt(minutesNeeded / 1440);
     var fullInHours = parseInt((minutesNeeded - fullInDays * 1440) / 60);
@@ -234,7 +234,7 @@ function getTimeBeforeFull(votingPower) {
             ? ` ${chrome.i18n.getMessage("minutes")} `
             : ` ${chrome.i18n.getMessage("minute")} `));
   }
-  return fullInString;
+  return chrome.i18n.getMessage("full_in", [fullInString]);
 }
 
 // Get STEEM price from Bittrex

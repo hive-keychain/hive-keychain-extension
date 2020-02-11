@@ -74,7 +74,7 @@ class Account {
 
   async getVotingMana() {
     const vm = await getVotingMana(await this.getAccountInfos());
-    const full = (vm == 100 ? "" : "Full in ") + getTimeBeforeFull(vm * 100);
+    const full = getTimeBeforeFull(vm * 100);
     return [vm, full];
   }
 
