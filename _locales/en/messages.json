@@ -32,6 +32,10 @@
     "description": "Wrong pwd upon unlocking"
   },
   "days": {
+    "message": "Full in",
+    "description": "Full in x days x hours x minutes"
+  },
+  "days": {
     "message": "days",
     "description": "Full in x days x hours x minutes"
   },

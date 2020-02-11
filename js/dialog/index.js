@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
           : chrome.i18n.getMessage("dialog_header_error")
       );
       $("#dialog_header").addClass("error_header");
-      $("#error_dialog").text(msg.msg.display_msg);
+      $("#error_dialog").html(msg.msg.display_msg);
       $("#modal-body-msg").hide();
       $(".modal-body-error").show();
       $(".dialog-message").hide();
@@ -91,7 +91,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.data.display_msg) {
       $("#modal-body-msg .msg-data").css("max-height", "245px");
       $("#dialog_message").show();
-      $("#dialog_message").text(msg.data.display_msg);
+      $("#dialog_message").html(msg.data.display_msg);
     }
 
     if (type == "transfer") {
