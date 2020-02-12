@@ -31,6 +31,10 @@
     "message": "잘못된 비밀번호입니다!",
     "description": "Wrong pwd upon unlocking"
   },
+  "full_in": {
+    "message": "충전 완료: $1",
+    "description": "Full in x days x hours x minutes"
+  },
   "days": {
     "message": "일",
     "description": "Full in x days x hours x minutes"
@@ -56,7 +60,7 @@
     "description": "Full in x days x hours x minutes"
   },
   "popup_html_register": {
-    "message": "스팀 계정에 접근할 때 Steem Keychain을 이용하면 더 좋습니다. 간편하면서도 가볍고 안전합니다. <br><br> Let's start by creating a Keychain 전용 비밀번호를 만드는 것부터 시작해볼까요?. 이 비밀번호는 계정에 접근하거나 계정 관련 변경사항이 있을 때 필요할 것입니다.",
+    "message": "스팀 계정에 접근할 때 Steem Keychain을 이용하면 더 좋습니다. 간편하면서도 가볍고 안전합니다. <br><br> Keychain 전용 비밀번호를 만드는 것부터 시작해봅시다. 이 비밀번호는 계정에 접근하거나 계정 관련 변경사항이 있을 때 필요합니다.",
     "description": "Text on registration page"
   },
   "popup_html_unlock": {
@@ -91,7 +95,7 @@
     "description": "After clicking forgot password"
   },
   "popup_html_reset_desc": {
-    "message": "비밀번호가 기억나지 않는다면, 데이터를 삭제한 다음 새롭게 시작할 수 있지만 키를 다시 입력해야 합니다.",
+    "message": "비밀번호가 기억나지 않을 때, 기존 데이터를 삭제한 후 새롭게 시작할 수 있지만 키를 다시 입력해야 합니다.",
     "description": "text after clicking forgot password"
   },
   "popup_html_vm": {
@@ -136,7 +140,7 @@
     "description": "on popup main page"
   },
   "popup_html_estimation_info_text": {
-    "message": "계정 보유 자산 예상 가치는 보유 자산을 USD로 환산한 대략적인 가치입니다.<br><br>            대기 중인 마켓 거래나 전송, 트랜잭션은 가치 산정에 포함되지 않습니다.",
+    "message": "계정 보유 자산 예상 가치는 보유 자산을 USD로 환산한 대략적인 가치입니다.<br><br>대기 중인 마켓 거래나 전송, 트랜잭션은 가치 산정에 포함되지 않습니다.",
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {
@@ -144,7 +148,7 @@
     "description": "Upon clicking on History"
   },
   "popup_html_setup_text": {
-    "message": "스팀 계정 이름을 입력하고 마스터 비밀번호, 개인 포스팅 키, 개인 액티브 키 가운데 하나를 계정 아래 칸에 입력하세요. 마스터 비밀번호는 저장되지 않으며, 개인 키 생성 목적으로만 사용될 것입니다.<br/><br/> 언젠든지 스팀 계정 이나 키를 추가하거나 삭제할 수 있습니다. 새로운 스팀 계정을 만들고 싶은 경우, <a href=\"https://signup.steemit.com/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">https://signup.steemit.com/</a>을 통해 계정 생성을 진행할 수 있습니다.",
+    "message": "스팀 계정 이름을 입력하고 마스터 비밀번호, 개인 포스팅 키, 개인 액티브 키 가운데 하나를 개인 키 란에 입력하세요. 마스터 비밀번호는 저장되지 않으며, 개인 키 생성 목적으로만 사용될 것입니다.<br/><br/> 언제든지 스팀 계정 또는 키를 추가하거나 삭제할 수 있습니다. 새로운 스팀 계정을 만들고 싶은 경우, <a href=\"https://signup.steemit.com/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">https://signup.steemit.com/</a>을 통해 계정 생성을 진행할 수 있습니다.",
     "description": "When adding new account"
   },
   "popup_html_setup": {
@@ -272,7 +276,7 @@
     "description": "on keychainify settings"
   },
   "popup_html_about_text": {
-    "message": "Steem Keychain 브라우저 확장 프로그램 아이디어와 컨셉은 스팀 블록체인 증인이자 개발자로 활동 중인 <a href=\"https://steemit.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a>이 구상한 것입니다. 스팀 증인이자 스팀 개발자(SteemPlus)인 <a href=\"https://steemit.com/@stoodkev\" target=\"_blank\">@stoodkev</a>가 Steem Keychain 기능 대부분을 개발했습니다. 설계와 개발 자금은 @aggroed (스팀 상위 20 위 증인 중 한 명), @yabapmatt 이 함께 운영하는 블록체인 기반 수집 카드 거래 게임인 Splinterlands를 통해 지원받았습니다. <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>를 방문하시면 Splinterlands에 대해 더 자세한 정보를 확인하실 수 있습니다!",
+    "message": "Steem Keychain 브라우저 확장 프로그램 <br>아이디어와 컨셉은 스팀 블록체인 증인이자 개발자로 활동 중인 <a href=\"https://steemit.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a>이 구상한 것입니다. 스팀 증인이자 스팀 개발자(SteemPlus)인 <a href=\"https://steemit.com/@stoodkev\" target=\"_blank\">@stoodkev</a>가 Steem Keychain 기능 대부분을 개발했습니다. 설계와 개발 자금은 @aggroed (스팀 상위 20 위 증인 중 한 명), @yabapmatt 이 함께 운영하는 블록체인 기반 수집 카드 거래 게임인 Splinterlands를 통해 지원받았습니다. <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>를 방문하시면 Splinterlands에 대해 더 자세한 정보를 확인하실 수 있습니다!",
     "description": "on about keychain"
   },
   "popup_html_remove": {
@@ -316,7 +320,7 @@
     "description": "on manage accounts, add a previously non stored key"
   },
   "popup_html_add_key_text": {
-    "message": "계정에 <span></span> 개인 키를 추가하세요. 마스터 비밀번호를 입력해서 이러한 키를 추가할 수도 있습니다.",
+    "message": "계정에 <span></span> 개인 키를 추가하세요. 마스터 <br>비밀번호를 입력해서 이러한 키를 추가할 수도 있습니다.",
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
@@ -324,7 +328,7 @@
     "description": "on preferences when clicking on a key"
   },
   "popup_html_change_password_text": {
-    "message": "확인을 위해 기존 비밀 번호를 입력한 후, 새로운 비밀번호를 설정하세요.",
+    "message": "확인을 위해 기존 비밀 번호를 입력한 후, 신규 비밀번호를 설정하세요.",
     "description": "on change password"
   },
   "popup_html_old_password": {
@@ -400,7 +404,7 @@
     "description": "On witness page"
   },
   "popup_html_witness_voted": {
-    "message": "투표 완료",
+    "message": "투표현황",
     "description": "On witness page. Tab name, keep short"
   },
   "popup_html_witness_top": {
@@ -452,7 +456,7 @@
     "description": "Main page > Power Up . Current SP balance"
   },
   "popup_html_powerup_text": {
-    "message": "파워 업을 하면 스팀이 스팀 파워로 변환됩니다.",
+    "message": "스팀을 파워 업하면 스팀 파워로 변환됩니다.",
     "description": "Main page > Power Up"
   },
   "popup_html_powerdown_text": {
@@ -500,7 +504,7 @@
     "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
   },
   "popup_html_support": {
-    "message": "Steem Keychain 개발에 도움을 주고 싶은 분들은 여기를 클릭해서 Steem Keychain 작성자에게 증인 투표를 해주세요!",
+    "message": "Steem Keychain 작성자에게 증인 투표를 해주시면 Steem Keychain 개발에 도움이 됩니다!",
     "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
   },
   "popup_accounts_reveal_private": {
@@ -512,7 +516,7 @@
     "description": "instead of estimated value, if cant reach bittrex api"
   },
   "popup_accounts_add_memo": {
-    "message": "이 메모를 읽으려면 개인 메모키를 추가하세요.",
+    "message": "이 메모를 읽으려면 개인 메모키를 추가해야 합니다.",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
   },
   "popup_accounts_no_recent_transfers": {
@@ -528,7 +532,7 @@
     "description": "when adding new account with incorrect key"
   },
   "popup_accounts_incorrect_user": {
-    "message": "사용자 이름 확인 후 다시 시도해주세요.",
+    "message": "사용자 이름을 확인하신 후 다시 시도해주세요.",
     "description": "when adding new account but the username doesnt exist"
   },
   "popup_accounts_fill": {
@@ -540,11 +544,11 @@
     "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
   },
   "popup_accounts_not_your_key": {
-    "message": "$1 키는 당신의 키가 아닙니다!",
+    "message": "이것은 당신의 $1 키가 아닙니다!",
     "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
   },
   "popup_accounts_not_wif": {
-    "message": "이것은 개인 키가 아닙니다!",
+    "message": "이것은 개인 키 포맷이 아닙니다!",
     "description": "not a private key"
   },
   "popup_accounts_try_again": {
@@ -552,7 +556,7 @@
     "description": "Generic unknown error, user is invited to try again"
   },
   "popup_accounts_err_claim": {
-    "message": "보상을 요청하려면 개인 포스팅 키를 등록해야 합니다!",
+    "message": "보상 요청은 개인 포스팅 키 등록이 필요합니다!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
   "popup_delegate_key": {
@@ -572,7 +576,7 @@
     "description": "when registering a password on keychain"
   },
   "popup_password_regex": {
-    "message": "비밀번호는 소문자, 대문자, 숫자를 포함한 최소 8자 이상 또는 16자 이상(아무런 제약없이 구성 가능) 이어야 합니다.",
+    "message": "비밀번호는 소문자, 대문자, 숫자를 포함한 <br> 최소 8자 이상 또는 16자 이상(아무런 제약없이 구성 가능)이어야 합니다.",
     "description": "when registering the master pwd on keychain"
   },
   "popup_add_account": {
@@ -696,11 +700,11 @@
     "description": "tokens > setting wheel"
   },
   "popup_view_tokens_balance": {
-    "message": "커스텀 토큰 잔액을 확인하세요. 설정 아이콘을 클릭해서 특정 토큰을 숨기거나 추가 정보를 확인할 수 있습니다.",
+    "message": "커스텀 토큰 잔액을 확인하세요. 설정 버튼을 클릭해서 특정 토큰을 숨기거나 추가 정보를 확인할 수 있습니다.",
     "description": "on tokens page "
   },
   "popup_no_tokens": {
-    "message": "현재 보유 중인 커스텀 토큰이 없습니다. 톱니 바퀴 모양의 설정 아이콘을 클릭하면 이용 가능한 토큰에 관한 정보를 확인할 수 있습니다.",
+    "message": "현재 보유 중인 커스텀 토큰이 없습니다. 톱니 바퀴 모양의 설정 버튼을 클릭하면 이용 <br>가능한 토큰 정보를 확인할 수 있습니다.",
     "description": "on tokens page when you dont have any"
   },
   "popup_token_key": {
@@ -904,7 +908,7 @@
     "message": "데이터 <span class='small'>(클릭해서 내용 보기)</span>"
   },
   "dialog_header_unlock": {
-    "message": "Keychain 잠금을 해제하세요",
+    "message": "Keychain 잠금 해제",
     "description": "When website request a transaction but keychain is locked"
   },
   "dialog_header_error": {
@@ -999,11 +1003,11 @@
     "description": "Website request title"
   },
   "dialog_no_prompt_verify": {
-    "message": "$2에서 @$1 계정 키를 확인하는 창을 더이상 띄우지 마세요.",
+    "message": "$2에서 @$1 계정 키를 확인하는 창을 다시 보고 싶지 않습니다.",
     "description": "When a website request a verification using posting key and you dont want it to pop all the time"
   },
   "dialog_no_prompt": {
-    "message": "$3 에서 @$2 계정으로부터 발생하는 $1 트랜잭션 전송은 더이상 확인 창을 띄우지 마세요.",
+    "message": "$3 의 @$2 계정에서 발생하는 $1 트랜잭션 확인 창을 다시 보고 싶지 않습니다.",
     "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
   },
   "dialog_desc_verify": {

@@ -4,7 +4,7 @@
     "description": "Extension name, night not need to translate it."
   },
   "description": {
-    "message": "Extensión segura de Steem Wallet.",
+    "message": "Extensión Segura de Steem Wallet.",
     "description": "Extension description, as shown in the store."
   },
   "transaction_error": {
@@ -30,6 +30,10 @@
   "wrong_password": {
     "message": "¡Contraseña incorrecta!",
     "description": "Wrong pwd upon unlocking"
+  },
+  "full_in": {
+    "message": "Completo en $1",
+    "description": "Full in x days x hours x minutes"
   },
   "days": {
     "message": "días",
@@ -700,7 +704,7 @@
     "description": "on tokens page "
   },
   "popup_no_tokens": {
-    "message": "Actualmente no tienes ningun token personalizado. Haz clic en la rueda de configuración para obtener información sobre los tokens disponibles.",
+    "message": "Actualmente no tienes ningún token personalizado. Haz clic en la rueda de configuración para obtener información sobre los tokens disponibles.",
     "description": "on tokens page when you dont have any"
   },
   "popup_token_key": {
@@ -840,7 +844,7 @@
     "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
-    "message": "Metadatos JSON",
+    "message": "Metadata JSON",
     "description": "When website request a post"
   },
   "dialog_pu": {
@@ -1075,7 +1079,7 @@
     "message": "Votado con éxito @$1 por Witness."
   },
   "bgd_ops_witness_unvoted": {
-    "message": "Exitosamente no votado @$1 por witness."
+    "message": "Exitosamente desvotado @$1 por witness."
   },
   "bgd_ops_vote": {
     "message": "Votado con éxito por @$1's posteo $2 a $3%."
@@ -1093,7 +1097,7 @@
     "message": "Hubo un error en la transmisión de esta transacción:"
   },
   "bgd_ops_transfer_success": {
-    "message": "Transferido exitosamente $1 $2 from @$3 to @$4."
+    "message": "Transferido exitosamente $1 $2 desde @$3 a @$4."
   },
   "bgd_ops_tokens": {
     "message": "La transacción ha sido transmitida con éxito. Por favor, compruebe su saldo para confirmar que ha sido procesada con éxito."
@@ -1117,7 +1121,7 @@
     "message": "Votó con éxito a favor de la propuesta #$1."
   },
   "bgd_ops_proposal_unvote": {
-    "message": "Removio su voto exitosamente por la propuesta #$1."
+    "message": "Removió su voto exitosamente por la propuesta #$1."
   },
   "bgd_ops_pu": {
     "message": "Hizo Power Up $1 STEEM en @$2."

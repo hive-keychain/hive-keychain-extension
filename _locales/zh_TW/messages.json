@@ -31,6 +31,10 @@
     "message": "密碼錯誤 ！",
     "description": "Wrong pwd upon unlocking"
   },
+  "full_in": {
+    "message": "將滿$1",
+    "description": "Full in x days x hours x minutes"
+  },
   "days": {
     "message": "天",
     "description": "Full in x days x hours x minutes"
@@ -308,7 +312,7 @@
     "description": "on preferences"
   },
   "popup_html_rpc_node": {
-    "message": "RPC Node",
+    "message": "遠端程序呼叫 Node",
     "description": "on preferences"
   },
   "popup_html_add_key": {
@@ -1093,7 +1097,7 @@
     "message": "播送此交易時出錯："
   },
   "bgd_ops_transfer_success": {
-    "message": "已成功將$1 $2從@$3轉移到@$4。"
+    "message": "已成功將$1$2從@$3轉移到@$4。"
   },
   "bgd_ops_tokens": {
     "message": "交易已成功播送。 請檢查您的餘額以確認過程是否已成功。"

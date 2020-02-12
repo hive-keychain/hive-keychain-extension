@@ -31,6 +31,10 @@
     "message": "密码错误 ！",
     "description": "Wrong pwd upon unlocking"
   },
+  "full_in": {
+    "message": "将满$1",
+    "description": "Full in x days x hours x minutes"
+  },
   "days": {
     "message": "天",
     "description": "Full in x days x hours x minutes"
