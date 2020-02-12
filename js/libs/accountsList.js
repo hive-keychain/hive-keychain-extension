@@ -4,9 +4,12 @@ class AccountsList {
   }
   init(accounts, last_account) {
     if (accounts) {
-      this.accounts = accounts;
+			this.accounts = accounts;
+			this.accounts.list = this.accounts.list.map(e => new Account(e));
+
       // Sort the accounts by name
-      this.account.list.sort((a,b) => a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0)      
+			this.accounts.list.sort((a,b) => a.getName() < b.getName() ? -1 : a.getName() > b.getName() ? 1 : 0)      
+			
       // Add the last account selected to the front of the account list.
       if (last_account) {
         let last = this.accounts.list.find(a => a.name == last_account);
@@ -15,7 +18,6 @@ class AccountsList {
           this.accounts.list.unshift(last);
         }
       }
-      this.accounts.list = this.accounts.list.map(e => new Account(e));
     }
   }
   getList() {
