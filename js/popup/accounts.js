@@ -423,7 +423,7 @@ function manageKeys(name) {
                     if (weight)
                         addKeys(index, adding_key, keys[adding_key], pub, name);
                     else
-                        showError("Not a private WIF!");
+                        showError("This password does not give you the " + adding_key + " role!");
                 }
             } else {
                 showError("Please try again later!");
