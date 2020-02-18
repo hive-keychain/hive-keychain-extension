@@ -85,7 +85,13 @@ const saveNoConfirm = msg => {
 const unlockFromDialog = msg => {
   chrome.storage.local.get(["accounts"], function(items) {
     if (!items.accounts) {
-      sendErrors(msg.tab, "no_wallet", "No wallet!", "", msg.data);
+      sendErrors(
+        msg.tab,
+        "no_wallet",
+        chrome.i18n.getMessage("bgd_init_no_wallet"),
+        "",
+        msg.data
+      );
     } else {
       if (decryptToJson(items.accounts, msg.mk) != null) {
         mk = msg.mk;

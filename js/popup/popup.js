@@ -117,7 +117,7 @@ $("#submit_unlock").click(function() {
       initializeMainMenu();
       initializeVisibility();
     } else {
-      showError("Wrong password!");
+      showError(chrome.i18n.getMessage("wrong_password"));
     }
   });
 });
@@ -139,12 +139,10 @@ $("#submit_master_pwd").click(function() {
       initializeMainMenu();
       $(".error_div").hide();
     } else {
-      showError("Your passwords do not match!");
+      showError(chrome.i18n.getMessage("popup_password_mismatch"));
     }
   } else {
-    showError(
-      "Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter and a digit or be at least 16 characters long without restriction."
-    );
+    showError(chrome.i18n.getMessage("popup_password_regex"));
   }
 });
 function acceptMP(mp) {
@@ -184,7 +182,11 @@ function initializeMainMenu() {
         }
         $(".usernames select")
           .eq(0)
-          .append("<option name='add_account'>Add New Account</option>");
+          .append(
+            `<option name='add_account'>${chrome.i18n.getMessage(
+              "popup_add_account"
+            )}</option>`
+          );
         initiateCustomSelect();
       } else {
         $("#main").hide();
@@ -211,9 +213,9 @@ function confirmTransfer() {
   $("#to_conf_transfer").text("@" + to);
   $("#amt_conf_transfer").text(amount + " " + currency);
   $("#memo_conf_transfer").text(
-    (memo == "" ? "Empty" : memo) +
+    (memo == "" ? chrome.i18n.getMessage("popup_empty") : memo) +
       ((memo != "" && $("#encrypt_memo").prop("checked")) || memo[0] == "#"
-        ? " (encrypted)"
+        ? ` (${chrome.i18n.getMessage("popup_encrypted")})`
         : "")
   );
 }
@@ -263,7 +265,7 @@ function voteFor(name) {
         .eq(0)
         .html()
     );
-    showError("Please enter your active key to vote for witnesses!");
+    showError(chrome.i18n.getMessage("popup_witness_key"));
   }
 }
 
@@ -318,7 +320,7 @@ async function sendTransfer() {
           }
           $(".error_div").hide();
           $(".success_div")
-            .html("Transfer successful!")
+            .html(chrome.i18n.getMessage("popup_transfer_success"))
             .show();
           chrome.storage.local.get({transfer_to: JSON.stringify({})}, function(
             items
@@ -345,13 +347,13 @@ async function sendTransfer() {
           }, 5000);
         } else {
           $(".success_div").hide();
-          showError("Something went wrong! Please try again!");
+          showError(chrome.i18n.getMessage("unknown_error"));
         }
         $("#send_transfer").show();
       }
     );
   } else {
-    showError("Please fill the fields!");
+    showError(chrome.i18n.getMessage("popup_accounts_fill"));
     $("#send_loader").hide();
     $("#send_transfer").show();
   }

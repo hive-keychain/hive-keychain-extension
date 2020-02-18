@@ -1,4 +1,13 @@
-const REVEAL_PRIVATE = "Click to show private key";
+const REVEAL_PRIVATE = chrome.i18n.getMessage("popup_accounts_reveal_private");
+const TO = chrome.i18n.getMessage("popup_html_transfer_to");
+const FROM = chrome.i18n.getMessage("popup_html_transfer_from");
+const NO_RECENT_TRANSFERS = chrome.i18n.getMessage(
+  "popup_accounts_no_recent_transfers"
+);
+const INCORRECT_KEY = chrome.i18n.getMessage("popup_accounts_incorrect_key");
+const INCORRECT_USER = chrome.i18n.getMessage("popup_accounts_incorrect_user");
+const FILL = chrome.i18n.getMessage("popup_accounts_fill");
+
 // All functions regarding the handling of a particular account
 // Load account information
 const loadAccount = async name => {
@@ -43,17 +52,25 @@ const showUserData = async () => {
   ];
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getSteem()));
+    .html(
+      numberWithCommas(
+        $("#currency_send .select-selected").text() === "STEEM"
+          ? await activeAccount.getSteem()
+          : await activeAccount.getSBD()
+      )
+    );
   $("#vm_val").text(" ($" + vd + ")");
 
   $("#rc").html(rc.estimated_pct + "%");
-  const full = (rc.estimated_pct == 100 ? "" : "Full in ") + rc.fullin;
+  const full = rc.fullin;
   $("#rc_info").attr("title", full);
   const accountValue = await activeAccount.getAccountValue();
   if (accountValue) {
     $("#account_value_amt").html(accountValue);
   } else {
-    $("#account_value_amt").html("Bittrex is unreachable");
+    $("#account_value_amt").html(
+      chrome.i18n.getMessage("popup_accounts_no_bittrex")
+    );
   }
 };
 
@@ -74,7 +91,7 @@ const getAccountHistory = async () => {
           try {
             memo = window.decodeMemo(activeAccount.getKey("memo"), memo);
           } catch (e) {}
-        } else memo = "Add your private memo key to read this memo";
+        } else memo = chrome.i18n.getMessage("popup_accounts_add_memo");
       }
       var transfers_element = $(
         "<div class='transfer_row'><span class='transfer_date' title='" +
@@ -87,8 +104,8 @@ const getAccountHistory = async () => {
           transfer[1].op[1].amount.split(" ")[0] +
           "</span><span class='transfer_name'>" +
           (transfer[1].op[1].from == activeAccount.getName()
-            ? "TO: @" + transfer[1].op[1].to
-            : "FROM: @" + transfer[1].op[1].from) +
+            ? `${TO}: @` + transfer[1].op[1].to
+            : `${FROM}: @` + transfer[1].op[1].from) +
           "</span><span class='transfer_cur'>" +
           transfer[1].op[1].amount.split(" ")[1] +
           "</span></div>"
@@ -109,7 +126,7 @@ const getAccountHistory = async () => {
   } else
     $("#acc_transfers div")
       .eq(1)
-      .append("No recent transfers");
+      .append(`<div class="transfer_row">${NO_RECENT_TRANSFERS}</div>`);
 };
 // Adding accounts. Private keys can be entered individually or by the mean of the
 // master key, in which case user can chose which keys to store, mk will then be
@@ -120,7 +137,9 @@ $("#check_add_account").click(function() {
   const pwd = $("#pwd").val();
   if (username !== "" && pwd !== "") {
     if (accountsList && accountsList.get(username)) {
-      showError("You already registered an account for @" + username + "!");
+      showError(
+        chrome.i18n.getMessage("popup_accounts_already_registered", [username])
+      );
     } else
       steem.api.getAccounts([username], function(err, result) {
         if (result.length != 0) {
@@ -168,15 +187,15 @@ $("#check_add_account").click(function() {
               $("#add_account_div").hide();
               $("#master_check").show();
             } else {
-              showError("Incorrect private key or password.");
+              showError(INCORRECT_KEY);
             }
           }
         } else {
-          showError("Please check the username and try again.");
+          showError(INCORRECT_USER);
         }
       });
   } else {
-    showError("Please fill the fields.");
+    showError(FILL);
   }
 });
 
@@ -373,8 +392,8 @@ const manageKeys = name => {
     .click(function() {
       adding_key = $(this)
         .prevAll(".keys_info_type")
-        .html()
-        .split(" ")[0]
+        .attr("id")
+        .split("_")[0]
         .toLowerCase();
       $("#add_key_div p span").html(adding_key);
       $("#manage_keys").hide();
@@ -396,20 +415,46 @@ const manageKeys = name => {
           if (steem.auth.isWif(pwd)) {
             if (adding_key == "memo" && isMemoWif(pwd, pub_memo)) {
               if (keys.hasOwnProperty("memo"))
-                showError("You already entered your memo key!");
+                showError(
+                  chrome.i18n.getMessage("popup_accounts_already_have_key", [
+                    chrome.i18n.getMessage("memo")
+                  ])
+                );
               else addKeys(index, "memo", pwd, pub_memo, name);
             } else if (
               adding_key == "posting" &&
               isPostingWif(pwd, pub_posting)
             ) {
               if (keys.hasOwnProperty("posting"))
-                showError("You already entered your posting key!");
+                showError(
+                  chrome.i18n.getMessage("popup_accounts_already_have_key", [
+                    chrome.i18n.getMessage("posting")
+                  ])
+                );
               else addKeys(index, "posting", pwd, pub_posting, name);
             } else if (adding_key == "active" && isActiveWif(pwd, pub_active)) {
               if (keys.hasOwnProperty("active"))
-                showError("You already entered your active key!");
+                showError(
+                  chrome.i18n.getMessage("popup_accounts_already_have_key", [
+                    chrome.i18n.getMessage("active")
+                  ])
+                );
               else addKeys(index, "active", pwd, pub_active, name);
-            } else showError("This is not your " + adding_key + " key!");
+            } else {
+              console.log(adding_key);
+              console.log(
+                adding_key,
+                chrome.i18n.getMessage(adding_key),
+                chrome.i18n.getMessage("popup_accounts_not_your_key", [
+                  chrome.i18n.getMessage(adding_key)
+                ])
+              );
+              showError(
+                chrome.i18n.getMessage("popup_accounts_not_your_key", [
+                  chrome.i18n.getMessage(adding_key)
+                ])
+              );
+            }
           } else {
             const keys = steem.auth.getPrivateKeys(name, pwd, [
               "posting",
@@ -436,10 +481,10 @@ const manageKeys = name => {
                   break;
               }
               addKeys(index, adding_key, keys[adding_key], pub, name);
-            } else showError("Not a private WIF!");
+            } else showError(chrome.i18n.getMessage("popup_accounts_not_wif"));
           }
         } else {
-          showError("Please try again later!");
+          showError(chrome.i18n.getMessage("popup_accounts_try_again"));
         }
       });
     });
@@ -505,10 +550,7 @@ const claimRewards = async () => {
                 $("#claim_rewards button").prop("disabled", false);
                 initializeMainMenu();
               });
-            else
-              showError(
-                "You need to enter your private Posting key to claim rewards!"
-              );
+            else showError(chrome.i18n.getMessage("popup_accounts_err_claim"));
           });
         $(".close_claim")
           .unbind("click")

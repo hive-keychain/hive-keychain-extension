@@ -14,35 +14,26 @@ chrome.storage.local.get(["hidden_tokens"], function(items) {
 getTokens().then(function(tok) {
   tokens = tok;
   for (token of tokens) {
-    let html =
-      "<div class='row_existing_tokens'>\
-    <div class='key_checkbox'>\
-    <label class='checkbox_container'>\
-    <span class='name_token'>" +
-      token.name +
-      "</span>";
+    let html = `<div class='row_existing_tokens'>
+    <div class='key_checkbox'>
+    <label class='checkbox_container'>
+    <span class='name_token'>${token.name}</span>`;
     if (token.url)
-      html +=
-        "<a target='_blank' href='" +
-        token.url +
-        "'><img src='../images/link.png' class='img_token'/></a>";
-    html +=
-      "<span class='symbol_token'>" +
-      token.symbol +
-      "</span>\
-    <span class='issuer_token'>by @" +
-      token.issuer +
-      "</span>\
-    <div class='supply_token'>Supply: " +
-      numberWithCommas(nFormatter(token.supply, 3)) +
-      "/" +
-      numberWithCommas(nFormatter(token.maxSupply, 3)) +
-      "</div>\
-      <input type='checkbox' checked=true class='check_row_token'/>\
-      <span class='checkmark'/>\
-    </label>\
-    </div>\
-    ";
+      html += `<a target='_blank' href='${token.url}'><img src='../images/link.png' class='img_token'/></a>`;
+    html += `<span class='symbol_token'>${token.symbol}</span>
+    <span class='issuer_token'>${chrome.i18n.getMessage(
+      "popup_token_issued_by",
+      [token.issuer]
+    )}</span><div class='supply_token'>${chrome.i18n.getMessage(
+      "popup_token_supply"
+    )}: ${numberWithCommas(nFormatter(token.supply, 3))}/${numberWithCommas(
+      nFormatter(token.maxSupply, 3)
+    )}</div>
+      <input type='checkbox' checked=true class='check_row_token'/>
+      <span class='checkmark'/>
+    </label>
+    </div>
+    `;
 
     $("#existing_tokens").append(html);
   }
@@ -74,7 +65,6 @@ getTokens().then(function(tok) {
             .parent()
             .toggle();
       }
-      console.log(hidden_tokens);
       chrome.storage.local.set({
         hidden_tokens: JSON.stringify(hidden_tokens)
       });
@@ -87,18 +77,14 @@ function showTokenBalances() {
     $("#tokens_list").empty();
     for (token of tokenBalances) {
       $("#tokens_list").append(
-        "<div class='row_token_balance'>\
-      <span>" +
-          addCommas(token.balance) +
-          "</span>\
-      <span class='symbol_owned_token'>" +
-          token.symbol +
-          "</span>\
-      <img src='../images/history.png' class='history_token_icon'/>\
-      <img src='../images/transfer.png' class='send_token_icon' symbol='" +
-          token.symbol +
-          "'/>\
-      </div>"
+        `<div class='row_token_balance'>
+      <span>${addCommas(token.balance)}</span>
+      <span class='symbol_owned_token'>${token.symbol}</span>
+      <img src='../images/history.png' class='history_token_icon'/>
+      <img src='../images/transfer.png' class='send_token_icon' symbol='${
+        token.symbol
+      }'/>
+      </div>`
       );
     }
 
@@ -111,20 +97,15 @@ function showTokenBalances() {
 
     if (tokenBalances.length) {
       $("#tokens_div p").html(
-        "View your custom token balances. You can hide certain tokens and see more information by clicking the settings wheel."
+        chrome.i18n.getMessage("popup_view_tokens_balance")
       );
     } else {
-      $("#tokens_div p").html(
-        "You currently don't have any custom tokens. Click on the settings wheel to get information about the tokens available."
-      );
+      $("#tokens_div p").html(chrome.i18n.getMessage("popup_no_tokens"));
     }
 
     if (!activeAccount.hasKey("active")) {
       $("#send_tok").addClass("disabled");
-      $("#wrap_tok").attr(
-        "title",
-        "Please add your active key to send tokens!"
-      );
+      $("#wrap_tok").attr("title", chrome.i18n.getMessage("popup_token_key"));
     } else {
       $("#send_tok").removeClass("disabled");
       $("#wrap_tok").removeAttr("title");
@@ -183,8 +164,10 @@ function showTokenBalances() {
                 "</span>\
 										<span class='history_name'>" +
                 (elt.from == activeAccount.getName()
-                  ? "TO: @" + elt.to
-                  : "FROM: @" + elt.from) +
+                  ? `${chrome.i18n.getMessage("popup_html_transfer_to")}: @` +
+                    elt.to
+                  : `${chrome.i18n.getMessage("popup_html_transfer_from")}: @` +
+                    elt.from) +
                 "</span>\
 										<span class='history_cur'>" +
                 elt.symbol +
@@ -240,7 +223,7 @@ async function sendToken(account_to, token, amount, memo) {
   };
   $("#tok_loading").show();
   if (!(await checkAccountExists(account_to))) {
-    showError("This username is not registered on the blockchain!");
+    showError(chrome.i18n.getMessage("popup_no_such_account"));
     $("#tok_loading").hide();
     return;
   }
@@ -253,18 +236,21 @@ async function sendToken(account_to, token, amount, memo) {
     function(err, result) {
       if (err) {
         $("#tok_loading").hide();
-        showError("Something went wrong! Please try again!");
+        showError(chrome.i18n.getMessage("unknown_error"));
       } else {
         tryConfirmTransaction(result.id).then(function(res) {
           $("#tok_loading").hide();
           if (res && res.confirmed) {
-            if (res.error) showError("Transaction error: " + res.error);
+            if (res.error)
+              showError(
+                `${chrome.i18n.getMessage("transaction_error")}: ${res.error}`
+              );
             else {
-              showConfirm("Tokens sent succesfully!");
+              showConfirm(chrome.i18n.getMessage("popup_token_success"));
               $("#confirm_token_send_div").hide();
               $("#tokens_div").show();
             }
-          } else showError("Transaction timed out without response. Please double check your token balance before trying to send again.");
+          } else showError(chrome.i18n.getMessage("popup_token_timeout"));
         });
       }
     }
@@ -313,7 +299,9 @@ function confirmTokenTransfer() {
   $("#from_conf_token_transfer").text("@" + activeAccount.getName());
   $("#to_conf_token_transfer").text("@" + to);
   $("#amt_conf_token_transfer").text(amount + " " + currency);
-  $("#memo_conf_token_transfer").text(memo == "" ? "Empty" : memo); // steem engine token memo doesn't support encryption
+  $("#memo_conf_token_transfer").text(
+    memo == "" ? chrome.i18n.getMessage("popup_empty") : memo
+  ); // steem engine token memo doesn't support encryption
 }
 
 // Send token to a user

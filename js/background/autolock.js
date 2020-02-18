@@ -4,7 +4,6 @@ const startAutolock = async autoLock => {
   console.log(autolock);
   if (mk == null) return;
   if (!autolock || autolock.type == "default") return;
-  console.log("start autolock");
   if (autolock.type == "locked") {
     chrome.idle.setDetectionInterval(parseInt(autolock.mn) * 60);
     chrome.idle.onStateChanged.addListener(state => {

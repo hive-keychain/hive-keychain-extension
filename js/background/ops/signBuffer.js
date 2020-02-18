@@ -11,8 +11,8 @@ const signBuffer = data => {
       error,
       signed,
       data,
-      "Message signed succesfully",
-      "Could not sign"
+      chrome.i18n.getMessage("bgd_ops_sign_success"),
+      chrome.i18n.getMessage("bgd_ops_sign_error")
     );
   }
 };

@@ -18,12 +18,22 @@ const broadcastDelegation = data => {
         delegated_vest,
         (err, result) => {
           console.log(result, err);
+          const err_message = beautifyErrorMessage(err);
           const message = createMessage(
             err,
             result,
             data,
-            "The transaction has been broadcasted successfully.",
-            "There was an error broadcasting this transaction, please try again."
+            parseFloat(data.amount) === 0
+              ? chrome.i18n.getMessage("bgd_ops_undelegate", [
+                  data.delegatee,
+                  data.username
+                ])
+              : chrome.i18n.getMessage("bgd_ops_delegate", [
+                  data.amount,
+                  data.delegatee,
+                  data.username
+                ]),
+            err_message
           );
           resolve(message);
         }

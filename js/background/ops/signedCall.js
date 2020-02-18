@@ -12,7 +12,7 @@ const broadcastSignedCall = data => {
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
+          chrome.i18n.getMessage("bgd_ops_signed_call"),
           err_message
         );
         resolve(message);

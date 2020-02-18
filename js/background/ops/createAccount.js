@@ -12,12 +12,13 @@ const broadcastCreateClaimedAccount = data => {
       [],
       (err, result) => {
         console.log(result, err);
+        const err_message = beautifyErrorMessage(err);
         const message = createMessage(
           err,
           result,
           data,
-          "The transaction has been broadcasted successfully.",
-          "There was an error broadcasting this transaction, please try again."
+          chrome.i18n.getMessage("bgd_ops_create_account", [data.new_account]),
+          err_message
         );
         resolve(message);
       }
