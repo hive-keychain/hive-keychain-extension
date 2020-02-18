@@ -9,7 +9,7 @@
 
 <body>
     <div class="cloud"></div>
-    <div id="register">
+    <div id="register" class="hide-at-start">
         <img src="../images/keychain_logo.png" class="logo-white" />
         <p>Steem Keychain is a better way to access your STEEM accounts. Simple. Lightweight.
             Secure. <br><br> Let's start by creating a Keychain password. You will
@@ -24,7 +24,7 @@
         </div>
         <button id="submit_master_pwd">Submit</button>
     </div>
-    <div id="unlock">
+    <div id="unlock" class="hide-at-start">
         <img src="../images/keychain_logo.png" class="logo-white" />
         <p>It's a better way to access your STEEM accounts. Simple. Lightweight. Secure.<br/><br/>Be
             Free and Steem On.</p>
@@ -39,7 +39,7 @@
         </div>
         <a href="#" id="forgot">Forgot Password?</a>
     </div>
-    <div id="forgot_div">
+    <div id="forgot_div" class="hide-at-start">
         <div class="back_enabled" id="back_forgot">Reset account</div>
         <p>If you forgot your password, you can clear your data but will have to enter
             all your keys again.</p>
@@ -47,7 +47,7 @@
     </div>
     <div class="error_div"></div>
     <div class="success_div"></div>
-    <div id="main">
+    <div id="main" class="hide-at-start">
         <div class="main_header">
             <img class="icon" src="../images/keychain_icon2.png" />
             <span>
@@ -67,7 +67,7 @@
                         <span>Voting Mana</span>
                         <img id="vm_info" src="../images/icon_info_white.png" />
                     </div>
-                    <div id="vm">...
+                    <div id="vm"><span id='vm_pct'>...</span><span id='vm_val'></span>
                     </div>
                 </div>
                 <div>
@@ -125,19 +125,19 @@
         <button class="dash-button main-button" id="tokens">Tokens</button>
         <button class="dash-button main-button" id="witness">Witness</button>
     </div>
-    <div id="estimation_info">
+    <div id="estimation_info" class="hide-at-start">
         <div class="back_menu back_enabled">account value</div>
         <div>
             The estimated account value is a ballpark idea of what your funds are worth in USD.<br><br>            Please note that the value does not take into account pending market
             trades, transfers, or transactions.
         </div>
     </div>
-    <div id="acc_transfers">
+    <div id="acc_transfers" class="hide-at-start">
         <div class="back_menu back_enabled">Wallet History</div>
         <div id="transfer_rows"></div>
     </div>
-    <div id="add_account_div">
-        <div class="back_menu back_enabled">Set up</div>
+    <div id="add_account_div" class="settings_child hide-at-start">
+        <div class="back_enabled back_pref">Set up</div>
         <p>Enter your Steem account name and either the master password or the private
             posting or active key for that account below. Your master password will
             NOT be saved and will only be used to generate your private keys.
@@ -156,7 +156,7 @@
         </div>
         <button id="check_add_account">Import keys</button>
     </div>
-    <div id="master_check">
+    <div id="master_check" class="hide-at-start">
         <div class="back_add_key back_enabled">Import Keys</div>
         <p>Import successful! <br><br>Please select the Keys you wish to store with
             Steem Keychain:</p>
@@ -186,7 +186,7 @@
         </div>
         <button id="save_master">Save</button>
     </div>
-    <div id="settings_div">
+    <div id="settings_div" class="hide-at-start">
         <div class="back_enabled back_menu">Settings</div>
 
         <div class="setting_row" id="add_new_account">
@@ -222,7 +222,7 @@
             <span>Clear All Data</span>
         </div>
     </div>
-    <div id="autolock_div" class="settings_child">
+    <div id="autolock_div" class="settings_child hide-at-start">
         <div class="back_enabled back_pref">Autolock</div>
         <div class="key_checkbox autolock">
             <label for="default" class="checkbox_container">
@@ -253,7 +253,7 @@
         </div>
         <button id="save_autolock">Save</button>
     </div>
-    <div id="keychainify_settings" class="settings_child">
+    <div id="keychainify_settings" class="settings_child hide-at-start">
         <div class="back_enabled back_pref">Keychainify</div>
         <p>This feature allows you to trigger a SteemKeychain operation when clicking on a supported link on a web page
             or accessing the URL directly in a browser tab.</p>
@@ -266,7 +266,7 @@
             </label>
         </div>
     </div>
-    <div id="about_div" class="settings_child">
+    <div id="about_div" class="settings_child hide-at-start">
         <div class="back_enabled back_pref">About</div>
         <h3></h3>
         <div class="about-content">The overall idea and concept for the Steem Keychain browser extension was
@@ -277,7 +277,7 @@
             collectible trading card game built on top of the Steem blockchain. Be
             sure to check it out at <a href="https://steemmonsters.com" target="_blank">steemmonsters.com</a>!</div>
     </div>
-    <div id="manage_keys" class="settings_child">
+    <div id="manage_keys" class="settings_child hide-at-start">
         <div class="back_enabled back_pref">Manage Accounts</div>
         <div class="custom-select usernames" id="custom_select_keys">
             <select>
@@ -306,7 +306,7 @@
         </div>
         <button id="delete_account">DELETE THIS ACCOUNT</button>
     </div>
-    <div id="pref_div" class="settings_child">
+    <div id="pref_div" class="settings_child hide-at-start">
         <div class="back_enabled back_pref" style="font-size: 18px;">Preferences</div>
         <h3>Select an RPC node</h3>
             <div class="custom-select no-img" id="custom_select_rpc">
@@ -322,7 +322,7 @@
                 have opted not to recieve a confirmation prompt.</div>
             <div id="pref">No preferences</div>
     </div>
-    <div id="add_rpc_div">
+    <div id="add_rpc_div" class="hide-at-start">
         <div class="back_enabled">Add RPC</div>
         <p>Add your RPC node here:</p>
         <div class="input_container">
@@ -331,7 +331,7 @@
         <button id="add_new_rpc">Add RPC</button>
         <div id="custom_rpc"></div>
     </div>
-    <div id="add_key_div">
+    <div id="add_key_div" class="hide-at-start">
         <div class="back_enabled">Add Key</div>
         <p>Add the <span></span> private key to your account. You can also add it by
             entering your master key.</p>
@@ -341,11 +341,11 @@
         </div>
         <button id="add_new_key">Import key</button>
     </div>
-    <div id="copied">
+    <div id="copied" class="hide-at-start">
         <div>Key copied to clipboard!</div>
     </div>
     <input id="fake_input" />
-    <div id="change_password" class="settings_child">
+    <div id="change_password" class="settings_child hide-at-start">
         <div class="back_enabled back_pref">Change Password</div>
         <p>Input your old password for confirmation, then chose a new password.</p>
         <div class="input_container">
@@ -362,11 +362,11 @@
         </div>
         <button id="confirm_change_pwd">Confirm</button>
     </div>
-    <div id="send_div">
+    <div id="send_div" class="hide-at-start">
         <div class="back_menu back_enabled">Transfer Funds</div>
         <div class="transfer_balance">
             <div>STEEM Balance</div>
-            <div></div>
+            <div>loading...</div>
         </div>
         <div id="send_form">
             <div class="input_container">
@@ -393,7 +393,7 @@
         </div>
         <div id="show_add_active">Please add an active key to send STEEM or SBD.</div>
     </div>
-    <div id="confirm_send_div">
+    <div id="confirm_send_div" class="hide-at-start">
         <div class="back_enabled">Transfer</div>
         <p>Please confirm your transfer.<br>This cannot be undone.</p>
         <h3>From</h3>
@@ -409,14 +409,14 @@
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
-    <div id="claim_rewards">
+    <div id="claim_rewards" class="hide-at-start">
         <img src="../images/delete.png" class="close_claim" id="close_claim" />
         <img src="../images/rewards.png" id="gift" />
         <p></p>
         <button class="close_claim">Not Now</button>
         <button id="redeem_rewards">Redeem</button>
     </div>
-    <div id="witness_div">
+    <div id="witness_div" class="hide-at-start">
         <div class="back_enabled back_menu">Witness Voting</div>
         <span id="wit_disclaimer">You may vote for up to 30 witnesses.</span>
         <div id="votes_remaining">Votes remaining: <span>30</span></div>
@@ -448,20 +448,20 @@
             </div>
         </div>
     </div>
-    <div id="tokens_div">
+    <div id="tokens_div" class="hide-at-start">
         <div class="back_enabled back_menu">Tokens</div>
         <img src="../images/settings.png" id="settings_tokens" />
         <p></p>
         <div id="tokens_list">
         </div>
     </div>
-    <div id="tokens_settings_div">
+    <div id="tokens_settings_div" class="hide-at-start">
         <div class="back_enabled ">Tokens Available</div>
         <p>View token information and chose which tokens to display. Learn more about custom tokens on the Steem blockchain at <a href="https://steem-engine.com" target="_blank">https://steem-engine.com</a>.</p>
         <div id="existing_tokens">
         </div>
     </div>
-    <div id="token_send_div">
+    <div id="token_send_div" class="hide-at-start">
         <div class="back_enabled "></div>
         <div class="token_available">
             <div><span class="token_left">Available</span><span class="token_right"></span></div>
@@ -474,7 +474,7 @@
         <input type="text" placeholder="MEMO (optional)" id="memo_tok" />
         <div id="wrap_tok"><button id="send_tok">Send</button></div>
     </div>
-    <div id="confirm_token_send_div">
+    <div id="confirm_token_send_div" class="hide-at-start">
         <div class="back_enabled">Transfer</div>
         <p>Please confirm your transfer.<br>This cannot be undone.</p>
         <h3>From</h3>
@@ -490,20 +490,21 @@
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
-    <div id="token_history_div">
+    <div id="token_history_div" class="hide-at-start">
         <div class="back_enabled"></div>
         <div class="loader" id="loading_history_token" style="display:none">
             <div><img src="../images/loading.gif" /></div>
         </div>
         <div id="history_tokens_rows"></div>
     </div>
-    <div id="powerup_div">
+    <div id="powerup_div" class="hide-at-start">
         <div class="back_enabled back_menu">Power Up</div>
         <div class="power">
             <div><span class="power_left">Available</span><span class="power_right power_steem"></span></div>
             <div><span class="power_left">Current</span><span class="power_right power_sp"></span></div>
         </div>
         <p>Power Up your STEEM to transform it in Steem Power.</p>
+        <input type="text" id="user_pu"></input>
         <input type="number" id="amt_pu" placeholder="0.000"></input>
         <div class="sp_del">
             STEEM
@@ -513,7 +514,7 @@
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
-    <div id="powerdown_div">
+    <div id="powerdown_div" class="hide-at-start">
         <div class="back_enabled back_menu">Power Down</div>
         <div class="power">
             <div><span class="power_left">Current</span><span class="power_right power_steem"></span></div>
@@ -534,7 +535,7 @@
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
-    <div id="delegation_div">
+    <div id="delegation_div" class="hide-at-start">
         <div class="back_enabled back_menu">Delegations</div>
         <p>You may delegate your Steem Power (SP) to another user. Click on the Outgoing
             amount to review or make changes.</p>
@@ -558,7 +559,7 @@
             </div>
         </div>
     </div>
-    <div id="outgoing_del_div">
+    <div id="outgoing_del_div" class="hide-at-start">
         <div class="back_enabled">Outgoing SP</div>
         <div id="total_outgoing">
             <span>Total Outgoing</span>
@@ -567,7 +568,7 @@
         <div id="list_outgoing">
         </div>
     </div>
-    <div id="incoming_del_div">
+    <div id="incoming_del_div" class="hide-at-start">
         <div class="back_enabled">Incoming SP</div>
         <div id="total_incoming">
             <span>Total Incoming</span>
@@ -576,7 +577,7 @@
         <div id="list_incoming">
         </div>
     </div>
-    <div id="edit_del_div">
+    <div id="edit_del_div" class="hide-at-start">
         <div class="back_enabled">Edit Delegation</div>
         <p>You are changing the amount delegated to this user. Edit the amount and save
             your change.</p>
@@ -597,7 +598,7 @@
             <div><img src="../images/loading.gif" /></div>
         </div>
     </div>
-    <div id="witness_votes">
+    <div id="witness_votes" class="hide-at-start">
         <img src="../images/delete.png" id="close_witness" style="display: none;" />
         <div id="witness_toggle">Click here to support Steem Keychain development by casting your witness
             votes for the creators!</div>
@@ -619,6 +620,8 @@
     </div>
 
     <script src="../vendor/jquery.min.js"></script>
+    <script src="../js/popup/navigation.js"></script>
+    <script src="../js/popup/preinit.js"></script>
     <script src="../vendor/decode.min.js"></script>
     <script src="../vendor/steem.min.js"></script>
     <script src="../vendor/md5.min.js"></script>
@@ -626,12 +629,15 @@
     <script src="../vendor/axios.min.js"></script>
     <script src="../vendor/ssc.min.js"></script>
     <script src="../vendor/jquery-autocomplete.min.js"></script>
-    <script src="../js/encrypt.js"></script>
+    <script src="../js/libs/encrypt.js"></script>
+    <script src="../js/libs/rpcs.js"></script>
+    <script src="../js/libs/globalProps.js"></script>
+    <script src="../js/libs/account.js"></script>
+    <script src="../js/libs/accountsList.js"></script>
     <script src="../js/popup/com.js"></script>
     <script src="../js/popup/rpc.js"></script>
     <script src="../js/popup/accounts.js"></script>
-    <script src="../js/popup/utils.js"></script>
-    <script src="../js/popup/navigation.js"></script>
+    <script src="../js/libs/utils.js"></script>
     <script src="../js/popup/settings.js"></script>
     <script src="../js/popup/witness.js"></script>
     <script src="../js/popup/delegate.js"></script>

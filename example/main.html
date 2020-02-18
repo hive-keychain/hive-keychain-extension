@@ -2,145 +2,167 @@
 <html>
 
 <head>
-    <title>Steem Keychain</title>
+  <title>Steem Keychain</title>
 </head>
 
 <body>
-    <h3>Handshake</h3>
-    <button id="sw-handshake">Send handshake</button>
-    <h3>Decode memo</h3>
-    <input type="text" placeholder="username" id="decode_user" />
-    <select id="decode_method">
-      <option>Memo</option>
-      <option>Posting</option>
-      <option>Active</option>
-    </select>
-    <input type="text" id="decode_message" placeholder="message" />
-    <button id="send_decode">Send</button>
-    <h3>Post</h3>
-    <input type="text" placeholder="username" id="post_username" />
-    <input type="text" placeholder="title" id="post_title" />
-    <input type="text" placeholder="permlink" id="post_perm" />
-    <input type="text" placeholder="body" id="post_body" />
-    <input type="text" placeholder="json_metadata" id="post_json" />
-    <input type="text" placeholder="parent_username" id="post_pu" />
-    <input type="text" placeholder="parent_perm" id="post_pp" />
-    <input type="text" placeholder="Comment options" id="comment_options" />
-    <button id="send_post">Send</button>
-    <h3>Vote</h3>
-    <input type="text" placeholder="username" id="vote_username" />
-    <input type="text" placeholder="author" id="vote_author" />
-    <input type="text" placeholder="permlink" id="vote_perm" />
-    <input type="number" placeholder="weight" id="vote_weight" />
-    <button id="send_vote">Send</button>
-    <h3>Custom_JSON</h3>
-    <input type="text" placeholder="message" id="custom_message" />
-    <input type="text" placeholder="username" id="custom_username" />
-    <select id="custom_method">
-      <option>Posting</option>
-      <option>Active</option>
-    </select>
-    <input type="text" placeholder="id" id="custom_id" />
-    <input type="text" placeholder="custom_json" id="custom_json" />
-    <button id="send_custom">Send</button>
-    <h3>Transfer</h3>
-    <input type="text" placeholder="username" id="transfer_username" />
-    <input type="text" placeholder="to" id="transfer_to" />
-    <input type="text" placeholder="memo" id="transfer_memo" />
-    <input type="number" placeholder="0.000" id="transfer_val" />
-    <input type="checkbox" id="transfer_enforce" /><label for="transfer_enforce">Enforce username</label>
-    <select id="transfer_currency">
-      <option>STEEM</option>
-      <option>SBD</option>
-    </select>
-    <button id="send_tra">Send</button>
-    <h3>Sign message</h3>
-    <input type="text" placeholder="username" id="sign_username" />
-    <input type="text" placeholder="message" id="sign_message" />
-    <select id="sign_method">
-      <option>Memo</option>
-      <option>Posting</option>
-      <option>Active</option>
-    </select>
-    <button id="send_signature">Send</button>
-    <h3>Add Account Authority</h3>
-    <input type="text" placeholder="username" id="addauth_username" />
-    <input type="text" placeholder="authorized_username" id="addauth_authorized_username" />
-    <select id="addauth_role">
-      <option>Posting</option>
-      <option>Active</option>
-    </select>
-    <input type="number" placeholder="1" id="addauth_weight" />
-    <button id="send_addauth">Send</button>
-    <h3>Remove Account Authority</h3>
-    <input type="text" placeholder="username" id="removeauth_username" />
-    <input type="text" placeholder="authorized_username" id="removeauth_authorized_username" />
-    <select id="removeauth_role">
-      <option>Posting</option>
-      <option>Active</option>
-    </select>
-    <button id="send_removeauth">Send</button>
-    <h3>Broadcast</h3>
-    <input type="text" placeholder="username" id="broadcast_username" />
-    <input type="text" placeholder="operations" id="broadcast_operations" />
-    <select id="broadcast_method">
-      <option>Memo</option>
-      <option>Posting</option>
-      <option>Active</option>
-    </select>
-    <button id="send_broadcast">Send</button>
-    <h3>Broadcast Create New claimed account</h3>
-    <input type="text" placeholder="username" id="create_claimed_username" />
-    <input type="text" placeholder="new_username" id="create_claimed_new_username" />
-    <input type="text" placeholder="owner" id="create_claimed_owner" />
-    <input type="text" placeholder="active" id="create_claimed_active" />
-    <input type="text" placeholder="posting" id="create_claimed_posting" />
-    <input type="text" placeholder="memo" id="create_claimed_memo" />
-    <button id="send_create_claimed">Send</button>
-    <h3>Signed Call</h3>
-    <input type="text" placeholder="username" id="signed_call_username" />
-    <input type="text" placeholder="method" id="signed_call_method" />
-    <input type="text" placeholder="params" id="signed_call_params" />
-    <select id="signed_call_key_type">
-      <option>Memo</option>
-      <option>Posting</option>
-      <option>Active</option>
-    </select>
-    <button id="send_signed_call">Send</button>
+  <h3>Handshake</h3>
+  <button id="sw-handshake">Send handshake</button>
+  <h3>Decode memo</h3>
+  <input type="text" placeholder="username" id="decode_user" />
+  <select id="decode_method">
+    <option>Memo</option>
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <input type="text" id="decode_message" placeholder="message" />
+  <button id="send_decode">Send</button>
+  <h3>Post</h3>
+  <input type="text" placeholder="username" id="post_username" />
+  <input type="text" placeholder="title" id="post_title" />
+  <input type="text" placeholder="permlink" id="post_perm" />
+  <input type="text" placeholder="body" id="post_body" />
+  <input type="text" placeholder="json_metadata" id="post_json" />
+  <input type="text" placeholder="parent_username" id="post_pu" />
+  <input type="text" placeholder="parent_perm" id="post_pp" />
+  <input type="text" placeholder="Comment options" id="comment_options" />
+  <button id="send_post">Send</button>
+  <h3>Vote</h3>
+  <input type="text" placeholder="username" id="vote_username" />
+  <input type="text" placeholder="author" id="vote_author" />
+  <input type="text" placeholder="permlink" id="vote_perm" />
+  <input type="number" placeholder="weight" id="vote_weight" />
+  <button id="send_vote">Send</button>
+  <h3>Custom_JSON</h3>
+  <input type="text" placeholder="message" id="custom_message" />
+  <input type="text" placeholder="username" id="custom_username" />
+  <select id="custom_method">
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <input type="text" placeholder="id" id="custom_id" />
+  <input type="text" placeholder="custom_json" id="custom_json" />
+  <input type="text" placeholder="rpc" id="custom_rpc" />
+  <button id="send_custom">Send</button>
+  <h3>Transfer</h3>
+  <input type="text" placeholder="username" id="transfer_username" value='stoodkev' />
+  <input type="text" placeholder="to" id="transfer_to" value='steem-plus' />
+  <input type="text" placeholder="memo" id="transfer_memo" value='hi'/>
+  <input type="number" placeholder="0.000" id="transfer_val" value='1.000'/>
+  <input type="checkbox" id="transfer_enforce" /><label for="transfer_enforce">Enforce username</label>
+  <select id="transfer_currency">
+    <option>STEEM</option>
+    <option>SBD</option>
+  </select>
+  <button id="send_tra">Send</button>
+  <h3>Sign message</h3>
+  <input type="text" placeholder="username" id="sign_username" />
+  <input type="text" placeholder="message" id="sign_message" />
+  <select id="sign_method">
+    <option>Memo</option>
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <button id="send_signature">Send</button>
+  <h3>Add Account Authority</h3>
+  <input type="text" placeholder="username" id="addauth_username" />
+  <input type="text" placeholder="authorized_username" id="addauth_authorized_username" />
+  <select id="addauth_role">
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <input type="number" placeholder="1" id="addauth_weight" />
+  <button id="send_addauth">Send</button>
+  <h3>Remove Account Authority</h3>
+  <input type="text" placeholder="username" id="removeauth_username" />
+  <input type="text" placeholder="authorized_username" id="removeauth_authorized_username" />
+  <select id="removeauth_role">
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <button id="send_removeauth">Send</button>
+  <h3>Broadcast</h3>
+  <input type="text" placeholder="username" id="broadcast_username" />
+  <input type="text" placeholder="operations" id="broadcast_operations" />
+  <select id="broadcast_method">
+    <option>Memo</option>
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <button id="send_broadcast">Send</button>
+  <h3>Broadcast Create New claimed account</h3>
+  <input type="text" placeholder="username" id="create_claimed_username" />
+  <input type="text" placeholder="new_username" id="create_claimed_new_username" />
+  <input type="text" placeholder="owner" id="create_claimed_owner" value='{"weight_threshold": 1,"account_auths": [],"key_auths":[["SMT...",1]]}' />
+  <input type="text" placeholder="active" id="create_claimed_active" value='{"weight_threshold": 1,"account_auths": [],"key_auths":[["SMT...",1]]}'/>
+  <input type="text" placeholder="posting" id="create_claimed_posting" value='{"weight_threshold": 1,"account_auths": [],"key_auths":[["SMT...",1]]}'/>
+  <input type="text" placeholder="memo" id="create_claimed_memo" value='STM...'/>
+  <button id="send_create_claimed">Send</button>
+  <h3>Signed Call</h3>
+  <input type="text" placeholder="username" id="signed_call_username" />
+  <input type="text" placeholder="method" id="signed_call_method" />
+  <input type="text" placeholder="params" id="signed_call_params" />
+  <select id="signed_call_key_type">
+    <option>Memo</option>
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <button id="send_signed_call">Send</button>
 
-    <h3>Delegate</h3>
-    <input type="text" placeholder="username" id="delegation_username" />
-    <input type="text" placeholder="delegatee" id="delegation_delegatee" />
-    <input type="number" placeholder="SP" id="delegation_sp" />
-    <select id="delegation_unit">
-      <option>SP</option>
-      <option>VESTS</option>
-    </select>
-    <button id="send_delegation">Send</button>
-    <h3>Send Tokens</h3>
-    <input type="text" placeholder="username" id="tokens_username" />
-    <input type="text" placeholder="to" id="tokens_to" />
-    <input type="number" placeholder="1.000" id="tokens_qt" />
-    <input type="text" placeholder="tokens" id="tokens_unit" />
-    <input type="text" placeholder="memo" id="tokens_memo" />
-    <button id="sendTokens">Send</button>
-    <h3>Witness</h3>
-    <input type="text" placeholder="username" id="witness_username" />
-    <input type="text" placeholder="username" id="witness" />
-    <input type="checkbox" id="vote_wit" /><label for="vote_wit">Vote for this witness</label>
-    <button id="send_witness_vote">Send</button>
-    <h3>Power Up</h3>
-    <input type="text" placeholder="username" id="pu_username" />
-    <input type="text" placeholder="recipient" id="pu_recipient" />
-    <input type="number" placeholder="steem" id="pu_steem" />
-    <button id="send_pu">Send</button>
-    <h3>Power Down</h3>
-    <input type="text" placeholder="username" id="pd_username" />
-    <input type="number" placeholder="sp" id="pd_sp" />
-    <button id="send_pd">Send</button>
+  <h3>Delegate</h3>
+  <input type="text" placeholder="username" id="delegation_username" />
+  <input type="text" placeholder="delegatee" id="delegation_delegatee" />
+  <input type="number" placeholder="SP" id="delegation_sp" />
+  <select id="delegation_unit">
+    <option>SP</option>
+    <option>VESTS</option>
+  </select>
+  <button id="send_delegation">Send</button>
+  <h3>Send Tokens</h3>
+  <input type="text" placeholder="username" id="tokens_username" />
+  <input type="text" placeholder="to" id="tokens_to" />
+  <input type="number" placeholder="1.000" id="tokens_qt" />
+  <input type="text" placeholder="tokens" id="tokens_unit" />
+  <input type="text" placeholder="memo" id="tokens_memo" />
+  <button id="sendTokens">Send</button>
+  <h3>Witness</h3>
+  <input type="text" placeholder="username" id="witness_username" />
+  <input type="text" placeholder="username" id="witness" />
+  <input type="checkbox" id="vote_wit" /><label for="vote_wit">Vote for this witness</label>
+  <button id="send_witness_vote">Send</button>
+  <h3>Power Up</h3>
+  <input type="text" placeholder="username" id="pu_username" />
+  <input type="text" placeholder="recipient" id="pu_recipient" />
+  <input type="number" placeholder="steem" id="pu_steem" />
+  <button id="send_pu">Send</button>
+  <h3>Power Down</h3>
+  <input type="text" placeholder="username" id="pd_username" />
+  <input type="number" placeholder="sp" id="pd_sp" />
+  <button id="send_pd">Send</button>
+  <h3>Create Proposal</h3>
+  <input type="text" placeholder="username" id="cp_username" value="stoodkev" />
+  <input type="text" placeholder="receiver" id="cp_receiver" value="stoodkev" />
+  <input type="text" placeholder="start_date" id="cp_start" value="2019-09-01T00:00:00" />
+  <input type="text" placeholder="end_date" id="cp_end" value="2019-10-01T00:00:00" />
+  <input type="text" placeholder="daily pay" id="cp_daily_pay" value="1.000 TBD" />
+  <input type="text" placeholder="subject" id="cp_subject" value="My proposal" />
+  <input type="text" placeholder="extensions" id="cp_extensions" value="[]" />
+  <input type="text" placeholder="permlink" id="cp_permlink" value="witness-update" />
+  <button id="send_cp">Send</button>
+  <h3>Remove Proposal</h3>
+  <input type="text" placeholder="username" id="rp_username" value="stoodkev" />
+  <input type="text" placeholder="proposal_ids" id="rp_proposal_ids" value="[7]" />
+  <input type="text" placeholder="extensions" id="rp_extensions" value="[]" />
+  <button id="send_rp">Send</button>
+  <h3>Update proposal votes</h3>
+  <input type="text" placeholder="username" id="vp_username" value="stoodkev" />
+  <input type="text" placeholder="proposal_ids" id="vp_proposal_ids" value="[7]" />
+  <input type="checkbox" id="vp_approve" /><label for="vp_approve">Approve</label>
+  <input type="text" placeholder="extensions" id="vp_extensions" value="[]" />
+  <button id="send_vp">Send</button>
 
-    <script src="./jquery.js"></script>
-    <script src="main.js?v=a"></script>
+  <script src="./jquery.js"></script>
+  <script src="main.js?v=a"></script>
 </body>
 
 </html>

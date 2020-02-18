@@ -1,6 +1,5 @@
-
 let contentScript = {
-  init: function () {
+  init: function() {
     contentScript.process.checkAnchors();
   },
 
@@ -22,46 +21,53 @@ let contentScript = {
      * Initializing the MutationObserver to support pages with lazy-loading.
      * Dynamically reacts to page change instead of regular polling.
      */
-    initObserver: function () {
+    initObserver: function() {
       let body = document.body;
 
       // Using a MutationObserver to wait for a DOM change
       // This is to scan dynamically loaded content (lazyload of comments for example)
-      contentScript.process.observer = new MutationObserver(function (process) {
-        return function (mutations) {
-          mutations.forEach(function (mutation) {
-            // Preventing multipl calls to checkAnchors()
-            if (process.observerTimer) {
-              window.clearTimeout(process.observerTimer);
-            }
+      contentScript.process.observer = new MutationObserver(
+        (function(process) {
+          return function(mutations) {
+            mutations.forEach(function(mutation) {
+              // Preventing multipl calls to checkAnchors()
+              if (process.observerTimer) {
+                window.clearTimeout(process.observerTimer);
+              }
 
-            // Lets wait for a DOM change
-            process.observerTimer = window.setTimeout(function () {
-              process.checkAnchors();
-            }, 500);
-          });
-        };
-      }(contentScript.process));
+              // Lets wait for a DOM change
+              process.observerTimer = window.setTimeout(function() {
+                process.checkAnchors();
+              }, 500);
+            });
+          };
+        })(contentScript.process)
+      );
 
       // Waiting for the DOM to be modified (lazy loading)
-      contentScript.process.observer.observe(body, contentScript.process.observerConfig);
+      contentScript.process.observer.observe(
+        body,
+        contentScript.process.observerConfig
+      );
     },
 
     /**
      * Verify all anchors to find scammy links
      */
-    checkAnchors: function () {
-      let anchors = document.querySelectorAll('a[href]:not(.steem-keychain-checked)');
+    checkAnchors: function() {
+      let anchors = document.querySelectorAll(
+        "a[href]:not(.steem-keychain-checked)"
+      );
 
       for (let i = 0; i < anchors.length; i++) {
         let anchor = anchors[i];
 
         if (
-          anchor.href
-          && !anchor.classList.contains('steem-keychain-checked')  // That was not checked before
-          && keychainify.isUrlSupported(anchor.href)
+          anchor.href &&
+          !anchor.classList.contains("steem-keychain-checked") && // That was not checked before
+          keychainify.isUrlSupported(anchor.href)
         ) {
-          anchor.addEventListener('click', async function(e) {
+          anchor.addEventListener("click", async function(e) {
             e.preventDefault();
 
             if (await keychainify.isKeychainifyEnabled()) {
@@ -79,7 +85,7 @@ let contentScript = {
     /**
      * Initialize the scanning process
      */
-    init: function () {
+    init: function() {
       contentScript.process.initObserver();
       contentScript.process.checkAnchors();
     }

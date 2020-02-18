@@ -1,31 +1,63 @@
 {
   "name": "Steem Keychain",
-  "version": "1.5.11",
+  "version": "1.6.2",
   "description": "Secure Steem Wallet Extension.",
-  "permissions": ["activeTab", "declarativeContent", "storage", "webNavigation","tabs", "https://*/*", "notifications", "idle"],
+  "permissions": [
+    "activeTab", "declarativeContent", "storage", "webNavigation", "tabs",
+    "https://*/*", "notifications", "idle", "contextMenus"
+  ],
   "browser_action": {
     "default_popup": "html/popup.html",
     "default_icon": "images/keychain_icon_small.png"
+  },
+  "icons": {
+    "16": "images/keychain_icon_small.png",
+    "32": "images/keychain_icon_small.png"
   },
   "background": {
     "scripts": [
       "vendor/crypto-js.js",
       "vendor/md5.min.js",
-      "js/encrypt.js",
+      "js/libs/encrypt.js",
       "vendor/steem.min.js",
       "vendor/decode.min.js",
+      "vendor/jquery.min.js",
       "js/config.js",
-      "js/keychainify.js",
-      "js/background.js"
+      "js/libs/keychainify.js",
+      "js/libs/account.js",
+      "js/libs/accountsList.js",
+      "js/libs/hf21.js",
+      "js/libs/rpcs.js",
+      "js/background/autolock.js",
+      "js/background/init.js",
+      "js/background/dialog_lifecycle.js",
+      "js/background/errors.js",
+      "js/background/keychainify.js",
+      "js/background/auth.js",
+      "js/background/ops/authority.js",
+      "js/background/ops/broadcast.js",
+      "js/background/ops/createAccount.js",
+      "js/background/ops/customJson.js",
+      "js/background/ops/decode.js",
+      "js/background/ops/delegation.js",
+      "js/background/ops/post.js",
+      "js/background/ops/power.js",
+      "js/background/ops/proposals.js",
+      "js/background/ops/signBuffer.js",
+      "js/background/ops/signedCall.js",
+      "js/background/ops/tokens.js",
+      "js/background/ops/transfer.js",
+      "js/background/ops/vote.js",
+      "js/background/ops/witness.js",
+      "js/background/transactions.js",
+      "js/background/context_menu.js"
     ],
     "persistent": true
   },
   "web_accessible_resources": ["/images/logo.png", "js/steem_keychain.js"],
-  "content_scripts": [
-    {
-      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
-      "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/keychainify.js", "js/keychainify_content.js"]
-    }
-  ],
+  "content_scripts": [{
+    "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+    "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/libs/keychainify.js", "js/keychainify_content.js"]
+  }],
   "manifest_version": 2
 }
