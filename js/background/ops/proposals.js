@@ -19,7 +19,7 @@ const broadcastCreateProposal = data => {
           err,
           result,
           data,
-          "Successfully created a new proposal.",
+          chrome.i18n.getMessage("bgd_ops_proposal_create"),
           err_message
         );
         resolve(message);
@@ -45,9 +45,13 @@ const broadcastUpdateProposalVote = data => {
           err,
           result,
           data,
-          `Successfully voted for proposal #${
-            JSON.parse(data.proposal_ids)[0]
-          }`,
+          data.approve
+            ? chrome.i18n.getMessage("bgd_ops_proposal_vote", [
+                JSON.parse(data.proposal_ids)[0]
+              ])
+            : chrome.i18n.getMessage("bgd_ops_proposal_unvote", [
+                JSON.parse(data.proposal_ids)[0]
+              ]),
           err_message
         );
         resolve(message);
@@ -72,7 +76,9 @@ const broadcastRemoveProposal = data => {
           err,
           result,
           data,
-          `Successfully removed proposal #${JSON.parse(data.proposal_ids)[0]}`,
+          chrome.i18n.getMessage("bgd_ops_proposal_remove", [
+            JSON.parse(data.proposal_ids)[0]
+          ]),
           err_message
         );
         resolve(message);

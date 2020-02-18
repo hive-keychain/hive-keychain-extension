@@ -8,12 +8,12 @@ const prepareDelegationTab = async () => {
     $("#send_del").addClass("disabled");
     $("#wrap_send_del").attr(
       "title",
-      "Please add your active key to send delegations!"
+      chrome.i18n.getMessage("popup_delegate_key")
     );
     $("#edit_del").addClass("disabled");
     $("#wrap_edit_del").attr(
       "title",
-      "Please add your active key to send delegations!"
+      chrome.i18n.getMessage("popup_delegate_key")
     );
   } else {
     $("#send_del").removeClass("disabled");
@@ -39,9 +39,9 @@ const prepareDelegationTab = async () => {
           $("#send_del").show();
           $("#del_loading").hide();
           if (err) {
-            showError("Something went wrong! Please try again!");
+            showError(chrome.i18n.getMessage("unknown_error"));
           } else {
-            showConfirm("Your delegation was succesful!");
+            showConfirm(chrome.i18n.getMessage("popup_delegate_success"));
             loadAccount(activeAccount.getName());
           }
         }
@@ -160,9 +160,11 @@ const showEditDiv = async delegatees => {
           $("#edit_del").show();
           $("#edit_del_loading").hide();
           if (err) {
-            showError("Something went wrong! Please try again!");
+            showError(chrome.i18n.getMessage("unknown_error"));
           } else {
-            showConfirm("Your delegation  change was succesful!");
+            showConfirm(
+              chrome.i18n.getMessage("popup_delegate_change_success")
+            );
             loadAccount(activeAccount.getName());
             $("#edit_del_div").hide();
             $("#outgoing_del_div").show();

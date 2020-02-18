@@ -4,7 +4,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
   witness_ranks = await getWitnessRanks();
   $("#votes_remaining span").html(30 - witness_votes.length);
   if (proxy != "") {
-    $("#proxy div").html("PROXY: @ " + proxy);
+    $("#proxy div").html(`${chrome.i18n.getMessage("popup_proxy")}: @${proxy}`);
     $("#proxy").show();
   } else $("#proxy").hide();
   if (!activeAccount.hasKey("active")) $("#proxy div").addClass("no_active");
@@ -126,9 +126,11 @@ async function prepareWitnessDiv(witness_votes, proxy) {
         function(err, result) {
           $(that).attr("src", "../images/delete.png");
           if (err == null) {
-            showConfirm("Succesfully unvoted @" + acc);
+            showConfirm(
+              chrome.i18n.getMessage("popup_success_unvote_wit", [acc])
+            );
             loadAccount(activeAccount.getName());
-          } else showError("Something went wrong! Please try again!");
+          } else showError(chrome.i18n.getMessage("unknown_error"));
         }
       );
     });
@@ -138,7 +140,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
     .click(function() {
       $("#vote_wit").hide();
       $("#wit_loading").show();
-      if ($("#witness_div select option:selected").val() == "Wit") {
+      if ($("#witness_div select option:selected").val() === "Wit") {
         steem.broadcast.accountWitnessVote(
           activeAccount.getKey("active"),
           activeAccount.getName(),
@@ -147,10 +149,14 @@ async function prepareWitnessDiv(witness_votes, proxy) {
           function(err, result) {
             $("#vote_wit").show();
             $("#wit_loading").hide();
-            if (err == null) {
-              showConfirm("Succesfully voted for @" + $("#wit-username").val());
+            if (!err) {
+              showConfirm(
+                chrome.i18n.getMessage("popup_success_wit", [
+                  $("#wit-username").val()
+                ])
+              );
               loadAccount(activeAccount.getName());
-            } else showError("Something went wrong! Please try again!");
+            } else showError(chrome.i18n.getMessage("unknown_error"));
           }
         );
       } else {
@@ -159,12 +165,19 @@ async function prepareWitnessDiv(witness_votes, proxy) {
           activeAccount.getName(),
           $("#wit-username").val(),
           function(err, result) {
-            if (err == null) {
+            $("#wit_loading").hide();
+            $("#vote_wit").show();
+            if (!err) {
               showConfirm(
-                "Succesfully chose @" + $("#wit-username").val() + " for proxy"
+                chrome.i18n.getMessage("popup_success_proxy", [
+                  $("#wit-username").val()
+                ])
               );
               loadAccount(activeAccount.getName());
-            } else showError("Something went wrong! Please try again!");
+            } else {
+              console.log(err);
+              showError(chrome.i18n.getMessage("unknown_error"));
+            }
           }
         );
       }

@@ -13,10 +13,10 @@ $("#confirm_change_pwd").click(function() {
         accountsList.save(mk);
         sendMk(mk);
         initializeVisibility();
-        showConfirm("Your master password was changed succesfully");
-      } else showError("Please use a stronger password!");
-    } else showError("The new passwords do not match!");
-  } else showError("Wrong current password");
+        showConfirm(chrome.i18n.getMessage("popup_master_changed"));
+      } else showError(chrome.i18n.getMessage("popup_pwd_stronger"));
+    } else showError(chrome.i18n.getMessage("popup_pwd_match"));
+  } else showError(chrome.i18n.getMessage("popup_wrong_current_pwd"));
 });
 
 // Set "remember choice" Preferences
@@ -25,24 +25,22 @@ function setPreferences(name) {
     try {
       const pref = JSON.parse(items.no_confirm);
       $("#pref").html("");
-      if (
-        pref[name] == undefined ||
-        pref[name] == null ||
-        Object.keys(pref[name]).length == 0
-      )
-        $("#pref").html("No preferences");
+      if (!pref[name] || Object.keys(pref[name]).length == 0)
+        $("#pref").html(chrome.i18n.getMessage("popup_html_no_pref"));
       for (let obj in pref[name]) {
-        $("#pref").append("<h4>Website: " + obj + "</h4>");
+        $("#pref").append(
+          `<h4>${chrome.i18n.getMessage("popup_website")}: ${obj} </h4>`
+        );
         var display_names = {
-          broadcast: "Broadcast",
-          addAccountAuthority: "Add Account Authority",
-          removeAccountAuthority: "Remove Account Authority",
-          custom: "Custom Transaction",
-          decode: "Verify Key",
-          signBuffer: "Sign",
-          signedCall: "Signed Call",
-          post: "Post",
-          vote: "Vote"
+          broadcast: chrome.i18n.getMessage("popup_broadcast"),
+          addAccountAuthority: chrome.i18n.getMessage("popup_add_auth"),
+          removeAccountAuthority: chrome.i18n.getMessage("popup_remove_auth"),
+          custom: chrome.i18n.getMessage("popup_custom"),
+          decode: chrome.i18n.getMessage("popup_decode"),
+          signBuffer: chrome.i18n.getMessage("popup_sign_buffer"),
+          signedCall: chrome.i18n.getMessage("popup_signed_call"),
+          post: chrome.i18n.getMessage("popup_post"),
+          vote: chrome.i18n.getMessage("popup_vote")
         };
         var site_container = $(
           '<div class="preferences-site-container"></div>'

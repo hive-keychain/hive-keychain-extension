@@ -50,7 +50,7 @@ chrome.windows.onRemoved.addListener(id => {
         error: "user_cancel",
         result: null,
         data: request,
-        message: "Request was canceled by the user.",
+        message: chrome.i18n.getMessage("bgd_lifecycle_request_canceled"),
         request_id: request_id
       }
     });

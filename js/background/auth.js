@@ -10,9 +10,8 @@ const checkBeforeCreate = (request, tab, domain) => {
           error: "locked",
           result: null,
           data: request,
-          message: "The wallet is locked!",
-          display_msg:
-            "The current website is trying to send a request to the Steem Keychain browser extension. Please enter your password below to unlock the wallet and continue."
+          message: chrome.i18n.getMessage("bgd_auth_locked"),
+          display_msg: chrome.i18n.getMessage("bgd_auth_locked_desc")
         },
         tab: tab,
         domain: domain
@@ -27,7 +26,13 @@ const checkBeforeCreate = (request, tab, domain) => {
         // Check user
         if (!items.accounts) {
           createPopup(() => {
-            sendErrors(tab, "no_wallet", "No wallet!", "", request);
+            sendErrors(
+              tab,
+              "no_wallet",
+              chrome.i18n.getMessage("bgd_init_no_wallet"),
+              "",
+              request
+            );
           });
         } else {
           // Check that user and wanted keys are in the wallet
@@ -54,10 +59,10 @@ const checkBeforeCreate = (request, tab, domain) => {
                 sendErrors(
                   tab,
                   "user_cancel",
-                  "Request was canceled by the user.",
-                  "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" +
-                    username +
-                    " using the active key, which has not been added to the wallet.",
+                  chrome.i18n.getMessage("bgd_auth_canceled"),
+                  chrome.i18n.getMessage("bgd_auth_transfer_no_active", [
+                    username
+                  ]),
                   request
                 );
               });
@@ -67,10 +72,10 @@ const checkBeforeCreate = (request, tab, domain) => {
                 sendErrors(
                   tab,
                   "user_cancel",
-                  "Request was canceled by the user.",
-                  "The current website is trying to send a request to the Steem Keychain browser extension for account @" +
-                    username +
-                    " using the memo key, which has not been added to the wallet.",
+                  chrome.i18n.getMessage("bgd_auth_canceled"),
+                  chrome.i18n.getMessage("bgd_auth_transfer_no_memo", [
+                    username
+                  ]),
                   request
                 );
               });
@@ -80,10 +85,10 @@ const checkBeforeCreate = (request, tab, domain) => {
                 sendErrors(
                   tab,
                   "user_cancel",
-                  "Request was canceled by the user.",
-                  "The current website is trying to send a transfer request to the Steem Keychain browser extension for account @" +
-                    username +
-                    " using the active key, which has not been added to the wallet.",
+                  chrome.i18n.getMessage("bgd_auth_canceled"),
+                  chrome.i18n.getMessage("bgd_auth_transfer_no_active", [
+                    username
+                  ]),
                   request
                 );
               });
@@ -108,8 +113,8 @@ const checkBeforeCreate = (request, tab, domain) => {
                 sendErrors(
                   tab,
                   "user_cancel",
-                  "Request was canceled by the user.",
-                  `The current website is trying to send a request to the Steem Keychain browser extension for account @${username} which has not been added to the wallet.`,
+                  chrome.i18n.getMessage("bgd_auth_canceled"),
+                  chrome.i18n.getMessage("bgd_auth_no_account", [username]),
                   request
                 );
               };
@@ -132,8 +137,11 @@ const checkBeforeCreate = (request, tab, domain) => {
                   sendErrors(
                     tab,
                     "user_cancel",
-                    "Request was canceled by the user.",
-                    `The current website is trying to send a request to the Steem Keychain browser extension for account @${username} using the ${typeWif} key, which has not been added to the wallet.`,
+                    chrome.i18n.getMessage("bgd_auth_canceled"),
+                    chrome.i18n.getMessage("bgd_auth_no_key", [
+                      username,
+                      typeWif
+                    ]),
                     request
                   );
                 });

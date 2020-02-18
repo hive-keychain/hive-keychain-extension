@@ -29,10 +29,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#unlock-dialog").focus();
       }
       $("#dialog_header").text(
-        msg.msg.error == "locked" ? "Unlock Keychain" : "Error"
+        msg.msg.error == "locked"
+          ? chrome.i18n.getMessage("dialog_header_unlock")
+          : chrome.i18n.getMessage("dialog_header_error")
       );
       $("#dialog_header").addClass("error_header");
-      $("#error_dialog").text(msg.msg.display_msg);
+      $("#error_dialog").html(msg.msg.display_msg);
       $("#modal-body-msg").hide();
       $(".modal-body-error").show();
       $(".dialog-message").hide();
@@ -41,11 +43,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       });
     }
   } else if (msg.command == "wrongMk") {
-    $("#error-mk").html("Wrong password!");
+    $("#error-mk").text(chrome.i18n.getMessage("dialog_header_wrong_pwd"));
   } else if (msg.command == "broadcastingNoConfirm") {
     $("#tx_loading").show();
     $(".unlock").hide();
-    $("#dialog_header").text("Broadcasting");
+    $("#dialog_header").text(
+      chrome.i18n.getMessage("dialog_header_broadcasting")
+    );
     $("#error_dialog").hide();
   } else if (msg.command == "sendDialogConfirm") {
     let enforce = null;
@@ -56,25 +60,29 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     var type = msg.data.type;
 
     var titles = {
-      custom: "Custom Transaction",
-      decode: "Verify Key",
-      signBuffer: "Sign Message",
-      addAccountAuthority: "Add Authority",
-      removeAccountAuthority: "Remove Authority",
-      broadcast: "Broadcast",
-      signedCall: "Signed Call",
-      post: "Post",
-      vote: "Vote",
-      transfer: "Transfer",
-      delegation: "Delegation",
-      witnessVote: "Witness Vote",
-      sendToken: "Send Tokens",
-      powerUp: "Power Up",
-      powerDown: "Power Down",
-      createClaimedAccount: "Create Claimed Account",
-      createProposal: "Create Worker Proposal",
-      removeProposal: "Remove Worker Proposal",
-      updateProposalVote: "Vote for Proposal"
+      custom: chrome.i18n.getMessage("dialog_title_custom"),
+      decode: chrome.i18n.getMessage("dialog_title_decode"),
+      signBuffer: chrome.i18n.getMessage("dialog_title_sign"),
+      addAccountAuthority: chrome.i18n.getMessage("dialog_title_add_auth"),
+      removeAccountAuthority: chrome.i18n.getMessage(
+        "dialog_title_remove_auth"
+      ),
+      broadcast: chrome.i18n.getMessage("dialog_title_broadcast"),
+      signedCall: chrome.i18n.getMessage("dialog_title_call"),
+      post: chrome.i18n.getMessage("dialog_title_post"),
+      vote: chrome.i18n.getMessage("dialog_title_vote"),
+      transfer: chrome.i18n.getMessage("dialog_title_transfer"),
+      delegation: chrome.i18n.getMessage("dialog_title_delegation"),
+      witnessVote: chrome.i18n.getMessage("dialog_title_wit"),
+      sendToken: chrome.i18n.getMessage("dialog_title_token"),
+      powerUp: chrome.i18n.getMessage("dialog_title_powerup"),
+      powerDown: chrome.i18n.getMessage("dialog_title_powerdown"),
+      createClaimedAccount: chrome.i18n.getMessage(
+        "dialog_title_create_account"
+      ),
+      createProposal: chrome.i18n.getMessage("dialog_title_create_proposal"),
+      removeProposal: chrome.i18n.getMessage("dialog_title_remove_proposal"),
+      updateProposalVote: chrome.i18n.getMessage("dialog_title_vote_proposal")
     };
     var title = titles[type];
     console.log(msg);
@@ -83,20 +91,22 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     if (msg.data.display_msg) {
       $("#modal-body-msg .msg-data").css("max-height", "245px");
       $("#dialog_message").show();
-      $("#dialog_message").text(msg.data.display_msg);
+      $("#dialog_message").html(msg.data.display_msg);
     }
 
     if (type == "transfer") {
       $("#modal-body-msg .msg-data").css("max-height", "200px");
       let accounts = msg.accounts;
+      console.log(accounts, msg.data.username);
       if (msg.data.username !== undefined) {
         let i = msg.accounts.findIndex(function(elt) {
-          return elt.name == msg.data.username;
+          return elt == msg.data.username;
         });
 
         let first = [accounts[i]];
         delete accounts[i];
         accounts = first.concat(accounts);
+        console.log(accounts);
       }
       for (acc of accounts) {
         if (acc != undefined)
@@ -111,20 +121,18 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     $("#modal-content").css("align-items", "flex-start");
     const keyVerifyAction =
       msg.data.type == "decode" || msg.data.type == "signBuffer";
-    console.log(msg.data.key);
     if (msg.data.key !== "active" && msg.data.type != "transfer") {
       $("#keep_div").show();
       var prompt_msg = keyVerifyAction
-        ? "Do not prompt again to verify keys for the @" +
-          msg.data.username +
-          " account on " +
-          msg.domain
-        : "Do not prompt again to send " +
-          msg.data.type +
-          " transactions from the @" +
-          msg.data.username +
-          " account on " +
-          msg.domain;
+        ? chrome.i18n.getMessage("dialog_no_prompt_verify", [
+            msg.data.username,
+            msg.domain
+          ])
+        : chrome.i18n.getMessage("dialog_no_prompt", [
+            msg.data.type,
+            msg.data.username,
+            msg.domain
+          ]);
       $("#keep_label").text(prompt_msg);
     } else {
       $(".keep_checkbox").css("display", "none");
@@ -136,28 +144,26 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#modal-body-msg").css("max-height", "235px");
         $("#dialog_message").show();
         $("#dialog_message").text(
-          "The website " +
-            msg.domain +
-            " would like to verify that you have access to the private " +
-            msg.data.method +
-            " key for the account: @" +
+          chrome.i18n.getMessage("dialog_desc_verify", [
+            msg.domain,
+            msg.data.method,
             msg.data.username
+          ])
         );
         break;
       case "signBuffer":
         $("#dialog_message").show();
         $("#dialog_message").text(
-          "The website " +
-            msg.domain +
-            " would like you to sign a message using the " +
-            msg.data.method +
-            " key for the account: @" +
+          chrome.i18n.getMessage("dialog_desc_sign", [
+            msg.domain,
+            msg.data.method,
             msg.data.username
+          ])
         );
         const fullMessage = msg.data.message;
         let truncatedMessage = fullMessage.substring(0, 200);
         if (fullMessage.length > 200) {
-          truncatedMessage += "...(click to expand)";
+          truncatedMessage += chrome.i18n.getMessage("dialog_expand");
         }
         let expanded = false;
         $("#message_sign").text(truncatedMessage);
@@ -360,7 +366,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     });
   } else if (msg.command == "answerRequest") {
     $("#tx_loading").hide();
-    $("#dialog_header").text(msg.msg.success == true ? "Success!" : "Error!");
+    $("#dialog_header").text(
+      msg.msg.success == true
+        ? `${chrome.i18n.getMessage("dialog_header_success")} !`
+        : `${chrome.i18n.getMessage("dialog_header_error")} !`
+    );
     $("#error_dialog").text(msg.msg.message);
     $(".modal-body-error").show();
     $("#error-ok").click(function() {

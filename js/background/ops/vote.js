@@ -13,9 +13,11 @@ const broadcastVote = data => {
           err,
           result,
           data,
-          `Successfully voted for @${data.author}'s post ${
-            data.permlink
-          } at ${parseInt(data.weight) / 100}%`,
+          chrome.i18n.getMessage("bgd_ops_vote", [
+            data.author,
+            data.permlink,
+            parseInt(data.weight) / 100
+          ]),
           err_message
         );
         resolve(message);
