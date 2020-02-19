@@ -465,7 +465,7 @@ const manageKeys = name => {
                     chrome.i18n.getMessage("active")
                   ])
                 );
-              else addKeys(index, "active", pwd, pub_active, name);
+              else addKeys(index, "active", pwd, pub_unknown, name);
             } else {
               console.log(adding_key);
               console.log(
@@ -504,14 +504,16 @@ const manageKeys = name => {
             }
             if (weight)
               addKeys(index, adding_key, keys[adding_key], pub, name);
-            } else showError(chrome.i18n.getMessage("popup_accounts_not_wif"));
-          }
+            else {
+            	showError(chrome.i18n.getMessage("popup_accounts_not_wif"));
+            } 
+          } // else
         } else {
           showError(chrome.i18n.getMessage("popup_accounts_try_again"));
-        }
-      });
-    });
-};
+        }; // if/else
+      }); // getAccounts
+    }); // .click
+}; // manageKeys
 
 // Add the new keys to the display and the encrypted storage
 const addKeys = (i, key, priv, pub, name) => {
