@@ -23,6 +23,12 @@ const performTransaction = async (data, tab, no_confirm) => {
       case "removeAccountAuthority":
         message = await broadcastRemoveAccountAuthority(data);
         break;
+      case "addKeyAuthority":
+        message = await broadcastAddKeyAuthority(data);
+        break;
+      case "removeKeyAuthority":
+        message = await broadcastRemoveKeyAuthority(data);
+        break;
       case "broadcast":
         message = await broadcastData(data);
         break;

@@ -67,6 +67,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       removeAccountAuthority: chrome.i18n.getMessage(
         "dialog_title_remove_auth"
       ),
+      addKeyAuthority: chrome.i18n.getMessage("dialog_title_add_key_auth"),
+      removeKeyAuthority: chrome.i18n.getMessage(
+        "dialog_title_remove_key_auth"
+      ),
       broadcast: chrome.i18n.getMessage("dialog_title_broadcast"),
       signedCall: chrome.i18n.getMessage("dialog_title_call"),
       post: chrome.i18n.getMessage("dialog_title_post"),
@@ -184,6 +188,15 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         break;
       case "removeAccountAuthority":
         $("#authorized_account").text(msg.data.authorizedUsername);
+        $("#role").text(msg.data.role);
+        break;
+      case "addKeyAuthority":
+        $("#authorized_key").text(msg.data.authorizedKey);
+        $("#role").text(msg.data.role);
+        $("#weight").text(msg.data.weight);
+        break;
+      case "removeKeyAuthority":
+        $("#authorized_key").text(msg.data.authorizedKey);
         $("#role").text(msg.data.role);
         break;
       case "broadcast":

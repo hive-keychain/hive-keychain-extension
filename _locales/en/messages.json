@@ -1165,5 +1165,23 @@
   },
   "popup_html_send_transfer": {
     "message": "Send"
+  },
+  "dialog_title_add_key_auth": {
+    "message": "Add Key"
+  },
+  "dialog_title_remove_key_auth": {
+    "message": "Remove Key"
+  },
+  "dialog_auth_key": {
+    "message": "Key",
+    "context": "New key to be added"
+  },
+  "bgd_ops_add_key_auth": {
+    "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
+    "context": "Succesfully added a new keypair"
+  },
+  "bgd_ops_remove_key_auth": {
+    "message": "$1 has been removed as a $2 key for account @$3.",
+    "context": "succesfully removed a keypair"
   }
 }

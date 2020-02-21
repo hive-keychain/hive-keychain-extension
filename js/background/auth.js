@@ -214,6 +214,8 @@ const getRequiredWifType = request => {
       break;
     case "addAccountAuthority":
     case "removeAccountAuthority":
+    case "removeKeyAuthority":
+    case "addKeyAuthority":
     case "broadcast":
       return request.method.toLowerCase();
     case "signedCall":

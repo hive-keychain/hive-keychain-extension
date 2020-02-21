@@ -152,6 +152,32 @@ $("#send_removeauth").click(function() {
   );
 });
 
+$("#send_addkey").click(function() {
+  console.log("add key");
+  steem_keychain.requestAddKeyAuthority(
+    $("#addkey_username").val(),
+    $("#addkey_authorized_key").val(),
+    $("#addkey_role option:selected").text(),
+    $("#addkey_weight").val(),
+    function(response) {
+      console.log("main js response - add auth key");
+      console.log(response);
+    }
+  );
+});
+
+$("#send_removekey").click(function() {
+  steem_keychain.requestRemoveKeyAuthority(
+    $("#removekey_username").val(),
+    $("#removekey_authorized_key").val(),
+    $("#removekey_role option:selected").text(),
+    function(response) {
+      console.log("main js response - remove auth key");
+      console.log(response);
+    }
+  );
+});
+
 $("#send_broadcast").click(function() {
   steem_keychain.requestBroadcast(
     $("#broadcast_username").val(),

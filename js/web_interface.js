@@ -89,6 +89,7 @@ const sendResponse = response => {
 };
 
 const validate = () => {
+  console.log(req);
   return (
     req != null &&
     req != undefined &&
@@ -132,6 +133,13 @@ const validate = () => {
         isFilled(req.weight)) ||
       (req.type == "removeAccountAuthority" &&
         isFilled(req.authorizedUsername) &&
+        isFilled(req.role)) ||
+      (req.type == "addKeyAuthority" &&
+        isFilled(req.authorizedKey) &&
+        isFilled(req.role) &&
+        isFilled(req.weight)) ||
+      (req.type == "removeKeyAuthority" &&
+        isFilled(req.authorizedKey) &&
         isFilled(req.role)) ||
       (req.type == "broadcast" &&
         isFilled(req.operations) &&
