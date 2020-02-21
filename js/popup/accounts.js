@@ -9,6 +9,24 @@ const INCORRECT_USER = chrome.i18n.getMessage("popup_accounts_incorrect_user");
 const FILL = chrome.i18n.getMessage("popup_accounts_fill");
 
 // All functions regarding the handling of a particular account
+
+// The public key could be supplied by the user or derived from the private key 
+// using steem.auth.wifToPublic().  The structures returned by 
+// steem.api.getAccounts() will have 'posting' and 'active' members each each 
+// of which is a perm_info structure.  These can be passed as the second 
+// parameter.  dpub will be the public key you wish to test.
+function getPubkeyWeight(dpub /* Public key string */, perm_info /*permission info structure*/) {
+  for (let n in perm_info.key_auths) {
+    const kw = perm_info.key_auths[n];
+    const lpub = kw["0"];
+    // later: maybe for multisig we should handle when weight threshold is too low by contacting the cosigner
+    if (dpub == lpub) {
+      return kw["1"];
+    }
+  } // for
+  return 0;
+}
+
 // Load account information
 const loadAccount = async name => {
   console.log(`Load account ${name}`);
@@ -143,47 +161,52 @@ $("#check_add_account").click(function() {
     } else
       steem.api.getAccounts([username], function(err, result) {
         if (result.length != 0) {
-          const pub_active = result["0"].active.key_auths["0"]["0"];
-          const pub_posting = result["0"].posting.key_auths["0"]["0"];
+          const active_info = result["0"].active;
+          const posting_info = result["0"].posting;
           const pub_memo = result["0"].memo_key;
           if (steem.auth.isWif(pwd)) {
-            if (isMemoWif(pwd, pub_memo)) {
+            const pub_unknown = steem.auth.wifToPublic(pwd);
+            if (pub_unknown == pub_memo) {
               addAccount({
-                name: username,
-                keys: {
-                  memo: pwd,
-                  memoPubkey: pub_memo
-                }
+		name: username,
+		keys: {
+		  memo: pwd,
+		  memoPubkey: pub_memo
+		}
               });
-            } else if (isPostingWif(pwd, pub_posting)) {
-              addAccount({
-                name: username,
-                keys: {
-                  posting: pwd,
-                  postingPubkey: pub_posting
-                }
-              });
-            } else if (isActiveWif(pwd, pub_active)) {
-              addAccount({
-                name: username,
-                keys: {
-                  active: pwd,
-                  activePubkey: pub_active
-                }
-              });
+	    } else if (getPubkeyWeight(pub_unknown, posting_info)) {
+	      addAccount({
+		name: username,
+		keys: {
+		  posting: pwd,
+		  postingPubkey: pub_unknown
+		}
+	      });
+	    } else if (getPubkeyWeight(pub_unknown, active_info)) {
+	      addAccount({
+		name: username,
+		keys: {
+		  active: pwd,
+		  activePubkey: pub_unknown
+		}
+	      });
             }
           } else {
-            const keys = steem.auth.getPrivateKeys(username, pwd, [
-              "posting",
-              "active",
-              "memo"
-            ]);
-            console.log(keys);
-            if (
-              keys.activePubkey == pub_active &&
-              keys.postingPubkey == pub_posting &&
-              keys.memoPubkey == pub_memo
-            ) {
+            const keys = 
+              steem.auth.getPrivateKeys(username, pwd, 
+                ["posting", "active", "memo"]);
+            const has_active = 
+              getPubkeyWeight(keys.activePubkey, active_info) != 0;
+            const has_posting = 
+              getPubkeyWeight(keys.postingPubkey, posting_info) != 0;
+            if ((has_active > 0) || 
+              (has_posting > 0) || (keys.memoPubkey == pub_memo)) {
+              $("#posting_key").prop("checked", has_posting);
+              $("#posting_key").prop("disabled", !has_posting);
+              $("#active_key").prop("checked", has_active);
+              $("#active_key").prop("disabled", !has_active);
+              $("#memo_key").prop("checked", keys.memoPubkey == pub_memo);
+              $("#memo_key").prop("disabled", keys.memoPubkey != pub_memo);
               $("#add_account_div").hide();
               $("#master_check").show();
             } else {
@@ -409,11 +432,12 @@ const manageKeys = name => {
 
       steem.api.getAccounts([name], function(err, result) {
         if (result.length != 0) {
-          const pub_active = result["0"].active.key_auths["0"]["0"];
-          const pub_posting = result["0"].posting.key_auths["0"]["0"];
+          const active_info = result["0"].active;
+          const posting_info = result["0"].posting;
           const pub_memo = result["0"].memo_key;
           if (steem.auth.isWif(pwd)) {
-            if (adding_key == "memo" && isMemoWif(pwd, pub_memo)) {
+            const pub_unknown = steem.auth.wifToPublic(pwd);
+            if (adding_key == "memo" && pub_unknown == pub_memo) {
               if (keys.hasOwnProperty("memo"))
                 showError(
                   chrome.i18n.getMessage("popup_accounts_already_have_key", [
@@ -422,8 +446,8 @@ const manageKeys = name => {
                 );
               else addKeys(index, "memo", pwd, pub_memo, name);
             } else if (
-              adding_key == "posting" &&
-              isPostingWif(pwd, pub_posting)
+              adding_key == "posting" && 
+                getPubkeyWeight(pub_unknown, posting_info)
             ) {
               if (keys.hasOwnProperty("posting"))
                 showError(
@@ -431,15 +455,17 @@ const manageKeys = name => {
                     chrome.i18n.getMessage("posting")
                   ])
                 );
-              else addKeys(index, "posting", pwd, pub_posting, name);
-            } else if (adding_key == "active" && isActiveWif(pwd, pub_active)) {
+              else
+                addKeys(index, "posting", pwd, pub_unknown, name);
+            } else if (adding_key == "active" && 
+                getPubkeyWeight(pub_unknown, active_info)) {
               if (keys.hasOwnProperty("active"))
                 showError(
                   chrome.i18n.getMessage("popup_accounts_already_have_key", [
                     chrome.i18n.getMessage("active")
                   ])
                 );
-              else addKeys(index, "active", pwd, pub_active, name);
+              else addKeys(index, "active", pwd, pub_unknown, name);
             } else {
               console.log(adding_key);
               console.log(
@@ -456,39 +482,38 @@ const manageKeys = name => {
               );
             }
           } else {
-            const keys = steem.auth.getPrivateKeys(name, pwd, [
-              "posting",
-              "active",
-              "memo"
-            ]);
+          const keys = steem.auth.getPrivateKeys(name, pwd, [
+            "posting",
+            "active",
+            "memo"
+          ]);
             console.log(keys);
-            if (
-              keys.activePubkey == pub_active &&
-              keys.postingPubkey == pub_posting &&
-              keys.memoPubkey == pub_memo
-            ) {
-              let pub = null;
-              let prKey = null;
-              switch (adding_key) {
-                case "memo":
-                  pub = pub_memo;
-                  break;
-                case "active":
-                  pub = pub_active;
-                  break;
-                case "posting":
-                  pub = pub_posting;
-                  break;
-              }
+            switch (adding_key) {
+              case "memo":
+                pub = pub_memo;
+                weight = (keys.memoPubkey == pub_memo) ? 1 : 0;
+                break;
+              case "active":
+                pub = keys.activePubkey;
+                weight = getPubkeyWeight(keys.activePubkey, active_info);
+                break;
+              case "posting":
+                pub = keys.postingPubkey;
+                weight = getPubkeyWeight(keys.postingPubkey, posting_info);
+                break;
+            }
+            if (weight)
               addKeys(index, adding_key, keys[adding_key], pub, name);
-            } else showError(chrome.i18n.getMessage("popup_accounts_not_wif"));
-          }
+            else {
+            	showError(chrome.i18n.getMessage("popup_accounts_not_wif"));
+            } 
+          } // else
         } else {
           showError(chrome.i18n.getMessage("popup_accounts_try_again"));
-        }
-      });
-    });
-};
+        }; // if/else
+      }); // getAccounts
+    }); // .click
+}; // manageKeys
 
 // Add the new keys to the display and the encrypted storage
 const addKeys = (i, key, priv, pub, name) => {
