@@ -208,7 +208,7 @@ const isBoolean = obj => {
 };
 
 const isFilledOrEmpty = obj => {
-  if (obj) return true;
+  return obj || obj == "";
 };
 
 const isProposalIDs = obj => {
