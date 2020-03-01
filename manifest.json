@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.7",
+  "version": "1.7.1",
   "permissions": [
     "activeTab",
     "declarativeContent",
