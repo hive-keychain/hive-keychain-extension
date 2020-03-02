@@ -106,6 +106,7 @@ const createMessage = (err, result, data, success_message, fail_message) => {
 };
 
 const beautifyErrorMessage = err => {
+  console.log(err);
   if (!err) return null;
   let error = err.message.split("xception:")[1].replace(".rethrow", ".");
   if (error.replace(" ", "") === "")
