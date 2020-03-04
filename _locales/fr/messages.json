@@ -152,7 +152,7 @@
     "description": "When adding new account"
   },
   "popup_html_setup": {
-    "message": "Paramètres",
+    "message": "Nouveau Compte",
     "description": "when adding new account"
   },
   "popup_html_private_key": {
