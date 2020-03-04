@@ -407,3 +407,32 @@ $("#edit_delegation_values .del_left")
   .text(chrome.i18n.getMessage("popup_html_current"));
 $("#edit_del").text(chrome.i18n.getMessage("popup_html_save"));
 $("#witness_toggle").text(chrome.i18n.getMessage("popup_html_support"));
+
+//add accounts new
+$("#add_by_keys").text(chrome.i18n.getMessage("popup_html_add_by_keys"));
+$("#add_by_auth").text(chrome.i18n.getMessage("popup_html_add_by_auth"));
+$("#add_account_types_div p").html(
+  chrome.i18n.getMessage("popup_html_chose_add_method")
+);
+$("#add_account_types_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_setup")
+);
+
+//add by auth
+$("#authorized_acc_auth").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_auth_placeholder_username_auth")
+);
+$("#username_auth").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_auth_placeholder_username")
+);
+$("#add_auth_account_div p").html(
+  chrome.i18n.getMessage("popup_html_auth_text")
+);
+$("#add_auth_account_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_setup")
+);
+$("#add_auth_account_div button").text(
+  chrome.i18n.getMessage("popup_html_save")
+);

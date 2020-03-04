@@ -76,7 +76,9 @@ body {
 #incoming_del_div,
 #edit_del_div,
 #token_history_div,
-#confirm_send_div {
+#confirm_send_div,
+#add_account_types_div,
+#add_auth_account_div {
   scrollbar-width: none;
   width: 350px;
   height: 100%;
@@ -172,7 +174,9 @@ input:focus {
 #edit_del_div input,
 #powerup_div input,
 #token_send_div input,
-#powerdown_div input {
+#powerdown_div input,
+#add_account_types_div input,
+#add_auth_account_div input {
   width: 100%;
   box-sizing: border-box;
   height: 48.43px;
@@ -236,7 +240,9 @@ input:focus {
 #confirm_token_send_div button,
 #powerup_div button,
 #powerdown_div button,
-#confirm_send_div button {
+#confirm_send_div button,
+#add_account_types_div button,
+#add_auth_account_div button {
   border-radius: 5px;
   width: 100%;
   height: 48.43px;
@@ -271,7 +277,9 @@ input:focus {
 #edit_del:hover,
 #vote_wit:hover,
 #token_send_div button:hover,
-#confirm_send_div button:hover {
+#confirm_send_div button:hover,
+#add_account_types_div button:hover,
+#add_auth_account_div button:hover {
   background-color: #917FC6;
   border: solid 1px #917FC6;
 }
@@ -375,7 +383,9 @@ input:focus {
 #incoming_del_div,
 #edit_del_div,
 #token_history_div,
-#confirm_send_div {
+#confirm_send_div,
+#add_account_types_div,
+#add_auth_account_div {
   display: none;
 }
 
@@ -1989,4 +1999,13 @@ input:focus {
 #autocomplete_container {
   padding-top: -20px;
   position: relative;
+}
+
+#add_by_keys {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
+
+#add_account_types_div p {
+  margin-top: 20px;
 }
