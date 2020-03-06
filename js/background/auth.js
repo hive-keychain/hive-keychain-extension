@@ -186,7 +186,8 @@ const hasNoConfirm = (arr, data, domain, current_rpc) => {
     if (
       data.method == "active" ||
       arr == undefined ||
-      current_rpc === "TESTNET"
+      current_rpc === "TESTNET" ||
+      domain === "steemit.com"
     ) {
       return false;
     } else return JSON.parse(arr)[data.username][domain][data.type] == true;
