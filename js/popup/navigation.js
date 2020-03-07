@@ -101,6 +101,11 @@ $("#add_key_div .back_enabled").click(function() {
   $(".error_div").hide();
 });
 
+$(".back_account_types").click(() => {
+  $("#add_account_types_div").show();
+  $("#add_auth_account_div").hide();
+});
+
 $("#add_rpc_div .back_enabled").click(function() {
   chrome.storage.local.get(["rpc", "current_rpc"], function(items) {
     loadRPC(items.rpc, items.current_rpc);
@@ -308,10 +313,28 @@ $("#add_new_account").click(function() {
 });
 
 function showAddAccount() {
-  $("#add_account_div").css("display", "block");
-  $("#main").css("display", "none");
-  $("#settings_div").css("display", "none");
+  $("#add_account_types_div").show();
+  $("#main").hide();
+  $("#settings_div").hide();
+  $("#add_account_div .back_enabled")
+    .unbind("click")
+    .click(() => {
+      $("#add_account_types_div").show();
+      $("#add_account_div").hide();
+    });
 }
+
+$("#add_by_auth").click(() => {
+  $("#add_account_types_div").hide();
+  $("#add_auth_account_div").show();
+});
+
+$("#add_by_keys").click(() => {
+  $("#add_account_types_div").hide();
+  $("#add_account_div .back_enabled").removeClass("back_menu");
+  $("#add_account_div .back_enabled").addClass("back_account_types");
+  $("#add_account_div").show();
+});
 
 $(".wallet_currency").click(function() {
   $(".wallet_currency")

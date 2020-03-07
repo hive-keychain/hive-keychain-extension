@@ -81,6 +81,23 @@
     <option>Active</option>
   </select>
   <button id="send_removeauth">Send</button>
+  <h3>Add Key Authority</h3>
+  <input type="text" placeholder="username" id="addkey_username" />
+  <input type="text" placeholder="authorized_key" id="addkey_authorized_key" />
+  <select id="addkey_role">
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <input type="number" placeholder="1" id="addkey_weight" />
+  <button id="send_addkey">Send</button>
+  <h3>Remove Key Authority</h3>
+  <input type="text" placeholder="username" id="removekey_username" />
+  <input type="text" placeholder="authorized_key" id="removekey_authorized_key" />
+  <select id="removekey_role">
+    <option>Posting</option>
+    <option>Active</option>
+  </select>
+  <button id="send_removekey">Send</button>
   <h3>Broadcast</h3>
   <input type="text" placeholder="username" id="broadcast_username" />
   <input type="text" placeholder="operations" id="broadcast_operations" />

@@ -28,6 +28,9 @@ $("#receiver")
 $("#authorized_account")
   .prev("h3")
   .text(chrome.i18n.getMessage("dialog_auth_account"));
+$("#authorized_key")
+  .prev("h3")
+  .text(chrome.i18n.getMessage("dialog_auth_key"));
 $("#role")
   .prev("h3")
   .text(chrome.i18n.getMessage("dialog_role"));

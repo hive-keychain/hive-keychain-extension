@@ -1165,5 +1165,49 @@
   },
   "popup_html_send_transfer": {
     "message": "Send"
+  },
+  "dialog_title_add_key_auth": {
+    "message": "Add Key"
+  },
+  "dialog_title_remove_key_auth": {
+    "message": "Remove Key"
+  },
+  "dialog_auth_key": {
+    "message": "Key",
+    "context": "New key to be added"
+  },
+  "bgd_ops_add_key_auth": {
+    "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
+    "context": "Succesfully added a new keypair"
+  },
+  "bgd_ops_remove_key_auth": {
+    "message": "$1 has been removed as a $2 key for account @$3.",
+    "context": "succesfully removed a keypair"
+  },
+  "popup_html_add_by_keys": {
+    "message": "Use keys/pwd",
+    "context": "When adding new account. In a button, must keep short. "
+  },
+  "popup_html_add_by_auth": {
+    "message": "Use authorized account",
+    "context": "When adding new account. In a button, must keep short."
+  },
+  "popup_html_chose_add_method": {
+    "message": "You can add your keys by entring a private key or your master password.<br/>Alternatively, you can specify an authorized account.",
+    "context": "Text when adding new method."
+  },
+  "popup_html_auth_text": {
+    "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Steem Keychain.",
+    "context": "On Add new account => via auth"
+  },
+  "popup_html_auth_placeholder_username": {
+    "message": "Username"
+  },
+  "popup_html_auth_placeholder_username_auth": {
+    "message": "Authorized Account",
+    "context": "The placeholder for the authorized account that will use its keys for this account."
+  },
+  "popup_no_auth_account": {
+    "message": "Please save @$1 in Steem Keychain to use it as an authorized account."
   }
 }

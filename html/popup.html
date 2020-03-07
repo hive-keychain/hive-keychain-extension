@@ -130,8 +130,14 @@
         <div class="back_menu back_enabled"></div>
         <div id="transfer_rows"></div>
     </div>
+    <div id="add_account_types_div" class="settings_child hide-at-start">
+        <div class="back_enabled back_menu"></div>
+        <p></p>
+        <button id="add_by_keys"></button>
+        <button id="add_by_auth"></button>
+    </div>
     <div id="add_account_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref"></div>
+        <div class="back_enabled back_menu"></div>
         <p></p>
         <div class="input_container">
             <input type="text" id="username"></input>
@@ -142,6 +148,19 @@
             <img src="../images/key.png" class="input_img" />
         </div>
         <button id="check_add_account"></button>
+    </div>
+    <div id="add_auth_account_div" class="settings_child hide-at-start">
+        <div class="back_enabled back_account_types"></div>
+        <p></p>
+        <div class="input_container">
+            <input type="text" id="username_auth"></input>
+            <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <div class="input_container">
+            <input type="text" id="authorized_acc_auth"></input>
+            <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <button id="add_account_by_auth"></button>
     </div>
     <div id="master_check" class="hide-at-start">
         <div class="back_add_key back_enabled"></div>

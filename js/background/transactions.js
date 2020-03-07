@@ -23,6 +23,12 @@ const performTransaction = async (data, tab, no_confirm) => {
       case "removeAccountAuthority":
         message = await broadcastRemoveAccountAuthority(data);
         break;
+      case "addKeyAuthority":
+        message = await broadcastAddKeyAuthority(data);
+        break;
+      case "removeKeyAuthority":
+        message = await broadcastRemoveKeyAuthority(data);
+        break;
       case "broadcast":
         message = await broadcastData(data);
         break;
@@ -100,6 +106,7 @@ const createMessage = (err, result, data, success_message, fail_message) => {
 };
 
 const beautifyErrorMessage = err => {
+  console.log(err);
   if (!err) return null;
   let error = err.message.split("xception:")[1].replace(".rethrow", ".");
   if (error.replace(" ", "") === "")
