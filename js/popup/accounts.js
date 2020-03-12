@@ -182,7 +182,8 @@ $("#add_account_by_auth").click(async () => {
       accountsList.add(account).save(mk);
       initializeMainMenu();
       initializeVisibility();
-    } else showError("no such auth");
+    } else
+      showError(chrome.i18n.getMessage("popup_accounts_no_auth", [auth, name]));
   }
 });
 

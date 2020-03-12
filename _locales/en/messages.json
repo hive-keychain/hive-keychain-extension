@@ -1209,5 +1209,9 @@
   },
   "popup_no_auth_account": {
     "message": "Please save @$1 in Steem Keychain to use it as an authorized account."
+  },
+  "popup_accounts_no_auth": {
+    "message": "@$1 does not have authority over @$2.",
+    "context": "When trying to add an account via authority"
   }
 }
