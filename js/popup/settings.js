@@ -87,3 +87,13 @@ function setPreferences(name) {
     } catch (e) {}
   });
 }
+
+$("#import_keys").click(() => {});
+$("#export_keys").click(() => {
+  var data = new Blob([accountsList.encrypt(mk)], {type: "text/plain"});
+  var url = window.URL.createObjectURL(data);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "keys.skc";
+  a.click();
+});
