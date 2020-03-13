@@ -216,6 +216,11 @@ $("#keychainify").click(function() {
   $("#keychainify_settings").show();
 });
 
+$("#import_export").click(function() {
+  $("#settings_div").hide();
+  $("#import_settings").show();
+});
+
 // Show transaction window
 $("#send").click(function() {
   $("#send_div").show();

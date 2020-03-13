@@ -34,13 +34,8 @@ class AccountsList {
     return this.accounts.list[id];
   }
   save(mk) {
-    const accounts = {
-      ...this.accounts,
-      list: this.accounts.list.map(e => e.getObj())
-    };
-    console.log(accounts);
     chrome.storage.local.set({
-      accounts: encryptJson(accounts, mk)
+      accounts: this.encrypt(mk)
     });
   }
   clear() {
@@ -49,6 +44,13 @@ class AccountsList {
   }
   isEmpty() {
     return !this.accounts.list || !this.accounts.list.length;
+  }
+  encrypt(mk) {
+    const accounts = {
+      ...this.accounts,
+      list: this.accounts.list.map(e => e.getObj())
+    };
+    return encryptJson(accounts, mk);
   }
   add(account) {
     if (!this.accounts.list) this.accounts.list = [];

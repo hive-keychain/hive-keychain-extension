@@ -231,6 +231,10 @@
     "message": "Keychainify",
     "description": "on settings page"
   },
+  "popup_html_import_export": {
+    "message": "Import / Export",
+    "description": "on settings page"
+  },
   "popup_html_about": {
     "message": "About Steem Keychain",
     "description": "on settings page"
@@ -274,6 +278,18 @@
   "popup_html_enable_keychainify_info": {
     "message": "Currently only support Steem Connect transfers URLs.",
     "description": "on keychainify settings"
+  },
+  "popup_html_import_export_text": {
+    "message": "You can export all your keys encrypted in a file. This will allow you to import them to Keychain on another device or simply safeguard them.<br/><br/>When importing, only accounts that are not already present on the instance will be added.",
+    "description": "on import / export settings"
+  },
+  "popup_html_import": {
+    "message": "Import",
+    "description": "on import / export settings"
+  },
+  "popup_html_export": {
+    "message": "Export",
+    "description": "on import / export settings"
   },
   "popup_html_about_text": {
     "message": "The overall idea and concept for the Steem Keychain browser extension was created by <a href=\"https://steemit.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steemit.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
