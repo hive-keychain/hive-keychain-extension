@@ -146,6 +146,7 @@ const checkBeforeCreate = (request, tab, domain) => {
                   );
                 });
               } else {
+                public = account.getKey(`${typeWif}Pubkey`);
                 key = account.getKey(typeWif);
                 if (
                   !hasNoConfirm(

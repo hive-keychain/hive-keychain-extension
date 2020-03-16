@@ -91,7 +91,14 @@ const performTransaction = async (data, tab, no_confirm) => {
   }
 };
 
-const createMessage = (err, result, data, success_message, fail_message) => {
+const createMessage = (
+  err,
+  result,
+  data,
+  success_message,
+  fail_message,
+  publicKey
+) => {
   return {
     command: "answerRequest",
     msg: {
@@ -100,7 +107,8 @@ const createMessage = (err, result, data, success_message, fail_message) => {
       result: result,
       data: data,
       message: !err ? success_message : fail_message,
-      request_id
+      request_id,
+      publicKey
     }
   };
 };
