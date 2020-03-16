@@ -391,6 +391,10 @@ button {
   width: 15px
 }
 
+#steemit {
+  display: none
+}
+
 #balance, #balance_after {
   display: none
 }
