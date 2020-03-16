@@ -91,7 +91,26 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     var title = titles[type];
     console.log(msg);
     $("#dialog_header").html(title + (msg.testnet ? " (TESTNET)" : ""));
-
+    if (msg.domain === "steemit.com") {
+      $.get(
+        "https://api.steemplus.app/steemitBlock",
+        function(data) {
+          if (data.text) {
+            $("#steemit").show();
+            $("#steemit p").text(data.text);
+            $("#mod_content").hide();
+            if (!data.lock) {
+              $("#steemit").append(`<button>Ok</button>`);
+              $("#steemit button").click(() => {
+                $("#mod_content").show();
+                $("#steemit").hide();
+              });
+            }
+          }
+        },
+        "json"
+      );
+    }
     if (msg.data.display_msg) {
       $("#modal-body-msg .msg-data").css("max-height", "245px");
       $("#dialog_message").show();
