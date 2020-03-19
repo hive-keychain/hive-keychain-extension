@@ -2020,3 +2020,7 @@ input:focus {
   margin-bottom: 30px;
   margin-top: 20px;
 }
+
+#keychainify {
+  display: none;
+}

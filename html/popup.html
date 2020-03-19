@@ -86,20 +86,20 @@
             </div>
             <div id="wallet_currency">
                 <div class='currency-section'>
-                    <div class="wallet_currency">STEEM</div>
+                    <div class="wallet_currency">HBD</div>
                     <div class="dropdown">
                         <div id="send_steem"><img src="../images/transfer.png" /></div>
                         <div id="powerup"><img src="../images/powerup.png" /></div>
                     </div>
                 </div>
                 <div class='currency-section'>
-                    <div class="wallet_currency">SBD</div>
+                    <div class="wallet_currency">HBD</div>
                     <div class="dropdown">
                         <div id="send_sbd"><img src="../images/transfer.png" /></div>
                     </div>
                 </div>
                 <div class='currency-section'>
-                    <div class="wallet_currency" id="wallet_sp">SP</div>
+                    <div class="wallet_currency" id="wallet_sp">HP</div>
                     <div class="dropdown">
                         <div id="delegate"><img src="../images/delegate.png" /></div>
                         <div id="powerdown"><img src="../images/powerdown.png" /></div>
@@ -215,10 +215,7 @@
             <img src="../images/autolock.png" />
             <span></span>
         </div>
-        <div class="setting_row" id="keychainify">
-            <img src="../images/white-link.png" />
-            <span></span>
-        </div>
+
         <div class="setting_row" id="import_export">
             <img  src="../images/import.svg" />
             <span></span>
@@ -229,6 +226,10 @@
         </div>
         <div class="setting_row" id="clear">
             <img src="../images/clear.png" />
+            <span></span>
+        </div>
+        <div class="setting_row" id="keychainify">
+            <img src="../images/white-link.png" />
             <span></span>
         </div>
     </div>
@@ -384,8 +385,8 @@
             <input type="number" id="amt_send" autocomplete="off" placeholder="0.000" />
             <div class="custom-select" id="currency_send">
                 <select>
-            <option value="STEEM">STEEM</option>
-              <option value="SBD">SBD</option>
+            <option value="HIVE">HIVE</option>
+              <option value="HBD">HBD</option>
             </select>
             </div>
             <input type="text"  id="memo_send" />
@@ -514,7 +515,7 @@
         <input type="text" id="user_pu"></input>
         <input type="number" id="amt_pu" placeholder="0.000"></input>
         <div class="sp_del">
-            STEEM
+            HIVE
         </div>
         <div id="wrap_power_up"><button id="power_up"></button></div>
         <div class="loader" id="powerup_loading" style="display:none">

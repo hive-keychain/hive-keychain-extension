@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.7.4",
+  "version": "1.8",
   "permissions": [
     "activeTab",
     "declarativeContent",
@@ -40,7 +40,6 @@
       "js/background/init.js",
       "js/background/dialog_lifecycle.js",
       "js/background/errors.js",
-      "js/background/keychainify.js",
       "js/background/auth.js",
       "js/background/ops/authority.js",
       "js/background/ops/broadcast.js",
@@ -57,8 +56,7 @@
       "js/background/ops/transfer.js",
       "js/background/ops/vote.js",
       "js/background/ops/witness.js",
-      "js/background/transactions.js",
-      "js/background/context_menu.js"
+      "js/background/transactions.js"
     ],
     "persistent": true
   },
@@ -70,7 +68,7 @@
       "matches": [
         "https://*/*", "http://0.0.0.0:1337/*", "http://*/*"
       ],
-      "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/libs/keychainify.js", "js/keychainify_content.js"]
+      "js": ["vendor/jquery.min.js", "js/web_interface.js"]
     }
   ],
   "manifest_version": 2
