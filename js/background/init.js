@@ -60,6 +60,32 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
       performTransaction(msg.data, msg.tab, false);
       // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
       break;
+    case "importKeys":
+      try {
+        chrome.storage.local.get(["accounts"], function(items) {
+          const decrypt = decryptToJson(items.accounts, mk);
+          if (!decrypt)
+            chrome.runtime.sendMessage({
+              command: "importResult",
+              result: false
+            });
+          accountsList.init(decrypt);
+          const accounts = decryptToJson(msg.fileData, mk);
+          console.log(accounts);
+          accountsList.import(accounts.list, mk);
+          chrome.runtime.sendMessage({
+            command: "importResult",
+            result: true
+          });
+        });
+      } catch (e) {
+        console.log(e);
+        chrome.runtime.sendMessage({
+          command: "importResult",
+          result: false
+        });
+      }
+      break;
   }
 };
 

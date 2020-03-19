@@ -88,12 +88,32 @@ function setPreferences(name) {
   });
 }
 
-$("#import_keys").click(() => {});
+$("#import_keys").click(() => {
+  importKeys();
+});
+
+const importKeys = () => {
+  chrome.windows.getCurrent(w => {
+    chrome.windows.create(
+      {
+        url: chrome.runtime.getURL("html/import.html"),
+        type: "popup",
+        height: 566,
+        focused: true,
+        width: 350,
+        left: w.width - 350 + w.left,
+        top: w.top
+      },
+      w => w.update()
+    );
+  });
+};
+
 $("#export_keys").click(() => {
   var data = new Blob([accountsList.encrypt(mk)], {type: "text/plain"});
   var url = window.URL.createObjectURL(data);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "keys.skc";
+  a.download = "accounts.kc";
   a.click();
 });

@@ -391,6 +391,7 @@ function initiateCustomSelect() {
       if (
         this.innerHTML.includes(chrome.i18n.getMessage("popup_add_account"))
       ) {
+        $("#add_import_keys").hide();
         showAddAccount();
       } else if (
         !getPref &&

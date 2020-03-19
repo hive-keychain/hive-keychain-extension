@@ -427,6 +427,8 @@ $("#witness_toggle").text(chrome.i18n.getMessage("popup_html_support"));
 //add accounts new
 $("#add_by_keys").text(chrome.i18n.getMessage("popup_html_add_by_keys"));
 $("#add_by_auth").text(chrome.i18n.getMessage("popup_html_add_by_auth"));
+$("#add_import_keys").text(chrome.i18n.getMessage("popup_html_import_keys"));
+
 $("#add_account_types_div p").html(
   chrome.i18n.getMessage("popup_html_chose_add_method")
 );

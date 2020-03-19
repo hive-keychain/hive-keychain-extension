@@ -328,6 +328,9 @@ function showAddAccount() {
       $("#add_account_div").hide();
     });
 }
+$("#add_import_keys").click(() => {
+  importKeys();
+});
 
 $("#add_by_auth").click(() => {
   $("#add_account_types_div").hide();

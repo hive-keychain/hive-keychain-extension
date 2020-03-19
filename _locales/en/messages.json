@@ -1229,5 +1229,15 @@
   "popup_accounts_no_auth": {
     "message": "@$1 does not have authority over @$2.",
     "context": "When trying to add an account via authority"
+  },
+  "import_html_text": {
+    "message": "Import your keys from another Keychain instance using a .kc file.<br/><br/>You need to use the same master password on both instances to decrypt the keys."
+  },
+  "import_html_success": {
+    "message": "You succesfully imported your keys!"
+  },
+  "import_html_error": {
+    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
   }
+
 }

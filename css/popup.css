@@ -2005,7 +2005,11 @@ input:focus {
 
 #add_by_keys {
   margin-top: 40px;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
+}
+
+#add_import_keys {
+  margin-top: 30px;
 }
 
 #add_account_types_div p {

@@ -1,6 +1,6 @@
 class AccountsList {
   constructor() {
-    this.accounts = {};
+    this.accounts = {list: []};
   }
   init(accounts, last_account) {
     if (accounts) {
@@ -44,6 +44,14 @@ class AccountsList {
   }
   isEmpty() {
     return !this.accounts.list || !this.accounts.list.length;
+  }
+  import(accounts, mk) {
+    console.log(this.accounts.list);
+    for (const account of accounts) {
+      if (!this.accounts.list.find(acc => acc.getName() === account.name))
+        this.accounts.list.push(new Account(account));
+    }
+    this.save(mk);
   }
   encrypt(mk) {
     const accounts = {

@@ -191,8 +191,8 @@ function initializeMainMenu() {
       } else {
         $("#main").hide();
         $("#register").hide();
-        $("#add_account_div").show();
-        $("#add_account_div .back_enabled").addClass("back_disabled");
+        $("#add_account_types_div").show();
+        $("#add_account_types_div .back_enabled").addClass("back_disabled");
       }
     }
   );
