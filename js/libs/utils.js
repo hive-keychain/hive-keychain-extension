@@ -39,7 +39,7 @@ var getEffectiveVestingSharesPerAccount = function(account) {
 };
 
 // get SP of the account
-var getSteemPowerPerAccount = function(
+var getHivePowerPerAccount = function(
   account,
   totalVestingFund,
   totalVestingShares
@@ -119,14 +119,6 @@ var getVotingDollarsPerAccount = async function(
       );
       var current_power = full ? 10000 : vm;
       var weight = voteWeight * 100;
-      //const voteEffectiveShares =
-      //  effective_vesting_shares * ((vm * (weight / 10000)) / 10000) * 0.02;
-      // const medianPrice = await steem.api.getCurrentMedianHistoryPriceAsync();
-      // fulfill(
-      //   (voteEffectiveShares / recentClaims) *
-      //     rewardBalance *
-      //     (parseFloat(medianPrice.base) / parseFloat(medianPrice.quote))
-      // );
 
       var max_vote_denom =
         (votePowerReserveRate * STEEMIT_VOTE_REGENERATION_SECONDS) /
@@ -238,7 +230,7 @@ function getTimeBeforeFull(votingPower) {
 }
 
 // Get STEEM price from Bittrex
-function getPriceSteemAsync() {
+function getPriceHiveAsync() {
   return new Promise(function(resolve, reject) {
     $.ajax({
       type: "GET",
@@ -278,7 +270,7 @@ function getBTCPriceAsync() {
 }
 
 // Get SBD price from Bittrex
-function getPriceSBDAsync() {
+function getPriceHBDAsync() {
   return new Promise(function(resolve, reject) {
     $.ajax({
       type: "GET",

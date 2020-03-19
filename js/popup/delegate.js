@@ -31,7 +31,7 @@ const prepareDelegationTab = async () => {
     .click(function() {
       $("#send_del").hide();
       $("#del_loading").show();
-      activeAccount.delegateSP(
+      activeAccount.delegateHP(
         $("#amt_del").val(),
         $("#username_del").val(),
         function(err, result) {
@@ -51,31 +51,31 @@ const prepareDelegationTab = async () => {
 
 function getSumOutgoing(delegatees) {
   return delegatees.reduce(function(total, elt) {
-    return total + parseFloat(elt.sp);
+    return total + parseFloat(elt.hp);
   }, 0);
 }
 
 function getSumIncoming(delegators) {
   return delegators.reduce(function(total, elt) {
-    return total + parseFloat(elt.sp);
+    return total + parseFloat(elt.hp);
   }, 0);
 }
 
 const displayIncomingDelegations = delegators => {
   const sumIncoming = getSumIncoming(delegators);
   delegators = delegators.sort(function(a, b) {
-    return b.sp - a.sp;
+    return b.hp - a.hp;
   });
   $("#total_incoming span")
     .eq(1)
-    .html(numberWithCommas(sumIncoming.toFixed(3)) + " SP");
+    .html(numberWithCommas(sumIncoming.toFixed(3)) + " HP");
   $("#list_incoming").empty();
   for (delegator of delegators) {
     $("#list_incoming").append(
       "<div class='line_incoming'><span>@" +
         delegator.delegator +
         "</span><span>" +
-        numberWithCommas(delegator.sp) +
+        numberWithCommas(delegator.hp) +
         "</span></div>"
     );
   }
@@ -88,7 +88,7 @@ const displayDelegationMain = async (delegators, delegatees) => {
   $("#outgoing_del").html("- " + numberWithCommas(sumOutgoing.toFixed(3)));
   $("#available_del").html(
     numberWithCommas(
-      ((await activeAccount.getSP()) - 5 - sumOutgoing).toFixed(3)
+      ((await activeAccount.getHP()) - 5 - sumOutgoing).toFixed(3)
     )
   );
 };
@@ -97,14 +97,14 @@ const displayOutgoingDelegations = delegatees => {
   const sumOutgoing = getSumOutgoing(delegatees);
   $("#total_outgoing span")
     .eq(1)
-    .html("- " + numberWithCommas(sumOutgoing.toFixed(3)) + " SP");
+    .html("- " + numberWithCommas(sumOutgoing.toFixed(3)) + " HP");
   $("#list_outgoing").empty();
   for (delegatee of delegatees) {
     $("#list_outgoing").append(
       "<div class='line_outgoing'><span>@" +
         delegatee.delegatee +
         "</span><span>" +
-        numberWithCommas(delegatee.sp) +
+        numberWithCommas(delegatee.hp) +
         "</span><img src='../images/edit.png'/></div>"
     );
   }
@@ -133,7 +133,7 @@ const displayOutgoingDelegations = delegatees => {
 const showEditDiv = async delegatees => {
   const delegatee = delegatees[0];
   $("#this_outgoing_del").html(
-    numberWithCommas(parseFloat(delegatee.sp)) + " SP"
+    numberWithCommas(parseFloat(delegatee.hp)) + " HP"
   );
   $("#this_available_del").html(
     numberWithCommas(
@@ -142,9 +142,9 @@ const showEditDiv = async delegatees => {
           $("#available_del")
             .html()
             .replace(",", "")
-        ) + parseFloat(delegatee.sp)
+        ) + parseFloat(delegatee.hp)
       ).toFixed(3)
-    ) + " SP"
+    ) + " HP"
   );
   $("#username_del span").html(delegatee.delegatee);
   $("#edit_del")
@@ -152,7 +152,7 @@ const showEditDiv = async delegatees => {
     .click(function() {
       $("#edit_del").hide();
       $("#edit_del_loading").show();
-      activeAccount.delegateSP(
+      activeAccount.delegateHP(
         $("#amt_edit_del").val(),
         delegatee.delegatee,
         function(err, result) {

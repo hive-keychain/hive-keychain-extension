@@ -38,20 +38,20 @@ class Account {
     return info[key];
   }
   async getAvailableRewards() {
-    this.reward_sbd = await this.getAccountInfo("reward_sbd_balance");
+    this.reward_hbd = await this.getAccountInfo("reward_sbd_balance");
     this.reward_vests = await this.getAccountInfo("reward_vesting_balance");
-    const reward_sp = (await this.toSP(this.reward_vests)) + " SP";
-    this.reward_steem = await this.getAccountInfo("reward_steem_balance");
+    const reward_hp = (await this.toHP(this.reward_vests)) + " HP";
+    this.reward_hive = await this.getAccountInfo("reward_steem_balance");
     let rewardText = chrome.i18n.getMessage("popup_account_redeem") + ":<br>";
-    if (getValFromString(reward_sp) != 0) rewardText += reward_sp + " / ";
-    if (getValFromString(this.reward_sbd) != 0)
-      rewardText += this.reward_sbd + " / ";
-    if (getValFromString(this.reward_steem) != 0)
-      rewardText += this.reward_steem + " / ";
+    if (getValFromString(reward_hp) != 0) rewardText += reward_hp + " / ";
+    if (getValFromString(this.reward_hbd) != 0)
+      rewardText += this.reward_hbd + " / ";
+    if (getValFromString(this.reward_hive) != 0)
+      rewardText += this.reward_hive + " / ";
     rewardText = rewardText.slice(0, -3);
-    return [this.reward_sbd, reward_sp, this.reward_steem, rewardText];
+    return [this.reward_hbd, reward_hp, this.reward_hive, rewardText];
   }
-  async toSP(vests) {
+  async toHP(vests) {
     return steem.formatter
       .vestToSteem(
         vests,
@@ -65,8 +65,8 @@ class Account {
     steem.broadcast.claimRewardBalance(
       this.getKey("posting"),
       this.getName(),
-      this.reward_steem,
-      this.reward_sbd,
+      this.reward_hive,
+      this.reward_hbd,
       this.reward_vests,
       callback
     );
@@ -78,16 +78,16 @@ class Account {
     return [vm, full];
   }
 
-  async getSteem() {
-    return (await this.getAccountInfo("balance")).replace(" STEEM", "");
+  async getHive() {
+    return (await this.getAccountInfo("balance")).replace(" HIVE", "");
   }
 
-  async getSBD() {
-    return (await this.getAccountInfo("sbd_balance")).replace(" SBD", "");
+  async getHBD() {
+    return (await this.getAccountInfo("sbd_balance")).replace(" HBD", "");
   }
 
-  async getSP() {
-    return await this.toSP(
+  async getHP() {
+    return await this.toHP(
       (await this.getAccountInfo("vesting_shares")).replace(" VESTS", "")
     );
   }
@@ -100,23 +100,23 @@ class Account {
     return await getVotingDollarsPerAccount(
       percentage,
       await this.getAccountInfos(),
-      (await this.props.getFund("reward_balance")).replace("STEEM", ""),
-      (await this.props.getFund("recent_claims")).replace("STEEM", ""),
-      await this.props.getSteemPrice(),
+      (await this.props.getFund("reward_balance")).replace("HIVE", ""),
+      (await this.props.getFund("recent_claims")).replace("HBD", ""),
+      await this.props.getHivePrice(),
       await this.props.getProp("vote_power_reserve_rate"),
       false
     );
   }
 
   async getAccountValue() {
-    const [steem, sbd] = await this.props.getPrices();
+    const [hive, hbd] = await this.props.getPrices();
     return (
       numberWithCommas(
         "$ " +
           (
-            sbd * parseInt(await this.getSBD()) +
-            steem *
-              (parseInt(await this.getSP()) + parseInt(await this.getSteem()))
+            hbd * parseInt(await this.getHBD()) +
+            hive *
+              (parseInt(await this.getHP()) + parseInt(await this.getHive()))
           ).toFixed(2)
       ) + "\t  USD"
     );
@@ -154,14 +154,14 @@ class Account {
     return [withdrawn, total_withdrawing, next_vesting_withdrawal];
   }
 
-  async powerDown(sp, callback) {
+  async powerDown(hp, callback) {
     const totalSteem = Number(
       (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
     );
     const totalVests = Number(
       (await this.props.getProp("total_vesting_shares")).split(" ")[0]
     );
-    let vestingShares = (parseFloat(sp) * totalVests) / totalSteem;
+    let vestingShares = (parseFloat(hp) * totalVests) / totalSteem;
     vestingShares = vestingShares.toFixed(6);
     vestingShares = vestingShares.toString() + " VESTS";
 
@@ -192,8 +192,8 @@ class Account {
     if (delegatees.length > 0)
       delegatees = await Promise.all(
         delegatees.map(async elt => {
-          elt.sp = parseFloat(
-            await this.toSP(
+          elt.hp = parseFloat(
+            await this.toHP(
               parseFloat(elt.vesting_shares.replace(" VESTS", ""))
             )
           ).toFixed(3);
@@ -211,14 +211,14 @@ class Account {
     if (delegators.length > 0)
       delegators = await Promise.all(
         delegators.map(async elt => {
-          const sp = await that.toSP(elt.vesting_shares + " VESTS");
-          elt.sp = parseFloat(sp).toFixed(3);
+          const hp = await that.toHP(elt.vesting_shares + " VESTS");
+          elt.hp = parseFloat(hp).toFixed(3);
           return elt;
         })
       );
     return delegators;
   }
-  async delegateSP(amount, to, callback) {
+  async delegateHP(amount, to, callback) {
     const totalSteem = Number(
       (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
     );

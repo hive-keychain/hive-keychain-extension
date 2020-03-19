@@ -75,9 +75,9 @@ const showUserData = async () => {
     .eq(1)
     .html(
       numberWithCommas(
-        $("#currency_send .select-selected").text() === "STEEM"
-          ? await activeAccount.getSteem()
-          : await activeAccount.getSBD()
+        $("#currency_send .select-selected").text() === "HIVE"
+          ? await activeAccount.getHive()
+          : await activeAccount.getHBD()
       )
     );
   $("#vm_val").text(" ($" + vd + ")");
@@ -574,13 +574,13 @@ const addKeys = (i, key, priv, pub, name) => {
 const showBalances = async () => {
   $("#wallet_amt div")
     .eq(0)
-    .html(numberWithCommas(await activeAccount.getSteem()));
+    .html(numberWithCommas(await activeAccount.getHive()));
   $("#wallet_amt div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getSBD()));
+    .html(numberWithCommas(await activeAccount.getHBD()));
   $("#wallet_amt div")
     .eq(2)
-    .html(numberWithCommas(await activeAccount.getSP()));
+    .html(numberWithCommas(await activeAccount.getHP()));
   $("#balance_loader").hide();
 };
 
@@ -595,12 +595,12 @@ const deleteAccount = i => {
 const claimRewards = async () => {
   console.log(`Check claim rewards for ${activeAccount.getName()}`);
   const [
-    reward_sbd,
-    reward_sp,
-    reward_steem,
+    reward_hbd,
+    reward_hp,
+    reward_hive,
     rewardText
   ] = await activeAccount.getAvailableRewards();
-  if (hasReward(reward_sbd, reward_sp, reward_steem)) {
+  if (hasReward(reward_hbd, reward_hp, reward_hive)) {
     $("#claim_rewards button").prop("disabled", false);
     $("#claim").show();
     $("#claim")

@@ -1,8 +1,8 @@
 async function preparePowerUpDown() {
-  const SP = numberWithCommas(await activeAccount.getSP()) + "    SP";
-  const STEEM = numberWithCommas(await activeAccount.getSteem()) + " STEEM";
-  $(".power_sp").html(SP);
-  $(".power_steem").html(STEEM);
+  const HP = numberWithCommas(await activeAccount.getHP()) + "    HP";
+  const HIVE = numberWithCommas(await activeAccount.getHive()) + " HIVE";
+  $(".power_sp").html(HP);
+  $(".power_steem").html(HIVE);
   const [
     withdrawn,
     total_withdrawing,
@@ -13,7 +13,7 @@ async function preparePowerUpDown() {
     $("#powerdown_div .power")
       .eq(1)
       .show();
-    $("#powering_down").html(withdrawn + " / " + total_withdrawing + " SP");
+    $("#powering_down").html(withdrawn + " / " + total_withdrawing + " HP");
     $("#powering_down").attr(
       "title",
       chrome.i18n.getMessage("popup_next_powerdown", [next_vesting_withdrawal])
@@ -38,7 +38,7 @@ async function preparePowerUpDown() {
   $("#power_up")
     .unbind("click")
     .click(function() {
-      const amount = parseFloat($("#amt_pu").val()).toFixed(3) + " STEEM";
+      const amount = parseFloat($("#amt_pu").val()).toFixed(3) + " HIVE";
       $("#power_up").hide();
       $("#powerup_loading").show();
       activeAccount.powerUp(amount, $("#user_pu").val(), (err, result) => {
