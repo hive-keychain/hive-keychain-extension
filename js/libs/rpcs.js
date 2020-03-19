@@ -1,19 +1,13 @@
 class Rpcs {
   constructor() {
     console.log("build");
-    this.currentRpc = "https://api.steemit.com";
+    this.currentRpc = "https://api.hive.blog/";
     this.awaitRollback = false;
-    this.DEFAULT_RPC_API = "https://api.steemkeychain.com/rpc";
+    this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
     this.list = [
       "DEFAULT",
-      "https://api.steemit.com",
-      "https://anyx.io",
-      "https://rpc.usesteem.com",
-      "https://api.steemitdev.com",
-      "https://api.steem.house",
-      "https://steemd.minnowsupportproject.org",
-      "https://steemd.privex.io",
-      "https://appbasetest.timcliff.com",
+      "https://api.hive.blog/",
+      "https://api.openhive.network/",
       "TESTNET"
     ];
   }
@@ -30,16 +24,16 @@ class Rpcs {
     }
     const newRpc = this.list.includes(rpc) ? rpc : this.currentRpc;
     if (newRpc === "TESTNET") {
-      steem.api.setOptions({
-        url: "https://testnet.steemitdev.com",
-        transport: "http",
-        useAppbaseApi: true
-      });
-      steem.config.set("address_prefix", "TST");
-      steem.config.set(
-        "chain_id",
-        "46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32"
-      );
+      // steem.api.setOptions({
+      //   url: "https://testnet.steemitdev.com",
+      //   transport: "http",
+      //   useAppbaseApi: true
+      // });
+      // steem.config.set("address_prefix", "TST");
+      // steem.config.set(
+      //   "chain_id",
+      //   "46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32"
+      // );
     } else {
       if (newRpc === "DEFAULT") {
         let rpc;
@@ -55,7 +49,6 @@ class Rpcs {
           useAppbaseApi: true
         });
       } else {
-        console.log("a", newRpc);
         steem.api.setOptions({
           url: newRpc,
           useAppbaseApi: true
