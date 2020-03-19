@@ -884,10 +884,13 @@ input:focus {
 }
 
 #tokens {
+  display: none;
   background-image: url("../images/btn-bg_tokens.png");
+  margin-right: 0px;
 }
 
 #witness {
+  width: 100%;
   background-image: url("../images/btn-bg_witness.png");
 }
 
