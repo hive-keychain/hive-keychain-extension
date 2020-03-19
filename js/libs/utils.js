@@ -158,7 +158,7 @@ var getRC = function(name) {
   };
   return new Promise(function(fulfill, reject) {
     $.ajax({
-      url: "https://api.steemit.com",
+      url: "https://api.hive.blog/",
       type: "POST",
       data: JSON.stringify(data),
       success: function(response) {
