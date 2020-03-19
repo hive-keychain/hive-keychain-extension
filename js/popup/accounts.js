@@ -57,7 +57,7 @@ const loadAccount = async name => {
   showUserData();
   claimRewards();
   prepareWitnessDiv(witness_votes, proxy);
-  prepareDelegationTab();
+  //prepareDelegationTab();
   preparePowerUpDown();
   showTokenBalances();
   proposeWitnessVote(witness_votes, proxy);
@@ -66,11 +66,9 @@ const loadAccount = async name => {
 
 // Display all the account data
 const showUserData = async () => {
+  console.log("show bal");
   showBalances();
-  const [vd, rc] = [
-    await activeAccount.getVotingDollars(100),
-    await activeAccount.getRC()
-  ];
+
   $(".transfer_balance div")
     .eq(1)
     .html(
@@ -80,6 +78,11 @@ const showUserData = async () => {
           : await activeAccount.getHBD()
       )
     );
+  const [vd, rc] = [
+    await activeAccount.getVotingDollars(100),
+    //await activeAccount.getRC()
+    null
+  ];
   $("#vm_val").text(" ($" + vd + ")");
 
   $("#rc").html(rc.estimated_pct + "%");

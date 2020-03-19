@@ -150,7 +150,7 @@ var getRC = function(name) {
   };
   return new Promise(function(fulfill, reject) {
     $.ajax({
-      url: "https://api.hive.blog/",
+      url: "https://api.openhive.network/",
       type: "POST",
       data: JSON.stringify(data),
       success: function(response) {
@@ -389,8 +389,8 @@ function initiateCustomSelect() {
         !getPref &&
         !manageKey &&
         !this.classList.contains("select-arrow-active") &&
-        this.innerHTML !== "SBD" &&
-        this.innerHTML !== "STEEM" &&
+        this.innerHTML !== "HBD" &&
+        this.innerHTML !== "HIVE" &&
         this.innerHTML !== chrome.i18n.getMessage("popup_html_witness_vote") &&
         this.innerHTML !== chrome.i18n.getMessage("popup_html_chose_proxy")
       ) {
@@ -398,20 +398,20 @@ function initiateCustomSelect() {
           last_account: this.innerHTML
         });
         loadAccount(this.innerHTML);
-      } else if (this.innerHTML == "SBD") {
+      } else if (this.innerHTML == "HBD") {
         $(".transfer_balance div")
           .eq(0)
-          .text(chrome.i18n.getMessage("popup_html_balance", ["SBD"]));
+          .text(chrome.i18n.getMessage("popup_html_balance", ["HBD"]));
         $(".transfer_balance div")
           .eq(1)
-          .html(numberWithCommas(await activeAccount.getSBD()));
-      } else if (this.innerHTML == "STEEM") {
+          .html(numberWithCommas(await activeAccount.getHBD()));
+      } else if (this.innerHTML == "HIVE") {
         $(".transfer_balance div")
           .eq(0)
-          .text(chrome.i18n.getMessage("popup_html_balance", ["STEEM"]));
+          .text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
         $(".transfer_balance div")
           .eq(1)
-          .html(numberWithCommas(await activeAccount.getSteem()));
+          .html(numberWithCommas(await activeAccount.getHive()));
       } else if (manageKey) {
         manageKeys(this.innerHTML);
       } else if (
@@ -467,11 +467,11 @@ function initiateCustomSelect() {
 
 // Check if there is a reward to claim
 
-function hasReward(reward_sbd, reward_sp, reward_steem) {
+function hasReward(reward_hbd, reward_hp, reward_hive) {
   return (
-    getValFromString(reward_sbd) != 0 ||
-    getValFromString(reward_sp) != 0 ||
-    getValFromString(reward_steem) != 0
+    getValFromString(reward_hbd) != 0 ||
+    getValFromString(reward_hp) != 0 ||
+    getValFromString(reward_hive) != 0
   );
 }
 

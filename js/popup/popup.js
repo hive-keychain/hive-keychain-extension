@@ -297,9 +297,12 @@ async function sendTransfer() {
       activeAccount.getKey("active"),
       activeAccount.getName(),
       to,
-      parseFloat(amount).toFixed(3) + " " + currency,
+      parseFloat(amount).toFixed(3) +
+        " " +
+        currency.replace("HIVE", "STEEM").replace("HBD", "SBD"),
       memo,
       async function(err, result) {
+        console.log(err, result);
         $("#send_loader").hide();
         $("#confirm_send_transfer").show();
         if (err == null) {

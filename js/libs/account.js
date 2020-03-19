@@ -42,6 +42,7 @@ class Account {
     this.reward_vests = await this.getAccountInfo("reward_vesting_balance");
     const reward_hp = (await this.toHP(this.reward_vests)) + " HP";
     this.reward_hive = await this.getAccountInfo("reward_steem_balance");
+    console.log(this.reward_hbd, this.reward_hive, reward_hp);
     let rewardText = chrome.i18n.getMessage("popup_account_redeem") + ":<br>";
     if (getValFromString(reward_hp) != 0) rewardText += reward_hp + " / ";
     if (getValFromString(this.reward_hbd) != 0)
@@ -65,8 +66,8 @@ class Account {
     steem.broadcast.claimRewardBalance(
       this.getKey("posting"),
       this.getName(),
-      this.reward_hive,
-      this.reward_hbd,
+      this.reward_hive.replace("HIVE", "STEEM"),
+      this.reward_hbd.replace("HBD", "SBD"),
       this.reward_vests,
       callback
     );
@@ -79,6 +80,7 @@ class Account {
   }
 
   async getHive() {
+    console.log(await this.getAccountInfos());
     return (await this.getAccountInfo("balance")).replace(" HIVE", "");
   }
 
