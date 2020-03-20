@@ -80,7 +80,6 @@ h3.dialog-message {
   text-align: center;
   margin-top: 0;
   margin-bottom: 10px;
-  background-color: rgba(0, 156, 156, 0.4);
   padding: 5px 0 10px 0;
 }
 
@@ -238,8 +237,8 @@ button {
   position: absolute;
   top: 7px;
   left: 0;
-  height: 32px;
-  width: 32px;
+  height: 20px;
+  width: 20px;
   background-color: rgba(255, 255, 255, 0.65);
 }
 
@@ -257,8 +256,8 @@ button {
 
 /* Style the checkmark/indicator */
 .checkbox_container .checkmark:after {
-  left: 11.52px;
-  top: 6.4px;
+  left: 7px;
+  top: 2px;
   width: 6.4px;
   height: 11.8px;
   border: solid #009C9C;
@@ -271,7 +270,7 @@ button {
 #confirm_footer {
   display: none;
   width: 100%;
-  min-height: 169px;
+  min-height: 200px;
   position: absolute;
   box-sizing: border-box;
   bottom: 0;
