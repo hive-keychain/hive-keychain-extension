@@ -221,26 +221,26 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest", request, callback);
   },
-  requestSendToken: function(
-    account,
-    to,
-    amount,
-    memo,
-    currency,
-    callback,
-    rpc
-  ) {
-    var request = {
-      type: "sendToken",
-      username: account,
-      to,
-      amount,
-      memo,
-      currency,
-      rpc
-    };
-    this.dispatchCustomEvent("swRequest", request, callback);
-  },
+  // requestSendToken: function(
+  //   account,
+  //   to,
+  //   amount,
+  //   memo,
+  //   currency,
+  //   callback,
+  //   rpc
+  // ) {
+  //   var request = {
+  //     type: "sendToken",
+  //     username: account,
+  //     to,
+  //     amount,
+  //     memo,
+  //     currency,
+  //     rpc
+  //   };
+  //   this.dispatchCustomEvent("swRequest", request, callback);
+  // },
   requestDelegation: function(
     username,
     delegatee,

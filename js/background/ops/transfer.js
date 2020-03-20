@@ -16,7 +16,9 @@ const broadcastTransfer = data => {
       key_transfer,
       data.username,
       data.to,
-      data.amount + " " + data.currency,
+      data.amount +
+        " " +
+        data.currency.replace("HIVE", "STEEM").replace("HBD", "SBD"),
       memo,
       (err, result) => {
         console.log(result, err);

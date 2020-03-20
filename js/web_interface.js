@@ -255,7 +255,7 @@ const isFilledAmtSP = obj => {
   return (
     isFilled(obj.amount) &&
     !isNaN(obj.amount) &&
-    ((countDecimals(obj.amount) == 3 && obj.unit == "SP") ||
+    ((countDecimals(obj.amount) == 3 && obj.unit == "HP") ||
       (countDecimals(obj.amount) == 6 && obj.unit == "VESTS"))
   );
 };
@@ -266,7 +266,7 @@ const isFilledAmtSBD = amt => {
     amt.split(" ").length == 2 &&
     !isNaN(amt.split(" ")[0]) &&
     parseFloat(countDecimals(amt.split(" ")[0])) == 3 &&
-    amt.split(" ")[1] == "SBD"
+    amt.split(" ")[1] == "HBD"
   );
 };
 
@@ -281,7 +281,7 @@ const isFilledWeight = obj => {
 };
 
 const isFilledCurrency = obj => {
-  return isFilled(obj) && (obj == "STEEM" || obj == "SBD");
+  return isFilled(obj) && (obj == "HIVE" || obj == "HBD");
 };
 
 const isFilledKey = obj => {
