@@ -5,19 +5,18 @@
 }
 
 html {
-  width: 350px;
-  height: 566px;
   overflow: hidden;
   border-radius: 1px;
   margin: 0 !important;
   padding: 0 !important;
-  background-image: linear-gradient(328deg, #3df9b4, #00d3cc, #a779ff) !important;
+  background: transparent linear-gradient(330deg, #59626C 0%, #000000 100%) 0% 0% no-repeat padding-box !important;
   background-repeat: no-repeat;
   background-attachment: fixed;
   top: 0;
   left: 0;
   position: relative;
-  word-wrap: break-word;
+  height: 600px;
+  width: 350px !important;
 }
 
 body {
@@ -25,20 +24,18 @@ body {
   font-family: Futura !important;
   font-weight: 400;
   padding: 0 !important;
-  width: 100%;
+  width: 350px;
   margin: 0 !important;
   overflow: hidden;
+  position: relative;
 }
 
 .cloud {
-  background: url("../images/bg-steam@2x.png") no-repeat;
-  background-size: cover;
-  width: 350px;
-  height: 436px;
   position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
+  width: 350px;
+  height: 600px;
+  background: transparent url('../images/hive-watermark.png') 0% 0% no-repeat padding-box;
+  opacity: 1;
 }
 
 .modal-content {

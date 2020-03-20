@@ -6,11 +6,11 @@
       }
 
       .cls-1 {
-        stroke: #5ebc92;
+        stroke: #E31337;
       }
 
       .cls-2 {
-        fill: #1fbf8f;
+        fill: #E31337;
       }
 
       .cls-3 {
