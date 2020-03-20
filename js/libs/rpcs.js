@@ -8,7 +8,8 @@ class Rpcs {
       "DEFAULT",
       "https://api.hive.blog/",
       "https://api.openhive.network/",
-      "https://anyx.io",
+      "https://api.hivekings.com/",
+      "https://anyx.io/",
       "TESTNET"
     ];
   }
