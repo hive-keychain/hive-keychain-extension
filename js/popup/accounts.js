@@ -80,8 +80,7 @@ const showUserData = async () => {
     );
   const [vd, rc] = [
     await activeAccount.getVotingDollars(100),
-    //await activeAccount.getRC()
-    null
+    await activeAccount.getRC()
   ];
   $("#vm_val").text(" ($" + vd + ")");
 
