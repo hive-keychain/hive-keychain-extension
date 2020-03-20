@@ -17,7 +17,7 @@
   color: white;
   font-family: Futura;
   text-transform: uppercase;
-  border: solid 3px rgba(0, 156, 156);
+  border: solid 3px black;
   cursor: pointer;
 }
 
@@ -28,8 +28,8 @@
 
 #file:focus+label,
 #file+label:hover {
-  background-color: #917FC6;
-  border: solid 3px #917FC6;
+  background-color: #E31337;
+  border: solid 3px #E31337;
 }
 
 #import_result {

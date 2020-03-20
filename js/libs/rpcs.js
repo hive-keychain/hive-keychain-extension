@@ -1,7 +1,7 @@
 class Rpcs {
   constructor() {
     console.log("build");
-    this.currentRpc = "https://api.hive.blog/";
+    this.currentRpc = "https://api.steemit.com/";
     this.awaitRollback = false;
     this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
     this.list = [

@@ -170,6 +170,7 @@ function initializeMainMenu() {
           decryptToJson(items.accounts, mk),
           items.last_account
         );
+      console.log(items.rpc, items.current_rpc);
       loadRPC(items.rpc, items.current_rpc);
       console.log(accountsList.getList());
       $("#accounts").empty();
@@ -296,9 +297,12 @@ async function sendTransfer() {
       activeAccount.getKey("active"),
       activeAccount.getName(),
       to,
-      parseFloat(amount).toFixed(3) + " " + currency,
+      parseFloat(amount).toFixed(3) +
+        " " +
+        currency.replace("HIVE", "STEEM").replace("HBD", "SBD"),
       memo,
       async function(err, result) {
+        console.log(err, result);
         $("#send_loader").hide();
         $("#confirm_send_transfer").show();
         if (err == null) {
@@ -309,11 +313,11 @@ async function sendTransfer() {
           steem_p = sender["0"].balance.replace("STEEM", "");
           $("#confirm_send_div").hide();
           $("#send_div").show();
-          if (currency == "SBD") {
+          if (currency == "HBD") {
             $(".transfer_balance div")
               .eq(1)
               .html(numberWithCommas(sbd));
-          } else if (currency == "STEEM") {
+          } else if (currency == "HIVE") {
             $(".transfer_balance div")
               .eq(1)
               .html(numberWithCommas(steem_p));

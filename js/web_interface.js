@@ -4,7 +4,7 @@ let req = null;
 const setupInjection = () => {
   try {
     var scriptTag = document.createElement("script");
-    scriptTag.src = chrome.runtime.getURL("js/steem_keychain.js");
+    scriptTag.src = chrome.runtime.getURL("js/hive_keychain.js");
     var container = document.head || document.documentElement;
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
@@ -14,21 +14,21 @@ const setupInjection = () => {
 setupInjection();
 
 // Answering the handshakes
-document.addEventListener("swHandshake", function(request) {
+document.addEventListener("swHandshake_hive", function(request) {
   const req = JSON.stringify(request.detail);
   if (request.detail.extension)
     chrome.runtime.sendMessage(request.detail.extension, req);
   else
     window.postMessage(
       {
-        type: "steem_keychain_handshake"
+        type: "hive_keychain_handshake"
       },
       window.location.origin
     );
 });
 
 // Answering the requests
-document.addEventListener("swRequest", function(request) {
+document.addEventListener("swRequest_hive", function(request) {
   const prevReq = req;
   req = request.detail;
   // If all information are filled, send the request to the background, if not notify an error
@@ -81,7 +81,7 @@ const sendResponse = response => {
   else
     window.postMessage(
       {
-        type: "steem_keychain_response",
+        type: "hive_keychain_response",
         response
       },
       window.location.origin
@@ -255,7 +255,7 @@ const isFilledAmtSP = obj => {
   return (
     isFilled(obj.amount) &&
     !isNaN(obj.amount) &&
-    ((countDecimals(obj.amount) == 3 && obj.unit == "SP") ||
+    ((countDecimals(obj.amount) == 3 && obj.unit == "HP") ||
       (countDecimals(obj.amount) == 6 && obj.unit == "VESTS"))
   );
 };
@@ -266,7 +266,7 @@ const isFilledAmtSBD = amt => {
     amt.split(" ").length == 2 &&
     !isNaN(amt.split(" ")[0]) &&
     parseFloat(countDecimals(amt.split(" ")[0])) == 3 &&
-    amt.split(" ")[1] == "SBD"
+    amt.split(" ")[1] == "HBD"
   );
 };
 
@@ -281,7 +281,7 @@ const isFilledWeight = obj => {
 };
 
 const isFilledCurrency = obj => {
-  return isFilled(obj) && (obj == "STEEM" || obj == "SBD");
+  return isFilled(obj) && (obj == "HIVE" || obj == "HBD");
 };
 
 const isFilledKey = obj => {

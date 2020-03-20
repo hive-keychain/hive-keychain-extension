@@ -45,25 +45,25 @@ function loadRPC(local, current_rpc) {
   } else {
     $("#currency_send select")
       .children("option:first")
-      .text("STEEM");
+      .text("HIVE");
     $("#currency_send select")
       .children("option:first")
-      .val("STEEM");
+      .val("HIVE");
     $("#currency_send select")
       .children("option:nth-child(2)")
-      .text("SBD");
+      .text("HBD");
     $("#currency_send select")
       .children("option:nth-child(2)")
-      .val("SBD");
+      .val("HBD");
     $("#wallet_currency .wallet_currency")
       .eq(0)
-      .text("STEEM");
+      .text("HIVE");
     $("#wallet_currency .wallet_currency")
       .eq(1)
-      .text("SBD");
+      .text("HBD");
     $("#wallet_currency .wallet_currency")
       .eq(2)
-      .text("SP");
+      .text("HP");
   }
 }
 

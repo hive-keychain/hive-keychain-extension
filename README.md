@@ -47,10 +47,10 @@ NOTE: On localhost, it will only run on port 1337.
 
 ## API Documentation
 
-The Steem Keychain extension will inject a "steem_keychain" JavaScript into all web pages opened in the browser while the extension is running. You can therefore check if the current user has the extension installed using the following code:
+The Steem Keychain extension will inject a "hive_keychain" JavaScript into all web pages opened in the browser while the extension is running. You can therefore check if the current user has the extension installed using the following code:
 
 ```
-if(window.steem_keychain) {
+if(window.hive_keychain) {
     // Steem Keychain extension installed...
 } else {
     // Steem Keychain extension not installed...
@@ -62,7 +62,7 @@ if(window.steem_keychain) {
 Additionally, you can request a "handshake" from the extension to further ensure it's installed and that your page is able to connect to it:
 
 ```
-steem_keychain.requestHandshake(function() {
+hive_keychain.requestHandshake(function() {
     console.log('Handshake received!');
 });
 ```
@@ -72,7 +72,7 @@ steem_keychain.requestHandshake(function() {
 Sites can request that the extension sign and broadcast a transfer operation for STEEM or SBD. Note that a confirmation will always be shown to the user for transfer operations and they cannot be disabled.
 
 ```
-steem_keychain.requestTransfer(account_name, to_account, amount, memo, currency, function(response) {
+hive_keychain.requestTransfer(account_name, to_account, amount, memo, currency, function(response) {
 	console.log(response);
 },enforce);
 ```
@@ -83,7 +83,7 @@ where `memo` will be encrypted using Memo key if it is starting by `#`, and `enf
 Sites can request that the extension decode a memo encrypted by the Memo, Posting, or Active key for a particular Steem account. This is messaged to the user as "Verify Key" since it is typically used to verify that they have access to the private key for an account in order to "log them in".
 
 ```
-steem_keychain.requestVerifyKey(account_name, encrypted_message, key_type, function(response) {
+hive_keychain.requestVerifyKey(account_name, encrypted_message, key_type, function(response) {
     console.log(response);
 });
 ```
@@ -95,7 +95,7 @@ The values for "key_type" can be: "Memo", "Posting", or "Active".
 Sites can request that the extension sign and broadcast a "comment" operation (which can be a top-level post or a reply).
 
 ```
-steem_keychain.requestPost(account_name, title, body, parent_permlink, parent_author, json_metadata, permlink, function(response) {
+hive_keychain.requestPost(account_name, title, body, parent_permlink, parent_author, json_metadata, permlink, function(response) {
 	console.log(response);
 });
 ```
@@ -105,7 +105,7 @@ steem_keychain.requestPost(account_name, title, body, parent_permlink, parent_au
 Sites can request that the extension sign and broadcast a "vote" operation:
 
 ```
-steem_keychain.requestVote(account_name, permlink, author, weight, function(response) {
+hive_keychain.requestVote(account_name, permlink, author, weight, function(response) {
 	console.log(response);
 });
 ```
@@ -115,7 +115,7 @@ steem_keychain.requestVote(account_name, permlink, author, weight, function(resp
 Sites can request that the extension sign and broadcast a "custom_json" operation using either the posting or active key for the account:
 
 ```
-steem_keychain.requestCustomJson(account_name, custom_json_id, key_type, json, display_name, function(response) {
+hive_keychain.requestCustomJson(account_name, custom_json_id, key_type, json, display_name, function(response) {
 	console.log(response);
 });
 ```
@@ -127,7 +127,7 @@ Where "key_type" can be "Posting" or "Active" and "display_name" is a user-frien
 Sites can request that the extension sign messages:
 
 ```
-steem_keychain.requestSignBuffer(account_name, message, key_type, function(response) {
+hive_keychain.requestSignBuffer(account_name, message, key_type, function(response) {
         console.log(response);
 });
 ```
@@ -146,7 +146,7 @@ to be signed, you can pass `JSON.stringify(buffer)` as `message`, then this meth
 Sites can request that the extension add account authority for a given role:
 
 ```
-steem_keychain.requestAddAccountAuthority(account_name, authorized_account_name, role, weight, function(response) {
+hive_keychain.requestAddAccountAuthority(account_name, authorized_account_name, role, weight, function(response) {
         console.log(response);
 });
 ```
@@ -158,7 +158,7 @@ where "role" can be "Posting" or "Active".
 Sites can request that the extension remove account authority for a given role:
 
 ```
-steem_keychain.requestRemoveAccountAuthority(account_name, authorized_account_name, role, function(response) {
+hive_keychain.requestRemoveAccountAuthority(account_name, authorized_account_name, role, function(response) {
         console.log(response);
 });
 ```
@@ -170,7 +170,7 @@ where "role" can be "Posting" or "Active".
 Sites can request that the extension sign and broadcast general operations allowed by the `steem-js` library:
 
 ```
-steem_keychain.requestBroadcast(account_name, operations, key_type, function(response) {
+hive_keychain.requestBroadcast(account_name, operations, key_type, function(response) {
         console.log(response);
 });
 ```
@@ -188,7 +188,7 @@ Sites can request that per sign RPCs using steem authorities as specified in htt
 and implemented in the `steem-js` library method signedCall:
 
 ```
-steem_keychain.requestSignedCall(account_name, method, params, key_type, function(response) {
+hive_keychain.requestSignedCall(account_name, method, params, key_type, function(response) {
         console.log(response);
 });
 ```
@@ -202,7 +202,7 @@ Sites can request that Keychain broadcasts a JSON with active authority to trans
 This works with tokens generated using [Steem Engine](https://steem-engine.com).
 
 ```
-steem_keychain.requestSendToken(username, to,amount,memo, token, function(response) {
+hive_keychain.requestSendToken(username, to,amount,memo, token, function(response) {
     console.log(response);
 });
 ```
@@ -214,7 +214,7 @@ where `token` is the symbol of the said token.
 Sites can request a delegation via Keychain, using the active authority :
 
 ```
-steem_keychain.requestDelegation(username, delegatee, amount, unit, function(response) {
+hive_keychain.requestDelegation(username, delegatee, amount, unit, function(response) {
     console.log(response);
 });
 ```
@@ -226,7 +226,7 @@ where `unit` can be either `VESTS` or `SP`. `amount` needs 6 decimals if the uni
 Sites can request that the user votes for a particular witness :
 
 ```
-steem_keychain.requestWitnessVote(username, witness,vote, function(response) {
+hive_keychain.requestWitnessVote(username, witness,vote, function(response) {
     console.log(response);
 });
 ```
@@ -238,7 +238,7 @@ Where `vote` is a boolean, set to `true` for voting a witness, `false` for unvot
 Sites can request a Power Up:
 
 ```
-steem_keychain.requestPowerUp(username, to, amount, function(response) {
+hive_keychain.requestPowerUp(username, to, amount, function(response) {
     console.log(response);
 });
 ```
@@ -250,7 +250,7 @@ Where `to` is the recipient of the power up, and `amount` is expressed in STEEM 
 Sites can request a Power Down:
 
 ```
-steem_keychain.requestPowerDown(username,  amount, function(response) {
+hive_keychain.requestPowerDown(username,  amount, function(response) {
     console.log(response);
 });
 ```

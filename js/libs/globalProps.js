@@ -14,7 +14,7 @@ class GlobalProps {
   async getFund(key) {
     return (await this.fund)[key];
   }
-  async getSteemPrice() {
+  async getHivePrice() {
     const median = await this.getMedian();
     return (
       parseFloat(median.base.replace(" SBD", "")) /
@@ -23,8 +23,8 @@ class GlobalProps {
   }
   async initGetPrice() {
     return await Promise.all([
-      await getPriceSteemAsync(),
-      await getPriceSBDAsync(),
+      await getPriceHiveAsync(),
+      await getPriceHBDAsync(),
       await getBTCPriceAsync()
     ]);
   }

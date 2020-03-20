@@ -57,7 +57,7 @@ const loadAccount = async name => {
   showUserData();
   claimRewards();
   prepareWitnessDiv(witness_votes, proxy);
-  prepareDelegationTab();
+  //prepareDelegationTab();
   preparePowerUpDown();
   showTokenBalances();
   proposeWitnessVote(witness_votes, proxy);
@@ -66,20 +66,23 @@ const loadAccount = async name => {
 
 // Display all the account data
 const showUserData = async () => {
+  console.log("show bal");
   showBalances();
-  const [vd, rc] = [
-    await activeAccount.getVotingDollars(100),
-    await activeAccount.getRC()
-  ];
+
   $(".transfer_balance div")
     .eq(1)
     .html(
       numberWithCommas(
-        $("#currency_send .select-selected").text() === "STEEM"
-          ? await activeAccount.getSteem()
-          : await activeAccount.getSBD()
+        $("#currency_send .select-selected").text() === "HIVE"
+          ? await activeAccount.getHive()
+          : await activeAccount.getHBD()
       )
     );
+  const [vd, rc] = [
+    await activeAccount.getVotingDollars(100),
+    //await activeAccount.getRC()
+    null
+  ];
   $("#vm_val").text(" ($" + vd + ")");
 
   $("#rc").html(rc.estimated_pct + "%");
@@ -574,13 +577,13 @@ const addKeys = (i, key, priv, pub, name) => {
 const showBalances = async () => {
   $("#wallet_amt div")
     .eq(0)
-    .html(numberWithCommas(await activeAccount.getSteem()));
+    .html(numberWithCommas(await activeAccount.getHive()));
   $("#wallet_amt div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getSBD()));
+    .html(numberWithCommas(await activeAccount.getHBD()));
   $("#wallet_amt div")
     .eq(2)
-    .html(numberWithCommas(await activeAccount.getSP()));
+    .html(numberWithCommas(await activeAccount.getHP()));
   $("#balance_loader").hide();
 };
 
@@ -595,12 +598,12 @@ const deleteAccount = i => {
 const claimRewards = async () => {
   console.log(`Check claim rewards for ${activeAccount.getName()}`);
   const [
-    reward_sbd,
-    reward_sp,
-    reward_steem,
+    reward_hbd,
+    reward_hp,
+    reward_hive,
     rewardText
   ] = await activeAccount.getAvailableRewards();
-  if (hasReward(reward_sbd, reward_sp, reward_steem)) {
+  if (hasReward(reward_hbd, reward_hp, reward_hive)) {
     $("#claim_rewards button").prop("disabled", false);
     $("#claim").show();
     $("#claim")

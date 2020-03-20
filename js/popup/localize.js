@@ -31,8 +31,8 @@ $("#vm_title").text(chrome.i18n.getMessage("popup_html_vm"));
 $("#rc_title").text(chrome.i18n.getMessage("popup_html_rc"));
 
 // Main - actions
-$("#send_steem").append(chrome.i18n.getMessage("popup_html_send", ["STEEM"]));
-$("#send_sbd").append(chrome.i18n.getMessage("popup_html_send", ["SBD"]));
+$("#send_steem").append(chrome.i18n.getMessage("popup_html_send", ["HIVE"]));
+$("#send_sbd").append(chrome.i18n.getMessage("popup_html_send", ["HBD"]));
 $("#powerup").append(chrome.i18n.getMessage("popup_html_pu"));
 $("#powerdown").append(chrome.i18n.getMessage("popup_html_pd"));
 $("#delegate").append(chrome.i18n.getMessage("popup_html_delegate"));
@@ -239,7 +239,7 @@ $("#confirm_change_pwd").text(chrome.i18n.getMessage("popup_html_save"));
 $("#send_div .back_enabled").text(
   chrome.i18n.getMessage("popup_html_transfer_funds")
 );
-$("#balance").text(chrome.i18n.getMessage("popup_html_balance", ["STEEM"]));
+$("#balance").text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
 $("#loading_balance").text(chrome.i18n.getMessage("popup_html_loading"));
 $("#recipient").attr(
   "placeholder",
@@ -394,7 +394,7 @@ $("#send_del").text(chrome.i18n.getMessage("popup_html_delegate_to_user"));
 
 //Outgoing
 $("#outgoing_del_div .back_enabled").text(
-  chrome.i18n.getMessage("popup_html_outgoing", ["SP"])
+  chrome.i18n.getMessage("popup_html_outgoing", ["HP"])
 );
 $("#total_outgoing span")
   .eq(0)
@@ -402,7 +402,7 @@ $("#total_outgoing span")
 
 //Incoming
 $("#incoming_del_div .back_enabled").text(
-  chrome.i18n.getMessage("popup_html_incoming", ["SP"])
+  chrome.i18n.getMessage("popup_html_incoming", ["HP"])
 );
 $("#total_incoming span")
   .eq(0)

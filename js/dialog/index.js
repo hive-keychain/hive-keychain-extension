@@ -345,11 +345,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         break;
       case "powerUp":
         $("#to").text("@" + msg.data.recipient);
-        $("#amount").text(msg.data.steem + " STEEM");
+        $("#amount").text(msg.data.steem + " HIVE");
         break;
       case "powerDown":
-        showBalances(msg.data.username, "SP", msg.data.steem_power);
-        $("#amount").text(msg.data.steem_power + " SP");
+        showBalances(msg.data.username, "HP", msg.data.steem_power);
+        $("#amount").text(msg.data.steem_power + " HP");
         break;
       case "createProposal":
         $("#receiver").text(msg.data.receiver);
@@ -413,17 +413,17 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
 const showBalances = async (user, currency, amount) => {
   let balance = 0;
-  if (["sbd", "steem", "sp"].includes(currency.toLowerCase())) {
+  if (["hbd", "hive", "hp"].includes(currency.toLowerCase())) {
     const account = (await steem.api.getAccountsAsync([user]))[0];
     switch (currency.toLowerCase()) {
-      case "steem":
+      case "hive":
         balance = parseFloat(account.balance.split(" ")[0]);
         break;
-      case "sbd":
+      case "hbd":
         balance = parseFloat(account.sbd_balance.split(" ")[0]);
         break;
-      case "sp":
-        balance = await getSteemPower(account.vesting_shares);
+      case "hp":
+        balance = await getHivePower(account.vesting_shares);
         break;
     }
   } else {
@@ -442,7 +442,7 @@ const showBalances = async (user, currency, amount) => {
   $(".balance_loading").hide();
 };
 
-const getSteemPower = async vesting_shares => {
+const getHivePower = async vesting_shares => {
   const result = await steem.api.getDynamicGlobalPropertiesAsync();
   const total_vesting_shares = result.total_vesting_shares;
   const total_vesting_fund = result.total_vesting_fund_steem;

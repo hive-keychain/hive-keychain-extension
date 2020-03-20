@@ -384,10 +384,10 @@ $("#send_steem").click(async function() {
   );
   $(".transfer_balance div")
     .eq(0)
-    .text(chrome.i18n.getMessage("popup_html_balance", ["STEEM"]));
+    .text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getSteem()));
+    .html(numberWithCommas(await activeAccount.getHive()));
 });
 
 $("#send_sbd").click(async function() {
@@ -402,10 +402,10 @@ $("#send_sbd").click(async function() {
   );
   $(".transfer_balance div")
     .eq(0)
-    .text(chrome.i18n.getMessage("popup_html_balance", ["SBD"]));
+    .text(chrome.i18n.getMessage("popup_html_balance", ["HBD"]));
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getSBD()));
+    .html(numberWithCommas(await activeAccount.getHBD()));
 });
 
 $("#delegate").click(function() {

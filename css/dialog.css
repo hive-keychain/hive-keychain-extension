@@ -5,19 +5,18 @@
 }
 
 html {
-  width: 350px;
-  height: 566px;
   overflow: hidden;
   border-radius: 1px;
   margin: 0 !important;
   padding: 0 !important;
-  background-image: linear-gradient(328deg, #3df9b4, #00d3cc, #a779ff) !important;
+  background: transparent linear-gradient(330deg, #59626C 0%, #000000 100%) 0% 0% no-repeat padding-box !important;
   background-repeat: no-repeat;
   background-attachment: fixed;
   top: 0;
   left: 0;
   position: relative;
-  word-wrap: break-word;
+  height: 600px;
+  width: 350px !important;
 }
 
 body {
@@ -25,20 +24,18 @@ body {
   font-family: Futura !important;
   font-weight: 400;
   padding: 0 !important;
-  width: 100%;
+  width: 350px;
   margin: 0 !important;
   overflow: hidden;
+  position: relative;
 }
 
 .cloud {
-  background: url("../images/bg-steam@2x.png") no-repeat;
-  background-size: cover;
-  width: 350px;
-  height: 436px;
   position: absolute;
-  bottom: 0;
-  left: 0;
-  z-index: 1;
+  width: 350px;
+  height: 600px;
+  background: transparent url('../images/hive-watermark.png') 0% 0% no-repeat padding-box;
+  opacity: 1;
 }
 
 .modal-content {
@@ -71,7 +68,7 @@ h2::before {
   width: 41.21px;
   height: 30px;
   opacity: 0.8;
-  background-image: url("../images/keychain_icon2.png");
+  background-image: url("../images/keychain_icon_small.png");
   background-repeat: no-repeat;
   background-size: 41.21px 30px;
   padding-right: 60px;
@@ -83,7 +80,6 @@ h3.dialog-message {
   text-align: center;
   margin-top: 0;
   margin-bottom: 10px;
-  background-color: rgba(0, 156, 156, 0.4);
   padding: 5px 0 10px 0;
 }
 
@@ -126,15 +122,17 @@ h3 .small {
 
 .input_container input {
   width: 100%;
-  box-sizing: border-box;
   height: 48.43px;
+  box-sizing: border-box;
   margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  padding-left: 65px;
-  border-radius: 5px;
-  color: #009C9C;
+  background: #212529 0% 0% no-repeat padding-box;
+  border-radius: 8px 8px 0px 0px;
+  opacity: 1;
+  padding-left: 97px;
   font-size: 20px;
+  color: white;
+  border-style: unset;
+  border-bottom: solid 1px white;
 }
 
 button {
@@ -147,8 +145,8 @@ button {
   color: white;
   font-family: Futura;
   text-transform: uppercase;
-  background-color: rgba(0, 156, 156);
-  border: solid 1px rgba(0, 156, 156);
+  background-color: black;
+  border: none;
   cursor: pointer;
 }
 
@@ -165,8 +163,11 @@ button {
 #modal-body-msg .msg-data {
   max-height: 285px;
   overflow-y: scroll;
-  background-color: rgba(0, 156, 156, 0.8);
-  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px 32px;
+  margin-left: -32px;
+  margin-right: -32px;
+}
 }
 
 ::-webkit-scrollbar {
@@ -238,8 +239,8 @@ button {
   position: absolute;
   top: 7px;
   left: 0;
-  height: 32px;
-  width: 32px;
+  height: 20px;
+  width: 20px;
   background-color: rgba(255, 255, 255, 0.65);
 }
 
@@ -257,8 +258,8 @@ button {
 
 /* Style the checkmark/indicator */
 .checkbox_container .checkmark:after {
-  left: 11.52px;
-  top: 6.4px;
+  left: 7px;
+  top: 2px;
   width: 6.4px;
   height: 11.8px;
   border: solid #009C9C;
@@ -271,26 +272,31 @@ button {
 #confirm_footer {
   display: none;
   width: 100%;
-  min-height: 169px;
+  min-height: 200px;
   position: absolute;
   box-sizing: border-box;
   bottom: 0;
-  background-color: rgba(0, 156, 156, 0.8);
+  background-color: rgba(255, 255, 255, 0.2);
   margin-left: -32px;
   padding: 10px 32px 60px 32px;
 }
 
 #confirm_footer button {
   width: 138px;
+  border: none;
 }
 
 #confirm_footer button:first-of-type {
   margin-right: 6px;
-  background-color: #006060;
+  background-color: #7E8C9A;
+}
+
+#proceed {
+  background-color: black;
 }
 
 #proceed:hover {
-  background-color: #917FC6;
+  background-color: #E31337;
 }
 
 #keep_label {
@@ -324,7 +330,7 @@ button {
 }
 
 .select-selected {
-  background-color: rgba(0, 96, 96, 0.29);
+  background-color: #58616A;
   padding-left: 20px !important;
 }
 
@@ -337,12 +343,12 @@ button {
   width: 0;
   height: 0;
   border: 10px solid transparent;
-  border-color: #88F7FB transparent transparent transparent;
+  border-color: white transparent transparent transparent;
 }
 
 /*point the arrow upwards when the select box is open (active):*/
 .select-selected.select-arrow-active:after {
-  border-color: transparent transparent #88F7FB transparent;
+  border-color: transparent transparent white transparent;
   top: 11px;
 }
 
@@ -350,7 +356,7 @@ button {
 .select-items div,
 .select-selected {
   box-sizing: border-box;
-  color: #88F7FB;
+  color: white;
   font-family: Futura;
   font-size: 20px;
   margin-bottom: 0px;
@@ -365,7 +371,7 @@ button {
 /*style items (options):*/
 .select-items {
   position: absolute;
-  background-color: rgba(0, 96, 96, 0.84);
+  background-color: rgba(0, 0, 0, 0.8);
   top: 100%;
   left: 0;
   margin-bottom: 0;
@@ -384,7 +390,7 @@ button {
 
 .select-items div:hover,
 .same-as-selected {
-  background-color: rgba(0, 96, 96, 1);
+  background-color: #E31337;
 }
 
 .balance_loading {

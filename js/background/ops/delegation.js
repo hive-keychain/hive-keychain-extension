@@ -2,7 +2,7 @@ const broadcastDelegation = data => {
   return new Promise((resolve, reject) => {
     steem.api.getDynamicGlobalPropertiesAsync().then(res => {
       let delegated_vest = null;
-      if (data.unit == "SP") {
+      if (data.unit == "HP") {
         const totalSteem = Number(res.total_vesting_fund_steem.split(" ")[0]);
         const totalVests = Number(res.total_vesting_shares.split(" ")[0]);
         delegated_vest = (parseFloat(data.amount) * totalVests) / totalSteem;
