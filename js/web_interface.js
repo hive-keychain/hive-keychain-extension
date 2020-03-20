@@ -4,7 +4,7 @@ let req = null;
 const setupInjection = () => {
   try {
     var scriptTag = document.createElement("script");
-    scriptTag.src = chrome.runtime.getURL("js/steem_keychain.js");
+    scriptTag.src = chrome.runtime.getURL("js/hive_keychain.js");
     var container = document.head || document.documentElement;
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
@@ -21,7 +21,7 @@ document.addEventListener("swHandshake", function(request) {
   else
     window.postMessage(
       {
-        type: "steem_keychain_handshake"
+        type: "hive_keychain_handshake"
       },
       window.location.origin
     );
@@ -81,7 +81,7 @@ const sendResponse = response => {
   else
     window.postMessage(
       {
-        type: "steem_keychain_response",
+        type: "hive_keychain_response",
         response
       },
       window.location.origin

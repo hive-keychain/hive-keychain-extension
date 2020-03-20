@@ -61,7 +61,7 @@
     "persistent": true
   },
   "web_accessible_resources": [
-    "/images/logo.png", "js/steem_keychain.js"
+    "/images/logo.png", "js/hive_keychain.js"
   ],
   "content_scripts": [
     {
