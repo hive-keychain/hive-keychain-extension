@@ -1424,8 +1424,13 @@ input:focus {
   margin-right: 3.5px;
 }
 
+#top100 {
+  display: none;
+}
+
 .active_wit {
-  background-color: #917FC6 !important;
+  background-color: #E31337 !important;
+  outline: none;
 }
 
 #proxy {
@@ -1558,7 +1563,7 @@ input:focus {
 
 #custom_select_wit .select-selected {
   padding-left: 20px;
-  background-color: rgba(0, 96, 96, 0.68) !important;
+  background-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 #custom_select_wit {

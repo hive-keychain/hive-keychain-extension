@@ -122,15 +122,17 @@ h3 .small {
 
 .input_container input {
   width: 100%;
-  box-sizing: border-box;
   height: 48.43px;
+  box-sizing: border-box;
   margin-bottom: 20px;
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  padding-left: 65px;
-  border-radius: 5px;
-  color: #009C9C;
+  background: #212529 0% 0% no-repeat padding-box;
+  border-radius: 8px 8px 0px 0px;
+  opacity: 1;
+  padding-left: 97px;
   font-size: 20px;
+  color: white;
+  border-style: unset;
+  border-bottom: solid 1px white;
 }
 
 button {
