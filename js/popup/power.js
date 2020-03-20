@@ -38,7 +38,7 @@ async function preparePowerUpDown() {
   $("#power_up")
     .unbind("click")
     .click(function() {
-      const amount = parseFloat($("#amt_pu").val()).toFixed(3) + " HIVE";
+      const amount = parseFloat($("#amt_pu").val()).toFixed(3) + " STEEM";
       $("#power_up").hide();
       $("#powerup_loading").show();
       activeAccount.powerUp(amount, $("#user_pu").val(), (err, result) => {
