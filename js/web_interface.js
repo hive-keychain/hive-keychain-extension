@@ -14,7 +14,7 @@ const setupInjection = () => {
 setupInjection();
 
 // Answering the handshakes
-document.addEventListener("swHandshake", function(request) {
+document.addEventListener("swHandshake_hive", function(request) {
   const req = JSON.stringify(request.detail);
   if (request.detail.extension)
     chrome.runtime.sendMessage(request.detail.extension, req);
@@ -28,7 +28,7 @@ document.addEventListener("swHandshake", function(request) {
 });
 
 // Answering the requests
-document.addEventListener("swRequest", function(request) {
+document.addEventListener("swRequest_hive", function(request) {
   const prevReq = req;
   req = request.detail;
   // If all information are filled, send the request to the background, if not notify an error

@@ -6,7 +6,7 @@ var hive_keychain = {
 
   requestHandshake: function(callback) {
     this.handshake_callback = callback;
-    this.dispatchCustomEvent("swHandshake", "");
+    this.dispatchCustomEvent("swHandshake_hive", "");
   },
 
   requestVerifyKey: function(account, message, key, callback, rpc) {
@@ -18,7 +18,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestSignBuffer: function(account, message, key, callback, rpc) {
@@ -30,7 +30,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestAddAccountAuthority: function(
@@ -51,7 +51,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestRemoveAccountAuthority: function(
@@ -70,7 +70,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   requestAddKeyAuthority: function(
     account,
@@ -90,7 +90,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   requestRemoveKeyAuthority: function(
     account,
@@ -108,7 +108,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestBroadcast: function(account, operations, key, callback, rpc) {
@@ -120,7 +120,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestSignedCall: function(account, method, params, key, callback, rpc) {
@@ -134,7 +134,7 @@ var hive_keychain = {
       rpc
     };
     console.log(request);
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
@@ -162,7 +162,7 @@ var hive_keychain = {
       comment_options,
       rpc
     };
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestVote: function(account, permlink, author, weight, callback, rpc) {
@@ -175,7 +175,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestCustomJson: function(
@@ -197,7 +197,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   requestTransfer: function(
     account,
@@ -219,7 +219,7 @@ var hive_keychain = {
       currency,
       rpc
     };
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   // requestSendToken: function(
   //   account,
@@ -239,7 +239,7 @@ var hive_keychain = {
   //     currency,
   //     rpc
   //   };
-  //   this.dispatchCustomEvent("swRequest", request, callback);
+  //   this.dispatchCustomEvent("swRequest_hive", request, callback);
   // },
   requestDelegation: function(
     username,
@@ -257,7 +257,7 @@ var hive_keychain = {
       unit,
       rpc
     };
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   requestWitnessVote: function(username, witness, vote, callback, rpc) {
     var request = {
@@ -267,7 +267,7 @@ var hive_keychain = {
       vote,
       rpc
     };
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   requestPowerUp: function(username, recipient, steem, callback, rpc) {
     var request = {
@@ -277,7 +277,7 @@ var hive_keychain = {
       steem,
       rpc
     };
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   requestPowerDown: function(username, steem_power, callback, rpc) {
     var request = {
@@ -286,7 +286,7 @@ var hive_keychain = {
       steem_power,
       rpc
     };
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestCreateClaimedAccount: function(
@@ -310,7 +310,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   //HF21
@@ -339,7 +339,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   requestRemoveProposal: function(
@@ -357,7 +357,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
   requestUpdateProposalVote: function(
     username,
@@ -376,7 +376,7 @@ var hive_keychain = {
       rpc
     };
 
-    this.dispatchCustomEvent("swRequest", request, callback);
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   // Send the customEvent
