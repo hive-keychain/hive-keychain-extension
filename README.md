@@ -12,7 +12,7 @@ Steem Keychain aims to bring the security and ease-of-use of Metamask to the Ste
 You can download and install the latest published version of the extension for the following browsers:
 
 - Google Chrome (or Brave): [https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm](https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm)
-- Firefox: [https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/](https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/)
+- Firefox(Soon to be updated): [https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/](https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/)
 
 ## Features
 The Steem Keychain extension includes the following features:
