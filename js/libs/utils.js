@@ -238,7 +238,7 @@ function getPriceHiveAsync() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-STEEM",
+      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-HIVE",
       success: function(response) {
         resolve(response.result["Bid"]);
       },
@@ -278,7 +278,7 @@ function getPriceHBDAsync() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-SBD",
+      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-HBD",
       success: function(response) {
         resolve(response.result["Bid"]);
       },

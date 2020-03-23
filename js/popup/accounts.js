@@ -90,8 +90,7 @@ const showUserData = async () => {
   $("#rc_info").attr("title", full);
   const accountValue = await activeAccount.getAccountValue();
   if (accountValue) {
-    $("#account_value_amt").html("...");
-    //$("#account_value_amt").html(accountValue);
+    $("#account_value_amt").html(accountValue);
   } else {
     $("#account_value_amt").html(
       chrome.i18n.getMessage("popup_accounts_no_bittrex")
