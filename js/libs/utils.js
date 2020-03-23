@@ -327,7 +327,7 @@ function showConfirm(message) {
 }
 
 // Custom select dropdown
-function initiateCustomSelect(options) {
+function initiateCustomSelect(options, current_rpc) {
   /*look for any elements with the class "custom-select":*/
   x = document.getElementsByClassName("custom-select");
 
@@ -337,6 +337,7 @@ function initiateCustomSelect(options) {
     selElmnt = x[i].getElementsByTagName("select")[0];
 
     /*for each element, create a new DIV that will act as the selected item:*/
+    if ($(x[i]).find("div.select-selected").length) continue;
     a = document.createElement("DIV");
     a.setAttribute("class", "select-selected");
     a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;

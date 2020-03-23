@@ -1,5 +1,6 @@
-async function loadRPC(local, current_rpc) {
+async function loadRPC(current_rpc) {
   const listRPC = await rpcs.getList();
+  console.log(listRPC);
   $("#custom_select_rpc").html("<select></select>");
   $("#pref_div .usernames .select-selected").remove();
   $("#pref_div .usernames .select-items").remove();
@@ -11,6 +12,8 @@ async function loadRPC(local, current_rpc) {
   $("#custom_select_rpc select").append(
     `<option>${chrome.i18n.getMessage("popup_rpc_add")}</option>`
   );
+
+  initiateCustomSelect();
   if (current_rpc === "TESTNET") {
     $("#currency_send select")
       .children("option:first")
