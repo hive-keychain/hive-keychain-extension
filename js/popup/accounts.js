@@ -58,7 +58,7 @@ const loadAccount = async (name, options) => {
   showUserData();
   claimRewards();
   prepareWitnessDiv(witness_votes, proxy);
-  //prepareDelegationTab();
+  prepareDelegationTab();
   preparePowerUpDown();
   showTokenBalances();
   proposeWitnessVote(witness_votes, proxy);
