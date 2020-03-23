@@ -327,7 +327,7 @@ function showConfirm(message) {
 }
 
 // Custom select dropdown
-function initiateCustomSelect() {
+function initiateCustomSelect(options) {
   /*look for any elements with the class "custom-select":*/
   x = document.getElementsByClassName("custom-select");
 
@@ -372,7 +372,7 @@ function initiateCustomSelect() {
       b.appendChild(c);
     }
     x[i].appendChild(b);
-    if (i == 0) loadAccount(a.innerHTML);
+    if (i == 0) loadAccount(a.innerHTML, options);
     a.addEventListener("click", async function(e) {
       /*when the select box is clicked, close any other select boxes,
       and open/close the current select box:*/
@@ -397,7 +397,7 @@ function initiateCustomSelect() {
         chrome.storage.local.set({
           last_account: this.innerHTML
         });
-        loadAccount(this.innerHTML);
+        loadAccount(this.innerHTML, options);
       } else if (this.innerHTML == "HBD") {
         $(".transfer_balance div")
           .eq(0)

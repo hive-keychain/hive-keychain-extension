@@ -4,7 +4,12 @@ class Rpcs {
     this.currentRpc = "https://api.steemit.com/";
     this.awaitRollback = false;
     this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
-    this.list = [
+    this.list = this.initList();
+  }
+
+  async initList() {
+    let listRPC = [];
+    const RPCs = [
       "DEFAULT",
       "https://api.hive.blog/",
       "https://api.openhive.network/",
@@ -12,10 +17,23 @@ class Rpcs {
       "https://anyx.io/",
       "TESTNET"
     ];
+    return new Promise(resolve => {
+      chrome.storage.local.get(["rpc"], items => {
+        const local = items.rpc;
+        listRPC = local != undefined ? JSON.parse(local).concat(RPCs) : RPCs;
+        const currentrpc = this.current_rpc || "DEFAULT";
+        const list = [currentrpc].concat(
+          listRPC.filter(e => {
+            return e != currentrpc;
+          })
+        );
+        resolve(list);
+      });
+    });
   }
 
-  getList() {
-    return this.list;
+  async getList() {
+    return await this.list;
   }
 
   async setOptions(rpc, awaitRollback = false) {
@@ -24,7 +42,8 @@ class Rpcs {
       console.log("Same RPC");
       return;
     }
-    const newRpc = this.list.includes(rpc) ? rpc : this.currentRpc;
+    const list = await this.getList();
+    const newRpc = list.includes(rpc) ? rpc : this.currentRpc;
     if (newRpc === "TESTNET") {
       // steem.api.setOptions({
       //   url: "https://testnet.steemitdev.com",

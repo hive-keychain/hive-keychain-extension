@@ -155,24 +155,18 @@ function acceptMP(mp) {
   );
 }
 // Set visibilities back to normal when coming back to main menu
-function initializeMainMenu() {
+function initializeMainMenu(options) {
   console.log("init");
   sendAutolock();
   checkKeychainify();
   manageKey = false;
   getPref = false;
   chrome.storage.local.get(
-    ["accounts", "last_account", "rpc", "current_rpc", "transfer_to"],
-    function(items) {
+    ["accounts", "last_account", "current_rpc", "transfer_to"],
+    async function(items) {
+      loadRPC(items.current_rpc);
       to_autocomplete = items.transfer_to ? JSON.parse(items.transfer_to) : {};
-      if (items.accounts)
-        accountsList.init(
-          decryptToJson(items.accounts, mk),
-          items.last_account
-        );
-      console.log(items.rpc, items.current_rpc);
-      loadRPC(items.rpc, items.current_rpc);
-      console.log(accountsList.getList());
+      accountsList.init(decryptToJson(items.accounts, mk), items.last_account);
       $("#accounts").empty();
       if (!accountsList.isEmpty()) {
         $(".usernames").html("<select></select>");
@@ -188,7 +182,8 @@ function initializeMainMenu() {
               "popup_add_account"
             )}</option>`
           );
-        initiateCustomSelect();
+
+        initiateCustomSelect(options);
       } else {
         $("#main").hide();
         $("#register").hide();

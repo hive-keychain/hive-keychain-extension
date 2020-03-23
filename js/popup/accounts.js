@@ -31,8 +31,9 @@ function getPubkeyWeight(
 }
 
 // Load account information
-const loadAccount = async name => {
+const loadAccount = async (name, options) => {
   console.log(`Load account ${name}`);
+  if (options) await options;
   activeAccount = accountsList.get(name);
   console.log(activeAccount);
   activeAccount.init();

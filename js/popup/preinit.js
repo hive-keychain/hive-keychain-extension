@@ -27,7 +27,7 @@ initializeVisibility(true);
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
   if (msg.command == "sendBackMk") {
     chrome.storage.local.get(["accounts", "current_rpc"], function(items) {
-      rpcs.setOptions(items.current_rpc || "DEFAULT");
+      const options = rpcs.setOptions(items.current_rpc || "DEFAULT");
       if (!msg.mk) {
         if (!items.accounts) {
           showRegister();
@@ -36,8 +36,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }
       } else {
         mk = msg.mk;
-        initializeMainMenu();
         initializeVisibility();
+        initializeMainMenu(options);
       }
     });
   }

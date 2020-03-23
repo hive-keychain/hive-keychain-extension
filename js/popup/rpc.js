@@ -1,17 +1,8 @@
-function loadRPC(local, current_rpc) {
-  const RPCs = rpcs.getList();
-  console.log(RPCs);
+async function loadRPC(local, current_rpc) {
+  const listRPC = await rpcs.getList();
   $("#custom_select_rpc").html("<select></select>");
   $("#pref_div .usernames .select-selected").remove();
   $("#pref_div .usernames .select-items").remove();
-  let listRPC = [];
-  listRPC = local != undefined ? JSON.parse(local).concat(RPCs) : RPCs;
-  const currentrpc = current_rpc || "https://api.hive.blog/";
-  listRPC = [currentrpc].concat(
-    listRPC.filter(e => {
-      return e != currentrpc;
-    })
-  );
   $("#custom_select_rpc select").html(
     listRPC.reduce((acc, val) => {
       return acc + "<option>" + val + "</option>";

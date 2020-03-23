@@ -3,6 +3,7 @@ class AccountsList {
     this.accounts = {list: []};
   }
   init(accounts, last_account) {
+    console.log(accounts, last_account);
     if (accounts) {
       this.accounts = accounts;
       this.accounts.list = this.accounts.list.map(e => new Account(e));
