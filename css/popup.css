@@ -1424,10 +1424,6 @@ input:focus {
   margin-right: 3.5px;
 }
 
-#top100 {
-  display: none;
-}
-
 .active_wit {
   background-color: #E31337 !important;
   outline: none;
@@ -2042,7 +2038,7 @@ input:focus {
   margin-top: 20px;
 }
 
-#keychainify, #delegate {
+#keychainify, {
   display: none;
 }
 
