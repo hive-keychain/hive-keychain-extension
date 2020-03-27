@@ -116,7 +116,14 @@ const createMessage = (
 const beautifyErrorMessage = err => {
   console.log(err);
   if (!err) return null;
-  let error = err.message.split("xception:")[1].replace(".rethrow", ".");
+  let error = '';
+  if (err.message.indexOf("xception:") !== -1) {
+    error = err.message.split("xception:").pop().replace(".rethrow", ".");
+  } else if (err.message.indexOf(':') !== -1) {
+    error = err.message.split(":").pop();
+  } else {
+    error = err.message;
+  }
   if (error.replace(" ", "") === "")
     return chrome.i18n.getMessage("unknown_error");
   return `${chrome.i18n.getMessage("bgd_ops_error")} : ${error}`;
