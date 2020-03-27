@@ -29,7 +29,7 @@ const broadcastDelegation = data => {
                   data.username
                 ])
               : chrome.i18n.getMessage("bgd_ops_delegate", [
-                  data.amount,
+                  `${data.amount} ${data.unit}`,
                   data.delegatee,
                   data.username
                 ]),

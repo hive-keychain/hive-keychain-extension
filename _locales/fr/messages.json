@@ -1155,7 +1155,7 @@
     "message": "La délégation à @$1 a été arrêtée avec succès depuis le compte @$2."
   },
   "bgd_ops_delegate": {
-    "message": "Succesfully delegated $1 HP from @$3 to @$2."
+    "message": "Succesfully delegated $1 from @$3 to @$2."
   },
   "bgd_ops_decode": {
     "message": "Mémo décodé avec succès."

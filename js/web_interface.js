@@ -225,7 +225,7 @@ const isProposalIDs = obj => {
 };
 
 const isFilledDelegationMethod = obj => {
-  return obj == "VESTS" || obj == "SP";
+  return obj == "VESTS" || obj == "HP";
 };
 
 const isFilledJSON = obj => {

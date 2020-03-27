@@ -413,6 +413,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
 const showBalances = async (user, currency, amount) => {
   let balance = 0;
+  steem.api.setOptions({url: "https://api.hive.blog/"});
   if (["hbd", "hive", "hp"].includes(currency.toLowerCase())) {
     const account = (await steem.api.getAccountsAsync([user]))[0];
     switch (currency.toLowerCase()) {
