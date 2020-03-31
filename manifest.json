@@ -4,7 +4,6 @@
   "default_locale": "en",
   "version": "1.8.2.3",
   "permissions": [
-    "activeTab",
     "declarativeContent",
     "storage",
     "webNavigation",
