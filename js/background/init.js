@@ -17,6 +17,24 @@ chrome.storage.local.get(["current_rpc", "autolock"], function(items) {
   rpc.setOptions(items.current_rpc || "DEFAULT");
 });
 
+chrome.runtime.onInstalled.addListener(function(details) {
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+    chrome.declarativeContent.onPageChanged.addRules([
+      {
+        conditions: [
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: {schemes: ["https", "http"]}
+          })
+        ],
+        actions: [
+          new chrome.declarativeContent.RequestContentScript({
+            js: ["vendor/jquery.min.js", "js/web_interface.js"]
+          })
+        ]
+      }
+    ]);
+  });
+});
 //Listen to the other parts of the extension
 
 const chromeMessageHandler = (msg, sender, sendResp) => {

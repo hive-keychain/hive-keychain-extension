@@ -104,6 +104,7 @@ const sendMk = mk => {
 };
 // Unlock with masterkey and show the main menu
 $("#submit_unlock").click(function() {
+  requestPermissions();
   chrome.storage.local.get(["accounts"], function(items) {
     const pwd = $("#unlock_pwd").val();
     const accs = decryptToJson(items.accounts, pwd);
@@ -132,6 +133,7 @@ $("#forgot_div button").click(function() {
 
 // Registration confirmation
 $("#submit_master_pwd").click(function() {
+  requestPermissions();
   if (acceptMP($("#master_pwd").val())) {
     if ($("#master_pwd").val() == $("#confirm_master_pwd").val()) {
       mk = $("#master_pwd").val();
@@ -357,3 +359,14 @@ async function sendTransfer() {
     $("#send_transfer").show();
   }
 }
+
+const requestPermissions = () => {
+  chrome.permissions.request(
+    {
+      origins: ["https://*/*", "http://*/*"]
+    },
+    granted => {
+      console.log("permissions", granted);
+    }
+  );
+};

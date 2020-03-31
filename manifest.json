@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.8.2.2",
+  "version": "1.8.2.3",
   "permissions": [
     "activeTab",
     "declarativeContent",
@@ -11,7 +11,11 @@
     "tabs",
     "notifications",
     "idle",
-    "contextMenus"
+    "contextMenus",
+    "declarativeContent"
+  ],
+  "optional_permissions": [
+    "http://*/*", "https://*/*"
   ],
   "browser_action": {
     "default_popup": "html/popup.html",
@@ -61,14 +65,6 @@
   },
   "web_accessible_resources": [
     "/images/logo.png", "js/hive_keychain.js"
-  ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://*/*", "http://0.0.0.0:1337/*", "http://*/*"
-      ],
-      "js": ["vendor/jquery.min.js", "js/web_interface.js"]
-    }
   ],
   "manifest_version": 2
 }
