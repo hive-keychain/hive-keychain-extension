@@ -268,3 +268,4 @@ Where `amount` is expressed in HP for more visibility for the user.
 
 * [ngx-steem-keychain](https://github.com/steeveproject/ngx-steem-keychain) -
   Native [Angular](https://angular.io) framework integration.
+* [steem-keychain](https://github.com/MattyIce/steem-keychain) - Original keychain plugin for the Steem blockchain
