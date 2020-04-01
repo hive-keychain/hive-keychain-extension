@@ -3,12 +3,12 @@
   try {
     let req = null;
     if (window.is_hive_keychain_injected) return;
-    window.is_hive_keychain_injected = true;
     const setupInjection = () => {
       var scriptTag = document.createElement("script");
       scriptTag.src = chrome.runtime.getURL("js/hive_keychain.js");
       var container = document.head || document.documentElement;
       container.insertBefore(scriptTag, container.children[0]);
+      window.is_hive_keychain_injected = true;
     };
     setupInjection();
 
@@ -312,6 +312,7 @@
         : nb.toString().split(".")[1].length || 0;
     };
   } catch (e) {
+    console.log(e);
     console.log("fail");
   }
 })();

@@ -28,7 +28,7 @@ chrome.runtime.onInstalled.addListener(function(details) {
         ],
         actions: [
           new chrome.declarativeContent.RequestContentScript({
-            js: ["vendor/jquery.min.js", "js/web_interface.js"]
+            js: ["js/web_interface.js"]
           })
         ]
       }
