@@ -7,6 +7,7 @@
     "declarativeContent",
     "storage",
     "webNavigation",
+    "activeTab",
     "tabs",
     "notifications",
     "idle",
