@@ -311,8 +311,5 @@
         ? 0
         : nb.toString().split(".")[1].length || 0;
     };
-  } catch (e) {
-    console.log(e);
-    console.log("fail");
-  }
+  } catch (e) {}
 })();
