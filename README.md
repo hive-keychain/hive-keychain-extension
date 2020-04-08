@@ -1,18 +1,26 @@
 ![](http://u.cubeupload.com/arcange/yOdI5g.png)
 ---
-Putting private keys directly into websites is not safe or secure. Even ones run by HiveIt, Inc. Yet this is currently how nearly every Hive-based site or service currently works. On top of that, most Hive users likely use their master password which is even worse
+
+Putting private keys directly into websites is not safe or secure, even ones run by reputable community members. Yet this is currently how nearly every Hive-based site or service currently works. On top of that, most Hive users likely use their master password which is even worse.
 
 The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of Hive users and does not easily interact with websites - which is Hive's primary use case.
 
-On Ethereum, you never have to enter your private key into a website to use a dApp, you can just use a browser extension like Metamask, which dApp websites can interface with to securely store your keys and broadcast transactions to the blockchain.
+On Ethereum, you never have to enter your private key into a website to use a dApp. You can just use a browser extension like Metamask, which dApp websites can interface with to securely store your keys and broadcast transactions to the blockchain.
 
 Hive Keychain aims to bring the security and ease-of-use of Metamask to the Hive blockchain platform.
 
 ## Installation
 You can download and install the latest published version of the extension for the following browsers:
 
-- Google Chrome (or Brave): [https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm](https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm)
-- Firefox(Soon to be updated): [https://addons.mozilla.org/en-US/firefox/addon/hive-keychain](https://addons.mozilla.org/en-US/firefox/addon/hive-keychain)
+- Google Chrome (or Brave): Comming soon. For now, install it manually:
+  - Export your keys from Steem keychain (in settings)
+  - Download this repository as zip
+  - Unzip the downloaded folder
+  - Right click on any existing extension > Manage my extensions.
+  - Activate developer mode.
+  - Click "Load Unpacked" and select the unzipped folder.
+  - Import your keys (use the same master password)
+- Firefox: [https://addons.mozilla.org/en-GB/firefox/addon/hive-keychain/](https://addons.mozilla.org/en-GB/firefox/addon/hive-keychain/)
 
 ## Features
 The Hive Keychain extension includes the following features:
@@ -243,3 +251,9 @@ hive_keychain.requestPowerDown(username,  amount, function(response) {
 ```
 
 Where `amount` is expressed in HP for more visibility for the user.
+
+## Related Projects
+
+* [ngx-steem-keychain](https://github.com/steeveproject/ngx-steem-keychain) -
+  Native [Angular](https://angular.io) framework integration.
+* [steem-keychain](https://github.com/MattyIce/steem-keychain) - Original keychain plugin for the Steem blockchain.

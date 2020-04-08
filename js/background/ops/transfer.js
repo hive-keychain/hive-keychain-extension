@@ -6,8 +6,8 @@ const broadcastTransfer = data => {
     if (data.memo && data.memo.length > 0 && data.memo[0] == "#") {
       try {
         const receiver = await steem.api.getAccountsAsync([data.to]);
-        const memoReceiver = receiver["0"].memo_key;
-        memo = window.encodeMemo(ac.keys.memo, memoReceiver, memo);
+        const memoReceiver = receiver[0].memo_key;
+        memo = window.encodeMemo(ac.getKey("memo"), memoReceiver, memo);
       } catch (e) {
         console.log(e);
       }

@@ -2,19 +2,9 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.8.2.4",
+  "version": "1.8.2.5",
   "permissions": [
-    "declarativeContent",
-    "storage",
-    "webNavigation",
-    "tabs",
-    "notifications",
-    "idle",
-    "contextMenus",
-    "declarativeContent"
-  ],
-  "optional_permissions": [
-    "http://*/*", "https://*/*"
+    "storage", "tabs", "notifications", "idle"
   ],
   "browser_action": {
     "default_popup": "html/popup.html",
