@@ -1,32 +1,39 @@
 ![](https://i.imgur.com/4rPWDFs.png)
 ---
-Putting private keys directly into websites is not safe or secure. Even ones run by SteemIt, Inc. Yet this is currently how nearly every Steem-based site or service currently works. On top of that, most Steem users likely use their master password which is even worse
+Putting private keys directly into websites is not safe or secure, even ones run by reputable community members. Yet this is currently how nearly every Hive-based site or service currently works. On top of that, most Hive users likely use their master password which is even worse.
 
-The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of Steem users and does not easily interact with websites - which is Steem's primary use case.
+The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of Hive users and does not easily interact with websites - which is Hive's primary use case.
 
-On Ethereum, you never have to enter your private key into a website to use a dApp, you can just use a browser extension like Metamask, which dApp websites can interface with to securely store your keys and broadcast transactions to the blockchain.
+On Ethereum, you never have to enter your private key into a website to use a dApp. You can just use a browser extension like Metamask, which dApp websites can interface with to securely store your keys and broadcast transactions to the blockchain.
 
-Steem Keychain aims to bring the security and ease-of-use of Metamask to the Steem blockchain platform.
+Hive Keychain aims to bring the security and ease-of-use of Metamask to the Hive blockchain platform.
 
 ## Installation
 You can download and install the latest published version of the extension for the following browsers:
 
-- Google Chrome (or Brave): [https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm](https://chrome.google.com/webstore/detail/steem-keychain/lkcjlnjfpbikmcmbachjpdbijejflpcm)
-- Firefox(Soon to be updated): [https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/](https://addons.mozilla.org/en-US/firefox/addon/steem-keychain/)
+- Google Chrome (or Brave): Comming soon. For now, install it manually:
+  - Export your keys from Steem keychain (in settings)
+  - Download this repository as zip
+  - Unzip the downloaded folder
+  - Right click on any existing extension > Manage my extensions.
+  - Activate developer mode.
+  - Click "Load Unpacked" and select the unzipped folder.
+  - Import your keys (use the same master password)
+- Firefox: [https://addons.mozilla.org/en-GB/firefox/addon/hive-keychain/](https://addons.mozilla.org/en-GB/firefox/addon/hive-keychain/)
 
 ## Features
-The Steem Keychain extension includes the following features:
-- Store an unlimited number of Steem account keys, encrypted with AES
+The Hive Keychain extension includes the following features:
+- Store an unlimited number of Hive account keys, encrypted with AES
 - View balances, transaction history, voting power, and resource credits
-- Send STEEM and SBD transfers, manage witness votes, and update SP delegation right from the extension
-- Securely interact with Steem-based websites that have integrated with Steem Keychain
+- Send HIVE and HBD transfers, manage witness votes, and update HP delegation right from the extension
+- Securely interact with Hive-based websites that have integrated with Hive Keychain
 - Manage transaction confirmation preferences by account and by website
 - Locks automatically on browser shutdown or manually using the lock button
 
 ## Website Integration
-Websites can currently request the Steem Keychain extension to perform the following functions / broadcast operations:
+Websites can currently request the Hive Keychain extension to perform the following functions / broadcast operations:
 - Send a handshake to make sure the extension is installed
-- Decrypt a message encrypted by a Steem account private key (commonly used for "logging in")
+- Decrypt a message encrypted by a Hive account private key (commonly used for "logging in")
 - Post a comment (top level or reply)
 - Broadcast a vote
 - Broadcast a custom JSON operation
@@ -47,13 +54,13 @@ NOTE: On localhost, it will only run on port 1337.
 
 ## API Documentation
 
-The Steem Keychain extension will inject a "hive_keychain" JavaScript into all web pages opened in the browser while the extension is running. You can therefore check if the current user has the extension installed using the following code:
+The Hive Keychain extension will inject a "hive_keychain" JavaScript into all web pages opened in the browser while the extension is running. You can therefore check if the current user has the extension installed using the following code:
 
 ```
 if(window.hive_keychain) {
-    // Steem Keychain extension installed...
+    // Hive Keychain extension installed...
 } else {
-    // Steem Keychain extension not installed...
+    // Hive Keychain extension not installed...
 }
 ```
 
@@ -69,7 +76,7 @@ hive_keychain.requestHandshake(function() {
 
 ### Transfer
 
-Sites can request that the extension sign and broadcast a transfer operation for STEEM or SBD. Note that a confirmation will always be shown to the user for transfer operations and they cannot be disabled.
+Sites can request that the extension sign and broadcast a transfer operation for HIVE or HBD. Note that a confirmation will always be shown to the user for transfer operations and they cannot be disabled.
 
 ```
 hive_keychain.requestTransfer(account_name, to_account, amount, memo, currency, function(response) {
@@ -80,7 +87,7 @@ where `memo` will be encrypted using Memo key if it is starting by `#`, and `enf
 
 ### Decode Memo / Verify Key
 
-Sites can request that the extension decode a memo encrypted by the Memo, Posting, or Active key for a particular Steem account. This is messaged to the user as "Verify Key" since it is typically used to verify that they have access to the private key for an account in order to "log them in".
+Sites can request that the extension decode a memo encrypted by the Memo, Posting, or Active key for a particular Hive account. This is messaged to the user as "Verify Key" since it is typically used to verify that they have access to the private key for an account in order to "log them in".
 
 ```
 hive_keychain.requestVerifyKey(account_name, encrypted_message, key_type, function(response) {
@@ -219,7 +226,7 @@ hive_keychain.requestDelegation(username, delegatee, amount, unit, function(resp
 });
 ```
 
-where `unit` can be either `VESTS` or `SP`. `amount` needs 6 decimals if the unit is `VESTS`, 3 if it is `SP`.
+where `unit` can be either `VESTS` or `HP`. `amount` needs 6 decimals if the unit is `VESTS`, 3 if it is `HP`.
 
 ### Vote for a Witness
 
@@ -243,7 +250,7 @@ hive_keychain.requestPowerUp(username, to, amount, function(response) {
 });
 ```
 
-Where `to` is the recipient of the power up, and `amount` is expressed in STEEM (with 3 decimals).
+Where `to` is the recipient of the power up, and `amount` is expressed in HIVE (with 3 decimals).
 
 ### Power Down
 
@@ -255,9 +262,10 @@ hive_keychain.requestPowerDown(username,  amount, function(response) {
 });
 ```
 
-Where `amount` is expressed in SP for more visibility for the user.
+Where `amount` is expressed in HP for more visibility for the user.
 
 ## Related Projects
 
 * [ngx-steem-keychain](https://github.com/steeveproject/ngx-steem-keychain) -
   Native [Angular](https://angular.io) framework integration.
+* [steem-keychain](https://github.com/MattyIce/steem-keychain) - Original keychain plugin for the Steem blockchain

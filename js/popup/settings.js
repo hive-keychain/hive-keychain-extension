@@ -94,18 +94,16 @@ $("#import_keys").click(() => {
 
 const importKeys = () => {
   chrome.windows.getCurrent(w => {
-    chrome.windows.create(
-      {
-        url: chrome.runtime.getURL("html/import.html"),
-        type: "popup",
-        height: 566,
-        focused: true,
-        width: 350,
-        left: w.width - 350 + w.left,
-        top: w.top
-      },
-      w => w.update()
-    );
+    const win = {
+      url: chrome.runtime.getURL("html/import.html"),
+      type: "popup",
+      height: 566,
+      width: 350,
+      left: w.width - 350 + w.left,
+      top: w.top
+    };
+    if (typeof InstallTrigger === undefined) win.focused = true;
+    chrome.windows.create(win, w => w.update());
   });
 };
 
