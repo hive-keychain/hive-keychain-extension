@@ -208,7 +208,7 @@ const hasTransferInfo = req => {
 };
 
 const isFilled = obj => {
-  return obj != undefined && obj != null && obj != "";
+  return obj != undefined && obj != null && ((typeof obj)!="string" ||  obj != "");
 };
 
 const isBoolean = obj => {
