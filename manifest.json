@@ -55,13 +55,5 @@
   "web_accessible_resources": [
     "/images/logo.png", "js/hive_keychain.js"
   ],
-  "content_scripts": [
-    {
-      "matches": [
-        "https://*/*", "http://0.0.0.0:1337/*", "http://*/*"
-      ],
-      "js": ["vendor/jquery.min.js", "js/web_interface.js"]
-    }
-  ],
   "manifest_version": 2
 }

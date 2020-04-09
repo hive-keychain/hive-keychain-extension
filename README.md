@@ -1,5 +1,6 @@
-![](https://i.imgur.com/4rPWDFs.png)
+![](http://u.cubeupload.com/arcange/yOdI5g.png)
 ---
+
 Putting private keys directly into websites is not safe or secure, even ones run by reputable community members. Yet this is currently how nearly every Hive-based site or service currently works. On top of that, most Hive users likely use their master password which is even worse.
 
 The Vessel desktop wallet software is a secure alternative, but it is too difficult to use for the majority of Hive users and does not easily interact with websites - which is Hive's primary use case.
@@ -38,7 +39,7 @@ Websites can currently request the Hive Keychain extension to perform the follow
 - Broadcast a vote
 - Broadcast a custom JSON operation
 - Send a transfer
-- Send Steem Engine tokens
+- Send Hive Engine tokens
 - Send Delegations
 - Power up/down
 - Vote for witnesses
@@ -127,7 +128,7 @@ hive_keychain.requestCustomJson(account_name, custom_json_id, key_type, json, di
 });
 ```
 
-Where "key_type" can be "Posting" or "Active" and "display_name" is a user-friendly name of the operation to be shown to the user so they know what operation is being broadcast (ex. "Steem Monsters Card Transfer").
+Where "key_type" can be "Posting" or "Active" and "display_name" is a user-friendly name of the operation to be shown to the user so they know what operation is being broadcast (ex. "Hive Monsters Card Transfer").
 
 ### Sign
 
@@ -174,7 +175,7 @@ where "role" can be "Posting" or "Active".
 
 ### Broadcast
 
-Sites can request that the extension sign and broadcast general operations allowed by the `steem-js` library:
+Sites can request that the extension sign and broadcast general operations allowed by the `hive-js` library:
 
 ```
 hive_keychain.requestBroadcast(account_name, operations, key_type, function(response) {
@@ -191,8 +192,8 @@ broadcast.send({ extensions: [], operations }, keys, errorCallback);
 
 ### Signed Call
 
-Sites can request that per sign RPCs using steem authorities as specified in https://github.com/steemit/rpc-auth
-and implemented in the `steem-js` library method signedCall:
+Sites can request that per sign RPCs using hive authorities as specified in https://github.com/steemit/rpc-auth
+and implemented in the `hive-js` library method signedCall:
 
 ```
 hive_keychain.requestSignedCall(account_name, method, params, key_type, function(response) {
@@ -202,19 +203,6 @@ hive_keychain.requestSignedCall(account_name, method, params, key_type, function
 
 Where "method" is the method name, e.g. `conveyor.get_feature_flags`, "params" are the method parameters,
 and "key_type" can be "Posting" or "Active".
-
-### Send Tokens
-
-Sites can request that Keychain broadcasts a JSON with active authority to transfer tokens to another user.
-This works with tokens generated using [Steem Engine](https://steem-engine.com).
-
-```
-hive_keychain.requestSendToken(username, to,amount,memo, token, function(response) {
-    console.log(response);
-});
-```
-
-where `token` is the symbol of the said token.
 
 ### Delegate
 
@@ -268,4 +256,4 @@ Where `amount` is expressed in HP for more visibility for the user.
 
 * [ngx-steem-keychain](https://github.com/steeveproject/ngx-steem-keychain) -
   Native [Angular](https://angular.io) framework integration.
-* [steem-keychain](https://github.com/MattyIce/steem-keychain) - Original keychain plugin for the Steem blockchain
+* [steem-keychain](https://github.com/MattyIce/steem-keychain) - Original keychain plugin for the Steem blockchain.
