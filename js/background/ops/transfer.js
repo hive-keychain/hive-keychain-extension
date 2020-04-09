@@ -10,6 +10,15 @@ const broadcastTransfer = data => {
         memo = window.encodeMemo(ac.getKey("memo"), memoReceiver, memo);
       } catch (e) {
         console.log(e);
+        const message = createMessage(
+          true,
+          null,
+          data,
+          null,
+          "Could not encode transfer."
+        );
+        resolve(message);
+        return;
       }
     }
     steem.broadcast.transfer(
