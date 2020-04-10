@@ -1,28 +1,38 @@
 const broadcastData = data => {
   return new Promise((resolve, reject) => {
-    const operations = data.operations;
+    const operations = JSON.parse(data.operations);
     const broadcastKeys = {};
     broadcastKeys[data.typeWif] = key;
-    
+    let account = accountsList.get(data.username);
+
     // check if operations contains any transfer wich requires memo encryption
-    for(op of operations) {
-      if(op[0]=="transfer") {
-        const memo = op[1].memo
+    operations.map(async op => {
+      if (op[0] == "transfer") {
+        const memo = op[1].memo;
         if (memo && memo.length > 0 && memo[0] == "#") {
           try {
             const receiver = await steem.api.getAccountsAsync([op[1].to]);
+            console.log("receiver", receiver);
             const memoReceiver = receiver[0].memo_key;
-            op[1].memo = window.encodeMemo(ac.getKey("memo"), memoReceiver, memo);
+            console.log("memoReceiver", memoReceiver);
+            op[1].memo = window.encodeMemo(
+              account.getKey("memo"),
+              memoReceiver,
+              memo
+            );
+            console.log(op[1].memo);
+            return op;
           } catch (e) {
             console.log(e);
           }
         }
       }
-    }    
-    
+    });
+    console.log(operations);
+
     steem.broadcast.send(
       {
-        operations,
+        operations: operations,
         extensions: []
       },
       broadcastKeys,
