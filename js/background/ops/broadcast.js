@@ -1,5 +1,5 @@
 const broadcastData = data => {
-  return new Promise((resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     let operations = JSON.parse(data.operations);
     const broadcastKeys = {};
     broadcastKeys[data.typeWif] = key;
@@ -7,28 +7,32 @@ const broadcastData = data => {
 
     // check if operations contains any transfer wich requires memo encryption
     try {
-      operations = operations.map(async op => {
-        if (op[0] == "transfer") {
-          const memo = op[1].memo;
-          if (memo && memo.length > 0 && memo[0] == "#") {
-            const receiver = await steem.api.getAccountsAsync([op[1].to]);
-            if(!receiver) {
-              throw new Error("Failed to load receiver memo key")
+      operations = await Promise.all(
+        operations.map(async op => {
+          if (op[0] == "transfer") {
+            const memo = op[1].memo;
+            if (memo && memo.length > 0 && memo[0] == "#") {
+              const receiver = await steem.api.getAccountsAsync([op[1].to]);
+              if (!receiver) {
+                throw new Error("Failed to load receiver memo key");
+              }
+              console.log("receiver", receiver);
+              const memoReceiver = receiver[0].memo_key;
+              console.log("memoReceiver", memoReceiver);
+              op[1].memo = window.encodeMemo(
+                account.getKey("memo"),
+                memoReceiver,
+                memo
+              );
+              console.log(op[1].memo);
+              console.log(op);
+              return op;
             }
-            console.log("receiver", receiver);
-            const memoReceiver = receiver[0].memo_key;
-            console.log("memoReceiver", memoReceiver);
-            op[1].memo = window.encodeMemo(
-              account.getKey("memo"),
-              memoReceiver,
-              memo
-            );
-            console.log(op[1].memo);
-            return op;
           }
-        }
-      });
-      console.log(operations);
+        })
+      );
+
+      console.log("op", operations);
 
       steem.broadcast.send(
         {
