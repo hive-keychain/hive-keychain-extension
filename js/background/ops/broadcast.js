@@ -1,17 +1,20 @@
 const broadcastData = data => {
   return new Promise((resolve, reject) => {
-    const operations = JSON.parse(data.operations);
+    let operations = JSON.parse(data.operations);
     const broadcastKeys = {};
     broadcastKeys[data.typeWif] = key;
     let account = accountsList.get(data.username);
 
     // check if operations contains any transfer wich requires memo encryption
     try {
-      operations.map(async op => {
+      operations = operations.map(async op => {
         if (op[0] == "transfer") {
           const memo = op[1].memo;
           if (memo && memo.length > 0 && memo[0] == "#") {
             const receiver = await steem.api.getAccountsAsync([op[1].to]);
+            if(!receiver) {
+              throw new Error("Failed to load receiver memo key")
+            }
             console.log("receiver", receiver);
             const memoReceiver = receiver[0].memo_key;
             console.log("memoReceiver", memoReceiver);
@@ -53,7 +56,7 @@ const broadcastData = data => {
         null,
         data,
         null,
-        "Could not encode transfer."
+        "Could not encode transfer: `${error.message}`."
       );
       resolve(message);
     }
