@@ -230,7 +230,7 @@ function getTimeBeforeFull(votingPower) {
 }
 
 // Get STEEM price from Bittrex
-function getPriceHiveAsync() {
+function getPricesAsync() {
   return new Promise(function(resolve, reject) {
     $.ajax({
       type: "GET",
@@ -238,49 +238,9 @@ function getPriceHiveAsync() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-HIVE",
+      url: "https://api.steemkeychain.com/hive/bittrex",
       success: function(response) {
-        resolve(response.result["Bid"]);
-      },
-      error: function(msg) {
-        resolve(null);
-      }
-    });
-  });
-}
-
-// Get BTC price from Bittrex
-function getBTCPriceAsync() {
-  return new Promise(function(resolve, reject) {
-    $.ajax({
-      type: "GET",
-      beforeSend: function(xhttp) {
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
-      },
-      url: "https://bittrex.com/api/v1.1/public/getticker?market=USDT-BTC",
-      success: function(response) {
-        resolve(response.result["Bid"]);
-      },
-      error: function(msg) {
-        resolve(null);
-      }
-    });
-  });
-}
-
-// Get SBD price from Bittrex
-function getPriceHBDAsync() {
-  return new Promise(function(resolve, reject) {
-    $.ajax({
-      type: "GET",
-      beforeSend: function(xhttp) {
-        xhttp.setRequestHeader("Content-type", "application/json");
-        xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
-      },
-      url: "https://bittrex.com/api/v1.1/public/getticker?market=BTC-HBD",
-      success: function(response) {
-        resolve(response.result["Bid"]);
+        resolve(response);
       },
       error: function(msg) {
         resolve(null);
