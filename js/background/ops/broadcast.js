@@ -1,6 +1,6 @@
 const broadcastData = data => {
   return new Promise(async (resolve, reject) => {
-    let operations = JSON.parse(data.operations);
+    let operations = data.operations;
     const broadcastKeys = {};
     broadcastKeys[data.typeWif] = key;
     let account = accountsList.get(data.username);
@@ -26,9 +26,9 @@ const broadcastData = data => {
               );
               console.log(op[1].memo);
               console.log(op);
-              return op;
             }
           }
+          return op;
         })
       );
 
