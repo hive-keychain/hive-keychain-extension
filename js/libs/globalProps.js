@@ -22,14 +22,13 @@ class GlobalProps {
     );
   }
   async initGetPrice() {
-    return await Promise.all([
-      await getPriceHiveAsync(),
-      await getPriceHBDAsync(),
-      await getBTCPriceAsync()
-    ]);
+    return await getPricesAsync();
   }
   async getPrices() {
-    const [steem, sbd, btc] = await this.prices;
-    return [steem * btc, sbd * btc];
+    let {hive, hbd, btc} = await this.prices;
+    hive = hive.result["Bid"];
+    hbd = hbd.result["Bid"];
+    btc = btc.result["Bid"];
+    return [hive * btc, hbd * btc];
   }
 }

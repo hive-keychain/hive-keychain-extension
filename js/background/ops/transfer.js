@@ -6,10 +6,22 @@ const broadcastTransfer = data => {
     if (data.memo && data.memo.length > 0 && data.memo[0] == "#") {
       try {
         const receiver = await steem.api.getAccountsAsync([data.to]);
+        if (!receiver) {
+           throw new Error("Failed to load receiver memo key");
+        }        
         const memoReceiver = receiver[0].memo_key;
         memo = window.encodeMemo(ac.getKey("memo"), memoReceiver, memo);
       } catch (e) {
         console.log(e);
+        const message = createMessage(
+          true,
+          null,
+          data,
+          null,
+          "Could not encode transfer."
+        );
+        resolve(message);
+        return;
       }
     }
     steem.broadcast.transfer(
