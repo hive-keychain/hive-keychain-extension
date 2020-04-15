@@ -4,7 +4,7 @@
   "default_locale": "en",
   "version": "1.8.2.7",
   "permissions": [
-    "storage", "tabs", "notifications", "idle"
+    "storage", "tabs", "notifications", "idle", "webNavigation"
   ],
   "browser_action": {
     "default_popup": "html/popup.html",
@@ -48,7 +48,8 @@
       "js/background/ops/transfer.js",
       "js/background/ops/vote.js",
       "js/background/ops/witness.js",
-      "js/background/transactions.js"
+      "js/background/transactions.js",
+      "js/background/keychainify.js"
     ],
     "persistent": true
   },
@@ -60,7 +61,7 @@
       "matches": [
         "https://*/*", "http://0.0.0.0:1337/*", "http://*/*"
       ],
-      "js": ["vendor/jquery.min.js", "js/web_interface.js"]
+      "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/libs/keychainify.js", "js/keychainify_content.js"]
     }
   ],
   "manifest_version": 2

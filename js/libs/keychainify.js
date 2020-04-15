@@ -23,7 +23,7 @@ const keychainify = {
   },
 
   isUrlSupported: function(url) {
-    return url.includes("steemconnect.com/sign/transfer");
+    return url.includes("hivesigner.com/sign/transfer");
   },
 
   /**
@@ -47,13 +47,13 @@ const keychainify = {
       /**
        * Transfer fund
        */
-      case (url.includes("steemconnect.com/sign/transfer")):
+      case (url.includes("hivesigner.com/sign/transfer")):
         defaults = {
           from: null,
           to: null,
           amount: 0,
           memo: "",
-          currency: "STEEM"
+          currency: "HIVE"
         };
 
         payload = Object.assign(defaults, vars);
@@ -70,17 +70,17 @@ const keychainify = {
         break;
 
       /**
-       * Delegate Steem Power
+       * Delegate Hive Power
        */
-      case (url.includes("steemconnect.com/sign/delegate-vesting-shares")):
-        // @TODO currently Steem Keychain does not allow null delegator account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
+      case (url.includes("hivesigner.com/sign/delegate-vesting-shares")):
+        // @TODO currently Hive Keychain does not allow null delegator account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
         //let [amount, unit] = vars.vesting_shares.split(' ');
         //keychainify.requestDelegation(null, vars.delegatee, amount, unit, null);
         window.location.href = url;
         break;
 
-      case (url.includes("steemconnect.com/sign/account-witness-vote")):
-        // @TODO currently Steem Keychain does not allow null voter account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
+      case (url.includes("hivesigner.com/sign/account-witness-vote")):
+        // @TODO currently Hive Keychain does not allow null voter account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
         //keychainify.requestWitnessVote(null, vars.witness, vars.approve);
         window.location.href = url;
         break;
