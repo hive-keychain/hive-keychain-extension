@@ -159,7 +159,11 @@ const keychainify = {
       currency: currency
     };
 
-    keychainify.dispatchRequest(tab, request);
+    if (to && amount && currency) {
+      keychainify.dispatchRequest(tab, request);
+    } else {
+      console.error('[keychainify] Missing parameters for transfers');
+    }
   },
 
   /**
@@ -176,7 +180,12 @@ const keychainify = {
       witness: witness,
       vote: vote
     };
-    keychainify.dispatchRequest(tab, request);
+
+    if (username && witness && vote) {
+      keychainify.dispatchRequest(tab, request);
+    } else {
+      console.error('[keychainify] Missing parameters for witness vote');
+    }
   },
 
   /**
@@ -196,7 +205,11 @@ const keychainify = {
       unit: unit,
     };
 
-    keychainify.dispatchRequest(tab, request);
+    if (username && delegatee && amount && unit) {
+      keychainify.dispatchRequest(tab, request);
+    } else {
+      console.error('[keychainify] Missing parameters for delegation');
+    }
   },
 
   /**
