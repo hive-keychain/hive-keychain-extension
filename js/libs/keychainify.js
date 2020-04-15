@@ -73,16 +73,29 @@ const keychainify = {
        * Delegate Hive Power
        */
       case (url.includes("hivesigner.com/sign/delegate-vesting-shares")):
-        // @TODO currently Hive Keychain does not allow null delegator account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
-        //let [amount, unit] = vars.vesting_shares.split(' ');
-        //keychainify.requestDelegation(null, vars.delegatee, amount, unit, null);
-        window.location.href = url;
+        defaults = {
+          delegator: null,
+          delegatee: null,
+          amount: 0,
+          unit: "HP"
+        };
+
+        payload = Object.assign(defaults, vars);
+
+        let [amount, unit] = vars.vesting_shares.split(' ');
+        keychainify.requestDelegation(tab, vars.delegator, vars.delegatee, amount, unit, null);
         break;
 
       case (url.includes("hivesigner.com/sign/account-witness-vote")):
-        // @TODO currently Hive Keychain does not allow null voter account. Awaiting https://github.com/MattyIce/steem-keychain/issues/101 to continue
-        //keychainify.requestWitnessVote(null, vars.witness, vars.approve);
-        window.location.href = url;
+        defaults = {
+          account: null,
+          witness: null,
+          approve: '0',
+        };
+
+        payload = Object.assign(defaults, vars);
+
+        keychainify.requestWitnessVote(tab, payload.account, payload.witness, parseInt(payload.approve));
         break;
     }
   },
@@ -163,7 +176,7 @@ const keychainify = {
       witness: witness,
       vote: vote
     };
-    keychainify.dispatchRequest(tab, equest);
+    keychainify.dispatchRequest(tab, request);
   },
 
   /**
@@ -180,7 +193,7 @@ const keychainify = {
       username: username,
       delegatee: delegatee,
       amount: amount,
-      unit: unit
+      unit: unit,
     };
 
     keychainify.dispatchRequest(tab, request);
