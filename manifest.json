@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.8.2.6",
+  "version": "1.8.2.7",
   "permissions": [
     "storage", "tabs", "notifications", "idle"
   ],
@@ -54,6 +54,14 @@
   },
   "web_accessible_resources": [
     "/images/logo.png", "js/hive_keychain.js"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*", "http://0.0.0.0:1337/*", "http://*/*"
+      ],
+      "js": ["vendor/jquery.min.js", "js/web_interface.js"]
+    }
   ],
   "manifest_version": 2
 }
