@@ -1,7 +1,9 @@
 const broadcastWitnessVote = data => {
   return new Promise((resolve, reject) => {
+    const ac = accountsList.get(data.username);
+    const key_witness = ac.getKey("active");
     steem.broadcast.accountWitnessVote(
-      key,
+      key_witness,
       data.username,
       data.witness,
       data.vote ? 1 : 0,

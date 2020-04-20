@@ -149,11 +149,9 @@ const validate = () => {
         isFilled(req.params) &&
         isFilled(req.typeWif)) ||
       (req.type == "witnessVote" &&
-        isFilled(req.username) &&
         isFilled(req.witness) &&
         isBoolean(req.vote)) ||
       (req.type == "delegation" &&
-        isFilled(req.username) &&
         isFilled(req.delegatee) &&
         isFilledAmtSP(req) &&
         isFilledDelegationMethod(req.unit)) ||

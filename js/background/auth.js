@@ -1,8 +1,7 @@
 const checkBeforeCreate = (request, tab, domain) => {
   if (mk == null) {
-    // Check if locked
+    // if locked
     const callback = () => {
-      console.log("locked");
       chrome.runtime.sendMessage({
         command: "sendDialogError",
         msg: {
@@ -19,6 +18,7 @@ const checkBeforeCreate = (request, tab, domain) => {
     };
     createPopup(callback);
   } else {
+    // if not locked
     chrome.storage.local.get(
       ["accounts", "no_confirm", "current_rpc"],
       function(items) {
@@ -43,7 +43,6 @@ const checkBeforeCreate = (request, tab, domain) => {
               .getList()
               .filter(e => e.hasKey("active"))
               .map(e => e.getName());
-            console.log(tr_accounts, "a");
 
             const encode = memo && memo.length > 0 && memo[0] == "#";
             const enforced = enforce || encode;
@@ -55,7 +54,6 @@ const checkBeforeCreate = (request, tab, domain) => {
               !accountsList.get(username).hasKey("active")
             ) {
               createPopup(() => {
-                console.log("error1");
                 sendErrors(
                   tab,
                   "user_cancel",
@@ -68,7 +66,6 @@ const checkBeforeCreate = (request, tab, domain) => {
               });
             } else if (encode && !account.hasKey("memo")) {
               createPopup(() => {
-                console.log("error2");
                 sendErrors(
                   tab,
                   "user_cancel",
@@ -81,7 +78,6 @@ const checkBeforeCreate = (request, tab, domain) => {
               });
             } else if (tr_accounts.length == 0) {
               createPopup(() => {
-                console.log("error3");
                 sendErrors(
                   tab,
                   "user_cancel",
@@ -93,7 +89,39 @@ const checkBeforeCreate = (request, tab, domain) => {
                 );
               });
             } else {
-              console.log("b", tr_accounts);
+              const callback = () => {
+                chrome.runtime.sendMessage({
+                  command: "sendDialogConfirm",
+                  data: request,
+                  domain,
+                  accounts: tr_accounts,
+                  tab,
+                  testnet: items.current_rpc === "TESTNET"
+                });
+              };
+              createPopup(callback);
+            }
+            // if transfer
+          } else if (
+            ["delegation", "witnessVote"].includes(type) &&
+            !username
+          ) {
+            // if no username specified for witness vote or delegation
+            const tr_accounts = accountsList
+              .getList()
+              .filter(e => e.hasKey("active"))
+              .map(e => e.getName());
+            if (tr_accounts.length == 0) {
+              createPopup(() => {
+                sendErrors(
+                  tab,
+                  "user_cancel",
+                  chrome.i18n.getMessage("bgd_auth_canceled"),
+                  chrome.i18n.getMessage("bgd_auth_no_active"),
+                  request
+                );
+              });
+            } else {
               const callback = () => {
                 chrome.runtime.sendMessage({
                   command: "sendDialogConfirm",
@@ -107,9 +135,9 @@ const checkBeforeCreate = (request, tab, domain) => {
               createPopup(callback);
             }
           } else {
+            // if not a transfer nor witness/delegation with dropdown
             if (!accountsList.get(username)) {
               const callback = () => {
-                console.log("error4");
                 sendErrors(
                   tab,
                   "user_cancel",
@@ -133,7 +161,6 @@ const checkBeforeCreate = (request, tab, domain) => {
 
               if (!account.hasKey(typeWif)) {
                 createPopup(() => {
-                  console.log("error5");
                   sendErrors(
                     tab,
                     "user_cancel",

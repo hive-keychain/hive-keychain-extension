@@ -1238,6 +1238,9 @@
   },
   "import_html_error": {
     "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+  },
+  "bgd_auth_no_active": {
+    "message": "No account with active authority."
   }
 
 }

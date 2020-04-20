@@ -1,5 +1,7 @@
 const broadcastDelegation = data => {
   return new Promise((resolve, reject) => {
+    const ac = accountsList.get(data.username);
+    const key_delegation = ac.getKey("active");
     steem.api.getDynamicGlobalPropertiesAsync().then(res => {
       let delegated_vest = null;
       if (data.unit == "HP") {
@@ -12,7 +14,7 @@ const broadcastDelegation = data => {
         delegated_vest = data.amount + " VESTS";
       }
       steem.broadcast.delegateVestingShares(
-        key,
+        key_delegation,
         data.username,
         data.delegatee,
         delegated_vest,
