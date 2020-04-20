@@ -82,20 +82,32 @@ const keychainify = {
 
         payload = Object.assign(defaults, vars);
 
-        let [amount, unit] = vars.vesting_shares.split(' ');
-        keychainify.requestDelegation(tab, vars.delegator, vars.delegatee, amount, unit, null);
+        let [amount, unit] = vars.vesting_shares.split(" ");
+        keychainify.requestDelegation(
+          tab,
+          vars.delegator,
+          vars.delegatee,
+          amount,
+          unit,
+          null
+        );
         break;
 
       case (url.includes("hivesigner.com/sign/account-witness-vote")):
         defaults = {
           account: null,
           witness: null,
-          approve: '0',
+          approve: "0"
         };
 
         payload = Object.assign(defaults, vars);
 
-        keychainify.requestWitnessVote(tab, payload.account, payload.witness, parseInt(payload.approve));
+        keychainify.requestWitnessVote(
+          tab,
+          payload.account,
+          payload.witness,
+          parseInt(payload.approve)
+        );
         break;
     }
   },
@@ -162,7 +174,7 @@ const keychainify = {
     if (to && amount && currency) {
       keychainify.dispatchRequest(tab, request);
     } else {
-      console.error('[keychainify] Missing parameters for transfers');
+      console.error("[keychainify] Missing parameters for transfers");
     }
   },
 
@@ -181,10 +193,10 @@ const keychainify = {
       vote: vote
     };
 
-    if (username && witness && vote) {
+    if (witness && vote) {
       keychainify.dispatchRequest(tab, request);
     } else {
-      console.error('[keychainify] Missing parameters for witness vote');
+      console.error("[keychainify] Missing parameters for witness vote");
     }
   },
 
@@ -199,16 +211,16 @@ const keychainify = {
   requestDelegation: function(tab, username, delegatee, amount, unit) {
     const request = {
       type: "delegation",
-      username: username,
-      delegatee: delegatee,
-      amount: amount,
-      unit: unit,
+      delegatee,
+      amount,
+      unit
     };
-
-    if (username && delegatee && amount && unit) {
+    if (username) request.username = username;
+    if (delegatee && amount && unit) {
+      console.log(request);
       keychainify.dispatchRequest(tab, request);
     } else {
-      console.error('[keychainify] Missing parameters for delegation');
+      console.error("[keychainify] Missing parameters for delegation");
     }
   },
 
