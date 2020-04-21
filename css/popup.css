@@ -352,7 +352,7 @@ input:focus {
 }
 
 .success_div {
-  background-color: rgba(0, 156, 156, 0.74);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 #forgot_div,
@@ -413,7 +413,7 @@ input:focus {
 .checkbox_memo .checkbox_container div {
   font-size: 20px;
   padding-top: 10px;
-  color: #009C9C;
+  color: white;
 }
 
 .checkbox_memo {
@@ -436,7 +436,7 @@ input:focus {
 
 .checkbox_container div {
   margin-top: 5px;
-  color: #006060;
+  color: white;
 }
 
 .checkbox_container div:first-of-type {
@@ -480,7 +480,7 @@ input:focus {
   top: 6.4px;
   width: 6.4px;
   height: 11.8px;
-  border: solid #009C9C;
+  border: solid white;
   border-width: 0 3px 3px 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
