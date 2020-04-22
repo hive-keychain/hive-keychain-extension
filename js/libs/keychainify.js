@@ -1,6 +1,6 @@
 /**
  *
- * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation, dispatchRequest: keychainify.dispatchRequest}}
+ * @type {{requestTransfer: keychainify.requestTransfer, initBackground: keychainify.initBackground, isKeychainifyEnabled: (function(): Promise), getVarsFromURL: (function(*)), requestWitnessVote: keychainify.requestWitnessVote, keychainifyUrl: keychainify.keychainifyUrl, requestDelegation: keychainify.requestDelegation,requestProxy: keychainify.requestProxy, dispatchRequest: keychainify.dispatchRequest}}
  */
 const keychainify = {
   /**
@@ -109,6 +109,16 @@ const keychainify = {
           parseInt(payload.approve)
         );
         break;
+      case (url.includes("https://hivesigner.com/sign/account-witness-proxy")):
+        defaults = {
+          account: null,
+          proxy: ""
+        };
+
+        payload = Object.assign(defaults, vars);
+
+        keychainify.requestProxy(tab, payload.account, payload.proxy);
+        break;
     }
   },
 
@@ -193,11 +203,27 @@ const keychainify = {
       vote: vote
     };
 
-    if (witness && vote) {
+    if (witness && vote !== undefined) {
       keychainify.dispatchRequest(tab, request);
     } else {
       console.error("[keychainify] Missing parameters for witness vote");
     }
+  },
+
+  /**
+   * Requesting a Keychain proxy operation
+   * @param tab
+   * @param username
+   * @param proxy
+   */
+  requestProxy: function(tab, username, proxy, vote) {
+    var request = {
+      type: "proxy",
+      username,
+      proxy
+    };
+
+    keychainify.dispatchRequest(tab, request);
   },
 
   /**
@@ -216,7 +242,7 @@ const keychainify = {
       unit
     };
     if (username) request.username = username;
-    if (delegatee && amount && unit) {
+    if (delegatee && amount !== undefined && unit) {
       console.log(request);
       keychainify.dispatchRequest(tab, request);
     } else {
