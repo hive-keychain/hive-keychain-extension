@@ -14,7 +14,6 @@ const performTransaction = async (data, tab, no_confirm) => {
         message = await broadcastTransfer(data);
         break;
       case "post":
-        console.log("post");
         message = await broadcastPost(data);
         break;
       case "addAccountAuthority":
@@ -43,6 +42,8 @@ const performTransaction = async (data, tab, no_confirm) => {
         break;
       case "witnessVote":
         message = await broadcastWitnessVote(data);
+      case "proxy":
+        message = await broadcastProxy(data);
         break;
       case "powerUp":
         message = await broadcastPowerUp(data);
@@ -116,10 +117,13 @@ const createMessage = (
 const beautifyErrorMessage = err => {
   console.log(err);
   if (!err) return null;
-  let error = '';
+  let error = "";
   if (err.message.indexOf("xception:") !== -1) {
-    error = err.message.split("xception:").pop().replace(".rethrow", ".");
-  } else if (err.message.indexOf(':') !== -1) {
+    error = err.message
+      .split("xception:")
+      .pop()
+      .replace(".rethrow", ".");
+  } else if (err.message.indexOf(":") !== -1) {
     error = err.message.split(":").pop();
   } else {
     error = err.message;

@@ -90,6 +90,9 @@ $("#message_sign")
 $("#witness")
   .prev("h3")
   .text(chrome.i18n.getMessage("dialog_witness"));
+$("#proxy")
+  .prev("h3")
+  .text(chrome.i18n.getMessage("popup_proxy"));
 $("#voteWit")
   .prev("h3")
   .text(chrome.i18n.getMessage("dialog_witness"));

@@ -103,7 +103,7 @@ const checkBeforeCreate = (request, tab, domain) => {
             }
             // if transfer
           } else if (
-            ["delegation", "witnessVote"].includes(type) &&
+            ["delegation", "witnessVote", "proxy"].includes(type) &&
             !username
           ) {
             // if no username specified for witness vote or delegation
@@ -259,6 +259,9 @@ const getRequiredWifType = request => {
       return "active";
       break;
     case "witnessVote":
+      return "active";
+      break;
+    case "proxy":
       return "active";
       break;
     case "powerUp":

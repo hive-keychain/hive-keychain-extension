@@ -740,7 +740,7 @@
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
-    "message": "PROXY",
+    "message": "Proxy",
     "description": "on witness page "
   },
   "popup_success_wit": {
@@ -754,6 +754,10 @@
   "popup_success_proxy": {
     "message": "Succesfully chose @$1 for proxy.",
     "description": "on tokens page when chosing a proxy"
+  },
+  "bgd_ops_unproxy": {
+    "message": "Succesfully removed the proxy.",
+    "description": "when removing proxy"
   },
   "popup_utils_full": {
     "message": "Already full!",
@@ -988,6 +992,10 @@
   },
   "dialog_title_wit": {
     "message": "Witness Vote",
+    "description": "Website request title"
+  },
+  "dialog_title_proxy": {
+    "message": "Chose Proxy",
     "description": "Website request title"
   },
   "dialog_title_token": {

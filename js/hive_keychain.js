@@ -269,6 +269,16 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
+  requestProxy: function(username, proxy, callback, rpc) {
+    console.log(username, proxy);
+    var request = {
+      type: "proxy",
+      username,
+      proxy,
+      rpc
+    };
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
+  },
   requestPowerUp: function(username, recipient, steem, callback, rpc) {
     var request = {
       type: "powerUp",

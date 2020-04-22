@@ -78,6 +78,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       transfer: chrome.i18n.getMessage("dialog_title_transfer"),
       delegation: chrome.i18n.getMessage("dialog_title_delegation"),
       witnessVote: chrome.i18n.getMessage("dialog_title_wit"),
+      proxy: chrome.i18n.getMessage("dialog_title_proxy"),
       sendToken: chrome.i18n.getMessage("dialog_title_token"),
       powerUp: chrome.i18n.getMessage("dialog_title_powerup"),
       powerDown: chrome.i18n.getMessage("dialog_title_powerdown"),
@@ -127,7 +128,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       msg.data.type == "decode" || msg.data.type == "signBuffer";
     if (
       msg.data.key !== "active" &&
-      !["transfer", "witnessVote", "delegation"].includes(msg.data.type)
+      !["transfer", "witnessVote", "delegation", "proxy"].includes(
+        msg.data.type
+      )
     ) {
       $("#keep_div").show();
       var prompt_msg = keyVerifyAction
@@ -321,6 +324,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#witness").html(msg.data.witness);
         $("#voteWit").html(JSON.stringify(msg.data.vote));
         break;
+      case "proxy":
+        showDropdownIfNoUsername(msg);
+        $("#proxy").html(msg.data.proxy.length ? msg.data.proxy : "None");
+        break;
       case "sendToken":
         showBalances(msg.data.username, msg.data.currency, msg.data.amount);
         $("#to").text("@" + msg.data.to);
@@ -361,7 +368,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       let data = msg.data;
       if (
         (data.type === "transfer" && !enforce) ||
-        (["witnessVote", "delegation"].includes(data.type) && !data.username)
+        (["witnessVote", "delegation", "proxy"].includes(data.type) &&
+          !data.username)
       )
         // if transfer account is not enforced or no username is specified for witness vote / delegation
         data.username = $("#select_transfer option:selected").val();

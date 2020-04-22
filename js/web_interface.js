@@ -151,6 +151,7 @@ const validate = () => {
       (req.type == "witnessVote" &&
         isFilled(req.witness) &&
         isBoolean(req.vote)) ||
+      (req.type == "proxy" && isFilledOrEmpty(req.proxy)) ||
       (req.type == "delegation" &&
         isFilled(req.delegatee) &&
         isFilledAmtSP(req) &&

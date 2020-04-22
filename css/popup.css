@@ -1445,7 +1445,7 @@ input:focus {
   font-size: 20px;
   padding-top: 18px;
   padding-left: 32px;
-  color: #88F7FB;
+  color: white;
 }
 
 #proxy div {
@@ -1454,7 +1454,7 @@ input:focus {
 
 #proxy div::after {
   content: "";
-  background-image: url("../images/close.png");
+  background-image: url("../images/delete.png");
   background-size: 18px 18px;
   display: inline-block;
   background-repeat: no-repeat;
