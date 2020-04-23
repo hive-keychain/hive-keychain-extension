@@ -101,23 +101,32 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
 
     if (msg.accounts) {
       $("#modal-body-msg .msg-data").css("max-height", "200px");
-      let accounts = msg.accounts;
-      console.log(accounts, msg.data.username);
-      if (msg.data.username !== undefined) {
-        let i = msg.accounts.findIndex(function(elt) {
-          return elt == msg.data.username;
-        });
-
-        let first = [accounts[i]];
-        delete accounts[i];
-        accounts = first.concat(accounts);
-        console.log(accounts);
-      }
-      for (acc of accounts) {
-        if (acc != undefined)
-          $("#select_transfer").append("<option>" + acc + "</option>");
-      }
-      initiateCustomSelect(msg.data);
+      chrome.storage.local.get(["last_chosen_account"], function(items) {
+        let accounts = msg.accounts;
+        console.log(items);
+        console.log(accounts, msg.data.username);
+        if (msg.data.username) {
+          let i = msg.accounts.findIndex(function(elt) {
+            return elt == msg.data.username;
+          });
+          let first = [accounts[i]];
+          delete accounts[i];
+          accounts = first.concat(accounts);
+        } else if (items.last_chosen_account) {
+          console.log(items.last_chosen_account);
+          let i = msg.accounts.findIndex(function(elt) {
+            return elt == items.last_chosen_account;
+          });
+          let first = [accounts[i]];
+          delete accounts[i];
+          accounts = first.concat(accounts);
+        }
+        for (acc of accounts) {
+          if (acc != undefined)
+            $("#select_transfer").append("<option>" + acc + "</option>");
+        }
+        initiateCustomSelect(msg.data);
+      });
     }
     var message = "";
     $("." + type).show();
@@ -371,8 +380,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         (["witnessVote", "delegation", "proxy"].includes(data.type) &&
           !data.username)
       )
-        // if transfer account is not enforced or no username is specified for witness vote / delegation
-        data.username = $("#select_transfer option:selected").val();
+        chrome.storage.local.set({
+          last_chosen_account: $("#select_transfer option:selected").val()
+        });
+      // if transfer account is not enforced or no username is specified for witness vote / delegation
+      data.username = $("#select_transfer option:selected").val();
       chrome.runtime.sendMessage({
         command: "acceptTransaction",
         data: data,

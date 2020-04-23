@@ -97,7 +97,7 @@ const keychainify = {
         defaults = {
           account: null,
           witness: null,
-          approve: "0"
+          approve: "1"
         };
 
         payload = Object.assign(defaults, vars);
