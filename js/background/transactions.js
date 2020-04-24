@@ -42,6 +42,7 @@ const performTransaction = async (data, tab, no_confirm) => {
         break;
       case "witnessVote":
         message = await broadcastWitnessVote(data);
+        break;
       case "proxy":
         message = await broadcastProxy(data);
         break;

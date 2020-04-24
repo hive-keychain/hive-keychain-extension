@@ -1,4 +1,5 @@
 const broadcastProxy = data => {
+  console.log("broadcastproxy");
   return new Promise((resolve, reject) => {
     const ac = accountsList.get(data.username);
     const key_proxy = ac.getKey("active");
