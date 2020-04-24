@@ -215,6 +215,17 @@ $("#send_witness_vote").click(function() {
   );
 });
 
+$("#send_proxy").click(function() {
+  hive_keychain.requestProxy(
+    $("#proxy_username").val(),
+    $("#proxy").val() ? $("#proxy").val() : "",
+    function(response) {
+      console.log("main js response - proxy");
+      console.log(response);
+    }
+  );
+});
+
 $("#send_pu").click(function() {
   hive_keychain.requestPowerUp(
     $("#pu_username").val(),

@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.8.3",
+  "version": "1.8.4",
   "permissions": [
     "storage", "tabs", "notifications", "idle", "webNavigation"
   ],
@@ -11,8 +11,7 @@
     "default_icon": "images/iconhive.png"
   },
   "icons": {
-    "16": "images/iconhive.png",
-    "32": "images/iconhive.png"
+    "128": "images/iconhive.png"
   },
   "background": {
     "scripts": [
@@ -48,6 +47,7 @@
       "js/background/ops/transfer.js",
       "js/background/ops/vote.js",
       "js/background/ops/witness.js",
+      "js/background/ops/proxy.js",
       "js/background/transactions.js",
       "js/background/keychainify.js"
     ],

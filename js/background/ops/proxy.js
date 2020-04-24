@@ -1,12 +1,11 @@
-const broadcastWitnessVote = data => {
+const broadcastProxy = data => {
   return new Promise((resolve, reject) => {
     const ac = accountsList.get(data.username);
-    const key_witness = ac.getKey("active");
-    steem.broadcast.accountWitnessVote(
-      key_witness,
+    const key_proxy = ac.getKey("active");
+    steem.broadcast.accountWitnessProxy(
+      key_proxy,
       data.username,
-      data.witness,
-      data.vote ? 1 : 0,
+      data.proxy,
       (err, result) => {
         console.log(result, err);
         const err_message = beautifyErrorMessage(err);
@@ -14,9 +13,9 @@ const broadcastWitnessVote = data => {
           err,
           result,
           data,
-          data.vote
-            ? chrome.i18n.getMessage("bgd_ops_witness_voted", [data.witness])
-            : chrome.i18n.getMessage("bgd_ops_witness_unvoted", [data.witness]),
+          data.proxy.length
+            ? chrome.i18n.getMessage("popup_success_proxy", [data.proxy])
+            : chrome.i18n.getMessage("bgd_ops_unproxy"),
           err_message
         );
         resolve(message);

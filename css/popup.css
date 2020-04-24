@@ -352,7 +352,7 @@ input:focus {
 }
 
 .success_div {
-  background-color: rgba(0, 156, 156, 0.74);
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 #forgot_div,
@@ -413,7 +413,7 @@ input:focus {
 .checkbox_memo .checkbox_container div {
   font-size: 20px;
   padding-top: 10px;
-  color: #009C9C;
+  color: white;
 }
 
 .checkbox_memo {
@@ -436,7 +436,7 @@ input:focus {
 
 .checkbox_container div {
   margin-top: 5px;
-  color: #006060;
+  color: white;
 }
 
 .checkbox_container div:first-of-type {
@@ -480,7 +480,7 @@ input:focus {
   top: 6.4px;
   width: 6.4px;
   height: 11.8px;
-  border: solid #009C9C;
+  border: solid white;
   border-width: 0 3px 3px 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
@@ -980,9 +980,16 @@ input:focus {
 
 ::-webkit-scrollbar {
   width: 0px;
-  /* remove scrollbar space */
   background: transparent;
-  /* optional: just make scrollbar invisible */
+}
+
+.show-scroll::-webkit-scrollbar {
+  width: 3px;
+}
+
+.show-scroll::-webkit-scrollbar-thumb {
+  background: #E31337;
+  width: 3px !important;
 }
 
 /* optional: show position indicator in red */
@@ -1003,7 +1010,7 @@ input:focus {
 }
 
 .transfer_row span:nth-child(odd) {
-  width: 186px;
+  width: 183px;
 }
 
 .transfer_date,
@@ -1438,7 +1445,7 @@ input:focus {
   font-size: 20px;
   padding-top: 18px;
   padding-left: 32px;
-  color: #88F7FB;
+  color: white;
 }
 
 #proxy div {
@@ -1447,7 +1454,7 @@ input:focus {
 
 #proxy div::after {
   content: "";
-  background-image: url("../images/close.png");
+  background-image: url("../images/delete.png");
   background-size: 18px 18px;
   display: inline-block;
   background-repeat: no-repeat;
@@ -1470,7 +1477,6 @@ input:focus {
 
 #list_wit,
 #top100_div {
-  scrollbar-width: none;
   max-height: 290px;
   margin-top: 16px;
   margin-left: -32px;
@@ -1748,7 +1754,7 @@ input:focus {
 
 .line_outgoing span:first-of-type {
   display: inline-block;
-  width: 150px;
+  width: 147px;
 }
 
 .line_outgoing span:last-of-type {

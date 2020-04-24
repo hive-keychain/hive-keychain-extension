@@ -78,6 +78,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       transfer: chrome.i18n.getMessage("dialog_title_transfer"),
       delegation: chrome.i18n.getMessage("dialog_title_delegation"),
       witnessVote: chrome.i18n.getMessage("dialog_title_wit"),
+      proxy: chrome.i18n.getMessage("dialog_title_proxy"),
       sendToken: chrome.i18n.getMessage("dialog_title_token"),
       powerUp: chrome.i18n.getMessage("dialog_title_powerup"),
       powerDown: chrome.i18n.getMessage("dialog_title_powerdown"),
@@ -91,51 +92,41 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     var title = titles[type];
     console.log(msg);
     $("#dialog_header").html(title + (msg.testnet ? " (TESTNET)" : ""));
-    if (msg.domain === "steemit.com") {
-      $.get(
-        "https://api.steemplus.app/steemitBlock",
-        function(data) {
-          if (data.text) {
-            $("#steemit").show();
-            $("#steemit p").text(data.text);
-            $("#mod_content").hide();
-            if (!data.lock) {
-              $("#steemit").append(`<button>Ok</button>`);
-              $("#steemit button").click(() => {
-                $("#mod_content").show();
-                $("#steemit").hide();
-              });
-            }
-          }
-        },
-        "json"
-      );
-    }
+
     if (msg.data.display_msg) {
       $("#modal-body-msg .msg-data").css("max-height", "245px");
       $("#dialog_message").show();
       $("#dialog_message").html(msg.data.display_msg);
     }
 
-    if (type == "transfer") {
+    if (msg.accounts) {
       $("#modal-body-msg .msg-data").css("max-height", "200px");
-      let accounts = msg.accounts;
-      console.log(accounts, msg.data.username);
-      if (msg.data.username !== undefined) {
-        let i = msg.accounts.findIndex(function(elt) {
-          return elt == msg.data.username;
-        });
-
-        let first = [accounts[i]];
-        delete accounts[i];
-        accounts = first.concat(accounts);
-        console.log(accounts);
-      }
-      for (acc of accounts) {
-        if (acc != undefined)
-          $("#select_transfer").append("<option>" + acc + "</option>");
-      }
-      initiateCustomSelect(msg.data);
+      chrome.storage.local.get(["last_chosen_account"], function(items) {
+        let accounts = msg.accounts;
+        console.log(items);
+        console.log(accounts, msg.data.username);
+        if (msg.data.username) {
+          let i = msg.accounts.findIndex(function(elt) {
+            return elt == msg.data.username;
+          });
+          let first = [accounts[i]];
+          delete accounts[i];
+          accounts = first.concat(accounts);
+        } else if (items.last_chosen_account) {
+          console.log(items.last_chosen_account);
+          let i = msg.accounts.findIndex(function(elt) {
+            return elt == items.last_chosen_account;
+          });
+          let first = [accounts[i]];
+          delete accounts[i];
+          accounts = first.concat(accounts);
+        }
+        for (acc of accounts) {
+          if (acc != undefined)
+            $("#select_transfer").append("<option>" + acc + "</option>");
+        }
+        initiateCustomSelect(msg.data);
+      });
     }
     var message = "";
     $("." + type).show();
@@ -144,7 +135,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     $("#modal-content").css("align-items", "flex-start");
     const keyVerifyAction =
       msg.data.type == "decode" || msg.data.type == "signBuffer";
-    if (msg.data.key !== "active" && msg.data.type != "transfer") {
+    if (
+      msg.data.key !== "active" &&
+      !["transfer", "witnessVote", "delegation", "proxy"].includes(
+        msg.data.type
+      )
+    ) {
       $("#keep_div").show();
       var prompt_msg = keyVerifyAction
         ? chrome.i18n.getMessage("dialog_no_prompt_verify", [
@@ -328,13 +324,18 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         }
         break;
       case "delegation":
+        showDropdownIfNoUsername(msg);
         $("#delegatee").text("@" + msg.data.delegatee);
         $("#amt_sp").text(msg.data.amount + " " + msg.data.unit);
         break;
       case "witnessVote":
-        console.log(msg.data);
+        showDropdownIfNoUsername(msg);
         $("#witness").html(msg.data.witness);
         $("#voteWit").html(JSON.stringify(msg.data.vote));
+        break;
+      case "proxy":
+        showDropdownIfNoUsername(msg);
+        $("#proxy").html(msg.data.proxy.length ? msg.data.proxy : "None");
         break;
       case "sendToken":
         showBalances(msg.data.username, msg.data.currency, msg.data.amount);
@@ -374,8 +375,16 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     // Closes the window and launch the transaction in background
     $("#proceed").click(function() {
       let data = msg.data;
-      if (data.type == "transfer" && !enforce)
-        data.username = $("#select_transfer option:selected").val();
+      if (
+        (data.type === "transfer" && !enforce) ||
+        (["witnessVote", "delegation", "proxy"].includes(data.type) &&
+          !data.username)
+      )
+        chrome.storage.local.set({
+          last_chosen_account: $("#select_transfer option:selected").val()
+        });
+      // if transfer account is not enforced or no username is specified for witness vote / delegation
+      data.username = $("#select_transfer option:selected").val();
       chrome.runtime.sendMessage({
         command: "acceptTransaction",
         data: data,
@@ -383,7 +392,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         domain: msg.domain,
         keep: $("#keep").is(":checked")
       });
-      if (type == "decode" || type == "signBuffer") window.close();
+      if (type === "decode" || type === "signBuffer") window.close();
       else {
         $("#confirm_footer").hide();
         $("#modal-body-msg").hide();
@@ -396,10 +405,10 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     $("#cancel").click(function() {
       window.close();
     });
-  } else if (msg.command == "answerRequest") {
+  } else if (msg.command === "answerRequest") {
     $("#tx_loading").hide();
     $("#dialog_header").text(
-      msg.msg.success == true
+      msg.msg.success
         ? `${chrome.i18n.getMessage("dialog_header_success")} !`
         : `${chrome.i18n.getMessage("dialog_header_error")} !`
     );
@@ -546,3 +555,13 @@ function initiateCustomSelect(data) {
   then close all select boxes:*/
   document.addEventListener("click", closeAllSelect);
 }
+
+const showDropdownIfNoUsername = msg => {
+  if (!msg.data.username) {
+    $("#username").hide();
+    $("#username")
+      .prev()
+      .hide();
+    $("#transfer_acct_list").show();
+  }
+};
