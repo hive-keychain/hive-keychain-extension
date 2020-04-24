@@ -52,6 +52,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     );
     $("#error_dialog").hide();
   } else if (msg.command == "sendDialogConfirm") {
+    console.log(msg.data);
     let enforce = null;
     let encode = null;
     // Display confirmation window
@@ -375,16 +376,18 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     // Closes the window and launch the transaction in background
     $("#proceed").click(function() {
       let data = msg.data;
+      console.log(data);
       if (
         (data.type === "transfer" && !enforce) ||
         (["witnessVote", "delegation", "proxy"].includes(data.type) &&
           !data.username)
-      )
+      ) {
         chrome.storage.local.set({
           last_chosen_account: $("#select_transfer option:selected").val()
         });
-      // if transfer account is not enforced or no username is specified for witness vote / delegation
-      data.username = $("#select_transfer option:selected").val();
+        // if transfer account is not enforced or no username is specified for witness vote / delegation
+        data.username = $("#select_transfer option:selected").val();
+      }
       chrome.runtime.sendMessage({
         command: "acceptTransaction",
         data: data,
