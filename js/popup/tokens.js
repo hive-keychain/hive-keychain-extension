@@ -51,7 +51,6 @@ getTokens().then(function(tok) {
       const nameToken = $(this)
         .prevAll(".symbol_token")
         .html();
-      console.log(hidden_tokens);
       if ($(this).is(":checked")) {
         hidden_tokens = hidden_tokens.filter(function(value, index, arr) {
           return value != nameToken;
@@ -139,7 +138,6 @@ function showTokenBalances() {
           history
         ) {
           for (elt of history) {
-            console.log(elt);
             const date = new Date(elt.timestamp * 1000);
             const timestamp =
               date.getMonth() +
@@ -151,7 +149,7 @@ function showTokenBalances() {
 
             var history_row = $(
               "<div class='history_tokens_row " +
-                (elt.memo != null ? "history_row_memo" : "") +
+                (elt.memo ? "history_row_memo" : "") +
                 "'>\
 										<span class='history_date ' title='" +
                 elt.timestamp +
@@ -178,7 +176,7 @@ function showTokenBalances() {
 
             var memo_element = $("<div class='history_memo'></div>");
             memo_element.text(elt.memo);
-
+            history_row.append(memo_element);
             $("#history_tokens_rows").append(history_row);
           }
           $("#loading_history_token").hide();
@@ -189,10 +187,11 @@ function showTokenBalances() {
                 $(this)
                   .find(".history_memo")
                   .html() != "null"
-              )
+              ) {
                 $(this)
                   .find(".history_memo")
                   .toggle();
+              }
             });
         });
       });
@@ -336,7 +335,7 @@ function getTokenHistory(account, limit, offset, currency) {
         fulfill(tokenHistory);
       },
       error: function(msg) {
-        console.log(msg);
+        console.log("error", msg);
         reject(msg);
       }
     });
