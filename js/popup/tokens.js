@@ -1,9 +1,9 @@
 let tokens = [];
 let accountTokenBalances = [];
-const urlSSC = ["https://api.steem-engine.com/rpc"];
+const urlSSC = ["https://api.hive-engine.com/rpc"];
 const ssc = new SSC(urlSSC[0]);
 let hidden_tokens = [];
-const steemEngine = "https://api.steem-engine.com/accounts";
+const hiveEngine = "https://accounts.hive-engine.com/accountHistory?account=";
 const CHAIN_ID = config.mainNet;
 // TODO : extract token logic
 chrome.storage.local.get(["hidden_tokens"], function(items) {
@@ -139,7 +139,8 @@ function showTokenBalances() {
           history
         ) {
           for (elt of history) {
-            const date = new Date(elt.timestamp);
+            console.log(elt);
+            const date = new Date(elt.timestamp * 1000);
             const timestamp =
               date.getMonth() +
               1 +
@@ -177,7 +178,6 @@ function showTokenBalances() {
 
             var memo_element = $("<div class='history_memo'></div>");
             memo_element.text(elt.memo);
-            history_row.append(memo_element);
 
             $("#history_tokens_rows").append(history_row);
           }
@@ -331,16 +331,7 @@ function getTokenHistory(account, limit, offset, currency) {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url:
-        steemEngine +
-        "/history?account=" +
-        account +
-        "&limit=" +
-        limit +
-        "&offset=" +
-        offset +
-        "&type=user&symbol=" +
-        currency,
+      url: `${hiveEngine}${account}&limit=${limit}&offset=${offset}&type=user&symbol=${currency}`,
       success: function(tokenHistory) {
         fulfill(tokenHistory);
       },

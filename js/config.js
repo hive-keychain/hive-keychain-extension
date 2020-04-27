@@ -1,3 +1,3 @@
 let config = {
-  mainNet: "ssc-mainnet1"
+  mainNet: "ssc-mainnet-hive"
 };
