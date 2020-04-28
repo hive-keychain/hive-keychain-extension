@@ -90,6 +90,7 @@ const sendResponse = response => {
 
 const validate = () => {
   console.log(req);
+  console.log(req.type == "signTx", isFilled(req.tx), isFilled(req.method));
   return (
     req != null &&
     req != undefined &&
@@ -144,6 +145,7 @@ const validate = () => {
       (req.type == "broadcast" &&
         isFilled(req.operations) &&
         isFilled(req.method)) ||
+      (req.type == "signTx" && isFilled(req.tx) && isFilled(req.method)) ||
       (req.type == "signedCall" &&
         isFilled(req.method) &&
         isFilled(req.params) &&

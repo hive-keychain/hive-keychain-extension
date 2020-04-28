@@ -1,6 +1,7 @@
 const performTransaction = async (data, tab, no_confirm) => {
   let message = null;
   try {
+    console.log("-- PERFORMING TRANSACTION --");
     console.log(data);
     if (data.rpc) rpc.setOptions(data.rpc, true);
     switch (data.type) {
@@ -69,6 +70,9 @@ const performTransaction = async (data, tab, no_confirm) => {
         break;
       case "signBuffer":
         message = await signBuffer(data);
+        break;
+      case "signTx":
+        message = await signTx(data);
         break;
     }
     chrome.tabs.sendMessage(tab, message);

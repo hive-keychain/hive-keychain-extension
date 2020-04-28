@@ -123,6 +123,18 @@ var hive_keychain = {
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
+  requestSignTx: function(account, tx, key, callback, rpc) {
+    var request = {
+      type: "signTx",
+      username: account,
+      tx,
+      method: key,
+      rpc
+    };
+
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
+  },
+
   requestSignedCall: function(account, method, params, key, callback, rpc) {
     console.log("getting request");
     var request = {

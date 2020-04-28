@@ -687,12 +687,16 @@
     "message": "Custom Transaction",
     "description": "On preferences, list of rights that were given to some websites."
   },
+  "popup_sign_tx": {
+    "message": "Sign Transaction",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
   "popup_decode": {
     "message": "Verify Key",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_sign_buffer": {
-    "message": "Sign",
+    "message": "Sign Message",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_signed_call": {
@@ -970,6 +974,10 @@
     "message": "Broadcast",
     "description": "Website request title"
   },
+  "dialog_title_sign_tx": {
+    "message": "Sign Transaction",
+    "description": "Website request title"
+  },
   "dialog_title_call": {
     "message": "Signed Call",
     "description": "Website request title"
@@ -1173,6 +1181,9 @@
   },
   "bgd_ops_broadcast": {
     "message": "The transaction has been broadcasted successfully."
+  },
+  "bgd_ops_sign_tx": {
+    "message": "The transaction has been signed successfully."
   },
   "bgd_ops_create_account": {
     "message": "Succesfully created account @$1."

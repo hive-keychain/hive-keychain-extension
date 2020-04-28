@@ -127,6 +127,18 @@ $("#send_signature").click(function() {
   );
 });
 
+$("#send_sign_tx").click(function() {
+  hive_keychain.requestSignTx(
+    $("#tx_username").val(),
+    $("#tx").val(),
+    $("#tx_type option:selected").text(),
+    function(response) {
+      console.log("main js response - tx");
+      console.log(response);
+    }
+  );
+});
+
 $("#send_addauth").click(function() {
   hive_keychain.requestAddAccountAuthority(
     $("#addauth_username").val(),
