@@ -52,11 +52,11 @@ let contentScript = {
     },
 
     /**
-     * Verify all anchors to find scammy links
+     * Verify all anchors to find HiveSigner links
      */
     checkAnchors: function() {
       let anchors = document.querySelectorAll(
-        "a[href]:not(.steem-keychain-checked)"
+        "a[href]:not(.keychainify-checked)"
       );
 
       for (let i = 0; i < anchors.length; i++) {
@@ -64,7 +64,7 @@ let contentScript = {
 
         if (
           anchor.href &&
-          !anchor.classList.contains("steem-keychain-checked") && // That was not checked before
+          !anchor.classList.contains("keychainify-checked") && // That was not checked before
           keychainify.isUrlSupported(anchor.href)
         ) {
           anchor.addEventListener("click", async function(e) {
@@ -78,7 +78,7 @@ let contentScript = {
           });
         }
 
-        anchor.classList.add("steem-keychain-checked");
+        anchor.classList.add("keychainify-checked");
       }
     },
 
