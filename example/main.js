@@ -130,7 +130,7 @@ $("#send_signature").click(function() {
 $("#send_sign_tx").click(function() {
   hive_keychain.requestSignTx(
     $("#tx_username").val(),
-    $("#tx").val(),
+    JSON.parse($("#tx").val()),
     $("#tx_type option:selected").text(),
     function(response) {
       console.log("main js response - tx");
