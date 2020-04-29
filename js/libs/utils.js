@@ -359,14 +359,14 @@ function initiateCustomSelect(options, current_rpc) {
           last_account: this.innerHTML
         });
         loadAccount(this.innerHTML, options);
-      } else if (this.innerHTML == "HBD") {
+      } else if (this.innerHTML === "HBD") {
         $(".transfer_balance div")
           .eq(0)
           .text(chrome.i18n.getMessage("popup_html_balance", ["HBD"]));
         $(".transfer_balance div")
           .eq(1)
           .html(numberWithCommas(await activeAccount.getHBD()));
-      } else if (this.innerHTML == "HIVE") {
+      } else if (this.innerHTML === "HIVE") {
         $(".transfer_balance div")
           .eq(0)
           .text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
@@ -388,9 +388,10 @@ function initiateCustomSelect(options, current_rpc) {
           .parent()
           .attr("id") == "custom_select_rpc"
       ) {
-        if (this.innerHTML !== chrome.i18n.getMessage("popup_rpc_add"))
+        if (this.innerHTML !== chrome.i18n.getMessage("popup_rpc_add")) {
+          chrome.storage.local.set({current_rpc: this.innerHTML});
           switchRPC(this.innerHTML);
-        else {
+        } else {
           showCustomRPC();
           $("#pref_div").hide();
           $("#add_rpc_div").show();

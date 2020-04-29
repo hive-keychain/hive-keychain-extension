@@ -6,7 +6,6 @@ class Rpcs {
     this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
     this.list = this.initList();
   }
-
   async initList() {
     let listRPC = [];
     const RPCs = [
@@ -15,13 +14,17 @@ class Rpcs {
       "https://api.openhive.network/",
       "https://api.hivekings.com/",
       "https://anyx.io/",
+      "https://api.pharesim.me/",
+      "https://hived.hive-engine.com/",
+      "https://hived.privex.io/",
       "TESTNET"
     ];
+
     return new Promise(resolve => {
-      chrome.storage.local.get(["rpc"], items => {
+      chrome.storage.local.get(["rpc", "current_rpc"], items => {
         const local = items.rpc;
         listRPC = local != undefined ? JSON.parse(local).concat(RPCs) : RPCs;
-        const currentrpc = this.current_rpc || "DEFAULT";
+        const currentrpc = items.current_rpc || "DEFAULT";
         const list = [currentrpc].concat(
           listRPC.filter(e => {
             return e != currentrpc;
