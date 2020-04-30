@@ -43,6 +43,7 @@
       "js/background/ops/proposals.js",
       "js/background/ops/signBuffer.js",
       "js/background/ops/signedCall.js",
+      "js/background/ops/signTx.js",
       "js/background/ops/tokens.js",
       "js/background/ops/transfer.js",
       "js/background/ops/vote.js",

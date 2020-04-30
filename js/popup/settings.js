@@ -34,6 +34,7 @@ function setPreferences(name) {
         var display_names = {
           broadcast: chrome.i18n.getMessage("popup_broadcast"),
           addAccountAuthority: chrome.i18n.getMessage("popup_add_auth"),
+          signTx: chrome.i18n.getMessage("popup_sign_tx"),
           removeAccountAuthority: chrome.i18n.getMessage("popup_remove_auth"),
           custom: chrome.i18n.getMessage("popup_custom"),
           decode: chrome.i18n.getMessage("popup_decode"),
