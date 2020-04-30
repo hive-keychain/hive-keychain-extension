@@ -14,9 +14,15 @@ const keychainify = {
           const featureStatus =
             items.hasOwnProperty("keychainify_enabled") &&
             items.keychainify_enabled;
+          console.log(
+            "a",
+            items.hasOwnProperty("keychainify_enabled"),
+            items.keychainify_enabled
+          );
           resolve(featureStatus);
         });
       } catch (err) {
+        console.log(err);
         reject(err);
       }
     });
@@ -38,6 +44,7 @@ const keychainify = {
     } else {
       url = tab.url;
     }
+    console.log("url", url);
     const vars = keychainify.getVarsFromURL(url);
     let payload = {},
       defaults = {};
