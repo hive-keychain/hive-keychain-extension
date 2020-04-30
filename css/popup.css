@@ -900,13 +900,10 @@ input:focus {
 }
 
 #tokens {
-  display: none;
   background-image: url("../images/btn-bg_tokens.png");
-  margin-right: 0px;
 }
 
 #witness {
-  width: 100%;
   background-image: url("../images/solo.png");
 }
 
@@ -1898,7 +1895,7 @@ input:focus {
 
 .name_token {
   font-size: 18px;
-  width: 90%;
+  width: 100%;
   font-weight: bold;
 }
 
@@ -1909,7 +1906,7 @@ input:focus {
 #tok {
   display: inline-block;
   width: 108px !important;
-  background-color: rgba(33, 172, 204, 0.75);
+  background-color: #7E8C9A;
   padding-top: 15px;
   padding-bottom: 11px;
   text-align: center;
@@ -1986,7 +1983,7 @@ input:focus {
 }
 
 .history_tokens_row span:nth-child(odd) {
-  width: 180px;
+  width: 170px;
 }
 
 .transfer_date,
@@ -1995,7 +1992,7 @@ input:focus {
 }
 
 .history_tokens_row span:nth-child(even) {
-  width: 100px;
+  width: 109px;
   text-align: right;
 }
 
@@ -2064,4 +2061,8 @@ input:focus {
 
 input[type="checkbox"] {
   display: none;
+}
+
+#tokens_settings_div a:visited {
+  color: inherit;
 }

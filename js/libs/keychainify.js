@@ -14,9 +14,11 @@ const keychainify = {
           const featureStatus =
             items.hasOwnProperty("keychainify_enabled") &&
             items.keychainify_enabled;
+
           resolve(featureStatus);
         });
       } catch (err) {
+        console.log(err);
         reject(err);
       }
     });
@@ -102,7 +104,6 @@ const keychainify = {
           witness: null,
           approve: "1"
         };
-        console.log("wit vote");
         vars.approve = ["false", "0"].includes(vars.approve) ? "0" : "1";
         payload = Object.assign(defaults, vars);
         keychainify.requestWitnessVote(
@@ -247,7 +248,6 @@ const keychainify = {
     };
     if (username) request.username = username;
     if (delegatee && amount !== undefined && unit) {
-      console.log(request);
       keychainify.dispatchRequest(tab, request);
     } else {
       console.error("[keychainify] Missing parameters for delegation");

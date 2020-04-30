@@ -88,7 +88,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       ),
       createProposal: chrome.i18n.getMessage("dialog_title_create_proposal"),
       removeProposal: chrome.i18n.getMessage("dialog_title_remove_proposal"),
-      updateProposalVote: chrome.i18n.getMessage("dialog_title_vote_proposal")
+      updateProposalVote: chrome.i18n.getMessage("dialog_title_vote_proposal"),
+      signTx: chrome.i18n.getMessage("dialog_title_sign_tx")
     };
     var title = titles[type];
     console.log(msg);
@@ -135,7 +136,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     $("#username").text("@" + msg.data.username);
     $("#modal-content").css("align-items", "flex-start");
     const keyVerifyAction =
-      msg.data.type == "decode" || msg.data.type == "signBuffer";
+      msg.data.type === "decode" ||
+      msg.data.type === "signBuffer" ||
+      msg.data.type === "signTx";
     if (
       msg.data.key !== "active" &&
       !["transfer", "witnessVote", "delegation", "proxy"].includes(
@@ -220,6 +223,13 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
           $("#custom_json").slideToggle();
         });
         $("#custom_json").html(JSON.stringify(msg.data.operations));
+        $("#custom_key").text(msg.data.method);
+        break;
+      case "signTx":
+        $("#custom_data").click(function() {
+          $("#custom_json").slideToggle();
+        });
+        $("#custom_json").html(JSON.stringify(msg.data.tx.operations));
         $("#custom_key").text(msg.data.method);
         break;
       case "createClaimedAccount":
