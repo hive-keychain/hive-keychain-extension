@@ -212,13 +212,16 @@ const checkBeforeCreate = (request, tab, domain) => {
 const hasNoConfirm = (arr, data, domain, current_rpc) => {
   try {
     if (
-      data.method.toLocaleLowerCase() === "active" ||
+      (data.method && data.method.toLowerCase() === "active") ||
       arr == undefined ||
       current_rpc === "TESTNET" ||
       domain === "steemit.com"
     ) {
       return false;
-    } else return JSON.parse(arr)[data.username][domain][data.type] == true;
+    } else {
+      console.log("consider");
+      return JSON.parse(arr)[data.username][domain][data.type] == true;
+    }
   } catch (e) {
     console.log(e);
     return false;
