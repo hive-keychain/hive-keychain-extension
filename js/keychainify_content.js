@@ -1,6 +1,6 @@
 let contentScript = {
   init: function() {
-    contentScript.process.checkAnchors();
+    contentScript.process.init();
   },
 
   /**
@@ -30,7 +30,7 @@ let contentScript = {
         (function(process) {
           return function(mutations) {
             mutations.forEach(function(mutation) {
-              // Preventing multipl calls to checkAnchors()
+              // Preventing multiple calls to checkAnchors()
               if (process.observerTimer) {
                 window.clearTimeout(process.observerTimer);
               }
@@ -52,11 +52,11 @@ let contentScript = {
     },
 
     /**
-     * Verify all anchors to find scammy links
+     * Verify all anchors to find HiveSigner links
      */
     checkAnchors: function() {
       let anchors = document.querySelectorAll(
-        "a[href]:not(.steem-keychain-checked)"
+        "a[href]:not(.keychainify-checked)"
       );
 
       for (let i = 0; i < anchors.length; i++) {
@@ -64,21 +64,24 @@ let contentScript = {
 
         if (
           anchor.href &&
-          !anchor.classList.contains("steem-keychain-checked") && // That was not checked before
+          !anchor.classList.contains("keychainify-checked") && // That was not checked before
           keychainify.isUrlSupported(anchor.href)
         ) {
           anchor.addEventListener("click", async function(e) {
             e.preventDefault();
+            e.stopPropagation();
 
             if (await keychainify.isKeychainifyEnabled()) {
               keychainify.keychainifyUrl(this.href);
             } else {
               window.location.href = this.href;
             }
+
+            return false;
           });
         }
 
-        anchor.classList.add("steem-keychain-checked");
+        anchor.classList.add("keychainify-checked");
       }
     },
 
