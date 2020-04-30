@@ -27,7 +27,8 @@ const keychainify = {
   isUrlSupported: function(url) {
     return url.includes("hivesigner.com/sign/transfer")
       || url.includes("hivesigner.com/sign/account-witness-vote")
-      || url.includes("hivesigner.com/sign/delegate-vesting-shares");
+      || url.includes("hivesigner.com/sign/delegate-vesting-shares")
+      || url.includes("hivesigner.com/sign/account-witness-proxy");
   },
 
   /**

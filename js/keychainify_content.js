@@ -1,6 +1,6 @@
 let contentScript = {
   init: function() {
-    contentScript.process.checkAnchors();
+    contentScript.process.init();
   },
 
   /**
@@ -30,7 +30,7 @@ let contentScript = {
         (function(process) {
           return function(mutations) {
             mutations.forEach(function(mutation) {
-              // Preventing multipl calls to checkAnchors()
+              // Preventing multiple calls to checkAnchors()
               if (process.observerTimer) {
                 window.clearTimeout(process.observerTimer);
               }
@@ -69,12 +69,15 @@ let contentScript = {
         ) {
           anchor.addEventListener("click", async function(e) {
             e.preventDefault();
+            e.stopPropagation();
 
             if (await keychainify.isKeychainifyEnabled()) {
               keychainify.keychainifyUrl(this.href);
             } else {
               window.location.href = this.href;
             }
+
+            return false;
           });
         }
 
