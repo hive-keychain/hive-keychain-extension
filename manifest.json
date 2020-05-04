@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.9",
+  "version": "1.9.0.1",
   "permissions": [
     "storage", "tabs", "notifications", "idle", "webNavigation"
   ],
