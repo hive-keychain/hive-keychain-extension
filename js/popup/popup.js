@@ -164,6 +164,7 @@ function initializeMainMenu(options) {
   chrome.storage.local.get(
     ["accounts", "last_account", "current_rpc", "transfer_to"],
     async function(items) {
+      console.log("init", items.current_rpc);
       loadRPC(items.current_rpc);
       to_autocomplete = items.transfer_to ? JSON.parse(items.transfer_to) : {};
       accountsList.init(decryptToJson(items.accounts, mk), items.last_account);

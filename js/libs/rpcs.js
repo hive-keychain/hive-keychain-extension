@@ -36,7 +36,7 @@ class Rpcs {
   }
 
   async getList() {
-    return await this.list;
+    return await this.initList();
   }
 
   async setOptions(rpc, awaitRollback = false) {
