@@ -121,7 +121,7 @@ NOTE: On localhost, it will only run on port 1337.
 
 ## Operations
 
-
+The Hive Keychain extension will inject a "hive_keychain" JavaScript into all web pages opened in the browser while the extension is running. You can therefore check if the current user has the extension installed using the following code:
 
 
 ### hive_keychain
@@ -146,7 +146,7 @@ This function is called to verify that the user has a certain authority over an 
 -   `message` **[String][55]** Message to be decoded by the account
 -   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestSignBuffer
 
@@ -158,7 +158,7 @@ Requests a message to be signed with proper authority
 -   `message` **[String][55]** Message to be signed by the account
 -   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestAddAccountAuthority
 
@@ -171,7 +171,7 @@ Requests to add account authority over another account. For more information abo
 -   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'
 -   `weight` **[number][57]** Weight of the authority
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestRemoveAccountAuthority
 
@@ -183,7 +183,7 @@ Requests to remove an account authority over another account. For more informati
 -   `authorizedUsername` **[String][55]** Account to lose authority
 -   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestAddKeyAuthority
 
@@ -196,7 +196,7 @@ Requests to add a new key authority to an account. For more information about mu
 -   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'
 -   `weight` **[number][57]** Weight of the key authority
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestRemoveKeyAuthority
 
@@ -208,7 +208,7 @@ Requests to remove a key to an account. For more information about multisig, ple
 -   `authorizedKey` **[String][55]** Key to be removed (public key).
 -   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'.
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestBroadcast
 
@@ -220,7 +220,7 @@ Generic broadcast request
 -   `operations` **[Array][58]** Array of operations to be broadcasted
 -   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestSignTx
 
@@ -232,7 +232,7 @@ Requests to sign a transaction with a given authority
 -   `tx` **[Object][59]** Unsigned transaction
 -   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestSignedCall
 
@@ -245,7 +245,7 @@ Requests a signed call
 -   `params` **[String][55]** Parameters of the call
 -   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestPost
 
@@ -262,7 +262,7 @@ Requests to broadcast a blog post/comment
 -   `permlink` **[String][55]** Permlink of the blog post
 -   `comment_options` **[Object][59]** Options attached to the blog post. Consult Hive documentation to learn more about it
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestVote
 
@@ -275,7 +275,7 @@ Requests a vote
 -   `author` **[String][55]** Author of the blog post
 -   `weight` **[String][55]** Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestCustomJson
 
@@ -289,7 +289,7 @@ Requests a custom JSON broadcast
 -   `json` **[String][55]** Stringified custom json
 -   `display_msg` **[String][55]** Message to display to explain to the user what this broadcast is about
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestTransfer
 
@@ -303,8 +303,8 @@ Requests a transfer
 -   `memo` **[String][55]** The memo will be automatically encrypted if starting by '#' and the memo key is available on Keychain. It will also overrule the account to be enforced, regardless of the 'enforce' parameter
 -   `currency` **[String][55]** 'HIVE' or 'HBD'
 -   `callback` **[function][54]** Keychain's response to the request
--   `enforce` **[boolean][60]** Optional : If set to true, user cannot chose to make the transfer from another account (optional, default `false`)
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `enforce` **[boolean][60]** If set to true, user cannot chose to make the transfer from another account (optional, default `false`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestDelegation
 
@@ -317,7 +317,7 @@ Requests a delegation broadcast
 -   `amount` **[number][57]** Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
 -   `unit` **[String][55]** HP or VESTS
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestWitnessVote
 
@@ -329,7 +329,7 @@ Requests a witness vote broadcast
 -   `witness` **[String][55]** Account to receive the witness vote
 -   `vote` **[boolean][60]** Set to true to vote for the witness, false to unvote
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestProxy
 
@@ -340,7 +340,7 @@ Select an account as proxy
 -   `username` **[String][55]** Hive account to perform the request
 -   `proxy` **[String][55]** Account to become the proxy. Empty string ('') to remove a proxy
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestPowerUp
 
@@ -352,7 +352,7 @@ Request a power up
 -   `recipient` **[String][55]** Account to receive the power up
 -   `hive` **[number][57]** Amount of HIVE to be powered up
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestPowerDown
 
@@ -363,7 +363,7 @@ Request a power down
 -   `username` **[String][55]** Hive account to perform the request
 -   `hive_power` **[number][57]** Amount of HIVE to be powered down
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestCreateClaimedAccount
 
@@ -378,7 +378,7 @@ Request the creation of an account using claimed tokens
 -   `posting` **[object][59]** posting authority object
 -   `memo` **[String][55]** public memo key
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestCreateProposal
 
@@ -395,7 +395,7 @@ Request the creation of a DHF proposal
 -   `end` **[Date][61]** Ending date
 -   `extensions` **[Array][58]** 
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestRemoveProposal
 
@@ -407,7 +407,7 @@ Request the removal of a DHF proposal
 -   `proposal_ids` **[Array][58]** Ids of the proposals to be removed
 -   `extensions` **[Array][58]** 
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 #### requestUpdateProposalVote
 
@@ -420,7 +420,7 @@ Vote/Unvote a DHF proposal
 -   `approve` **[boolean][60]** Set to true to support the proposal, false to remove a vote
 -   `extensions` **[Array][58]** 
 -   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Optional : Override user's RPC settings (optional, default `null`)
+-   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
 
 [1]: #about-keychain
 
