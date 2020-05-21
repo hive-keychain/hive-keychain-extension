@@ -1,14 +1,26 @@
-// Content script interfacing the website and the extension
+/**
+ * Use the `hive_keychain` methods listed below to issue requests to the Hive blockchain.
+ */
 var hive_keychain = {
   current_id: 1,
   requests: {},
   handshake_callback: null,
-
+  /**
+   * This function is called to verify Keychain installation on a user's device
+   * @param {function} callback Confirms Keychain installation
+   */
   requestHandshake: function(callback) {
     this.handshake_callback = callback;
     this.dispatchCustomEvent("swHandshake_hive", "");
   },
-
+  /**
+   * This function is called to verify that the user has a certain authority over an account, by requesting to decode a message
+   * @param {String} account Hive account to perform the request
+   * @param {String} message Message to be decoded by the account
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestVerifyKey: function(account, message, key, callback, rpc) {
     var request = {
       type: "decode",
@@ -20,7 +32,14 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Requests a message to be signed with proper authority
+   * @param {String} account Hive account to perform the request
+   * @param {String} message Message to be signed by the account
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestSignBuffer: function(account, message, key, callback, rpc) {
     var request = {
       type: "signBuffer",
@@ -32,7 +51,15 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Requests to add account authority over another account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @param {String} account Hive account to perform the request
+   * @param {String} authorizedUsername Authorized account
+   * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
+   * @param {number} weight Weight of the authority
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestAddAccountAuthority: function(
     account,
     authorizedUsername,
@@ -53,7 +80,14 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Requests to remove an account authority over another account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @param {String} account Hive account to perform the request
+   * @param {String} authorizedUsername Account to lose authority
+   * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestRemoveAccountAuthority: function(
     account,
     authorizedUsername,
@@ -72,6 +106,15 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
+  /**
+   * Requests to add a new key authority to an account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @param {String} account Hive account to perform the request
+   * @param {String} authorizedKey New public key to be associated with the account
+   * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
+   * @param {number} weight Weight of the key authority
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestAddKeyAuthority: function(
     account,
     authorizedKey,
@@ -92,6 +135,14 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
+  /**
+   * Requests to remove a key to an account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @param {String} account Hive account to perform the request
+   * @param {String} authorizedKey Key to be removed (public key).
+   * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'.
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestRemoveKeyAuthority: function(
     account,
     authorizedKey,
@@ -110,7 +161,14 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Generic broadcast request
+   * @param {String} account Hive account to perform the request
+   * @param {Array} operations Array of operations to be broadcasted
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestBroadcast: function(account, operations, key, callback, rpc) {
     var request = {
       type: "broadcast",
@@ -122,7 +180,14 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Requests to sign a transaction with a given authority
+   * @param {String} account Hive account to perform the request
+   * @param {Object} tx Unsigned transaction
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestSignTx: function(account, tx, key, callback, rpc) {
     var request = {
       type: "signTx",
@@ -134,7 +199,15 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Requests a signed call
+   * @param {String} account Hive account to perform the request
+   * @param {String} method Method of the call
+   * @param {String} params Parameters of the call
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestSignedCall: function(account, method, params, key, callback, rpc) {
     console.log("getting request");
     var request = {
@@ -150,6 +223,19 @@ var hive_keychain = {
   },
 
   // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
+  /**
+   * Requests to broadcast a blog post/comment
+   * @param {String} account Hive account to perform the request
+   * @param {String} title Title of the blog post
+   * @param {String} body Content of the blog post
+   * @param {String} parent_perm Permlink of the parent post. Main tag for a root post
+   * @param {String} parent_account Author of the parent post. Pass null for root post
+   * @param {Object} json_metadata Parameters of the call
+   * @param {String} permlink Permlink of the blog post
+   * @param {Object} comment_options Options attached to the blog post. Consult Hive documentation to learn more about it
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestPost: function(
     account,
     title,
@@ -176,7 +262,15 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Requests a vote
+   * @param {String} account Hive account to perform the request
+   * @param {String} permlink Permlink of the blog post
+   * @param {String} author Author of the blog post
+   * @param {String} weight Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestVote: function(account, permlink, author, weight, callback, rpc) {
     var request = {
       type: "vote",
@@ -189,7 +283,16 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Requests a custom JSON broadcast
+   * @param {String} account Hive account to perform the request
+   * @param {String} id Type of custom_json to be broadcasted
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {String} json Stringified custom json
+   * @param {String} display_msg Message to display to explain to the user what this broadcast is about
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestCustomJson: function(
     account,
     id,
@@ -211,6 +314,17 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
+  /**
+   * Requests a transfer
+   * @param {String} account Hive account to perform the request
+   * @param {String} to Hive account to receive the transfer
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} memo The memo will be automatically encrypted if starting by '#' and the memo key is available on Keychain. It will also overrule the account to be enforced, regardless of the 'enforce' parameter
+   * @param {String} currency 'HIVE' or 'HBD'
+   * @param {function} callback Keychain's response to the request
+   * @param {boolean} [enforce=false] If set to true, user cannot chose to make the transfer from another account
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestTransfer: function(
     account,
     to,
@@ -253,6 +367,15 @@ var hive_keychain = {
   //   };
   //   this.dispatchCustomEvent("swRequest_hive", request, callback);
   // },
+  /**
+   * Requests a delegation broadcast
+   * @param {String} username Hive account to perform the request
+   * @param {String} delegatee Account to receive the delegation
+   * @param {number} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
+   * @param {String} unit HP or VESTS
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestDelegation: function(
     username,
     delegatee,
@@ -271,6 +394,14 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
+  /**
+   * Requests a witness vote broadcast
+   * @param {String} username Hive account to perform the request
+   * @param {String} witness Account to receive the witness vote
+   * @param {boolean} vote Set to true to vote for the witness, false to unvote
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestWitnessVote: function(username, witness, vote, callback, rpc) {
     var request = {
       type: "witnessVote",
@@ -281,6 +412,13 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
+  /**
+   * Select an account as proxy
+   * @param {String} username Hive account to perform the request
+   * @param {String} proxy Account to become the proxy. Empty string ('') to remove a proxy
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestProxy: function(username, proxy, callback, rpc) {
     console.log(username, proxy);
     var request = {
@@ -291,26 +429,51 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-  requestPowerUp: function(username, recipient, steem, callback, rpc) {
+  /**
+   * Request a power up
+   * @param {String} username Hive account to perform the request
+   * @param {String} recipient Account to receive the power up
+   * @param {number} hive Amount of HIVE to be powered up
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestPowerUp: function(username, recipient, hive, callback, rpc) {
     var request = {
       type: "powerUp",
       username,
       recipient,
-      steem,
+      steem: hive,
       rpc
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-  requestPowerDown: function(username, steem_power, callback, rpc) {
+  /**
+   * Request a power down
+   * @param {String} username Hive account to perform the request
+   * @param {number} hive_power Amount of HIVE to be powered down
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestPowerDown: function(username, hive_power, callback, rpc) {
     var request = {
       type: "powerDown",
       username,
-      steem_power,
+      steem_power: hive_power,
       rpc
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Request the creation of an account using claimed tokens
+   * @param {String} username Hive account to perform the request
+   * @param {String} new_account New account to be created
+   * @param {object} owner owner authority object
+   * @param {object} active active authority object
+   * @param {object} posting posting authority object
+   * @param {String} memo public memo key
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestCreateClaimedAccount: function(
     username,
     new_account,
@@ -336,6 +499,19 @@ var hive_keychain = {
   },
 
   //HF21
+  /**
+   * Request the creation of a DHF proposal
+   * @param {String} username Hive account to perform the request
+   * @param {String} receiver Account receiving the funding if the proposal is voted
+   * @param {String} subject Title of the DAO
+   * @param {String} permlink Permlink to the proposal description
+   * @param {number} daily_pay Daily amount to be received by `receiver`
+   * @param {Date} start Starting date
+   * @param {Date} end Ending date
+   * @param {Array} extensions
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestCreateProposal: function(
     username,
     receiver,
@@ -363,7 +539,14 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-
+  /**
+   * Request the removal of a DHF proposal
+   * @param {String} username Hive account to perform the request
+   * @param {Array} proposal_ids Ids of the proposals to be removed
+   * @param {Array} extensions
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestRemoveProposal: function(
     username,
     proposal_ids,
@@ -381,6 +564,15 @@ var hive_keychain = {
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
+  /**
+   * Vote/Unvote a DHF proposal
+   * @param {String} username Hive account to perform the request
+   * @param {Array} proposal_ids Ids of the proposals to be removed
+   * @param {boolean} approve Set to true to support the proposal, false to remove a vote
+   * @param {Array} extensions
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
   requestUpdateProposalVote: function(
     username,
     proposal_ids,

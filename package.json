@@ -1,0 +1,30 @@
+{
+  "name": "hive-keychain",
+  "version": "1.9.0",
+  "description": "Hive Keychain extension",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "doc": "documentation build js/hive_keychain.js -f md -c documentation.yml -o README.md"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stoodkev/hive-keychain.git"
+  },
+  "keywords": [
+    "hive",
+    "keychain",
+    "extension"
+  ],
+  "author": "stoodkev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stoodkev/hive-keychain/issues"
+  },
+  "homepage": "https://github.com/stoodkev/hive-keychain#readme",
+  "dependencies": {
+    "documentation": "^13.0.0"
+  }
+}
