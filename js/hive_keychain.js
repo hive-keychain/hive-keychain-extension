@@ -19,7 +19,7 @@ var hive_keychain = {
    * @param {String} message Message to be decoded by the account
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestVerifyKey: function(account, message, key, callback, rpc) {
     var request = {
@@ -38,7 +38,7 @@ var hive_keychain = {
    * @param {String} message Message to be signed by the account
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestSignBuffer: function(account, message, key, callback, rpc) {
     var request = {
@@ -58,7 +58,7 @@ var hive_keychain = {
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
    * @param {number} weight Weight of the authority
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestAddAccountAuthority: function(
     account,
@@ -86,7 +86,7 @@ var hive_keychain = {
    * @param {String} authorizedUsername Account to lose authority
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestRemoveAccountAuthority: function(
     account,
@@ -113,7 +113,7 @@ var hive_keychain = {
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
    * @param {number} weight Weight of the key authority
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestAddKeyAuthority: function(
     account,
@@ -141,7 +141,7 @@ var hive_keychain = {
    * @param {String} authorizedKey Key to be removed (public key).
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'.
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestRemoveKeyAuthority: function(
     account,
@@ -167,7 +167,7 @@ var hive_keychain = {
    * @param {Array} operations Array of operations to be broadcasted
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestBroadcast: function(account, operations, key, callback, rpc) {
     var request = {
@@ -186,7 +186,7 @@ var hive_keychain = {
    * @param {Object} tx Unsigned transaction
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestSignTx: function(account, tx, key, callback, rpc) {
     var request = {
@@ -206,7 +206,7 @@ var hive_keychain = {
    * @param {String} params Parameters of the call
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestSignedCall: function(account, method, params, key, callback, rpc) {
     console.log("getting request");
@@ -234,7 +234,7 @@ var hive_keychain = {
    * @param {String} permlink Permlink of the blog post
    * @param {Object} comment_options Options attached to the blog post. Consult Hive documentation to learn more about it
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestPost: function(
     account,
@@ -269,7 +269,7 @@ var hive_keychain = {
    * @param {String} author Author of the blog post
    * @param {String} weight Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestVote: function(account, permlink, author, weight, callback, rpc) {
     var request = {
@@ -291,7 +291,7 @@ var hive_keychain = {
    * @param {String} json Stringified custom json
    * @param {String} display_msg Message to display to explain to the user what this broadcast is about
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestCustomJson: function(
     account,
@@ -322,8 +322,8 @@ var hive_keychain = {
    * @param {String} memo The memo will be automatically encrypted if starting by '#' and the memo key is available on Keychain. It will also overrule the account to be enforced, regardless of the 'enforce' parameter
    * @param {String} currency 'HIVE' or 'HBD'
    * @param {function} callback Keychain's response to the request
-   * @param {boolean} [enforce=false] Optional : If set to true, user cannot chose to make the transfer from another account
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {boolean} [enforce=false] If set to true, user cannot chose to make the transfer from another account
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestTransfer: function(
     account,
@@ -374,7 +374,7 @@ var hive_keychain = {
    * @param {number} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
    * @param {String} unit HP or VESTS
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestDelegation: function(
     username,
@@ -400,7 +400,7 @@ var hive_keychain = {
    * @param {String} witness Account to receive the witness vote
    * @param {boolean} vote Set to true to vote for the witness, false to unvote
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestWitnessVote: function(username, witness, vote, callback, rpc) {
     var request = {
@@ -417,7 +417,7 @@ var hive_keychain = {
    * @param {String} username Hive account to perform the request
    * @param {String} proxy Account to become the proxy. Empty string ('') to remove a proxy
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestProxy: function(username, proxy, callback, rpc) {
     console.log(username, proxy);
@@ -435,7 +435,7 @@ var hive_keychain = {
    * @param {String} recipient Account to receive the power up
    * @param {number} hive Amount of HIVE to be powered up
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestPowerUp: function(username, recipient, hive, callback, rpc) {
     var request = {
@@ -452,7 +452,7 @@ var hive_keychain = {
    * @param {String} username Hive account to perform the request
    * @param {number} hive_power Amount of HIVE to be powered down
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestPowerDown: function(username, hive_power, callback, rpc) {
     var request = {
@@ -472,7 +472,7 @@ var hive_keychain = {
    * @param {object} posting posting authority object
    * @param {String} memo public memo key
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestCreateClaimedAccount: function(
     username,
@@ -510,7 +510,7 @@ var hive_keychain = {
    * @param {Date} end Ending date
    * @param {Array} extensions
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestCreateProposal: function(
     username,
@@ -545,7 +545,7 @@ var hive_keychain = {
    * @param {Array} proposal_ids Ids of the proposals to be removed
    * @param {Array} extensions
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestRemoveProposal: function(
     username,
@@ -571,7 +571,7 @@ var hive_keychain = {
    * @param {boolean} approve Set to true to support the proposal, false to remove a vote
    * @param {Array} extensions
    * @param {function} callback Keychain's response to the request
-   * @param {String} [rpc=null] Optional : Override user's RPC settings
+   * @param {String} [rpc=null] Override user's RPC settings
    */
   requestUpdateProposalVote: function(
     username,
