@@ -234,15 +234,11 @@ const getRequiredWifType = request => {
     case "decode":
     case "signBuffer":
       return request.method.toLowerCase();
-      break;
     case "post":
     case "vote":
       return "posting";
-      break;
     case "custom":
-      return request.method == null || request.method == undefined
-        ? "posting"
-        : request.method.toLowerCase();
+      return !request.method ? "posting" : request.method.toLowerCase();
       break;
     case "addAccountAuthority":
     case "removeAccountAuthority":
@@ -250,41 +246,19 @@ const getRequiredWifType = request => {
     case "addKeyAuthority":
     case "broadcast":
     case "signTx":
-      return request.method.toLowerCase();
     case "signedCall":
       return request.typeWif.toLowerCase();
     case "transfer":
-      return "active";
-      break;
     case "sendToken":
-      return "active";
-      break;
     case "delegation":
-      return "active";
-      break;
     case "witnessVote":
-      return "active";
-      break;
     case "proxy":
-      return "active";
-      break;
     case "powerUp":
-      return "active";
-      break;
     case "powerDown":
-      return "active";
-      break;
     case "createClaimedAccount":
-      return "active";
-      break;
     case "createProposal":
-      return "active";
-      break;
     case "removeProposal":
-      return "active";
-      break;
     case "updateProposalVote":
       return "active";
-      break;
   }
 };
