@@ -233,6 +233,12 @@ const getRequiredWifType = request => {
   switch (request.type) {
     case "decode":
     case "signBuffer":
+    case "broadcast":
+    case "addAccountAuthority":
+    case "removeAccountAuthority":
+    case "removeKeyAuthority":
+    case "addKeyAuthority":
+    case "signTx":
       return request.method.toLowerCase();
     case "post":
     case "vote":
@@ -240,12 +246,7 @@ const getRequiredWifType = request => {
     case "custom":
       return !request.method ? "posting" : request.method.toLowerCase();
       break;
-    case "addAccountAuthority":
-    case "removeAccountAuthority":
-    case "removeKeyAuthority":
-    case "addKeyAuthority":
-    case "broadcast":
-    case "signTx":
+
     case "signedCall":
       return request.typeWif.toLowerCase();
     case "transfer":
