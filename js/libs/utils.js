@@ -360,19 +360,33 @@ function initiateCustomSelect(options, current_rpc) {
         });
         loadAccount(this.innerHTML, options);
       } else if (this.innerHTML === "HBD") {
+        const balance = await activeAccount.getHBD();
         $(".transfer_balance div")
           .eq(0)
           .text(chrome.i18n.getMessage("popup_html_balance", ["HBD"]));
         $(".transfer_balance div")
           .eq(1)
-          .html(numberWithCommas(await activeAccount.getHBD()));
+          .html(numberWithCommas(balance));
+        $("#amt_send_max")
+          .unbind("click")
+          .click(() => {
+            $("#amt_send").val(balance);
+          });
+        $("#amt_send").val(null);
       } else if (this.innerHTML === "HIVE") {
+        const balance = await activeAccount.getHive();
         $(".transfer_balance div")
           .eq(0)
           .text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
         $(".transfer_balance div")
           .eq(1)
-          .html(numberWithCommas(await activeAccount.getHive()));
+          .html(numberWithCommas(balance));
+        $("#amt_send_max")
+          .unbind("click")
+          .click(() => {
+            $("#amt_send").val(balance);
+          });
+        $("#amt_send").val(null);
       } else if (manageKey) {
         manageKeys(this.innerHTML);
       } else if (

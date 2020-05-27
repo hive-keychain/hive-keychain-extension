@@ -239,6 +239,7 @@ $("#confirm_change_pwd").text(chrome.i18n.getMessage("popup_html_save"));
 $("#send_div .back_enabled").text(
   chrome.i18n.getMessage("popup_html_transfer_funds")
 );
+$(".send_max").text(chrome.i18n.getMessage("popup_html_send_max"));
 $("#balance").text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
 $("#loading_balance").text(chrome.i18n.getMessage("popup_html_loading"));
 $("#recipient").attr(

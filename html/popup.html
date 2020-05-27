@@ -379,12 +379,16 @@
                 <img src="../images/arobase.png" class="input_img" />
             </div>
             <div id="autocomplete_container"></div>
-            <input type="number" id="amt_send" autocomplete="off" placeholder="0.000" />
+              <input type="number" id="amt_send" autocomplete="off" placeholder="0.000" />
+
             <div class="custom-select" id="currency_send">
                 <select>
-            <option value="HIVE">HIVE</option>
-              <option value="HBD">HBD</option>
-            </select>
+                  <option value="HIVE">HIVE</option>
+                  <option value="HBD">HBD</option>
+                </select>
+            </div>
+            <div class="send_max_div">
+              <span class="send_max" id="amt_send_max"></span>
             </div>
             <input type="text"  id="memo_send" />
             <div class='checkbox_memo'>

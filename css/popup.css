@@ -193,10 +193,6 @@ input:focus {
   margin-bottom: 0px !important;
 }
 
-#amt_send {
-  margin-top: 20px;
-}
-
 #unlock input,
 #add_account_div input,
 #change_password input,
@@ -938,10 +934,12 @@ input:focus {
   text-overflow: clip;
 }
 
-#amt_send {
-  width: 167px !important;
+#send_div #amt_send {
+  width: 167px;
   margin-right: 7px;
   text-align: right;
+  margin-top: 20px;
+  margin-bottom: 5px;
 }
 
 #send_transfer {
@@ -2065,4 +2063,19 @@ input[type="checkbox"] {
 
 #tokens_settings_div a:visited {
   color: inherit;
+}
+
+.send_max_div {
+  width: 165px;
+  text-align: right;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.send_max {
+  font-size: 15px;
+  cursor: pointer;
+  text-transform: uppercase;
+  color: white;
+  border-bottom: dotted 2px white;
 }

@@ -373,6 +373,7 @@ $("#powerdown").click(function() {
 });
 
 $("#send_steem").click(async function() {
+  const balance = await activeAccount.getHive();
   $("#send_div").show();
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
@@ -385,12 +386,20 @@ $("#send_steem").click(async function() {
   $(".transfer_balance div")
     .eq(0)
     .text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
+
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getHive()));
+    .html(numberWithCommas(balance));
+  $("#amt_send_max")
+    .unbind("click")
+    .click(() => {
+      $("#amt_send").val(balance);
+    });
+  $("#amt_send").val(null);
 });
 
 $("#send_sbd").click(async function() {
+  const balance = await activeAccount.getHBD();
   $("#send_div").show();
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
@@ -405,7 +414,13 @@ $("#send_sbd").click(async function() {
     .text(chrome.i18n.getMessage("popup_html_balance", ["HBD"]));
   $(".transfer_balance div")
     .eq(1)
-    .html(numberWithCommas(await activeAccount.getHBD()));
+    .html(numberWithCommas(balance));
+  $("#amt_send_max")
+    .unbind("click")
+    .click(() => {
+      $("#amt_send").val(balance);
+    });
+  $("#amt_send").val(null);
 });
 
 $("#delegate").click(function() {

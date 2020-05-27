@@ -351,6 +351,10 @@
     "message": "Old Password",
     "description": "on change password"
   },
+  "popup_html_send_max": {
+    "message": "Send Max",
+    "description": "on transfer"
+  },
   "popup_html_transfer_funds": {
     "message": "Transfer Funds",
     "description": "When initiating a HIVE or HBD transfer"
