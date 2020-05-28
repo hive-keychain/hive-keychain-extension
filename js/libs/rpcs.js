@@ -65,7 +65,7 @@ class Rpcs {
           rpc = (await this.getDefaultRPC()).rpc || this.list[1];
           console.log(`Using ${rpc} as default.`);
         } catch (e) {
-          rpc = this.currentRpc;
+          rpc = "https://api.hive.blog/";
         }
         console.log("rpc", rpc);
         steem.api.setOptions({
