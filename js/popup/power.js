@@ -1,8 +1,11 @@
 async function preparePowerUpDown() {
+  const balanceHive = await activeAccount.getHive();
+  const availableHP = await activeAccount.getMaxPD();
   const HP = numberWithCommas(await activeAccount.getHP()) + "    HP";
-  const HIVE = numberWithCommas(await activeAccount.getHive()) + " HIVE";
-  $(".power_sp").html(HP);
-  $(".power_steem").html(HIVE);
+  const HIVE = numberWithCommas(balanceHive) + " HIVE";
+  $(".power_sp").text(HP);
+  $(".power_steem").text(HIVE);
+  $("#pu_hp").text(numberWithCommas(availableHP));
   const [
     withdrawn,
     total_withdrawing,
@@ -35,6 +38,16 @@ async function preparePowerUpDown() {
     $("#wrap_power_up").removeAttr("title");
     $("#wrap_power_down").removeAttr("title");
   }
+  $("#pu_max")
+    .unbind("click")
+    .click(() => {
+      $("#amt_pu").val(balanceHive);
+    });
+  $("#pd_max")
+    .unbind("click")
+    .click(() => {
+      $("#amt_pd").val(availableHP);
+    });
   $("#power_up")
     .unbind("click")
     .click(function() {

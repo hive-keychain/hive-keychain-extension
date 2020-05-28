@@ -1809,12 +1809,13 @@ input:focus {
   padding-bottom: 9px;
 }
 
-#amt_pu,
-#amt_pd {
+#powerup_div #amt_pu,
+#powerdown_div #amt_pd {
   padding-left: 0px !important;
   width: 167px !important;
   margin-right: 7px;
   text-align: right;
+  margin-bottom: 5px;
 }
 
 #powerup_div p,

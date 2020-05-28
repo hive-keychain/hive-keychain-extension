@@ -94,6 +94,25 @@ class Account {
     );
   }
 
+  async getMaxPD() {
+    return Math.max(
+      0,
+      parseFloat(
+        await this.toHP(
+          parseFloat(
+            (await this.getAccountInfo("vesting_shares")).replace(" VESTS", "")
+          ) -
+            parseFloat(
+              (await this.getAccountInfo("delegated_vesting_shares")).replace(
+                " VESTS",
+                ""
+              )
+            )
+        )
+      ) - 5
+    );
+  }
+
   async getRC() {
     return await getRC(this.account.name);
   }

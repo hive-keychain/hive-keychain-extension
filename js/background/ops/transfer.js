@@ -18,7 +18,7 @@ const broadcastTransfer = data => {
           null,
           data,
           null,
-          "Could not encode transfer."
+          "Could not encode memo."
         );
         resolve(message);
         return;
