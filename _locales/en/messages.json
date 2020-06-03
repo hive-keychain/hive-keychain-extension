@@ -1264,6 +1264,9 @@
   },
   "bgd_auth_no_active": {
     "message": "No account with active authority."
+  },
+  "popup_warning_phishing": {
+    "message": "This account has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
+    "description": "When trying to transfer to a blacklisted account"
   }
-
 }

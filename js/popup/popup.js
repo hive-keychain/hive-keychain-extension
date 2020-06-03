@@ -6,6 +6,7 @@ let manageKey,
   getPref = false;
 let to_autocomplete = [];
 let accountsList = new AccountsList();
+let transferValidator = new TransferValidator();
 //chrome.storage.local.remove("transfer_to");
 
 $("#copied").hide();
@@ -200,9 +201,10 @@ $("#send_transfer").click(function() {
 });
 
 function confirmTransfer() {
+  const to = $("#recipient").val();
+  transferValidator.validate(to);
   $("#confirm_send_div").show();
   $("#send_div").hide();
-  const to = $("#recipient").val();
   const amount = $("#amt_send").val();
   const currency = $("#currency_send .select-selected").html();
   let memo = $("#memo_send").val();

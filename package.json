@@ -14,9 +14,7 @@
     "url": "git+https://github.com/stoodkev/hive-keychain.git"
   },
   "keywords": [
-    "hive",
-    "keychain",
-    "extension"
+    "hive", "keychain", "extension"
   ],
   "author": "stoodkev",
   "license": "MIT",

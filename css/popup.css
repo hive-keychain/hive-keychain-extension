@@ -2080,3 +2080,9 @@ input[type="checkbox"] {
   color: white;
   border-bottom: dotted 2px white;
 }
+
+#transfer_warning {
+  color: red;
+  font-size: 18px;
+  font-weight: bold;
+}

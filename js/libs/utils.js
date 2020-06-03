@@ -558,3 +558,23 @@ function getDelegators(name) {
     });
   });
 }
+
+const getPhishingAccounts = async () => {
+  return new Promise(function(fulfill, reject) {
+    $.ajax({
+      type: "GET",
+      beforeSend: function(xhttp) {
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+      },
+      url: "https://api.steemkeychain.com/hive/phishingAccounts",
+      success: function(phishingAccounts) {
+        fulfill(phishingAccounts);
+      },
+      error: function(msg) {
+        console.log(msg);
+        reject(msg);
+      }
+    });
+  });
+};

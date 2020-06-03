@@ -1238,5 +1238,9 @@
   },
   "import_html_error": {
     "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+  },
+  "popup_warning_phishing": {
+    "message": "Ce compte a été listé comme pontentiellement malveillant (phishing), vérifiez qu'il s'agit bien du compte désiré.",
+    "description": "When trying to transfer to a blacklisted account"
   }
 }
