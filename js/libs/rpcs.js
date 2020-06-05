@@ -1,10 +1,10 @@
 class Rpcs {
   constructor() {
-    console.log("build");
     this.currentRpc = "https://api.steemit.com/";
     this.awaitRollback = false;
     this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
     this.list = this.initList();
+    this.version = steem.api.getVersionAsync();
   }
   async initList() {
     let listRPC = [];
@@ -40,9 +40,9 @@ class Rpcs {
   }
 
   async setOptions(rpc, awaitRollback = false) {
-    console.log("option:", rpc);
+    //console.log("option:", rpc);
     if (rpc === this.currentRpc) {
-      console.log("Same RPC");
+      //console.log("Same RPC");
       return;
     }
     const list = await this.getList();
@@ -67,7 +67,7 @@ class Rpcs {
         } catch (e) {
           rpc = "https://api.hive.blog/";
         }
-        console.log("rpc", rpc);
+
         steem.api.setOptions({
           url: rpc,
           useAppbaseApi: true
@@ -78,11 +78,16 @@ class Rpcs {
           useAppbaseApi: true
         });
       }
-      steem.config.set("address_prefix", "STM");
-      steem.config.set(
-        "chain_id",
-        "0000000000000000000000000000000000000000000000000000000000000000"
+      const version = parseInt(
+        (await this.version).blockchain_version.split(".")[1]
       );
+      const chain_id =
+        version >= 24
+          ? "BEEABODE00000000000000000000000000000000000000000000000000000000"
+          : "0000000000000000000000000000000000000000000000000000000000000000";
+      console.log(`HF${version} => chain_id: ${chain_id}`);
+      steem.config.set("address_prefix", "STM");
+      steem.config.set("chain_id", chain_id);
     }
     this.previousRpc = this.currentRpc;
     this.currentRpc = newRpc;

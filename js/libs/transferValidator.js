@@ -22,7 +22,6 @@ class TransferValidator {
     ];
 
     const exchange = exchanges.find(exchange => exchange.account === account);
-    console.log(exchange);
     if (!exchange) return null;
     else if (!exchange.tokens.includes(currency)) {
       return chrome.i18n.getMessage("popup_warning_exchange_deposit", [
@@ -34,10 +33,8 @@ class TransferValidator {
   }
 
   async validate(account, currency, hasMemo) {
-    console.log(account, currency, hasMemo);
     let warning = null;
     if (await this.isPhishing(account)) {
-      console.log("is phishing");
       warning = chrome.i18n.getMessage("popup_warning_phishing");
     } else {
       warning = this.getExchangeValidationWarning(account, currency, hasMemo);

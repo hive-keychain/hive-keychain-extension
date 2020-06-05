@@ -3,7 +3,6 @@ class AccountsList {
     this.accounts = {list: []};
   }
   init(accounts, last_account) {
-    console.log(accounts, last_account);
     if (accounts) {
       this.accounts = accounts;
       this.accounts.list = this.accounts.list.map(e => new Account(e));
@@ -15,9 +14,7 @@ class AccountsList {
 
       // Add the last account selected to the front of the account list.
       if (last_account) {
-        console.log(this.accounts.list, last_account);
         let last = this.accounts.list.find(a => a.account.name == last_account);
-        console.log(last);
         if (last) {
           this.accounts.list.splice(this.accounts.list.indexOf(last), 1);
           this.accounts.list.unshift(last);
