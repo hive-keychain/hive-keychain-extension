@@ -202,12 +202,12 @@ $("#send_transfer").click(function() {
 
 function confirmTransfer() {
   const to = $("#recipient").val();
-  transferValidator.validate(to);
-  $("#confirm_send_div").show();
-  $("#send_div").hide();
   const amount = $("#amt_send").val();
   const currency = $("#currency_send .select-selected").html();
   let memo = $("#memo_send").val();
+  transferValidator.validate(to, currency, memo.length);
+  $("#confirm_send_div").show();
+  $("#send_div").hide();
   $("#from_conf_transfer").text("@" + activeAccount.getName());
   $("#to_conf_transfer").text("@" + to);
   $("#amt_conf_transfer").text(amount + " " + currency);

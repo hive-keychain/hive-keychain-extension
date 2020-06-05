@@ -1268,5 +1268,13 @@
   "popup_warning_phishing": {
     "message": "This account has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
+  },
+  "popup_warning_exchange_deposit": {
+    "message": "This exchange account does not accept $1 deposits.",
+    "description": "When trying to transfer to an exchange that does not accept this currency."
+  },
+  "popup_warning_exchange_memo": {
+    "message": "Make sure you add a memo when transfering to an exchange account.",
+    "description": "When forgetting memo to transfer to exchange."
   }
 }
