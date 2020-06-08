@@ -6,7 +6,7 @@ let manageKey,
   getPref = false;
 let to_autocomplete = [];
 let accountsList = new AccountsList();
-let transferValidator = new TransferValidator();
+const transferValidator = new TransferValidator();
 //chrome.storage.local.remove("transfer_to");
 
 $("#copied").hide();

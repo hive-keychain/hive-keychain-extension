@@ -403,3 +403,8 @@ button {
 #balance, #balance_after {
   display: none
 }
+
+#transfer_warning {
+  color: red;
+  font-weight: bold;
+}

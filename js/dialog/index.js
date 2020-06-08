@@ -1,3 +1,4 @@
+const transferValidator = new TransferValidator();
 chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
   chrome.runtime.sendMessage({
     command: "stopInterval"
@@ -292,6 +293,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#to").text("@" + msg.data.to);
         $("#amount").text(msg.data.amount + " " + msg.data.currency);
         $("#memo").text(msg.data.memo);
+        transferValidator.validate(
+          msg.data.to,
+          msg.data.currency,
+          msg.data.memo
+        );
         if (msg.data.memo.length > 0) $(".transfer_memo").show();
         break;
       case "post":
