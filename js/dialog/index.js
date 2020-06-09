@@ -1,14 +1,18 @@
 const transferValidator = new TransferValidator();
-chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
+chrome.runtime.onMessage.addListener(function(
+  {msg, accounts, command, data, tab, domain, request_id, testnet},
+  sender,
+  sendResp
+) {
   chrome.runtime.sendMessage({
     command: "stopInterval"
   });
-  if (msg.command == "sendDialogError") {
+  if (command === "sendDialogError") {
     // Display error window
 
-    if (!msg.msg.success) {
+    if (!msg.success) {
       $("#tx_loading").hide();
-      if (msg.msg.error == "locked") {
+      if (msg.error === "locked") {
         $(".unlock").show();
         $("#error-ok").hide();
         $("#no-unlock").click(function() {
@@ -17,11 +21,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#yes-unlock").click(function() {
           chrome.runtime.sendMessage({
             command: "unlockFromDialog",
-            data: msg.msg.data,
-            tab: msg.tab,
+            data: data,
+            tab: tab,
             mk: $("#unlock-dialog").val(),
-            domain: msg.domain,
-            request_id: msg.request_id
+            domain: domain,
+            request_id: request_id
           });
         });
         $("#unlock-dialog").keypress(function(e) {
@@ -30,12 +34,12 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#unlock-dialog").focus();
       }
       $("#dialog_header").text(
-        msg.msg.error == "locked"
+        msg.error === "locked"
           ? chrome.i18n.getMessage("dialog_header_unlock")
           : chrome.i18n.getMessage("dialog_header_error")
       );
       $("#dialog_header").addClass("error_header");
-      $("#error_dialog").html(msg.msg.display_msg);
+      $("#error_dialog").html(msg.display_msg);
       $("#modal-body-msg").hide();
       $(".modal-body-error").show();
       $(".dialog-message").hide();
@@ -43,23 +47,70 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         window.close();
       });
     }
-  } else if (msg.command == "wrongMk") {
+  } else if (command === "wrongMk") {
     $("#error-mk").text(chrome.i18n.getMessage("dialog_header_wrong_pwd"));
-  } else if (msg.command == "broadcastingNoConfirm") {
+  } else if (command === "broadcastingNoConfirm") {
     $("#tx_loading").show();
     $(".unlock").hide();
     $("#dialog_header").text(
       chrome.i18n.getMessage("dialog_header_broadcasting")
     );
     $("#error_dialog").hide();
-  } else if (msg.command == "sendDialogConfirm") {
-    console.log(msg.data);
-    let enforce = null;
-    let encode = null;
+  } else if (command === "sendDialogConfirm") {
     // Display confirmation window
     $("#confirm_footer").show();
     $("#modal-body-msg").show();
-    var type = msg.data.type;
+    let {enforce} = data;
+    let encode;
+    const {
+      type,
+      display_msg,
+      username,
+      key,
+      method,
+      message,
+      authorizedUsername,
+      role,
+      weight,
+      authorizedKey,
+      operations,
+      tx,
+      owner,
+      active,
+      posting,
+      memo,
+      params,
+      typeWif,
+      author,
+      permlink,
+      id,
+      json,
+      currency,
+      amount,
+      to,
+      body,
+      json_metadata,
+      parent_perm,
+      parent_username,
+      comment_options,
+      delegatee,
+      unit,
+      witness,
+      vote,
+      proxy,
+      recipient,
+      steem,
+      receiver,
+      steem_power,
+      extensions,
+      start,
+      title,
+      end,
+      subject,
+      daily_pay,
+      proposal_ids,
+      approve
+    } = data;
 
     var titles = {
       custom: chrome.i18n.getMessage("dialog_title_custom"),
@@ -92,32 +143,29 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       updateProposalVote: chrome.i18n.getMessage("dialog_title_vote_proposal"),
       signTx: chrome.i18n.getMessage("dialog_title_sign_tx")
     };
-    var title = titles[type];
-    console.log(msg);
-    $("#dialog_header").html(title + (msg.testnet ? " (TESTNET)" : ""));
+    const header = titles[type];
+    $("#dialog_header").html(header + (testnet ? " (TESTNET)" : ""));
 
-    if (msg.data.display_msg) {
+    if (display_msg) {
       $("#modal-body-msg .msg-data").css("max-height", "245px");
       $("#dialog_message").show();
-      $("#dialog_message").html(msg.data.display_msg);
+      $("#dialog_message").html(display_msg);
     }
 
-    if (msg.accounts) {
+    if (accounts) {
       $("#modal-body-msg .msg-data").css("max-height", "200px");
       chrome.storage.local.get(["last_chosen_account"], function(items) {
-        let accounts = msg.accounts;
-        console.log(items);
-        console.log(accounts, msg.data.username);
-        if (msg.data.username) {
-          let i = msg.accounts.findIndex(function(elt) {
-            return elt == msg.data.username;
+        let accounts = accounts;
+        if (username) {
+          let i = accounts.findIndex(function(elt) {
+            return elt === username;
           });
           let first = [accounts[i]];
           delete accounts[i];
           accounts = first.concat(accounts);
         } else if (items.last_chosen_account) {
           console.log(items.last_chosen_account);
-          let i = msg.accounts.findIndex(function(elt) {
+          let i = accounts.findIndex(function(elt) {
             return elt == items.last_chosen_account;
           });
           let first = [accounts[i]];
@@ -125,38 +173,26 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
           accounts = first.concat(accounts);
         }
         for (acc of accounts) {
-          if (acc != undefined)
+          if (acc !== undefined)
             $("#select_transfer").append("<option>" + acc + "</option>");
         }
-        initiateCustomSelect(msg.data);
+        initiateCustomSelect(data);
       });
     }
-    var message = "";
     $("." + type).show();
     $(".modal-body-error").hide();
-    $("#username").text("@" + msg.data.username);
+    $("#username").text(`@${username}`);
     $("#modal-content").css("align-items", "flex-start");
     const keyVerifyAction =
-      msg.data.type === "decode" ||
-      msg.data.type === "signBuffer" ||
-      msg.data.type === "signTx";
+      type === "decode" || type === "signBuffer" || type === "signTx";
     if (
-      msg.data.key !== "active" &&
-      !["transfer", "witnessVote", "delegation", "proxy"].includes(
-        msg.data.type
-      )
+      key !== "active" &&
+      !["transfer", "witnessVote", "delegation", "proxy"].includes(type)
     ) {
       $("#keep_div").show();
       var prompt_msg = keyVerifyAction
-        ? chrome.i18n.getMessage("dialog_no_prompt_verify", [
-            msg.data.username,
-            msg.domain
-          ])
-        : chrome.i18n.getMessage("dialog_no_prompt", [
-            msg.data.type,
-            msg.data.username,
-            msg.domain
-          ]);
+        ? chrome.i18n.getMessage("dialog_no_prompt_verify", [username, domain])
+        : chrome.i18n.getMessage("dialog_no_prompt", [type, username, domain]);
       $("#keep_label").text(prompt_msg);
     } else {
       $(".keep_checkbox").css("display", "none");
@@ -164,27 +200,23 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     }
     switch (type) {
       case "decode":
-        $("#wif").html(msg.data.method);
+        $("#wif").html(method);
         $("#modal-body-msg").css("max-height", "235px");
         $("#dialog_message").show();
         $("#dialog_message").text(
           chrome.i18n.getMessage("dialog_desc_verify", [
-            msg.domain,
-            msg.data.method,
-            msg.data.username
+            domain,
+            method,
+            username
           ])
         );
         break;
       case "signBuffer":
         $("#dialog_message").show();
         $("#dialog_message").text(
-          chrome.i18n.getMessage("dialog_desc_sign", [
-            msg.domain,
-            msg.data.method,
-            msg.data.username
-          ])
+          chrome.i18n.getMessage("dialog_desc_sign", [domain, method, username])
         );
-        const fullMessage = msg.data.message;
+        const fullMessage = message;
         let truncatedMessage = fullMessage.substring(0, 200);
         if (fullMessage.length > 200) {
           truncatedMessage += chrome.i18n.getMessage("dialog_expand");
@@ -202,47 +234,48 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
         break;
       case "addAccountAuthority":
-        $("#authorized_account").text(msg.data.authorizedUsername);
-        $("#role").text(msg.data.role);
-        $("#weight").text(msg.data.weight);
+        $("#authorized_account").text(authorizedUsername);
+        $("#role").text(role);
+        $("#weight").text(weight);
         break;
       case "removeAccountAuthority":
-        $("#authorized_account").text(msg.data.authorizedUsername);
-        $("#role").text(msg.data.role);
+        $("#authorized_account").text(authorizedUsername);
+        $("#role").text(role);
         break;
       case "addKeyAuthority":
-        $("#authorized_key").text(msg.data.authorizedKey);
-        $("#role").text(msg.data.role);
-        $("#weight").text(msg.data.weight);
+        $("#authorized_key").text(authorizedKey);
+        $("#role").text(role);
+        $("#weight").text(weight);
         break;
       case "removeKeyAuthority":
-        $("#authorized_key").text(msg.data.authorizedKey);
-        $("#role").text(msg.data.role);
+        $("#authorized_key").text(authorizedKey);
+        $("#role").text(role);
         break;
       case "broadcast":
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json").html(JSON.stringify(msg.data.operations));
-        $("#custom_key").text(msg.data.method);
+        $("#custom_json").html(JSON.stringify(operations));
+        $("#custom_key").text(method);
         break;
       case "signTx":
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json").html(JSON.stringify(msg.data.tx.operations));
-        $("#custom_key").text(msg.data.method);
+        $("#custom_json").html(JSON.stringify(tx.operations));
+        $("#custom_key").text(method);
         break;
       case "createClaimedAccount":
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
+
         $("#custom_json").html(
           JSON.stringify({
-            owner: msg.data.owner,
-            active: msg.data.active,
-            posting: msg.data.posting,
-            memo: msg.data.memo
+            owner: owner,
+            active: active,
+            posting: posting,
+            memo: memo
           })
         );
         break;
@@ -252,17 +285,17 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
         $("#custom_json div")
           .eq(0)
-          .text(msg.data.method);
+          .text(method);
         $("#custom_json div")
           .eq(1)
-          .text(JSON.stringify(msg.data.params));
+          .text(JSON.stringify(params));
 
-        $("#custom_key").text(msg.data.typeWif);
+        $("#custom_key").text(typeWif);
         break;
       case "vote":
-        $("#weight").text(msg.data.weight / 100 + " %");
-        $("#author").text("@" + msg.data.author);
-        $("#perm").text(msg.data.permlink);
+        $("#weight").text(`${weight / 100}%`);
+        $("#author").text(`@${author}`);
+        $("#perm").text(permlink);
         break;
       case "custom":
         $("#custom_data").click(function() {
@@ -270,19 +303,16 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         });
         $("#custom_json div")
           .eq(0)
-          .text(msg.data.id);
+          .text(id);
         $("#custom_json div")
           .eq(1)
-          .text(msg.data.json);
-        $("#custom_key").text(msg.data.method);
+          .text(json);
+        $("#custom_key").text(method);
         break;
       case "transfer":
-        encode =
-          msg.data.memo != undefined &&
-          msg.data.memo.length > 0 &&
-          msg.data.memo[0] == "#";
-        showBalances(msg.data.username, msg.data.currency, msg.data.amount);
-        enforce = msg.data.enforce || encode;
+        encode = memo !== undefined && memo.length > 0 && memo[0] === "#";
+        showBalances(username, currency, amount);
+        enforce = enforce || encode;
         if (enforce) {
           $("#username").show();
           $("#username")
@@ -290,15 +320,11 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
             .show();
           $("#transfer_acct_list").hide();
         }
-        $("#to").text("@" + msg.data.to);
-        $("#amount").text(msg.data.amount + " " + msg.data.currency);
-        $("#memo").text(msg.data.memo);
-        transferValidator.validate(
-          msg.data.to,
-          msg.data.currency,
-          msg.data.memo
-        );
-        if (msg.data.memo.length > 0) $(".transfer_memo").show();
+        $("#to").text(`@${to}`);
+        $("#amount").text(`${amount} ${currency}`);
+        $("#memo").text(memo);
+        transferValidator.validate(to, currency, memo);
+        if (memo.length > 0) $(".transfer_memo").show();
         break;
       case "post":
         $("#body_toggle").click(function() {
@@ -307,96 +333,87 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
         $("#options_toggle").click(function() {
           $("#options").slideToggle();
         });
-        $("#title").text(msg.data.title);
-        $("#permlink").text(msg.data.permlink);
-        $("#body").text(msg.data.body);
-        $("#json_metadata").text(msg.data.json_metadata);
-        $("#parent_url").text(msg.data.parent_perm);
-        $("#parent_username").text(msg.data.parent_username);
-        if (msg.data.comment_options != "") {
-          let options = JSON.parse(msg.data.comment_options);
+
+        $("#title").text(title);
+        $("#permlink").text(permlink);
+        $("#body").text(body);
+        $("#json_metadata").text(json_metadata);
+        $("#parent_url").text(parent_perm);
+        $("#parent_username").text(parent_username);
+        if (comment_options !== "") {
+          let options = JSON.parse(comment_options);
           $("#max_payout").text(options.max_accepted_payout);
           $("#percent_sbd").text(options.percent_steem_dollars);
           $("#allow_votes").text(options.allow_votes);
           $("#allow_curation_rewards").text(options.allow_curation_rewards);
           let beneficiaries = "";
           for (benef of options.extensions[0][1].beneficiaries) {
-            beneficiaries +=
-              "@" +
-              benef.account +
-              " (" +
-              (benef.weight / 100).toFixed(2) +
-              "%) ";
+            beneficiaries += `@${benef.account} (${(benef.weight / 100).toFixed(
+              2
+            )}%) `;
           }
-          if (beneficiaries != "") $("#beneficiaries").text(beneficiaries);
+          if (beneficiaries !== "") $("#beneficiaries").text(beneficiaries);
           else $("#beneficiaries_div").hide();
         } else $("#options_toggle").hide();
-        if (
-          msg.data.parent_username == "" ||
-          msg.data.parent_username == null ||
-          msg.data.parent_username == undefined
-        ) {
+        if (parent_username === "" || !parent_username) {
           $("#parent_username").hide();
           $("#parent_username_title").hide();
         }
         break;
       case "delegation":
-        showDropdownIfNoUsername(msg);
-        $("#delegatee").text("@" + msg.data.delegatee);
-        $("#amt_sp").text(msg.data.amount + " " + msg.data.unit);
+        showDropdownIfNoUsername(username);
+        $("#delegatee").text(`@${delegatee}`);
+        $("#amt_sp").text(`${amount} ${unit}`);
         break;
       case "witnessVote":
-        showDropdownIfNoUsername(msg);
-        $("#witness").html(msg.data.witness);
-        $("#voteWit").html(JSON.stringify(msg.data.vote));
+        showDropdownIfNoUsername(username);
+        $("#witness").html(witness);
+        $("#voteWit").html(JSON.stringify(vote));
         break;
       case "proxy":
-        showDropdownIfNoUsername(msg);
-        $("#proxy").html(msg.data.proxy.length ? msg.data.proxy : "None");
+        showDropdownIfNoUsername(username);
+        $("#proxy").html(proxy.length ? proxy : "None");
         break;
       case "sendToken":
-        showBalances(msg.data.username, msg.data.currency, msg.data.amount);
-        $("#to").text("@" + msg.data.to);
-        $("#amount").text(msg.data.amount + " " + msg.data.currency);
-        $("#memo").text(msg.data.memo);
-        if (msg.data.memo.length > 0) $(".transfer_memo").show();
+        showBalances(username, currency, amount);
+        $("#to").text(`@${to}`);
+        $("#amount").text(`${amount} ${currency}`);
+        $("#memo").text(memo);
+        if (memo.length > 0) $(".transfer_memo").show();
         break;
       case "powerUp":
-        $("#to").text("@" + msg.data.recipient);
-        $("#amount").text(msg.data.steem + " HIVE");
+        $("#to").text(`@${recipient}`);
+        $("#amount").text(`${steem} HIVE`);
         break;
       case "powerDown":
-        showBalances(msg.data.username, "HP", msg.data.steem_power);
-        $("#amount").text(msg.data.steem_power + " HP");
+        showBalances(username, "HP", steem_power);
+        $("#amount").text(`${steem_power} HP`);
         break;
       case "createProposal":
-        $("#receiver").text(msg.data.receiver);
-        $("#extensions").text(msg.data.extensions);
-        $("#period_f").text(`From: ${msg.data.start.replace("T", " ")}`);
-        $("#period_t").text(`To: ${msg.data.end.replace("T", " ")}`);
-        $("#title").text(msg.data.subject);
-        $("#permlink").text(msg.data.permlink);
-        $("#daily_pay").text(msg.data.daily_pay);
+        $("#receiver").text(receiver);
+        $("#extensions").text(extensions);
+        $("#period_f").text(`From: ${start.replace("T", " ")}`);
+        $("#period_t").text(`To: ${end.replace("T", " ")}`);
+        $("#title").text(subject);
+        $("#permlink").text(permlink);
+        $("#daily_pay").text(daily_pay);
         break;
       case "removeProposal":
-        $("#proposal_ids").text(msg.data.proposal_ids);
-        $("#extensions").text(msg.data.extensions);
+        $("#proposal_ids").text(proposal_ids);
+        $("#extensions").text(extensions);
         break;
       case "updateProposalVote":
-        $("#proposal_ids").text(msg.data.proposal_ids);
-        $("#extensions").text(msg.data.extensions);
-        $("#approve").text(msg.data.approve);
+        $("#proposal_ids").text(proposal_ids);
+        $("#extensions").text(extensions);
+        $("#approve").text(approve);
         break;
     }
 
     // Closes the window and launch the transaction in background
     $("#proceed").click(function() {
-      let data = msg.data;
-      console.log(data);
       if (
-        (data.type === "transfer" && !enforce) ||
-        (["witnessVote", "delegation", "proxy"].includes(data.type) &&
-          !data.username)
+        (type === "transfer" && !enforce) ||
+        (["witnessVote", "delegation", "proxy"].includes(type) && !username)
       ) {
         chrome.storage.local.set({
           last_chosen_account: $("#select_transfer option:selected").val()
@@ -407,8 +424,8 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
       chrome.runtime.sendMessage({
         command: "acceptTransaction",
         data: data,
-        tab: msg.tab,
-        domain: msg.domain,
+        tab: tab,
+        domain: domain,
         keep: $("#keep").is(":checked")
       });
       if (type === "decode" || type === "signBuffer") window.close();
@@ -424,14 +441,14 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResp) {
     $("#cancel").click(function() {
       window.close();
     });
-  } else if (msg.command === "answerRequest") {
+  } else if (command === "answerRequest") {
     $("#tx_loading").hide();
     $("#dialog_header").text(
-      msg.msg.success
+      msg.success
         ? `${chrome.i18n.getMessage("dialog_header_success")} !`
         : `${chrome.i18n.getMessage("dialog_header_error")} !`
     );
-    $("#error_dialog").text(msg.msg.message);
+    $("#error_dialog").text(msg.message);
     $(".modal-body-error").show();
     $("#error-ok").click(function() {
       window.close();
@@ -575,8 +592,8 @@ function initiateCustomSelect(data) {
   document.addEventListener("click", closeAllSelect);
 }
 
-const showDropdownIfNoUsername = msg => {
-  if (!msg.data.username) {
+const showDropdownIfNoUsername = username => {
+  if (!username) {
     $("#username").hide();
     $("#username")
       .prev()
