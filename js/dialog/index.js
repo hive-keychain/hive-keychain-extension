@@ -155,7 +155,6 @@ chrome.runtime.onMessage.addListener(function(
     if (accounts) {
       $("#modal-body-msg .msg-data").css("max-height", "200px");
       chrome.storage.local.get(["last_chosen_account"], function(items) {
-        let accounts = accounts;
         if (username) {
           let i = accounts.findIndex(function(elt) {
             return elt === username;
@@ -172,6 +171,7 @@ chrome.runtime.onMessage.addListener(function(
           delete accounts[i];
           accounts = first.concat(accounts);
         }
+        console.log(accounts);
         for (acc of accounts) {
           if (acc !== undefined)
             $("#select_transfer").append("<option>" + acc + "</option>");

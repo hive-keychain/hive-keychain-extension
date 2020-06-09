@@ -41,7 +41,7 @@ const broadcastTransfer = data => {
             case "adjust_balance":
               err_message = chrome.i18n.getMessage(
                 "bgd_ops_transfer_adjust_balance",
-                [data.currency]
+                [data.currency, data.username]
               );
               break;
             case "get_account":
