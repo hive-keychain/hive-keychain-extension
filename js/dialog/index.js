@@ -19,13 +19,14 @@ chrome.runtime.onMessage.addListener(function(
           window.close();
         });
         $("#yes-unlock").click(function() {
+          //console.log(msg, msg.data, tab, domain, msg.request_id);
           chrome.runtime.sendMessage({
             command: "unlockFromDialog",
-            data: data,
-            tab: tab,
+            data: msg.data,
+            tab,
             mk: $("#unlock-dialog").val(),
-            domain: domain,
-            request_id: request_id
+            domain,
+            request_id
           });
         });
         $("#unlock-dialog").keypress(function(e) {

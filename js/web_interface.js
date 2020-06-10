@@ -90,7 +90,6 @@ const sendResponse = response => {
 
 const validate = () => {
   console.log(req);
-  console.log(req.type == "signTx", isFilled(req.tx), isFilled(req.method));
   return (
     req != null &&
     req != undefined &&
@@ -195,7 +194,11 @@ const validate = () => {
       (req.type == "updateProposalVote" &&
         isFilled(req.username) &&
         isProposalIDs(req.proposal_ids) &&
-        isBoolean(req.approve)))
+        isBoolean(req.approve)) ||
+      (req.type == "sendToken" &&
+        isFilledAmt(req.amount) &&
+        isFilled(req.to) &&
+        isFilled(req.currency)))
   );
 };
 

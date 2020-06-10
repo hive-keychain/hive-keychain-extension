@@ -347,26 +347,26 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-  // requestSendToken: function(
-  //   account,
-  //   to,
-  //   amount,
-  //   memo,
-  //   currency,
-  //   callback,
-  //   rpc
-  // ) {
-  //   var request = {
-  //     type: "sendToken",
-  //     username: account,
-  //     to,
-  //     amount,
-  //     memo,
-  //     currency,
-  //     rpc
-  //   };
-  //   this.dispatchCustomEvent("swRequest_hive", request, callback);
-  // },
+  requestSendToken: function(
+    account,
+    to,
+    amount,
+    memo,
+    currency,
+    callback,
+    rpc
+  ) {
+    var request = {
+      type: "sendToken",
+      username: account,
+      to,
+      amount,
+      memo,
+      currency,
+      rpc
+    };
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
+  },
   /**
    * Requests a delegation broadcast
    * @param {String} username Hive account to perform the request
