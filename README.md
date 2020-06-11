@@ -33,28 +33,30 @@
             -   [Parameters][29]
         -   [requestTransfer][30]
             -   [Parameters][31]
-        -   [requestDelegation][32]
+        -   [requestSendToken][32]
             -   [Parameters][33]
-        -   [requestWitnessVote][34]
+        -   [requestDelegation][34]
             -   [Parameters][35]
-        -   [requestProxy][36]
+        -   [requestWitnessVote][36]
             -   [Parameters][37]
-        -   [requestPowerUp][38]
+        -   [requestProxy][38]
             -   [Parameters][39]
-        -   [requestPowerDown][40]
+        -   [requestPowerUp][40]
             -   [Parameters][41]
-        -   [requestCreateClaimedAccount][42]
+        -   [requestPowerDown][42]
             -   [Parameters][43]
-        -   [requestCreateProposal][44]
+        -   [requestCreateClaimedAccount][44]
             -   [Parameters][45]
-        -   [requestRemoveProposal][46]
+        -   [requestCreateProposal][46]
             -   [Parameters][47]
-        -   [requestUpdateProposalVote][48]
+        -   [requestRemoveProposal][48]
             -   [Parameters][49]
+        -   [requestUpdateProposalVote][50]
+            -   [Parameters][51]
 
 ## About Keychain
 
-## ![][50]
+## ![][52]
 
 Putting private keys directly into websites is not safe or secure, even ones run by reputable community members. Yet this is currently how nearly every Hive-based site or service currently works. On top of that, most Hive users likely use their master password which is even worse.
 
@@ -68,7 +70,7 @@ Hive Keychain aims to bring the security and ease-of-use of Metamask to the Hive
 
 You can download and install the latest published version of the extension for the following browsers:
 
--   Google Chrome (or Opera/Brave): [on Chrome Store][51]
+-   Google Chrome (or Opera/Brave): [on Chrome Store][53]
     -   Export your keys from Steem keychain (in settings)
     -   Download this repository as zip
     -   Unzip the downloaded folder
@@ -76,7 +78,7 @@ You can download and install the latest published version of the extension for t
     -   Activate developer mode.
     -   Click "Load Unpacked" and select the unzipped folder.
     -   Import your keys (use the same master password)
--   Firefox: [on Firefox Addon Store][52]
+-   Firefox: [on Firefox Addon Store][54]
 
 ## Features
 
@@ -111,7 +113,7 @@ Websites can currently request the Hive Keychain extension to perform the follow
 
 ## Example
 
-An example of a web page that interacts with the extension is included in the "example" folder in the repo. You can test it by running a local HTTP server and going to [http://localhost:1337/main.html][53] in your browser.
+An example of a web page that interacts with the extension is included in the "example" folder in the repo. You can test it by running a local HTTP server and going to [http://localhost:1337/main.html][55] in your browser.
 
 `cd example`
 `python -m http.server 1337 //or any other method to run a static server`
@@ -134,7 +136,7 @@ This function is called to verify Keychain installation on a user's device
 
 ##### Parameters
 
--   `callback` **[function][54]** Confirms Keychain installation
+-   `callback` **[function][56]** Confirms Keychain installation
 
 #### requestVerifyKey
 
@@ -142,11 +144,11 @@ This function is called to verify that the user has a certain authority over an 
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `message` **[String][55]** Message to be decoded by the account
--   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `message` **[String][57]** Message to be decoded by the account
+-   `key` **[String][57]** Type of key. Can be 'Posting','Active' or 'Memo'
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestSignBuffer
 
@@ -154,61 +156,61 @@ Requests a message to be signed with proper authority
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `message` **[String][55]** Message to be signed by the account
--   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `message` **[String][57]** Message to be signed by the account
+-   `key` **[String][57]** Type of key. Can be 'Posting','Active' or 'Memo'
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestAddAccountAuthority
 
-Requests to add account authority over another account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][56]
+Requests to add account authority over another account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][58]
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `authorizedUsername` **[String][55]** Authorized account
--   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'
--   `weight` **[number][57]** Weight of the authority
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `authorizedUsername` **[String][57]** Authorized account
+-   `role` **[String][57]** Type of authority. Can be 'Posting','Active' or 'Memo'
+-   `weight` **[number][59]** Weight of the authority
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestRemoveAccountAuthority
 
-Requests to remove an account authority over another account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][56]
+Requests to remove an account authority over another account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][58]
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `authorizedUsername` **[String][55]** Account to lose authority
--   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `authorizedUsername` **[String][57]** Account to lose authority
+-   `role` **[String][57]** Type of authority. Can be 'Posting','Active' or 'Memo'
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestAddKeyAuthority
 
-Requests to add a new key authority to an account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][56]
+Requests to add a new key authority to an account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][58]
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `authorizedKey` **[String][55]** New public key to be associated with the account
--   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'
--   `weight` **[number][57]** Weight of the key authority
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `authorizedKey` **[String][57]** New public key to be associated with the account
+-   `role` **[String][57]** Type of authority. Can be 'Posting','Active' or 'Memo'
+-   `weight` **[number][59]** Weight of the key authority
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestRemoveKeyAuthority
 
-Requests to remove a key to an account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][56]
+Requests to remove a key to an account. For more information about multisig, please read [https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain][58]
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `authorizedKey` **[String][55]** Key to be removed (public key).
--   `role` **[String][55]** Type of authority. Can be 'Posting','Active' or 'Memo'.
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `authorizedKey` **[String][57]** Key to be removed (public key).
+-   `role` **[String][57]** Type of authority. Can be 'Posting','Active' or 'Memo'.
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestBroadcast
 
@@ -216,11 +218,11 @@ Generic broadcast request
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `operations` **[Array][58]** Array of operations to be broadcasted
--   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `operations` **[Array][60]** Array of operations to be broadcasted
+-   `key` **[String][57]** Type of key. Can be 'Posting','Active' or 'Memo'
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestSignTx
 
@@ -228,11 +230,11 @@ Requests to sign a transaction with a given authority
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `tx` **[Object][59]** Unsigned transaction
--   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `tx` **[Object][61]** Unsigned transaction
+-   `key` **[String][57]** Type of key. Can be 'Posting','Active' or 'Memo'
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestSignedCall
 
@@ -240,12 +242,12 @@ Requests a signed call
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `method` **[String][55]** Method of the call
--   `params` **[String][55]** Parameters of the call
--   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `method` **[String][57]** Method of the call
+-   `params` **[String][57]** Parameters of the call
+-   `key` **[String][57]** Type of key. Can be 'Posting','Active' or 'Memo'
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestPost
 
@@ -253,16 +255,16 @@ Requests to broadcast a blog post/comment
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `title` **[String][55]** Title of the blog post
--   `body` **[String][55]** Content of the blog post
--   `parent_perm` **[String][55]** Permlink of the parent post. Main tag for a root post
--   `parent_account` **[String][55]** Author of the parent post. Pass null for root post
--   `json_metadata` **[Object][59]** Parameters of the call
--   `permlink` **[String][55]** Permlink of the blog post
--   `comment_options` **[Object][59]** Options attached to the blog post. Consult Hive documentation to learn more about it
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `title` **[String][57]** Title of the blog post
+-   `body` **[String][57]** Content of the blog post
+-   `parent_perm` **[String][57]** Permlink of the parent post. Main tag for a root post
+-   `parent_account` **[String][57]** Author of the parent post. Pass null for root post
+-   `json_metadata` **[Object][61]** Parameters of the call
+-   `permlink` **[String][57]** Permlink of the blog post
+-   `comment_options` **[Object][61]** Options attached to the blog post. Consult Hive documentation to learn more about it
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestVote
 
@@ -270,12 +272,12 @@ Requests a vote
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `permlink` **[String][55]** Permlink of the blog post
--   `author` **[String][55]** Author of the blog post
--   `weight` **[String][55]** Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `permlink` **[String][57]** Permlink of the blog post
+-   `author` **[String][57]** Author of the blog post
+-   `weight` **[String][57]** Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestCustomJson
 
@@ -283,13 +285,13 @@ Requests a custom JSON broadcast
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `id` **[String][55]** Type of custom_json to be broadcasted
--   `key` **[String][55]** Type of key. Can be 'Posting','Active' or 'Memo'
--   `json` **[String][55]** Stringified custom json
--   `display_msg` **[String][55]** Message to display to explain to the user what this broadcast is about
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `id` **[String][57]** Type of custom_json to be broadcasted
+-   `key` **[String][57]** Type of key. Can be 'Posting','Active' or 'Memo'
+-   `json` **[String][57]** Stringified custom json
+-   `display_msg` **[String][57]** Message to display to explain to the user what this broadcast is about
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestTransfer
 
@@ -297,14 +299,28 @@ Requests a transfer
 
 ##### Parameters
 
--   `account` **[String][55]** Hive account to perform the request
--   `to` **[String][55]** Hive account to receive the transfer
--   `amount` **[String][55]** Amount to be transfered. Requires 3 decimals.
--   `memo` **[String][55]** The memo will be automatically encrypted if starting by '#' and the memo key is available on Keychain. It will also overrule the account to be enforced, regardless of the 'enforce' parameter
--   `currency` **[String][55]** 'HIVE' or 'HBD'
--   `callback` **[function][54]** Keychain's response to the request
--   `enforce` **[boolean][60]** If set to true, user cannot chose to make the transfer from another account (optional, default `false`)
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][57]** Hive account to perform the request
+-   `to` **[String][57]** Hive account to receive the transfer
+-   `amount` **[String][57]** Amount to be transfered. Requires 3 decimals.
+-   `memo` **[String][57]** The memo will be automatically encrypted if starting by '#' and the memo key is available on Keychain. It will also overrule the account to be enforced, regardless of the 'enforce' parameter
+-   `currency` **[String][57]** 'HIVE' or 'HBD'
+-   `callback` **[function][56]** Keychain's response to the request
+-   `enforce` **[boolean][62]** If set to true, user cannot chose to make the transfer from another account (optional, default `false`)
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
+
+#### requestSendToken
+
+Requests a token transfer
+
+##### Parameters
+
+-   `account` **[String][57]** Hive account to perform the request
+-   `to` **[String][57]** Hive account to receive the transfer
+-   `amount` **[String][57]** Amount to be transfered. Requires 3 decimals.
+-   `memo` **[String][57]** Memo attached to the transfer
+-   `currency` **[String][57]** Token to be sent
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestDelegation
 
@@ -312,12 +328,12 @@ Requests a delegation broadcast
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `delegatee` **[String][55]** Account to receive the delegation
--   `amount` **[number][57]** Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
--   `unit` **[String][55]** HP or VESTS
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `delegatee` **[String][57]** Account to receive the delegation
+-   `amount` **[number][59]** Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
+-   `unit` **[String][57]** HP or VESTS
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestWitnessVote
 
@@ -325,11 +341,11 @@ Requests a witness vote broadcast
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `witness` **[String][55]** Account to receive the witness vote
--   `vote` **[boolean][60]** Set to true to vote for the witness, false to unvote
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `witness` **[String][57]** Account to receive the witness vote
+-   `vote` **[boolean][62]** Set to true to vote for the witness, false to unvote
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestProxy
 
@@ -337,10 +353,10 @@ Select an account as proxy
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `proxy` **[String][55]** Account to become the proxy. Empty string ('') to remove a proxy
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `proxy` **[String][57]** Account to become the proxy. Empty string ('') to remove a proxy
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestPowerUp
 
@@ -348,11 +364,11 @@ Request a power up
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `recipient` **[String][55]** Account to receive the power up
--   `hive` **[number][57]** Amount of HIVE to be powered up
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `recipient` **[String][57]** Account to receive the power up
+-   `hive` **[number][59]** Amount of HIVE to be powered up
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestPowerDown
 
@@ -360,10 +376,10 @@ Request a power down
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `hive_power` **[number][57]** Amount of HIVE to be powered down
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `hive_power` **[number][59]** Amount of HIVE to be powered down
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestCreateClaimedAccount
 
@@ -371,14 +387,14 @@ Request the creation of an account using claimed tokens
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `new_account` **[String][55]** New account to be created
--   `owner` **[object][59]** owner authority object
--   `active` **[object][59]** active authority object
--   `posting` **[object][59]** posting authority object
--   `memo` **[String][55]** public memo key
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `new_account` **[String][57]** New account to be created
+-   `owner` **[object][61]** owner authority object
+-   `active` **[object][61]** active authority object
+-   `posting` **[object][61]** posting authority object
+-   `memo` **[String][57]** public memo key
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestCreateProposal
 
@@ -386,16 +402,16 @@ Request the creation of a DHF proposal
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `receiver` **[String][55]** Account receiving the funding if the proposal is voted
--   `subject` **[String][55]** Title of the DAO
--   `permlink` **[String][55]** Permlink to the proposal description
--   `daily_pay` **[number][57]** Daily amount to be received by `receiver`
--   `start` **[Date][61]** Starting date
--   `end` **[Date][61]** Ending date
--   `extensions` **[Array][58]** 
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `receiver` **[String][57]** Account receiving the funding if the proposal is voted
+-   `subject` **[String][57]** Title of the DAO
+-   `permlink` **[String][57]** Permlink to the proposal description
+-   `daily_pay` **[number][59]** Daily amount to be received by `receiver`
+-   `start` **[Date][63]** Starting date
+-   `end` **[Date][63]** Ending date
+-   `extensions` **[Array][60]** 
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestRemoveProposal
 
@@ -403,11 +419,11 @@ Request the removal of a DHF proposal
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `proposal_ids` **[Array][58]** Ids of the proposals to be removed
--   `extensions` **[Array][58]** 
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `proposal_ids` **[Array][60]** Ids of the proposals to be removed
+-   `extensions` **[Array][60]** 
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 #### requestUpdateProposalVote
 
@@ -415,12 +431,12 @@ Vote/Unvote a DHF proposal
 
 ##### Parameters
 
--   `username` **[String][55]** Hive account to perform the request
--   `proposal_ids` **[Array][58]** Ids of the proposals to be removed
--   `approve` **[boolean][60]** Set to true to support the proposal, false to remove a vote
--   `extensions` **[Array][58]** 
--   `callback` **[function][54]** Keychain's response to the request
--   `rpc` **[String][55]** Override user's RPC settings (optional, default `null`)
+-   `username` **[String][57]** Hive account to perform the request
+-   `proposal_ids` **[Array][60]** Ids of the proposals to be removed
+-   `approve` **[boolean][62]** Set to true to support the proposal, false to remove a vote
+-   `extensions` **[Array][60]** 
+-   `callback` **[function][56]** Keychain's response to the request
+-   `rpc` **[String][57]** Override user's RPC settings (optional, default `null`)
 
 [1]: #about-keychain
 
@@ -484,62 +500,66 @@ Vote/Unvote a DHF proposal
 
 [31]: #parameters-13
 
-[32]: #requestdelegation
+[32]: #requestsendtoken
 
 [33]: #parameters-14
 
-[34]: #requestwitnessvote
+[34]: #requestdelegation
 
 [35]: #parameters-15
 
-[36]: #requestproxy
+[36]: #requestwitnessvote
 
 [37]: #parameters-16
 
-[38]: #requestpowerup
+[38]: #requestproxy
 
 [39]: #parameters-17
 
-[40]: #requestpowerdown
+[40]: #requestpowerup
 
 [41]: #parameters-18
 
-[42]: #requestcreateclaimedaccount
+[42]: #requestpowerdown
 
 [43]: #parameters-19
 
-[44]: #requestcreateproposal
+[44]: #requestcreateclaimedaccount
 
 [45]: #parameters-20
 
-[46]: #requestremoveproposal
+[46]: #requestcreateproposal
 
 [47]: #parameters-21
 
-[48]: #requestupdateproposalvote
+[48]: #requestremoveproposal
 
 [49]: #parameters-22
 
-[50]: http://u.cubeupload.com/arcange/yOdI5g.png
+[50]: #requestupdateproposalvote
 
-[51]: https://chrome.google.com/webstore/detail/hive-keychain/jcacnejopjdphbnjgfaaobbfafkihpep
+[51]: #parameters-23
 
-[52]: https://addons.mozilla.org/en-GB/firefox/addon/hive-keychain/
+[52]: http://u.cubeupload.com/arcange/yOdI5g.png
 
-[53]: http://localhost:1337/main.html
+[53]: https://chrome.google.com/webstore/detail/hive-keychain/jcacnejopjdphbnjgfaaobbfafkihpep
 
-[54]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[54]: https://addons.mozilla.org/en-GB/firefox/addon/hive-keychain/
 
-[55]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[55]: http://localhost:1337/main.html
 
-[56]: https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+[56]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[57]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[57]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[58]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[58]: https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
 
-[59]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+[59]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[60]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+[60]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[61]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date
+[61]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
+
+[62]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
+
+[63]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date

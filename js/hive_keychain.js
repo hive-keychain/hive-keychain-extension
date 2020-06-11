@@ -347,26 +347,36 @@ var hive_keychain = {
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
-  // requestSendToken: function(
-  //   account,
-  //   to,
-  //   amount,
-  //   memo,
-  //   currency,
-  //   callback,
-  //   rpc
-  // ) {
-  //   var request = {
-  //     type: "sendToken",
-  //     username: account,
-  //     to,
-  //     amount,
-  //     memo,
-  //     currency,
-  //     rpc
-  //   };
-  //   this.dispatchCustomEvent("swRequest_hive", request, callback);
-  // },
+  /**
+   * Requests a token transfer
+   * @param {String} account Hive account to perform the request
+   * @param {String} to Hive account to receive the transfer
+   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} memo Memo attached to the transfer
+   * @param {String} currency Token to be sent
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestSendToken: function(
+    account,
+    to,
+    amount,
+    memo,
+    currency,
+    callback,
+    rpc
+  ) {
+    var request = {
+      type: "sendToken",
+      username: account,
+      to,
+      amount,
+      memo,
+      currency,
+      rpc
+    };
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
+  },
   /**
    * Requests a delegation broadcast
    * @param {String} username Hive account to perform the request
