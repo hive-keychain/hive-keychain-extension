@@ -295,9 +295,9 @@ const keychainify = {
     display_msg
   ) {
     let username = null;
-    if (!["[]", "_signer"].includes(required_posting_auths))
+    if (!["[]", "__signer"].includes(required_posting_auths))
       username = required_posting_auths;
-    if (!["[]", "_signer"].includes(required_auths)) username = required_auths;
+    if (!["[]", "__signer"].includes(required_auths)) username = required_auths;
     var request = {
       type: "custom",
       username,
