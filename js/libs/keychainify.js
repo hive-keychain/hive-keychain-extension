@@ -146,7 +146,7 @@ const keychainify = {
           payload.id,
           payload.json,
           payload.display_msg,
-          payload.redirect_url
+          payload.redirect_uri
         );
         break;
     }
@@ -159,7 +159,6 @@ const keychainify = {
    */
   dispatchRequest: function(tab, request) {
     const now = new Date().getTime();
-
     if (tab) {
       chromeMessageHandler(
         {
@@ -285,7 +284,7 @@ const keychainify = {
    * @param id
    * @param json
    * @param display_msg
-   * @param redirect_url
+   * @param redirect_uri
    */
   requestCustomJSON: function(
     tab,
@@ -295,7 +294,7 @@ const keychainify = {
     id,
     json,
     display_msg,
-    redirect_url
+    redirect_uri
   ) {
     let username = null;
     if (!["[]", "__signer"].includes(required_posting_auths))
@@ -308,7 +307,7 @@ const keychainify = {
       method: authority,
       json,
       display_msg,
-      redirect_url
+      redirect_uri
     };
 
     keychainify.dispatchRequest(tab, request);
