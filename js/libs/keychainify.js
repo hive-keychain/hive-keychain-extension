@@ -145,7 +145,8 @@ const keychainify = {
           payload.authority,
           payload.id,
           payload.json,
-          payload.display_msg
+          payload.display_msg,
+          payload.redirect_url
         );
         break;
     }
@@ -284,6 +285,7 @@ const keychainify = {
    * @param id
    * @param json
    * @param display_msg
+   * @param redirect_url
    */
   requestCustomJSON: function(
     tab,
@@ -292,7 +294,8 @@ const keychainify = {
     authority,
     id,
     json,
-    display_msg
+    display_msg,
+    redirect_url
   ) {
     let username = null;
     if (!["[]", "__signer"].includes(required_posting_auths))
@@ -304,7 +307,8 @@ const keychainify = {
       id,
       method: authority,
       json,
-      display_msg
+      display_msg,
+      redirect_url
     };
 
     keychainify.dispatchRequest(tab, request);

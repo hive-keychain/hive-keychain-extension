@@ -73,12 +73,12 @@ chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
 });
 
 const sendResponse = response => {
-  if (response.data.extension && response.data.extensionName)
+  if (response.data.extension && response.data.extensionName) {
     chrome.runtime.sendMessage(
       response.data.extension,
       JSON.stringify(response)
     );
-  else
+  } else {
     window.postMessage(
       {
         type: "hive_keychain_response",
@@ -86,6 +86,7 @@ const sendResponse = response => {
       },
       window.location.origin
     );
+  }
 };
 
 const validate = () => {
