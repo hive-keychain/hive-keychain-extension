@@ -2040,10 +2040,6 @@ input:focus {
   margin-top: 20px;
 }
 
-#keychainify {
-  display: none;
-}
-
 .preferences-site-container {
   background-color: rgba(227, 19, 55, 0.32);
   width: 100%;
