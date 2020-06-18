@@ -71,7 +71,8 @@ const keychainify = {
           payload.to,
           payload.amount,
           payload.memo,
-          payload.currency
+          payload.currency,
+          payload.redirect_uri
         );
         break;
 
@@ -189,6 +190,7 @@ const keychainify = {
    * @param amount
    * @param memo
    * @param currency
+   * @param redirect_uri
    * @param enforce
    */
   requestTransfer: function(
@@ -198,6 +200,7 @@ const keychainify = {
     amount,
     memo,
     currency,
+    redirect_uri,
     enforce = false
   ) {
     const request = {
@@ -207,7 +210,8 @@ const keychainify = {
       amount: amount,
       memo: memo,
       enforce: enforce,
-      currency: currency
+      currency: currency,
+      redirect_uri
     };
 
     if (to && amount && currency) {
@@ -297,9 +301,10 @@ const keychainify = {
     redirect_uri
   ) {
     let username = null;
-    if (!["[]", "__signer"].includes(required_posting_auths))
+    if (!["[]", '["__signer"]'].includes(required_posting_auths))
       username = required_posting_auths;
-    if (!["[]", "__signer"].includes(required_auths)) username = required_auths;
+    if (!["[]", '["__signer"]'].includes(required_auths))
+      username = required_auths;
     var request = {
       type: "custom",
       username,
