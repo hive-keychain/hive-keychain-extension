@@ -168,7 +168,7 @@ $("#add_account_by_auth").click(async () => {
       chrome.i18n.getMessage("popup_accounts_already_registered", [name])
     );
   else {
-    const account = new Account({name, keys: {}});
+    const account = new Account({ name, keys: {} });
     account.init();
     let hasAuth = 0;
     for (const key of ["posting", "active"]) {
@@ -308,6 +308,14 @@ const manageKeys = name => {
       return obj;
     }
   })[0];
+  console.log(`keychain://add_account=${JSON.stringify(account.account)}`);
+  $("#qrcode_export").append(
+    kjua({
+      text: `keychain://add_account=${JSON.stringify(account.account)}`,
+      quiet: 0,
+      back: "rgba(255, 255, 255, 0.7)"
+    })
+  );
   const keys = account.getKeys();
   $(".public_key").html("");
   $(".private_key").html("");
