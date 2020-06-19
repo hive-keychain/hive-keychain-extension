@@ -2,10 +2,8 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.9.2",
-  "permissions": [
-    "storage", "tabs", "notifications", "idle", "webNavigation"
-  ],
+  "version": "1.9.3",
+  "permissions": ["storage", "tabs", "notifications", "idle", "webNavigation"],
   "browser_action": {
     "default_popup": "html/popup.html",
     "default_icon": "images/iconhive.png"
@@ -54,15 +52,16 @@
     ],
     "persistent": true
   },
-  "web_accessible_resources": [
-    "/images/logo.png", "js/hive_keychain.js"
-  ],
+  "web_accessible_resources": ["/images/logo.png", "js/hive_keychain.js"],
   "content_scripts": [
     {
-      "matches": [
-        "https://*/*", "http://0.0.0.0:1337/*", "http://*/*"
-      ],
-      "js": ["vendor/jquery.min.js", "js/web_interface.js", "js/libs/keychainify.js", "js/keychainify_content.js"]
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "js": [
+        "vendor/jquery.min.js",
+        "js/web_interface.js",
+        "js/libs/keychainify.js",
+        "js/keychainify_content.js"
+      ]
     }
   ],
   "manifest_version": 2
