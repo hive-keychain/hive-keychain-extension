@@ -22,7 +22,7 @@ const checkBeforeCreate = (request, tab, domain) => {
     chrome.storage.local.get(
       ["accounts", "no_confirm", "current_rpc"],
       function(items) {
-        const {memo, username, type, enforce} = request;
+        const { memo, username, type, enforce, method } = request;
         // Check user
         if (!items.accounts) {
           createPopup(() => {
@@ -103,13 +103,14 @@ const checkBeforeCreate = (request, tab, domain) => {
             }
             // if transfer
           } else if (
-            ["delegation", "witnessVote", "proxy"].includes(type) &&
+            ["delegation", "witnessVote", "proxy", "custom"].includes(type) &&
             !username
           ) {
             // if no username specified for witness vote or delegation
+            const filterKey = getRequiredWifType(request);
             const tr_accounts = accountsList
               .getList()
-              .filter(e => e.hasKey("active"))
+              .filter(e => e.hasKey(filterKey))
               .map(e => e.getName());
             if (tr_accounts.length == 0) {
               createPopup(() => {

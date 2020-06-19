@@ -1,6 +1,6 @@
 const transferValidator = new TransferValidator();
 chrome.runtime.onMessage.addListener(function(
-  {msg, accounts, command, data, tab, domain, request_id, testnet},
+  { msg, accounts, command, data, tab, domain, request_id, testnet },
   sender,
   sendResp
 ) {
@@ -61,7 +61,7 @@ chrome.runtime.onMessage.addListener(function(
     // Display confirmation window
     $("#confirm_footer").show();
     $("#modal-body-msg").show();
-    let {enforce} = data;
+    let { enforce } = data;
     let encode;
     const {
       type,
@@ -299,6 +299,7 @@ chrome.runtime.onMessage.addListener(function(
         $("#perm").text(permlink);
         break;
       case "custom":
+        showDropdownIfNoUsername(username);
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
@@ -414,7 +415,8 @@ chrome.runtime.onMessage.addListener(function(
     $("#proceed").click(function() {
       if (
         (type === "transfer" && !enforce) ||
-        (["witnessVote", "delegation", "proxy"].includes(type) && !username)
+        (["witnessVote", "delegation", "proxy", "custom"].includes(type) &&
+          !username)
       ) {
         chrome.storage.local.set({
           last_chosen_account: $("#select_transfer option:selected").val()
@@ -459,7 +461,7 @@ chrome.runtime.onMessage.addListener(function(
 
 const showBalances = async (user, currency, amount) => {
   let balance = 0;
-  steem.api.setOptions({url: "https://api.hive.blog/"});
+  steem.api.setOptions({ url: "https://api.hive.blog/" });
   if (["hbd", "hive", "hp"].includes(currency.toLowerCase())) {
     const account = (await steem.api.getAccountsAsync([user]))[0];
     switch (currency.toLowerCase()) {
@@ -501,7 +503,7 @@ const getHivePower = async vesting_shares => {
 
 const getTokens = async account => {
   const ssc = new SSC("https://api.steem-engine.com/rpc");
-  return await ssc.find("tokens", "balances", {account});
+  return await ssc.find("tokens", "balances", { account });
 };
 
 function initiateCustomSelect(data) {

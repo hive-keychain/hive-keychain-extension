@@ -25,10 +25,12 @@ const keychainify = {
   },
 
   isUrlSupported: function(url) {
-    return url.includes("hivesigner.com/sign/transfer")
-      || url.includes("hivesigner.com/sign/account-witness-vote")
-      || url.includes("hivesigner.com/sign/delegate-vesting-shares")
-      || url.includes("hivesigner.com/sign/account-witness-proxy");
+    return (
+      (url.includes("hivesigner.com/sign/transfer") ||
+      url.includes("hivesigner.com/sign/account-witness-vote") ||
+      url.includes("hivesigner.com/sign/delegate-vesting-shares") ||
+      url.includes("hivesigner.com/sign/account-witness-proxy"))
+    );
   },
 
   /**
@@ -69,7 +71,8 @@ const keychainify = {
           payload.to,
           payload.amount,
           payload.memo,
-          payload.currency
+          payload.currency,
+          payload.redirect_uri
         );
         break;
 
@@ -125,6 +128,28 @@ const keychainify = {
 
         keychainify.requestProxy(tab, payload.account, payload.proxy);
         break;
+      case (url.includes("https://hivesigner.com/sign/custom-json") ||
+        url.includes("https://hivesigner.com/sign/custom_json")):
+        defaults = {
+          required_auths: null,
+          required_posting_auths: null,
+          id: null,
+          json: null
+        };
+
+        payload = Object.assign(defaults, vars);
+
+        keychainify.requestCustomJSON(
+          tab,
+          payload.required_posting_auths,
+          payload.required_auths,
+          payload.authority,
+          payload.id,
+          payload.json,
+          payload.display_msg,
+          payload.redirect_uri
+        );
+        break;
     }
   },
 
@@ -135,7 +160,6 @@ const keychainify = {
    */
   dispatchRequest: function(tab, request) {
     const now = new Date().getTime();
-
     if (tab) {
       chromeMessageHandler(
         {
@@ -166,6 +190,7 @@ const keychainify = {
    * @param amount
    * @param memo
    * @param currency
+   * @param redirect_uri
    * @param enforce
    */
   requestTransfer: function(
@@ -175,6 +200,7 @@ const keychainify = {
     amount,
     memo,
     currency,
+    redirect_uri,
     enforce = false
   ) {
     const request = {
@@ -184,7 +210,8 @@ const keychainify = {
       amount: amount,
       memo: memo,
       enforce: enforce,
-      currency: currency
+      currency: currency,
+      redirect_uri
     };
 
     if (to && amount && currency) {
@@ -254,7 +281,42 @@ const keychainify = {
       console.error("[keychainify] Missing parameters for delegation");
     }
   },
+  /**
+   * Requesting a Keychain custom_json
+   * @param required_posting_auths
+   * @param required_auths
+   * @param id
+   * @param json
+   * @param display_msg
+   * @param redirect_uri
+   */
+  requestCustomJSON: function(
+    tab,
+    required_posting_auths,
+    required_auths,
+    authority,
+    id,
+    json,
+    display_msg,
+    redirect_uri
+  ) {
+    let username = null;
+    if (!["[]", '["__signer"]'].includes(required_posting_auths))
+      username = required_posting_auths;
+    if (!["[]", '["__signer"]'].includes(required_auths))
+      username = required_auths;
+    var request = {
+      type: "custom",
+      username,
+      id,
+      method: authority,
+      json,
+      display_msg,
+      redirect_uri
+    };
 
+    keychainify.dispatchRequest(tab, request);
+  },
   /**
    * Parsing the query string
    * @param url
