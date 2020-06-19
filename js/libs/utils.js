@@ -300,7 +300,8 @@ function initiateCustomSelect(options, current_rpc) {
     if ($(x[i]).find("div.select-selected").length) continue;
     a = document.createElement("DIV");
     a.setAttribute("class", "select-selected");
-    a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+    if (selElmnt.options[selElmnt.selectedIndex])
+      a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
     x[i].appendChild(a);
     /*for each element, create a new DIV that will contain the option list:*/
     b = document.createElement("DIV");
@@ -403,7 +404,7 @@ function initiateCustomSelect(options, current_rpc) {
           .attr("id") == "custom_select_rpc"
       ) {
         if (this.innerHTML !== chrome.i18n.getMessage("popup_rpc_add")) {
-          chrome.storage.local.set({current_rpc: this.innerHTML});
+          chrome.storage.local.set({ current_rpc: this.innerHTML });
           switchRPC(this.innerHTML);
         } else {
           showCustomRPC();
