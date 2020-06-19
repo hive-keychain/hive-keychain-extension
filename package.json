@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "1.9.0",
+  "version": "1.9.3",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -14,7 +14,9 @@
     "url": "git+https://github.com/stoodkev/hive-keychain.git"
   },
   "keywords": [
-    "hive", "keychain", "extension"
+    "hive",
+    "keychain",
+    "extension"
   ],
   "author": "stoodkev",
   "license": "MIT",
