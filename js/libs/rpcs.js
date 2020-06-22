@@ -4,7 +4,10 @@ class Rpcs {
     this.awaitRollback = false;
     this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
     this.list = this.initList();
-    this.version = hive.api.getVersionAsync();
+    //this.version = hive.api.getVersionAsync();
+  }
+  getCurrent() {
+    return this.currentRpc;
   }
   async initList() {
     let listRPC = [];

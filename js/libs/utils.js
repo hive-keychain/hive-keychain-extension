@@ -150,7 +150,7 @@ var getRC = function(name) {
   };
   return new Promise(function(fulfill, reject) {
     $.ajax({
-      url: "https://api.hive.blog/",
+      url: rpcs.getCurrent(),
       type: "POST",
       data: JSON.stringify(data),
       success: function(response) {
