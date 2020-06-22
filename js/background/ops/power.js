@@ -1,6 +1,6 @@
 const broadcastPowerUp = data => {
   return new Promise((resolve, reject) => {
-    steem.broadcast.transferToVesting(
+    hive.broadcast.transferToVesting(
       key,
       data.username,
       data.recipient,
@@ -23,7 +23,7 @@ const broadcastPowerUp = data => {
 
 const broadcastPowerDown = data => {
   return new Promise((resolve, reject) => {
-    steem.api.getDynamicGlobalPropertiesAsync().then(res => {
+    hive.api.getDynamicGlobalPropertiesAsync().then(res => {
       let vestingShares = null;
       const totalSteem = Number(res.total_vesting_fund_steem.split(" ")[0]);
       const totalVests = Number(res.total_vesting_shares.split(" ")[0]);
@@ -31,7 +31,7 @@ const broadcastPowerDown = data => {
       vestingShares = vestingShares.toFixed(6);
       vestingShares = vestingShares.toString() + " VESTS";
 
-      steem.broadcast.withdrawVesting(
+      hive.broadcast.withdrawVesting(
         key,
         data.username,
         vestingShares,

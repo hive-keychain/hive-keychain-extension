@@ -1,639 +1,674 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+  <head>
     <title></title>
-    <link rel="stylesheet" type="text/css" href="../css/popup.css">
-    <link rel="stylesheet" type="text/css" href="../vendor/jquery-autocomplete.min.css">
-</head>
+    <link rel="stylesheet" type="text/css" href="../css/popup.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="../vendor/jquery-autocomplete.min.css"
+    />
+  </head>
 
-<body>
+  <body>
     <div class="cloud"></div>
     <div id="register" class="hide-at-start">
-        <img src="../images/keychain_logo.png" class="logo-white" />
-        <p></p>
-        <div class="input_container">
-            <input type="password" id="master_pwd"  />
-            <img src="../images/lock.png" class="input_img" />
-        </div>
-        <div class="input_container">
-            <input type="password" id="confirm_master_pwd" />
-            <img src="../images/lock.png" class="input_img" />
-        </div>
-        <button id="submit_master_pwd"></button>
+      <img src="../images/keychain_logo.png" class="logo-white" />
+      <p></p>
+      <div class="input_container">
+        <input type="password" id="master_pwd" />
+        <img src="../images/lock.png" class="input_img" />
+      </div>
+      <div class="input_container">
+        <input type="password" id="confirm_master_pwd" />
+        <img src="../images/lock.png" class="input_img" />
+      </div>
+      <button id="submit_master_pwd"></button>
     </div>
     <div id="unlock" class="hide-at-start">
-        <img src="../images/keychain_logo.png" class="logo-white" />
-        <p></p>
-        <div class="input_container">
-            <input type="password" id="unlock_pwd" />
-            <img src="../images/lock.png" class="input_img" />
-            <img src="../images/hide.png" class="input_img_right_eye" />
-        </div>
-        <div class="input_container">
-            <button id="submit_unlock"></button>
-            <img src="../images/submit.png" class="input_img_right_submit" />
-        </div>
-        <a href="#" id="forgot"></a>
+      <img src="../images/keychain_logo.png" class="logo-white" />
+      <p></p>
+      <div class="input_container">
+        <input type="password" id="unlock_pwd" />
+        <img src="../images/lock.png" class="input_img" />
+        <img src="../images/hide.png" class="input_img_right_eye" />
+      </div>
+      <div class="input_container">
+        <button id="submit_unlock"></button>
+        <img src="../images/submit.png" class="input_img_right_submit" />
+      </div>
+      <a href="#" id="forgot"></a>
     </div>
     <div id="forgot_div" class="hide-at-start">
-        <div class="back_enabled" id="back_forgot"></div>
-        <p></p>
-        <button></button>
+      <div class="back_enabled" id="back_forgot"></div>
+      <p></p>
+      <button></button>
     </div>
     <div class="error_div"></div>
     <div class="success_div"></div>
     <div id="main" class="hide-at-start">
-        <div class="main_header">
-            <img class="icon" src="../images/keychain_icon_small.png" />
-            <span>
-              <div class="dash-button" id="claim"></div>
-              <img  src="../images/lock_wallet.png" id="lock"/>
-              <img  src="../images/squares.png" id="settings"/>
-            </span>
-        </div>
-        <div class="custom-select custom-select-main usernames">
-            <select>
-            </select>
-        </div>
-        <div id="voting_power">
-            <div id="voting_power_inner">
-                <div id="vm_div">
-                    <div>
-                        <span id="vm_title"></span>
-                        <img id="vm_info" src="../images/icon_info_white.png" />
-                    </div>
-                    <div id="vm"><span id='vm_pct'>...</span><span id='vm_val'></span>
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        <span id="rc_title"></span>
-                        <img id="rc_info" src="../images/icon_info_white.png" />
-                    </div>
-                    <div id="rc">...
-                    </div>
-                </div>
+      <div class="main_header">
+        <img class="icon" src="../images/keychain_icon_small.png" />
+        <span>
+          <div class="dash-button" id="claim"></div>
+          <img src="../images/lock_wallet.png" id="lock" />
+          <img src="../images/squares.png" id="settings" />
+        </span>
+      </div>
+      <div class="custom-select custom-select-main usernames">
+        <select> </select>
+      </div>
+      <div id="voting_power">
+        <div id="voting_power_inner">
+          <div id="vm_div">
+            <div>
+              <span id="vm_title"></span>
+              <img id="vm_info" src="../images/icon_info_white.png" />
             </div>
+            <div id="vm">
+              <span id="vm_pct">...</span><span id="vm_val"></span>
+            </div>
+          </div>
+          <div>
+            <div>
+              <span id="rc_title"></span>
+              <img id="rc_info" src="../images/icon_info_white.png" />
+            </div>
+            <div id="rc">...</div>
+          </div>
         </div>
-        <div id="wallet">
-            <div id="wallet_amt">
-                <div class="wallet_infos">...</div>
-                <div class="wallet_infos">...</div>
-                <div class="wallet_infos">...</div>
+      </div>
+      <div id="wallet">
+        <div id="wallet_amt">
+          <div class="wallet_infos">...</div>
+          <div class="wallet_infos">...</div>
+          <div class="wallet_infos">...</div>
+        </div>
+        <div id="wallet_currency">
+          <div class="currency-section">
+            <div class="wallet_currency">HBD</div>
+            <div class="dropdown">
+              <div id="send_steem"><img src="../images/transfer.png" /></div>
+              <div id="powerup"><img src="../images/powerup.png" /></div>
             </div>
-            <div id="wallet_currency">
-                <div class='currency-section'>
-                    <div class="wallet_currency">HBD</div>
-                    <div class="dropdown">
-                        <div id="send_steem"><img src="../images/transfer.png" /></div>
-                        <div id="powerup"><img src="../images/powerup.png" /></div>
-                    </div>
-                </div>
-                <div class='currency-section'>
-                    <div class="wallet_currency">HBD</div>
-                    <div class="dropdown">
-                        <div id="send_sbd"><img src="../images/transfer.png" /></div>
-                    </div>
-                </div>
-                <div class='currency-section'>
-                    <div class="wallet_currency" id="wallet_sp">HP</div>
-                    <div class="dropdown">
-                        <div id="delegate"><img src="../images/delegate.png" /></div>
-                        <div id="powerdown"><img src="../images/powerdown.png" /></div>
-                    </div>
-                </div>
+          </div>
+          <div class="currency-section">
+            <div class="wallet_currency">HBD</div>
+            <div class="dropdown">
+              <div id="send_sbd"><img src="../images/transfer.png" /></div>
             </div>
+          </div>
+          <div class="currency-section">
+            <div class="wallet_currency" id="wallet_sp">HP</div>
+            <div class="dropdown">
+              <div id="delegate"><img src="../images/delegate.png" /></div>
+              <div id="powerdown"><img src="../images/powerdown.png" /></div>
+            </div>
+          </div>
+        </div>
 
-            <div class="dropdown">
-            </div>
-            <div class="dropdown">
-            </div>
-        </div>
-        <div id="account_value">
-            <div id="account_value_header"></div>
-            <div id="account_value_amt" class="wallet_infos">...</div>
-        </div>
-        <button class="dash-button main-button" id="send"></button>
-        <button class="dash-button main-button" id="history"></button>
-        <button class="dash-button main-button" id="tokens"></button>
-        <button class="dash-button main-button" id="witness"></button>
+        <div class="dropdown"></div>
+        <div class="dropdown"></div>
+      </div>
+      <div id="account_value">
+        <div id="account_value_header"></div>
+        <div id="account_value_amt" class="wallet_infos">...</div>
+      </div>
+      <button class="dash-button main-button" id="send"></button>
+      <button class="dash-button main-button" id="history"></button>
+      <button class="dash-button main-button" id="tokens"></button>
+      <button class="dash-button main-button" id="witness"></button>
     </div>
     <div id="estimation_info" class="hide-at-start">
-        <div class="back_menu back_enabled"></div>
-        <div id="estimation_info_text">
-        </div>
+      <div class="back_menu back_enabled"></div>
+      <div id="estimation_info_text"></div>
     </div>
     <div id="acc_transfers" class="hide-at-start">
-        <div class="back_menu back_enabled"></div>
-        <div id="transfer_rows" class="show-scroll"></div>
+      <div class="back_menu back_enabled"></div>
+      <div id="transfer_rows" class="show-scroll"></div>
     </div>
     <div id="add_account_types_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_menu"></div>
-        <p></p>
-        <button id="add_by_keys"></button>
-        <button id="add_by_auth"></button>
-        <button id="add_import_keys"></button>
+      <div class="back_enabled back_menu"></div>
+      <p></p>
+      <button id="add_by_keys"></button>
+      <button id="add_by_auth"></button>
+      <button id="add_import_keys"></button>
     </div>
     <div id="add_account_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_menu"></div>
-        <p></p>
-        <div class="input_container">
-            <input type="text" id="username"></input>
-            <img src="../images/arobase.png" class="input_img" />
-        </div>
-        <div class="input_container">
-            <input type="password" id="pwd"></input>
-            <img src="../images/key.png" class="input_img" />
-        </div>
-        <button id="check_add_account"></button>
+      <div class="back_enabled back_menu"></div>
+      <p></p>
+      <div class="input_container">
+        <input type="text" id="username" />
+        <img src="../images/arobase.png" class="input_img" />
+      </div>
+      <div class="input_container">
+        <input type="password" id="pwd" />
+        <img src="../images/key.png" class="input_img" />
+      </div>
+      <button id="check_add_account"></button>
     </div>
     <div id="add_auth_account_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_account_types"></div>
-        <p></p>
-        <div class="input_container">
-            <input type="text" id="username_auth"></input>
-            <img src="../images/arobase.png" class="input_img" />
-        </div>
-        <div class="input_container">
-            <input type="text" id="authorized_acc_auth"></input>
-            <img src="../images/arobase.png" class="input_img" />
-        </div>
-        <button id="add_account_by_auth"></button>
+      <div class="back_enabled back_account_types"></div>
+      <p></p>
+      <div class="input_container">
+        <input type="text" id="username_auth" />
+        <img src="../images/arobase.png" class="input_img" />
+      </div>
+      <div class="input_container">
+        <input type="text" id="authorized_acc_auth" />
+        <img src="../images/arobase.png" class="input_img" />
+      </div>
+      <button id="add_account_by_auth"></button>
     </div>
     <div id="master_check" class="hide-at-start">
-        <div class="back_add_key back_enabled"></div>
-        <p id="import_success"></p>
-        <div class="key_checkbox" id="import_posting">
-            <label for="posting_key" class="checkbox_container">
-              <div class="import_key_title"></div>
-              <div class="import_key_info"></div>
-              <input type="checkbox" checked="checked" id="posting_key"/>
-              <span class="checkmark"/>
-            </label>
-        </div>
-        <div class="key_checkbox" id="import_active">
-            <label for="active_key" class="checkbox_container">
-            <div class="import_key_title"></div>
-            <div class="import_key_info"></div>
-          <input type="checkbox" checked=true id="active_key"/>
-          <span class="checkmark"/>
+      <div class="back_add_key back_enabled"></div>
+      <p id="import_success"></p>
+      <div class="key_checkbox" id="import_posting">
+        <label for="posting_key" class="checkbox_container">
+          <div class="import_key_title"></div>
+          <div class="import_key_info"></div>
+          <input type="checkbox" checked="checked" id="posting_key" />
+          <span class="checkmark" />
         </label>
-        </div>
-        <div class="key_checkbox" id="import_memo">
-            <label for="memo_key" class="checkbox_container">
-            <div class="import_key_title"></div>
-            <div class="import_key_info"></div>
-          <input type="checkbox" checked=true id="memo_key"/>
-          <span class="checkmark"/>
+      </div>
+      <div class="key_checkbox" id="import_active">
+        <label for="active_key" class="checkbox_container">
+          <div class="import_key_title"></div>
+          <div class="import_key_info"></div>
+          <input type="checkbox" checked="true" id="active_key" />
+          <span class="checkmark" />
         </label>
-        </div>
-        <button id="save_master"></button>
+      </div>
+      <div class="key_checkbox" id="import_memo">
+        <label for="memo_key" class="checkbox_container">
+          <div class="import_key_title"></div>
+          <div class="import_key_info"></div>
+          <input type="checkbox" checked="true" id="memo_key" />
+          <span class="checkmark" />
+        </label>
+      </div>
+      <button id="save_master"></button>
     </div>
     <div id="settings_div" class="hide-at-start show-scroll">
-        <div class="back_enabled back_menu"></div>
+      <div class="back_enabled back_menu"></div>
 
-        <div class="setting_row" id="add_new_account">
-            <img src="../images/add_account.png" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="manage">
-            <img src="../images/accounts.png" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="change_pwd">
-            <img src="../images/password.png" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="preferences">
-            <img src="../images/preferences.png" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="autolock">
-            <img src="../images/autolock.png" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="keychainify">
-            <img src="../images/white-link.png" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="import_export">
-            <img  src="../images/import.svg" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="about">
-            <img src="../images/info.png" />
-            <span></span>
-        </div>
-        <div class="setting_row" id="clear">
-            <img src="../images/clear.png" />
-            <span></span>
-        </div>
+      <div class="setting_row" id="add_new_account">
+        <img src="../images/add_account.png" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="manage">
+        <img src="../images/accounts.png" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="change_pwd">
+        <img src="../images/password.png" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="preferences">
+        <img src="../images/preferences.png" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="autolock">
+        <img src="../images/autolock.png" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="keychainify">
+        <img src="../images/white-link.png" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="import_export">
+        <img src="../images/import.svg" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="about">
+        <img src="../images/info.png" />
+        <span></span>
+      </div>
+      <div class="setting_row" id="clear">
+        <img src="../images/clear.png" />
+        <span></span>
+      </div>
     </div>
     <div id="autolock_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref"></div>
-        <div class="key_checkbox autolock">
-            <label for="default" class="checkbox_container"id="div_default">
+      <div class="back_enabled back_pref"></div>
+      <div class="key_checkbox autolock">
+        <label for="default" class="checkbox_container" id="div_default">
           <div class="al_title"></div>
           <div class="al_info"></div>
-          <input type="checkbox" checked=true id="default"/>
-          <span class="checkmark"/>
+          <input type="checkbox" checked="true" id="default" />
+          <span class="checkmark" />
         </label>
-        </div>
-        <div class="key_checkbox autolock"id="div_locked">
-            <label for="locked" class="checkbox_container">
+      </div>
+      <div class="key_checkbox autolock" id="div_locked">
+        <label for="locked" class="checkbox_container">
           <div class="al_title"></div>
           <div class="al_info"></div>
-          <input type="checkbox"  id="locked"/>
-          <span class="checkmark"/>
+          <input type="checkbox" id="locked" />
+          <span class="checkmark" />
         </label>
-        </div>
-        <div class="key_checkbox autolock" id="div_idle">
-            <label for="idle" class="checkbox_container">
+      </div>
+      <div class="key_checkbox autolock" id="div_idle">
+        <label for="idle" class="checkbox_container">
           <div class="al_title"></div>
           <div class="al_info"></div>
-          <input type="checkbox" id="idle"/>
-          <span class="checkmark"/>
+          <input type="checkbox" id="idle" />
+          <span class="checkmark" />
         </label>
-        </div>
-        <div class="input_container">
-            <input type="number" id="mn" placeholder="10"></input>
-        </div>
-        <button id="save_autolock"></button>
+      </div>
+      <div class="input_container">
+        <input type="number" id="mn" placeholder="10" />
+      </div>
+      <button id="save_autolock"></button>
     </div>
     <div id="keychainify_settings" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref"></div>
-        <p></p>
-        <div class="key_checkbox enable_keychainify">
-            <label for="default" class="checkbox_container">
-                <div id="enable_keychainify_title"></div>
-                <div id="enable_keychainify_info"></div>
-                <input type="checkbox" checked=true id="enable_keychainify"/>
-                <span class="checkmark"/>
-            </label>
-        </div>
+      <div class="back_enabled back_pref"></div>
+      <p></p>
+      <div class="key_checkbox enable_keychainify">
+        <label for="default" class="checkbox_container">
+          <div id="enable_keychainify_title"></div>
+          <div id="enable_keychainify_info"></div>
+          <input type="checkbox" checked="true" id="enable_keychainify" />
+          <span class="checkmark" />
+        </label>
+      </div>
     </div>
     <div id="import_settings" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref"></div>
-        <p></p>
-        <button id="import_keys"></button>
-        <button id="export_keys"></button>
+      <div class="back_enabled back_pref"></div>
+      <p></p>
+      <button id="import_keys"></button>
+      <button id="export_keys"></button>
     </div>
     <div id="about_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref"></div>
-        <h3></h3>
-        <div class="about-content"></div>
+      <div class="back_enabled back_pref"></div>
+      <h3></h3>
+      <div class="about-content"></div>
     </div>
     <div id="manage_keys" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref"></div>
-        <div class="custom-select usernames" id="custom_select_keys">
-            <select>
-          </select>
-        </div>
-        <div class="keys_info">
-            <span class="keys_info_type" id="posting_key_title"></span>
-            <span id="posting" class="remove_key"></span>
-            <div class="private_key"></div>
-            <div class="public_key"></div>
-            <div class="img_add_key"></div>
-        </div>
-        <div class="keys_info">
-            <span class="keys_info_type" id="active_key_title"></span>
-            <span id="active" class="remove_key"></span>
-            <div class="private_key"></div>
-            <div class="public_key"></div>
-            <div class="img_add_key"></div>
-        </div>
-        <div class="keys_info">
-            <span class="keys_info_type" id="memo_key_title"></span>
-            <span id="memo" class="remove_key"></span>
-            <div class="private_key"></div>
-            <div class="public_key"></div>
-            <div class="img_add_key"></div>
-        </div>
-        <button id="delete_account"></button>
+      <div class="back_enabled back_pref"></div>
+      <div class="custom-select usernames" id="custom_select_keys">
+        <select> </select>
+      </div>
+      <div class="keys_info">
+        <span class="keys_info_type" id="posting_key_title"></span>
+        <span id="posting" class="remove_key"></span>
+        <div class="private_key"></div>
+        <div class="public_key"></div>
+        <div class="img_add_key"></div>
+      </div>
+      <div class="keys_info">
+        <span class="keys_info_type" id="active_key_title"></span>
+        <span id="active" class="remove_key"></span>
+        <div class="private_key"></div>
+        <div class="public_key"></div>
+        <div class="img_add_key"></div>
+      </div>
+      <div class="keys_info">
+        <span class="keys_info_type" id="memo_key_title"></span>
+        <span id="memo" class="remove_key"></span>
+        <div class="private_key"></div>
+        <div class="public_key"></div>
+        <div class="img_add_key"></div>
+      </div>
+      <button id="delete_account"></button>
     </div>
     <div id="pref_div" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref" style="font-size: 18px;"></div>
-        <h3 id="select_rpc"></h3>
-            <div class="custom-select no-img" id="custom_select_rpc">
-                <select>
-                </select>
-            </div>
-        <h3 id="notif_pref"></h3>
-            <div class="custom-select usernames" id="custom_select_pref">
-                <select>
-                </select>
-            </div>
-            <div class="info"></div>
-            <div id="pref"></div>
+      <div class="back_enabled back_pref" style="font-size: 18px;"></div>
+      <h3 id="select_rpc"></h3>
+      <div class="custom-select no-img" id="custom_select_rpc">
+        <select> </select>
+      </div>
+      <h3 id="notif_pref"></h3>
+      <div class="custom-select usernames" id="custom_select_pref">
+        <select> </select>
+      </div>
+      <div class="info"></div>
+      <div id="pref"></div>
     </div>
     <div id="add_rpc_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <p></p>
-        <div class="input_container">
-            <input type="text" id="new_rpc"></input>
-        </div>
-        <button id="add_new_rpc"></button>
-        <div id="custom_rpc"></div>
+      <div class="back_enabled"></div>
+      <p></p>
+      <div class="input_container">
+        <input type="text" id="new_rpc" />
+      </div>
+      <button id="add_new_rpc"></button>
+      <div id="custom_rpc"></div>
     </div>
     <div id="add_key_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <p></p>
-        <div class="input_container">
-            <input type="password" id="new_key" ></input>
-            <img src="../images/key.png" class="input_img" />
-        </div>
-        <button id="add_new_key"></button>
+      <div class="back_enabled"></div>
+      <p></p>
+      <div class="input_container">
+        <input type="password" id="new_key" />
+        <img src="../images/key.png" class="input_img" />
+      </div>
+      <button id="add_new_key"></button>
     </div>
     <div id="copied" class="hide-at-start">
-        <div></div>
+      <div></div>
     </div>
     <input id="fake_input" />
     <div id="change_password" class="settings_child hide-at-start">
-        <div class="back_enabled back_pref"></div>
-        <p></p>
-        <div class="input_container">
-            <input type="password" id="old_pwd" />
-            <img src="../images/lock.png" class="input_img" />
-        </div>
-        <div class="input_container">
-            <input type="password" id="new_pwd" />
-            <img src="../images/lock.png" class="input_img" />
-        </div>
-        <div class="input_container">
-            <input type="password" id="confirm_new_pwd" />
-            <img src="../images/lock.png" class="input_img" />
-        </div>
-        <button id="confirm_change_pwd"></button>
+      <div class="back_enabled back_pref"></div>
+      <p></p>
+      <div class="input_container">
+        <input type="password" id="old_pwd" />
+        <img src="../images/lock.png" class="input_img" />
+      </div>
+      <div class="input_container">
+        <input type="password" id="new_pwd" />
+        <img src="../images/lock.png" class="input_img" />
+      </div>
+      <div class="input_container">
+        <input type="password" id="confirm_new_pwd" />
+        <img src="../images/lock.png" class="input_img" />
+      </div>
+      <button id="confirm_change_pwd"></button>
     </div>
     <div id="send_div" class="hide-at-start">
-        <div class="back_menu back_enabled"></div>
-        <div class="transfer_balance">
-            <div id='balance'></div>
-            <div id='loading_balance'></div>
+      <div class="back_menu back_enabled"></div>
+      <div class="transfer_balance">
+        <div id="balance"></div>
+        <div id="loading_balance"></div>
+      </div>
+      <div id="send_form">
+        <div class="input_container">
+          <input id="recipient" autocomplete="off" />
+          <img src="../images/arobase.png" class="input_img" />
         </div>
-        <div id="send_form">
-            <div class="input_container">
-                <input id="recipient" autocomplete="off" />
-                <img src="../images/arobase.png" class="input_img" />
-            </div>
-            <div id="autocomplete_container"></div>
-              <input type="number" id="amt_send" autocomplete="off" placeholder="0.000" />
+        <div id="autocomplete_container"></div>
+        <input
+          type="number"
+          id="amt_send"
+          autocomplete="off"
+          placeholder="0.000"
+        />
 
-            <div class="custom-select" id="currency_send">
-                <select>
-                  <option value="HIVE">HIVE</option>
-                  <option value="HBD">HBD</option>
-                </select>
-            </div>
-            <div class="send_max_div">
-              <span class="send_max" id="amt_send_max"></span>
-            </div>
-            <input type="text"  id="memo_send" />
-            <div class='checkbox_memo'>
-                <label for='encrypt_memo' class='checkbox_container'>
-                <div></div>
-                <input type='checkbox' id='encrypt_memo'/>
-                <span class='checkmark'/>
-              </label>
-            </div>
-            <button id="send_transfer"></button>
+        <div class="custom-select" id="currency_send">
+          <select>
+            <option value="HIVE">HIVE</option>
+            <option value="HBD">HBD</option>
+          </select>
         </div>
-        <div id="show_add_active"></div>
+        <div class="send_max_div">
+          <span class="send_max" id="amt_send_max"></span>
+        </div>
+        <input type="text" id="memo_send" />
+        <div class="checkbox_memo">
+          <label for="encrypt_memo" class="checkbox_container">
+            <div></div>
+            <input type="checkbox" id="encrypt_memo" />
+            <span class="checkmark" />
+          </label>
+        </div>
+        <button id="send_transfer"></button>
+      </div>
+      <div id="show_add_active"></div>
     </div>
     <div id="confirm_send_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <p></p>
-        <div id="transfer_warning"></div>
-        <h3></h3>
-        <div id="from_conf_transfer"></div>
-        <h3></h3>
-        <div id="to_conf_transfer"></div>
-        <h3></h3>
-        <div id="amt_conf_transfer"></div>
-        <h3></h3>
-        <div id="memo_conf_transfer"></div>
-        <button id="confirm_send_transfer"></button>
-        <div class="loader" id="send_loader" style="display:none">
-            <div><img src="../images/loading.gif" /></div>
-        </div>
+      <div class="back_enabled"></div>
+      <p></p>
+      <div id="transfer_warning"></div>
+      <h3></h3>
+      <div id="from_conf_transfer"></div>
+      <h3></h3>
+      <div id="to_conf_transfer"></div>
+      <h3></h3>
+      <div id="amt_conf_transfer"></div>
+      <h3></h3>
+      <div id="memo_conf_transfer"></div>
+      <button id="confirm_send_transfer"></button>
+      <div class="loader" id="send_loader" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="claim_rewards" class="hide-at-start">
-        <img src="../images/delete.png" class="close_claim" id="close_claim" />
-        <img src="../images/rewards.png" id="gift" />
-        <p></p>
-        <button class="close_claim"></button>
-        <button id="redeem_rewards"></button>
+      <img src="../images/delete.png" class="close_claim" id="close_claim" />
+      <img src="../images/rewards.png" id="gift" />
+      <p></p>
+      <button class="close_claim"></button>
+      <button id="redeem_rewards"></button>
     </div>
     <div id="witness_div" class="hide-at-start">
-        <div class="back_enabled back_menu"></div>
-        <span id="wit_disclaimer"></span>
-        <div id="votes_remaining"></div>
-        <button class="wit-menu" id="voted" class="active_wit"></button>
-        <button class="wit-menu" id="top100"></button>
-        <button class="wit-menu" id="add_wit"></button>
-        <div class="sub_wit" id="voted_div">
-            <div id="proxy">
-                <div></div>
-            </div>
-            <div class="show-scroll" id="list_wit"></div>
+      <div class="back_enabled back_menu"></div>
+      <span id="wit_disclaimer"></span>
+      <div id="votes_remaining"></div>
+      <button class="wit-menu" id="voted" class="active_wit"></button>
+      <button class="wit-menu" id="top100"></button>
+      <button class="wit-menu" id="add_wit"></button>
+      <div class="sub_wit" id="voted_div">
+        <div id="proxy">
+          <div></div>
         </div>
-        <div class="sub_wit show-scroll" id="top100_div"></div>
-        <div class="sub_wit "  id="add_wit_div">
-            <p></p>
-            <div class="input_container">
-                <input type="text" id="wit-username"></input>
-                <img src="../images/arobase.png" class="input_img" />
-            </div>
-            <div class="custom-select" id="custom_select_wit">
-                <select>
+        <div class="show-scroll" id="list_wit"></div>
+      </div>
+      <div class="sub_wit show-scroll" id="top100_div"></div>
+      <div class="sub_wit " id="add_wit_div">
+        <p></p>
+        <div class="input_container">
+          <input type="text" id="wit-username" />
+          <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <div class="custom-select" id="custom_select_wit">
+          <select>
             <option value="Wit"></option>
             <option value="Proxy"></option>
           </select>
-            </div>
-            <button id="vote_wit"></button>
-            <div class="loader" id="wit_loading" style="display:none">
-                <div><img src="../images/loading.gif" /></div>
-            </div>
         </div>
+        <button id="vote_wit"></button>
+        <div class="loader" id="wit_loading" style="display:none">
+          <div><img src="../images/loading.gif" /></div>
+        </div>
+      </div>
     </div>
     <div id="tokens_div" class="hide-at-start">
-        <div class="back_enabled back_menu"></div>
-        <img src="../images/settings.png" id="settings_tokens" />
-        <p></p>
-        <div id="tokens_list" class="show-scroll">
-        </div>
+      <div class="back_enabled back_menu"></div>
+      <img src="../images/settings.png" id="settings_tokens" />
+      <p></p>
+      <div id="tokens_list" class="show-scroll"></div>
     </div>
     <div id="tokens_settings_div" class="hide-at-start">
-        <div class="back_enabled "></div>
-        <p></p>
-        <div id="existing_tokens" class="show-scroll">
-        </div>
+      <div class="back_enabled "></div>
+      <p></p>
+      <div id="existing_tokens" class="show-scroll"></div>
     </div>
     <div id="token_send_div" class="hide-at-start">
-        <div class="back_enabled "></div>
-        <div class="token_available">
-            <div><span class="token_left"></span><span class="token_right"></span></div>
+      <div class="back_enabled "></div>
+      <div class="token_available">
+        <div>
+          <span class="token_left"></span><span class="token_right"></span>
         </div>
-        <p></p>
-        <input type="text" id="send_tok_to" />
-        <input type="number" id="amt_tok" placeholder="0.000"></input>
-        <div id="tok">
-        </div>
-        <input type="text"  id="memo_tok" />
-        <div id="wrap_tok"><button id="send_tok"></button></div>
+      </div>
+      <p></p>
+      <input type="text" id="send_tok_to" />
+      <input type="number" id="amt_tok" placeholder="0.000" />
+      <div id="tok"></div>
+      <input type="text" id="memo_tok" />
+      <div id="wrap_tok"><button id="send_tok"></button></div>
     </div>
     <div id="confirm_token_send_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <p></p>
-        <h3></h3>
-        <div id="from_conf_token_transfer"></div>
-        <h3></h3>
-        <div id="to_conf_token_transfer"></div>
-        <h3></h3>
-        <div id="amt_conf_token_transfer"></div>
-        <h3></h3>
-        <div id="memo_conf_token_transfer"></div>
-        <button id="confirm_send_tok"></button>
-        <div class="loader" id="tok_loading" style="display:none">
-            <div><img src="../images/loading.gif" /></div>
-        </div>
+      <div class="back_enabled"></div>
+      <p></p>
+      <h3></h3>
+      <div id="from_conf_token_transfer"></div>
+      <h3></h3>
+      <div id="to_conf_token_transfer"></div>
+      <h3></h3>
+      <div id="amt_conf_token_transfer"></div>
+      <h3></h3>
+      <div id="memo_conf_token_transfer"></div>
+      <button id="confirm_send_tok"></button>
+      <div class="loader" id="tok_loading" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="token_history_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <div class="loader" id="loading_history_token" style="display:none">
-            <div><img src="../images/loading.gif" /></div>
-        </div>
-        <div id="history_tokens_rows" class="show-scroll"></div>
+      <div class="back_enabled"></div>
+      <div class="loader" id="loading_history_token" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
+      <div id="history_tokens_rows" class="show-scroll"></div>
     </div>
     <div id="powerup_div" class="hide-at-start">
-        <div class="back_enabled back_menu"></div>
-        <div class="power">
-            <div><span class="power_left"></span><span class="power_right power_steem"></span></div>
-            <div><span class="power_left"></span><span class="power_right power_sp"></span></div>
+      <div class="back_enabled back_menu"></div>
+      <div class="power">
+        <div>
+          <span class="power_left"></span
+          ><span class="power_right power_steem"></span>
         </div>
-        <p></p>
-        <input type="text" id="user_pu"></input>
-        <input type="number" id="amt_pu" placeholder="0.000"></input>
-        <div class="sp_del">
-            HIVE
+        <div>
+          <span class="power_left"></span
+          ><span class="power_right power_sp"></span>
         </div>
-        <div class="send_max_div">
-          <span class="send_max" id="pu_max"></span>
-        </div>
-        <div id="wrap_power_up"><button id="power_up"></button></div>
-        <div class="loader" id="powerup_loading" style="display:none">
-            <div><img src="../images/loading.gif" /></div>
-        </div>
+      </div>
+      <p></p>
+      <input type="text" id="user_pu" />
+      <input type="number" id="amt_pu" placeholder="0.000" />
+      <div class="sp_del">
+        HIVE
+      </div>
+      <div class="send_max_div">
+        <span class="send_max" id="pu_max"></span>
+      </div>
+      <div id="wrap_power_up"><button id="power_up"></button></div>
+      <div class="loader" id="powerup_loading" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="powerdown_div" class="hide-at-start">
-        <div class="back_enabled back_menu"></div>
-        <div class="power">
-            <div><span class="power_left"></span><span class="power_right power_steem"></span></div>
-            <div><span class="power_left"></span><span id="pu_hp"class="power_right power_sp"></span></div>
+      <div class="back_enabled back_menu"></div>
+      <div class="power">
+        <div>
+          <span class="power_left"></span
+          ><span class="power_right power_steem"></span>
         </div>
-        <p></p>
-        <div class="power" id="powering_down_div">
-            <div></div>
-            <div><span id="powering_down"></span></div>
+        <div>
+          <span class="power_left"></span
+          ><span id="pu_hp" class="power_right power_sp"></span>
         </div>
-        <input type="number" id="amt_pd" placeholder="0.000"></input>
-        <div class="sp_del">
-            HP
-        </div>
-        <div class="send_max_div">
-          <span class="send_max" id="pd_max"></span>
-        </div>
-        <div id="wrap_power_down"><button id="power_down"></button></div>
-        <div class="loader" id="powerdown_loading" style="display:none">
-            <div><img src="../images/loading.gif" /></div>
-        </div>
+      </div>
+      <p></p>
+      <div class="power" id="powering_down_div">
+        <div></div>
+        <div><span id="powering_down"></span></div>
+      </div>
+      <input type="number" id="amt_pd" placeholder="0.000" />
+      <div class="sp_del">
+        HP
+      </div>
+      <div class="send_max_div">
+        <span class="send_max" id="pd_max"></span>
+      </div>
+      <div id="wrap_power_down"><button id="power_down"></button></div>
+      <div class="loader" id="powerdown_loading" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="delegation_div" class="hide-at-start">
-        <div class="back_enabled back_menu"></div>
-        <p></p>
-        <div id="delegation_values">
-            <div><span class="del_left"></span><span class="del_right" id="incoming_del"></span></div>
-            <div><span class="del_left"></span><span class="del_right" id="outgoing_del"></span></div>
-            <div><span class="del_left"></span><span class="del_right" id="available_del"></span></div>
+      <div class="back_enabled back_menu"></div>
+      <p></p>
+      <div id="delegation_values">
+        <div>
+          <span class="del_left"></span
+          ><span class="del_right" id="incoming_del"></span>
         </div>
-        <div id="new_delegation_div">
-            <div class="input_container">
-                <input type="text" id="username_del" ></input>
-                <img src="../images/arobase.png" class="input_img" />
-            </div>
-            <input type="number" id="amt_del" placeholder="0.000"></input>
-            <div class="sp_del">
-                HP
-            </div>
-            <div id="wrap_send_del"><button id="send_del"></button></div>
-            <div class="loader" id="del_loading" style="display:none">
-                <div><img src="../images/loading.gif" /></div>
-            </div>
+        <div>
+          <span class="del_left"></span
+          ><span class="del_right" id="outgoing_del"></span>
         </div>
+        <div>
+          <span class="del_left"></span
+          ><span class="del_right" id="available_del"></span>
+        </div>
+      </div>
+      <div id="new_delegation_div">
+        <div class="input_container">
+          <input type="text" id="username_del" />
+          <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <input type="number" id="amt_del" placeholder="0.000" />
+        <div class="sp_del">
+          HP
+        </div>
+        <div id="wrap_send_del"><button id="send_del"></button></div>
+        <div class="loader" id="del_loading" style="display:none">
+          <div><img src="../images/loading.gif" /></div>
+        </div>
+      </div>
     </div>
     <div id="outgoing_del_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <div id="total_outgoing">
-            <span></span>
-            <span></span>
-        </div>
-        <div id="list_outgoing" class="show-scroll">
-        </div>
+      <div class="back_enabled"></div>
+      <div id="total_outgoing">
+        <span></span>
+        <span></span>
+      </div>
+      <div id="list_outgoing" class="show-scroll"></div>
     </div>
     <div id="incoming_del_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <div id="total_incoming">
-            <span></span>
-            <span></span>
-        </div>
-        <div id="list_incoming" class="show-scroll">
-        </div>
+      <div class="back_enabled"></div>
+      <div id="total_incoming">
+        <span></span>
+        <span></span>
+      </div>
+      <div id="list_incoming" class="show-scroll"></div>
     </div>
     <div id="edit_del_div" class="hide-at-start">
-        <div class="back_enabled"></div>
-        <p></p>
-        <div id="edit_delegation_values">
-            <div><span class="del_left"></span><span class="del_right" id="this_available_del"></span></div>
-            <div><span class="del_left"></span><span class="del_right" id="this_outgoing_del"></span></div>
+      <div class="back_enabled"></div>
+      <p></p>
+      <div id="edit_delegation_values">
+        <div>
+          <span class="del_left"></span
+          ><span class="del_right" id="this_available_del"></span>
         </div>
-        <div id="username_del">
-            <img src="../images/arobase-light.png" />
-            <span></span>
+        <div>
+          <span class="del_left"></span
+          ><span class="del_right" id="this_outgoing_del"></span>
         </div>
-        <input type="number" id="amt_edit_del" placeholder="0.000"></input>
-        <div class="sp_del">
-            HP
-        </div>
-        <div id="wrap_edit_del"><button id="edit_del"></button></div>
-        <div class="loader" id="edit_del_loading" style="display:none">
-            <div><img src="../images/loading.gif" /></div>
-        </div>
+      </div>
+      <div id="username_del">
+        <img src="../images/arobase-light.png" />
+        <span></span>
+      </div>
+      <input type="number" id="amt_edit_del" placeholder="0.000" />
+      <div class="sp_del">
+        HP
+      </div>
+      <div id="wrap_edit_del"><button id="edit_del"></button></div>
+      <div class="loader" id="edit_del_loading" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="witness_votes" class="hide-at-start">
-        <img src="../images/delete.png" id="close_witness" style="display: none;" />
-        <div id="witness_toggle"></div>
-        <div class="witness_container" id="yabapmatt">
-            <button>@yabapmatt</button>
-            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
-            />
-        </div>
-        <div class="witness_container" id="stoodkev">
-            <button>@stoodkev</button>
-            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
-            />
-        </div>
-        <div class="witness_container" id="aggroed">
-            <button>@aggroed</button>
-            <img src="../images/icon_witness-vote_default.svg" class="input_img_right_submit"
-            />
-        </div>
+      <img
+        src="../images/delete.png"
+        id="close_witness"
+        style="display: none;"
+      />
+      <div id="witness_toggle"></div>
+      <div class="witness_container" id="yabapmatt">
+        <button>@yabapmatt</button>
+        <img
+          src="../images/icon_witness-vote_default.svg"
+          class="input_img_right_submit"
+        />
+      </div>
+      <div class="witness_container" id="stoodkev">
+        <button>@stoodkev</button>
+        <img
+          src="../images/icon_witness-vote_default.svg"
+          class="input_img_right_submit"
+        />
+      </div>
+      <div class="witness_container" id="aggroed">
+        <button>@aggroed</button>
+        <img
+          src="../images/icon_witness-vote_default.svg"
+          class="input_img_right_submit"
+        />
+      </div>
     </div>
 
     <script src="../vendor/jquery.min.js"></script>
     <script src="../vendor/decode.min.js"></script>
-    <script src="../vendor/steem.min.js"></script>
+    <script src="../vendor/hive.min.js"></script>
     <script src="../vendor/md5.min.js"></script>
     <script src="../vendor/crypto-js.js"></script>
     <script src="../vendor/axios.min.js"></script>
@@ -659,6 +694,5 @@
     <script src="../js/config.js"></script>
     <script src="../js/popup/tokens.js"></script>
     <script src="../js/popup/popup.js"></script>
-</body>
-
+  </body>
 </html>

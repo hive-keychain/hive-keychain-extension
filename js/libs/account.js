@@ -3,7 +3,7 @@ class Account {
     this.account = obj || {};
   }
   init() {
-    this.info = steem.api.getAccountsAsync([this.account.name]);
+    this.info = hive.api.getAccountsAsync([this.account.name]);
     this.props = new GlobalProps();
     this.delegatees = getDelegatees(this.account.name);
     this.delegators = getDelegators(this.account.name);
@@ -52,7 +52,7 @@ class Account {
     return [this.reward_hbd, reward_hp, this.reward_hive, rewardText];
   }
   async toHP(vests) {
-    return steem.formatter
+    return hive.formatter
       .vestToSteem(
         vests,
         await this.props.getProp("total_vesting_shares"),
@@ -62,7 +62,7 @@ class Account {
   }
 
   claimRewards(callback) {
-    steem.broadcast.claimRewardBalance(
+    hive.broadcast.claimRewardBalance(
       this.getKey("posting"),
       this.getName(),
       this.reward_hive.replace("HIVE", "STEEM"),
@@ -142,7 +142,7 @@ class Account {
   }
 
   async getTransfers() {
-    const result = await steem.api.getAccountHistoryAsync(
+    const result = await hive.api.getAccountHistoryAsync(
       this.getName(),
       -1,
       1000
@@ -184,7 +184,7 @@ class Account {
     vestingShares = vestingShares.toFixed(6);
     vestingShares = vestingShares.toString() + " VESTS";
 
-    steem.broadcast.withdrawVesting(
+    hive.broadcast.withdrawVesting(
       this.getKey("active"),
       this.getName(),
       vestingShares,
@@ -193,7 +193,7 @@ class Account {
   }
 
   powerUp(amount, to, callback) {
-    steem.broadcast.transferToVesting(
+    hive.broadcast.transferToVesting(
       this.getKey("active"),
       this.getName(),
       to,
@@ -247,7 +247,7 @@ class Account {
     let delegated_vest = (parseFloat(amount) * totalVests) / totalSteem;
     delegated_vest = delegated_vest.toFixed(6);
     delegated_vest = delegated_vest.toString() + " VESTS";
-    steem.broadcast.delegateVestingShares(
+    hive.broadcast.delegateVestingShares(
       activeAccount.getKey("active"),
       activeAccount.getName(),
       to,

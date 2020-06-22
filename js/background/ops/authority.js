@@ -1,6 +1,6 @@
 const broadcastAddAccountAuthority = data => {
   return new Promise((resolve, reject) => {
-    steem.broadcast.addAccountAuth(
+    hive.broadcast.addAccountAuth(
       {
         signingKey: key,
         username: data.username,
@@ -30,7 +30,7 @@ const broadcastAddAccountAuthority = data => {
 
 const broadcastRemoveAccountAuthority = data => {
   return new Promise((resolve, reject) => {
-    steem.broadcast.removeAccountAuth(
+    hive.broadcast.removeAccountAuth(
       {
         signingKey: key,
         username: data.username,
@@ -59,7 +59,7 @@ const broadcastRemoveAccountAuthority = data => {
 
 const broadcastAddKeyAuthority = data => {
   return new Promise((resolve, reject) => {
-    steem.broadcast.addKeyAuth(
+    hive.broadcast.addKeyAuth(
       {
         signingKey: key,
         username: data.username,
@@ -90,7 +90,7 @@ const broadcastAddKeyAuthority = data => {
 
 const broadcastRemoveKeyAuthority = data => {
   return new Promise((resolve, reject) => {
-    steem.broadcast.removeKeyAuth(
+    hive.broadcast.removeKeyAuth(
       {
         signingKey: key,
         username: data.username,

@@ -79,7 +79,7 @@ const removeProposal = (
 };
 
 const broadcast = (tx, keys, callback) => {
-  steem.broadcast.send(tx, keys, (error, result) => {
+  hive.broadcast.send(tx, keys, (error, result) => {
     callback(error, result);
   });
 };

@@ -1,6 +1,6 @@
 const broadcastCreateClaimedAccount = data => {
   return new Promise((resolve, reject) => {
-    steem.broadcast.createClaimedAccount(
+    hive.broadcast.createClaimedAccount(
       key,
       data.username,
       data.new_account,

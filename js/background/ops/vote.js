@@ -1,6 +1,6 @@
 const broadcastVote = data => {
   return new Promise((resolve, reject) => {
-    steem.broadcast.vote(
+    hive.broadcast.vote(
       key,
       data.username,
       data.author,

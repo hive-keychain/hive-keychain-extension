@@ -16,7 +16,7 @@
       "vendor/crypto-js.js",
       "vendor/md5.min.js",
       "js/libs/encrypt.js",
-      "vendor/steem.min.js",
+      "vendor/hive.min.js",
       "vendor/decode.min.js",
       "vendor/jquery.min.js",
       "js/config.js",

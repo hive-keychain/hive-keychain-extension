@@ -461,9 +461,9 @@ chrome.runtime.onMessage.addListener(function(
 
 const showBalances = async (user, currency, amount) => {
   let balance = 0;
-  steem.api.setOptions({ url: "https://api.hive.blog/" });
+  hive.api.setOptions({ url: "https://api.hive.blog/" });
   if (["hbd", "hive", "hp"].includes(currency.toLowerCase())) {
-    const account = (await steem.api.getAccountsAsync([user]))[0];
+    const account = (await hive.api.getAccountsAsync([user]))[0];
     switch (currency.toLowerCase()) {
       case "hive":
         balance = parseFloat(account.balance.split(" ")[0]);
@@ -492,11 +492,11 @@ const showBalances = async (user, currency, amount) => {
 };
 
 const getHivePower = async vesting_shares => {
-  const result = await steem.api.getDynamicGlobalPropertiesAsync();
+  const result = await hive.api.getDynamicGlobalPropertiesAsync();
   const total_vesting_shares = result.total_vesting_shares;
   const total_vesting_fund = result.total_vesting_fund_steem;
   // Handle Promises, when you’re sure the two functions were completed simply do:
-  return steem.formatter
+  return hive.formatter
     .vestToSteem(vesting_shares, total_vesting_shares, total_vesting_fund)
     .toFixed(3);
 };

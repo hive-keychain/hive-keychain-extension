@@ -1,8 +1,8 @@
 class GlobalProps {
   constructor() {
-    this.props = steem.api.getDynamicGlobalPropertiesAsync();
-    this.median = steem.api.getCurrentMedianHistoryPriceAsync();
-    this.fund = steem.api.getRewardFundAsync("post");
+    this.props = hive.api.getDynamicGlobalPropertiesAsync();
+    this.median = hive.api.getCurrentMedianHistoryPriceAsync();
+    this.fund = hive.api.getRewardFundAsync("post");
     this.prices = this.initGetPrice();
   }
   async getProp(key) {
@@ -25,7 +25,7 @@ class GlobalProps {
     return await getPricesAsync();
   }
   async getPrices() {
-    let {hive, hbd, btc} = await this.prices;
+    let { hive, hbd, btc } = await this.prices;
     hive = hive.result["Bid"];
     hbd = hbd.result["Bid"];
     btc = btc.result["Bid"];

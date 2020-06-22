@@ -59,7 +59,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
     .unbind("click")
     .click(function() {
       $("#proxy").hide();
-      steem.broadcast.accountWitnessProxy(
+      hive.broadcast.accountWitnessProxy(
         activeAccount.getKey("active"),
         activeAccount.getName(),
         "",
@@ -76,7 +76,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
       const that = this;
       console.log(voted_wit);
       $(that).addClass("wit-loading");
-      steem.broadcast.accountWitnessVote(
+      hive.broadcast.accountWitnessVote(
         activeAccount.getKey("active"),
         activeAccount.getName(),
         $(this)
@@ -118,7 +118,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
         .replace("@", "");
       const that = this;
       $(that).attr("src", "../images/loading.gif");
-      steem.broadcast.accountWitnessVote(
+      hive.broadcast.accountWitnessVote(
         activeAccount.getKey("active"),
         activeAccount.getName(),
         acc,
@@ -141,7 +141,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
       $("#vote_wit").hide();
       $("#wit_loading").show();
       if ($("#witness_div select option:selected").val() === "Wit") {
-        steem.broadcast.accountWitnessVote(
+        hive.broadcast.accountWitnessVote(
           activeAccount.getKey("active"),
           activeAccount.getName(),
           $("#wit-username").val(),
@@ -160,7 +160,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
           }
         );
       } else {
-        steem.broadcast.accountWitnessProxy(
+        hive.broadcast.accountWitnessProxy(
           activeAccount.getKey("active"),
           activeAccount.getName(),
           $("#wit-username").val(),

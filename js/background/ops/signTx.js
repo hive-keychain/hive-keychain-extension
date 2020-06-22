@@ -4,7 +4,7 @@ const signTx = data => {
       err = null;
 
     try {
-      result = steem.auth.signTransaction(data.tx, [key]);
+      result = hive.auth.signTransaction(data.tx, [key]);
     } catch (e) {
       err = e;
     }

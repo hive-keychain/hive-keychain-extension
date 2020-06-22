@@ -5,7 +5,7 @@ const broadcastTransfer = data => {
     let key_transfer = ac.getKey("active");
     if (data.memo && data.memo.length > 0 && data.memo[0] == "#") {
       try {
-        const receiver = await steem.api.getAccountsAsync([data.to]);
+        const receiver = await hive.api.getAccountsAsync([data.to]);
         if (!receiver) {
           throw new Error("Failed to load receiver memo key");
         }
@@ -24,7 +24,7 @@ const broadcastTransfer = data => {
         return;
       }
     }
-    steem.broadcast.transfer(
+    hive.broadcast.transfer(
       key_transfer,
       data.username,
       data.to,

@@ -11,8 +11,8 @@ const FILL = chrome.i18n.getMessage("popup_accounts_fill");
 // All functions regarding the handling of a particular account
 
 // The public key could be supplied by the user or derived from the private key
-// using steem.auth.wifToPublic().  The structures returned by
-// steem.api.getAccounts() will have 'posting' and 'active' members each each
+// using hive.auth.wifToPublic().  The structures returned by
+// hive.api.getAccounts() will have 'posting' and 'active' members each each
 // of which is a perm_info structure.  These can be passed as the second
 // parameter.  dpub will be the public key you wish to test.
 function getPubkeyWeight(
@@ -168,7 +168,7 @@ $("#add_account_by_auth").click(async () => {
       chrome.i18n.getMessage("popup_accounts_already_registered", [name])
     );
   else {
-    const account = new Account({name, keys: {}});
+    const account = new Account({ name, keys: {} });
     account.init();
     let hasAuth = 0;
     for (const key of ["posting", "active"]) {
@@ -200,13 +200,13 @@ $("#check_add_account").click(function() {
         chrome.i18n.getMessage("popup_accounts_already_registered", [username])
       );
     } else
-      steem.api.getAccounts([username], function(err, result) {
+      hive.api.getAccounts([username], function(err, result) {
         if (result.length != 0) {
           const active_info = result["0"].active;
           const posting_info = result["0"].posting;
           const pub_memo = result["0"].memo_key;
-          if (steem.auth.isWif(pwd)) {
-            const pub_unknown = steem.auth.wifToPublic(pwd);
+          if (hive.auth.isWif(pwd)) {
+            const pub_unknown = hive.auth.wifToPublic(pwd);
             if (pub_unknown == pub_memo) {
               addAccount({
                 name: username,
@@ -233,7 +233,7 @@ $("#check_add_account").click(function() {
               });
             }
           } else {
-            const keys = steem.auth.getPrivateKeys(username, pwd, [
+            const keys = hive.auth.getPrivateKeys(username, pwd, [
               "posting",
               "active",
               "memo"
@@ -279,7 +279,7 @@ $("#save_master").click(function() {
     if ($("#posting_key").prop("checked")) permissions.push("posting");
     if ($("#active_key").prop("checked")) permissions.push("active");
     if ($("#memo_key").prop("checked")) permissions.push("memo");
-    const keys = steem.auth.getPrivateKeys(
+    const keys = hive.auth.getPrivateKeys(
       $("#username").val(),
       $("#pwd").val(),
       permissions
@@ -476,13 +476,13 @@ const manageKeys = name => {
       const keys = accountsList.getById(index).getKeys();
       const pwd = $("#new_key").val();
 
-      steem.api.getAccounts([name], function(err, result) {
+      hive.api.getAccounts([name], function(err, result) {
         if (result.length != 0) {
           const active_info = result["0"].active;
           const posting_info = result["0"].posting;
           const pub_memo = result["0"].memo_key;
-          if (steem.auth.isWif(pwd)) {
-            const pub_unknown = steem.auth.wifToPublic(pwd);
+          if (hive.auth.isWif(pwd)) {
+            const pub_unknown = hive.auth.wifToPublic(pwd);
             if (adding_key == "memo" && pub_unknown == pub_memo) {
               if (keys.hasOwnProperty("memo"))
                 showError(
@@ -529,7 +529,7 @@ const manageKeys = name => {
               );
             }
           } else {
-            const keys = steem.auth.getPrivateKeys(name, pwd, [
+            const keys = hive.auth.getPrivateKeys(name, pwd, [
               "posting",
               "active",
               "memo"

@@ -11,7 +11,7 @@ const broadcastSendToken = data => {
         memo: data.memo
       }
     };
-    steem.broadcast.customJson(
+    hive.broadcast.customJson(
       key,
       [data.username],
       null,
