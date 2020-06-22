@@ -3,7 +3,7 @@ const broadcastPost = data => {
   console.log(data);
   return new Promise((resolve, reject) => {
     if (data.comment_options == "") {
-      steem.broadcast.comment(
+      hive.broadcast.comment(
         key,
         data.parent_username,
         data.parent_perm,
@@ -41,7 +41,7 @@ const broadcastPost = data => {
         ],
         ["comment_options", JSON.parse(data.comment_options)]
       ];
-      steem.broadcast.send(
+      hive.broadcast.send(
         {
           operations,
           extensions: []

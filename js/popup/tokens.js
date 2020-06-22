@@ -226,7 +226,7 @@ async function sendToken(account_to, token, amount, memo) {
     $("#tok_loading").hide();
     return;
   }
-  steem.broadcast.customJson(
+  hive.broadcast.customJson(
     activeAccount.getKey("active"),
     [activeAccount.getName()],
     null,
@@ -271,7 +271,7 @@ function tryConfirmTransaction(trxId) {
       if (logs.errors && logs.errors.length > 0) error = logs.errors[0];
     }
 
-    fulfill({confirmed: result != null, error: error});
+    fulfill({ confirmed: result != null, error: error });
   });
 }
 
@@ -315,7 +315,7 @@ $("#confirm_send_tok").click(function() {
 
 function checkAccountExists(account) {
   return new Promise(function(fulfill, reject) {
-    steem.api.getAccounts([account], function(err, res) {
+    hive.api.getAccounts([account], function(err, res) {
       if (err) reject(err);
       else fulfill(res[0]);
     });

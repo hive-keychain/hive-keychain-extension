@@ -230,7 +230,7 @@ function voteFor(name) {
   if (activeAccount.hasKey("active")) {
     $("#" + name + " img").attr("src", "../images/loading.gif");
 
-    steem.broadcast.accountWitnessVote(
+    hive.broadcast.accountWitnessVote(
       activeAccount.getKey("active"),
       activeAccount.getName(),
       name,
@@ -278,7 +278,7 @@ async function sendTransfer() {
   let memo = $("#memo_send").val();
   if ((memo != "" && $("#encrypt_memo").prop("checked")) || memo[0] == "#") {
     try {
-      const receiver = await steem.api.getAccountsAsync([to]);
+      const receiver = await hive.api.getAccountsAsync([to]);
       const memoReceiver = receiver["0"].memo_key;
       memo = memo[0] == "#" ? memo : "#" + memo;
       memo = window.encodeMemo(
@@ -291,7 +291,7 @@ async function sendTransfer() {
     }
   }
   if (to != "" && amount != "" && amount >= 0.001) {
-    steem.broadcast.transfer(
+    hive.broadcast.transfer(
       activeAccount.getKey("active"),
       activeAccount.getName(),
       to,
@@ -304,7 +304,7 @@ async function sendTransfer() {
         $("#send_loader").hide();
         $("#confirm_send_transfer").show();
         if (err == null) {
-          const sender = await steem.api.getAccountsAsync([
+          const sender = await hive.api.getAccountsAsync([
             activeAccount.getName()
           ]);
           sbd = sender["0"].sbd_balance.replace("SBD", "");
@@ -324,26 +324,27 @@ async function sendTransfer() {
           $(".success_div")
             .html(chrome.i18n.getMessage("popup_transfer_success"))
             .show();
-          chrome.storage.local.get({transfer_to: JSON.stringify({})}, function(
-            items
-          ) {
-            let transfer_to = JSON.parse(items.transfer_to);
-            if (!transfer_to[activeAccount.getName()])
-              transfer_to[activeAccount.getName()] = [];
-            console.log(transfer_to);
-            if (
-              transfer_to[activeAccount.getName()].filter(elt => {
-                return elt == to;
-              }).length == 0
-            )
-              transfer_to[activeAccount.getName()].push(to);
-            console.log(transfer_to);
+          chrome.storage.local.get(
+            { transfer_to: JSON.stringify({}) },
+            function(items) {
+              let transfer_to = JSON.parse(items.transfer_to);
+              if (!transfer_to[activeAccount.getName()])
+                transfer_to[activeAccount.getName()] = [];
+              console.log(transfer_to);
+              if (
+                transfer_to[activeAccount.getName()].filter(elt => {
+                  return elt == to;
+                }).length == 0
+              )
+                transfer_to[activeAccount.getName()].push(to);
+              console.log(transfer_to);
 
-            console.log(JSON.stringify(transfer_to));
-            chrome.storage.local.set({
-              transfer_to: JSON.stringify(transfer_to)
-            });
-          });
+              console.log(JSON.stringify(transfer_to));
+              chrome.storage.local.set({
+                transfer_to: JSON.stringify(transfer_to)
+              });
+            }
+          );
           setTimeout(function() {
             $(".success_div").hide();
           }, 5000);

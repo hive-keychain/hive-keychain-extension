@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.9.3",
+  "version": "1.9.3.1",
   "permissions": ["storage", "tabs", "notifications", "idle", "webNavigation"],
   "browser_action": {
     "default_popup": "html/popup.html",
@@ -16,7 +16,7 @@
       "vendor/crypto-js.js",
       "vendor/md5.min.js",
       "js/libs/encrypt.js",
-      "vendor/steem.min.js",
+      "vendor/hive.min.js",
       "vendor/decode.min.js",
       "vendor/jquery.min.js",
       "js/config.js",

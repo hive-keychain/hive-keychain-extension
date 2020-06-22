@@ -3,7 +3,7 @@ const broadcastProxy = data => {
   return new Promise((resolve, reject) => {
     const ac = accountsList.get(data.username);
     const key_proxy = ac.getKey("active");
-    steem.broadcast.accountWitnessProxy(
+    hive.broadcast.accountWitnessProxy(
       key_proxy,
       data.username,
       data.proxy,

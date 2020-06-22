@@ -46,7 +46,7 @@ var getHivePowerPerAccount = function(
 ) {
   if (totalVestingFund && totalVestingShares) {
     var vesting_shares = getEffectiveVestingSharesPerAccount(account);
-    var sp = steem.formatter.vestToSteem(
+    var sp = hive.formatter.vestToSteem(
       vesting_shares,
       totalVestingShares,
       totalVestingFund
@@ -150,7 +150,7 @@ var getRC = function(name) {
   };
   return new Promise(function(fulfill, reject) {
     $.ajax({
-      url: "https://api.hive.blog/",
+      url: rpcs.getCurrent(),
       type: "POST",
       data: JSON.stringify(data),
       success: function(response) {
@@ -457,15 +457,15 @@ function getValFromString(string) {
 }
 //Check WIF validity
 function isActiveWif(pwd, active) {
-  return steem.auth.wifToPublic(pwd) == active;
+  return hive.auth.wifToPublic(pwd) == active;
 }
 
 function isPostingWif(pwd, posting) {
-  return steem.auth.wifToPublic(pwd) == posting;
+  return hive.auth.wifToPublic(pwd) == posting;
 }
 
 function isMemoWif(pwd, memo) {
-  return steem.auth.wifToPublic(pwd) == memo;
+  return hive.auth.wifToPublic(pwd) == memo;
 }
 
 let numberWithCommas = x => {
@@ -530,7 +530,7 @@ function addCommas(nStr, currency) {
 
 function getDelegatees(name) {
   return new Promise(function(fulfill, reject) {
-    steem.api.getVestingDelegations(name, null, 1000, function(
+    hive.api.getVestingDelegations(name, null, 1000, function(
       err,
       outgoingDelegations
     ) {

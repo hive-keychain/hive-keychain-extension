@@ -2,7 +2,7 @@ const broadcastWitnessVote = data => {
   return new Promise((resolve, reject) => {
     const ac = accountsList.get(data.username);
     const key_witness = ac.getKey("active");
-    steem.broadcast.accountWitnessVote(
+    hive.broadcast.accountWitnessVote(
       key_witness,
       data.username,
       data.witness,

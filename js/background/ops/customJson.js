@@ -2,7 +2,7 @@ const broadcastCustomJson = data => {
   return new Promise((resolve, reject) => {
     let ac = accountsList.get(data.username);
     let key_json = ac.getKey(data.method.toLowerCase());
-    steem.broadcast.customJson(
+    hive.broadcast.customJson(
       key_json,
       data.method.toLowerCase() == "active" ? [data.username] : null,
       data.method.toLowerCase() == "posting" ? [data.username] : null,
