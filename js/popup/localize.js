@@ -185,6 +185,7 @@ $("#memo_key_title").text(
   chrome.i18n.getMessage("popup_html_memo").toUpperCase()
 );
 $("#delete_account").text(chrome.i18n.getMessage("popup_html_delete_account"));
+$("#show_qr").text(chrome.i18n.getMessage("popup_html_show_qr"));
 
 //preferences
 $("#pref_div .back_enabled").text(chrome.i18n.getMessage("popup_html_pref"));

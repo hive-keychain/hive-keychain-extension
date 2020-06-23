@@ -303,6 +303,10 @@
     "message": "DELETE THIS ACCOUNT",
     "description": "on manage accounts"
   },
+  "popup_html_show_qr": {
+    "message": "Show QR Code",
+    "description": "on manage accounts"
+  },
   "popup_html_select_rpc": {
     "message": "Select an RPC node",
     "description": "on preferences"

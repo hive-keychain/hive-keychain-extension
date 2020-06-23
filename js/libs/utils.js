@@ -389,6 +389,8 @@ function initiateCustomSelect(options, current_rpc) {
         $("#amt_send").val(null);
       } else if (manageKey) {
         manageKeys(this.innerHTML);
+        $("#show_qr").show();
+        $("#qrcode_export").html("");
       } else if (
         getPref &&
         $(this)
@@ -403,7 +405,7 @@ function initiateCustomSelect(options, current_rpc) {
           .attr("id") == "custom_select_rpc"
       ) {
         if (this.innerHTML !== chrome.i18n.getMessage("popup_rpc_add")) {
-          chrome.storage.local.set({current_rpc: this.innerHTML});
+          chrome.storage.local.set({ current_rpc: this.innerHTML });
           switchRPC(this.innerHTML);
         } else {
           showCustomRPC();
