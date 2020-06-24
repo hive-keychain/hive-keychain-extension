@@ -148,9 +148,11 @@ var getRC = function(name) {
       accounts: [name]
     }
   };
+  let url = rpcs.getCurrent();
+  if (url === "DEFAULT") url = "https://api.hive.blog/";
   return new Promise(function(fulfill, reject) {
     $.ajax({
-      url: rpcs.getCurrent(),
+      url: url,
       type: "POST",
       data: JSON.stringify(data),
       success: function(response) {
