@@ -78,7 +78,8 @@ body {
 #token_history_div,
 #confirm_send_div,
 #add_account_types_div,
-#add_auth_account_div {
+#add_auth_account_div,
+#buy_div {
   scrollbar-width: none;
   width: 350px;
   height: 100%;
@@ -2094,4 +2095,40 @@ input[type="checkbox"] {
   width: 200px;
   margin-top: 15px;
   margin: auto;
+}
+
+#buy_div .img_wrapper {
+  width: 170px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 5px;
+  margin: auto;
+}
+#buy_div img {
+  max-height: 60px;
+  max-width: 150px;
+}
+
+#buy_exchanges .img_wrapper {
+  display: inline-block;
+  width: 80px;
+  padding: 10px;
+  background-color: white;
+  border-radius: 5px;
+  height: 30px;
+  margin: auto;
+}
+#buy_exchanges .img_wrapper div {
+  display: flex;
+  flex-direction: column;
+  align-content: space-around;
+  justify-content: space-around;
+}
+#buy_exchanges img {
+  max-height: 20px;
+}
+.row_exchange {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
 }
