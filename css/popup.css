@@ -2111,11 +2111,11 @@ input[type="checkbox"] {
 
 #buy_exchanges .img_wrapper {
   display: inline-block;
-  width: 80px;
+  width: 100px;
   padding: 10px;
   background-color: white;
   border-radius: 5px;
-  height: 30px;
+  height: 35px;
   margin: auto;
 }
 #buy_exchanges .img_wrapper div {
@@ -2125,10 +2125,11 @@ input[type="checkbox"] {
   justify-content: space-around;
 }
 #buy_exchanges img {
-  max-height: 20px;
+  max-height: 25px;
 }
 .row_exchange {
   display: flex;
+  margin-bottom: 20px;
   flex-direction: row;
   justify-content: space-around;
 }
