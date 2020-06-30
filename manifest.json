@@ -3,7 +3,7 @@
   "description": "__MSG_description__",
   "default_locale": "en",
   "version": "1.9.3.1",
-  "permissions": ["storage", "tabs", "notifications", "idle", "webNavigation"],
+  "permissions": ["storage", "tabs", "idle", "webNavigation"],
   "browser_action": {
     "default_popup": "html/popup.html",
     "default_icon": "images/iconhive.png"
