@@ -1276,5 +1276,9 @@
   "popup_warning_exchange_memo": {
     "message": "Make sure you add a memo when transfering to an exchange account.",
     "description": "When forgetting memo to transfer to exchange."
+  },
+  "dialog_keys": {
+    "message": "Private Keys",
+    "description": "When adding an account by request"
   }
 }

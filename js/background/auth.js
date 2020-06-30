@@ -24,7 +24,7 @@ const checkBeforeCreate = (request, tab, domain) => {
       function(items) {
         const { memo, username, type, enforce, method } = request;
         // Check user
-        if (!items.accounts) {
+        if (!items.accounts && type !== "addAccount") {
           createPopup(() => {
             sendErrors(
               tab,
@@ -37,6 +37,19 @@ const checkBeforeCreate = (request, tab, domain) => {
         } else {
           // Check that user and wanted keys are in the wallet
           accountsList.init(decryptToJson(items.accounts, mk));
+          if (accountsList.get(username) && type === "addAccount") {
+            createPopup(() => {
+              sendErrors(
+                tab,
+                "user_cancel",
+                chrome.i18n.getMessage("bgd_auth_canceled"),
+                chrome.i18n.getMessage("popup_accounts_already_registered", [
+                  username
+                ]),
+                request
+              );
+            });
+          }
           let account = null;
           if (type === "transfer") {
             let tr_accounts = accountsList

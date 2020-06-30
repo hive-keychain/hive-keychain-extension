@@ -199,7 +199,8 @@ const validate = () => {
       (req.type === "sendToken" &&
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
-        isFilled(req.currency)))
+        isFilled(req.currency)) ||
+      (req.type === "addAccount" && isFilledKeys(req.amount)))
   );
 };
 
@@ -293,6 +294,18 @@ const isFilledKey = obj => {
   return (
     isFilled(obj) && (obj === "Memo" || obj === "Active" || obj === "Posting")
   );
+};
+
+const isFilledKeys = obj => {
+  if (typeof obj !== "object") return false;
+  const keys = Object.keys(obj);
+  if (!keys.length) return false;
+  if (
+    keys.includes("posting") ||
+    keys.includes("active") ||
+    keys.includes("memo")
+  )
+    return true;
 };
 
 const isCustomOptions = obj => {

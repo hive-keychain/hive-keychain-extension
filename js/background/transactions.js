@@ -74,6 +74,9 @@ const performTransaction = async (data, tab, no_confirm) => {
       case "signTx":
         message = await signTx(data);
         break;
+      case "addAccount":
+        message = await addAccount(data);
+        break;
     }
     chrome.tabs.sendMessage(tab, message);
   } catch (e) {

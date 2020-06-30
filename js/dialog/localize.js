@@ -96,6 +96,9 @@ $("#proxy")
 $("#voteWit")
   .prev("h3")
   .text(chrome.i18n.getMessage("dialog_witness"));
+$("#keys")
+  .prev("h3")
+  .text(chrome.i18n.getMessage("dialog_keys"));
 
 // Buttons
 $("#cancel").text(chrome.i18n.getMessage("dialog_cancel"));
