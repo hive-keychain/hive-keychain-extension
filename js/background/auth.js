@@ -50,8 +50,19 @@ const checkBeforeCreate = (request, tab, domain) => {
               );
             });
           }
+
           let account = null;
-          if (type === "transfer") {
+          if (type === "addAccount") {
+            const callback = () => {
+              chrome.runtime.sendMessage({
+                command: "sendDialogConfirm",
+                data: request,
+                domain,
+                tab
+              });
+            };
+            createPopup(callback);
+          } else if (type === "transfer") {
             let tr_accounts = accountsList
               .getList()
               .filter(e => e.hasKey("active"))

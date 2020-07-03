@@ -607,7 +607,7 @@ var hive_keychain = {
    * @param {String} username username of the account to be added
    * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
    */
-  requestAddAccount: function(username, keys) {
+  requestAddAccount: function(username, keys, callback) {
     const request = {
       type: "addAccount",
       username,

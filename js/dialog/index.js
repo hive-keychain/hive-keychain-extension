@@ -110,6 +110,7 @@ chrome.runtime.onMessage.addListener(function(
       subject,
       daily_pay,
       proposal_ids,
+      keys,
       approve
     } = data;
 
@@ -142,7 +143,8 @@ chrome.runtime.onMessage.addListener(function(
       createProposal: chrome.i18n.getMessage("dialog_title_create_proposal"),
       removeProposal: chrome.i18n.getMessage("dialog_title_remove_proposal"),
       updateProposalVote: chrome.i18n.getMessage("dialog_title_vote_proposal"),
-      signTx: chrome.i18n.getMessage("dialog_title_sign_tx")
+      signTx: chrome.i18n.getMessage("dialog_title_sign_tx"),
+      addAccount: chrome.i18n.getMessage("popup_html_add_account")
     };
     const header = titles[type];
     $("#dialog_header").html(header + (testnet ? " (TESTNET)" : ""));
@@ -188,7 +190,13 @@ chrome.runtime.onMessage.addListener(function(
       type === "decode" || type === "signBuffer" || type === "signTx";
     if (
       key !== "active" &&
-      !["transfer", "witnessVote", "delegation", "proxy"].includes(type)
+      ![
+        "transfer",
+        "witnessVote",
+        "delegation",
+        "proxy",
+        "addAccount"
+      ].includes(type)
     ) {
       $("#keep_div").show();
       var prompt_msg = keyVerifyAction
@@ -408,6 +416,17 @@ chrome.runtime.onMessage.addListener(function(
         $("#proposal_ids").text(proposal_ids);
         $("#extensions").text(extensions);
         $("#approve").text(approve);
+        break;
+      case "addAccount":
+        $("#keys").html(
+          `<div><strong>Posting:</strong><span> ${
+            keys.posting ? keys.posting : "Unknown"
+          }</span><br/><br/><strong>Active:</strong><span> ${
+            keys.active ? keys.active : "Unknown"
+          }</span><br/><br/><strong>Memo:</strong><span> ${
+            keys.memo ? keys.memo : "Unknown"
+          }</span></div>`
+        );
         break;
     }
 

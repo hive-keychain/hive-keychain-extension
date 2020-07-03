@@ -1132,6 +1132,15 @@
   "bgd_ops_error": {
     "message": "There was an error broadcasting this transaction:"
   },
+  "bgd_ops_add_account_error": {
+    "message": "There was an error adding this account. Please verify its keys."
+  },
+  "bgd_ops_add_account_error_invalid": {
+    "message": "This account username does not exist."
+  },
+  "bgd_ops_add_account": {
+    "message": "Succesfully added account @$1 to Keychain."
+  },
   "bgd_ops_transfer_success": {
     "message": "Successfully transfered $1 $2 from @$3 to @$4."
   },

@@ -200,7 +200,7 @@ const validate = () => {
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
         isFilled(req.currency)) ||
-      (req.type === "addAccount" && isFilledKeys(req.amount)))
+      (req.type === "addAccount" && isFilledKeys(req.keys)))
   );
 };
 
@@ -297,6 +297,8 @@ const isFilledKey = obj => {
 };
 
 const isFilledKeys = obj => {
+  console.log(obj);
+  console.log(obj, typeof obj, Object.keys(obj).length);
   if (typeof obj !== "object") return false;
   const keys = Object.keys(obj);
   if (!keys.length) return false;

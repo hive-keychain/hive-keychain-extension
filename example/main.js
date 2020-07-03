@@ -317,3 +317,14 @@ $("#send_vp").click(function() {
     }
   );
 });
+
+$("#send_save").click(function() {
+  hive_keychain.requestAddAccount(
+    $("#save_username").val(),
+    JSON.parse($("#save_keys").val()),
+    function(response) {
+      console.log("main js response - account saved");
+      console.log(response);
+    }
+  );
+});
