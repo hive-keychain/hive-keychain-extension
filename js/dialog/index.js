@@ -19,7 +19,6 @@ chrome.runtime.onMessage.addListener(function(
           window.close();
         });
         $("#yes-unlock").click(function() {
-          //console.log(msg, msg.data, tab, domain, msg.request_id);
           chrome.runtime.sendMessage({
             command: "unlockFromDialog",
             data: msg.data,
@@ -33,6 +32,38 @@ chrome.runtime.onMessage.addListener(function(
           if (e.keyCode == 13) $("#yes-unlock").click();
         });
         $("#unlock-dialog").focus();
+      } else if (msg.error === "register") {
+        $(".register").show();
+        $("#error-ok").hide();
+        $("#error_dialog").hide();
+        $("#dialog_header").hide();
+        $(".register p").html(msg.display_msg);
+        $("#submit_master_pwd").click(function() {
+          if (acceptMP($("#master_pwd").val())) {
+            if ($("#master_pwd").val() == $("#confirm_master_pwd").val()) {
+              chrome.runtime.sendMessage({
+                command: "unlockFromDialog",
+                data: msg.data,
+                tab,
+                mk: $("#master_pwd").val(),
+                domain,
+                request_id
+              });
+            } else {
+              $("#error_register").html(
+                chrome.i18n.getMessage("popup_password_mismatch")
+              );
+            }
+          } else {
+            $("#error_register").html(
+              chrome.i18n.getMessage("popup_password_regex")
+            );
+          }
+        });
+        $("#confirm_master_pwd").keypress(function(e) {
+          if (e.keyCode === 13) $("#submit_master_pwd").click();
+        });
+        $("#master_pwd").focus();
       }
       $("#dialog_header").text(
         msg.error === "locked"
@@ -166,7 +197,6 @@ chrome.runtime.onMessage.addListener(function(
           delete accounts[i];
           accounts = first.concat(accounts);
         } else if (items.last_chosen_account) {
-          console.log(items.last_chosen_account);
           let i = accounts.findIndex(function(elt) {
             return elt == items.last_chosen_account;
           });
@@ -174,7 +204,6 @@ chrome.runtime.onMessage.addListener(function(
           delete accounts[i];
           accounts = first.concat(accounts);
         }
-        console.log(accounts);
         for (acc of accounts) {
           if (acc !== undefined)
             $("#select_transfer").append("<option>" + acc + "</option>");
@@ -622,4 +651,14 @@ const showDropdownIfNoUsername = username => {
       .hide();
     $("#transfer_acct_list").show();
   }
+};
+
+const acceptMP = mp => {
+  return (
+    mp.length >= 16 ||
+    (mp.length >= 8 &&
+      mp.match(/.*[a-z].*/) &&
+      mp.match(/.*[A-Z].*/) &&
+      mp.match(/.*[0-9].*/))
+  );
 };

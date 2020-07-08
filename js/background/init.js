@@ -52,6 +52,7 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
       break;
     case "unlockFromDialog":
       // Receive unlock request from dialog
+
       unlockFromDialog(msg);
       break;
     case "acceptTransaction":
@@ -71,7 +72,6 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
             });
           accountsList.init(decrypt);
           const accounts = decryptToJson(msg.fileData, mk);
-          console.log(accounts);
           accountsList.import(accounts.list, mk);
           chrome.runtime.sendMessage({
             command: "importResult",
@@ -110,7 +110,7 @@ const saveNoConfirm = msg => {
 
 const unlockFromDialog = msg => {
   chrome.storage.local.get(["accounts"], function(items) {
-    if (!items.accounts) {
+    if (!items.accounts && msg.data.type !== "addAccount") {
       sendErrors(
         msg.tab,
         "no_wallet",
@@ -118,6 +118,9 @@ const unlockFromDialog = msg => {
         "",
         msg.data
       );
+    } else if (!items.accounts) {
+      mk = msg.mk;
+      checkBeforeCreate(msg.data, msg.tab, msg.domain);
     } else {
       if (decryptToJson(items.accounts, msg.mk) != null) {
         mk = msg.mk;
