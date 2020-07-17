@@ -104,6 +104,12 @@ const validate = () => {
       isFilled(req.message) &&
       req.message[0] === "#" &&
       isFilledKey(req.method)) ||
+      (req.type === "encode" &&
+        isFilled(req.username) &&
+        isFilled(req.receiver) &&
+        isFilled(req.message) &&
+        req.message[0] === "#" &&
+        isFilledKey(req.method)) ||
       (req.type === "signBuffer" &&
         isFilled(req.username) &&
         isFilled(req.message) &&
