@@ -20,6 +20,10 @@ class Rpcs {
       "https://api.pharesim.me/",
       "https://hived.hive-engine.com/",
       "https://hived.privex.io/",
+      "https://hive.roelandp.nl",
+      "https://rpc.ausbit.dev",
+      "https://rpc.esteem.app",
+      "https://techcoderx.com",      
       "TESTNET"
     ];
 
