@@ -2133,3 +2133,7 @@ input[type="checkbox"] {
   flex-direction: row;
   justify-content: space-around;
 }
+
+#qr_div {
+  display: none;
+}
