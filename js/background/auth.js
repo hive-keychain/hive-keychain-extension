@@ -253,6 +253,7 @@ const hasNoConfirm = (arr, data, domain, current_rpc) => {
 const getRequiredWifType = request => {
   switch (request.type) {
     case "decode":
+    case "encode":
     case "signBuffer":
     case "broadcast":
     case "addAccountAuthority":

@@ -68,6 +68,9 @@ const performTransaction = async (data, tab, no_confirm) => {
       case "decode":
         message = await decodeMessage(data);
         break;
+      case "encode":
+        message = await encodeMessage(data);
+        break;
       case "signBuffer":
         message = await signBuffer(data);
         break;

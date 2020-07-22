@@ -20,6 +20,19 @@ $("#send_decode").click(function() {
   );
 });
 
+$("#send_encode").click(() => {
+  hive_keychain.requestEncodeMessage(
+    $("#encode_user").val(),
+    $("#encode_receiver").val(),
+    $("#encode_message").val(),
+    $("#encode_method option:selected").text(),
+    function(response) {
+      console.log("main js response - verify key");
+      console.log(response);
+    }
+  );
+});
+
 // Send post request
 $("#send_post").click(function() {
   hive_keychain.requestPost(

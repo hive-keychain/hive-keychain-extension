@@ -148,6 +148,7 @@ chrome.runtime.onMessage.addListener(function(
     var titles = {
       custom: chrome.i18n.getMessage("dialog_title_custom"),
       decode: chrome.i18n.getMessage("dialog_title_decode"),
+      encode: chrome.i18n.getMessage("dialog_title_encode"),
       signBuffer: chrome.i18n.getMessage("dialog_title_sign"),
       addAccountAuthority: chrome.i18n.getMessage("dialog_title_add_auth"),
       removeAccountAuthority: chrome.i18n.getMessage(
@@ -248,6 +249,11 @@ chrome.runtime.onMessage.addListener(function(
             username
           ])
         );
+        break;
+      case "encode":
+        $("#wif").text(method);
+        $("#receiver").text(receiver);
+        $("#message_sign").text(message);
         break;
       case "signBuffer":
         $("#dialog_message").show();

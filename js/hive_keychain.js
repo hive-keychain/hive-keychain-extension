@@ -13,6 +13,35 @@ var hive_keychain = {
     this.handshake_callback = callback;
     this.dispatchCustomEvent("swHandshake_hive", "");
   },
+
+  /**
+   * This function is called to verify that the user has a certain authority over an account, by requesting to decode a message
+   * @param {String} username Hive account to perform the request
+   * @param {String} receiver Account that will decode the string
+   * @param {String} message Message to be encrypted
+   * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestEncodeMessage: function(
+    username,
+    receiver,
+    message,
+    key,
+    callback,
+    rpc
+  ) {
+    var request = {
+      type: "encode",
+      username,
+      receiver,
+      message,
+      method: key,
+      rpc
+    };
+
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
+  },
   /**
    * This function is called to verify that the user has a certain authority over an account, by requesting to decode a message
    * @param {String} account Hive account to perform the request

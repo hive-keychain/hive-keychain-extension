@@ -966,6 +966,10 @@
     "message": "Verify Key",
     "description": "Website request title"
   },
+  "dialog_title_encode": {
+    "message": "Encode message",
+    "description": "Website request title"
+  },
   "dialog_title_sign": {
     "message": "Sign Message",
     "description": "Website request title"
@@ -1195,6 +1199,12 @@
   },
   "bgd_ops_decode_err": {
     "message": "Could not verify key."
+  },
+  "bgd_ops_encode": {
+    "message": "Message encoded succesfully."
+  },
+  "bgd_ops_encode_err": {
+    "message": "Could not encode the message."
   },
   "bgd_ops_broadcast": {
     "message": "The transaction has been broadcasted successfully."

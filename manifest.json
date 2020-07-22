@@ -36,6 +36,7 @@
       "js/background/ops/addAccount.js",
       "js/background/ops/customJson.js",
       "js/background/ops/decode.js",
+      "js/background/ops/encode.js",
       "js/background/ops/delegation.js",
       "js/background/ops/post.js",
       "js/background/ops/power.js",
