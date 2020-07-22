@@ -33,6 +33,7 @@
       "js/background/ops/authority.js",
       "js/background/ops/broadcast.js",
       "js/background/ops/createAccount.js",
+      "js/background/ops/addAccount.js",
       "js/background/ops/customJson.js",
       "js/background/ops/decode.js",
       "js/background/ops/delegation.js",

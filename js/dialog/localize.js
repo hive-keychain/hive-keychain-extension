@@ -96,6 +96,9 @@ $("#proxy")
 $("#voteWit")
   .prev("h3")
   .text(chrome.i18n.getMessage("dialog_witness"));
+$("#keys")
+  .prev("h3")
+  .text(chrome.i18n.getMessage("dialog_keys"));
 
 // Buttons
 $("#cancel").text(chrome.i18n.getMessage("dialog_cancel"));
@@ -112,3 +115,14 @@ $("#pct_sbd").prepend(chrome.i18n.getMessage("dialog_percentage_sbd"));
 $("#allow_votes_div").prepend(chrome.i18n.getMessage("dialog_allow_votes"));
 $("#curation_rewards").prepend(chrome.i18n.getMessage("dialog_allow_curation"));
 $("#beneficiaries_div").prepend(chrome.i18n.getMessage("dialog_beneficiaries"));
+
+// Register
+$("#master_pwd").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_new_password")
+);
+$("#confirm_master_pwd").attr(
+  "placeholder",
+  chrome.i18n.getMessage("popup_html_confirm")
+);
+$("#submit_master_pwd").html(chrome.i18n.getMessage("popup_html_submit"));
