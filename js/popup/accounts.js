@@ -308,6 +308,7 @@ const manageKeys = name => {
       return obj;
     }
   })[0];
+  console.log(`keychain://add_account=${JSON.stringify(account.account)}`);
   const keys = account.getKeys();
   $(".public_key").html("");
   $(".private_key").html("");
@@ -454,6 +455,20 @@ const manageKeys = name => {
     .unbind("click")
     .click(function() {
       deleteAccount(index);
+    });
+  $("#show_qr")
+    .unbind("click")
+    .click(function() {
+      $("#qrcode_export").html(
+        kjua({
+          text: `keychain://add_account=${JSON.stringify(
+            accountsList.getById(index).account
+          )}`,
+          quiet: 0,
+          back: "rgba(255, 255, 255, 0.7)"
+        })
+      );
+      $("#show_qr").hide();
     });
   let adding_key = null;
   $(".img_add_key")

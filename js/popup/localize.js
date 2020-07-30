@@ -185,6 +185,7 @@ $("#memo_key_title").text(
   chrome.i18n.getMessage("popup_html_memo").toUpperCase()
 );
 $("#delete_account").text(chrome.i18n.getMessage("popup_html_delete_account"));
+$("#show_qr").text(chrome.i18n.getMessage("popup_html_show_qr"));
 
 //preferences
 $("#pref_div .back_enabled").text(chrome.i18n.getMessage("popup_html_pref"));
@@ -454,4 +455,15 @@ $("#add_auth_account_div .back_enabled").text(
 );
 $("#add_auth_account_div button").text(
   chrome.i18n.getMessage("popup_html_save")
+);
+// buy
+
+$("#buy_hive ").append(chrome.i18n.getMessage("popup_html_buy_hive"));
+$("#buy_hbd ").append(chrome.i18n.getMessage("popup_html_buy_hbd"));
+$("#buy_moonpay h2").text(
+  chrome.i18n.getMessage("popup_html_buy_moonpay_title")
+);
+$("#buy_swap h2").text(chrome.i18n.getMessage("popup_html_buy_swap_title"));
+$("#buy_exchanges h2").text(
+  chrome.i18n.getMessage("popup_html_buy_exchanges_title")
 );

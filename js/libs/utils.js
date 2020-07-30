@@ -392,6 +392,8 @@ function initiateCustomSelect(options, current_rpc) {
         $("#amt_send").val(null);
       } else if (manageKey) {
         manageKeys(this.innerHTML);
+        $("#show_qr").show();
+        $("#qrcode_export").html("");
       } else if (
         getPref &&
         $(this)

@@ -484,3 +484,30 @@ $("#confirm_token_send_div .back_enabled").click(function() {
   $("#confirm_token_send_div").hide();
   $("#token_send_div").show();
 });
+
+$("#buy_hive").click(() => {
+  $("#main").hide();
+  renderExchangesList("HIVE");
+  $("#buy_div .back_enabled").text(
+    chrome.i18n.getMessage("popup_html_buy_hive")
+  );
+  $("#buy_div p").text(
+    chrome.i18n.getMessage("popup_html_buy_intro", ["HIVE"])
+  );
+
+  $("#buy_div").show();
+  $(".buy_hbd").hide();
+  $(".buy_hive").show();
+});
+
+$("#buy_hbd").click(() => {
+  $("#main").hide();
+  $("#buy_div .back_enabled").text(
+    chrome.i18n.getMessage("popup_html_buy_hbd")
+  );
+  $("#buy_div p").text(chrome.i18n.getMessage("popup_html_buy_intro", ["HBD"]));
+  renderExchangesList("HBD");
+  $("#buy_div").show();
+  $(".buy_hive").hide();
+  $(".buy_hbd").show();
+});

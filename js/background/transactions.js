@@ -68,11 +68,17 @@ const performTransaction = async (data, tab, no_confirm) => {
       case "decode":
         message = await decodeMessage(data);
         break;
+      case "encode":
+        message = await encodeMessage(data);
+        break;
       case "signBuffer":
         message = await signBuffer(data);
         break;
       case "signTx":
         message = await signTx(data);
+        break;
+      case "addAccount":
+        message = await addAccount(data);
         break;
     }
     chrome.tabs.sendMessage(tab, message);

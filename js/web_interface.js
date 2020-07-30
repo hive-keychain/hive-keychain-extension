@@ -104,6 +104,12 @@ const validate = () => {
       isFilled(req.message) &&
       req.message[0] === "#" &&
       isFilledKey(req.method)) ||
+      (req.type === "encode" &&
+        isFilled(req.username) &&
+        isFilled(req.receiver) &&
+        isFilled(req.message) &&
+        req.message[0] === "#" &&
+        isFilledKey(req.method)) ||
       (req.type === "signBuffer" &&
         isFilled(req.username) &&
         isFilled(req.message) &&
@@ -199,7 +205,8 @@ const validate = () => {
       (req.type === "sendToken" &&
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
-        isFilled(req.currency)))
+        isFilled(req.currency)) ||
+      (req.type === "addAccount" && isFilledKeys(req.keys)))
   );
 };
 
@@ -293,6 +300,20 @@ const isFilledKey = obj => {
   return (
     isFilled(obj) && (obj === "Memo" || obj === "Active" || obj === "Posting")
   );
+};
+
+const isFilledKeys = obj => {
+  console.log(obj);
+  console.log(obj, typeof obj, Object.keys(obj).length);
+  if (typeof obj !== "object") return false;
+  const keys = Object.keys(obj);
+  if (!keys.length) return false;
+  if (
+    keys.includes("posting") ||
+    keys.includes("active") ||
+    keys.includes("memo")
+  )
+    return true;
 };
 
 const isCustomOptions = obj => {

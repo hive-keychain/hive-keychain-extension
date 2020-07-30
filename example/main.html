@@ -16,6 +16,16 @@
     </select>
     <input type="text" id="decode_message" placeholder="message" />
     <button id="send_decode">Send</button>
+    <h3>Encode memo</h3>
+    <input type="text" placeholder="username" id="encode_user" />
+    <input type="text" placeholder="receiver" id="encode_receiver" />
+    <select id="encode_method">
+      <option>Memo</option>
+      <option>Posting</option>
+      <option>Active</option>
+    </select>
+    <input type="text" id="encode_message" placeholder="message" />
+    <button id="send_encode">Send</button>
     <h3>Post</h3>
     <input type="text" placeholder="username" id="post_username" />
     <input type="text" placeholder="title" id="post_title" />
@@ -294,6 +304,10 @@
     >
     <input type="text" placeholder="extensions" id="vp_extensions" value="[]" />
     <button id="send_vp">Send</button>
+    <h3>Save account to keychain</h3>
+    <input type="text" placeholder="username" id="save_username" />
+    <input type="text" id="save_keys" />
+    <button id="send_save">Send</button>
 
     <script src="./jquery.js"></script>
     <script src="main.js?v=a"></script>

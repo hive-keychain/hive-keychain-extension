@@ -9,7 +9,8 @@ html {
   border-radius: 1px;
   margin: 0 !important;
   padding: 0 !important;
-  background: transparent linear-gradient(330deg, #59626C 0%, #000000 100%) 0% 0% no-repeat padding-box !important;
+  background: transparent linear-gradient(330deg, #59626c 0%, #000000 100%) 0%
+    0% no-repeat padding-box !important;
   background-repeat: no-repeat;
   background-attachment: fixed;
   top: 0;
@@ -34,7 +35,8 @@ body {
   position: absolute;
   width: 350px;
   height: 600px;
-  background: transparent url('../images/hive-watermark.png') 0% 0% no-repeat padding-box;
+  background: transparent url("../images/hive-watermark.png") 0% 0% no-repeat
+    padding-box;
   opacity: 1;
 }
 
@@ -89,9 +91,9 @@ h3 .small {
   cursor: pointer;
 }
 
-#modal-body-msg .msg-data>div,
-#modal-body-msg .msg-data>h3,
-#modal-body-msg .msg-data>img,
+#modal-body-msg .msg-data > div,
+#modal-body-msg .msg-data > h3,
+#modal-body-msg .msg-data > img,
 #transfer_acct_list {
   display: none;
 }
@@ -154,11 +156,13 @@ button {
   margin-bottom: 20px;
 }
 
-.unlock {
+.unlock,
+.register {
   display: none;
 }
 
-#modal-body-msg {}
+#modal-body-msg {
+}
 
 #modal-body-msg .msg-data {
   max-height: 285px;
@@ -178,7 +182,7 @@ button {
 
 /* optional: show position indicator in red */
 ::-webkit-scrollbar-thumb {
-  background: #FF0000;
+  background: #ff0000;
 }
 
 #modal-body-msg h3 {
@@ -251,7 +255,7 @@ button {
 }
 
 /* Show the checkmark when checked */
-.checkbox_container input:checked~.checkmark:after {
+.checkbox_container input:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -261,7 +265,7 @@ button {
   top: 2px;
   width: 6.4px;
   height: 11.8px;
-  border: solid #009C9C;
+  border: solid #009c9c;
   border-width: 0 3px 3px 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
@@ -287,7 +291,7 @@ button {
 
 #confirm_footer button:first-of-type {
   margin-right: 6px;
-  background-color: #7E8C9A;
+  background-color: #7e8c9a;
 }
 
 #proceed {
@@ -295,7 +299,7 @@ button {
 }
 
 #proceed:hover {
-  background-color: #E31337;
+  background-color: #e31337;
 }
 
 #keep_label {
@@ -329,7 +333,7 @@ button {
 }
 
 .select-selected {
-  background-color: #58616A;
+  background-color: #58616a;
   padding-left: 20px !important;
 }
 
@@ -389,22 +393,34 @@ button {
 
 .select-items div:hover,
 .same-as-selected {
-  background-color: #E31337;
+  background-color: #e31337;
 }
 
 .balance_loading {
-  width: 15px
+  width: 15px;
 }
 
 #steemit {
-  display: none
+  display: none;
 }
 
-#balance, #balance_after {
-  display: none
+#balance,
+#balance_after {
+  display: none;
 }
 
 #transfer_warning {
   color: red;
+  font-weight: bold;
+}
+
+.logo-white {
+  height: 60px;
+  opacity: 0.8;
+}
+
+#error_register {
+  color: red;
+  margin-top: 20px;
   font-weight: bold;
 }
