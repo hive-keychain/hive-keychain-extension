@@ -221,6 +221,11 @@ $("#import_export").click(function() {
   $("#import_settings").show();
 });
 
+$("#automated_ops").click(function() {
+  $("#settings_div").hide();
+  $("#automated_ops_div").show();
+});
+
 // Show transaction window
 $("#send").click(function() {
   $("#send_div").show();

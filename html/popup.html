@@ -249,6 +249,10 @@
         <img src="../images/import.svg" />
         <span></span>
       </div>
+      <div class="setting_row" id="automated_ops">
+        <img src="../images/clock.svg" />
+        <span></span>
+      </div>
       <div class="setting_row" id="about">
         <img src="../images/info.png" />
         <span></span>
@@ -306,6 +310,32 @@
       <p></p>
       <button id="import_keys"></button>
       <button id="export_keys"></button>
+    </div>
+    <div id="automated_ops_div" class="settings_child hide-at-start">
+      <div class="back_enabled back_pref"></div>
+      <p></p>
+      <div class="custom-select usernames" id="custom_select_automated_ops">
+        <select> </select>
+      </div>
+      <label for="default" class="checkbox_container">
+        <div id="enable_autoclaim_rewards"></div>
+        <div id="enable_autoclaim_rewards_info"></div>
+        <input
+          type="checkbox"
+          checked="false"
+          id="enable_autoclaim_rewards_button"
+        />
+        <span class="checkmark" /> </label
+      ><label for="default" class="checkbox_container">
+        <div id="enable_autoclaim_accounts"></div>
+        <div id="enable_autoclaim_accounts_info"></div>
+        <input
+          type="checkbox"
+          checked="false"
+          id="enable_autoclaim_accounts_button"
+        />
+        <span class="checkmark" />
+      </label>
     </div>
     <div id="about_div" class="settings_child hide-at-start">
       <div class="back_enabled back_pref"></div>

@@ -112,6 +112,9 @@ $("#keychainify span").text(chrome.i18n.getMessage("popup_html_keychainify"));
 $("#import_export span").text(
   chrome.i18n.getMessage("popup_html_import_export")
 );
+$("#automated_ops span").text(
+  chrome.i18n.getMessage("popup_html_automated_tasks")
+);
 $("#about span").text(chrome.i18n.getMessage("popup_html_about"));
 $("#clear span").text(chrome.i18n.getMessage("popup_html_clear"));
 
@@ -466,4 +469,25 @@ $("#buy_moonpay h2").text(
 $("#buy_swap h2").text(chrome.i18n.getMessage("popup_html_buy_swap_title"));
 $("#buy_exchanges h2").text(
   chrome.i18n.getMessage("popup_html_buy_exchanges_title")
+);
+
+// Automated tasks
+$("#automated_ops_div .back_enabled").text(
+  chrome.i18n.getMessage("popup_html_automated_tasks")
+);
+
+$("#automated_ops_div p").text(
+  chrome.i18n.getMessage("popup_html_automated_intro")
+);
+$("#enable_autoclaim_rewards").text(
+  chrome.i18n.getMessage("popup_html_enable_autoclaim_rewards")
+);
+$("#enable_autoclaim_rewards_info").text(
+  chrome.i18n.getMessage("popup_html_enable_autoclaim_rewards_info")
+);
+$("#enable_autoclaim_accounts").text(
+  chrome.i18n.getMessage("popup_html_enable_autoclaim_accounts")
+);
+$("#enable_autoclaim_accounts_info").text(
+  chrome.i18n.getMessage("popup_html_enable_autoclaim_accounts_info")
 );

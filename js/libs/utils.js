@@ -294,8 +294,8 @@ function initiateCustomSelect(options, current_rpc) {
   x = document.getElementsByClassName("custom-select");
 
   for (i = 0; i < x.length; i++) {
-    if (i == 4 && custom_created) return;
-    if (i == 4 && !custom_created) custom_created = true;
+    if (i == 5 && custom_created) return;
+    if (i == 5 && !custom_created) custom_created = true;
     selElmnt = x[i].getElementsByTagName("select")[0];
 
     /*for each element, create a new DIV that will act as the selected item:*/
