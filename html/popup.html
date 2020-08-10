@@ -317,23 +317,23 @@
       <div class="custom-select usernames" id="custom_select_automated_ops">
         <select> </select>
       </div>
-      <label for="default" class="checkbox_container">
+      <label
+        for="default"
+        class="checkbox_container"
+        id="autoclaim_rewards_checkbox"
+      >
         <div id="enable_autoclaim_rewards"></div>
         <div id="enable_autoclaim_rewards_info"></div>
-        <input
-          type="checkbox"
-          checked="false"
-          id="enable_autoclaim_rewards_button"
-        />
+        <input type="checkbox" id="enable_autoclaim_rewards_box" />
         <span class="checkmark" /> </label
-      ><label for="default" class="checkbox_container">
+      ><label
+        for="default"
+        class="checkbox_container"
+        id="autoclaim_accounts_checkbox"
+      >
         <div id="enable_autoclaim_accounts"></div>
         <div id="enable_autoclaim_accounts_info"></div>
-        <input
-          type="checkbox"
-          checked="false"
-          id="enable_autoclaim_accounts_button"
-        />
+        <input type="checkbox" id="enable_autoclaim_accounts_box" />
         <span class="checkmark" />
       </label>
     </div>
@@ -747,8 +747,10 @@
     <script src="../js/libs/account.js"></script>
     <script src="../js/libs/rpcs.js"></script>
     <script src="../js/libs/accountsList.js"></script>
+    <script src="../js/libs/automatedTasks.js"></script>
     <script src="../js/libs/transferValidator.js"></script>
     <script src="../js/popup/navigation.js"></script>
+    <script src="../js/popup/automatedTasks.js"></script>
     <script src="../js/popup/preinit.js"></script>
     <script src="../js/libs/utils.js"></script>
     <script src="../js/popup/localize.js"></script>
