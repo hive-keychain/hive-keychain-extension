@@ -336,7 +336,10 @@ function initiateCustomSelect(options, current_rpc) {
       b.appendChild(c);
     }
     x[i].appendChild(b);
-    if (i == 0) loadAccount(a.innerHTML, options);
+
+    if (i === 0) {
+      loadAccount(a.innerHTML, options);
+    }
     a.addEventListener("click", async function(e) {
       /*when the select box is clicked, close any other select boxes,
       and open/close the current select box:*/
@@ -349,6 +352,12 @@ function initiateCustomSelect(options, current_rpc) {
       ) {
         $("#add_import_keys").hide();
         showAddAccount();
+      } else if (
+        $(this)
+          .parent()
+          .attr("id") === "custom_select_automated_ops"
+      ) {
+        showAutomatedTasks(this.innerHTML);
       } else if (
         !getPref &&
         !manageKey &&

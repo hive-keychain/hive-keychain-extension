@@ -12,8 +12,11 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
-chrome.storage.local.get(["current_rpc", "autolock"], function(items) {
+chrome.storage.local.get(["current_rpc", "autolock", "claimRewards"], function(
+  items
+) {
   if (items.autolock) startAutolock(JSON.parse(items.autolock));
+  startClaimRewards(items.claimRewards);
   rpc.setOptions(items.current_rpc || "DEFAULT");
 });
 
@@ -38,6 +41,13 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
     case "sendMk":
       //Receive mk from the popup (upon registration or unlocking)
       mk = msg.mk;
+      try {
+        chrome.storage.local.get(["accounts"], function(items) {
+          accountsList.init(decryptToJson(items.accounts, mk));
+        });
+      } catch (e) {
+        console.log(e);
+      }
       break;
     case "sendAutolock":
       startAutolock(JSON.parse(msg.autolock));
