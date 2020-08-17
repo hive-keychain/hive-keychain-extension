@@ -2,12 +2,12 @@ let rewardInterval;
 
 const startClaimRewards = obj => {
   if (rewardInterval) clearTimeout(rewardInterval);
-  setInterval(async () => {
+  rewardInterval = setInterval(async () => {
     const users = Object.keys(obj);
     for (const user of users) {
       await claimRewardIfPossible(user);
     }
-  }, 3600 * 1000);
+  }, 30 * 1000);
 };
 
 const claimRewardIfPossible = async user => {
@@ -24,7 +24,8 @@ const claimRewardIfPossible = async user => {
       parseFloat(reward_sbd_balance) > 0 ||
       parseFloat(reward_vesting_balance) > 0 ||
       parseFloat(reward_steem_balance) > 0
-    )
+    ) {
+      console.log(`claiming ${reward_vesting_balance} VESTS for @${user}`);
       await hive.broadcast.claimRewardBalanceAsync(
         accountObj.getKey("posting"),
         accountObj.getName(),
@@ -32,6 +33,7 @@ const claimRewardIfPossible = async user => {
         reward_sbd_balance.replace("HBD", "SBD"),
         reward_vesting_balance
       );
+    }
   } catch (e) {
     console.log(e);
   }

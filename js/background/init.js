@@ -96,6 +96,12 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
         });
       }
       break;
+    case "updateClaims":
+      chrome.storage.local.get(["claimRewards"], ({ claimRewards }) => {
+        console.log("update", claimRewards);
+        startClaimRewards(claimRewards);
+      });
+      break;
   }
 };
 

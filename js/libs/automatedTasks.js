@@ -23,12 +23,16 @@ class AutomatedTasks {
     this[task][user] = obj;
     const newobj = {};
     newobj[task] = this[task];
-    chrome.storage.local.set(newobj);
+    chrome.storage.local.set(newobj, () => {
+      updateClaims();
+    });
   }
   removeTaskForUser(task, user) {
     delete this[task][user];
     const newobj = {};
     newobj[task] = this[task];
-    chrome.storage.local.set(newobj);
+    chrome.storage.local.set(newobj, () => {
+      updateClaims();
+    });
   }
 }
