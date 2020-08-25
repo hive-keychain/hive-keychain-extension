@@ -23,13 +23,19 @@ class TransferValidator {
 
     const exchange = exchanges.find(exchange => exchange.account === account);
     if (!exchange) return null;
-    else if (!exchange.tokens.includes(currency)) {
+    if (!exchange.tokens.includes(currency)) {
       return chrome.i18n.getMessage("popup_warning_exchange_deposit", [
         currency
       ]);
-    } else if (!hasMemo) {
-      return chrome.i18n.getMessage("popup_warning_exchange_memo");
-    } else return null;
+    } 
+    if (!hasMemo) return chrome.i18n.getMessage("popup_warning_exchange_memo");
+    if (exchange.account == "bittrex") {
+      const info =  await getBittrexCurrency(currency);
+      if(info && !info.IsActive) {
+        return chrome.i18n.getMessage("popup_warning_exchange_memo");
+      }
+    }
+    return null;
   }
 
   async validate(account, currency, hasMemo) {
