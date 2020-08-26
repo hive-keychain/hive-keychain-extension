@@ -12,13 +12,15 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
-chrome.storage.local.get(["current_rpc", "autolock", "claimRewards"], function(
-  items
-) {
-  if (items.autolock) startAutolock(JSON.parse(items.autolock));
-  startClaimRewards(items.claimRewards);
-  rpc.setOptions(items.current_rpc || "DEFAULT");
-});
+chrome.storage.local.get(
+  ["current_rpc", "autolock", "claimRewards", "claimAccounts"],
+  items => {
+    if (items.autolock) startAutolock(JSON.parse(items.autolock));
+    startClaimRewards(items.claimRewards);
+    startClaimAccounts(items.claimAccounts);
+    rpc.setOptions(items.current_rpc || "DEFAULT");
+  }
+);
 
 //Listen to the other parts of the extension
 
@@ -97,10 +99,14 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
       }
       break;
     case "updateClaims":
-      chrome.storage.local.get(["claimRewards"], ({ claimRewards }) => {
-        console.log("update", claimRewards);
-        startClaimRewards(claimRewards);
-      });
+      chrome.storage.local.get(
+        ["claimRewards", "claimAccounts"],
+        ({ claimRewards, claimAccounts }) => {
+          console.log("update", claimRewards);
+          startClaimRewards(claimRewards);
+          startClaimAccounts(claimAccounts);
+        }
+      );
       break;
   }
 };

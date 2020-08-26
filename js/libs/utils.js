@@ -1,5 +1,6 @@
 const STEEMIT_100_PERCENT = 10000;
 const STEEM_VOTING_MANA_REGENERATION_SECONDS = 432000;
+const CLAIM_ACCOUNT_RC = 5 * 10 ** 12;
 
 // get VM only
 var getVotingMana = function(account) {
@@ -139,7 +140,7 @@ var getVotingDollarsPerAccount = async function(
 };
 
 // get Resource Credits
-var getRC = function(name) {
+const getRC = name => {
   let data = {
     jsonrpc: "2.0",
     id: 1,
@@ -156,6 +157,7 @@ var getRC = function(name) {
       type: "POST",
       data: JSON.stringify(data),
       success: function(response) {
+        console.log(response);
         const STEEM_RC_MANA_REGENERATION_SECONDS = 432000;
         const estimated_max = parseFloat(
           response.result.rc_accounts["0"].max_rc
