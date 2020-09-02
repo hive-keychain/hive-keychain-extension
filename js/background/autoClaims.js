@@ -3,23 +3,32 @@ let accountsInterval;
 
 const startClaimRewards = obj => {
   if (rewardInterval) clearTimeout(rewardInterval);
+  const users = Object.keys(obj);
+  iterateClaimRewards(users);
   rewardInterval = setInterval(async () => {
-    const users = Object.keys(obj);
-    for (const user of users) {
-      await claimRewardIfPossible(user);
-    }
-  }, 3600 * 1000);
+    iterateClaimRewards(users);
+  }, 1200 * 1000);
+};
+
+const iterateClaimRewards = async users => {
+  for (const user of users) {
+    await claimRewardIfPossible(user);
+  }
 };
 
 const startClaimAccounts = obj => {
   if (accountsInterval) clearTimeout(accountsInterval);
-  accountsInterval = setInterval(async () => {
-    const users = Object.keys(obj);
-    console.log(users);
-    for (const user of users) {
-      await claimAccountsIfPossible(user);
-    }
-  }, 30 * 1000);
+  const users = Object.keys(obj);
+  iterateClaimAccounts(users);
+  accountsInterval = setInterval(() => {
+    iterateClaimAccounts(users);
+  }, 1200 * 1000);
+};
+
+const iterateClaimAccounts = async users => {
+  for (const user of users) {
+    await claimAccountsIfPossible(user);
+  }
 };
 
 const claimRewardIfPossible = async user => {
@@ -56,7 +65,7 @@ const claimAccountsIfPossible = async user => {
     const rc = await getRC(user);
     const CLAIM_ACCOUNT_RC = 5 * 10 ** 12;
     if (
-      parseFloat(rc.estimated_pct) > 85 &&
+      parseFloat(rc.estimated_pct) > 90 &&
       rc.estimated_max / CLAIM_ACCOUNT_RC > 2
     ) {
       console.log("try to claim", user);
@@ -134,7 +143,7 @@ const getRC = name => {
         };
         fulfill(res);
       },
-      error: function(e) {
+      error: e => {
         console.log(e);
       }
     });
