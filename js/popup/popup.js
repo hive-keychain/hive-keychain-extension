@@ -163,7 +163,14 @@ function initializeMainMenu(options) {
   manageKey = false;
   getPref = false;
   chrome.storage.local.get(
-    ["accounts", "last_account", "current_rpc", "transfer_to"],
+    [
+      "accounts",
+      "last_account",
+      "current_rpc",
+      "transfer_to",
+      "claimRewards",
+      "claimAccounts"
+    ],
     async function(items) {
       console.log("init", items.current_rpc);
       loadRPC(items.current_rpc);
@@ -184,8 +191,8 @@ function initializeMainMenu(options) {
               "popup_add_account"
             )}</option>`
           );
-
         initiateCustomSelect(options);
+        showAutomatedTasks(accountsList.getList()[0].getName(), items);
       } else {
         $("#main").hide();
         $("#register").hide();
