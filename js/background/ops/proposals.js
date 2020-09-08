@@ -41,17 +41,33 @@ const broadcastUpdateProposalVote = data => {
       (err, result) => {
         console.log(result, err);
         const err_message = beautifyErrorMessage(err);
+        let messageText = "";
+        const ids = JSON.parse(data.proposal_ids);
+        if (data.approve) {
+          if (ids.length === 1)
+            messageText = chrome.i18n.getMessage("bgd_ops_proposal_vote", [
+              ids[0]
+            ]);
+          else {
+            messageText = chrome.i18n.getMessage("bgd_ops_proposal_votes", [
+              ids.join(", #")
+            ]);
+          }
+        } else {
+          if (ids.length === 1)
+            messageText = chrome.i18n.getMessage("bgd_ops_proposal_unvote", [
+              ids[0]
+            ]);
+          else
+            messageText = chrome.i18n.getMessage("bgd_ops_proposal_unvotes", [
+              ids.join(", #")
+            ]);
+        }
         const message = createMessage(
           err,
           result,
           data,
-          data.approve
-            ? chrome.i18n.getMessage("bgd_ops_proposal_vote", [
-                JSON.parse(data.proposal_ids)[0]
-              ])
-            : chrome.i18n.getMessage("bgd_ops_proposal_unvote", [
-                JSON.parse(data.proposal_ids)[0]
-              ]),
+          messageText,
           err_message
         );
         resolve(message);

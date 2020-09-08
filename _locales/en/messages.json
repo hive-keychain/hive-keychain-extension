@@ -1173,8 +1173,14 @@
   "bgd_ops_proposal_vote": {
     "message": "Successfully voted for proposal #$1."
   },
+  "bgd_ops_proposal_votes": {
+    "message": "Successfully voted for proposals #$1."
+  },
   "bgd_ops_proposal_unvote": {
     "message": "Successfully unvoted proposal #$1."
+  },
+  "bgd_ops_proposal_unvotes": {
+    "message": "Successfully unvoted proposals #$1."
   },
   "bgd_ops_pu": {
     "message": "Powered up $1 HIVE on @$2."
