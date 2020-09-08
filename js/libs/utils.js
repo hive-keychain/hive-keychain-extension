@@ -583,3 +583,23 @@ const getPhishingAccounts = async () => {
     });
   });
 };
+
+const getBittrexCurrency = async (currency) => {
+  return new Promise(function(fulfill, reject) {
+    $.ajax({
+      type: "GET",
+      beforeSend: function(xhttp) {
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+      },
+      url: "https://api.bittrex.com/api/v1.1/public/getcurrencies",
+      success: function(currencies) {
+        fulfill(currencies.find(o => o.Currency==currency));
+      },
+      error: function(msg) {
+        console.log(msg);
+        reject(msg);
+      }
+    });
+  });
+};

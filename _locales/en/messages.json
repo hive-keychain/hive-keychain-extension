@@ -1300,6 +1300,10 @@
     "message": "Make sure you add a memo when transfering to an exchange account.",
     "description": "When forgetting memo to transfer to exchange."
   },
+  "popup_warning_exchange_wallet": {
+    "message": "Deposits/Withdrawals are disabled on this exchange.",
+    "description": "When wallet is disabled on exchange."
+  },
   "popup_html_buy_hive": {
     "message": "Buy HIVE",
     "description": "When clicking on the Hive arrow menu"
