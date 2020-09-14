@@ -243,7 +243,8 @@ input:focus {
 #confirm_send_div button,
 #add_account_types_div button,
 #add_auth_account_div button,
-#import_settings button {
+#import_settings button,
+#automated_ops_div button {
   border-radius: 5px;
   width: 100%;
   height: 48.43px;
@@ -2136,4 +2137,11 @@ input[type="checkbox"] {
 
 #qr_div {
   display: none;
+}
+
+#automated_ops_div .usernames {
+  margin-bottom: 50px;
+}
+#automated_ops_div label {
+  margin-bottom: 30px;
 }

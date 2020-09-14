@@ -30,3 +30,9 @@ function ping() {
     command: "ping"
   });
 }
+
+const updateClaims = () => {
+  chrome.runtime.sendMessage({
+    command: "updateClaims"
+  });
+};
