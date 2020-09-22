@@ -595,7 +595,7 @@ const getPhishingAccounts = async () => {
   });
 };
 
-const getBittrexCurrency = async (currency) => {
+const getBittrexCurrency = async currency => {
   return new Promise(function(fulfill, reject) {
     $.ajax({
       type: "GET",
@@ -605,7 +605,7 @@ const getBittrexCurrency = async (currency) => {
       },
       url: "https://api.bittrex.com/api/v1.1/public/getcurrencies",
       success: function(currencies) {
-        fulfill(currencies.find(o => o.Currency==currency));
+        fulfill(currencies.find(o => o.Currency == currency));
       },
       error: function(msg) {
         console.log(msg);

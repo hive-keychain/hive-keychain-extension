@@ -2135,10 +2135,6 @@ input[type="checkbox"] {
   justify-content: space-around;
 }
 
-#qr_div {
-  display: none;
-}
-
 #automated_ops_div .usernames {
   margin-bottom: 50px;
 }

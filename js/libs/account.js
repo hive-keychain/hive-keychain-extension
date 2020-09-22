@@ -129,6 +129,7 @@ class Account {
 
   async getAccountValue() {
     const [hive, hbd] = await this.props.getPrices();
+    console.log(hive, hbd);
     return (
       numberWithCommas(
         "$ " +
