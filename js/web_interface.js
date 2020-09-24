@@ -67,21 +67,18 @@ document.addEventListener("swRequest_hive", function(request) {
 // Get notification from the background upon request completion and pass it to the website.
 chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
   if (obj.command === "answerRequest") {
-    console.log("answerRequest");
     sendResponse(obj.msg);
     req = null;
   }
 });
 
 const sendResponse = response => {
-  console.log("response");
   if (response.data.extension && response.data.extensionName) {
     chrome.runtime.sendMessage(
       response.data.extension,
       JSON.stringify(response)
     );
   } else if (response.data.redirect_uri) {
-    console.log("redirect");
     window.location = response.data.redirect_uri;
   } else {
     window.postMessage(
@@ -95,7 +92,6 @@ const sendResponse = response => {
 };
 
 const validate = () => {
-  console.log(req);
   return (
     req &&
     req.type &&
@@ -303,8 +299,6 @@ const isFilledKey = obj => {
 };
 
 const isFilledKeys = obj => {
-  console.log(obj);
-  console.log(obj, typeof obj, Object.keys(obj).length);
   if (typeof obj !== "object") return false;
   const keys = Object.keys(obj);
   if (!keys.length) return false;

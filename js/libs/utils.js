@@ -1,5 +1,6 @@
 const STEEMIT_100_PERCENT = 10000;
 const STEEM_VOTING_MANA_REGENERATION_SECONDS = 432000;
+const CLAIM_ACCOUNT_RC = 5 * 10 ** 12;
 
 // get VM only
 var getVotingMana = function(account) {
@@ -139,7 +140,7 @@ var getVotingDollarsPerAccount = async function(
 };
 
 // get Resource Credits
-var getRC = function(name) {
+const getRC = name => {
   let data = {
     jsonrpc: "2.0",
     id: 1,
@@ -156,6 +157,7 @@ var getRC = function(name) {
       type: "POST",
       data: JSON.stringify(data),
       success: function(response) {
+        console.log(response);
         const STEEM_RC_MANA_REGENERATION_SECONDS = 432000;
         const estimated_max = parseFloat(
           response.result.rc_accounts["0"].max_rc
@@ -294,8 +296,8 @@ function initiateCustomSelect(options, current_rpc) {
   x = document.getElementsByClassName("custom-select");
 
   for (i = 0; i < x.length; i++) {
-    if (i == 4 && custom_created) return;
-    if (i == 4 && !custom_created) custom_created = true;
+    if (i == 5 && custom_created) return;
+    if (i == 5 && !custom_created) custom_created = true;
     selElmnt = x[i].getElementsByTagName("select")[0];
 
     /*for each element, create a new DIV that will act as the selected item:*/
@@ -336,7 +338,10 @@ function initiateCustomSelect(options, current_rpc) {
       b.appendChild(c);
     }
     x[i].appendChild(b);
-    if (i == 0) loadAccount(a.innerHTML, options);
+
+    if (i === 0) {
+      loadAccount(a.innerHTML, options);
+    }
     a.addEventListener("click", async function(e) {
       /*when the select box is clicked, close any other select boxes,
       and open/close the current select box:*/
@@ -349,6 +354,12 @@ function initiateCustomSelect(options, current_rpc) {
       ) {
         $("#add_import_keys").hide();
         showAddAccount();
+      } else if (
+        $(this)
+          .parent()
+          .attr("id") === "custom_select_automated_ops"
+      ) {
+        showAutomatedTasks(this.innerHTML);
       } else if (
         !getPref &&
         !manageKey &&
@@ -575,6 +586,26 @@ const getPhishingAccounts = async () => {
       url: "https://api.steemkeychain.com/hive/phishingAccounts",
       success: function(phishingAccounts) {
         fulfill(phishingAccounts);
+      },
+      error: function(msg) {
+        console.log(msg);
+        reject(msg);
+      }
+    });
+  });
+};
+
+const getBittrexCurrency = async currency => {
+  return new Promise(function(fulfill, reject) {
+    $.ajax({
+      type: "GET",
+      beforeSend: function(xhttp) {
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
+      },
+      url: "https://api.bittrex.com/api/v1.1/public/getcurrencies",
+      success: function(currencies) {
+        fulfill(currencies.find(o => o.Currency == currency));
       },
       error: function(msg) {
         console.log(msg);

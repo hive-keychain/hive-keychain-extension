@@ -12,10 +12,15 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
-chrome.storage.local.get(["current_rpc", "autolock"], function(items) {
-  if (items.autolock) startAutolock(JSON.parse(items.autolock));
-  rpc.setOptions(items.current_rpc || "DEFAULT");
-});
+chrome.storage.local.get(
+  ["current_rpc", "autolock", "claimRewards", "claimAccounts"],
+  items => {
+    if (items.autolock) startAutolock(JSON.parse(items.autolock));
+    startClaimRewards(items.claimRewards);
+    startClaimAccounts(items.claimAccounts);
+    rpc.setOptions(items.current_rpc || "DEFAULT");
+  }
+);
 
 //Listen to the other parts of the extension
 
@@ -38,6 +43,13 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
     case "sendMk":
       //Receive mk from the popup (upon registration or unlocking)
       mk = msg.mk;
+      try {
+        chrome.storage.local.get(["accounts"], function(items) {
+          accountsList.init(decryptToJson(items.accounts, mk));
+        });
+      } catch (e) {
+        console.log(e);
+      }
       break;
     case "sendAutolock":
       startAutolock(JSON.parse(msg.autolock));
@@ -85,6 +97,16 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
           result: false
         });
       }
+      break;
+    case "updateClaims":
+      chrome.storage.local.get(
+        ["claimRewards", "claimAccounts"],
+        ({ claimRewards, claimAccounts }) => {
+          console.log("update", claimRewards);
+          startClaimRewards(claimRewards);
+          startClaimAccounts(claimAccounts);
+        }
+      );
       break;
   }
 };

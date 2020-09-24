@@ -26,6 +26,7 @@ class GlobalProps {
   }
   async getPrices() {
     let { hive, hbd, btc } = await this.prices;
+    console.log(hive, hbd, btc);
     hive = hive.result["Bid"];
     hbd = hbd.result["Bid"];
     btc = btc.result["Bid"];

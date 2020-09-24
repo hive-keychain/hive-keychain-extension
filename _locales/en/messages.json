@@ -235,6 +235,10 @@
     "message": "Import / Export",
     "description": "on settings page"
   },
+  "popup_html_automated_tasks": {
+    "message": "Automated Tasks",
+    "description": "on settings page"
+  },
   "popup_html_about": {
     "message": "About Hive Keychain",
     "description": "on settings page"
@@ -1173,8 +1177,14 @@
   "bgd_ops_proposal_vote": {
     "message": "Successfully voted for proposal #$1."
   },
+  "bgd_ops_proposal_votes": {
+    "message": "Successfully voted for proposals #$1."
+  },
   "bgd_ops_proposal_unvote": {
     "message": "Successfully unvoted proposal #$1."
+  },
+  "bgd_ops_proposal_unvotes": {
+    "message": "Successfully unvoted proposals #$1."
   },
   "bgd_ops_pu": {
     "message": "Powered up $1 HIVE on @$2."
@@ -1300,6 +1310,10 @@
     "message": "Make sure you add a memo when transfering to an exchange account.",
     "description": "When forgetting memo to transfer to exchange."
   },
+  "popup_warning_exchange_wallet": {
+    "message": "Deposits/Withdrawals are disabled on this exchange.",
+    "description": "When wallet is disabled on exchange."
+  },
   "popup_html_buy_hive": {
     "message": "Buy HIVE",
     "description": "When clicking on the Hive arrow menu"
@@ -1331,5 +1345,25 @@
   "dialog_header_register": {
     "message": "Welcome to Keychain",
     "description": "When registering from request"
+  },
+  "popup_html_automated_intro": {
+    "message": "Setup automated tasks that will run every hour if fitting your conditions.",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_rewards": {
+    "message": "Claim Rewards",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_rewards_info": {
+    "message": "Regularly claiming your rewards can increase your gains.",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_accounts": {
+    "message": "Claim Accounts",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_accounts_info": {
+    "message": "Automatically claim an account when RC percentage is superior to the threshold. Account must have at least 10,000 HP",
+    "description": "When on automated tasks page"
   }
 }
