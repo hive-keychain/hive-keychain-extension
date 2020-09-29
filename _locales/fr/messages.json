@@ -1242,5 +1242,17 @@
   "popup_warning_phishing": {
     "message": "Ce compte a été listé comme pontentiellement malveillant (phishing), vérifiez qu'il s'agit bien du compte désiré.",
     "description": "When trying to transfer to a blacklisted account"
+  },
+  "popup_warning_exchange_deposit": {
+    "message": "Cet Exchange n'accepte pas les dépots de $1.",
+    "description": "When trying to transfer to an exchange that does not accept this currency."
+  },
+  "popup_warning_exchange_memo": {
+    "message": "Vérifiez que vous avez bien un mémo quand vous transférez vers le compte d'un Exchange.",
+    "description": "When forgetting memo to transfer to exchange."
+  },
+  "popup_warning_exchange_wallet": {
+    "message": "ATTENTION: Les Retraits/Dépots sont déseactivés sur cet Exchange.",
+    "description": "When wallet is disabled on exchange."
   }
 }
