@@ -459,10 +459,22 @@ $("#add_auth_account_div .back_enabled").text(
 $("#add_auth_account_div button").text(
   chrome.i18n.getMessage("popup_html_save")
 );
+
+// convert
+
+$("#convert_hbd ").append(chrome.i18n.getMessage("popup_html_convert_hbd"));
+$("#convert_div .back_enabled").append(
+  chrome.i18n.getMessage("popup_html_convert_hbd")
+);
+$("#convert_div p").text(
+  chrome.i18n.getMessage("popup_html_convert_hbd_intro")
+);
+
 // buy
 
 $("#buy_hive ").append(chrome.i18n.getMessage("popup_html_buy_hive"));
 $("#buy_hbd ").append(chrome.i18n.getMessage("popup_html_buy_hbd"));
+
 $("#buy_moonpay h2").text(
   chrome.i18n.getMessage("popup_html_buy_moonpay_title")
 );

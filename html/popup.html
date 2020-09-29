@@ -98,6 +98,7 @@
             <div class="dropdown">
               <div id="send_sbd"><img src="../images/transfer.png" /></div>
               <div id="buy_hbd"><img src="../images/buy.svg" /></div>
+              <div id="convert_hbd"><img src="../images/import.svg" /></div>
             </div>
           </div>
           <div class="currency-section">
@@ -485,6 +486,23 @@
       <div class="loader" id="send_loader" style="display:none">
         <div><img src="../images/loading.gif" /></div>
       </div>
+    </div>
+    <div id="convert_div" class="hide-at-start">
+      <div class="back_menu back_enabled"></div>
+      <p></p>
+      <input
+        type="number"
+        id="amt_convert"
+        autocomplete="off"
+        placeholder="0.000"
+      />
+
+      <div class="sp_del">HBD</div>
+
+      <div class="send_max_div">
+        <span class="send_max" id="amt_convert_max"></span>
+      </div>
+      <button id="send_convert"></button>
     </div>
     <div id="claim_rewards" class="hide-at-start">
       <img src="../images/delete.png" class="close_claim" id="close_claim" />
