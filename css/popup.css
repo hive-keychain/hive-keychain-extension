@@ -2078,7 +2078,8 @@ input[type="checkbox"] {
   margin-bottom: 10px;
 }
 
-.send_max {
+.send_max,
+.convert_max {
   font-size: 15px;
   cursor: pointer;
   text-transform: uppercase;
@@ -2149,4 +2150,8 @@ input[type="checkbox"] {
 #convert_div p {
   margin-bottom: 50px;
   margin-top: 30px;
+}
+#convert_div button,
+#convert_loading {
+  margin-top: 40px;
 }

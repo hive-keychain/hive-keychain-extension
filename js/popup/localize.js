@@ -469,6 +469,10 @@ $("#convert_div .back_enabled").append(
 $("#convert_div p").text(
   chrome.i18n.getMessage("popup_html_convert_hbd_intro")
 );
+$("#convert_div button").text(
+  chrome.i18n.getMessage("popup_html_convert_button")
+);
+$("#amt_convert_max").text(chrome.i18n.getMessage("popup_html_convert_max"));
 
 // buy
 

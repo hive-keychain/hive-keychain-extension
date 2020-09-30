@@ -500,9 +500,12 @@
       <div class="sp_del">HBD</div>
 
       <div class="send_max_div">
-        <span class="send_max" id="amt_convert_max"></span>
+        <span class="convert_max" id="amt_convert_max"></span>
       </div>
       <button id="send_convert"></button>
+      <div class="loader" id="convert_loading" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
     </div>
     <div id="claim_rewards" class="hide-at-start">
       <img src="../images/delete.png" class="close_claim" id="close_claim" />
@@ -781,6 +784,7 @@
     <script src="../js/popup/power.js"></script>
     <script src="../js/config.js"></script>
     <script src="../js/popup/tokens.js"></script>
+    <script src="../js/popup/conversion.js"></script>
     <script src="../js/popup/popup.js"></script>
   </body>
 </html>

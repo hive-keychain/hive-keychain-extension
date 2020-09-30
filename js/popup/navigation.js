@@ -516,8 +516,3 @@ $("#buy_hbd").click(() => {
   $(".buy_hive").hide();
   $(".buy_hbd").show();
 });
-
-$("#convert_hbd").click(() => {
-  $("#main").hide();
-  $("#convert_div").show();
-});
