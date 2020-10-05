@@ -2,7 +2,7 @@
   "name": "__MSG_keychain__",
   "description": "__MSG_description__",
   "default_locale": "en",
-  "version": "1.10.2",
+  "version": "1.10.2.1",
   "permissions": ["storage", "tabs", "idle", "webNavigation"],
   "browser_action": {
     "default_popup": "html/popup.html",
