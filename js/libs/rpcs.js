@@ -23,7 +23,7 @@ class Rpcs {
       "https://hive.roelandp.nl",
       "https://rpc.ausbit.dev",
       "https://rpc.esteem.app",
-      "https://techcoderx.com",      
+      "https://techcoderx.com",
       "TESTNET"
     ];
 
@@ -100,6 +100,8 @@ class Rpcs {
     this.currentRpc = newRpc;
     console.log(`Now using ${this.currentRpc}, previous: ${this.previousRpc}`);
     this.awaitRollback = awaitRollback;
+    console.log(hive.config.get("chain_id"));
+
     return;
   }
 

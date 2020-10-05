@@ -5,7 +5,10 @@ const broadcastDelegation = data => {
     hive.api.getDynamicGlobalPropertiesAsync().then(res => {
       let delegated_vest = null;
       if (data.unit == "HP") {
-        const totalSteem = Number(res.total_vesting_fund_steem.split(" ")[0]);
+        console.log(res);
+        const totalSteem = res.total_vesting_fund_steem
+          ? Number(res.total_vesting_fund_steem.split(" ")[0])
+          : Number(res.total_vesting_fund_hive.split(" ")[0]);
         const totalVests = Number(res.total_vesting_shares.split(" ")[0]);
         delegated_vest = (parseFloat(data.amount) * totalVests) / totalSteem;
         delegated_vest = delegated_vest.toFixed(6);

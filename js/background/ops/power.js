@@ -25,7 +25,9 @@ const broadcastPowerDown = data => {
   return new Promise((resolve, reject) => {
     hive.api.getDynamicGlobalPropertiesAsync().then(res => {
       let vestingShares = null;
-      const totalSteem = Number(res.total_vesting_fund_steem.split(" ")[0]);
+      const totalSteem = res.total_vesting_fund_steem
+        ? Number(res.total_vesting_fund_steem.split(" ")[0])
+        : Number(res.total_vesting_fund_hive.split(" ")[0]);
       const totalVests = Number(res.total_vesting_shares.split(" ")[0]);
       vestingShares = (parseFloat(data.steem_power) * totalVests) / totalSteem;
       vestingShares = vestingShares.toFixed(6);

@@ -8,7 +8,6 @@ let to_autocomplete = [];
 let accountsList = new AccountsList();
 const transferValidator = new TransferValidator();
 //chrome.storage.local.remove("transfer_to");
-
 $("#copied").hide();
 $("#witness_votes").hide();
 

@@ -24,6 +24,7 @@ const broadcastTransfer = data => {
         return;
       }
     }
+    //
     hive.broadcast.transfer(
       key_transfer,
       data.username,

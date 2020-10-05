@@ -38,10 +38,15 @@ class Account {
     return info[key];
   }
   async getAvailableRewards() {
-    this.reward_hbd = await this.getAccountInfo("reward_sbd_balance");
+    this.hf24 = (await this.getAccountInfo("reward_sbd_balance")) === undefined;
+    this.reward_hbd =
+      (await this.getAccountInfo("reward_sbd_balance")) ||
+      (await this.getAccountInfo("reward_hbd_balance"));
     this.reward_vests = await this.getAccountInfo("reward_vesting_balance");
     const reward_hp = (await this.toHP(this.reward_vests)) + " HP";
-    this.reward_hive = await this.getAccountInfo("reward_steem_balance");
+    this.reward_hive =
+      (await this.getAccountInfo("reward_steem_balance")) ||
+      (await this.getAccountInfo("reward_hive_balance"));
     let rewardText = chrome.i18n.getMessage("popup_account_redeem") + ":<br>";
     if (getValFromString(reward_hp) != 0) rewardText += reward_hp + " / ";
     if (getValFromString(this.reward_hbd) != 0)
@@ -56,20 +61,31 @@ class Account {
       .vestToSteem(
         vests,
         await this.props.getProp("total_vesting_shares"),
-        await this.props.getProp("total_vesting_fund_steem")
+        (await this.props.getProp("total_vesting_fund_steem")) ||
+          (await this.props.getProp("total_vesting_fund_hive"))
       )
       .toFixed(3);
   }
 
   claimRewards(callback) {
-    hive.broadcast.claimRewardBalance(
-      this.getKey("posting"),
-      this.getName(),
-      this.reward_hive.replace("HIVE", "STEEM"),
-      this.reward_hbd.replace("HBD", "SBD"),
-      this.reward_vests,
-      callback
-    );
+    if (!this.hf24)
+      hive.broadcast.claimRewardBalance(
+        this.getKey("posting"),
+        this.getName(),
+        this.reward_hive.replace("HIVE", "STEEM"),
+        this.reward_hbd.replace("HBD", "SBD"),
+        this.reward_vests,
+        callback
+      );
+    else
+      hive.broadcast.claimRewardBalance(
+        this.getKey("posting"),
+        this.getName(),
+        this.reward_hive,
+        this.reward_hbd,
+        this.reward_vests,
+        callback
+      );
   }
 
   async getVotingMana() {
@@ -83,7 +99,9 @@ class Account {
   }
 
   async getHBD() {
-    return (await this.getAccountInfo("sbd_balance")).replace(" HBD", "");
+    if (await this.getAccountInfo("sbd_balance"))
+      return (await this.getAccountInfo("sbd_balance")).replace(" HBD", "");
+    else return (await this.getAccountInfo("hbd_balance")).replace(" HBD", "");
   }
 
   async getHP() {
@@ -154,9 +172,13 @@ class Account {
   }
 
   async getPowerDown() {
-    const totalSteem = Number(
-      (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
-    );
+    const totalSteem = (await this.props.getProp("total_vesting_fund_steem"))
+      ? Number(
+          (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
+        )
+      : Number(
+          (await this.props.getProp("total_vesting_fund_hive")).split(" ")[0]
+        );
     const totalVests = Number(
       (await this.props.getProp("total_vesting_shares")).split(" ")[0]
     );
@@ -175,9 +197,13 @@ class Account {
   }
 
   async powerDown(hp, callback) {
-    const totalSteem = Number(
-      (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
-    );
+    const totalSteem = (await this.props.getProp("total_vesting_fund_steem"))
+      ? Number(
+          (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
+        )
+      : Number(
+          (await this.props.getProp("total_vesting_fund_hive")).split(" ")[0]
+        );
     const totalVests = Number(
       (await this.props.getProp("total_vesting_shares")).split(" ")[0]
     );
@@ -239,9 +265,13 @@ class Account {
     return delegators;
   }
   async delegateHP(amount, to, callback) {
-    const totalSteem = Number(
-      (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
-    );
+    const totalSteem = (await this.props.getProp("total_vesting_fund_steem"))
+      ? Number(
+          (await this.props.getProp("total_vesting_fund_steem")).split(" ")[0]
+        )
+      : Number(
+          (await this.props.getProp("total_vesting_fund_hive")).split(" ")[0]
+        );
     const totalVests = Number(
       (await this.props.getProp("total_vesting_shares")).split(" ")[0]
     );

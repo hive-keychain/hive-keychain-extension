@@ -522,7 +522,9 @@ const showBalances = async (user, currency, amount) => {
         balance = parseFloat(account.balance.split(" ")[0]);
         break;
       case "hbd":
-        balance = parseFloat(account.sbd_balance.split(" ")[0]);
+        balance = account.sbd_balance
+          ? parseFloat(account.sbd_balance.split(" ")[0])
+          : parseFloat(account.hbd_balance.split(" ")[0]);
         break;
       case "hp":
         balance = await getHivePower(account.vesting_shares);
@@ -547,7 +549,8 @@ const showBalances = async (user, currency, amount) => {
 const getHivePower = async vesting_shares => {
   const result = await hive.api.getDynamicGlobalPropertiesAsync();
   const total_vesting_shares = result.total_vesting_shares;
-  const total_vesting_fund = result.total_vesting_fund_steem;
+  const total_vesting_fund =
+    result.total_vesting_fund_steem || result.total_vesting_fund_hive;
   // Handle Promises, when you’re sure the two functions were completed simply do:
   return hive.formatter
     .vestToSteem(vesting_shares, total_vesting_shares, total_vesting_fund)
