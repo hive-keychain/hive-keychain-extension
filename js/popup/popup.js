@@ -313,7 +313,9 @@ async function sendTransfer() {
           const sender = await hive.api.getAccountsAsync([
             activeAccount.getName()
           ]);
-          sbd = sender["0"].sbd_balance.replace("SBD", "");
+          sbd = sender["0"].sbd_balance
+            ? sender["0"].sbd_balance.replace("SBD", "")
+            : sender["0"].hbd_balance.replace("HBD", "");
           steem_p = sender["0"].balance.replace("STEEM", "");
           $("#confirm_send_div").hide();
           $("#send_div").show();

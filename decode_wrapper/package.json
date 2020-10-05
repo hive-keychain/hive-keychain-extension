@@ -8,6 +8,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "steem": "^0.7.1"
+    "steem": "^0.7.11"
   }
 }

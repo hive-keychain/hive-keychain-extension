@@ -47,7 +47,9 @@ class Rpcs {
   }
 
   async setOptions(rpc, awaitRollback = false) {
-    //console.log("option:", rpc);
+    hive.config.set("rebranded_api", true);
+    hive.broadcast.updateOperations();
+
     if (rpc === this.currentRpc) {
       //console.log("Same RPC");
       return;

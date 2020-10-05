@@ -68,6 +68,8 @@ class Account {
   }
 
   claimRewards(callback) {
+    console.log(this.hf24);
+
     if (!this.hf24)
       hive.broadcast.claimRewardBalance(
         this.getKey("posting"),
@@ -77,15 +79,26 @@ class Account {
         this.reward_vests,
         callback
       );
-    else
-      hive.broadcast.claimRewardBalance(
-        this.getKey("posting"),
-        this.getName(),
-        this.reward_hive,
-        this.reward_hbd,
-        this.reward_vests,
+    else {
+      hive.broadcast.send(
+        {
+          operations: [
+            [
+              "claim_reward_balance",
+              {
+                account: this.getName(),
+                reward_hive: this.reward_hive,
+                reward_hbd: this.reward_hbd,
+                reward_vests: this.reward_vests
+              }
+            ]
+          ],
+          extensions: []
+        },
+        { posting: this.getKey("posting") },
         callback
       );
+    }
   }
 
   async getVotingMana() {

@@ -631,7 +631,8 @@ const claimRewards = async () => {
           .click(function() {
             $("#claim_rewards button").prop("disabled", true);
             if (activeAccount.hasKey("posting"))
-              activeAccount.claimRewards(() => {
+              activeAccount.claimRewards((res, err) => {
+                console.log(res, err);
                 $("#claim_rewards").hide();
                 $("#claim_rewards button").prop("disabled", false);
                 initializeMainMenu();
