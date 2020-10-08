@@ -37,21 +37,29 @@ const claimRewardIfPossible = async user => {
     const {
       reward_sbd_balance,
       reward_vesting_balance,
-      reward_steem_balance
+      reward_steem_balance,
+      reward_hive_balance,
+      reward_hbd_balance
     } = account;
+    const rewardMain = reward_hive_balance
+      ? reward_hive_balance
+      : reward_steem_balance;
+    const rewardDollar = reward_hbd_balance
+      ? reward_hbd_balance
+      : reward_sbd_balance;
     const accountObj = accountsList.get(user);
     if (!accountObj) return;
     if (
-      parseFloat(reward_sbd_balance) > 0 ||
+      parseFloat(rewardDollar) > 0 ||
       parseFloat(reward_vesting_balance) > 0 ||
-      parseFloat(reward_steem_balance) > 0
+      parseFloat(rewardMain) > 0
     ) {
       console.log(`claiming ${reward_vesting_balance} VESTS for @${user}`);
       await hive.broadcast.claimRewardBalanceAsync(
         accountObj.getKey("posting"),
         accountObj.getName(),
-        reward_steem_balance.replace("HIVE", "STEEM"),
-        reward_sbd_balance.replace("HBD", "SBD"),
+        rewardMain.replace("HIVE", "STEEM"),
+        rewardDollar.replace("HBD", "SBD"),
         reward_vesting_balance
       );
     }
