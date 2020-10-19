@@ -605,7 +605,9 @@ const getBittrexCurrency = async currency => {
       },
       url: "https://api.bittrex.com/api/v1.1/public/getcurrencies",
       success: function(currencies) {
-        fulfill(currencies.find(o => o.Currency == currency));
+        if(currencies.success) {
+          fulfill(currencies.result.find(o => o.Currency == currency));
+        }
       },
       error: function(msg) {
         console.log(msg);
