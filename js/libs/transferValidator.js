@@ -32,7 +32,7 @@ class TransferValidator {
     if (exchange.account == "bittrex") {
       const info = await getBittrexCurrency(currency);
       if (info && !info.IsActive) {
-        return chrome.i18n.getMessage("popup_warning_exchange_memo");
+        return chrome.i18n.getMessage("popup_warning_exchange_wallet");
       }
     }
     return null;
