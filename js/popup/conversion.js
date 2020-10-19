@@ -36,6 +36,7 @@ const getNextRequestID = async () => {
   conversions = await hive.api.getConversionRequestsAsync(
     await activeAccount.getName()
   );
-  nextRequestId = Math.max(...conversions.map(e => e.requestid)) + 1;
+  console.log(conversions);
+  nextRequestId = Math.max(...conversions.map(e => e.requestid), 0) + 1;
   console.log(nextRequestId);
 };
