@@ -391,11 +391,16 @@ chrome.runtime.onMessage.addListener(function(
           $("#percent_sbd").text(options.percent_steem_dollars);
           $("#allow_votes").text(options.allow_votes);
           $("#allow_curation_rewards").text(options.allow_curation_rewards);
+          let ext = options.extensions;
           let beneficiaries = "";
-          for (benef of options.extensions[0][1].beneficiaries) {
-            beneficiaries += `@${benef.account} (${(benef.weight / 100).toFixed(
-              2
-            )}%) `;
+          if (ext.length) {
+            if (ext[0].length >= 2) {
+              for (benef of ext[0][1].beneficiaries) {
+                beneficiaries += `@${benef.account} (${(
+                  benef.weight / 100
+                ).toFixed(2)}%) `;
+              }
+            }
           }
           if (beneficiaries !== "") $("#beneficiaries").text(beneficiaries);
           else $("#beneficiaries_div").hide();

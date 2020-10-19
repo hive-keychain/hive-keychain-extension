@@ -320,7 +320,8 @@ const isCustomOptions = obj => {
     return false;
   return (
     comment_options.hasOwnProperty("max_accepted_payout") &&
-    comment_options.hasOwnProperty("percent_steem_dollars") &&
+    (comment_options.hasOwnProperty("percent_steem_dollars") ||
+      comment_options.hasOwnProperty("percent_hbd")) &&
     comment_options.hasOwnProperty("allow_votes") &&
     comment_options.hasOwnProperty("allow_curation_rewards") &&
     comment_options.hasOwnProperty("extensions")

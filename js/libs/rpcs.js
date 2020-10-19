@@ -4,7 +4,9 @@ class Rpcs {
     this.awaitRollback = false;
     this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
     this.list = this.initList();
-    //this.version = hive.api.getVersionAsync();
+
+    hive.config.set("rebranded_api", true);
+    hive.broadcast.updateOperations();
   }
   getCurrent() {
     return this.currentRpc;
@@ -98,14 +100,8 @@ class Rpcs {
     }
     this.previousRpc = this.currentRpc;
     this.currentRpc = newRpc;
-    const props = await hive.api.getDynamicGlobalPropertiesAsync();
-    if (props.total_vesting_fund_hive) {
-      hive.config.set("rebranded_api", true);
-      hive.broadcast.updateOperations();
-    }
     console.log(`Now using ${this.currentRpc}, previous: ${this.previousRpc}`);
     this.awaitRollback = awaitRollback;
-    console.log(hive.config.get("chain_id"));
 
     return;
   }
