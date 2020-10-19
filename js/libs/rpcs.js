@@ -24,6 +24,7 @@ class Rpcs {
       "https://rpc.ausbit.dev",
       "https://rpc.esteem.app",
       "https://techcoderx.com",
+      "https://hive-api.arcange.eu/",
       "TESTNET"
     ];
 
