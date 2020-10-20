@@ -24,7 +24,7 @@ class Rpcs {
       "https://hived.privex.io/",
       "https://hive.roelandp.nl",
       "https://rpc.ausbit.dev",
-      "https://rpc.esteem.app",
+      "https://rpc.ecency.com",
       "https://techcoderx.com",
       "https://hive-api.arcange.eu/",
       "TESTNET"
