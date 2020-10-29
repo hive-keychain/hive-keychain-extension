@@ -10,7 +10,7 @@ const showAutomatedTasks = async (user, items) => {
     CLAIM_ACCOUNT_RC,
     rc.estimated_max / CLAIM_ACCOUNT_RC
   );
-  if (rc.estimated_max / CLAIM_ACCOUNT_RC < 2) {
+  if (rc.estimated_max / CLAIM_ACCOUNT_RC < 1.42) {
     tasks.removeTaskForUser("claimAccounts", taskUsername);
     $("#autoclaim_accounts_checkbox").hide();
   } else {

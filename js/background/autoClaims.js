@@ -71,10 +71,10 @@ const claimRewardIfPossible = async user => {
 const claimAccountsIfPossible = async user => {
   try {
     const rc = await getRC(user);
-    const CLAIM_ACCOUNT_RC = 5 * 10 ** 12;
+    const CLAIM_ACCOUNT_RC = 6 * 10 ** 12;
     if (
-      parseFloat(rc.estimated_pct) > 90 &&
-      rc.estimated_max / CLAIM_ACCOUNT_RC > 2
+      parseFloat(rc.estimated_pct) > 95 &&
+      rc.estimated_max / CLAIM_ACCOUNT_RC > 1.42
     ) {
       console.log("try to claim", user);
       const accountObj = accountsList.get(user);

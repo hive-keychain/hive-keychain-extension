@@ -1,6 +1,6 @@
 const STEEMIT_100_PERCENT = 10000;
 const STEEM_VOTING_MANA_REGENERATION_SECONDS = 432000;
-const CLAIM_ACCOUNT_RC = 5 * 10 ** 12;
+const CLAIM_ACCOUNT_RC = 6 * 10 ** 12;
 
 // get VM only
 var getVotingMana = function(account) {
@@ -605,7 +605,7 @@ const getBittrexCurrency = async currency => {
       },
       url: "https://api.bittrex.com/api/v1.1/public/getcurrencies",
       success: function(currencies) {
-        if(currencies.success) {
+        if (currencies.success) {
           fulfill(currencies.result.find(o => o.Currency == currency));
         }
       },

@@ -1387,7 +1387,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts_info": {
-    "message": "Automatically claim an account when RC percentage is superior to the threshold. Account must have at least 10,000 HP",
+    "message": "Automatically claim an account when RC percentage is over 95%.",
     "description": "When on automated tasks page"
   }
 }
