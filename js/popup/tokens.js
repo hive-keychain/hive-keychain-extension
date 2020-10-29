@@ -209,6 +209,7 @@ function getAccountBalances(account) {
 }
 
 async function sendToken(account_to, token, amount, memo) {
+  $("#confirm_send_tok").hide();
   const id = CHAIN_ID;
   const json = {
     contractName: "tokens",
@@ -221,6 +222,7 @@ async function sendToken(account_to, token, amount, memo) {
     }
   };
   $("#tok_loading").show();
+
   if (!(await checkAccountExists(account_to))) {
     showError(chrome.i18n.getMessage("popup_no_such_account"));
     $("#tok_loading").hide();
