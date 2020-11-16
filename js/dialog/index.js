@@ -299,14 +299,15 @@ chrome.runtime.onMessage.addListener(function(
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json").text(JSON.stringify(operations));
+        console.log(JSON.stringify(operations, undefined, 2));
+        $("#custom_json pre").html(jsonj);
         $("#custom_key").text(method);
         break;
       case "signTx":
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json").text(JSON.stringify(tx.operations));
+        $("#custom_json pre").text(JSON.stringify(tx.operations, undefined, 2));
         $("#custom_key").text(method);
         break;
       case "createClaimedAccount":
@@ -314,13 +315,17 @@ chrome.runtime.onMessage.addListener(function(
           $("#custom_json").slideToggle();
         });
 
-        $("#custom_json").text(
-          JSON.stringify({
-            owner: owner,
-            active: active,
-            posting: posting,
-            memo: memo
-          })
+        $("#custom_json pre").text(
+          JSON.stringify(
+            {
+              owner: owner,
+              active: active,
+              posting: posting,
+              memo: memo
+            },
+            undefined,
+            2
+          )
         );
         break;
       case "signedCall":
@@ -330,9 +335,7 @@ chrome.runtime.onMessage.addListener(function(
         $("#custom_json div")
           .eq(0)
           .text(method);
-        $("#custom_json div")
-          .eq(1)
-          .text(JSON.stringify(params));
+        $("#custom_json pre").text(JSON.stringify(params, undefined, 2));
 
         $("#custom_key").text(typeWif);
         break;
@@ -349,9 +352,9 @@ chrome.runtime.onMessage.addListener(function(
         $("#custom_json div")
           .eq(0)
           .text(id);
-        $("#custom_json div")
-          .eq(1)
-          .text(json);
+        $("#custom_json pre").text(
+          JSON.stringify(JSON.parse(json), undefined, 2)
+        );
         $("#custom_key").text(method);
         break;
       case "transfer":
