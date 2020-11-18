@@ -1389,5 +1389,9 @@
   "popup_html_enable_autoclaim_accounts_info": {
     "message": "Automatically claim an account when RC percentage is over 95%.",
     "description": "When on automated tasks page"
+  },
+  "popup_html_proposal_request": {
+    "message": "Help support Keychain development through our DHF proposal",
+    "description": "When user doesnt vote for proposal"
   }
 }

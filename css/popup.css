@@ -1237,6 +1237,32 @@ input:focus {
   margin-bottom: 40px;
 }
 
+#proposal_vote {
+  display: block;
+  height: 45px;
+  background-color: black;
+  position: fixed;
+  bottom: 0px;
+  z-index: 4;
+  width: 100%;
+  padding: 4px;
+  color: white;
+  box-sizing: border-box;
+  font-size: 14px;
+  text-align: center;
+  opacity: 1;
+}
+#proposal_vote p {
+  margin: 0;
+}
+
+#proposal_vote button {
+  display: inline-block;
+  color: black;
+  margin: 0 10px;
+  cursor: pointer;
+}
+
 #witness_votes {
   display: block;
   height: 114px;

@@ -507,3 +507,6 @@ $("#enable_autoclaim_accounts").text(
 $("#enable_autoclaim_accounts_info").text(
   chrome.i18n.getMessage("popup_html_enable_autoclaim_accounts_info")
 );
+$("#proposal_vote p").text(
+  chrome.i18n.getMessage("popup_html_proposal_request")
+);
