@@ -299,8 +299,7 @@ chrome.runtime.onMessage.addListener(function(
         $("#custom_data").click(function() {
           $("#custom_json").slideToggle();
         });
-        console.log(JSON.stringify(operations, undefined, 2));
-        $("#custom_json pre").html(jsonj);
+        $("#custom_json pre").html(JSON.stringify(operations, undefined, 2));
         $("#custom_key").text(method);
         break;
       case "signTx":

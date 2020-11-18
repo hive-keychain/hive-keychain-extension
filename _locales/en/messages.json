@@ -280,7 +280,7 @@
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "Currently only support Steem Connect transfers URLs.",
+    "message": "Currently supports Hivesigner transfers URLs.",
     "description": "on keychainify settings"
   },
   "popup_html_import_export_text": {
@@ -296,7 +296,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "The overall idea and concept for the Hive Keychain browser extension was created on Steem by <a href=\"https://steempeak.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steempeak.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem/Hive developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
+    "message": "The overall idea and concept for the Hive Keychain browser extension was created by <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Hive blockchain. It was primarily developed by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Hive developer and witness. The design and development were funded by @aggroed and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Hive blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
     "description": "on about keychain"
   },
   "popup_html_remove": {
@@ -460,7 +460,7 @@
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
-    "message": "View token information and chose which tokens to display. Learn more about custom tokens on the Steem blockchain at <a href=\"https://steem-engine.com\" target=\"_blank\">https://steem-engine.com</a>.",
+    "message": "View token information and chose which tokens to display. Learn more about custom tokens on the Hive blockchain at <a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>.",
     "description": "On tokens page"
   },
   "popup_html_available": {
@@ -613,11 +613,11 @@
   },
   "popup_empty": {
     "message": "Empty",
-    "description": "On send STEEM/SBD confirmation page, when memo is empty"
+    "description": "On send HIVE/HBD confirmation page, when memo is empty"
   },
   "popup_encrypted": {
     "message": "encrypted",
-    "description": "On send STEEM/SBD confirmation page, when memo is encrypted"
+    "description": "On send HIVE/HBD confirmation page, when memo is encrypted"
   },
   "popup_witness_key": {
     "message": "Please add your active key to vote for witnesses!",
