@@ -6,7 +6,6 @@ class Rpcs {
     this.list = this.initList();
 
     hive.config.set("rebranded_api", true);
-    hive.broadcast.updateOperations();
   }
   getCurrent() {
     return this.currentRpc;

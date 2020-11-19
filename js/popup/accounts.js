@@ -61,7 +61,9 @@ const loadAccount = async (name, options) => {
   prepareDelegationTab();
   preparePowerUpDown();
   showTokenBalances();
-  proposeWitnessVote(witness_votes, proxy);
+  proposeVotes(name, witness_votes, proxy);
+  // proposeWitnessVote(witness_votes, proxy);
+  // checkProposalVote(name);
   getAccountHistory();
 };
 
@@ -710,3 +712,62 @@ const proposeWitnessVote = (witness_votes, proxy) => {
     );
   }
 };
+
+const proposeVotes = async (name, witness_votes, proxy) => {
+  hive.api
+    .listProposalVotesAsync(
+      [140, name],
+      1,
+      "by_proposal_voter",
+      "ascending",
+      "all"
+    )
+    .then(votes => {
+      console.log("votes", votes);
+      if (votes[0].voter !== name) {
+        console.log("show");
+        $("#proposal_vote").show();
+        $("#proposal_voter")
+          .unbind("click")
+          .click(() => {
+            $("#proposal_voter").prop("disabled", true);
+
+            hive.broadcast.send(
+              {
+                operations: [
+                  [
+                    "update_proposal_votes",
+                    {
+                      voter: name,
+                      proposal_ids: ["140"],
+                      approve: "true"
+                    }
+                  ]
+                ],
+                extensions: []
+              },
+              { active: activeAccount.getKey("active") },
+              (err, res) => {
+                $("#proposal_vote").hide();
+                if (err) {
+                  showError("Something went wrong!");
+                  console.log(err);
+                } else
+                  showConfirm("Succesfully voted for the Keychain proposal!");
+              }
+            );
+          });
+      } else {
+        $("#proposal_vote").hide();
+        proposeWitnessVote(witness_votes, proxy);
+      }
+    });
+};
+
+$("#proposal_read").click(() => {
+  var win = window.open(
+    "https://peakd.com/hive/@keychain/hive-keychain-development-proposal-2",
+    "_blank"
+  );
+  win.focus();
+});
