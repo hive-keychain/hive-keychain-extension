@@ -255,7 +255,7 @@ $("#memo_send").attr(
   chrome.i18n.getMessage("popup_html_memo_optional")
 );
 $(".checkbox_memo div").text(chrome.i18n.getMessage("popup_html_encrypt_memo"));
-$("#send_transfer").text(chrome.i18n.getMessage("popup_html_send"));
+$("#send_transfer").text(chrome.i18n.getMessage("popup_html_send", [""]));
 $("#show_add_active").text(chrome.i18n.getMessage("popup_html_add_active"));
 $("#confirm_send_div .back_enabled").text(
   chrome.i18n.getMessage("popup_html_transfer")
@@ -329,7 +329,7 @@ $("#memo_tok").attr(
   "placeholder",
   chrome.i18n.getMessage("popup_html_memo_optional")
 );
-$("#send_tok").text(chrome.i18n.getMessage("popup_html_send"));
+$("#send_tok").text(chrome.i18n.getMessage("popup_html_send", [""]));
 $("#confirm_token_send_div .back_enabled").text(
   chrome.i18n.getMessage("popup_html_transfer")
 );
