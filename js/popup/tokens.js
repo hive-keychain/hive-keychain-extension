@@ -238,9 +238,12 @@ async function sendToken(account_to, token, amount, memo) {
       if (err) {
         $("#tok_loading").hide();
         showError(chrome.i18n.getMessage("unknown_error"));
+
+        $("#confirm_send_tok").show();
       } else {
         tryConfirmTransaction(result.id).then(function(res) {
           $("#tok_loading").hide();
+          $("#confirm_send_tok").show();
           if (res && res.confirmed) {
             if (res.error)
               showError(
