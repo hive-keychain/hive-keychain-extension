@@ -177,7 +177,9 @@ class Account {
     const result = await hive.api.getAccountHistoryAsync(
       this.getName(),
       -1,
-      1000
+      1000,
+      "4",
+      null
     );
     let transfers = result.filter(tx => tx[1].op[0] === "transfer");
     transfers = transfers.slice(-10).reverse();
