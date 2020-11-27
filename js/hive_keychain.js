@@ -581,7 +581,7 @@ var hive_keychain = {
   /**
    * Request the removal of a DHF proposal
    * @param {String} username Hive account to perform the request
-   * @param {Array} proposal_ids Ids of the proposals to be removed
+   * @param {String} proposal_ids Stringified Array of ids of the proposals to be removed
    * @param {Array} extensions
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
@@ -606,7 +606,7 @@ var hive_keychain = {
   /**
    * Vote/Unvote a DHF proposal
    * @param {String} username Hive account to perform the request
-   * @param {Array} proposal_ids Ids of the proposals to be removed
+   * @param {String} proposal_ids Stringified Array of Ids of the proposals to be voted
    * @param {boolean} approve Set to true to support the proposal, false to remove a vote
    * @param {Array} extensions
    * @param {function} callback Keychain's response to the request

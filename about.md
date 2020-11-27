@@ -1,5 +1,4 @@
-![](http://u.cubeupload.com/arcange/yOdI5g.png)
----
+## ![](http://u.cubeupload.com/arcange/yOdI5g.png)
 
 Putting private keys directly into websites is not safe or secure, even ones run by reputable community members. Yet this is currently how nearly every Hive-based site or service currently works. On top of that, most Hive users likely use their master password which is even worse.
 
@@ -10,6 +9,7 @@ On Ethereum, you never have to enter your private key into a website to use a dA
 Hive Keychain aims to bring the security and ease-of-use of Metamask to the Hive blockchain platform.
 
 ## Installation
+
 You can download and install the latest published version of the extension for the following browsers:
 
 - Google Chrome (or Opera/Brave): [on Chrome Store](https://chrome.google.com/webstore/detail/hive-keychain/jcacnejopjdphbnjgfaaobbfafkihpep)
@@ -23,7 +23,9 @@ You can download and install the latest published version of the extension for t
 - Firefox: [on Firefox Addon Store](https://addons.mozilla.org/en-GB/firefox/addon/hive-keychain/)
 
 ## Features
+
 The Hive Keychain extension includes the following features:
+
 - Store an unlimited number of Hive account keys, encrypted with AES
 - View balances, transaction history, voting power, and resource credits
 - Send HIVE and HBD transfers, manage witness votes, and update HP delegation right from the extension
@@ -34,7 +36,9 @@ The Hive Keychain extension includes the following features:
 - Locks automatically on browser shutdown or manually using the lock button
 
 ## Website Integration
+
 Websites can currently request the Hive Keychain extension to perform the following functions / broadcast operations:
+
 - Send a handshake to make sure the extension is installed
 - Decrypt a message encrypted by a Hive account private key (commonly used for "logging in")
 - Post a comment (top level or reply)
@@ -58,3 +62,15 @@ An example of a web page that interacts with the extension is included in the "e
 
 NOTE: On localhost, it will only run on port 1337.
 
+## Using Keychain for logins
+
+To login, you can encode a message from your backend and verify that the user can decode it using the `requestVerifyKey` method.
+See an example in this project by @howo (@steempress witness):
+[Frontend](https://github.com/drov0/downvote-control-tools-front/blob/c453b81d482421e5ae006c25502c491dbebdc180/src/components/Login.js#L34)
+[Backend](https://github.com/drov0/downvote-control-tool-back/blob/master/routes/auth.js#L159)
+
+Alternatively, you can use `requestSignTx` and verify the signature on your backend.
+
+## @hiveio/keychain
+
+This [npm module](https://www.npmjs.com/package/@hiveio/keychain) makes it easy to add Keychain support within the browser. It also includes helpful functions to check whether Keychain was used before. It was developed by @therealwolf (witness).
