@@ -445,7 +445,7 @@ Request the creation of a DHF proposal
 -   `daily_pay` **[number][67]** Daily amount to be received by `receiver`
 -   `start` **[Date][71]** Starting date
 -   `end` **[Date][71]** Ending date
--   `extensions` **[Array][68]** 
+-   `extensions` **[String][65]** Stringified Array of extensions
 -   `callback` **[function][64]** Keychain's response to the request
 -   `rpc` **[String][65]** Override user's RPC settings (optional, default `null`)
 
@@ -457,7 +457,7 @@ Request the removal of a DHF proposal
 
 -   `username` **[String][65]** Hive account to perform the request
 -   `proposal_ids` **[String][65]** Stringified Array of ids of the proposals to be removed
--   `extensions` **[Array][68]** 
+-   `extensions` **[String][65]** Stringified Array of extensions
 -   `callback` **[function][64]** Keychain's response to the request
 -   `rpc` **[String][65]** Override user's RPC settings (optional, default `null`)
 
@@ -470,7 +470,7 @@ Vote/Unvote a DHF proposal
 -   `username` **[String][65]** Hive account to perform the request
 -   `proposal_ids` **[String][65]** Stringified Array of Ids of the proposals to be voted
 -   `approve` **[boolean][70]** Set to true to support the proposal, false to remove a vote
--   `extensions` **[Array][68]** 
+-   `extensions` **[String][65]** Stringified Array of extensions
 -   `callback` **[function][64]** Keychain's response to the request
 -   `rpc` **[String][65]** Override user's RPC settings (optional, default `null`)
 

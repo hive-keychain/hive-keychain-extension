@@ -547,7 +547,7 @@ var hive_keychain = {
    * @param {number} daily_pay Daily amount to be received by `receiver`
    * @param {Date} start Starting date
    * @param {Date} end Ending date
-   * @param {Array} extensions
+   * @param {String} extensions Stringified Array of extensions
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -582,7 +582,7 @@ var hive_keychain = {
    * Request the removal of a DHF proposal
    * @param {String} username Hive account to perform the request
    * @param {String} proposal_ids Stringified Array of ids of the proposals to be removed
-   * @param {Array} extensions
+   * @param {String} extensions Stringified Array of extensions
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -608,7 +608,7 @@ var hive_keychain = {
    * @param {String} username Hive account to perform the request
    * @param {String} proposal_ids Stringified Array of Ids of the proposals to be voted
    * @param {boolean} approve Set to true to support the proposal, false to remove a vote
-   * @param {Array} extensions
+   * @param {String} extensions Stringified Array of extensions
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
