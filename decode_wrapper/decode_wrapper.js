@@ -1,15 +1,16 @@
-var signature = require("steem/lib/auth/ecc");
-var steem = require("steem");
+var signature = require("@hiveio/hive-js/lib/auth/ecc");
+var hive = require("@hiveio/hive-js");
+
 window.decodeMemo = (e, r) => {
   try {
-    return steem.memo.decode(e, r);
+    return hive.memo.decode(e, r);
   } catch (a) {
     return r;
   }
 };
 window.encodeMemo = (e, r, a) => {
   try {
-    return steem.memo.encode(e, r, a);
+    return hive.memo.encode(e, r, a);
   } catch (a) {
     return a;
   }
@@ -37,4 +38,4 @@ window.signBuffer = (e, r) => {
   } catch (e) {}
   return signature.Signature.signBuffer(buf, r).toHex();
 };
-window.signedCall = (m, p, a, k, c) => steem.api.signedCall(m, p, a, k, c);
+window.signedCall = (m, p, a, k, c) => hive.api.signedCall(m, p, a, k, c);
