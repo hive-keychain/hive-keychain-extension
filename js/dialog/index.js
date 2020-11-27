@@ -384,7 +384,9 @@ chrome.runtime.onMessage.addListener(function(
         $("#title").text(title);
         $("#permlink").text(permlink);
         $("#body").text(body);
-        $("#json_metadata").text(json_metadata);
+        $("#json_metadata pre").text(
+          JSON.stringify(JSON.parse(json_metadata), null, 2)
+        );
         $("#parent_url").text(parent_perm);
         $("#parent_username").text(parent_username);
         if (comment_options !== "") {

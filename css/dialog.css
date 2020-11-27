@@ -31,6 +31,11 @@ body {
   position: relative;
 }
 
+pre {
+  font-family: Futura !important;
+  font-style: normal;
+}
+
 .cloud {
   position: absolute;
   width: 350px;
