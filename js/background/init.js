@@ -12,6 +12,7 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
+chrome.storage.local.get(["no_confirm"], items => { console.log(items); });
 chrome.storage.local.get(
   ["current_rpc", "autolock", "claimRewards", "claimAccounts"],
   items => {
@@ -98,6 +99,21 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
         });
       }
       break;
+    case "importPermissions":
+      try {
+        chrome.storage.local.set({ no_confirm: msg.fileData }, function() {
+          chrome.runtime.sendMessage({
+            command: "importResult",
+            result: true
+          });
+        });
+      } catch (e) {
+        console.log(e);
+        chrome.runtime.sendMessage({
+          command: "importResult",
+          result: false
+        });
+      }
     case "updateClaims":
       chrome.storage.local.get(
         ["claimRewards", "claimAccounts"],

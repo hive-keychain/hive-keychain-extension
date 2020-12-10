@@ -2069,9 +2069,12 @@ input:focus {
   margin-top: 20px;
 }
 
-#import_settings button:first-of-type {
-  margin-bottom: 30px;
+#import_settings button {
   margin-top: 20px;
+}
+
+#import_settings button:last-of-type {
+  margin-bottom: 30px;
 }
 
 .preferences-site-container {

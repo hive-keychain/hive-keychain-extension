@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="../css/dialog.css" />
+    <link rel="stylesheet" type="text/css" href="../css/import.css" />
+  </head>
+
+  <body>
+    <div class="cloud"></div>
+    <div class="modal-content" id="mod_content">
+      <h2 id="dialog_header"></h2>
+      <p id="text_import"></p>
+      <input type="file" accept=".json" id="file" />
+      <label for="file">Choose a file</label><span id="file_span"></span>
+      <button id="proceed"></button>
+    </div>
+    <div class="modal-content" id="import_result">
+      <h2 id="dialog_header_result"></h2>
+      <p id="text_finish_import"></p>
+      <button id="close"></button>
+    </div>
+    <script src="../vendor/jquery.min.js"></script>
+    <script src="../vendor/hive.min.js"></script>
+    <script src="../vendor/axios.min.js"></script>
+    <script src="../vendor/ssc.min.js"></script>
+    <script src="../js/importPermissions.js"></script>
+  </body>
+</html>

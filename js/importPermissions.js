@@ -1,5 +1,5 @@
-$("#dialog_header").text(chrome.i18n.getMessage("popup_html_import_keys"));
-$("#text_import").html(chrome.i18n.getMessage("import_html_text"));
+$("#dialog_header").text(chrome.i18n.getMessage("popup_html_import_permissions"));
+$("#text_import").html(chrome.i18n.getMessage("import_permissions_html_text"));
 $("#proceed").text(chrome.i18n.getMessage("popup_html_import"));
 
 $("#proceed").click(async () => {
@@ -8,8 +8,8 @@ $("#proceed").click(async () => {
     const base64 = await toBase64(file);
     const fileData = atob(base64);
     chrome.runtime.sendMessage({
-      command: "importKeys",
-      fileData
+      command: "importPermissions",
+      fileData,
     });
   }
 });
@@ -22,14 +22,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResp) => {
     $("#mod_content").hide();
     if (msg.result) {
       $("#text_finish_import").html(
-        chrome.i18n.getMessage("import_html_success")
+        chrome.i18n.getMessage("import_permissions_html_success")
       );
       $("#dialog_header_result").text(
         chrome.i18n.getMessage("dialog_header_success")
       );
     } else {
       $("#text_finish_import").html(
-        chrome.i18n.getMessage("import_html_error")
+        chrome.i18n.getMessage("import_permissions_html_error")
       );
       $("#dialog_header_result").text(
         chrome.i18n.getMessage("dialog_header_error")
