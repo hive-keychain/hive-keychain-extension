@@ -272,7 +272,7 @@
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
-    "message": "This feature allows you to trigger a Hive Keychain operation when clicking on a supported link on a web page or accessing the URL directly in a browser tab.",
+    "message": "This feature allows you to trigger a Hive Keychain operation when clicking on a supported link on a web page or accessing the URL directly in a browser tab. Currently supports the following Hivesigner links: transfers, delegation, custom JSON, witness proxy and votes.",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_title": {
@@ -280,7 +280,7 @@
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "Currently supports Hivesigner transfers URLs.",
+    "message": "When enabled, this feature will open a Keychain pop when you click on supported links.",
     "description": "on keychainify settings"
   },
   "popup_html_import_export_text": {
