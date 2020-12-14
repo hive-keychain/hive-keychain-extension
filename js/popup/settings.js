@@ -138,7 +138,10 @@ $("#export_keys").click(() => {
 
 $("#export_permissions").click(() => {
   chrome.storage.local.get(["no_confirm"], function(items) {
-    const { no_confirm } = items;
+    let { no_confirm } = items;
+    if (!no_confirm) {
+      no_confirm = '{}';
+    }
     const data = new Blob([no_confirm], {type: "application/json"});
     const url = window.URL.createObjectURL(data);
     const a = document.createElement("a");
