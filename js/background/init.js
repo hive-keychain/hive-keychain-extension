@@ -101,14 +101,26 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
       break;
     case "importPermissions":
       try {
-        chrome.storage.local.set({ no_confirm: msg.fileData }, function() {
+        if (
+            msg.hasOwnProperty('fileData')
+            && typeof msg.fileData === 'string'
+        ) {
+          chrome.storage.local.set({ no_confirm: msg.fileData }, function() {
+            console.error('[hivekeychain] permissions successfully imported from file');
+            chrome.runtime.sendMessage({
+              command: "importResult",
+              result: true
+            });
+          });
+        } else {
+          console.error('[hivekeychain] no file data to import');
           chrome.runtime.sendMessage({
             command: "importResult",
-            result: true
+            result: false
           });
-        });
+        }
       } catch (e) {
-        console.log(e);
+        console.error('[hivekeychain]', e);
         chrome.runtime.sendMessage({
           command: "importResult",
           result: false
