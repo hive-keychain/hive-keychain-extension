@@ -106,7 +106,7 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
             && typeof msg.fileData === 'string'
         ) {
           chrome.storage.local.set({ no_confirm: msg.fileData }, function() {
-            console.error('[hivekeychain] permissions successfully imported from file');
+            console.log('[hivekeychain] permissions successfully imported from file');
             chrome.runtime.sendMessage({
               command: "importResult",
               result: true
