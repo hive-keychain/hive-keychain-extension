@@ -6,7 +6,7 @@ let tab = null;
 let request = null;
 let request_id = null;
 let accountsList = new AccountsList();
-let timeoutIdle = null;
+let idleListenerReady = false;
 let autolock = null;
 let interval = null;
 let rpc = new Rpcs();
@@ -26,7 +26,6 @@ chrome.storage.local.get(
 
 const chromeMessageHandler = (msg, sender, sendResp) => {
   // Send mk upon request from the extension popup.
-  restartIdleCounterIfNeeded(autolock, msg);
   switch (msg.command) {
     case "getMk":
       chrome.runtime.sendMessage({
@@ -155,20 +154,6 @@ const unlockFromDialog = msg => {
       }
     }
   });
-};
-
-const restartIdleCounterIfNeeded = (autolock, msg) => {
-  if (
-    autolock != null &&
-    autolock.type == "idle" &&
-    (msg.command == "getMk" ||
-      msg.command == "setRPC" ||
-      msg.command == "sendMk" ||
-      msg.command == "sendRequest" ||
-      msg.command == "acceptTransaction" ||
-      msg.command == "ping")
-  )
-    restartIdleCounter();
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
