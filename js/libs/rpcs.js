@@ -2,7 +2,7 @@ class Rpcs {
   constructor() {
     this.currentRpc = "https://api.hive.blog/";
     this.awaitRollback = false;
-    this.DEFAULT_RPC_API = "https://api.steemkeychain.com/hive/rpc";
+    this.DEFAULT_RPC_API = "https://api.hive-keychain.com/hive/rpc";
     this.list = this.initList();
 
     hive.config.set("rebranded_api", true);
