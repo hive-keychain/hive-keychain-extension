@@ -147,7 +147,7 @@ class Account {
   }
 
   async getVotingDollars(percentage) {
-    return await getVotingDollarsPerAccount(
+    const vd = await getVotingDollarsPerAccount(
       percentage,
       await this.getAccountInfos(),
       (await this.props.getFund("reward_balance")).replace("HIVE", ""),
@@ -156,6 +156,7 @@ class Account {
       await this.props.getProp("vote_power_reserve_rate"),
       false
     );
+    return isNaN(vd) ? 0 : vd;
   }
 
   async getAccountValue() {

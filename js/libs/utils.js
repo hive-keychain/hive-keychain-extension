@@ -29,7 +29,7 @@ var getVotingManaData = function(account) {
     last_update_time: last_update_time,
     estimated_mana: estimated_mana,
     estimated_max: estimated_max,
-    estimated_pct: estimated_pct
+    estimated_pct: isNaN(estimated_pct) ? 100 : estimated_pct
   };
 };
 
