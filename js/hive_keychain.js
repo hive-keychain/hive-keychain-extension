@@ -63,7 +63,7 @@ var hive_keychain = {
   },
   /**
    * Requests a message to be signed with proper authority
-   * @param {String} account Hive account to perform the request
+   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} message Message to be signed by the account
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request

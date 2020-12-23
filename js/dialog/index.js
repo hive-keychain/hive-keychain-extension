@@ -225,7 +225,8 @@ chrome.runtime.onMessage.addListener(function(
         "witnessVote",
         "delegation",
         "proxy",
-        "addAccount"
+        "addAccount",
+        "signBuffer"
       ].includes(type)
     ) {
       $("#keep_div").show();
@@ -258,8 +259,18 @@ chrome.runtime.onMessage.addListener(function(
       case "signBuffer":
         $("#dialog_message").show();
         $("#dialog_message").text(
-          chrome.i18n.getMessage("dialog_desc_sign", [domain, method, username])
+          username
+            ? chrome.i18n.getMessage("dialog_desc_sign", [
+                domain,
+                method,
+                username
+              ])
+            : chrome.i18n.getMessage("dialog_desc_sign_user_unknown", [
+                domain,
+                method
+              ])
         );
+        showDropdownIfNoUsername(username);
         const fullMessage = message;
         let truncatedMessage = fullMessage.substring(0, 200);
         if (fullMessage.length > 200) {
@@ -477,7 +488,13 @@ chrome.runtime.onMessage.addListener(function(
     $("#proceed").click(function() {
       if (
         (type === "transfer" && !enforce) ||
-        (["witnessVote", "delegation", "proxy", "custom"].includes(type) &&
+        ([
+          "witnessVote",
+          "delegation",
+          "proxy",
+          "custom",
+          "signBuffer"
+        ].includes(type) &&
           !username)
       ) {
         chrome.storage.local.set({
