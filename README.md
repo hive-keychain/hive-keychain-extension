@@ -192,7 +192,7 @@ Requests a message to be signed with proper authority
 
 ##### Parameters
 
--   `account` **[String][65]** Hive account to perform the request
+-   `account` **[String][65]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 -   `message` **[String][65]** Message to be signed by the account
 -   `key` **[String][65]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][64]** Keychain's response to the request
@@ -321,7 +321,7 @@ Requests a custom JSON broadcast
 
 ##### Parameters
 
--   `account` **[String][65]** Hive account to perform the request
+-   `account` **[String][65]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 -   `id` **[String][65]** Type of custom_json to be broadcasted
 -   `key` **[String][65]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `json` **[String][65]** Stringified custom json
@@ -364,12 +364,13 @@ Requests a delegation broadcast
 
 ##### Parameters
 
--   `username` **[String][65]** Hive account to perform the request
+-   `username`  
 -   `delegatee` **[String][65]** Account to receive the delegation
 -   `amount` **[number][67]** Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
 -   `unit` **[String][65]** HP or VESTS
 -   `callback` **[function][64]** Keychain's response to the request
 -   `rpc` **[String][65]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][65]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 
 #### requestWitnessVote
 
@@ -377,11 +378,12 @@ Requests a witness vote broadcast
 
 ##### Parameters
 
--   `username` **[String][65]** Hive account to perform the request
+-   `username`  
 -   `witness` **[String][65]** Account to receive the witness vote
 -   `vote` **[boolean][70]** Set to true to vote for the witness, false to unvote
 -   `callback` **[function][64]** Keychain's response to the request
 -   `rpc` **[String][65]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][65]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 
 #### requestProxy
 
@@ -389,10 +391,11 @@ Select an account as proxy
 
 ##### Parameters
 
--   `username` **[String][65]** Hive account to perform the request
+-   `username`  
 -   `proxy` **[String][65]** Account to become the proxy. Empty string ('') to remove a proxy
 -   `callback` **[function][64]** Keychain's response to the request
 -   `rpc` **[String][65]** Override user's RPC settings (optional, default `null`)
+-   `account` **[String][65]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 
 #### requestPowerUp
 
