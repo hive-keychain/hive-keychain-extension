@@ -63,7 +63,7 @@ var hive_keychain = {
   },
   /**
    * Requests a message to be signed with proper authority
-   * @param {String} account Hive account to perform the request
+   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} message Message to be signed by the account
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
@@ -314,7 +314,7 @@ var hive_keychain = {
   },
   /**
    * Requests a custom JSON broadcast
-   * @param {String} account Hive account to perform the request
+   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} id Type of custom_json to be broadcasted
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {String} json Stringified custom json
@@ -408,7 +408,7 @@ var hive_keychain = {
   },
   /**
    * Requests a delegation broadcast
-   * @param {String} username Hive account to perform the request
+   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} delegatee Account to receive the delegation
    * @param {number} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
    * @param {String} unit HP or VESTS
@@ -435,7 +435,7 @@ var hive_keychain = {
   },
   /**
    * Requests a witness vote broadcast
-   * @param {String} username Hive account to perform the request
+   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} witness Account to receive the witness vote
    * @param {boolean} vote Set to true to vote for the witness, false to unvote
    * @param {function} callback Keychain's response to the request
@@ -453,7 +453,7 @@ var hive_keychain = {
   },
   /**
    * Select an account as proxy
-   * @param {String} username Hive account to perform the request
+   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} proxy Account to become the proxy. Empty string ('') to remove a proxy
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings

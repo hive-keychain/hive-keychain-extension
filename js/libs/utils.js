@@ -29,7 +29,7 @@ var getVotingManaData = function(account) {
     last_update_time: last_update_time,
     estimated_mana: estimated_mana,
     estimated_max: estimated_max,
-    estimated_pct: estimated_pct
+    estimated_pct: isNaN(estimated_pct) ? 100 : estimated_pct
   };
 };
 
@@ -245,7 +245,7 @@ function getPricesAsync() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: "https://api.steemkeychain.com/hive/bittrex",
+      url: "https://api.hive-keychain.com/hive/bittrex",
       success: function(response) {
         resolve(response);
       },
@@ -265,7 +265,7 @@ function getWitnessRanks() {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: "https://api.steemkeychain.com/hive/witnesses-ranks",
+      url: "https://api.hive-keychain.com/hive/witnesses-ranks",
       success: function(response) {
         resolve(response);
       },
@@ -566,7 +566,7 @@ function getDelegators(name) {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: "https://api.steemkeychain.com/hive/delegators/" + name,
+      url: "https://api.hive-keychain.com/hive/delegators/" + name,
       success: function(incomingDelegations) {
         fulfill(incomingDelegations);
       },
@@ -586,7 +586,7 @@ const getPhishingAccounts = async () => {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
-      url: "https://api.steemkeychain.com/hive/phishingAccounts",
+      url: "https://api.hive-keychain.com/hive/phishingAccounts",
       success: function(phishingAccounts) {
         fulfill(phishingAccounts);
       },

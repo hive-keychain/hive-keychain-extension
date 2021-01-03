@@ -1,28 +1,29 @@
-const startAutolock = async autoLock => {
-  //Receive autolock from the popup (upon registration or unlocking)
-  autolock = autoLock;
-  console.log(autolock);
-  if (mk == null) return;
-  if (!autolock || autolock.type == "default") return;
-  if (autolock.type == "locked") {
-    chrome.idle.setDetectionInterval(parseInt(autolock.mn) * 60);
+const startAutolock = async (autoLock) => {
+  //Receive autoLock from the popup (upon registration or unlocking)
+  if (
+      idleListenerReady === false
+      && (autoLock && autoLock.type !== "default")
+      && (autoLock.type === "locked"  || autoLock.type === "idle")
+  ) {
+    console.log('hive-keychain: setting up idle listener');
+    chrome.idle.setDetectionInterval(parseInt(autoLock.mn) * 60);
     chrome.idle.onStateChanged.addListener(state => {
-      console.log(state, autolock.type);
-      if (state === "locked") {
-        mk = null;
-        console.log("lock");
+      switch(true) {
+        case (autoLock.type === "locked" && state === "locked"):
+          mk = null;
+          console.log('hive-keychain: locking because computer locked');
+          break;
+
+        case (autoLock.type === "idle" && state !== "active"):
+          mk = null;
+          console.log('hive-keychain: locking because user idled or computer locked');
+          break;
+
+        default:
+          // Nothing
+          break;
       }
     });
-  } else if (autolock.type == "idle") {
-    restartIdleCounter();
+    idleListenerReady = true;
   }
-};
-//Create Custom Idle Function
-const restartIdleCounter = () => {
-  console.log("idleCounter", new Date().toISOString());
-  clearTimeout(timeoutIdle);
-  timeoutIdle = setTimeout(() => {
-    console.log("locked", new Date().toISOString());
-    mk = null;
-  }, autolock.mn * 60000);
 };

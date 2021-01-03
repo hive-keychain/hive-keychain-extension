@@ -133,7 +133,9 @@ const checkBeforeCreate = (request, tab, domain) => {
         }
         // if transfer
       } else if (
-        ["delegation", "witnessVote", "proxy", "custom"].includes(type) &&
+        ["delegation", "witnessVote", "proxy", "custom", "signBuffer"].includes(
+          type
+        ) &&
         !username
       ) {
         // if no username specified for witness vote or delegation

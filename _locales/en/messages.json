@@ -1078,6 +1078,10 @@
     "message": "The website $1 would like to sign a message using the $2 key for the account: @$3",
     "description": "Sign message"
   },
+  "dialog_desc_sign_user_unknown": {
+    "message": "The website $1 would like to sign a message using the $2 key.",
+    "description": "Sign message"
+  },
   "dialog_expand": {
     "message": "...(click to expand)",
     "description": "Toggle"
