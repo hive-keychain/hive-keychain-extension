@@ -299,10 +299,6 @@
     "message": "Export",
     "description": "on import / export settings"
   },
-  "popup_html_import_permissions": {
-    "message": "Import permissions",
-    "description": "on import / export settings"
-  },
   "popup_html_export_permissions": {
     "message": "Export permissions",
     "description": "on import / export settings"
