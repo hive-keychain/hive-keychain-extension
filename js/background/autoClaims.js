@@ -2,12 +2,16 @@ let rewardInterval;
 let accountsInterval;
 
 const startClaimRewards = obj => {
-  if (rewardInterval) clearTimeout(rewardInterval);
-  const users = Object.keys(obj);
-  iterateClaimRewards(users);
-  rewardInterval = setInterval(async () => {
+  if (obj) {
+    if (rewardInterval) clearTimeout(rewardInterval);
+    const users = Object.keys(obj);
     iterateClaimRewards(users);
-  }, 1200 * 1000);
+    rewardInterval = setInterval(async () => {
+      iterateClaimRewards(users);
+    }, 1200 * 1000);
+  } else {
+    console.error('startClaimRewards: obj not defined');
+  }
 };
 
 const iterateClaimRewards = async users => {
@@ -17,12 +21,16 @@ const iterateClaimRewards = async users => {
 };
 
 const startClaimAccounts = obj => {
-  if (accountsInterval) clearTimeout(accountsInterval);
-  const users = Object.keys(obj);
-  iterateClaimAccounts(users);
-  accountsInterval = setInterval(() => {
+  if (obj) {
+    if (accountsInterval) clearTimeout(accountsInterval);
+    const users = Object.keys(obj);
     iterateClaimAccounts(users);
-  }, 1200 * 1000);
+    accountsInterval = setInterval(() => {
+      iterateClaimAccounts(users);
+    }, 1200 * 1000);
+  } else {
+    console.error('startClaimAccounts: obj not defined');
+  }
 };
 
 const iterateClaimAccounts = async users => {

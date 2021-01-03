@@ -12,6 +12,7 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
+chrome.storage.local.get(["no_confirm"], items => { console.log(items); });
 chrome.storage.local.get(
   ["current_rpc", "autolock", "claimRewards", "claimAccounts"],
   items => {
@@ -97,6 +98,35 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
         });
       }
       break;
+    case "importPermissions":
+      try {
+        if (
+            msg.hasOwnProperty('fileData')
+            && typeof msg.fileData === 'string'
+        ) {
+          chrome.storage.local.set({ no_confirm: msg.fileData }, function() {
+            console.log('[hivekeychain] permissions successfully imported from file');
+            chrome.runtime.sendMessage({
+              command: "importResult",
+              result: true
+            });
+          });
+        } else {
+          console.error('[hivekeychain] no file data to import');
+          chrome.runtime.sendMessage({
+            command: "importResult",
+            result: false
+          });
+        }
+      } catch (e) {
+        console.error('[hivekeychain]', e);
+        chrome.runtime.sendMessage({
+          command: "importResult",
+          result: false
+        });
+      }
+      break;
+
     case "updateClaims":
       chrome.storage.local.get(
         ["claimRewards", "claimAccounts"],

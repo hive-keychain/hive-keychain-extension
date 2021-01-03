@@ -167,6 +167,10 @@
     "message": "Import Keys",
     "description": "Import all keys"
   },
+  "popup_html_import_permissions": {
+    "message": "Import Permissions",
+    "description": "Import permissions"
+  },
   "popup_html_import_key": {
     "message": "Import Key",
     "description": "Import one key"
@@ -293,6 +297,14 @@
   },
   "popup_html_export": {
     "message": "Export",
+    "description": "on import / export settings"
+  },
+  "popup_html_import_permissions": {
+    "message": "Import permissions",
+    "description": "on import / export settings"
+  },
+  "popup_html_export_permissions": {
+    "message": "Export permissions",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
@@ -1298,6 +1310,15 @@
   },
   "import_html_error": {
     "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+  },
+  "import_permissions_html_text": {
+    "message": "Import your permissions from another Keychain instance using a .kc.json file."
+  },
+  "import_permissions_html_success": {
+    "message": "You succesfully imported your permissions!"
+  },
+  "import_permissions_html_error": {
+    "message": "There was an error importing your permissions."
   },
   "bgd_auth_no_active": {
     "message": "No account with active authority."

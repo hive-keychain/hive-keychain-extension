@@ -93,10 +93,29 @@ $("#import_keys").click(() => {
   importKeys();
 });
 
+$("#import_permissions").click(() => {
+  importPermissions();
+});
+
 const importKeys = () => {
   chrome.windows.getCurrent(w => {
     const win = {
       url: chrome.runtime.getURL("html/import.html"),
+      type: "popup",
+      height: 566,
+      width: 350,
+      left: w.width - 350 + w.left,
+      top: w.top
+    };
+    if (typeof InstallTrigger === undefined) win.focused = true;
+    chrome.windows.create(win, w => w.update());
+  });
+};
+
+const importPermissions = () => {
+  chrome.windows.getCurrent(w => {
+    const win = {
+      url: chrome.runtime.getURL("html/importPermissions.html"),
       type: "popup",
       height: 566,
       width: 350,
@@ -115,4 +134,19 @@ $("#export_keys").click(() => {
   a.href = url;
   a.download = "accounts.kc";
   a.click();
+});
+
+$("#export_permissions").click(() => {
+  chrome.storage.local.get(["no_confirm"], function(items) {
+    let { no_confirm } = items;
+    if (!no_confirm) {
+      no_confirm = '{}';
+    }
+    const data = new Blob([no_confirm], {type: "application/json"});
+    const url = window.URL.createObjectURL(data);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "permissions.kc.json";
+    a.click();
+  });
 });

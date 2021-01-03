@@ -166,6 +166,12 @@ $("#import_settings button")
 $("#import_settings button")
   .eq(1)
   .html(chrome.i18n.getMessage("popup_html_export"));
+$("#import_settings button")
+    .eq(2)
+    .html(chrome.i18n.getMessage("popup_html_import_permissions"));
+$("#import_settings button")
+    .eq(3)
+    .html(chrome.i18n.getMessage("popup_html_export_permissions"));
 
 //about
 $("#about_div .back_enabled").text(chrome.i18n.getMessage("popup_html_about"));
