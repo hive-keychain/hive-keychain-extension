@@ -197,6 +197,7 @@ Requests a message to be signed with proper authority
 -   `key` **[String][65]** Type of key. Can be 'Posting','Active' or 'Memo'
 -   `callback` **[function][64]** Keychain's response to the request
 -   `rpc` **[String][65]** Override user's RPC settings (optional, default `null`)
+-   `title` **[String][65]** Override "Sign message" title (optional, default `null`)
 
 #### requestAddAccountAuthority
 
