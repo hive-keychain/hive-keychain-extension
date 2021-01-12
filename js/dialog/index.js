@@ -218,21 +218,36 @@ chrome.runtime.onMessage.addListener(function(
     $("#modal-content").css("align-items", "flex-start");
     const keyVerifyAction =
       type === "decode" || type === "signBuffer" || type === "signTx";
+
     if (
       key !== "active" &&
+      (!method || method.toLowerCase() !== "active") &&
       ![
         "transfer",
         "witnessVote",
         "delegation",
         "proxy",
-        "addAccount",
-        "signBuffer"
+        "addAccount"
       ].includes(type)
     ) {
       $("#keep_div").show();
-      var prompt_msg = keyVerifyAction
-        ? chrome.i18n.getMessage("dialog_no_prompt_verify", [username, domain])
-        : chrome.i18n.getMessage("dialog_no_prompt", [type, username, domain]);
+      let prompt_msg;
+      if (username)
+        prompt_msg = keyVerifyAction
+          ? chrome.i18n.getMessage("dialog_no_prompt_verify", [
+              username,
+              domain
+            ])
+          : chrome.i18n.getMessage("dialog_no_prompt", [
+              type,
+              username,
+              domain
+            ]);
+      else
+        prompt_msg = chrome.i18n.getMessage("dialog_no_prompt_no_username", [
+          type,
+          domain
+        ]);
       $("#keep_label").text(prompt_msg);
     } else {
       $(".keep_checkbox").css("display", "none");

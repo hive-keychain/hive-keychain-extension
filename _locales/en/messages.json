@@ -1066,6 +1066,10 @@
     "message": "Do not prompt again to send $1 transactions from the @$2 account on $3",
     "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
   },
+  "dialog_no_prompt_no_username": {
+    "message": "Do not prompt again to send $1 transactions from the selected account on $2",
+    "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
+  },
   "dialog_desc_verify": {
     "message": "The website $1 would like to verify that you have access to the private $2 key for the account: @$3",
     "description": "key verification message"
