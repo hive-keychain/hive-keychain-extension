@@ -136,7 +136,11 @@ $("#send_signature").click(function() {
     function(response) {
       console.log("main js response - sign");
       console.log(response);
-    }
+    },
+    null,
+    $("#sign_message_title").val().length
+      ? $("#sign_message_title").val()
+      : null
   );
 });
 

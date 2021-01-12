@@ -149,7 +149,7 @@ chrome.runtime.onMessage.addListener(function(
       custom: chrome.i18n.getMessage("dialog_title_custom"),
       decode: chrome.i18n.getMessage("dialog_title_decode"),
       encode: chrome.i18n.getMessage("dialog_title_encode"),
-      signBuffer: chrome.i18n.getMessage("dialog_title_sign"),
+      signBuffer: title ? title : chrome.i18n.getMessage("dialog_title_sign"),
       addAccountAuthority: chrome.i18n.getMessage("dialog_title_add_auth"),
       removeAccountAuthority: chrome.i18n.getMessage(
         "dialog_title_remove_auth"

@@ -68,14 +68,16 @@ var hive_keychain = {
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
+   * @param {String} [title=null] Override "Sign message" title
    */
-  requestSignBuffer: function(account, message, key, callback, rpc) {
+  requestSignBuffer: function(account, message, key, callback, rpc, title) {
     var request = {
       type: "signBuffer",
       username: account,
       message: message,
       method: key,
-      rpc
+      rpc,
+      title
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
