@@ -30,6 +30,12 @@ const exchanges = [
     name: "probit",
     tokens: ["HIVE"],
     url_hive: "https://www.probit.com/app/exchange/HIVE-USDT"
+  },
+  {
+    name: "cryptex24",
+    tokens: ["HIVE", "HBD"],
+    url_hive: "https://www.cryptex24.io/trade/HIVE&USDT",
+    url_hbd: "https://www.cryptex24.io/trade/HBD&USDT"
   }
 ];
 
