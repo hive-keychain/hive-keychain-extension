@@ -401,6 +401,8 @@ function initiateCustomSelect(options, current_rpc) {
         $("#amt_send_max")
           .unbind("click")
           .click(() => {
+            console.log("sendingmax", balance);
+
             $("#amt_send").val(balance);
           });
         $("#amt_send").val(null);

@@ -71,16 +71,18 @@ const loadAccount = async (name, options) => {
 const showUserData = async () => {
   console.log("show bal");
   showBalances();
-
+  const balance =
+    $("#currency_send .select-selected").text() === "HIVE"
+      ? await activeAccount.getHive()
+      : await activeAccount.getHBD();
   $(".transfer_balance div")
     .eq(1)
-    .html(
-      numberWithCommas(
-        $("#currency_send .select-selected").text() === "HIVE"
-          ? await activeAccount.getHive()
-          : await activeAccount.getHBD()
-      )
-    );
+    .html(numberWithCommas(balance));
+  $("#amt_send_max")
+    .unbind("click")
+    .click(() => {
+      $("#amt_send").val(balance);
+    });
   const [vd, rc] = [
     await activeAccount.getVotingDollars(100),
     await activeAccount.getRC()
