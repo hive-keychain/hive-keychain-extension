@@ -117,6 +117,12 @@ function showTokenBalances() {
         const balance = accountTokenBalances.find(e => e.symbol == symbol)
           .balance;
         $("#token_send_div .back_enabled").html("Send " + symbol);
+        $("#token_send_max")
+          .unbind("click")
+          .click(() => {
+            console.log("clicked", balance);
+            $("#amt_tok").val(balance);
+          });
         $("#tok").html(symbol);
         $(".token_right").html(addCommas(balance));
         $("#token_send_div").show();
