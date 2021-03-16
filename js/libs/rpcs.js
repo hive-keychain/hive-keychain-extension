@@ -14,11 +14,13 @@ class Rpcs {
     let listRPC = [];
     const RPCs = [
       "DEFAULT",
+      "https://api.deathwing.me",
       "https://api.hive.blog/",
       "https://api.openhive.network/",
       "https://api.hivekings.com/",
       "https://anyx.io/",
       "https://api.pharesim.me/",
+      "https://hived.emre.sh",
       "https://hived.hive-engine.com/",
       "https://hived.privex.io/",
       "https://hive.roelandp.nl",
