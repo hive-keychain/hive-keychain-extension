@@ -1,4 +1,4 @@
-const broadcastTransfer = data => {
+const broadcastTransfer = (data) => {
   return new Promise(async (resolve, reject) => {
     let ac = accountsList.get(data.username);
     let memo = data.memo || "";
@@ -29,9 +29,7 @@ const broadcastTransfer = data => {
       key_transfer,
       data.username,
       data.to,
-      data.amount +
-        " " +
-        data.currency.replace("HIVE", "STEEM").replace("HBD", "SBD"),
+      data.amount + " " + data.currency,
       memo,
       (err, result) => {
         console.log(result, err);
@@ -66,7 +64,7 @@ const broadcastTransfer = data => {
             data.amount,
             data.currency,
             data.username,
-            data.to
+            data.to,
           ]),
           err_message
         );
