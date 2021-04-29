@@ -14,21 +14,21 @@ const setupInjection = () => {
 setupInjection();
 
 // Answering the handshakes
-document.addEventListener("swHandshake_hive", function(request) {
+document.addEventListener("swHandshake_hive", function (request) {
   const req = JSON.stringify(request.detail);
   if (request.detail.extension)
     chrome.runtime.sendMessage(request.detail.extension, req);
   else
     window.postMessage(
       {
-        type: "hive_keychain_handshake"
+        type: "hive_keychain_handshake",
       },
       window.location.origin
     );
 });
 
 // Answering the requests
-document.addEventListener("swRequest_hive", function(request) {
+document.addEventListener("swRequest_hive", function (request) {
   const prevReq = req;
   req = request.detail;
   // If all information are filled, send the request to the background, if not notify an error
@@ -37,7 +37,7 @@ document.addEventListener("swRequest_hive", function(request) {
       command: "sendRequest",
       request: req,
       domain: req.extensionName || window.location.hostname,
-      request_id: req.request_id
+      request_id: req.request_id,
     });
     if (prevReq) {
       const response = {
@@ -45,8 +45,8 @@ document.addEventListener("swRequest_hive", function(request) {
         error: "ignored",
         result: null,
         message: "User ignored this transaction",
-        data: req,
-        request_id: req.request_id
+        data: prevReq,
+        request_id: prevReq.request_id,
       };
       sendResponse(response);
     }
@@ -57,7 +57,7 @@ document.addEventListener("swRequest_hive", function(request) {
       result: null,
       message: "Incomplete data or wrong format",
       data: req,
-      request_id: req.request_id
+      request_id: req.request_id,
     };
     sendResponse(response);
     req = prevReq;
@@ -65,14 +65,14 @@ document.addEventListener("swRequest_hive", function(request) {
 });
 
 // Get notification from the background upon request completion and pass it to the website.
-chrome.runtime.onMessage.addListener(function(obj, sender, sendResp) {
+chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
   if (obj.command === "answerRequest") {
     sendResponse(obj.msg);
     req = null;
   }
 });
 
-const sendResponse = response => {
+const sendResponse = (response) => {
   if (response.data.extension && response.data.extensionName) {
     chrome.runtime.sendMessage(
       response.data.extension,
@@ -84,7 +84,7 @@ const sendResponse = response => {
     window.postMessage(
       {
         type: "hive_keychain_response",
-        response
+        response,
       },
       window.location.origin
     );
@@ -207,35 +207,35 @@ const validate = () => {
 
 // Functions used to check the incoming data
 
-const hasTransferInfo = req => {
+const hasTransferInfo = (req) => {
   if (req.enforce) return isFilled(req.username);
   else if (isFilled(req.memo) && req.memo[0] === "#")
     return isFilled(req.username);
   else return true;
 };
 
-const isFilled = obj => {
+const isFilled = (obj) => {
   return obj != undefined && obj != null && obj != "";
 };
 
-const isBoolean = obj => {
+const isBoolean = (obj) => {
   return typeof obj === typeof true;
 };
 
-const isFilledOrEmpty = obj => {
+const isFilledOrEmpty = (obj) => {
   return obj || obj === "";
 };
 
-const isProposalIDs = obj => {
+const isProposalIDs = (obj) => {
   const parsed = JSON.parse(obj);
   return Array.isArray(parsed) && !parsed.some(isNaN);
 };
 
-const isFilledDelegationMethod = obj => {
+const isFilledDelegationMethod = (obj) => {
   return obj === "VESTS" || obj === "HP";
 };
 
-const isFilledJSON = obj => {
+const isFilledJSON = (obj) => {
   try {
     return (
       isFilled(obj) &&
@@ -249,16 +249,16 @@ const isFilledJSON = obj => {
   }
 };
 
-const isFilledDate = date => {
+const isFilledDate = (date) => {
   const regex = /\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/;
   return regex.test(date);
 };
 
-const isFilledAmt = obj => {
+const isFilledAmt = (obj) => {
   return isFilled(obj) && !isNaN(obj) && obj > 0 && countDecimals(obj) === 3;
 };
 
-const isFilledAmtSP = obj => {
+const isFilledAmtSP = (obj) => {
   return (
     isFilled(obj.amount) &&
     !isNaN(obj.amount) &&
@@ -267,7 +267,7 @@ const isFilledAmtSP = obj => {
   );
 };
 
-const isFilledAmtSBD = amt => {
+const isFilledAmtSBD = (amt) => {
   return (
     amt &&
     amt.split(" ").length === 2 &&
@@ -277,7 +277,7 @@ const isFilledAmtSBD = amt => {
   );
 };
 
-const isFilledWeight = obj => {
+const isFilledWeight = (obj) => {
   return (
     isFilled(obj) &&
     !isNaN(obj) &&
@@ -287,17 +287,17 @@ const isFilledWeight = obj => {
   );
 };
 
-const isFilledCurrency = obj => {
+const isFilledCurrency = (obj) => {
   return isFilled(obj) && (obj === "HIVE" || obj === "HBD");
 };
 
-const isFilledKey = obj => {
+const isFilledKey = (obj) => {
   return (
     isFilled(obj) && (obj === "Memo" || obj === "Active" || obj === "Posting")
   );
 };
 
-const isFilledKeys = obj => {
+const isFilledKeys = (obj) => {
   if (typeof obj !== "object") return false;
   const keys = Object.keys(obj);
   if (!keys.length) return false;
@@ -309,7 +309,7 @@ const isFilledKeys = obj => {
     return true;
 };
 
-const isCustomOptions = obj => {
+const isCustomOptions = (obj) => {
   if (obj.comment_options === "") return true;
   let comment_options = JSON.parse(obj.comment_options);
   if (
@@ -327,7 +327,7 @@ const isCustomOptions = obj => {
   );
 };
 
-const countDecimals = nb => {
+const countDecimals = (nb) => {
   return nb.toString().split(".")[1] === undefined
     ? 0
     : nb.toString().split(".")[1].length || 0;
