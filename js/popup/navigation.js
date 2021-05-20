@@ -26,7 +26,7 @@ function prePopulatePage(pageId) {
 
 // Visibility state on the main menu
 function initializeVisibility(hideAll = false) {
-  $(".hide-at-start").each(function() {
+  $(".hide-at-start").each(function () {
     const pageId = $(this).attr("id");
     if (hideAll || pageId !== window.sk_params.page) {
       $(this).hide();
@@ -68,34 +68,34 @@ function initializeVisibility(hideAll = false) {
 }
 
 // Use "Enter" as confirmation button for unlocking, registration, and adding account/key
-$("#unlock_pwd").keypress(function(e) {
+$("#unlock_pwd").keypress(function (e) {
   if (e.keyCode == 13) {
     e.preventDefault();
     $("#submit_unlock").click();
   }
 });
 
-$("#confirm_master_pwd").keypress(function(e) {
+$("#confirm_master_pwd").keypress(function (e) {
   if (e.keyCode == 13) $("#submit_master_pwd").click();
 });
 
-$("#pwd").keypress(function(e) {
+$("#pwd").keypress(function (e) {
   if (e.keyCode == 13) $("#check_add_account").click();
 });
 
-$("#new_key").keypress(function(e) {
+$("#new_key").keypress(function (e) {
   if (e.keyCode == 13) $("#add_new_key").click();
 });
 
 // Clicking back after "forgot password"
-$("#back_forgot").click(function() {
+$("#back_forgot").click(function () {
   $("#forgot_div").hide();
   if ($(this).attr("id") == "back_forgot_settings") $("#settings_div").show();
   else $("#unlock").show();
 });
 
 // Clicking back after "add key"
-$("#add_key_div .back_enabled").click(function() {
+$("#add_key_div .back_enabled").click(function () {
   $("#add_key_div").hide();
   $("#manage_keys").show();
   $(".error_div").hide();
@@ -106,8 +106,8 @@ $(".back_account_types").click(() => {
   $("#add_auth_account_div").hide();
 });
 
-$("#add_rpc_div .back_enabled").click(function() {
-  chrome.storage.local.get(["current_rpc"], function(items) {
+$("#add_rpc_div .back_enabled").click(function () {
+  chrome.storage.local.get(["current_rpc"], function (items) {
     loadRPC(items.current_rpc);
     initiateCustomSelect();
     $("#add_rpc_div").hide();
@@ -116,7 +116,7 @@ $("#add_rpc_div .back_enabled").click(function() {
 });
 
 // Clicking back from the preferences menu
-$(".back_pref").click(function() {
+$(".back_pref").click(function () {
   $(".settings_child").hide();
   $("#settings_div").show();
   manageKey = false;
@@ -124,19 +124,19 @@ $(".back_pref").click(function() {
 });
 
 // Show forgot password
-$("#forgot").click(function() {
+$("#forgot").click(function () {
   $("#forgot_div").show();
   $("#unlock").hide();
 });
 
 // Show settings
-$("#settings").click(function() {
+$("#settings").click(function () {
   $("#settings_div").show();
   $("#main").hide();
 });
 
 // Show about
-$("#about").click(function() {
+$("#about").click(function () {
   $("#about_div").show();
   $("#about_div h3").html(
     chrome.runtime.getManifest().name + chrome.runtime.getManifest().version
@@ -145,89 +145,81 @@ $("#about").click(function() {
 });
 
 // Open the mange keys info
-$("#manage").click(function() {
+$("#manage").click(function () {
   manageKey = true;
   $("#manage_keys").show();
   $("#settings_div").hide();
-  manageKeys(
-    $(".usernames .select-selected")
-      .eq(1)
-      .html()
-  );
+  manageKeys($(".usernames .select-selected").eq(1).html());
 });
 
 // Go back
-$(".back_menu").click(function() {
+$(".back_menu").click(function () {
   initializeMainMenu();
   initializeVisibility();
 });
 
 // Click on the change password option of the settings
-$("#change_pwd").click(function() {
+$("#change_pwd").click(function () {
   $("#settings_div").hide();
   $("#change_password").show();
 });
 
 // Navigate to preferences
-$("#preferences").click(async function() {
+$("#preferences").click(async function () {
   $("#pref_div").show();
   $("#settings_div").hide();
   getPref = true;
-  setPreferences(
-    $(".select-selected")
-      .eq(3)
-      .html()
-  );
+  setPreferences($(".select-selected").eq(3).html());
 });
 
 // After checking master key, go back to Add Account Page
-$(".back_add_key").click(function() {
+$(".back_add_key").click(function () {
   $("#master_check").hide();
   $("#add_account_div").show();
 });
 
 // Go to clear wallet page
-$("#clear").click(function() {
+$("#clear").click(function () {
   $("#settings_div").hide();
   $("#forgot_div").show();
   $("#back_forgot").attr("id", "back_forgot_settings");
 });
 
 // Show add a new key
-$("#add_key").click(function() {
+$("#add_key").click(function () {
   $("#add_key_div").show();
 });
 
 // extra info on the estimated account value
-$("#account_value_header").click(function() {
+$("#account_value_header").click(function () {
   $("#main").hide();
   $("#estimation_info").show();
 });
 
 // Navigate to autolock menu
-$("#autolock").click(function() {
+$("#autolock").click(function () {
   $("#settings_div").hide();
   $("#autolock_div").show();
 });
 
 // Nativate to keychainify_settings menu
-$("#keychainify").click(function() {
+$("#keychainify").click(function () {
   $("#settings_div").hide();
   $("#keychainify_settings").show();
 });
 
-$("#import_export").click(function() {
+$("#import_export").click(function () {
   $("#settings_div").hide();
   $("#import_settings").show();
 });
 
-$("#automated_ops").click(function() {
+$("#automated_ops").click(function () {
   $("#settings_div").hide();
   $("#automated_ops_div").show();
 });
 
 // Show transaction window
-$("#send").click(function() {
+$("#send").click(function () {
   $("#send_div").show();
   if (activeAccount.hasKey("memo")) {
     $(".checkbox_memo").show();
@@ -236,33 +228,33 @@ $("#send").click(function() {
 });
 
 // Show transaction history window
-$("#history").click(function() {
+$("#history").click(function () {
   $("#acc_transfers").show();
   $("#main").hide();
 });
 
-$("#tokens").click(function() {
+$("#tokens").click(function () {
   $("#tokens_div").show();
   $("#main").hide();
 });
 
 // Toggle witness votes div
-$("#witness_toggle").click(function() {
+$("#witness_toggle").click(function () {
   $("#witness_votes").animate(
     {
-      bottom: $("#witness_votes").css("bottom") == "0px" ? -72 : 0
+      bottom: $("#witness_votes").css("bottom") == "0px" ? -72 : 0,
     },
     500
   );
 });
 
-$("#witness").click(function() {
+$("#witness").click(function () {
   $("#main").hide();
   $("#witness_div").show();
   $("#voted").addClass("active_wit");
 });
 
-$(".wit-menu").click(function() {
+$(".wit-menu").click(function () {
   $("#witness_div button").removeClass("active_wit");
   $(this).addClass("active_wit");
   $(".sub_wit").hide();
@@ -270,7 +262,7 @@ $(".wit-menu").click(function() {
 });
 
 // Show / hide password
-$(".input_img_right_eye").click(function() {
+$(".input_img_right_eye").click(function () {
   if ($("#unlock_pwd").prop("type") == "password") {
     $("#unlock_pwd").prop("type", "text");
     $(".input_img_right_eye").prop("src", "../images/eye.png");
@@ -282,8 +274,15 @@ $(".input_img_right_eye").click(function() {
   }
 });
 
-$("#add_new_rpc").click(function() {
-  addNewRPC($("#new_rpc").val());
+$("#add_new_rpc").click(function () {
+  const rpcVal = $("#new_rpc").val();
+  const isTestnet = $(".checkbox_testnet").find("input").prop("checked");
+  const chainId = $("#chain_id").val();
+  const newRpc = isTestnet
+    ? { uri: rpcVal, testnet: true, chainId }
+    : { uri: rpcVal, testnet: false };
+  console.log(newRpc);
+  addNewRPC(newRpc);
 });
 
 // Handle pages visibility
@@ -318,7 +317,7 @@ function showAccountInfo(account, that) {
   $(".account_info").show();
 }
 
-$("#add_new_account").click(function() {
+$("#add_new_account").click(function () {
   showAddAccount();
 });
 
@@ -349,20 +348,14 @@ $("#add_by_keys").click(() => {
   $("#add_account_div").show();
 });
 
-$(".wallet_currency").click(function() {
-  $(".wallet_currency")
-    .not(this)
-    .removeClass("dropdown-open");
-  $(".dropdown")
-    .not($(this).next())
-    .hide();
+$(".wallet_currency").click(function () {
+  $(".wallet_currency").not(this).removeClass("dropdown-open");
+  $(".dropdown").not($(this).next()).hide();
   $(this).toggleClass("dropdown-open");
-  $(this)
-    .next()
-    .toggle();
+  $(this).next().toggle();
 });
 
-$("#powerup").click(function() {
+$("#powerup").click(function () {
   $("#powerup_div").show();
   $("#user_pu").val(activeAccount.getName());
   $("#main").hide();
@@ -370,31 +363,27 @@ $("#powerup").click(function() {
   $(".dropdown").hide();
 });
 
-$("#powerdown").click(function() {
+$("#powerdown").click(function () {
   $("#powerdown_div").show();
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
   $(".dropdown").hide();
 });
 
-$("#send_steem").click(async function() {
+$("#send_steem").click(async function () {
   const balance = await activeAccount.getHive();
   $("#send_div").show();
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
   $(".dropdown").hide();
   $("#currency_send .select-selected").html(
-    $("#currency_send select")
-      .children("option:first")
-      .text()
+    $("#currency_send select").children("option:first").text()
   );
   $(".transfer_balance div")
     .eq(0)
     .text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
 
-  $(".transfer_balance div")
-    .eq(1)
-    .html(numberWithCommas(balance));
+  $(".transfer_balance div").eq(1).html(numberWithCommas(balance));
   $("#amt_send_max")
     .unbind("click")
     .click(() => {
@@ -403,23 +392,19 @@ $("#send_steem").click(async function() {
   $("#amt_send").val(null);
 });
 
-$("#send_sbd").click(async function() {
+$("#send_sbd").click(async function () {
   const balance = await activeAccount.getHBD();
   $("#send_div").show();
   $("#main").hide();
   $(".wallet_currency").removeClass("dropdown-open");
   $(".dropdown").hide();
   $("#currency_send .select-selected").html(
-    $("#currency_send select")
-      .children("option:nth-child(2)")
-      .text()
+    $("#currency_send select").children("option:nth-child(2)").text()
   );
   $(".transfer_balance div")
     .eq(0)
     .text(chrome.i18n.getMessage("popup_html_balance", ["HBD"]));
-  $(".transfer_balance div")
-    .eq(1)
-    .html(numberWithCommas(balance));
+  $(".transfer_balance div").eq(1).html(numberWithCommas(balance));
   $("#amt_send_max")
     .unbind("click")
     .click(() => {
@@ -428,64 +413,64 @@ $("#send_sbd").click(async function() {
   $("#amt_send").val(null);
 });
 
-$("#delegate").click(function() {
+$("#delegate").click(function () {
   $("#main").hide();
   $("#delegation_div").show();
   $(".wallet_currency").removeClass("dropdown-open");
   $(".dropdown").hide();
 });
 
-$("#outgoing_del").click(function() {
+$("#outgoing_del").click(function () {
   $("#outgoing_del_div").show();
   $("#delegation_div").hide();
 });
 
-$("#outgoing_del_div .back_enabled").click(function() {
+$("#outgoing_del_div .back_enabled").click(function () {
   $("#outgoing_del_div").hide();
   $("#delegation_div").show();
 });
 
-$("#incoming_del").click(function() {
+$("#incoming_del").click(function () {
   $("#incoming_del_div").show();
   $("#delegation_div").hide();
 });
 
-$("#incoming_del_div .back_enabled").click(function() {
+$("#incoming_del_div .back_enabled").click(function () {
   $("#incoming_del_div").hide();
   $("#delegation_div").show();
 });
 
-$("#edit_del_div .back_enabled").click(function() {
+$("#edit_del_div .back_enabled").click(function () {
   $("#edit_del_div").hide();
   $("#outgoing_del_div").show();
 });
 
-$("#settings_tokens").click(function() {
+$("#settings_tokens").click(function () {
   $("#tokens_div").hide();
   $("#tokens_settings_div").show();
 });
 
-$("#tokens_settings_div .back_enabled").click(function() {
+$("#tokens_settings_div .back_enabled").click(function () {
   $("#tokens_div").show();
   $("#tokens_settings_div").hide();
 });
 
-$("#token_send_div .back_enabled").click(function() {
+$("#token_send_div .back_enabled").click(function () {
   $("#token_send_div").hide();
   $("#tokens_div").show();
 });
 
-$("#token_history_div .back_enabled").click(function() {
+$("#token_history_div .back_enabled").click(function () {
   $("#token_history_div").hide();
   $("#tokens_div").show();
 });
 
-$("#confirm_send_div .back_enabled").click(function() {
+$("#confirm_send_div .back_enabled").click(function () {
   $("#confirm_send_div").hide();
   $("#send_div").show();
 });
 
-$("#confirm_token_send_div .back_enabled").click(function() {
+$("#confirm_token_send_div .back_enabled").click(function () {
   $("#confirm_token_send_div").hide();
   $("#token_send_div").show();
 });
