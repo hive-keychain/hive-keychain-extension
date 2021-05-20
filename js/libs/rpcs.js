@@ -33,7 +33,6 @@ class Rpcs {
     return new Promise((resolve) => {
       chrome.storage.local.get(["rpc", "current_rpc"], (items) => {
         const local = items.rpc;
-        console.log(local);
         if (local) {
           listRPC = JSON.parse(local)
             .map((e) => {
@@ -46,7 +45,7 @@ class Rpcs {
           listRPC = RPCs;
         }
         const currentrpc = items.current_rpc || "DEFAULT";
-        console.log(items.currentRpc, currentrpc);
+        console.log(currentrpc);
         const list = [RPCs.find((e) => (e.uri = currentrpc))].concat(
           listRPC.filter((e) => {
             return e.uri != currentrpc;
@@ -63,12 +62,20 @@ class Rpcs {
   }
 
   async setOptions(rpc, awaitRollback = false) {
+    rpc = rpc.replace("(TESTNET)", "").trim();
+    console.log(rpc, this.currentRpc);
     if (rpc === this.currentRpc) {
       return;
     }
     const list = await this.getList();
-    const newRpcObj = list.find((e) => e.uri === rpc);
-    const newRpc = newRpcObj ? rpc : this.currentRpc;
+    const newRpcObj = list.find(
+      (e) => e.uri === rpc.replace("(TESTNET)", "").trim()
+    );
+
+    const newRpc = newRpcObj
+      ? newRpcObj
+      : list.find((e) => e.uri === this.currentRpc);
+    console.log(newRpc);
     if (newRpc.testnet) {
       hive.api.setOptions({
         url: newRpc.uri,
@@ -78,7 +85,7 @@ class Rpcs {
       hive.config.set("address_prefix", "TST");
       hive.config.set("chain_id", newRpc.chainId);
     } else {
-      if (newRpc === "DEFAULT") {
+      if (newRpc.uri === "DEFAULT") {
         let rpc;
         try {
           rpc = (await this.getDefaultRPC()).rpc || this.list[1].uri;
@@ -93,13 +100,14 @@ class Rpcs {
         });
       } else {
         hive.api.setOptions({
-          url: newRpc,
+          url: newRpc.uri,
           useAppbaseApi: true,
         });
       }
     }
+    console.log("arrive at the end");
     this.previousRpc = this.currentRpc;
-    this.currentRpc = newRpc;
+    this.currentRpc = newRpc.uri;
     console.log(`Now using ${this.currentRpc}, previous: ${this.previousRpc}`);
     this.awaitRollback = awaitRollback;
 

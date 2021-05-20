@@ -12,13 +12,16 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
-chrome.storage.local.get(["no_confirm"], items => { console.log(items); });
+chrome.storage.local.get(["no_confirm"], (items) => {
+  console.log(items);
+});
 chrome.storage.local.get(
   ["current_rpc", "autolock", "claimRewards", "claimAccounts"],
-  items => {
+  (items) => {
     if (items.autolock) startAutolock(JSON.parse(items.autolock));
     startClaimRewards(items.claimRewards);
     startClaimAccounts(items.claimAccounts);
+    console.log("should set...", items.current_rpc);
     rpc.setOptions(items.current_rpc || "DEFAULT");
   }
 );
@@ -31,20 +34,21 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
     case "getMk":
       chrome.runtime.sendMessage({
         command: "sendBackMk",
-        mk: mk
+        mk: mk,
       });
       break;
     case "stopInterval":
       clearInterval(interval);
       break;
     case "setRPC":
+      console.log(msg.rpc);
       rpc.setOptions(msg.rpc);
       break;
     case "sendMk":
       //Receive mk from the popup (upon registration or unlocking)
       mk = msg.mk;
       try {
-        chrome.storage.local.get(["accounts"], function(items) {
+        chrome.storage.local.get(["accounts"], function (items) {
           accountsList.init(decryptToJson(items.accounts, mk));
         });
       } catch (e) {
@@ -75,54 +79,56 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
       break;
     case "importKeys":
       try {
-        chrome.storage.local.get(["accounts"], function(items) {
+        chrome.storage.local.get(["accounts"], function (items) {
           const decrypt = decryptToJson(items.accounts, mk);
           if (!decrypt)
             chrome.runtime.sendMessage({
               command: "importResult",
-              result: false
+              result: false,
             });
           accountsList.init(decrypt);
           const accounts = decryptToJson(msg.fileData, mk);
           accountsList.import(accounts.list, mk);
           chrome.runtime.sendMessage({
             command: "importResult",
-            result: true
+            result: true,
           });
         });
       } catch (e) {
         console.log(e);
         chrome.runtime.sendMessage({
           command: "importResult",
-          result: false
+          result: false,
         });
       }
       break;
     case "importPermissions":
       try {
         if (
-            msg.hasOwnProperty('fileData')
-            && typeof msg.fileData === 'string'
+          msg.hasOwnProperty("fileData") &&
+          typeof msg.fileData === "string"
         ) {
-          chrome.storage.local.set({ no_confirm: msg.fileData }, function() {
-            console.log('[hivekeychain] permissions successfully imported from file');
+          chrome.storage.local.set({ no_confirm: msg.fileData }, function () {
+            console.log(
+              "[hivekeychain] permissions successfully imported from file"
+            );
             chrome.runtime.sendMessage({
               command: "importResult",
-              result: true
+              result: true,
             });
           });
         } else {
-          console.error('[hivekeychain] no file data to import');
+          console.error("[hivekeychain] no file data to import");
           chrome.runtime.sendMessage({
             command: "importResult",
-            result: false
+            result: false,
           });
         }
       } catch (e) {
-        console.error('[hivekeychain]', e);
+        console.error("[hivekeychain]", e);
         chrome.runtime.sendMessage({
           command: "importResult",
-          result: false
+          result: false,
         });
       }
       break;
@@ -140,8 +146,8 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
   }
 };
 
-const saveNoConfirm = msg => {
-  chrome.storage.local.get(["no_confirm"], function(items) {
+const saveNoConfirm = (msg) => {
+  chrome.storage.local.get(["no_confirm"], function (items) {
     let keep =
       items.no_confirm == null || items.no_confirm == undefined
         ? {}
@@ -154,13 +160,13 @@ const saveNoConfirm = msg => {
     }
     keep[msg.data.username][msg.domain][msg.data.type] = true;
     chrome.storage.local.set({
-      no_confirm: JSON.stringify(keep)
+      no_confirm: JSON.stringify(keep),
     });
   });
 };
 
-const unlockFromDialog = msg => {
-  chrome.storage.local.get(["accounts"], function(items) {
+const unlockFromDialog = (msg) => {
+  chrome.storage.local.get(["accounts"], function (items) {
     if (!items.accounts && msg.data.type !== "addAccount") {
       sendErrors(
         msg.tab,
@@ -179,7 +185,7 @@ const unlockFromDialog = msg => {
         checkBeforeCreate(msg.data, msg.tab, msg.domain);
       } else {
         chrome.runtime.sendMessage({
-          command: "wrongMk"
+          command: "wrongMk",
         });
       }
     }
