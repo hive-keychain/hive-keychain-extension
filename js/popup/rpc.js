@@ -16,7 +16,8 @@ async function loadRPC(current_rpc) {
   );
 
   initiateCustomSelect();
-  if (current_rpc === "TESTNET") {
+  const curRPCObj = listRPC.find((e) => e.uri === current_rpc);
+  if (curRPCObj.testnet) {
     $("#currency_send select").children("option:first").text("TESTS");
     $("#currency_send select").children("option:first").val("TESTS");
     $("#currency_send select").children("option:nth-child(2)").text("TBD");
@@ -104,3 +105,8 @@ function showCustomRPC() {
     }
   });
 }
+
+$(".checkbox_testnet").click(() => {
+  const checked = $(".checkbox_testnet").find("input").prop("checked");
+  $("#chain_id").css("display", checked ? "block" : "none");
+});

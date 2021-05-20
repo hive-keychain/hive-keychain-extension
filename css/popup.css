@@ -2184,3 +2184,10 @@ input[type="checkbox"] {
 #convert_loading {
   margin-top: 40px;
 }
+#chain_id {
+  display: none;
+  margin-top: 20px;
+}
+#add_new_rpc {
+  margin-top: 30px;
+}
