@@ -81,6 +81,13 @@ class Rpcs {
       hive.config.set("address_prefix", "TST");
       hive.config.set("chain_id", newRpc.chainId);
     } else {
+      console.log("reset chain id");
+      hive.config.set("address_prefix", "STM");
+      hive.config.set(
+        "chain_id",
+        "beeab0de00000000000000000000000000000000000000000000000000000000"
+      );
+
       if (newRpc.uri === "DEFAULT") {
         let rpc;
         try {
