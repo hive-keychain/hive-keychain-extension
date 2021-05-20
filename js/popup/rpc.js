@@ -86,13 +86,19 @@ function showCustomRPC() {
       $(".deleteCustomRPC")
         .unbind("click")
         .click(function () {
+          console.log($(this).prev().html());
+          console.log(rpcs);
           rpcs = rpcs.filter((e) => {
             if (typeof e === "string") {
-              return e !== $(this).prev().html();
+              return e !== $(this).prev().html().trim();
             } else {
-              return e.uri !== $(this).prev().html();
+              return (
+                e.uri !== $(this).prev().html().replace("(TESTNET)", "").trim()
+              );
             }
           });
+          console.log(rpcs);
+
           chrome.storage.local.set(
             {
               rpc: JSON.stringify(rpcs),
