@@ -13,34 +13,46 @@ class Rpcs {
   async initList() {
     let listRPC = [];
     const RPCs = [
-      "DEFAULT",
-      "https://api.deathwing.me",
-      "https://api.hive.blog/",
-      "https://api.openhive.network/",
-      "https://api.hivekings.com/",
-      "https://anyx.io/",
-      "https://api.pharesim.me/",
-      "https://hived.emre.sh",
-      "https://hived.hive-engine.com/",
-      "https://hived.privex.io/",
-      "https://hive.roelandp.nl",
-      "https://rpc.ausbit.dev",
-      "https://rpc.ecency.com",
-      "https://techcoderx.com",
-      "https://hive-api.arcange.eu/",
-      "TESTNET"
+      { uri: "DEFAULT", testnet: false },
+      { uri: "https://api.deathwing.me", testnet: false },
+      { uri: "https://api.hive.blog/", testnet: false },
+      { uri: "https://api.openhive.network/", testnet: false },
+      { uri: "https://api.hivekings.com/", testnet: false },
+      { uri: "https://anyx.io/", testnet: false },
+      { uri: "https://api.pharesim.me/", testnet: false },
+      { uri: "https://hived.emre.sh", testnet: false },
+      { uri: "https://hived.hive-engine.com/", testnet: false },
+      { uri: "https://hived.privex.io/", testnet: false },
+      { uri: "https://hive.roelandp.nl", testnet: false },
+      { uri: "https://rpc.ausbit.dev", testnet: false },
+      { uri: "https://rpc.ecency.com", testnet: false },
+      { uri: "https://techcoderx.com", testnet: false },
+      { uri: "https://hive-api.arcange.eu/", testnet: false },
     ];
 
-    return new Promise(resolve => {
-      chrome.storage.local.get(["rpc", "current_rpc"], items => {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(["rpc", "current_rpc"], (items) => {
         const local = items.rpc;
-        listRPC = local != undefined ? JSON.parse(local).concat(RPCs) : RPCs;
+        console.log(local);
+        if (local) {
+          listRPC = JSON.parse(local)
+            .map((e) => {
+              if (typeof e === "string") {
+                return { uri: e, testnet: false };
+              } else return e;
+            })
+            .concat(RPCs);
+        } else {
+          listRPC = RPCs;
+        }
         const currentrpc = items.current_rpc || "DEFAULT";
-        const list = [currentrpc].concat(
-          listRPC.filter(e => {
-            return e != currentrpc;
+        console.log(items.currentRpc, currentrpc);
+        const list = [RPCs.find((e) => (e.uri = currentrpc))].concat(
+          listRPC.filter((e) => {
+            return e.uri != currentrpc;
           })
         );
+        console.log(list);
         resolve(list);
       });
     });
@@ -52,27 +64,24 @@ class Rpcs {
 
   async setOptions(rpc, awaitRollback = false) {
     if (rpc === this.currentRpc) {
-      //console.log("Same RPC");
       return;
     }
     const list = await this.getList();
-    const newRpc = list.includes(rpc) ? rpc : this.currentRpc;
-    if (newRpc === "TESTNET") {
-      // steem.api.setOptions({
-      //   url: "https://testnet.steemitdev.com",
-      //   transport: "http",
-      //   useAppbaseApi: true
-      // });
-      // steem.config.set("address_prefix", "TST");
-      // steem.config.set(
-      //   "chain_id",
-      //   "46d82ab7d8db682eb1959aed0ada039a6d49afa1602491f93dde9cac3e8e6c32"
-      // );
+    const newRpcObj = list.find((e) => e.uri === rpc);
+    const newRpc = newRpcObj ? rpc : this.currentRpc;
+    if (newRpc.testnet) {
+      hive.api.setOptions({
+        url: newRpc.uri,
+        transport: "http",
+        useAppbaseApi: true,
+      });
+      hive.config.set("address_prefix", "TST");
+      hive.config.set("chain_id", newRpc.chainId);
     } else {
       if (newRpc === "DEFAULT") {
         let rpc;
         try {
-          rpc = (await this.getDefaultRPC()).rpc || this.list[1];
+          rpc = (await this.getDefaultRPC()).rpc || this.list[1].uri;
           console.log(`Using ${rpc} as default.`);
         } catch (e) {
           rpc = "https://api.hive.blog/";
@@ -80,24 +89,14 @@ class Rpcs {
 
         hive.api.setOptions({
           url: rpc,
-          useAppbaseApi: true
+          useAppbaseApi: true,
         });
       } else {
         hive.api.setOptions({
           url: newRpc,
-          useAppbaseApi: true
+          useAppbaseApi: true,
         });
       }
-      /*const version = parseInt(
-        (await this.version).blockchain_version.split(".")[1]
-      );
-      const chain_id =
-        version >= 24
-          ? "BEEABODE00000000000000000000000000000000000000000000000000000000"
-          : "0000000000000000000000000000000000000000000000000000000000000000";
-      console.log(`HF${version} => chain_id: ${chain_id}`);
-      hive.config.set("address_prefix", "STM");
-      hive.config.set("chain_id", chain_id);*/
     }
     this.previousRpc = this.currentRpc;
     this.currentRpc = newRpc;
@@ -119,7 +118,7 @@ class Rpcs {
   async getDefaultRPC() {
     return $.ajax({
       url: this.DEFAULT_RPC_API,
-      type: "GET"
+      type: "GET",
     });
   }
 }
