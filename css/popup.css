@@ -2191,3 +2191,11 @@ input[type="checkbox"] {
 #add_new_rpc {
   margin-top: 30px;
 }
+
+#custom_select_rpc .select-selected {
+  display: inline-block;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
