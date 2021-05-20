@@ -1,6 +1,5 @@
 async function loadRPC(current_rpc) {
   const listRPC = await rpcs.getList();
-  console.log(listRPC);
   $("#custom_select_rpc").html("<select></select>");
   $("#pref_div .usernames .select-selected").remove();
   $("#pref_div .usernames .select-items").remove();
@@ -86,8 +85,6 @@ function showCustomRPC() {
       $(".deleteCustomRPC")
         .unbind("click")
         .click(function () {
-          console.log($(this).prev().html());
-          console.log(rpcs);
           rpcs = rpcs.filter((e) => {
             if (typeof e === "string") {
               return e !== $(this).prev().html().trim();
@@ -97,7 +94,6 @@ function showCustomRPC() {
               );
             }
           });
-          console.log(rpcs);
 
           chrome.storage.local.set(
             {
