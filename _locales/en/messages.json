@@ -1090,6 +1090,10 @@
     "message": "No wallet!",
     "description": "when user didnt create a wallet yet"
   },
+  "bgd_init_no_wallet_explained": {
+    "message": "To be able to use Hive Keychain, please set up your wallet. Click on the Hive Keychain logo on the top right corner of your browser (it might be hidden in the extension menu), then setup your password and import your accounts.",
+    "description": "when user didnt create a wallet yet"
+  },
   "bgd_lifecycle_request_canceled": {
     "message": "Request was canceled by the user.",
     "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
