@@ -14,6 +14,8 @@ async function loadRPC(current_rpc) {
     `<option>${chrome.i18n.getMessage("popup_rpc_add")}</option>`
   );
 
+  console.log(current_rpc)
+
   initiateCustomSelect();
   const curRPCObj = listRPC.find((e) => e.uri === current_rpc);
   if (curRPCObj.testnet) {

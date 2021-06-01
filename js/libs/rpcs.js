@@ -44,12 +44,24 @@ class Rpcs {
         } else {
           listRPC = RPCs;
         }
-        const currentrpc = items.current_rpc || "DEFAULT";
-        const list = [RPCs.find((e) => (e.uri = currentrpc))].concat(
-          listRPC.filter((e) => {
-            return e.uri != currentrpc;
-          })
-        );
+
+        let currentrpc = items.current_rpc || RPCs[0];
+
+        if(typeof currentrpc === "string" ){
+          currentrpc = {uri: currentrpc, testnet: false}
+        }
+
+        const list = [...listRPC.filter(rpc =>{
+          console.log(rpc.uri, currentrpc.uri, rpc.uri != currentrpc.uri, rpc.uri !== currentrpc.uri)
+          return rpc.uri.trim() != currentrpc.uri.trim()
+        })];
+        list.unshift(currentrpc);
+
+        // const list = [RPCs.find((rpc) => (rpc.uri = currentrpc.uri))].concat(
+        //   listRPC.filter((rpc) => {
+        //     return rpc.uri != currentrpc.uri;
+        //   })
+        // );
         resolve(list);
       });
     });
