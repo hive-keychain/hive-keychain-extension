@@ -120,7 +120,7 @@ function showTokenBalances() {
         $("#token_send_max")
           .unbind("click")
           .click(() => {
-            console.log("clicked", balance);
+            console.info("clicked", balance);
             $("#amt_tok").val(balance);
           });
         $("#tok").html(symbol);
@@ -346,7 +346,7 @@ function getTokenHistory(account, limit, offset, currency) {
         fulfill(tokenHistory);
       },
       error: function(msg) {
-        console.log("error", msg);
+        console.error("error", msg);
         reject(msg);
       }
     });

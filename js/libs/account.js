@@ -108,13 +108,13 @@ class Account {
   }
 
   async getHive() {
-    return (await this.getAccountInfo("balance")).replace(" HIVE", "");
+    return (await this.getAccountInfo("balance")).replace(" HIVE", "").replace( " TESTS", "");
   }
 
   async getHBD() {
     if (await this.getAccountInfo("sbd_balance"))
-      return (await this.getAccountInfo("sbd_balance")).replace(" HBD", "");
-    else return (await this.getAccountInfo("hbd_balance")).replace(" HBD", "");
+      return (await this.getAccountInfo("sbd_balance")).replace(" HBD", "").replace( " TBD", "");
+    else return (await this.getAccountInfo("hbd_balance")).replace(" HBD", "").replace( " TBD", "");
   }
 
   async getHP() {

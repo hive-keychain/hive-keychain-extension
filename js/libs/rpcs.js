@@ -56,11 +56,6 @@ class Rpcs {
         })];
         list.unshift(currentrpc);
 
-        // const list = [RPCs.find((rpc) => (rpc.uri = currentrpc.uri))].concat(
-        //   listRPC.filter((rpc) => {
-        //     return rpc.uri != currentrpc.uri;
-        //   })
-        // );
         resolve(list);
       });
     });
@@ -84,12 +79,6 @@ class Rpcs {
     const newRpc = newRpcObj
       ? newRpcObj
       : list.find((e) => e.uri.trim() === this.currentRpc.trim());
-
-    console.log('----------START-----------');
-    console.log(rpc, this.currentRpc, newRpcObj, newRpc);
-    console.log('----------END-----------');
-  
-
 
     if (newRpc.testnet) {
       hive.api.setOptions({
