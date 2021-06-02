@@ -52,7 +52,6 @@ class Rpcs {
         }
 
         const list = [...listRPC.filter(rpc =>{
-          console.log(rpc.uri, currentrpc.uri, rpc.uri != currentrpc.uri, rpc.uri !== currentrpc.uri)
           return rpc.uri.trim() != currentrpc.uri.trim()
         })];
         list.unshift(currentrpc);
@@ -72,18 +71,26 @@ class Rpcs {
   }
 
   async setOptions(rpc, awaitRollback = false) {
+
     rpc = rpc.replace("(TESTNET)", "").trim();
     if (rpc === this.currentRpc) {
       return;
     }
     const list = await this.getList();
     const newRpcObj = list.find(
-      (e) => e.uri === rpc.replace("(TESTNET)", "").trim()
+      (e) => e.uri.trim() === rpc.trim()
     );
 
     const newRpc = newRpcObj
       ? newRpcObj
-      : list.find((e) => e.uri === this.currentRpc);
+      : list.find((e) => e.uri.trim() === this.currentRpc.trim());
+
+    console.log('----------START-----------');
+    console.log(rpc, this.currentRpc, newRpcObj, newRpc);
+    console.log('----------END-----------');
+  
+
+
     if (newRpc.testnet) {
       hive.api.setOptions({
         url: newRpc.uri,
@@ -100,7 +107,7 @@ class Rpcs {
         "beeab0de00000000000000000000000000000000000000000000000000000000"
       );
 
-      if (newRpc.uri === "DEFAULT") {
+      if (newRpc.uri.trim() === "DEFAULT") {
         let rpc;
         try {
           rpc = (await this.getDefaultRPC()).rpc || this.list[1].uri;

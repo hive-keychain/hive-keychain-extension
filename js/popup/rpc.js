@@ -14,8 +14,6 @@ async function loadRPC(current_rpc) {
     `<option>${chrome.i18n.getMessage("popup_rpc_add")}</option>`
   );
 
-  console.log(current_rpc)
-
   initiateCustomSelect();
   const curRPCObj = listRPC.find((e) => e.uri === current_rpc);
   if (curRPCObj.testnet) {
@@ -38,6 +36,7 @@ async function loadRPC(current_rpc) {
 }
 
 function switchRPC(rpc) {
+  console.log(rpc);
   rpcs.setOptions(rpc);
   setRPC(rpc);
   chrome.storage.local.set({
