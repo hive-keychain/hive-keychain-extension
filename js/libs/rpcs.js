@@ -48,7 +48,9 @@ class Rpcs {
         let currentrpc = items.current_rpc || RPCs[0];
 
         if(typeof currentrpc === "string" ){
-          currentrpc = {uri: currentrpc, testnet: false}
+          currentrpc = currentrpc.replace('(TESTNET)', '');
+          const currentRPCFromList = listRPC.find((rpc) => rpc.uri.trim() === currentrpc.trim());
+          currentrpc = currentRPCFromList;
         }
 
         const list = [...listRPC.filter(rpc =>{
