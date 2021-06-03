@@ -1,11 +1,11 @@
 const transferValidator = new TransferValidator();
-chrome.runtime.onMessage.addListener(function(
+chrome.runtime.onMessage.addListener(function (
   { msg, accounts, command, data, tab, domain, request_id, testnet },
   sender,
   sendResp
 ) {
   chrome.runtime.sendMessage({
-    command: "stopInterval"
+    command: "stopInterval",
   });
   if (command === "sendDialogError") {
     // Display error window
@@ -15,20 +15,20 @@ chrome.runtime.onMessage.addListener(function(
       if (msg.error === "locked") {
         $(".unlock").show();
         $("#error-ok").hide();
-        $("#no-unlock").click(function() {
+        $("#no-unlock").click(function () {
           window.close();
         });
-        $("#yes-unlock").click(function() {
+        $("#yes-unlock").click(function () {
           chrome.runtime.sendMessage({
             command: "unlockFromDialog",
             data: msg.data,
             tab,
             mk: $("#unlock-dialog").val(),
             domain,
-            request_id
+            request_id,
           });
         });
-        $("#unlock-dialog").keypress(function(e) {
+        $("#unlock-dialog").keypress(function (e) {
           if (e.keyCode == 13) $("#yes-unlock").click();
         });
         $("#unlock-dialog").focus();
@@ -38,7 +38,7 @@ chrome.runtime.onMessage.addListener(function(
         $("#error_dialog").hide();
         $("#dialog_header").hide();
         $(".register p").text(msg.display_msg);
-        $("#submit_master_pwd").click(function() {
+        $("#submit_master_pwd").click(function () {
           if (acceptMP($("#master_pwd").val())) {
             if ($("#master_pwd").val() == $("#confirm_master_pwd").val()) {
               chrome.runtime.sendMessage({
@@ -47,7 +47,7 @@ chrome.runtime.onMessage.addListener(function(
                 tab,
                 mk: $("#master_pwd").val(),
                 domain,
-                request_id
+                request_id,
               });
             } else {
               $("#error_register").text(
@@ -60,7 +60,7 @@ chrome.runtime.onMessage.addListener(function(
             );
           }
         });
-        $("#confirm_master_pwd").keypress(function(e) {
+        $("#confirm_master_pwd").keypress(function (e) {
           if (e.keyCode === 13) $("#submit_master_pwd").click();
         });
         $("#master_pwd").focus();
@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener(function(
       $("#modal-body-msg").hide();
       $(".modal-body-error").show();
       $(".dialog-message").hide();
-      $("#error-ok").click(function() {
+      $("#error-ok").click(function () {
         window.close();
       });
     }
@@ -142,7 +142,7 @@ chrome.runtime.onMessage.addListener(function(
       daily_pay,
       proposal_ids,
       keys,
-      approve
+      approve,
     } = data;
 
     var titles = {
@@ -176,7 +176,7 @@ chrome.runtime.onMessage.addListener(function(
       removeProposal: chrome.i18n.getMessage("dialog_title_remove_proposal"),
       updateProposalVote: chrome.i18n.getMessage("dialog_title_vote_proposal"),
       signTx: chrome.i18n.getMessage("dialog_title_sign_tx"),
-      addAccount: chrome.i18n.getMessage("popup_html_add_account")
+      addAccount: chrome.i18n.getMessage("popup_html_add_account"),
     };
     const header = titles[type];
     $("#dialog_header").text(header + (testnet ? " (TESTNET)" : ""));
@@ -189,16 +189,16 @@ chrome.runtime.onMessage.addListener(function(
 
     if (accounts) {
       $("#modal-body-msg .msg-data").css("max-height", "200px");
-      chrome.storage.local.get(["last_chosen_account"], function(items) {
+      chrome.storage.local.get(["last_chosen_account"], function (items) {
         if (username) {
-          let i = accounts.findIndex(function(elt) {
+          let i = accounts.findIndex(function (elt) {
             return elt === username;
           });
           let first = [accounts[i]];
           delete accounts[i];
           accounts = first.concat(accounts);
         } else if (items.last_chosen_account) {
-          let i = accounts.findIndex(function(elt) {
+          let i = accounts.findIndex(function (elt) {
             return elt == items.last_chosen_account;
           });
           let first = [accounts[i]];
@@ -206,8 +206,11 @@ chrome.runtime.onMessage.addListener(function(
           accounts = first.concat(accounts);
         }
         for (acc of accounts) {
-          if (acc !== undefined)
-            $("#select_transfer").append("<option>" + acc + "</option>");
+          if (acc) {
+            const option = document.createElement("option");
+            option.textContent = acc;
+            $("#select_transfer").append(option);
+          }
         }
         initiateCustomSelect(data);
       });
@@ -227,7 +230,7 @@ chrome.runtime.onMessage.addListener(function(
         "witnessVote",
         "delegation",
         "proxy",
-        "addAccount"
+        "addAccount",
       ].includes(type)
     ) {
       $("#keep_div").show();
@@ -236,17 +239,17 @@ chrome.runtime.onMessage.addListener(function(
         prompt_msg = keyVerifyAction
           ? chrome.i18n.getMessage("dialog_no_prompt_verify", [
               username,
-              domain
+              domain,
             ])
           : chrome.i18n.getMessage("dialog_no_prompt", [
               type,
               username,
-              domain
+              domain,
             ]);
       else
         prompt_msg = chrome.i18n.getMessage("dialog_no_prompt_no_username", [
           type,
-          domain
+          domain,
         ]);
       $("#keep_label").text(prompt_msg);
     } else {
@@ -262,7 +265,7 @@ chrome.runtime.onMessage.addListener(function(
           chrome.i18n.getMessage("dialog_desc_verify", [
             domain,
             method,
-            username
+            username,
           ])
         );
         break;
@@ -278,11 +281,11 @@ chrome.runtime.onMessage.addListener(function(
             ? chrome.i18n.getMessage("dialog_desc_sign", [
                 domain,
                 method,
-                username
+                username,
               ])
             : chrome.i18n.getMessage("dialog_desc_sign_user_unknown", [
                 domain,
-                method
+                method,
               ])
         );
         showDropdownIfNoUsername(username);
@@ -293,7 +296,7 @@ chrome.runtime.onMessage.addListener(function(
         }
         let expanded = false;
         $("#message_sign").text(truncatedMessage);
-        $("#message_sign").click(function() {
+        $("#message_sign").click(function () {
           if (expanded) {
             $("#message_sign").text(truncatedMessage);
             expanded = false;
@@ -322,21 +325,21 @@ chrome.runtime.onMessage.addListener(function(
         $("#role").text(role);
         break;
       case "broadcast":
-        $("#custom_data").click(function() {
+        $("#custom_data").click(function () {
           $("#custom_json").slideToggle();
         });
         $("#custom_json pre").text(JSON.stringify(operations, undefined, 2));
         $("#custom_key").text(method);
         break;
       case "signTx":
-        $("#custom_data").click(function() {
+        $("#custom_data").click(function () {
           $("#custom_json").slideToggle();
         });
         $("#custom_json pre").text(JSON.stringify(tx.operations, undefined, 2));
         $("#custom_key").text(method);
         break;
       case "createClaimedAccount":
-        $("#custom_data").click(function() {
+        $("#custom_data").click(function () {
           $("#custom_json").slideToggle();
         });
 
@@ -346,7 +349,7 @@ chrome.runtime.onMessage.addListener(function(
               owner: owner,
               active: active,
               posting: posting,
-              memo: memo
+              memo: memo,
             },
             undefined,
             2
@@ -354,12 +357,10 @@ chrome.runtime.onMessage.addListener(function(
         );
         break;
       case "signedCall":
-        $("#custom_data").click(function() {
+        $("#custom_data").click(function () {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json div")
-          .eq(0)
-          .text(method);
+        $("#custom_json div").eq(0).text(method);
         $("#custom_json pre").text(JSON.stringify(params, undefined, 2));
 
         $("#custom_key").text(typeWif);
@@ -371,12 +372,10 @@ chrome.runtime.onMessage.addListener(function(
         break;
       case "custom":
         showDropdownIfNoUsername(username);
-        $("#custom_data").click(function() {
+        $("#custom_data").click(function () {
           $("#custom_json").slideToggle();
         });
-        $("#custom_json div")
-          .eq(0)
-          .text(id);
+        $("#custom_json div").eq(0).text(id);
         $("#custom_json pre").text(
           JSON.stringify(JSON.parse(json), undefined, 2)
         );
@@ -388,9 +387,7 @@ chrome.runtime.onMessage.addListener(function(
         enforce = enforce || encode;
         if (enforce) {
           $("#username").show();
-          $("#username")
-            .prev()
-            .show();
+          $("#username").prev().show();
           $("#transfer_acct_list").hide();
         }
         $("#to").text(`@${to}`);
@@ -400,10 +397,10 @@ chrome.runtime.onMessage.addListener(function(
         if (memo.length > 0) $(".transfer_memo").show();
         break;
       case "post":
-        $("#body_toggle").click(function() {
+        $("#body_toggle").click(function () {
           $("#body").slideToggle();
         });
-        $("#options_toggle").click(function() {
+        $("#options_toggle").click(function () {
           $("#options").slideToggle();
         });
 
@@ -492,7 +489,7 @@ chrome.runtime.onMessage.addListener(function(
           `<div><strong>Posting:</strong><span id="add_account_posting"></span><br/><br/><strong>Active:</strong><span id="add_account_active">
           </span><br/><br/><strong>Memo:</strong><span id="add_account_memo"></span></div>`
         );
-        $("#add_account_posting").html(keys.posting ? keys.posting : "Unknown");
+        $("#add_account_posting").text(keys.posting ? keys.posting : "Unknown");
         $("#add_account_active").text(keys.active ? keys.active : "Unknown");
         $("#add_account_memo").text(keys.memo ? keys.memo : "Unknown");
 
@@ -500,7 +497,7 @@ chrome.runtime.onMessage.addListener(function(
     }
 
     // Closes the window and launch the transaction in background
-    $("#proceed").click(function() {
+    $("#proceed").click(function () {
       if (
         (type === "transfer" && !enforce) ||
         ([
@@ -508,12 +505,12 @@ chrome.runtime.onMessage.addListener(function(
           "delegation",
           "proxy",
           "custom",
-          "signBuffer"
+          "signBuffer",
         ].includes(type) &&
           !username)
       ) {
         chrome.storage.local.set({
-          last_chosen_account: $("#select_transfer option:selected").val()
+          last_chosen_account: $("#select_transfer option:selected").val(),
         });
         // if transfer account is not enforced or no username is specified for witness vote / delegation
         data.username = $("#select_transfer option:selected").val();
@@ -523,7 +520,7 @@ chrome.runtime.onMessage.addListener(function(
         data: data,
         tab: tab,
         domain: domain,
-        keep: $("#keep").is(":checked")
+        keep: $("#keep").is(":checked"),
       });
       if (type === "decode" || type === "signBuffer") window.close();
       else {
@@ -535,7 +532,7 @@ chrome.runtime.onMessage.addListener(function(
     });
 
     // Closes the window and notify the content script (and then the website) that the user refused the transaction.
-    $("#cancel").click(function() {
+    $("#cancel").click(function () {
       window.close();
     });
   } else if (command === "answerRequest") {
@@ -547,7 +544,7 @@ chrome.runtime.onMessage.addListener(function(
     );
     $("#error_dialog").text(msg.message);
     $(".modal-body-error").show();
-    $("#error-ok").click(function() {
+    $("#error-ok").click(function () {
       window.close();
     });
   }
@@ -573,12 +570,10 @@ const showBalances = async (user, currency, amount) => {
     }
   } else {
     const tokens = await getTokens(user);
-    const token = tokens.find(e => e.symbol === currency);
+    const token = tokens.find((e) => e.symbol === currency);
     balance = token ? parseFloat(token.balance) : 0;
   }
-  $("#balance")
-    .text(`${balance}  ${currency}`)
-    .show();
+  $("#balance").text(`${balance}  ${currency}`).show();
   const balance_after = (balance - amount).toFixed(3);
   $("#balance_after")
     .text(`${balance_after}  ${currency}`)
@@ -587,7 +582,7 @@ const showBalances = async (user, currency, amount) => {
   $(".balance_loading").hide();
 };
 
-const getHivePower = async vesting_shares => {
+const getHivePower = async (vesting_shares) => {
   const result = await hive.api.getDynamicGlobalPropertiesAsync();
   const total_vesting_shares = result.total_vesting_shares;
   const total_vesting_fund =
@@ -598,7 +593,7 @@ const getHivePower = async vesting_shares => {
     .toFixed(3);
 };
 
-const getTokens = async account => {
+const getTokens = async (account) => {
   const ssc = new SSC("https://api.hive-engine.com/rpc");
   return await ssc.find("tokens", "balances", { account });
 };
@@ -624,7 +619,7 @@ function initiateCustomSelect(data) {
       create a new DIV that will act as an option item:*/
       c = document.createElement("DIV");
       c.innerHTML = selElmnt.options[j].innerHTML;
-      c.addEventListener("click", function(e) {
+      c.addEventListener("click", function (e) {
         /*when an item is clicked, update the original select box,
         and the selected item:*/
         var y, i, k, s, h;
@@ -647,7 +642,7 @@ function initiateCustomSelect(data) {
       b.appendChild(c);
     }
     x[i].appendChild(b);
-    a.addEventListener("click", function(e) {
+    a.addEventListener("click", function (e) {
       /*when the select box is clicked, close any other select boxes,
       and open/close the current select box:*/
       e.stopPropagation();
@@ -692,17 +687,15 @@ function initiateCustomSelect(data) {
   document.addEventListener("click", closeAllSelect);
 }
 
-const showDropdownIfNoUsername = username => {
+const showDropdownIfNoUsername = (username) => {
   if (!username) {
     $("#username").hide();
-    $("#username")
-      .prev()
-      .hide();
+    $("#username").prev().hide();
     $("#transfer_acct_list").show();
   }
 };
 
-const acceptMP = mp => {
+const acceptMP = (mp) => {
   return (
     mp.length >= 16 ||
     (mp.length >= 8 &&
