@@ -26,9 +26,11 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
+    "axios": "^0.21.1",
     "documentation": "^13.0.0",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "sscjs": "^0.0.8"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",
