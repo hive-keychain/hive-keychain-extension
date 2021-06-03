@@ -141,7 +141,7 @@ const sendMk = mk => {
 };
 // Unlock with masterkey and show the main menu
 $("#submit_unlock").click(function() {
-  chrome.storage.local.get(["accounts"], function(items) {
+  chrome.storage.local.get(["accounts"], function({accounts}) {
     const pwd = $("#unlock_pwd").val();
     const accs = decryptToJson(items.accounts, pwd);
     console.log(accs);
