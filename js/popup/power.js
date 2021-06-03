@@ -55,7 +55,7 @@ async function preparePowerUpDown() {
       $("#power_up").hide();
       $("#powerup_loading").show();
       activeAccount.powerUp(amount, $("#user_pu").val(), (err, result) => {
-        console.log(err, result);
+        console.error(err, result);
         $("#power_up").show();
         $("#powerup_loading").hide();
         if (err) {
@@ -73,7 +73,7 @@ async function preparePowerUpDown() {
       $("#power_down").hide();
       $("#powerdown_loading").show();
       activeAccount.powerDown($("#amt_pd").val(), function(err, result) {
-        console.log(err, result);
+        console.error(err, result);
         $("#power_down").show();
         $("#powerdown_loading").hide();
         if (err) {

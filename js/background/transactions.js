@@ -1,8 +1,8 @@
 const performTransaction = async (data, tab, no_confirm) => {
   let message = null;
   try {
-    console.log("-- PERFORMING TRANSACTION --");
-    console.log(data);
+    console.info("-- PERFORMING TRANSACTION --");
+    console.info(data);
     if (data.rpc) rpc.setOptions(data.rpc, true);
     switch (data.type) {
       case "custom":

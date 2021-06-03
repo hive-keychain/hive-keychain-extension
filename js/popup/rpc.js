@@ -5,8 +5,9 @@ async function loadRPC(current_rpc) {
   $("#pref_div .usernames .select-items").remove();
   $("#custom_select_rpc select").html(
     listRPC.reduce((acc, val) => {
+      val = `${val.uri} ${val.testnet ? "(TESTNET)" : ""}`
       return (
-        acc + `<option>${val.uri} ${val.testnet ? "(TESTNET)" : ""}</option>`
+        acc + `<option>${val.trim()}</option>`
       );
     }, "")
   );
@@ -15,7 +16,13 @@ async function loadRPC(current_rpc) {
   );
 
   initiateCustomSelect();
-  const curRPCObj = listRPC.find((e) => e.uri === current_rpc);
+  refreshRpcLayout(current_rpc);
+}
+
+async function refreshRpcLayout(current_rpc) {
+  current_rpc = current_rpc.replace('(TESTNET)', '').trim();
+  const listRPC = await rpcs.getList();
+  const curRPCObj = listRPC.find((e) => e.uri.trim() === current_rpc);
   if (curRPCObj.testnet) {
     $("#currency_send select").children("option:first").text("TESTS");
     $("#currency_send select").children("option:first").val("TESTS");
@@ -41,6 +48,7 @@ function switchRPC(rpc) {
   chrome.storage.local.set({
     current_rpc: rpc,
   });
+  refreshRpcLayout(rpc)
 }
 
 function addNewRPC(rpc) {

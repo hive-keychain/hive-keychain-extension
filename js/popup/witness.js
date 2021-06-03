@@ -64,7 +64,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
         activeAccount.getName(),
         "",
         function(err, result) {
-          console.log(err, result);
+          console.error(err, result);
         }
       );
     });
@@ -74,7 +74,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
     .click(function() {
       const voted_wit = $(this).hasClass("wit-voted");
       const that = this;
-      console.log(voted_wit);
+      console.info(voted_wit);
       $(that).addClass("wit-loading");
       hive.broadcast.accountWitnessVote(
         activeAccount.getKey("active"),
@@ -85,18 +85,18 @@ async function prepareWitnessDiv(witness_votes, proxy) {
           .replace("@", ""),
         $(this).hasClass("wit-voted") ? 0 : 1,
         function(err, result) {
-          console.log(err, result);
+          console.error(err, result);
           $(that).removeClass("wit-loading");
           if (err == null) {
             if (voted_wit) {
-              console.log("unvoted");
+              console.info("unvoted");
               $(that).removeClass("wit-voted");
               $(that).addClass("wit-not-voted");
               $("#votes_remaining span").html(
                 parseInt($("#votes_remaining span").html()) + 1
               );
             } else {
-              console.log("voted");
+              console.info("voted");
               $(that).removeClass("wit-not-voted");
               $(that).addClass("wit-voted");
               $("#votes_remaining span").html(
@@ -175,7 +175,7 @@ async function prepareWitnessDiv(witness_votes, proxy) {
               );
               loadAccount(activeAccount.getName());
             } else {
-              console.log(err);
+              console.error(err);
               showError(chrome.i18n.getMessage("unknown_error"));
             }
           }
