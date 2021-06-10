@@ -12,6 +12,9 @@
       "target": "esnext",
       "resolveJsonModule": true,
       "baseUrl": ".",
+      "paths": {
+          "@popup/*":["./src/popup/*"],
+      }
     },            
 
     "exclude": [
