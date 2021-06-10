@@ -1,4 +1,4 @@
-import { RootState } from "@popup/store";
+import { RootState } from "@popup/store/index";
 import { AnyAction } from "redux";
 import { ThunkAction } from "redux-thunk";
 
