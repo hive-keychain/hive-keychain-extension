@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+      "allowJs": true,
+      "allowSyntheticDefaultImports": true,
+      "esModuleInterop": true,
+      "isolatedModules": true,
+      "jsx": "react",
+      "lib": ["es6","dom"],
+      "moduleResolution": "node",
+      "noEmit": false,
+      "strict": true,
+      "target": "esnext",
+      "resolveJsonModule": true,
+      "baseUrl": ".",
+    },            
+
+    "exclude": [
+      "babel.config.js",
+      "metro.config.js"
+    ]
+  }
