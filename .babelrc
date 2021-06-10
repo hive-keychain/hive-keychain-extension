@@ -9,6 +9,21 @@
       "@babel/preset-react"
   ],
   "plugins": [
-      "react-hot-loader/babel"
+      "react-hot-loader/babel",
+      [
+        "module-resolver",
+        {
+          "root": ["."],
+          "alias": {
+            "@popup": "./src/popup"
+          },
+          "extensions": [
+            ".js",
+            ".json",
+            ".ts",
+            ".jsx"
+          ]
+        }
+        ]
   ]
 }

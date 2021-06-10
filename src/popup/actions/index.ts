@@ -1,5 +1,5 @@
+import { TEST_MSG } from "@popup/actions/types";
 import { actionPayload, AppThunk } from "./interfaces";
-import { TEST_MSG } from "./types";
 
 export const setMsg =
   (string: string): AppThunk =>
