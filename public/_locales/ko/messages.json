@@ -1,0 +1,1242 @@
+{
+  "keychain": {
+    "message": "Hive Keychain",
+    "description": "Extension name, night not need to translate it."
+  },
+  "description": {
+    "message": "Secure Hive Wallet Extension.",
+    "description": "Extension description, as shown in the store."
+  },
+  "transaction_error": {
+    "message": "트랜잭션 오류",
+    "description": "Generic error during transaction"
+  },
+  "memo": {
+    "message": "메모",
+    "description": "type of key"
+  },
+  "posting": {
+    "message": "포스팅",
+    "description": "type of key"
+  },
+  "active": {
+    "message": "액티브",
+    "description": "type of key"
+  },
+  "unknown_error": {
+    "message": "오류가 발생했습니다. 다시 시도해주세요!",
+    "description": "Generic error"
+  },
+  "wrong_password": {
+    "message": "잘못된 비밀번호입니다!",
+    "description": "Wrong pwd upon unlocking"
+  },
+  "full_in": {
+    "message": "충전 완료: $1",
+    "description": "Full in x days x hours x minutes"
+  },
+  "days": {
+    "message": "일",
+    "description": "Full in x days x hours x minutes"
+  },
+  "day": {
+    "message": "일",
+    "description": "Full in x days x hours x minutes"
+  },
+  "hours": {
+    "message": "시간",
+    "description": "Full in x days x hours x minutes"
+  },
+  "hour": {
+    "message": "시간",
+    "description": "Full in x days x hours x minutes"
+  },
+  "minutes": {
+    "message": "분",
+    "description": "Full in x days x hours x minutes"
+  },
+  "minute": {
+    "message": "분",
+    "description": "Full in x days x hours x minutes"
+  },
+  "popup_html_register": {
+    "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
+    "description": "Text on registration page"
+  },
+  "popup_html_unlock": {
+    "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
+    "description": "Text on unlock page"
+  },
+  "popup_html_new_password": {
+    "message": "신규 비밀번호",
+    "description": "On settings, change password"
+  },
+  "popup_html_confirm": {
+    "message": "확인",
+    "description": "Generic button"
+  },
+  "popup_html_submit": {
+    "message": "제출하기",
+    "description": "Generic button"
+  },
+  "popup_html_password": {
+    "message": "비밀번호",
+    "description": "Placeholder in input for password"
+  },
+  "popup_html_signin": {
+    "message": "로그인"
+  },
+  "popup_html_forgot": {
+    "message": "비밀번호가 기억나지 않는다면?",
+    "description": "On unlock page"
+  },
+  "popup_html_reset": {
+    "message": "계정 초기화",
+    "description": "After clicking forgot password"
+  },
+  "popup_html_reset_desc": {
+    "message": "비밀번호가 기억나지 않을 때, 기존 데이터를 삭제한 후 새롭게 시작할 수 있지만 키를 다시 입력해야 합니다.",
+    "description": "text after clicking forgot password"
+  },
+  "popup_html_vm": {
+    "message": "보팅 마나",
+    "description": "on Keychain popup main page"
+  },
+  "popup_html_rc": {
+    "message": "리소스 크레딧",
+    "description": "on Keychain popup main page"
+  },
+  "popup_html_send": {
+    "message": "$1 보내기",
+    "description": "ex: Send HIVE"
+  },
+  "popup_html_pu": {
+    "message": "파워 업"
+  },
+  "popup_html_pd": {
+    "message": "파워 다운"
+  },
+  "popup_html_delegate": {
+    "message": "임대"
+  },
+  "popup_html_estimation": {
+    "message": "계정 보유 자산 예상 가치",
+    "description": "on popup main page"
+  },
+  "popup_html_history": {
+    "message": "내역",
+    "description": "on popup main page"
+  },
+  "popup_html_tokens": {
+    "message": "토큰",
+    "description": "on popup main page"
+  },
+  "popup_html_witness": {
+    "message": "증인",
+    "description": "on popup main page"
+  },
+  "popup_html_estimation_info": {
+    "message": "계정 가치",
+    "description": "on popup main page"
+  },
+  "popup_html_estimation_info_text": {
+    "message": "계정 보유 자산 예상 가치는 보유 자산을 USD로 환산한 대략적인 가치입니다.<br><br>대기 중인 마켓 거래나 전송, 트랜잭션은 가치 산정에 포함되지 않습니다.",
+    "description": "on popup main page, click info near estimated value"
+  },
+  "popup_html_wallet_history": {
+    "message": "지갑 내역",
+    "description": "Upon clicking on History"
+  },
+  "popup_html_setup_text": {
+    "message": "Enter your Hive account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.<br/><br/> You may add / remove Hive accounts or keys at any time. If you need to create a new Hive account, you can do so at <a href=\"https://signup.hive.io/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">signup.hive.io/</a>.",
+    "description": "When adding new account"
+  },
+  "popup_html_setup": {
+    "message": "설정",
+    "description": "when adding new account"
+  },
+  "popup_html_private_key": {
+    "message": "개인 키",
+    "description": "placeholder for entering private key"
+  },
+  "popup_html_username": {
+    "message": "사용자 이름",
+    "description": "placeholder for entering username"
+  },
+  "popup_html_import_keys": {
+    "message": "키 가져오기",
+    "description": "Import all keys"
+  },
+  "popup_html_import_key": {
+    "message": "키 가져오기",
+    "description": "Import one key"
+  },
+  "popup_html_import_success": {
+    "message": "Import successful! <br><br>Please select the Keys you wish to store with Hive Keychain:",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_posting": {
+    "message": "포스팅 키",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_active": {
+    "message": "액티브 키",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_memo": {
+    "message": "메모 키",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_posting_info": {
+    "message": "포스팅 및 보팅",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_active_info": {
+    "message": "전송 및 주문",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_memo_info": {
+    "message": "메모 보내기 및 읽기",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_save": {
+    "message": "저장",
+    "description": "Generic button"
+  },
+  "popup_html_settings": {
+    "message": "설정",
+    "description": "on settings page"
+  },
+  "popup_html_add_account": {
+    "message": "계정 추가",
+    "description": "on settings page"
+  },
+  "popup_html_manage_accounts": {
+    "message": "계정 관리",
+    "description": "on settings page"
+  },
+  "popup_html_change_password": {
+    "message": "비밀번호 변경",
+    "description": "on settings page"
+  },
+  "popup_html_pref": {
+    "message": "맞춤 설정",
+    "description": "on settings page"
+  },
+  "popup_html_autolock": {
+    "message": "자동 잠금",
+    "description": "on settings page"
+  },
+  "popup_html_keychainify": {
+    "message": "Keychainify",
+    "description": "on settings page"
+  },
+  "popup_html_import_export": {
+    "message": "Import / Export",
+    "description": "on settings page"
+  },
+  "popup_html_about": {
+    "message": "About Hive Keychain",
+    "description": "on settings page"
+  },
+  "popup_html_clear": {
+    "message": "모든 데이터 삭제",
+    "description": "on settings page"
+  },
+  "popup_html_al_default_title": {
+    "message": "기본",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_default_info": {
+    "message": "수동으로 keychain 잠그기 또는 브라우저 종료될 때 잠그기",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_locked_title": {
+    "message": "기기 잠금",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_locked_info": {
+    "message": "기기가 잠금 상태로 진입하면 keychain 자동 잠금",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_idle_title": {
+    "message": "유휴 시간 이후 잠김",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_idle_info": {
+    "message": "일정 시간 동안 브라우저가 아무 일도 하지 않을 때 keychain 자동 잠금",
+    "description": "on autolock settings"
+  },
+  "popup_html_keychainify_text": {
+    "message": "This feature allows you to trigger a Hive Keychain operation when clicking on a supported link on a web page or accessing the URL directly in a browser tab.",
+    "description": "on keychainify settings"
+  },
+  "popup_html_enable_keychainify_title": {
+    "message": "Keychainify 활성화",
+    "description": "on keychainify settings"
+  },
+  "popup_html_enable_keychainify_info": {
+    "message": "현재는 Steem Connect transfer URL만 지원됩니다.",
+    "description": "on keychainify settings"
+  },
+  "popup_html_import_export_text": {
+    "message": "You can export all your keys encrypted in a file. This will allow you to import them to Keychain on another device or simply safeguard them.<br/><br/>When importing, only accounts that are not already present on the instance will be added.",
+    "description": "on import / export settings"
+  },
+  "popup_html_import": {
+    "message": "Import",
+    "description": "on import / export settings"
+  },
+  "popup_html_export": {
+    "message": "Export",
+    "description": "on import / export settings"
+  },
+  "popup_html_about_text": {
+    "message": "The overall idea and concept for the Hive Keychain browser extension was created on Steem by <a href=\"https://steempeak.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steempeak.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem/Hive developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
+    "description": "on about keychain"
+  },
+  "popup_html_remove": {
+    "message": "삭제",
+    "description": "on manage accounts, remove key"
+  },
+  "popup_html_delete_account": {
+    "message": "이 계정 삭제하기",
+    "description": "on manage accounts"
+  },
+  "popup_html_select_rpc": {
+    "message": "RPC 노드 선택",
+    "description": "on preferences"
+  },
+  "popup_html_notif_pref": {
+    "message": "알림 설정",
+    "description": "on preferences"
+  },
+  "popup_html_pref_info": {
+    "message": "확인 창이 나타나지 않게 설정된 웹사이트와 트랜잭션 종류를 확인하고 업데이트 하세요.",
+    "description": "on preferences"
+  },
+  "popup_html_no_pref": {
+    "message": "맞춤 설정 항목 없음",
+    "description": "on preferences"
+  },
+  "popup_html_add_rpc": {
+    "message": "RPC 추가",
+    "description": "on preferences"
+  },
+  "popup_html_add_rpc_text": {
+    "message": "RPC 노드 추가하기:",
+    "description": "on preferences"
+  },
+  "popup_html_rpc_node": {
+    "message": "RPC 노드",
+    "description": "on preferences"
+  },
+  "popup_html_add_key": {
+    "message": "키 추가",
+    "description": "on manage accounts, add a previously non stored key"
+  },
+  "popup_html_add_key_text": {
+    "message": "계정에 <span></span> 개인 키를 추가하세요. 마스터 <br>비밀번호를 입력해서 이러한 키를 추가할 수도 있습니다.",
+    "description": "on preferences, within span will be posting/memo/active"
+  },
+  "popup_html_copied": {
+    "message": "클립보드에 키 복사됨!",
+    "description": "on preferences when clicking on a key"
+  },
+  "popup_html_change_password_text": {
+    "message": "확인을 위해 기존 비밀 번호를 입력한 후, 신규 비밀번호를 설정하세요.",
+    "description": "on change password"
+  },
+  "popup_html_old_password": {
+    "message": "기존 비밀번호",
+    "description": "on change password"
+  },
+  "popup_html_transfer_funds": {
+    "message": "자금 전송",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
+  "popup_html_balance": {
+    "message": "$1 잔액",
+    "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
+  },
+  "popup_html_loading": {
+    "message": "로딩...",
+    "description": "When initiating a HIVE or HBD transfer and the balance is loading."
+  },
+  "popup_html_memo_optional": {
+    "message": "메모(선택사항)",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
+  "popup_html_encrypt_memo": {
+    "message": "메모 암호화",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
+  "popup_html_add_active": {
+    "message": "Please add an active key to send HIVE or HBD.",
+    "description": "When trying to send HIVE or HBD but active key was not stored"
+  },
+  "popup_html_transfer": {
+    "message": "전송",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_confirm_text": {
+    "message": "전송 내역을 확인해주세요.<br>실행 후에는 취소할 수 없습니다.",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_from": {
+    "message": "보낸 사람",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_to": {
+    "message": "받는 사람",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_amount": {
+    "message": "수량",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_memo": {
+    "message": "메모",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_not_now": {
+    "message": "다음 기회에",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
+  "popup_html_redeem": {
+    "message": "클레임",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
+  "popup_html_witness_title": {
+    "message": "증인 투표",
+    "description": "On witness page"
+  },
+  "popup_html_witness_disclaimer": {
+    "message": "증인 투표는 최대 최대 30 명까지 가능합니다.",
+    "description": "On witness page"
+  },
+  "popup_html_witness_remaining": {
+    "message": "남은 투표: <span>30</span>",
+    "description": "On witness page"
+  },
+  "popup_html_witness_voted": {
+    "message": "투표현황",
+    "description": "On witness page. Tab name, keep short"
+  },
+  "popup_html_witness_top": {
+    "message": "Top 100",
+    "description": "On witness page. Tab name, keep short"
+  },
+  "popup_html_witness_add": {
+    "message": "추가",
+    "description": "On witness page. Tab name, keep short"
+  },
+  "popup_html_proxy_desc": {
+    "message": "증인 투표 계정 또는 프록시 계정을 수동으로 입력할 수 있습니다.",
+    "description": "On witness page > Add"
+  },
+  "popup_html_witness_vote": {
+    "message": "증인 투표",
+    "description": "On witness page > Add > Dropdown"
+  },
+  "popup_html_chose_proxy": {
+    "message": "프록시 선택",
+    "description": "On witness page > Add > Dropdown"
+  },
+  "popup_html_tokens_available": {
+    "message": "이용 가능한 토큰",
+    "description": "On tokens page"
+  },
+  "popup_html_tokens_settings_text": {
+    "message": "토큰 정보를 확인하고 지갑에서 보고 싶은 토큰을 선택하세요. 스팀 블록체인 상의 커스텀 토큰에 관한 추가 정보는 <a href=\"https://steem-engine.com\" target=\"_blank\">https://steem-engine.com</a>에서 확인하실 수 있습니다.",
+    "description": "On tokens page"
+  },
+  "popup_html_available": {
+    "message": "이용 가능 수량",
+    "description": "On tokens page"
+  },
+  "popup_html_tokens_send_text": {
+    "message": "토큰 전송 확인은 30초 정도 소요될 수 있습니다. 인내심을 가지고 기다리세요.",
+    "description": "On tokens page > Send"
+  },
+  "popup_html_recipient": {
+    "message": "받는 사람",
+    "description": "On tokens page > Send"
+  },
+  "popup_html_token_confirm_text": {
+    "message": "전송 내역을 확인해주세요.<br>실행 후에는 취소할 수 없습니다.",
+    "description": "On tokens page > Send > Confirm"
+  },
+  "popup_html_current": {
+    "message": "현재 상태",
+    "description": "Main page > Power Up . Current HP balance"
+  },
+  "popup_html_powerup_text": {
+    "message": "Power Up your HIVE to transform it in Hive Power.",
+    "description": "Main page > Power Up"
+  },
+  "popup_html_powerdown_text": {
+    "message": "Power Down your Hive Power to get liquid HIVE. The entire Power Down process will take 13 weeks.",
+    "description": "Main page > Power Down"
+  },
+  "popup_html_powering_down": {
+    "message": "파워 다운 중",
+    "description": "Main page > Power Down. When a power down has been started"
+  },
+  "popup_html_delegations": {
+    "message": "임대",
+    "description": "Main page > Delegate"
+  },
+  "popup_html_delegations_text": {
+    "message": "You may delegate your Hive Power (HP) to another user. Click on the Outgoing amount to review or make changes.",
+    "description": "Main page > Delegate"
+  },
+  "popup_html_incoming": {
+    "message": "임대 받은 수량 $1",
+    "description": "Main page > Delegate. Incoming delegations ($1 is a variable, should be HP)"
+  },
+  "popup_html_outgoing": {
+    "message": "임대한 수량 $1",
+    "description": "Main page > Delegate. Outgoing delegation ($1=HP)"
+  },
+  "popup_html_delegate_to_user": {
+    "message": "사용자에게 임대하기",
+    "description": "Main page > Delegate. Confirm a delegation"
+  },
+  "popup_html_total_outgoing": {
+    "message": "임대한 수량 합계",
+    "description": "Main page > Delegate > Click on Outgoing"
+  },
+  "popup_html_total_incoming": {
+    "message": "임대 받은 수량 합계",
+    "description": "Main page > Delegate > Click on Incoming"
+  },
+  "popup_html_edit_delegations": {
+    "message": "임대 정책 편집",
+    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
+  },
+  "popup_html_edit_delegations_text": {
+    "message": "이 사용자에게 임대한 수량을 변경하는 곳입니다. 수량 입력 후 변경 사항을 저장하세요.",
+    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
+  },
+  "popup_html_support": {
+    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
+    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
+  },
+  "popup_accounts_reveal_private": {
+    "message": "개인 키 보기",
+    "description": "On manage accounts"
+  },
+  "popup_accounts_no_bittrex": {
+    "message": "Bittrex와 연결할 수 없습니다",
+    "description": "instead of estimated value, if cant reach bittrex api"
+  },
+  "popup_accounts_add_memo": {
+    "message": "이 메모를 읽으려면 개인 메모키를 추가해야 합니다.",
+    "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
+  },
+  "popup_accounts_no_recent_transfers": {
+    "message": "최근 전송 내역이 없습니다",
+    "description": "if history is empty"
+  },
+  "popup_accounts_already_registered": {
+    "message": "@$1 계정은 이미 등록되어 있습니다!",
+    "description": "when trying to add an account already saved on keychain"
+  },
+  "popup_accounts_incorrect_key": {
+    "message": "개인 키 또는 비밀번호가 정확하지 않습니다.",
+    "description": "when adding new account with incorrect key"
+  },
+  "popup_accounts_incorrect_user": {
+    "message": "사용자 이름을 확인하신 후 다시 시도해주세요.",
+    "description": "when adding new account but the username doesnt exist"
+  },
+  "popup_accounts_fill": {
+    "message": "필수 입력사항을 모두 입력해주세요.",
+    "description": "when adding new account but not filling all fields"
+  },
+  "popup_accounts_already_have_key": {
+    "message": "$1 키는 이미 등록되어 있습니다!",
+    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
+  },
+  "popup_accounts_not_your_key": {
+    "message": "이것은 당신의 $1 키가 아닙니다!",
+    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
+  },
+  "popup_accounts_not_wif": {
+    "message": "이것은 개인 키 포맷이 아닙니다!",
+    "description": "not a private key"
+  },
+  "popup_accounts_try_again": {
+    "message": "나중에 다시 시도해주세요!",
+    "description": "Generic unknown error, user is invited to try again"
+  },
+  "popup_accounts_err_claim": {
+    "message": "보상 요청은 개인 포스팅 키 등록이 필요합니다!",
+    "description": "When trying to claim rewards but account doesnt havea stored active key"
+  },
+  "popup_delegate_key": {
+    "message": "임대를 보내려면 액티브 키를 추가해야 합니다!",
+    "description": "When trying to send delegation but user doenst have a stored active key"
+  },
+  "popup_delegate_success": {
+    "message": "임대 성공!",
+    "description": "Main menu > Delegate"
+  },
+  "popup_delegate_change_success": {
+    "message": "임대 변경 성공!",
+    "description": "After editing a delegation"
+  },
+  "popup_password_mismatch": {
+    "message": "비밀번호가 일치하지 않습니다!",
+    "description": "when registering a password on keychain"
+  },
+  "popup_password_regex": {
+    "message": "비밀번호는 소문자, 대문자, 숫자를 포함한 <br> 최소 8자 이상 또는 16자 이상(아무런 제약없이 구성 가능)이어야 합니다.",
+    "description": "when registering the master pwd on keychain"
+  },
+  "popup_add_account": {
+    "message": "새 계정 추가",
+    "description": "From accounts list dropdown"
+  },
+  "popup_empty": {
+    "message": "메모없음",
+    "description": "On send STEEM/SBD confirmation page, when memo is empty"
+  },
+  "popup_encrypted": {
+    "message": "암호화됨",
+    "description": "On send STEEM/SBD confirmation page, when memo is encrypted"
+  },
+  "popup_witness_key": {
+    "message": "증인 투표에 참여하려면 액티브 키를 등록해야 합니다!",
+    "description": "When trying to vote for witness but user doenst have a stored active key"
+  },
+  "popup_transfer_success": {
+    "message": "전송 성공!",
+    "description": "after sending a transfer"
+  },
+  "popup_next_powerdown": {
+    "message": "다음 번 파워 다운: $1",
+    "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
+  },
+  "popup_pu_key": {
+    "message": "파워 업을 하려면 액티브 키를 추가해야 합니다!",
+    "description": "When wanting to powerup but no active key stored"
+  },
+  "popup_pd_key": {
+    "message": "파워 다운을 하려면 액티브 키를 추가해야 합니다!",
+    "description": "When wanting to power down but no active key stored"
+  },
+  "popup_pu_success": {
+    "message": "파워 업 성공!",
+    "description": "After powering up"
+  },
+  "popup_pd_success": {
+    "message": "파워 다운이 시작되었습니다!",
+    "description": "After powering down"
+  },
+  "popup_pd_stop": {
+    "message": "파워 다운이 중지되었습니다!",
+    "description": "After powering down 0SP"
+  },
+  "popup_rpc_add": {
+    "message": "RPC 추가",
+    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
+  },
+  "popup_rpc_added": {
+    "message": "RPC 추가 성공!",
+    "description": "On preferences >Add RPC "
+  },
+  "popup_rpc_default": {
+    "message": "기본",
+    "description": "On preferences, rpc dropdown."
+  },
+  "popup_master_changed": {
+    "message": "마스터 비밀번호가 변경되었습니다",
+    "description": "When changing pwd from settings"
+  },
+  "popup_pwd_stronger": {
+    "message": "더 강력한 비밀번호를 사용해주세요!",
+    "description": "When changing pwd from settings"
+  },
+  "popup_pwd_match": {
+    "message": "새로운 비밀번호가 일치하지 않습니다!",
+    "description": "When changing pwd from settings"
+  },
+  "popup_wrong_current_pwd": {
+    "message": "기존 비밀번호가 일치하지 않습니다",
+    "description": "When changing pwd from settings"
+  },
+  "popup_website": {
+    "message": "웹사이트",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_broadcast": {
+    "message": "브로드캐스트",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_add_auth": {
+    "message": "계정 권한 추가",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_remove_auth": {
+    "message": "계정 권한 제거",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_custom": {
+    "message": "커스텀 트랜잭션",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_decode": {
+    "message": "키 확인",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_sign_buffer": {
+    "message": "서명",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_signed_call": {
+    "message": "서명된 호출",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_post": {
+    "message": "포스트",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_vote": {
+    "message": "투표",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_token_issued_by": {
+    "message": "생성자: @$1",
+    "description": "tokens > setting wheel"
+  },
+  "popup_token_supply": {
+    "message": "공급량",
+    "description": "tokens > setting wheel"
+  },
+  "popup_view_tokens_balance": {
+    "message": "커스텀 토큰 잔액을 확인하세요. 설정 버튼을 클릭해서 특정 토큰을 숨기거나 추가 정보를 확인할 수 있습니다.",
+    "description": "on tokens page "
+  },
+  "popup_no_tokens": {
+    "message": "현재 보유 중인 커스텀 토큰이 없습니다. 톱니 바퀴 모양의 설정 버튼을 클릭하면 이용 <br>가능한 토큰 정보를 확인할 수 있습니다.",
+    "description": "on tokens page when you dont have any"
+  },
+  "popup_token_key": {
+    "message": "토큰을 보내려면 액티브 키를 추가해야 합니다!",
+    "description": "on tokens when trying to send tokens without having an active key registed "
+  },
+  "popup_no_such_account": {
+    "message": "블록체인에 존재하지 않는 사용자 이름입니다!",
+    "description": "on tokens page when trying to send tokens to a non existing user"
+  },
+  "popup_token_success": {
+    "message": "토큰 전송 성공!",
+    "description": "on tokens page when transfer was succesful"
+  },
+  "popup_token_timeout": {
+    "message": "아무런 응답 없이 트랜잭션이 타임 아웃되었습니다. 다시 보내기 전에 토큰 잔액을 다시 한번 확인하세요.",
+    "description": "on tokens page when transaction timed out"
+  },
+  "popup_proxy": {
+    "message": "프록시",
+    "description": "on witness page "
+  },
+  "popup_success_wit": {
+    "message": "@$1 에 대한 증인 투표 성공.",
+    "description": "on witness page "
+  },
+  "popup_success_unvote_wit": {
+    "message": "@$1 에 대한 증인 투표 취소 성공.",
+    "description": "on witness page when unvoting a witness"
+  },
+  "popup_success_proxy": {
+    "message": "@$1 에 대한 프록시 설정 성공.",
+    "description": "on tokens page when chosing a proxy"
+  },
+  "popup_utils_full": {
+    "message": "충전완료!",
+    "description": "on main page, when rc or mana is full "
+  },
+  "dialog_ok": {
+    "message": "확인",
+    "description": "Ok button"
+  },
+  "dialog_unlock": {
+    "message": "잠금 해제",
+    "description": "Unlock button"
+  },
+  "dialog_cancel": {
+    "message": "취소",
+    "description": "Cancel button"
+  },
+  "dialog_broadcasting": {
+    "message": "블록체인에 트랜잭션 브로드캐스팅 중...",
+    "description": "When a website requested a transaction and it was approved."
+  },
+  "dialog_account": {
+    "message": "계정",
+    "description": "When website request a transaction"
+  },
+  "dialog_proposal_ids": {
+    "message": "제안 ID",
+    "description": "When website request a proposal vote"
+  },
+  "dialog_approve": {
+    "message": "승인",
+    "description": "When website request a witness vote"
+  },
+  "dialog_key": {
+    "message": "키",
+    "description": "When website request to decode with a certain key"
+  },
+  "dialog_author": {
+    "message": "저자",
+    "description": "When website request a post"
+  },
+  "dialog_receiver": {
+    "message": "받는 사람",
+    "description": "When website request a transfer"
+  },
+  "dialog_auth_account": {
+    "message": "위임 계정",
+    "description": "When website request to add authority to an account"
+  },
+  "dialog_role": {
+    "message": "역할",
+    "description": "When website request to add authority to an account"
+  },
+  "dialog_permlink": {
+    "message": "Permlink",
+    "description": "When website request a post"
+  },
+  "dialog_weight": {
+    "message": "가중치",
+    "description": "When website request a vote"
+  },
+  "dialog_data": {
+    "message": "데이터 <span class='small'>(클릭해서 내용 보기)</span>",
+    "description": "When website request a custom json"
+  },
+  "dialog_to": {
+    "message": "받는 사람",
+    "description": "When website request a transfer"
+  },
+  "dialog_amount": {
+    "message": "수량",
+    "description": "When website request a transfer"
+  },
+  "dialog_balance": {
+    "message": "현재 잔액",
+    "description": "When website request a transfer"
+  },
+  "dialog_future_balance": {
+    "message": "전송 후 잔액",
+    "description": "When website request a transfer"
+  },
+  "dialog_daily_pay": {
+    "message": "일일 요청량",
+    "description": "When website request a proposal creation"
+  },
+  "dialog_memo": {
+    "message": "메모",
+    "description": "When website request a transfer"
+  },
+  "dialog_title": {
+    "message": "제목",
+    "description": "When website request a post"
+  },
+  "dialog_body": {
+    "message": "본문 <span class='small'>(클릭해서 내용 보기)</span>",
+    "description": "When website request a post"
+  },
+  "dialog_period": {
+    "message": "기간",
+    "description": "When website request a proposal creation"
+  },
+  "dialog_extensions": {
+    "message": "확장",
+    "description": "When website request a generic broadcast"
+  },
+  "dialog_meta": {
+    "message": "JSON 메타데이터",
+    "description": "When website request a post"
+  },
+  "dialog_pu": {
+    "message": "부모 사용자 이름",
+    "description": "When website request a post"
+  },
+  "dialog_pp": {
+    "message": "부모 Permlink",
+    "description": "When website request a post"
+  },
+  "dialog_options": {
+    "message": "옵션 <span class='small'>(클릭해서 내용 보기)</span>",
+    "description": "When website request a post"
+  },
+  "dialog_max_payout": {
+    "message": "최대 페이아웃 : ",
+    "description": "When website request a post"
+  },
+  "dialog_percentage_sbd": {
+    "message": "SBD 비율 : ",
+    "description": "When website request a post"
+  },
+  "dialog_allow_votes": {
+    "message": "투표 허용 : ",
+    "description": "When website request a post"
+  },
+  "dialog_allow_curation": {
+    "message": "큐레이션 허용 : ",
+    "description": "When website request a post"
+  },
+  "dialog_beneficiaries": {
+    "message": "베니피셔리 : ",
+    "description": "When website request a post"
+  },
+  "dialog_delegatee": {
+    "message": "임대",
+    "description": "When website request a delegation"
+  },
+  "dialog_message": {
+    "message": "메시지",
+    "description": "When website request a custom json"
+  },
+  "dialog_witness": {
+    "message": "증인",
+    "description": "When website request a witness vote"
+  },
+  "dialog_vote": {
+    "message": "투표",
+    "description": "When website request a witness vote"
+  },
+  "dialog_confirm": {
+    "message": "확인"
+  },
+  "dialog_body_toggle": {
+    "message": "본문 <span class='small'>(클릭해서 내용 보기)</span>"
+  },
+  "dialog_options_toggle": {
+    "message": "옵션 <span class='small'>(클릭해서 내용 보기)</span>"
+  },
+  "dialog_data_toggle": {
+    "message": "데이터 <span class='small'>(클릭해서 내용 보기)</span>"
+  },
+  "dialog_header_unlock": {
+    "message": "Keychain 잠금 해제",
+    "description": "When website request a transaction but keychain is locked"
+  },
+  "dialog_header_error": {
+    "message": "오류",
+    "description": "Generic error"
+  },
+  "dialog_header_success": {
+    "message": "성공",
+    "description": "Generic success message"
+  },
+  "dialog_header_wrong_pwd": {
+    "message": "잘못된 비밀번호입니다!"
+  },
+  "dialog_header_broadcasting": {
+    "message": "브로드캐스팅",
+    "description": "when waiting from confirmation"
+  },
+  "dialog_title_custom": {
+    "message": "커스텀 트랜잭션",
+    "description": "Website request title"
+  },
+  "dialog_title_decode": {
+    "message": "키 확인",
+    "description": "Website request title"
+  },
+  "dialog_title_sign": {
+    "message": "메시지 서명하기",
+    "description": "Website request title"
+  },
+  "dialog_title_add_auth": {
+    "message": "권한 추가",
+    "description": "Website request title"
+  },
+  "dialog_title_remove_auth": {
+    "message": "권한 제거",
+    "description": "Website request title"
+  },
+  "dialog_title_broadcast": {
+    "message": "브로드캐스트",
+    "description": "Website request title"
+  },
+  "dialog_title_call": {
+    "message": "서명된 호출",
+    "description": "Website request title"
+  },
+  "dialog_title_post": {
+    "message": "포스트",
+    "description": "Website request title"
+  },
+  "dialog_title_vote": {
+    "message": "투표",
+    "description": "Website request title"
+  },
+  "dialog_title_transfer": {
+    "message": "전송하기",
+    "description": "Website request title"
+  },
+  "dialog_title_delegation": {
+    "message": "임대",
+    "description": "Website request title"
+  },
+  "dialog_title_wit": {
+    "message": "증인 투표",
+    "description": "Website request title"
+  },
+  "dialog_title_token": {
+    "message": "토큰 보내기",
+    "description": "Website request title"
+  },
+  "dialog_title_powerup": {
+    "message": "파워 업",
+    "description": "Website request title"
+  },
+  "dialog_title_powerdown": {
+    "message": "파워 다운",
+    "description": "Website request title"
+  },
+  "dialog_title_create_account": {
+    "message": "요청한 계정 생성하기",
+    "description": "Website request title"
+  },
+  "dialog_title_create_proposal": {
+    "message": "작업자 제안서 만들기",
+    "description": "Website request title"
+  },
+  "dialog_title_remove_proposal": {
+    "message": "작업자 제안서 삭제",
+    "description": "Website request title"
+  },
+  "dialog_title_vote_proposal": {
+    "message": "제안 투표하기",
+    "description": "Website request title"
+  },
+  "dialog_no_prompt_verify": {
+    "message": "$2에서 @$1 계정 키를 확인하는 창을 다시 보고 싶지 않습니다.",
+    "description": "When a website request a verification using posting key and you dont want it to pop all the time"
+  },
+  "dialog_no_prompt": {
+    "message": "$3 의 @$2 계정에서 발생하는 $1 트랜잭션 확인 창을 다시 보고 싶지 않습니다.",
+    "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
+  },
+  "dialog_desc_verify": {
+    "message": "$1 웹사이트에서 당신이 @$3 계정의 $2 키에 접근할 수 있는지 확인하려 합니다.",
+    "description": "key verification message"
+  },
+  "dialog_desc_sign": {
+    "message": "$1 웹사이트에서 @$3 계정의 $2 키를 이용해 메시지에 서명하려고 합니다.",
+    "description": "Sign message"
+  },
+  "dialog_expand": {
+    "message": "...(클릭하면 확장됩니다)",
+    "description": "Toggle"
+  },
+  "bgd_init_no_wallet": {
+    "message": "지갑 생성이 필요합니다!",
+    "description": "when user didnt create a wallet yet"
+  },
+  "bgd_lifecycle_request_canceled": {
+    "message": "사용자가 요청을 취소했습니다.",
+    "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
+  },
+  "bgd_context_transfer_user": {
+    "message": "Transfer HIVE/HBD to @%s",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_memo_user": {
+    "message": "@%s 에게 메모 메시지 보내기",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_tip_user": {
+    "message": "@%s 에게 팁 주기",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_transfer_author": {
+    "message": "Transfer HIVE/HBD to this author",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_memo_author": {
+    "message": "저자에게 메모 메시지 보내기",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_tip_author": {
+    "message": "저자에게 팁 보내기",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_auth_locked": {
+    "message": "지갑이 잠겨있습니다!"
+  },
+  "bgd_auth_locked_desc": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension. Please enter your password below to unlock the wallet and continue."
+  },
+  "bgd_auth_canceled": {
+    "message": "사용자가 요청을 취소했습니다."
+  },
+  "bgd_auth_transfer_no_active": {
+    "message": "The current website is trying to send a transfer request to the Hive Keychain browser extension for account @$1 using the active key, which has not been added to the wallet."
+  },
+  "bgd_auth_transfer_no_memo": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 using the memo key, which has not been added to the wallet."
+  },
+  "bgd_auth_no_account": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 which has not been added to the wallet."
+  },
+  "bgd_auth_no_key": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 using the $2 key, which has not been added to the wallet."
+  },
+  "bgd_ops_witness_voted": {
+    "message": "@$1 에 대한 증인 투표 성공."
+  },
+  "bgd_ops_witness_unvoted": {
+    "message": "@$1 에 대한 증인 투표 취소 성공."
+  },
+  "bgd_ops_vote": {
+    "message": "@$1 님이 작성한 $2 글에 $3% 가중치로 투표했습니다."
+  },
+  "bgd_ops_transfer_adjust_balance": {
+    "message": "@$2 계정에 보유 중인 $1 잔액이 충분하지 않습니다."
+  },
+  "bgd_ops_transfer_get_account": {
+    "message": "@$1 계정을 찾을 수 없습니다."
+  },
+  "bgd_ops_error_broadcasting": {
+    "message": "이 트랜잭션을 브로드캐스팅 하던 중 오류가 발생했습니다. 다시 시도해주세요."
+  },
+  "bgd_ops_error": {
+    "message": "이 트랜잭션을 브로드캐스팅 하던 중 오류가 발생했습니다."
+  },
+  "bgd_ops_transfer_success": {
+    "message": "@$3 님이 @$4 님에게 $1 $2 을 전송했습니다."
+  },
+  "bgd_ops_tokens": {
+    "message": "트랜잭션이 브로드캐스트되었습니다. 잔액을 확인해서 잘 처리되었는지 체크해보세요."
+  },
+  "bgd_ops_signed_call": {
+    "message": "성공!"
+  },
+  "bgd_ops_sign_success": {
+    "message": "메시지 서명 성공."
+  },
+  "bgd_ops_sign_error": {
+    "message": "서명할 수 없습니다."
+  },
+  "bgd_ops_proposal_create": {
+    "message": "새로운 제안서가 생성되었습니다."
+  },
+  "bgd_ops_proposal_remove": {
+    "message": "#$1 번째 제안을 제거했습니다."
+  },
+  "bgd_ops_proposal_vote": {
+    "message": "#$1 번째 제안에 투표했습니다."
+  },
+  "bgd_ops_proposal_unvote": {
+    "message": "#$1 번째 제안에 대한 투표를 취소했습니다."
+  },
+  "bgd_ops_pu": {
+    "message": "Powered up $1 HIVE on @$2."
+  },
+  "bgd_ops_pd": {
+    "message": "Started a $1 HP power down on @$2."
+  },
+  "bgd_ops_pd_stop": {
+    "message": "@$1의 파워 다운이 중지되었습니다."
+  },
+  "bgd_ops_post": {
+    "message": "글이 전송되었습니다."
+  },
+  "bgd_ops_undelegate": {
+    "message": "@$2 계정이 @$1 계정에 대한 임대를 중지했습니다."
+  },
+  "bgd_ops_delegate": {
+    "message": "Succesfully delegated $1 from @$3 to @$2."
+  },
+  "bgd_ops_decode": {
+    "message": "메모 복호화 성공."
+  },
+  "bgd_ops_decode_err": {
+    "message": "키를 확인할 수 없습니다."
+  },
+  "bgd_ops_broadcast": {
+    "message": "트랜잭션 브로드캐스트 성공"
+  },
+  "bgd_ops_create_account": {
+    "message": "@$1 계정 생성 성공."
+  },
+  "bgd_ops_add_auth": {
+    "message": "@$3 계정이 @$2 계정에게 $1 권한을 부여했습니다."
+  },
+  "bgd_ops_remove_auth": {
+    "message": "@$3 계정이 @$2 계정에 부여한 $1 권한을 삭제했습니다."
+  },
+  "popup_account_redeem": {
+    "message": "요청할 수 있는 보상 현황",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
+  "popup_html_send_transfer": {
+    "message": "보내기"
+  },
+  "dialog_title_add_key_auth": {
+    "message": "Add Key"
+  },
+  "dialog_title_remove_key_auth": {
+    "message": "Remove Key"
+  },
+  "dialog_auth_key": {
+    "message": "Key",
+    "description": "New key to be added"
+  },
+  "bgd_ops_add_key_auth": {
+    "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
+    "description": "Succesfully added a new keypair"
+  },
+  "bgd_ops_remove_key_auth": {
+    "message": "$1 has been removed as a $2 key for account @$3.",
+    "description": "succesfully removed a keypair"
+  },
+  "popup_html_add_by_keys": {
+    "message": "Use keys/pwd",
+    "description": "When adding new account. In a button, must keep short. "
+  },
+  "popup_html_add_by_auth": {
+    "message": "Use authorized account",
+    "description": "When adding new account. In a button, must keep short."
+  },
+  "popup_html_chose_add_method": {
+    "message": "You can add your keys by entring a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
+    "description": "Text when adding new method."
+  },
+  "popup_html_auth_text": {
+    "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
+    "description": "On Add new account => via auth"
+  },
+  "popup_html_auth_placeholder_username": {
+    "message": "Username"
+  },
+  "popup_html_auth_placeholder_username_auth": {
+    "message": "Authorized Account",
+    "description": "The placeholder for the authorized account that will use its keys for this account."
+  },
+  "popup_no_auth_account": {
+    "message": "Please save @$1 in Hive Keychain to use it as an authorized account."
+  },
+  "popup_accounts_no_auth": {
+    "message": "@$1 does not have authority over @$2.",
+    "description": "When trying to add an account via authority"
+  },
+  "import_html_text": {
+    "message": "Import your keys from another Keychain instance using a .kc file.<br/><br/>You need to use the same master password on both instances to decrypt the keys."
+  },
+  "import_html_success": {
+    "message": "You succesfully imported your keys!"
+  },
+  "import_html_error": {
+    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+  }
+}

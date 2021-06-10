@@ -1,0 +1,1242 @@
+{
+  "keychain": {
+    "message": "Hive Keychain",
+    "description": "Extension name, night not need to translate it."
+  },
+  "description": {
+    "message": "Secure Hive Wallet Extension.",
+    "description": "Extension description, as shown in the store."
+  },
+  "transaction_error": {
+    "message": "Error de transacción",
+    "description": "Generic error during transaction"
+  },
+  "memo": {
+    "message": "memo",
+    "description": "type of key"
+  },
+  "posting": {
+    "message": "publicando",
+    "description": "type of key"
+  },
+  "active": {
+    "message": "activo",
+    "description": "type of key"
+  },
+  "unknown_error": {
+    "message": "¡Algo salió mal! ¡Por favor, inténtalo de nuevo!",
+    "description": "Generic error"
+  },
+  "wrong_password": {
+    "message": "¡Contraseña incorrecta!",
+    "description": "Wrong pwd upon unlocking"
+  },
+  "full_in": {
+    "message": "Completo en $1",
+    "description": "Full in x days x hours x minutes"
+  },
+  "days": {
+    "message": "días",
+    "description": "Full in x days x hours x minutes"
+  },
+  "day": {
+    "message": "día",
+    "description": "Full in x days x hours x minutes"
+  },
+  "hours": {
+    "message": "horas",
+    "description": "Full in x days x hours x minutes"
+  },
+  "hour": {
+    "message": "hora",
+    "description": "Full in x days x hours x minutes"
+  },
+  "minutes": {
+    "message": "minutos",
+    "description": "Full in x days x hours x minutes"
+  },
+  "minute": {
+    "message": "minuto",
+    "description": "Full in x days x hours x minutes"
+  },
+  "popup_html_register": {
+    "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
+    "description": "Text on registration page"
+  },
+  "popup_html_unlock": {
+    "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
+    "description": "Text on unlock page"
+  },
+  "popup_html_new_password": {
+    "message": "Nueva contraseña",
+    "description": "On settings, change password"
+  },
+  "popup_html_confirm": {
+    "message": "Confirmar",
+    "description": "Generic button"
+  },
+  "popup_html_submit": {
+    "message": "Enviar",
+    "description": "Generic button"
+  },
+  "popup_html_password": {
+    "message": "Contraseña",
+    "description": "Placeholder in input for password"
+  },
+  "popup_html_signin": {
+    "message": "Inicia sesión"
+  },
+  "popup_html_forgot": {
+    "message": "¿Olvidó la contraseña?",
+    "description": "On unlock page"
+  },
+  "popup_html_reset": {
+    "message": "Resetear tu cuenta",
+    "description": "After clicking forgot password"
+  },
+  "popup_html_reset_desc": {
+    "message": "Si olvidaste tu contraseña, puedes borrar tus datos pero tendrás que volver a introducir todas tus claves.",
+    "description": "text after clicking forgot password"
+  },
+  "popup_html_vm": {
+    "message": "Poder de Voto",
+    "description": "on Keychain popup main page"
+  },
+  "popup_html_rc": {
+    "message": "Créditos de recursos",
+    "description": "on Keychain popup main page"
+  },
+  "popup_html_send": {
+    "message": "Enviar $1",
+    "description": "ex: Send HIVE"
+  },
+  "popup_html_pu": {
+    "message": "Power up"
+  },
+  "popup_html_pd": {
+    "message": "Power Down"
+  },
+  "popup_html_delegate": {
+    "message": "Delegar"
+  },
+  "popup_html_estimation": {
+    "message": "Valor aproximado de la cuenta",
+    "description": "on popup main page"
+  },
+  "popup_html_history": {
+    "message": "Historia",
+    "description": "on popup main page"
+  },
+  "popup_html_tokens": {
+    "message": "Tokens",
+    "description": "on popup main page"
+  },
+  "popup_html_witness": {
+    "message": "Witness",
+    "description": "on popup main page"
+  },
+  "popup_html_estimation_info": {
+    "message": "valor de la cuenta",
+    "description": "on popup main page"
+  },
+  "popup_html_estimation_info_text": {
+    "message": "El valor estimado de la cuenta es una idea aproximada del valor de sus fondos en dólares.<br><br>Tenga en cuenta que el valor no tiene en cuenta las operaciones, transferencias o transacciones de mercado que están pendientes.",
+    "description": "on popup main page, click info near estimated value"
+  },
+  "popup_html_wallet_history": {
+    "message": "Historial de la Billetera",
+    "description": "Upon clicking on History"
+  },
+  "popup_html_setup_text": {
+    "message": "Enter your Hive account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.<br/><br/> You may add / remove Hive accounts or keys at any time. If you need to create a new Hive account, you can do so at <a href=\"https://signup.hive.io/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">signup.hive.io/</a>.",
+    "description": "When adding new account"
+  },
+  "popup_html_setup": {
+    "message": "Instalación",
+    "description": "when adding new account"
+  },
+  "popup_html_private_key": {
+    "message": "Clave privada",
+    "description": "placeholder for entering private key"
+  },
+  "popup_html_username": {
+    "message": "Nombre de Usuario",
+    "description": "placeholder for entering username"
+  },
+  "popup_html_import_keys": {
+    "message": "Importar Claves",
+    "description": "Import all keys"
+  },
+  "popup_html_import_key": {
+    "message": "Importar Clave",
+    "description": "Import one key"
+  },
+  "popup_html_import_success": {
+    "message": "Import successful! <br><br>Please select the Keys you wish to store with Hive Keychain:",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_posting": {
+    "message": "Clave de publicación",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_active": {
+    "message": "Clave activa",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_memo": {
+    "message": "Memo key",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_posting_info": {
+    "message": "Para publicar y votar",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_active_info": {
+    "message": "Para hacer transferencias y órdenes",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_memo_info": {
+    "message": "Para enviar y leer memos",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_save": {
+    "message": "Guardar",
+    "description": "Generic button"
+  },
+  "popup_html_settings": {
+    "message": "Configuraciones",
+    "description": "on settings page"
+  },
+  "popup_html_add_account": {
+    "message": "Añadir cuenta",
+    "description": "on settings page"
+  },
+  "popup_html_manage_accounts": {
+    "message": "Gestionar Cuentas",
+    "description": "on settings page"
+  },
+  "popup_html_change_password": {
+    "message": "Cambiar Contraseña",
+    "description": "on settings page"
+  },
+  "popup_html_pref": {
+    "message": "Preferencias",
+    "description": "on settings page"
+  },
+  "popup_html_autolock": {
+    "message": "Bloqueo automático",
+    "description": "on settings page"
+  },
+  "popup_html_keychainify": {
+    "message": "Keychainify",
+    "description": "on settings page"
+  },
+  "popup_html_import_export": {
+    "message": "Import / Export",
+    "description": "on settings page"
+  },
+  "popup_html_about": {
+    "message": "About Hive Keychain",
+    "description": "on settings page"
+  },
+  "popup_html_clear": {
+    "message": "Limpiar todos los datos",
+    "description": "on settings page"
+  },
+  "popup_html_al_default_title": {
+    "message": "Predeterminado",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_default_info": {
+    "message": "Bloquea el keychain manualmente o cuando el navegador esté cerrado.",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_locked_title": {
+    "message": "Bloqueo de dispositivo",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_locked_info": {
+    "message": "Bloquea automáticamente el keychain cuando el dispositivo se bloquea.",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_idle_title": {
+    "message": "Bloquear inactivo",
+    "description": "on autolock settings"
+  },
+  "popup_html_al_idle_info": {
+    "message": "Bloquear automáticamente el keychain después de que la ventana del navegador esté inactiva durante el número de minutos especificado.",
+    "description": "on autolock settings"
+  },
+  "popup_html_keychainify_text": {
+    "message": "This feature allows you to trigger a Hive Keychain operation when clicking on a supported link on a web page or accessing the URL directly in a browser tab.",
+    "description": "on keychainify settings"
+  },
+  "popup_html_enable_keychainify_title": {
+    "message": "Habilitar Keychainify",
+    "description": "on keychainify settings"
+  },
+  "popup_html_enable_keychainify_info": {
+    "message": "Actualmente sólo soporta las transferencias con URLs de Steem Connect.",
+    "description": "on keychainify settings"
+  },
+  "popup_html_import_export_text": {
+    "message": "You can export all your keys encrypted in a file. This will allow you to import them to Keychain on another device or simply safeguard them.<br/><br/>When importing, only accounts that are not already present on the instance will be added.",
+    "description": "on import / export settings"
+  },
+  "popup_html_import": {
+    "message": "Import",
+    "description": "on import / export settings"
+  },
+  "popup_html_export": {
+    "message": "Export",
+    "description": "on import / export settings"
+  },
+  "popup_html_about_text": {
+    "message": "The overall idea and concept for the Hive Keychain browser extension was created on Steem by <a href=\"https://steempeak.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steempeak.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem/Hive developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
+    "description": "on about keychain"
+  },
+  "popup_html_remove": {
+    "message": "Remover",
+    "description": "on manage accounts, remove key"
+  },
+  "popup_html_delete_account": {
+    "message": "ELIMINAR ESTA CUENTA",
+    "description": "on manage accounts"
+  },
+  "popup_html_select_rpc": {
+    "message": "Seleccione un nodo RPC",
+    "description": "on preferences"
+  },
+  "popup_html_notif_pref": {
+    "message": "Preferencias de Notificación",
+    "description": "on preferences"
+  },
+  "popup_html_pref_info": {
+    "message": "Vea y actualice los sitios web y los tipos de transacciones para los que ha optado por no recibir una petición de confirmación.",
+    "description": "on preferences"
+  },
+  "popup_html_no_pref": {
+    "message": "Sin Preferencias",
+    "description": "on preferences"
+  },
+  "popup_html_add_rpc": {
+    "message": "Añadir RPC",
+    "description": "on preferences"
+  },
+  "popup_html_add_rpc_text": {
+    "message": "Añade tu nodo RPC aquí:",
+    "description": "on preferences"
+  },
+  "popup_html_rpc_node": {
+    "message": "Nodo RPC",
+    "description": "on preferences"
+  },
+  "popup_html_add_key": {
+    "message": "Añadir Clave",
+    "description": "on manage accounts, add a previously non stored key"
+  },
+  "popup_html_add_key_text": {
+    "message": "Añade la <span></span> clave privada a tu cuenta. También puedes añadirla ingresando tu clave maestra.",
+    "description": "on preferences, within span will be posting/memo/active"
+  },
+  "popup_html_copied": {
+    "message": "¡Clave copiada al portapapeles!",
+    "description": "on preferences when clicking on a key"
+  },
+  "popup_html_change_password_text": {
+    "message": "Introduce tu contraseña antigua para confirmar y luego elige una nueva contraseña.",
+    "description": "on change password"
+  },
+  "popup_html_old_password": {
+    "message": "Contraseña antigua",
+    "description": "on change password"
+  },
+  "popup_html_transfer_funds": {
+    "message": "Transferir fondos",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
+  "popup_html_balance": {
+    "message": "Saldo $1",
+    "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
+  },
+  "popup_html_loading": {
+    "message": "Cargando...",
+    "description": "When initiating a HIVE or HBD transfer and the balance is loading."
+  },
+  "popup_html_memo_optional": {
+    "message": "MEMO (Opcional)",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
+  "popup_html_encrypt_memo": {
+    "message": "Encriptar Memo",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
+  "popup_html_add_active": {
+    "message": "Please add an active key to send HIVE or HBD.",
+    "description": "When trying to send HIVE or HBD but active key was not stored"
+  },
+  "popup_html_transfer": {
+    "message": "Transferir",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_confirm_text": {
+    "message": "Por favor, confirme su transferencia.<br>Esto no se puede deshacer.",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_from": {
+    "message": "De",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_to": {
+    "message": "A",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_amount": {
+    "message": "Importe",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_memo": {
+    "message": "Memo",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_not_now": {
+    "message": "No ahora",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
+  "popup_html_redeem": {
+    "message": "Reclamar",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
+  "popup_html_witness_title": {
+    "message": "Votación para Witness",
+    "description": "On witness page"
+  },
+  "popup_html_witness_disclaimer": {
+    "message": "Puedes votar a favor de hasta 30 witnesses.",
+    "description": "On witness page"
+  },
+  "popup_html_witness_remaining": {
+    "message": "Votos restantes: <span>30</span>",
+    "description": "On witness page"
+  },
+  "popup_html_witness_voted": {
+    "message": "Votado",
+    "description": "On witness page. Tab name, keep short"
+  },
+  "popup_html_witness_top": {
+    "message": "Mejores 100",
+    "description": "On witness page. Tab name, keep short"
+  },
+  "popup_html_witness_add": {
+    "message": "Agregar",
+    "description": "On witness page. Tab name, keep short"
+  },
+  "popup_html_proxy_desc": {
+    "message": "Puede introducir manualmente un usuario para votar por Witness o para establecer como Proxy.",
+    "description": "On witness page > Add"
+  },
+  "popup_html_witness_vote": {
+    "message": "Vota por un Witness",
+    "description": "On witness page > Add > Dropdown"
+  },
+  "popup_html_chose_proxy": {
+    "message": "Elegir proxy",
+    "description": "On witness page > Add > Dropdown"
+  },
+  "popup_html_tokens_available": {
+    "message": "Tokens disponibles",
+    "description": "On tokens page"
+  },
+  "popup_html_tokens_settings_text": {
+    "message": "Ver información de tokens y elegir qué tokens mostrar. Aprende más sobre tokens personalizados en la blockchain de Steem en <a href=\"https://steem-engine.com\" target=\"_blank\">https://steem-engine.com</a>.",
+    "description": "On tokens page"
+  },
+  "popup_html_available": {
+    "message": "Disponible",
+    "description": "On tokens page"
+  },
+  "popup_html_tokens_send_text": {
+    "message": "Enviar sus tokens puede tardar hasta 30 segundos en confirmar, por favor sea paciente.",
+    "description": "On tokens page > Send"
+  },
+  "popup_html_recipient": {
+    "message": "Destinatario",
+    "description": "On tokens page > Send"
+  },
+  "popup_html_token_confirm_text": {
+    "message": "Por favor, confirme su transferencia.<br>Esto no se puede deshacer.",
+    "description": "On tokens page > Send > Confirm"
+  },
+  "popup_html_current": {
+    "message": "Actual",
+    "description": "Main page > Power Up . Current HP balance"
+  },
+  "popup_html_powerup_text": {
+    "message": "Power Up your HIVE to transform it in Hive Power.",
+    "description": "Main page > Power Up"
+  },
+  "popup_html_powerdown_text": {
+    "message": "Power Down your Hive Power to get liquid HIVE. The entire Power Down process will take 13 weeks.",
+    "description": "Main page > Power Down"
+  },
+  "popup_html_powering_down": {
+    "message": "Haciendo un Power Down",
+    "description": "Main page > Power Down. When a power down has been started"
+  },
+  "popup_html_delegations": {
+    "message": "Delegaciones",
+    "description": "Main page > Delegate"
+  },
+  "popup_html_delegations_text": {
+    "message": "You may delegate your Hive Power (HP) to another user. Click on the Outgoing amount to review or make changes.",
+    "description": "Main page > Delegate"
+  },
+  "popup_html_incoming": {
+    "message": "Entrando $1",
+    "description": "Main page > Delegate. Incoming delegations ($1 is a variable, should be HP)"
+  },
+  "popup_html_outgoing": {
+    "message": "Saliendo $1",
+    "description": "Main page > Delegate. Outgoing delegation ($1=HP)"
+  },
+  "popup_html_delegate_to_user": {
+    "message": "Delegar al usuario",
+    "description": "Main page > Delegate. Confirm a delegation"
+  },
+  "popup_html_total_outgoing": {
+    "message": "Total saliente",
+    "description": "Main page > Delegate > Click on Outgoing"
+  },
+  "popup_html_total_incoming": {
+    "message": "Total entrante",
+    "description": "Main page > Delegate > Click on Incoming"
+  },
+  "popup_html_edit_delegations": {
+    "message": "Editar Delegación",
+    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
+  },
+  "popup_html_edit_delegations_text": {
+    "message": "Estás cambiando la cantidad delegada a este usuario. Edita la cantidad y guarda tu cambio.",
+    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
+  },
+  "popup_html_support": {
+    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
+    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
+  },
+  "popup_accounts_reveal_private": {
+    "message": "Haga clic para mostrar la clave privada",
+    "description": "On manage accounts"
+  },
+  "popup_accounts_no_bittrex": {
+    "message": "Bittrex es inaccesible",
+    "description": "instead of estimated value, if cant reach bittrex api"
+  },
+  "popup_accounts_add_memo": {
+    "message": "Añade tu clave privada de memo para leer este memo",
+    "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
+  },
+  "popup_accounts_no_recent_transfers": {
+    "message": "No hay transferencias recientes",
+    "description": "if history is empty"
+  },
+  "popup_accounts_already_registered": {
+    "message": "¡Ya has registrado una cuenta por @$1!",
+    "description": "when trying to add an account already saved on keychain"
+  },
+  "popup_accounts_incorrect_key": {
+    "message": "Clave privada o contraseña incorrecta.",
+    "description": "when adding new account with incorrect key"
+  },
+  "popup_accounts_incorrect_user": {
+    "message": "Por favor, comprueba el nombre de usuario y vuelve a intentarlo.",
+    "description": "when adding new account but the username doesnt exist"
+  },
+  "popup_accounts_fill": {
+    "message": "Por favor, rellene los campos.",
+    "description": "when adding new account but not filling all fields"
+  },
+  "popup_accounts_already_have_key": {
+    "message": "¡Ya ha introducido su clave $1!",
+    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
+  },
+  "popup_accounts_not_your_key": {
+    "message": "¡Esta no es su clave $1!",
+    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
+  },
+  "popup_accounts_not_wif": {
+    "message": "¡Esto no es un Wi-Fi privado!",
+    "description": "not a private key"
+  },
+  "popup_accounts_try_again": {
+    "message": "¡Por favor, inténtalo de nuevo más tarde!",
+    "description": "Generic unknown error, user is invited to try again"
+  },
+  "popup_accounts_err_claim": {
+    "message": "¡Necesitas introducir tu clave privada de publicación para reclamar recompensas!",
+    "description": "When trying to claim rewards but account doesnt havea stored active key"
+  },
+  "popup_delegate_key": {
+    "message": "¡Por favor, añade tu clave activa para enviar delegaciones!",
+    "description": "When trying to send delegation but user doenst have a stored active key"
+  },
+  "popup_delegate_success": {
+    "message": "¡Su delegación ha sido exitosa!",
+    "description": "Main menu > Delegate"
+  },
+  "popup_delegate_change_success": {
+    "message": "¡Su cambio de delegación fue exitoso!",
+    "description": "After editing a delegation"
+  },
+  "popup_password_mismatch": {
+    "message": "¡Sus contraseñas no coinciden!",
+    "description": "when registering a password on keychain"
+  },
+  "popup_password_regex": {
+    "message": "Tu contraseña debe tener al menos 8 caracteres e incluir una letra minúscula, una letra mayúscula y un dígito o tener al menos 16 caracteres sin restricciones.",
+    "description": "when registering the master pwd on keychain"
+  },
+  "popup_add_account": {
+    "message": "Añadir nueva cuenta",
+    "description": "From accounts list dropdown"
+  },
+  "popup_empty": {
+    "message": "Vacío",
+    "description": "On send STEEM/SBD confirmation page, when memo is empty"
+  },
+  "popup_encrypted": {
+    "message": "encriptado",
+    "description": "On send STEEM/SBD confirmation page, when memo is encrypted"
+  },
+  "popup_witness_key": {
+    "message": "¡Por favor, añade tu clave activa para votar por los witness!",
+    "description": "When trying to vote for witness but user doenst have a stored active key"
+  },
+  "popup_transfer_success": {
+    "message": "¡Transferencia exitosa!",
+    "description": "after sending a transfer"
+  },
+  "popup_next_powerdown": {
+    "message": "El próximo power down en $1",
+    "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
+  },
+  "popup_pu_key": {
+    "message": "¡Por favor, añade tu clave activa para hacer un power up!",
+    "description": "When wanting to powerup but no active key stored"
+  },
+  "popup_pd_key": {
+    "message": "¡Por favor, añade tu clave activa para hacer un power down!",
+    "description": "When wanting to power down but no active key stored"
+  },
+  "popup_pu_success": {
+    "message": "¡Hiciste un power up con éxito!",
+    "description": "After powering up"
+  },
+  "popup_pd_success": {
+    "message": "¡Has empezado con éxito un power down!",
+    "description": "After powering down"
+  },
+  "popup_pd_stop": {
+    "message": "¡Has detenido con éxito un power down!",
+    "description": "After powering down 0SP"
+  },
+  "popup_rpc_add": {
+    "message": "AGREGAR RPC",
+    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
+  },
+  "popup_rpc_added": {
+    "message": "¡RPC agregado exitosamente!",
+    "description": "On preferences >Add RPC "
+  },
+  "popup_rpc_default": {
+    "message": "POR DEFECTO",
+    "description": "On preferences, rpc dropdown."
+  },
+  "popup_master_changed": {
+    "message": "Su contraseña maestra fue cambiada con éxito",
+    "description": "When changing pwd from settings"
+  },
+  "popup_pwd_stronger": {
+    "message": "¡Por favor, utiliza una contraseña más fuerte!",
+    "description": "When changing pwd from settings"
+  },
+  "popup_pwd_match": {
+    "message": "¡Las nuevas contraseñas no coinciden!",
+    "description": "When changing pwd from settings"
+  },
+  "popup_wrong_current_pwd": {
+    "message": "Contraseña actual incorrecta",
+    "description": "When changing pwd from settings"
+  },
+  "popup_website": {
+    "message": "Sitio Web",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_broadcast": {
+    "message": "Transmitir",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_add_auth": {
+    "message": "Añadir Autoridad de Cuenta",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_remove_auth": {
+    "message": "Eliminar Autoridad de Cuenta",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_custom": {
+    "message": "Transacción personalizada",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_decode": {
+    "message": "Verificar Clave",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_sign_buffer": {
+    "message": "Firmar",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_signed_call": {
+    "message": "Llamada Firmada",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_post": {
+    "message": "Publicar",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_vote": {
+    "message": "Votar",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_token_issued_by": {
+    "message": "por @$1",
+    "description": "tokens > setting wheel"
+  },
+  "popup_token_supply": {
+    "message": "Suministro",
+    "description": "tokens > setting wheel"
+  },
+  "popup_view_tokens_balance": {
+    "message": "Ver tus saldos de tokens personalizado. Puedes ocultar ciertos tokens y ver más información haciendo clic en la rueda de ajustes.",
+    "description": "on tokens page "
+  },
+  "popup_no_tokens": {
+    "message": "Actualmente no tienes ningún token personalizado. Haz clic en la rueda de configuración para obtener información sobre los tokens disponibles.",
+    "description": "on tokens page when you dont have any"
+  },
+  "popup_token_key": {
+    "message": "¡Por favor, añade tu clave activa para enviar tokens!",
+    "description": "on tokens when trying to send tokens without having an active key registed "
+  },
+  "popup_no_such_account": {
+    "message": "¡Este nombre de usuario no está registrado en el blockchain!",
+    "description": "on tokens page when trying to send tokens to a non existing user"
+  },
+  "popup_token_success": {
+    "message": "¡Tokens enviados con éxito!",
+    "description": "on tokens page when transfer was succesful"
+  },
+  "popup_token_timeout": {
+    "message": "La transacción ha expirado sin respuesta. Por favor, comprueba el saldo de tu token antes de intentar enviarlo de nuevo.",
+    "description": "on tokens page when transaction timed out"
+  },
+  "popup_proxy": {
+    "message": "PROXY",
+    "description": "on witness page "
+  },
+  "popup_success_wit": {
+    "message": "Votó con éxito por @$1 como un witness.",
+    "description": "on witness page "
+  },
+  "popup_success_unvote_wit": {
+    "message": "Removió su voto exitosamente @$1 como un witness.",
+    "description": "on witness page when unvoting a witness"
+  },
+  "popup_success_proxy": {
+    "message": "Eligió exitosamente @$1 para proxy.",
+    "description": "on tokens page when chosing a proxy"
+  },
+  "popup_utils_full": {
+    "message": "¡Ya está lleno!",
+    "description": "on main page, when rc or mana is full "
+  },
+  "dialog_ok": {
+    "message": "Ok",
+    "description": "Ok button"
+  },
+  "dialog_unlock": {
+    "message": "Desbloquear",
+    "description": "Unlock button"
+  },
+  "dialog_cancel": {
+    "message": "Cancelar",
+    "description": "Cancel button"
+  },
+  "dialog_broadcasting": {
+    "message": "Transmitiendo la transacción al blockchain...",
+    "description": "When a website requested a transaction and it was approved."
+  },
+  "dialog_account": {
+    "message": "Cuenta",
+    "description": "When website request a transaction"
+  },
+  "dialog_proposal_ids": {
+    "message": "IDs de propuesta",
+    "description": "When website request a proposal vote"
+  },
+  "dialog_approve": {
+    "message": "Aprobar",
+    "description": "When website request a witness vote"
+  },
+  "dialog_key": {
+    "message": "Clave",
+    "description": "When website request to decode with a certain key"
+  },
+  "dialog_author": {
+    "message": "Autor",
+    "description": "When website request a post"
+  },
+  "dialog_receiver": {
+    "message": "Receptor",
+    "description": "When website request a transfer"
+  },
+  "dialog_auth_account": {
+    "message": "Cuenta autorizada",
+    "description": "When website request to add authority to an account"
+  },
+  "dialog_role": {
+    "message": "Rol",
+    "description": "When website request to add authority to an account"
+  },
+  "dialog_permlink": {
+    "message": "Enlace Permanente",
+    "description": "When website request a post"
+  },
+  "dialog_weight": {
+    "message": "Peso",
+    "description": "When website request a vote"
+  },
+  "dialog_data": {
+    "message": "Datos <span class='small'>(clic para mostrar)</span>",
+    "description": "When website request a custom json"
+  },
+  "dialog_to": {
+    "message": "A",
+    "description": "When website request a transfer"
+  },
+  "dialog_amount": {
+    "message": "Importe",
+    "description": "When website request a transfer"
+  },
+  "dialog_balance": {
+    "message": "Balance",
+    "description": "When website request a transfer"
+  },
+  "dialog_future_balance": {
+    "message": "Balance futuro",
+    "description": "When website request a transfer"
+  },
+  "dialog_daily_pay": {
+    "message": "Pago Diario",
+    "description": "When website request a proposal creation"
+  },
+  "dialog_memo": {
+    "message": "Memo",
+    "description": "When website request a transfer"
+  },
+  "dialog_title": {
+    "message": "Título",
+    "description": "When website request a post"
+  },
+  "dialog_body": {
+    "message": "Cuerpo <span class='small'>(clic para mostrar)</span>",
+    "description": "When website request a post"
+  },
+  "dialog_period": {
+    "message": "Periodo",
+    "description": "When website request a proposal creation"
+  },
+  "dialog_extensions": {
+    "message": "Extensiones",
+    "description": "When website request a generic broadcast"
+  },
+  "dialog_meta": {
+    "message": "Metadata JSON",
+    "description": "When website request a post"
+  },
+  "dialog_pu": {
+    "message": "Usuario Padre",
+    "description": "When website request a post"
+  },
+  "dialog_pp": {
+    "message": "Permlink Padre",
+    "description": "When website request a post"
+  },
+  "dialog_options": {
+    "message": "Opciones <span class='small'>(clic para mostrar)</span>",
+    "description": "When website request a post"
+  },
+  "dialog_max_payout": {
+    "message": "Máximo Pago Aceptado : ",
+    "description": "When website request a post"
+  },
+  "dialog_percentage_sbd": {
+    "message": "Porcentaje de SBD : ",
+    "description": "When website request a post"
+  },
+  "dialog_allow_votes": {
+    "message": "Permitir votos : ",
+    "description": "When website request a post"
+  },
+  "dialog_allow_curation": {
+    "message": "Permitir curación : ",
+    "description": "When website request a post"
+  },
+  "dialog_beneficiaries": {
+    "message": "Beneficiarios : ",
+    "description": "When website request a post"
+  },
+  "dialog_delegatee": {
+    "message": "Delegado",
+    "description": "When website request a delegation"
+  },
+  "dialog_message": {
+    "message": "Mensaje",
+    "description": "When website request a custom json"
+  },
+  "dialog_witness": {
+    "message": "Witness",
+    "description": "When website request a witness vote"
+  },
+  "dialog_vote": {
+    "message": "Votar",
+    "description": "When website request a witness vote"
+  },
+  "dialog_confirm": {
+    "message": "Confirmar"
+  },
+  "dialog_body_toggle": {
+    "message": "Cuerpo <span class='small'>(clic para mostrar)</span>"
+  },
+  "dialog_options_toggle": {
+    "message": "Opciones <span class='small'>(clic para mostrar)</span>"
+  },
+  "dialog_data_toggle": {
+    "message": "Datos <span class='small'>(clic para mostrar)</span>"
+  },
+  "dialog_header_unlock": {
+    "message": "Desbloquear llavero",
+    "description": "When website request a transaction but keychain is locked"
+  },
+  "dialog_header_error": {
+    "message": "Error",
+    "description": "Generic error"
+  },
+  "dialog_header_success": {
+    "message": "Éxito",
+    "description": "Generic success message"
+  },
+  "dialog_header_wrong_pwd": {
+    "message": "¡Contraseña incorrecta!"
+  },
+  "dialog_header_broadcasting": {
+    "message": "Transmisión",
+    "description": "when waiting from confirmation"
+  },
+  "dialog_title_custom": {
+    "message": "Transacción Personalizada",
+    "description": "Website request title"
+  },
+  "dialog_title_decode": {
+    "message": "Verificar Clave",
+    "description": "Website request title"
+  },
+  "dialog_title_sign": {
+    "message": "Firmar Mensaje",
+    "description": "Website request title"
+  },
+  "dialog_title_add_auth": {
+    "message": "Añadir Autoridad",
+    "description": "Website request title"
+  },
+  "dialog_title_remove_auth": {
+    "message": "Eliminar Autoridad",
+    "description": "Website request title"
+  },
+  "dialog_title_broadcast": {
+    "message": "Transmitir",
+    "description": "Website request title"
+  },
+  "dialog_title_call": {
+    "message": "Llamada Firmada",
+    "description": "Website request title"
+  },
+  "dialog_title_post": {
+    "message": "Publicar",
+    "description": "Website request title"
+  },
+  "dialog_title_vote": {
+    "message": "Votar",
+    "description": "Website request title"
+  },
+  "dialog_title_transfer": {
+    "message": "Transferir",
+    "description": "Website request title"
+  },
+  "dialog_title_delegation": {
+    "message": "Delegación",
+    "description": "Website request title"
+  },
+  "dialog_title_wit": {
+    "message": "Votar al Witness",
+    "description": "Website request title"
+  },
+  "dialog_title_token": {
+    "message": "Enviar Tokens",
+    "description": "Website request title"
+  },
+  "dialog_title_powerup": {
+    "message": "Power Up",
+    "description": "Website request title"
+  },
+  "dialog_title_powerdown": {
+    "message": "Hacer Power Down",
+    "description": "Website request title"
+  },
+  "dialog_title_create_account": {
+    "message": "Crear una cuenta reclamada",
+    "description": "Website request title"
+  },
+  "dialog_title_create_proposal": {
+    "message": "Crear propuesta de trabajador",
+    "description": "Website request title"
+  },
+  "dialog_title_remove_proposal": {
+    "message": "Eliminar Propuesta de Trabajador",
+    "description": "Website request title"
+  },
+  "dialog_title_vote_proposal": {
+    "message": "Votar por propuesta",
+    "description": "Website request title"
+  },
+  "dialog_no_prompt_verify": {
+    "message": "No volver a pedir que verifique las claves de la cuenta @$1 en $2",
+    "description": "When a website request a verification using posting key and you dont want it to pop all the time"
+  },
+  "dialog_no_prompt": {
+    "message": "No volver a pedir que se envíen transacciones $1 desde la cuenta @$2 el $3",
+    "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
+  },
+  "dialog_desc_verify": {
+    "message": "El sitio web $1 quiere verificar que tiene acceso a la clave privada $2 para la cuenta: @$3",
+    "description": "key verification message"
+  },
+  "dialog_desc_sign": {
+    "message": "El sitio web $1 quiere firmar un mensaje usando la clave $2 para la cuenta: @$3",
+    "description": "Sign message"
+  },
+  "dialog_expand": {
+    "message": "...(haga clic para expandir)",
+    "description": "Toggle"
+  },
+  "bgd_init_no_wallet": {
+    "message": "¡No hay billetera!",
+    "description": "when user didnt create a wallet yet"
+  },
+  "bgd_lifecycle_request_canceled": {
+    "message": "La solicitud fue cancelada por el usuario.",
+    "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
+  },
+  "bgd_context_transfer_user": {
+    "message": "Transfer HIVE/HBD to @%s",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_memo_user": {
+    "message": "Enviar un mensaje de MEMO a @%s",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_tip_user": {
+    "message": "Dar propina a @%s",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_transfer_author": {
+    "message": "Transfer HIVE/HBD to this author",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_memo_author": {
+    "message": "Enviar un mensaje de MEMO a este autor",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_context_tip_author": {
+    "message": "Dar propina a este autor",
+    "description": "Context menu (when right click on a username on steemit)"
+  },
+  "bgd_auth_locked": {
+    "message": "¡La cartera está bloqueada!"
+  },
+  "bgd_auth_locked_desc": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension. Please enter your password below to unlock the wallet and continue."
+  },
+  "bgd_auth_canceled": {
+    "message": "La solicitud fue cancelada por el usuario."
+  },
+  "bgd_auth_transfer_no_active": {
+    "message": "The current website is trying to send a transfer request to the Hive Keychain browser extension for account @$1 using the active key, which has not been added to the wallet."
+  },
+  "bgd_auth_transfer_no_memo": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 using the memo key, which has not been added to the wallet."
+  },
+  "bgd_auth_no_account": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 which has not been added to the wallet."
+  },
+  "bgd_auth_no_key": {
+    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 using the $2 key, which has not been added to the wallet."
+  },
+  "bgd_ops_witness_voted": {
+    "message": "Votado con éxito @$1 por Witness."
+  },
+  "bgd_ops_witness_unvoted": {
+    "message": "Exitosamente desvotado @$1 por witness."
+  },
+  "bgd_ops_vote": {
+    "message": "Votado con éxito por @$1's posteo $2 a $3%."
+  },
+  "bgd_ops_transfer_adjust_balance": {
+    "message": "Insuficiente $1 balance en cuenta @$2."
+  },
+  "bgd_ops_transfer_get_account": {
+    "message": "No se puede encontrar cuenta @$1."
+  },
+  "bgd_ops_error_broadcasting": {
+    "message": "Hubo un error al emitir esta transacción, por favor, inténtelo de nuevo."
+  },
+  "bgd_ops_error": {
+    "message": "Hubo un error en la transmisión de esta transacción:"
+  },
+  "bgd_ops_transfer_success": {
+    "message": "Transferido exitosamente $1 $2 desde @$3 a @$4."
+  },
+  "bgd_ops_tokens": {
+    "message": "La transacción ha sido transmitida con éxito. Por favor, compruebe su saldo para confirmar que ha sido procesada con éxito."
+  },
+  "bgd_ops_signed_call": {
+    "message": "¡Todo ha ido bien!"
+  },
+  "bgd_ops_sign_success": {
+    "message": "Mensaje firmado con éxito."
+  },
+  "bgd_ops_sign_error": {
+    "message": "No se pudo firmar."
+  },
+  "bgd_ops_proposal_create": {
+    "message": "Se ha creado con éxito una nueva propuesta."
+  },
+  "bgd_ops_proposal_remove": {
+    "message": "Se eliminó con éxito la propuesta #$1."
+  },
+  "bgd_ops_proposal_vote": {
+    "message": "Votó con éxito a favor de la propuesta #$1."
+  },
+  "bgd_ops_proposal_unvote": {
+    "message": "Removió su voto exitosamente por la propuesta #$1."
+  },
+  "bgd_ops_pu": {
+    "message": "Powered up $1 HIVE on @$2."
+  },
+  "bgd_ops_pd": {
+    "message": "Started a $1 HP power down on @$2."
+  },
+  "bgd_ops_pd_stop": {
+    "message": "Se detuvo el Power Down en @$1."
+  },
+  "bgd_ops_post": {
+    "message": "La publicación fue enviada con éxito."
+  },
+  "bgd_ops_undelegate": {
+    "message": "Se detuvo con éxito la delegación a @$1 de la cuenta @$2."
+  },
+  "bgd_ops_delegate": {
+    "message": "Succesfully delegated $1 from @$3 to @$2."
+  },
+  "bgd_ops_decode": {
+    "message": "Memo decodificado exitosamente."
+  },
+  "bgd_ops_decode_err": {
+    "message": "No se pudo verificar la clave."
+  },
+  "bgd_ops_broadcast": {
+    "message": "La transacción ha sido transmitida con éxito."
+  },
+  "bgd_ops_create_account": {
+    "message": "Cuenta @$1 creada correctamente."
+  },
+  "bgd_ops_add_auth": {
+    "message": "Dio con éxito la autoridad de $1 a @$2 en la cuenta @$3."
+  },
+  "bgd_ops_remove_auth": {
+    "message": "Se ha eliminado con éxito $1 autoridad de @$2 en la cuenta @$3."
+  },
+  "popup_account_redeem": {
+    "message": "Tienes recompensas listas para canjear en la cantidad de",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
+  "popup_html_send_transfer": {
+    "message": "Enviar"
+  },
+  "dialog_title_add_key_auth": {
+    "message": "Add Key"
+  },
+  "dialog_title_remove_key_auth": {
+    "message": "Remove Key"
+  },
+  "dialog_auth_key": {
+    "message": "Key",
+    "description": "New key to be added"
+  },
+  "bgd_ops_add_key_auth": {
+    "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
+    "description": "Succesfully added a new keypair"
+  },
+  "bgd_ops_remove_key_auth": {
+    "message": "$1 has been removed as a $2 key for account @$3.",
+    "description": "succesfully removed a keypair"
+  },
+  "popup_html_add_by_keys": {
+    "message": "Use keys/pwd",
+    "description": "When adding new account. In a button, must keep short. "
+  },
+  "popup_html_add_by_auth": {
+    "message": "Use authorized account",
+    "description": "When adding new account. In a button, must keep short."
+  },
+  "popup_html_chose_add_method": {
+    "message": "You can add your keys by entring a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
+    "description": "Text when adding new method."
+  },
+  "popup_html_auth_text": {
+    "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
+    "description": "On Add new account => via auth"
+  },
+  "popup_html_auth_placeholder_username": {
+    "message": "Username"
+  },
+  "popup_html_auth_placeholder_username_auth": {
+    "message": "Authorized Account",
+    "description": "The placeholder for the authorized account that will use its keys for this account."
+  },
+  "popup_no_auth_account": {
+    "message": "Please save @$1 in Hive Keychain to use it as an authorized account."
+  },
+  "popup_accounts_no_auth": {
+    "message": "@$1 does not have authority over @$2.",
+    "description": "When trying to add an account via authority"
+  },
+  "import_html_text": {
+    "message": "Import your keys from another Keychain instance using a .kc file.<br/><br/>You need to use the same master password on both instances to decrypt the keys."
+  },
+  "import_html_success": {
+    "message": "You succesfully imported your keys!"
+  },
+  "import_html_error": {
+    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "name": "__MSG_keychain__",
+  "description": "__MSG_description__",
+  "default_locale": "en",
+  "version": "1.12.0.0",
+  "permissions": ["storage", "idle", "webNavigation"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "/assets/images/iconhive.png"
+  },
+  "icons": {
+    "128": "/assets/images/iconhive.png"
+  },
+  "background": {
+    "scripts": [
+      "vendor/crypto-js.js",
+      "vendor/md5.min.js",
+      "js/libs/encrypt.js",
+      "vendor/hive.min.js",
+      "vendor/decode.min.js",
+      "vendor/jquery.min.js",
+      "js/config.js",
+      "js/libs/keychainify.js",
+      "js/libs/globalProps.js",
+      "js/libs/account.js",
+      "js/libs/accountsList.js",
+      "js/libs/hf21.js",
+      "js/libs/rpcs.js",
+      "js/background/autolock.js",
+      "js/background/autoClaims.js",
+      "js/background/init.js",
+      "js/background/dialog_lifecycle.js",
+      "js/background/errors.js",
+      "js/background/auth.js",
+      "js/background/ops/authority.js",
+      "js/background/ops/broadcast.js",
+      "js/background/ops/createAccount.js",
+      "js/background/ops/addAccount.js",
+      "js/background/ops/customJson.js",
+      "js/background/ops/decode.js",
+      "js/background/ops/encode.js",
+      "js/background/ops/delegation.js",
+      "js/background/ops/post.js",
+      "js/background/ops/power.js",
+      "js/background/ops/proposals.js",
+      "js/background/ops/signBuffer.js",
+      "js/background/ops/signedCall.js",
+      "js/background/ops/signTx.js",
+      "js/background/ops/tokens.js",
+      "js/background/ops/transfer.js",
+      "js/background/ops/vote.js",
+      "js/background/ops/witness.js",
+      "js/background/ops/proxy.js",
+      "js/background/transactions.js",
+      "js/background/keychainify.js"
+    ],
+    "persistent": true
+  },
+  "web_accessible_resources": ["/images/logo.png", "js/hive_keychain.js"],
+  "content_scripts": [
+    {
+      "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
+      "js": [
+        "vendor/jquery.min.js",
+        "js/web_interface.js",
+        "js/libs/keychainify.js",
+        "js/keychainify_content.js"
+      ]
+    }
+  ],
+  "manifest_version": 2
+}

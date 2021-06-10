@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <defs>
+    <style>
+      .cls-1, .cls-4 {
+        fill: none;
+      }
+
+      .cls-1 {
+        stroke: #E31337;
+      }
+
+      .cls-2 {
+        fill: #E31337;
+      }
+
+      .cls-3 {
+        stroke: none;
+      }
+    </style>
+  </defs>
+  <g id="icon_witness-vote_default" transform="translate(9315 7099)">
+    <g id="Ellipse_21" data-name="Ellipse 21" class="cls-1" transform="translate(-9315 -7099)">
+      <circle class="cls-3" cx="10" cy="10" r="10"/>
+      <circle class="cls-4" cx="10" cy="10" r="9.5"/>
+    </g>
+    <g id="navigate-up-arrow" transform="translate(-9310.333 -7092.333)">
+      <path id="Path_137" data-name="Path 137" class="cls-2" d="M6.11,97.369l4.78,4.78a.778.778,0,1,1-1.1,1.1l-4.23-4.23-4.23,4.23a.779.779,0,0,1-1.1-1.1l4.78-4.78a.779.779,0,0,1,1.1,0Z" transform="translate(-0.001 -97.141)"/>
+    </g>
+  </g>
+</svg>

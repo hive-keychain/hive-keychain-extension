@@ -18,7 +18,6 @@ const App = ({ setMsg, msg }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log(state);
   return {
     msg: state.testMsg,
   };
