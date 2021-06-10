@@ -45,6 +45,7 @@
 const webpack = require("webpack");
 const path = require("path");
 const CopyPlugin = require("copy-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const config = {
   mode: "development",
@@ -103,6 +104,7 @@ const config = {
     alias: {
       "react-dom": "@hot-loader/react-dom",
     },
+    plugins: [new TsconfigPathsPlugin({ configFile: "./tsconfig.json" })],
   },
   devServer: {
     contentBase: "./dist",
