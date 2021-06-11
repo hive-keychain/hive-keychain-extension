@@ -1,9 +1,10 @@
 import { RootState } from "@popup/store/index";
 import { AnyAction } from "redux";
 import { ThunkAction } from "redux-thunk";
+import { ActionType } from "./action-type.enum";
 
 export interface actionPayload<T> {
-  readonly type: string;
+  readonly type: ActionType;
   readonly payload?: T;
 }
 

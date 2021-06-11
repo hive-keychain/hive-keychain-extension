@@ -1,4 +1,4 @@
-import { TEST_MSG } from "@popup/actions/types";
+import { ActionType } from "@popup/actions/action-type.enum";
 import { actionPayload, AppThunk } from "./interfaces";
 
 export const setMsg =
@@ -6,7 +6,7 @@ export const setMsg =
   async (dispatch, getState) => {
     // we dont need to use redux thunk here since there s no await but its for the sake example
     const action: actionPayload<string> = {
-      type: TEST_MSG,
+      type: ActionType.TEST_MSG,
       payload: string,
     };
     dispatch(action);

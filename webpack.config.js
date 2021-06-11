@@ -49,7 +49,7 @@ const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const config = {
   mode: "development",
-  entry: { popup: "./src/popup/index.tsx", dialog: "./src/dialog/index.tsx" },
+  entry: { popup: "./src/popup/index.tsx", dialog: "./src/dialog/index.tsx", background: './src/background/index.ts' },
   output: { path: path.join(__dirname, "dist"), filename: "[name]Bundle.js" },
   module: {
     rules: [

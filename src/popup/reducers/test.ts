@@ -1,13 +1,12 @@
 import { actionPayload } from "@popup/actions/interfaces";
-import { TEST_MSG } from "@popup/actions/types";
+import { ActionType } from "@popup/actions/action-type.enum";
 
 export default (
   state = "",
   { type, payload }: actionPayload<string>
 ): string => {
-  console.log(type, payload);
   switch (type) {
-    case TEST_MSG:
+    case ActionType.TEST_MSG:
       return payload!;
     default:
       return state;
