@@ -11,6 +11,4 @@ const chromeMessageHandler = (backgroundMessage: BackgroundMessage, sender: any,
     }
 }
 
-console.log("background in da place")
-
 chrome.runtime.onMessage.addListener(chromeMessageHandler);

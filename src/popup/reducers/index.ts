@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
-import { accountReducer } from "./account.reducer";
-import { mkReducer } from "./mk.reducer";
-import test from "./test";
+import { AccountReducer } from "./account.reducer";
+import { ErrorMessageReducer } from "./error-message.reducer";
+import { MkReducer } from "./mk.reducer";
 
 export default combineReducers({
-  testMsg: test,
-  mk: mkReducer,
-  accounts: accountReducer
+  mk: MkReducer,
+  accounts: AccountReducer,
+  errorMessage: ErrorMessageReducer
 });

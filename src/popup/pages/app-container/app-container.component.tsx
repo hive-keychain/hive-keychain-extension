@@ -7,7 +7,6 @@ const AppContainer = ({}: PropsFromRedux) => {
   
     return (
       <div className="app-container">
-          AppContainer
           <HomeComponent/>
       </div>
     );

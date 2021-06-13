@@ -23,9 +23,9 @@
     {
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
       "js": [
-        "js/web_interface.js",
-        "js/libs/keychainify.js",
-        "js/keychainify_content.js"
+        "libs/web_interface.js",
+        "libs/keychainify.js",
+        "libs/keychainify_content.js"
       ]
     }
   ],

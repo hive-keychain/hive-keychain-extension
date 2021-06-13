@@ -10,9 +10,9 @@ import { BackgroundCommand } from "src/reference-data/background-message-key.enu
 import { setMk } from "@popup/actions/mk.actions"
 import { BackgroundMessage } from "src/background/background-message.interface";
 import { AppContainerComponent } from "./pages/app-container/app-container.component";
+import { ErrorMessageContainerComponent } from "./pages/error-message-container/error-message-container.component";
 
 const App = ({ setMk, mk, getAccounts, accounts }: PropsFromRedux) => {
-  // just for testing action/reducer, you can delete
   useEffect(() => {
     getAccounts();
   }, [getAccounts]);
@@ -30,6 +30,7 @@ const App = ({ setMk, mk, getAccounts, accounts }: PropsFromRedux) => {
   }
 
   const renderMainLayoutNav = () => {
+    
     if(!mk) {
       if(accounts.length === 0) {
         return <SignUpComponent />
@@ -39,7 +40,7 @@ const App = ({ setMk, mk, getAccounts, accounts }: PropsFromRedux) => {
       }
     }
     else {
-      if(accounts.length > 0) {
+      if(accounts.length === 0) {
         return <AddAccountComponent />
       }
       else {
@@ -51,6 +52,7 @@ const App = ({ setMk, mk, getAccounts, accounts }: PropsFromRedux) => {
   return (
     <div className="App">
       {renderMainLayoutNav()}
+      <ErrorMessageContainerComponent />
     </div>
   );
 };
