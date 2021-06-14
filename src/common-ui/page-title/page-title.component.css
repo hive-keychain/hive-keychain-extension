@@ -1,0 +1,10 @@
+.title {
+    margin-top: 15px;
+    text-transform: uppercase;
+    color: white;
+    font-size: 20px;
+    line-height: 30px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    pointer-events: none;
+}

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import "./sign-up.component.css";
 import { setErrorMessage } from "@popup/actions/error-message.actions";
 import { setMk } from "@popup/actions/mk.actions";
+import ButtonComponent from "src/common-ui/button/button.component";
 
 const isPasswordValid = (password: string) => {
   return (
@@ -46,7 +47,7 @@ const SignUp = ({setErrorMessage, setMk}: PropsFromRedux) => {
             <input  type="password"  placeholder={chrome.i18n.getMessage('popup_html_confirm')}  value={newPasswordConfirm} onChange={(e) => setNewPasswordConfirm(e.target.value)}/>
             <img src="/assets/images/lock.png" className="input-img" />
           </div>
-          <button className="submit-button" onClick={submitMk}>{chrome.i18n.getMessage("popup_html_submit")}</button>
+          <ButtonComponent label={"popup_html_submit"} onClick={submitMk} />
       </div>
     );
   };

@@ -1,0 +1,7 @@
+export enum Screen {
+    INIT_ACCOUNT_PAGE = 'INIT_ACCOUNT_PAGE',
+    SIGN_IN_PAGE = 'SIGN_IN_PAGE',
+    SIGN_UP_PAGE = 'SIGN_UP_PAGE',
+    HOME_PAGE = "HOME_PAGE"
+    
+}
