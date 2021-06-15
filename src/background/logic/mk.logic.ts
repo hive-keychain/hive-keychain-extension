@@ -2,13 +2,21 @@ import { BackgroundCommand } from "src/reference-data/background-message-key.enu
 
 const MkModule = {
     sendBackMk,
+    saveMk
 }
 
-function sendBackMk(mk:string): void {
+
+let mk: string = '';
+
+function sendBackMk(): void {
     chrome.runtime.sendMessage({
         command: BackgroundCommand.SEND_BACK_MK,
         value: mk
     })
+}
+
+function saveMk(newMk: string): void {
+    mk = newMk;
 }
 
 export default MkModule;

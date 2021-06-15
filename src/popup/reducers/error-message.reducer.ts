@@ -5,7 +5,6 @@ export const ErrorMessageReducer = (
     state = "",
     { type, payload }: actionPayload<string>
   ): string => {
-    console.log(state, type, payload);
     switch (type) {
       case ActionType.SET_ERROR_MESSAGE:
         return payload!;

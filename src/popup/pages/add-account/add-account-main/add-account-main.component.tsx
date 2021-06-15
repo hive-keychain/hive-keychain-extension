@@ -3,18 +3,20 @@ import { connect, ConnectedProps } from "react-redux";
 import React from "react";
 import ButtonComponent from "src/common-ui/button/button.component";
 import { PageTitleComponent } from "src/common-ui/page-title/page-title.component";
-import './add-account.component.css';
+import './add-account-main.component.css';
+import { navigateTo } from "@popup/actions/navigation.actions";
+import { Screen } from "src/reference-data/screen.enum";
 
-const AddAccount = ({}: PropsFromRedux) => {
+const AddAccountMain = ({navigateTo}: PropsFromRedux) => {
 
     const handleAddByKeys = ():void => {
-      console.log('handleAddByKeys')
+      navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
     }
     const handleAddByAuth = ():void => {
-      console.log('handleAddByAuth')
+      navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_AUTH);
     }
     const handleImportKeys = ():void => {
-      console.log('handleImportKeys')
+      navigateTo(Screen.ACCOUNT_PAGE_IMPORT_KEYS);
     }
 
 
@@ -37,7 +39,7 @@ const AddAccount = ({}: PropsFromRedux) => {
     };
   };
   
-  const connector = connect(mapStateToProps, { });
+  const connector = connect(mapStateToProps, { navigateTo });
   type PropsFromRedux = ConnectedProps<typeof connector>;
   
-  export const AddAccountComponent =  connector(AddAccount);
+  export const AddAccountMainComponent =  connector(AddAccountMain);

@@ -2,14 +2,20 @@ import { ActionType } from "@popup/actions/action-type.enum";
 import { actionPayload } from "@popup/actions/interfaces";
 import { Screen } from "src/reference-data/screen.enum";
 
+interface NavigationState {
+  currentPage: Screen;
+  test: string
+}
 
+
+// TODO talk to Stoodkev about payload type
 export const NavigationReducer = (
-    state: Screen = Screen.HOME_PAGE,
-    { type, payload }: actionPayload<Screen>
-  ): Screen => {
+    state: NavigationState = {currentPage: Screen.HOME_PAGE, test: 'toto'},
+    { type, payload }: actionPayload<any>
+  ): NavigationState => {
     switch (type) {
       case ActionType.NAVIGATE_TO:
-        return payload!;
+        return {...state, currentPage: payload!};
       default:
         return state;
     }

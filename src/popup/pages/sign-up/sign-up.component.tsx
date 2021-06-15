@@ -1,6 +1,6 @@
 import { RootState } from "@popup/store";
 import { connect, ConnectedProps } from "react-redux";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./sign-up.component.css";
 import { setErrorMessage } from "@popup/actions/error-message.actions";
 import { setMk } from "@popup/actions/mk.actions";

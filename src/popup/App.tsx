@@ -3,16 +3,18 @@ import React, { useEffect } from "react";
 import { connect, ConnectedProps } from "react-redux";
 import "./App.css";
 import { getAccounts } from '@popup/actions/account.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
 import { SignInComponent } from "./pages/sign-in/sign-in.component";
-import { AddAccountComponent } from "./pages/add-account/add-account.component";
 import { SignUpComponent } from "./pages/sign-up/sign-up.component";
 import { BackgroundCommand } from "src/reference-data/background-message-key.enum";
 import { setMk } from "@popup/actions/mk.actions"
 import { BackgroundMessage } from "src/background/background-message.interface";
 import { AppContainerComponent } from "./pages/app-container/app-container.component";
 import { ErrorMessageContainerComponent } from "./pages/error-message-container/error-message-container.component";
+import { AddAccountRouterComponent } from "./pages/add-account/add-account-router/add-account-router.component";
+import { Screen } from "src/reference-data/screen.enum";
 
-const App = ({ setMk, mk, getAccounts, accounts }: PropsFromRedux) => {
+const App = ({ setMk, mk, getAccounts, accounts, navigateTo }: PropsFromRedux) => {
   useEffect(() => {
     getAccounts();
   }, [getAccounts]);
@@ -41,7 +43,8 @@ const App = ({ setMk, mk, getAccounts, accounts }: PropsFromRedux) => {
     }
     else {
       if(accounts.length === 0) {
-        return <AddAccountComponent />
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT);
+        return <AddAccountRouterComponent />
       }
       else {
         return <AppContainerComponent />
@@ -64,7 +67,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { setMk, getAccounts });
+const connector = connect(mapStateToProps, { setMk, getAccounts, navigateTo });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export default connector(App);
