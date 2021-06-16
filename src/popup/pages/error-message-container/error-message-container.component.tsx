@@ -2,7 +2,7 @@ import { RootState } from "@popup/store";
 import { connect, ConnectedProps } from "react-redux";
 import React, { useEffect, useState } from "react";
 import { resetErrorMessage } from "@popup/actions/error-message.actions";
-import "./error-container.component.css";
+import "./error-message-container.component.css";
 
 const ErrorMessageContainer = ({errorMessage, resetErrorMessage}: PropsFromRedux) => {
   const [progressBarWidth, setProgressBarWidth] = useState(0);
