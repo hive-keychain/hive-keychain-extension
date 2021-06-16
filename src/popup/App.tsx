@@ -7,6 +7,7 @@ import { connect, ConnectedProps } from "react-redux";
 import { BackgroundMessage } from "src/background/background-message.interface";
 import { BackgroundCommand } from "src/reference-data/background-message-key.enum";
 import { Screen } from "src/reference-data/screen.enum";
+import PopupUtils from "src/utils/popup.utils";
 import "./App.css";
 import { AddAccountRouterComponent } from "./pages/add-account/add-account-router/add-account-router.component";
 import { AppContainerComponent } from "./pages/app-container/app-container.component";
@@ -30,40 +31,7 @@ const App = ({
     chrome.runtime.onMessage.addListener(onSendBackListener);
   }, [setMk]);
   useEffect(() => {
-    if (
-      // From testing the following conditions seem to indicate that the popup was opened on a secondary monitor
-      window.screenLeft < 0 ||
-      window.screenTop < 0 ||
-      window.screenLeft > window.screen.width ||
-      window.screenTop > window.screen.height
-    ) {
-      chrome.runtime.getPlatformInfo(function (info) {
-        if (info.os === "mac") {
-          const fontFaceSheet = new CSSStyleSheet();
-          fontFaceSheet.insertRule(`
-            @keyframes redraw {
-              0% {
-                opacity: 1;
-              }
-              100% {
-                opacity: .99;
-              }
-            }
-          `);
-          fontFaceSheet.insertRule(`
-            html {
-              animation: redraw 1s linear infinite;
-            }
-          `);
-          //@ts-ignore
-          document.adoptedStyleSheets = [
-            //@ts-ignore
-            ...document.adoptedStyleSheets,
-            fontFaceSheet,
-          ];
-        }
-      });
-    }
+    PopupUtils.fixPopupOnMacOs();
   }, []);
   const onSendBackListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
