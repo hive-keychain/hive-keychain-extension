@@ -4,13 +4,11 @@ import { Screen } from "src/reference-data/screen.enum";
 
 interface NavigationState {
   currentPage: Screen;
-  test: string
 }
 
 
-// TODO talk to Stoodkev about payload type
 export const NavigationReducer = (
-    state: NavigationState = {currentPage: Screen.HOME_PAGE, test: 'toto'},
+    state: NavigationState = {currentPage: Screen.HOME_PAGE},
     { type, payload }: actionPayload<any>
   ): NavigationState => {
     switch (type) {

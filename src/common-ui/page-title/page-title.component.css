@@ -1,3 +1,6 @@
+
+
+
 .title-section {
     display: flex;
     align-items: center;
@@ -17,6 +20,7 @@
 .icon-button {
     margin-top: 15px;
     text-transform: uppercase;
+    background: transparent;
     color: white;
     font-size: 20px;
     line-height: 30px;

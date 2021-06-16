@@ -5,6 +5,8 @@ import "./sign-up.component.css";
 import { setErrorMessage } from "@popup/actions/error-message.actions";
 import { setMk } from "@popup/actions/mk.actions";
 import ButtonComponent from "src/common-ui/button/button.component";
+import InputComponent from "src/common-ui/input/input.component";
+import { InputType } from "src/common-ui/input/input-type.enum";
 
 const isPasswordValid = (password: string) => {
   return (
@@ -39,14 +41,9 @@ const SignUp = ({setErrorMessage, setMk}: PropsFromRedux) => {
       <div className="sign-up-page">
           <img src="/assets/images/keychain_logo.png" className="logo-white" />
           <p className="introduction" dangerouslySetInnerHTML={{__html: chrome.i18n.getMessage("popup_html_register")}}></p>
-          <div className="input-container">
-            <input  type="password" placeholder={chrome.i18n.getMessage('popup_html_new_password')} value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
-            <img src="/assets/images/lock.png" className="input-img" />
-          </div>
-          <div className="input-container">
-            <input  type="password"  placeholder={chrome.i18n.getMessage('popup_html_confirm')}  value={newPasswordConfirm} onChange={(e) => setNewPasswordConfirm(e.target.value)}/>
-            <img src="/assets/images/lock.png" className="input-img" />
-          </div>
+
+          <InputComponent value={newPassword} onChange={setNewPassword} logo="lock" placeholder="popup_html_new_password"  type={InputType.PASSWORD} />
+          <InputComponent value={newPasswordConfirm} onChange={setNewPasswordConfirm} logo="lock" placeholder="popup_html_confirm"  type={InputType.PASSWORD}  />
           <ButtonComponent label={"popup_html_submit"} onClick={submitMk} />
       </div>
     );

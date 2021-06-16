@@ -20,7 +20,7 @@ const PageTitle = ({title, isBackButtonEnabled, backScreen, navigateTo}: PropsTy
 
     return (
         <div className="title-section" >
-        {isBackButtonEnabled && <button className="icon-button" onClick={handleBackButtonClick}></button>}
+        {isBackButtonEnabled && <div className="icon-button" onClick={handleBackButtonClick}></div>}
         <div className="title">{chrome.i18n.getMessage(title)}</div>
     </div>
     );
