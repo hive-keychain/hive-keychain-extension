@@ -143,6 +143,7 @@ chrome.runtime.onMessage.addListener(function (
       proposal_ids,
       keys,
       approve,
+      collaterized,
     } = data;
 
     var titles = {
@@ -177,6 +178,9 @@ chrome.runtime.onMessage.addListener(function (
       updateProposalVote: chrome.i18n.getMessage("dialog_title_vote_proposal"),
       signTx: chrome.i18n.getMessage("dialog_title_sign_tx"),
       addAccount: chrome.i18n.getMessage("popup_html_add_account"),
+      convert: collaterized
+        ? chrome.i18n.getMessage("dialog_title_convert_hive")
+        : chrome.i18n.getMessage("dialog_title_convert_hbd"),
     };
     const header = titles[type];
     $("#dialog_header").text(header + (testnet ? " (TESTNET)" : ""));
@@ -493,6 +497,11 @@ chrome.runtime.onMessage.addListener(function (
         $("#add_account_active").text(keys.active ? keys.active : "Unknown");
         $("#add_account_memo").text(keys.memo ? keys.memo : "Unknown");
 
+        break;
+      case "convert":
+        $("#amount").text(
+          `${amount} ${collaterized ? "HIVE => HBD" : "HBD => HIVE"}`
+        );
         break;
     }
 

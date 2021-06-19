@@ -51,6 +51,7 @@
       "js/background/ops/vote.js",
       "js/background/ops/witness.js",
       "js/background/ops/proxy.js",
+      "js/background/ops/convert.js",
       "js/background/transactions.js",
       "js/background/keychainify.js"
     ],

@@ -297,6 +297,7 @@ const getRequiredWifType = (request) => {
     case "createProposal":
     case "removeProposal":
     case "updateProposalVote":
+    case "convert":
       return "active";
   }
 };

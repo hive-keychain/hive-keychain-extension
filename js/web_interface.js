@@ -201,7 +201,10 @@ const validate = () => {
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
         isFilled(req.currency)) ||
-      (req.type === "addAccount" && isFilledKeys(req.keys)))
+      (req.type === "addAccount" && isFilledKeys(req.keys)) ||
+      (req.type === "convert" &&
+        isFilledAmt(req.amount) &&
+        isBoolean(req.collaterized)))
   );
 };
 

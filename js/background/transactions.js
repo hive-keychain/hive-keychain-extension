@@ -80,6 +80,9 @@ const performTransaction = async (data, tab, no_confirm) => {
       case "addAccount":
         message = await addAccount(data);
         break;
+      case "convert":
+        message = await convert(data);
+        break;
     }
     chrome.tabs.sendMessage(tab, message);
   } catch (e) {
@@ -120,20 +123,17 @@ const createMessage = (
       data: data,
       message: !err ? success_message : fail_message,
       request_id,
-      publicKey
-    }
+      publicKey,
+    },
   };
 };
 
-const beautifyErrorMessage = err => {
+const beautifyErrorMessage = (err) => {
   console.log(err);
   if (!err) return null;
   let error = "";
   if (err.message.indexOf("xception:") !== -1) {
-    error = err.message
-      .split("xception:")
-      .pop()
-      .replace(".rethrow", ".");
+    error = err.message.split("xception:").pop().replace(".rethrow", ".");
   } else if (err.message.indexOf(":") !== -1) {
     error = err.message.split(":").pop();
   } else {

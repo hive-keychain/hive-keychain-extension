@@ -9,7 +9,7 @@ var hive_keychain = {
    * This function is called to verify Keychain installation on a user's device
    * @param {function} callback Confirms Keychain installation
    */
-  requestHandshake: function(callback) {
+  requestHandshake: function (callback) {
     this.handshake_callback = callback;
     this.dispatchCustomEvent("swHandshake_hive", "");
   },
@@ -23,7 +23,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestEncodeMessage: function(
+  requestEncodeMessage: function (
     username,
     receiver,
     message,
@@ -37,7 +37,7 @@ var hive_keychain = {
       receiver,
       message,
       method: key,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -50,13 +50,13 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestVerifyKey: function(account, message, key, callback, rpc) {
+  requestVerifyKey: function (account, message, key, callback, rpc) {
     var request = {
       type: "decode",
       username: account,
       message: message,
       method: key,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -70,14 +70,14 @@ var hive_keychain = {
    * @param {String} [rpc=null] Override user's RPC settings
    * @param {String} [title=null] Override "Sign message" title
    */
-  requestSignBuffer: function(account, message, key, callback, rpc, title) {
+  requestSignBuffer: function (account, message, key, callback, rpc, title) {
     var request = {
       type: "signBuffer",
       username: account,
       message: message,
       method: key,
       rpc,
-      title
+      title,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -91,7 +91,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestAddAccountAuthority: function(
+  requestAddAccountAuthority: function (
     account,
     authorizedUsername,
     role,
@@ -106,7 +106,7 @@ var hive_keychain = {
       role,
       weight,
       method: "Active",
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -119,7 +119,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestRemoveAccountAuthority: function(
+  requestRemoveAccountAuthority: function (
     account,
     authorizedUsername,
     role,
@@ -132,7 +132,7 @@ var hive_keychain = {
       authorizedUsername,
       role,
       method: "Active",
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -146,7 +146,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestAddKeyAuthority: function(
+  requestAddKeyAuthority: function (
     account,
     authorizedKey,
     role,
@@ -161,7 +161,7 @@ var hive_keychain = {
       weight,
       role,
       method: "Active",
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -174,7 +174,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestRemoveKeyAuthority: function(
+  requestRemoveKeyAuthority: function (
     account,
     authorizedKey,
     role,
@@ -187,7 +187,7 @@ var hive_keychain = {
       authorizedKey,
       role,
       method: "Active",
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -200,13 +200,13 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestBroadcast: function(account, operations, key, callback, rpc) {
+  requestBroadcast: function (account, operations, key, callback, rpc) {
     var request = {
       type: "broadcast",
       username: account,
       operations,
       method: key,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -219,13 +219,13 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestSignTx: function(account, tx, key, callback, rpc) {
+  requestSignTx: function (account, tx, key, callback, rpc) {
     var request = {
       type: "signTx",
       username: account,
       tx,
       method: key,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -239,7 +239,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestSignedCall: function(account, method, params, key, callback, rpc) {
+  requestSignedCall: function (account, method, params, key, callback, rpc) {
     console.log("getting request");
     var request = {
       type: "signedCall",
@@ -247,7 +247,7 @@ var hive_keychain = {
       method,
       params,
       typeWif: key,
-      rpc
+      rpc,
     };
     console.log(request);
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -267,7 +267,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestPost: function(
+  requestPost: function (
     account,
     title,
     body,
@@ -289,7 +289,7 @@ var hive_keychain = {
       json_metadata,
       permlink,
       comment_options,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -302,14 +302,14 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestVote: function(account, permlink, author, weight, callback, rpc) {
+  requestVote: function (account, permlink, author, weight, callback, rpc) {
     var request = {
       type: "vote",
       username: account,
       permlink,
       author,
       weight,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -324,7 +324,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestCustomJson: function(
+  requestCustomJson: function (
     account,
     id,
     key,
@@ -340,7 +340,7 @@ var hive_keychain = {
       method: key, // Posting key is used by default, active can be specified for id=custom .
       json: json, //content of your json
       display_msg: display_msg,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -356,7 +356,7 @@ var hive_keychain = {
    * @param {boolean} [enforce=false] If set to true, user cannot chose to make the transfer from another account
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestTransfer: function(
+  requestTransfer: function (
     account,
     to,
     amount,
@@ -374,7 +374,7 @@ var hive_keychain = {
       memo,
       enforce,
       currency,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -388,7 +388,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestSendToken: function(
+  requestSendToken: function (
     account,
     to,
     amount,
@@ -404,7 +404,7 @@ var hive_keychain = {
       amount,
       memo,
       currency,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -417,7 +417,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestDelegation: function(
+  requestDelegation: function (
     username,
     delegatee,
     amount,
@@ -431,7 +431,7 @@ var hive_keychain = {
       delegatee,
       amount,
       unit,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -443,13 +443,13 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestWitnessVote: function(username, witness, vote, callback, rpc) {
+  requestWitnessVote: function (username, witness, vote, callback, rpc) {
     var request = {
       type: "witnessVote",
       username,
       witness,
       vote,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -460,13 +460,13 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestProxy: function(username, proxy, callback, rpc) {
+  requestProxy: function (username, proxy, callback, rpc) {
     console.log(username, proxy);
     var request = {
       type: "proxy",
       username,
       proxy,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -478,13 +478,13 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestPowerUp: function(username, recipient, hive, callback, rpc) {
+  requestPowerUp: function (username, recipient, hive, callback, rpc) {
     var request = {
       type: "powerUp",
       username,
       recipient,
       steem: hive,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -495,12 +495,12 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestPowerDown: function(username, hive_power, callback, rpc) {
+  requestPowerDown: function (username, hive_power, callback, rpc) {
     var request = {
       type: "powerDown",
       username,
       steem_power: hive_power,
-      rpc
+      rpc,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
@@ -515,7 +515,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestCreateClaimedAccount: function(
+  requestCreateClaimedAccount: function (
     username,
     new_account,
     owner,
@@ -533,7 +533,7 @@ var hive_keychain = {
       active,
       posting,
       memo,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -553,7 +553,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestCreateProposal: function(
+  requestCreateProposal: function (
     username,
     receiver,
     subject,
@@ -575,7 +575,7 @@ var hive_keychain = {
       end,
       daily_pay,
       extensions,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -588,7 +588,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestRemoveProposal: function(
+  requestRemoveProposal: function (
     username,
     proposal_ids,
     extensions,
@@ -600,7 +600,7 @@ var hive_keychain = {
       username,
       proposal_ids,
       extensions,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -614,7 +614,7 @@ var hive_keychain = {
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestUpdateProposalVote: function(
+  requestUpdateProposalVote: function (
     username,
     proposal_ids,
     approve,
@@ -628,7 +628,7 @@ var hive_keychain = {
       proposal_ids,
       approve,
       extensions,
-      rpc
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
@@ -638,37 +638,53 @@ var hive_keychain = {
    * @param {String} username username of the account to be added
    * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
    */
-  requestAddAccount: function(username, keys, callback) {
+  requestAddAccount: function (username, keys, callback) {
     const request = {
       type: "addAccount",
       username,
-      keys
+      keys,
+    };
+
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
+  },
+  /**
+   * Request currency conversion
+   * @param {String} username username of the account to be added
+   * @param {String} amount amount to be converted.
+   * @param {Boolean} collaterized true to convert HIVE to HBD. false to convert HBD to HIVE.
+   */
+  requestConversion: function (username, amount, collaterized, callback) {
+    const request = {
+      type: "convert",
+      username,
+      amount,
+      collaterized,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
 
   // Send the customEvent
-  dispatchCustomEvent: function(name, data, callback) {
+  dispatchCustomEvent: function (name, data, callback) {
     this.requests[this.current_id] = callback;
     data = Object.assign(
       {
-        request_id: this.current_id
+        request_id: this.current_id,
       },
       data
     );
     document.dispatchEvent(
       new CustomEvent(name, {
-        detail: data
+        detail: data,
       })
     );
     this.current_id++;
-  }
+  },
 };
 
 window.addEventListener(
   "message",
-  function(event) {
+  function (event) {
     // We only accept messages from ourselves
     if (event.source != window) return;
 
