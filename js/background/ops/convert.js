@@ -1,11 +1,9 @@
 const convert = async (data) => {
   const { username, amount, collaterized } = data;
   let request_id = await getNextRequestID(username);
-  console.log(request_id);
   const isTestnet = (await rpc.initList()).find(
     (e) => e.uri === rpc.currentRpc
   ).testnet;
-  console.log(isTestnet);
   return new Promise((resolve) => {
     if (collaterized) {
       hive.broadcast.collateralizedConvert(
@@ -52,9 +50,20 @@ const convert = async (data) => {
 };
 
 // TODO: put in utils, use from both front and bgd
-// TODO: getConversionRequest does not give back collaterized convs at the moment
 const getNextRequestID = async (username) => {
   const conversions = await hive.api.getConversionRequestsAsync(username);
   console.log(conversions);
-  return Math.max(...conversions.map((e) => e.requestid), 0) + 1;
+  let collateralized_conversions = [];
+  try {
+    collateralized_conversions =
+      (await hive.api.callAsync(
+        "condenser_api.get_collateralized_conversion_requests",
+        ["stoodkev"]
+      )) | [];
+  } catch (e) {
+    console.log(e);
+  }
+  const conv = [...conversions, ...collateralized_conversions];
+
+  return Math.max(...conv.map((e) => e.requestid), 0) + 1;
 };
