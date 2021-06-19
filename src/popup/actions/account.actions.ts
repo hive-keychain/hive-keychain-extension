@@ -1,16 +1,14 @@
-import { Account } from "src/interfaces/account.interface";
+import AccountUtils from "src/utils/account.utils";
 import { ActionType } from "./action-type.enum";
-import { AppThunk, actionPayload } from "./interfaces";
+import { AppThunk } from "./interfaces";
 
 export const getAccounts = (): AppThunk =>
-    async (dispatch, getState) => {
-        chrome.storage.local.get(['accounts'], (res) => {
-            const action: actionPayload<any> = {
-                type: ActionType.GET_ACCOUNTS,
-                payload: res.accounts ?? []
-            }
-            dispatch(action);
-        })
+    async () => {
+        let accounts = await AccountUtils.getAccounts();
+        return {
+            type: ActionType.GET_ACCOUNTS,
+            payload: accounts ?? []
+        }
         
     }
 

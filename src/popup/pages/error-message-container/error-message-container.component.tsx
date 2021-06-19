@@ -7,7 +7,7 @@ import "./error-message-container.component.css";
 const ErrorMessageContainer = ({errorMessage, resetErrorMessage}: PropsFromRedux) => {
   const [progressBarWidth, setProgressBarWidth] = useState(0);
   useEffect(() => {
-    if(errorMessage.length){
+    if(errorMessage.key){
       setProgressBarWidth(100)
       setTimeout(() => {
         resetErrorMessage();
@@ -17,13 +17,13 @@ const ErrorMessageContainer = ({errorMessage, resetErrorMessage}: PropsFromRedux
   }, [errorMessage])
     return (
       <div>
-        { errorMessage.length > 0 &&
+        { errorMessage.key.length > 0 &&
         <div className="error-container">
           <div className="barHolder" >
             <div className="bar" style={{"width" : progressBarWidth + '%'}}></div>
           </div>
           <div className="error-message">
-              {chrome.i18n.getMessage(errorMessage)}
+              {chrome.i18n.getMessage(errorMessage.key, errorMessage.params)}
           </div>
         </div> 
         }

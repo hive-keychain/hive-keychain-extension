@@ -1,16 +1,17 @@
+import { ErrorMessage } from "src/interfaces/errorMessage.interface";
 import { ActionType } from "./action-type.enum";
 import { actionPayload } from "./interfaces";
 
-export const setErrorMessage = (errorMessage: string): actionPayload<string> => {
+export const setErrorMessage = (key: string, params: string[] = []): actionPayload<ErrorMessage> => {
     return {
         type: ActionType.SET_ERROR_MESSAGE,
-        payload: errorMessage
+        payload: {key: key, params: params}
     }
 }
 
-export const resetErrorMessage = (): actionPayload<string> => {
+export const resetErrorMessage = (): actionPayload<ErrorMessage> => {
     return {
         type: ActionType.SET_ERROR_MESSAGE,
-        payload: ''
+        payload: {key: '', params: []}
     }
 }

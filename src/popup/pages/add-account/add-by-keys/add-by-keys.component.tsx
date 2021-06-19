@@ -7,14 +7,18 @@ import { Screen } from "src/reference-data/screen.enum";
 import ButtonComponent from "src/common-ui/button/button.component";
 import InputComponent from "src/common-ui/input/input.component";
 import { InputType } from "src/common-ui/input/input-type.enum";
+import AccountUtils from "src/utils/account.utils";
+import { setErrorMessage } from "@popup/actions/error-message.actions";
 
-const AddByKeys = ({}: PropsFromRedux) => {
+
+const AddByKeys = ({setErrorMessage}: PropsFromRedux) => {
 
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
 
   const submitForm = (): void => {
-    console.log(username, privateKey); 
+    console.log(username, privateKey);
+    AccountUtils.verifyAccount(username, privateKey, setErrorMessage);
   }
 
   
@@ -36,7 +40,7 @@ const AddByKeys = ({}: PropsFromRedux) => {
     };
   };
   
-  const connector = connect(mapStateToProps, { });
+  const connector = connect(mapStateToProps, { setErrorMessage });
   type PropsFromRedux = ConnectedProps<typeof connector>;
   
   export const AddByKeysComponent = connector(AddByKeys);
