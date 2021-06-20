@@ -83,6 +83,9 @@ const performTransaction = async (data, tab, no_confirm) => {
       case "convert":
         message = await convert(data);
         break;
+      case "recurrentTransfer":
+        message = await recurrentTransfer(data);
+        break;
     }
     chrome.tabs.sendMessage(tab, message);
   } catch (e) {

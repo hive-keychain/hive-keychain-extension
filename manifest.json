@@ -52,6 +52,7 @@
       "js/background/ops/witness.js",
       "js/background/ops/proxy.js",
       "js/background/ops/convert.js",
+      "js/background/ops/recurrentTransfer.js",
       "js/background/transactions.js",
       "js/background/keychainify.js"
     ],

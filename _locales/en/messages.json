@@ -783,6 +783,14 @@
     "message": "Succesfully removed the proxy.",
     "description": "when removing proxy"
   },
+  "bgd_ops_recurrent_transfer": {
+    "message": "Succesfully started a recurrent transfer.",
+    "description": "when starting a recurrent transfer"
+  },
+  "bgd_ops_stop_recurrent_transfer": {
+    "message": "Succesfully stopped a recurrent transfer.",
+    "description": "when starting a recurrent transfer"
+  },
   "popup_utils_full": {
     "message": "Already full!",
     "description": "on main page, when rc or mana is full "
@@ -1275,6 +1283,9 @@
   "dialog_title_add_key_auth": {
     "message": "Add Key"
   },
+  "dialog_title_recurrent_transfer": {
+    "message": "Recurrent Transfer"
+  },
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
@@ -1408,6 +1419,30 @@
   "dialog_keys": {
     "message": "Private Keys",
     "description": "When adding an account by request"
+  },
+  "dialog_recurrence": {
+    "message": "Recurrence",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions": {
+    "message": "Executions",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions_times": {
+    "message": "$1 times",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_hours": {
+    "message": "Every $1 hour(s)",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days": {
+    "message": "Every $1 day(s)",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days_hours": {
+    "message": "Every $1 day(s) and $2 hours(s)",
+    "description": "When requesting recurrent transfers"
   },
   "dialog_header_register": {
     "message": "Welcome to Keychain",

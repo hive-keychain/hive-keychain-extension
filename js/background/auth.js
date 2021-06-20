@@ -144,6 +144,7 @@ const checkBeforeCreate = (request, tab, domain) => {
             "proxy",
             "custom",
             "signBuffer",
+            "recurrentTransfer",
           ].includes(type) &&
           !username
         ) {
@@ -298,6 +299,7 @@ const getRequiredWifType = (request) => {
     case "removeProposal":
     case "updateProposalVote":
     case "convert":
+    case "recurrentTransfer":
       return "active";
   }
 };

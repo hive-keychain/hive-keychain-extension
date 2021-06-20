@@ -144,6 +144,8 @@ chrome.runtime.onMessage.addListener(function (
       keys,
       approve,
       collaterized,
+      recurrence,
+      executions,
     } = data;
 
     var titles = {
@@ -181,6 +183,9 @@ chrome.runtime.onMessage.addListener(function (
       convert: collaterized
         ? chrome.i18n.getMessage("dialog_title_convert_hive")
         : chrome.i18n.getMessage("dialog_title_convert_hbd"),
+      recurrentTransfer: chrome.i18n.getMessage(
+        "dialog_title_recurrent_transfer"
+      ),
     };
     const header = titles[type];
     $("#dialog_header").text(header + (testnet ? " (TESTNET)" : ""));
@@ -503,6 +508,36 @@ chrome.runtime.onMessage.addListener(function (
           `${amount} ${collaterized ? "HIVE => HBD" : "HBD => HIVE"}`
         );
         break;
+      case "recurrentTransfer":
+        const days = parseInt(recurrence / 24);
+        const hours = parseInt(recurrence % 24);
+        let recurrenceString;
+        if (!days) {
+          recurrenceString = chrome.i18n.getMessage("dialog_recurrence_hours", [
+            hours,
+          ]);
+        } else {
+          if (!hours) {
+            recurrenceString = chrome.i18n.getMessage(
+              "dialog_recurrence_days",
+              [days]
+            );
+          } else {
+            recurrenceString = chrome.i18n.getMessage(
+              "dialog_recurrence_days_hours",
+              [days, hours]
+            );
+          }
+        }
+        showDropdownIfNoUsername(username);
+        $("#to").text(`@${to}`);
+        $("#amount").text(`${amount} ${currency}`);
+        $("#recurrence").text(recurrenceString);
+        $("#executions").text(
+          chrome.i18n.getMessage("dialog_executions_times", [executions])
+        );
+        $("#memo").text(memo);
+        break;
     }
 
     // Closes the window and launch the transaction in background
@@ -515,6 +550,7 @@ chrome.runtime.onMessage.addListener(function (
           "proxy",
           "custom",
           "signBuffer",
+          "recurrentTransfer",
         ].includes(type) &&
           !username)
       ) {

@@ -352,7 +352,23 @@ $("#send_con").click(function () {
     $("#con_amount").val(),
     $("#con_collaterized").is(":checked"),
     function (response) {
-      console.log("main js response - account saved");
+      console.log("main js response - conversion");
+      console.log(response);
+    }
+  );
+});
+
+$("#send_rec").click(function () {
+  hive_keychain.requestRecurrentTransfer(
+    $("#rec_username").val().length ? $("#rec_username").val() : null,
+    $("#rec_to").val(),
+    $("#rec_amount").val(),
+    $("#rec_currency option:selected").text(),
+    $("#rec_memo").val(),
+    parseInt($("#rec_recurrence").val()),
+    parseInt($("#rec_ex").val()),
+    function (response) {
+      console.log("main js response - recurrent transfer");
       console.log(response);
     }
   );

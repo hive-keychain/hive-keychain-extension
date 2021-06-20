@@ -649,16 +649,56 @@ var hive_keychain = {
   },
   /**
    * Request currency conversion
-   * @param {String} username username of the account to be added
+   * @param {String} username Hive account to perform the request
    * @param {String} amount amount to be converted.
    * @param {Boolean} collaterized true to convert HIVE to HBD. false to convert HBD to HIVE.
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
    */
-  requestConversion: function (username, amount, collaterized, callback) {
+  requestConversion: function (username, amount, collaterized, callback, rpc) {
     const request = {
       type: "convert",
       username,
       amount,
       collaterized,
+      rpc,
+    };
+
+    this.dispatchCustomEvent("swRequest_hive", request, callback);
+  },
+  /**
+   * Request recurrent transfer
+   * @param {String} [username=null] Hive account to perform the request
+   * @param {String} to Hive account receiving the transfers.
+   * @param {String} amount amount to be sent on each execution.
+   * @param {String} currency HIVE or HBD on mainnet.
+   * @param {String} memo transfer memo
+   * @param {Number} recurrence How often will the payment be triggered (in hours).
+   * @param {Number} executions The times the recurrent payment will be executed.
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestRecurrentTransfer: function (
+    username,
+    to,
+    amount,
+    currency,
+    memo,
+    recurrence,
+    executions,
+    callback,
+    rpc
+  ) {
+    const request = {
+      type: "recurrentTransfer",
+      username,
+      to,
+      amount,
+      currency,
+      memo,
+      recurrence,
+      executions,
+      rpc,
     };
 
     this.dispatchCustomEvent("swRequest_hive", request, callback);
