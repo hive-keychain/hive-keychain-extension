@@ -539,6 +539,10 @@
     "message": "No hay transferencias recientes",
     "description": "if history is empty"
   },
+  "popup_account_password_is_public_key": {
+    "message": "This is a public key! Please enter a private key or your master key.",
+    "description": "If entered password is public key"
+  },
   "popup_accounts_already_registered": {
     "message": "¡Ya has registrado una cuenta por @$1!",
     "description": "when trying to add an account already saved on keychain"
