@@ -167,11 +167,11 @@ $("#import_settings button")
   .eq(1)
   .html(chrome.i18n.getMessage("popup_html_export"));
 $("#import_settings button")
-    .eq(2)
-    .html(chrome.i18n.getMessage("popup_html_import_permissions"));
+  .eq(2)
+  .html(chrome.i18n.getMessage("popup_html_import_permissions"));
 $("#import_settings button")
-    .eq(3)
-    .html(chrome.i18n.getMessage("popup_html_export_permissions"));
+  .eq(3)
+  .html(chrome.i18n.getMessage("popup_html_export_permissions"));
 
 //about
 $("#about_div .back_enabled").text(chrome.i18n.getMessage("popup_html_about"));
@@ -467,6 +467,19 @@ $("#add_auth_account_div button").text(
 );
 
 // convert
+$("#convert_hive").append(chrome.i18n.getMessage("popup_html_convert_hive"));
+$("#convert_hive_div .back_enabled").append(
+  chrome.i18n.getMessage("popup_html_convert_hive")
+);
+$("#convert_hive_div p").text(
+  chrome.i18n.getMessage("popup_html_convert_hive_intro")
+);
+$("#convert_hive_div button").text(
+  chrome.i18n.getMessage("popup_html_convert_button")
+);
+$("#amt_convert_max_hive").text(
+  chrome.i18n.getMessage("popup_html_convert_max")
+);
 
 $("#convert_hbd ").append(chrome.i18n.getMessage("popup_html_convert_hbd"));
 $("#convert_div .back_enabled").append(
@@ -481,7 +494,6 @@ $("#convert_div button").text(
 $("#amt_convert_max").text(chrome.i18n.getMessage("popup_html_convert_max"));
 
 // buy
-
 $("#buy_hive ").append(chrome.i18n.getMessage("popup_html_buy_hive"));
 $("#buy_hbd ").append(chrome.i18n.getMessage("popup_html_buy_hbd"));
 

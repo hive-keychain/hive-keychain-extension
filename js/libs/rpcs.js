@@ -4,7 +4,7 @@ class Rpcs {
     this.awaitRollback = false;
     this.DEFAULT_RPC_API = "https://api.hive-keychain.com/hive/rpc";
     this.list = this.initList();
-
+    this.isTestnet = false;
     hive.config.set("rebranded_api", true);
   }
   getCurrent() {
@@ -47,15 +47,19 @@ class Rpcs {
 
         let currentrpc = items.current_rpc || RPCs[0];
 
-        if(typeof currentrpc === "string" ){
-          currentrpc = currentrpc.replace('(TESTNET)', '');
-          const currentRPCFromList = listRPC.find((rpc) => rpc.uri.trim() === currentrpc.trim());
+        if (typeof currentrpc === "string") {
+          currentrpc = currentrpc.replace("(TESTNET)", "");
+          const currentRPCFromList = listRPC.find(
+            (rpc) => rpc.uri.trim() === currentrpc.trim()
+          );
           currentrpc = currentRPCFromList;
         }
 
-        const list = [...listRPC.filter(rpc =>{
-          return rpc.uri.trim() != currentrpc.uri.trim()
-        })];
+        const list = [
+          ...listRPC.filter((rpc) => {
+            return rpc.uri.trim() != currentrpc.uri.trim();
+          }),
+        ];
         list.unshift(currentrpc);
 
         resolve(list);
@@ -63,20 +67,21 @@ class Rpcs {
     });
   }
 
+  async isTestnet() {
+    return this.isTestnet;
+  }
+
   async getList() {
     return await this.initList();
   }
 
   async setOptions(rpc, awaitRollback = false) {
-
     rpc = rpc.replace("(TESTNET)", "").trim();
     if (rpc === this.currentRpc) {
       return;
     }
     const list = await this.getList();
-    const newRpcObj = list.find(
-      (e) => e.uri.trim() === rpc.trim()
-    );
+    const newRpcObj = list.find((e) => e.uri.trim() === rpc.trim());
 
     const newRpc = newRpcObj
       ? newRpcObj
@@ -120,6 +125,7 @@ class Rpcs {
     }
     this.previousRpc = this.currentRpc;
     this.currentRpc = newRpc.uri;
+    this.isTestnet = newRpc.testnet;
     console.log(`Now using ${this.currentRpc}, previous: ${this.previousRpc}`);
     this.awaitRollback = awaitRollback;
 

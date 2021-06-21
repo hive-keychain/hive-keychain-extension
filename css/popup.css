@@ -80,6 +80,7 @@ body {
 #add_account_types_div,
 #add_auth_account_div,
 #convert_div,
+#convert_hive_div,
 #buy_div {
   scrollbar-width: none;
   width: 350px;
@@ -179,7 +180,8 @@ input:focus {
 #powerdown_div input,
 #add_account_types_div input,
 #add_auth_account_div input,
-#convert_div input {
+#convert_div input,
+#convert_hive_div input {
   width: 100%;
   height: 48.43px;
   box-sizing: border-box;
@@ -247,7 +249,8 @@ input:focus {
 #add_auth_account_div button,
 #import_settings button,
 #automated_ops_div button,
-#convert_div button {
+#convert_div button,
+#convert_hive_div button {
   border-radius: 5px;
   width: 100%;
   height: 48.43px;
@@ -392,7 +395,8 @@ input:focus {
 #confirm_send_div,
 #add_account_types_div,
 #add_auth_account_div,
-#convert_div {
+#convert_div,
+#convert_hive_div {
   display: none;
 }
 
@@ -1845,7 +1849,8 @@ input:focus {
 
 #powerup_div #amt_pu,
 #powerdown_div #amt_pd,
-#amt_convert {
+#amt_convert,
+#amt_convert_hive {
   padding-left: 0px !important;
   width: 167px !important;
   margin-right: 7px;
@@ -2176,12 +2181,15 @@ input[type="checkbox"] {
 #automated_ops_div label {
   margin-bottom: 30px;
 }
-#convert_div p {
+#convert_div p,
+#convert_hive_div p {
   margin-bottom: 50px;
   margin-top: 30px;
 }
 #convert_div button,
-#convert_loading {
+#convert_loading,
+#convert_hive_div button,
+#convert_hive_loading {
   margin-top: 40px;
 }
 #chain_id {

@@ -58,7 +58,7 @@ const getNextRequestID = async (username) => {
     collateralized_conversions =
       (await hive.api.callAsync(
         "condenser_api.get_collateralized_conversion_requests",
-        ["stoodkev"]
+        [username]
       )) | [];
   } catch (e) {
     console.log(e);
