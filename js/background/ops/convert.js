@@ -52,17 +52,17 @@ const convert = async (data) => {
 // TODO: put in utils, use from both front and bgd
 const getNextRequestID = async (username) => {
   const conversions = await hive.api.getConversionRequestsAsync(username);
-  console.log(conversions);
   let collateralized_conversions = [];
   try {
-    collateralized_conversions =
-      (await hive.api.callAsync(
-        "condenser_api.get_collateralized_conversion_requests",
-        [username]
-      )) | [];
+    collateralized_conversions = await hive.api.callAsync(
+      "condenser_api.get_collateralized_conversion_requests",
+      [username]
+    );
+    console.log(collateralized_conversions);
   } catch (e) {
     console.log(e);
   }
+  if (!collateralized_conversions) collateralized_conversions = [];
   const conv = [...conversions, ...collateralized_conversions];
 
   return Math.max(...conv.map((e) => e.requestid), 0) + 1;
