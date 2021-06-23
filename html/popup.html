@@ -472,12 +472,26 @@
           <span class="send_max" id="amt_send_max"></span>
         </div>
         <input type="text" id="memo_send" />
-        <div class="checkbox_memo">
-          <label for="encrypt_memo" class="checkbox_container">
+        <div class="recurrent_transfer hf25">
+          <label for="recurrent_transfer_checkbox" class="checkbox_container">
             <div></div>
-            <input type="checkbox" id="encrypt_memo" />
+            <input type="checkbox" id="recurrent_transfer_checkbox" />
             <span class="checkmark" />
           </label>
+        </div>
+        <div class="recurrent_transfer_checked hide-at-start ">
+          <p></p>
+          <input
+          type="number"
+          id="recurrence"
+          autocomplete="off"
+          placeholder="recurrence"
+        /><input
+        type="number"
+        id="rec_iterations"
+        autocomplete="off"
+        placeholder="iterations"
+      />
         </div>
         <button id="send_transfer"></button>
       </div>
@@ -495,6 +509,8 @@
       <div id="amt_conf_transfer"></div>
       <h3></h3>
       <div id="memo_conf_transfer"></div>
+      <h3></h3>
+      <div id="rec_conf_transfer"></div>
       <button id="confirm_send_transfer"></button>
       <div class="loader" id="send_loader" style="display:none">
         <div><img src="../images/loading.gif" /></div>

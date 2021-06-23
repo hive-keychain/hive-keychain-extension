@@ -375,6 +375,10 @@
     "message": "Transfer Funds",
     "description": "When initiating a HIVE or HBD transfer"
   },
+  "popup_html_transfer_rec": {
+    "message": "Transfers be made every [recurrence] in hours (min 24), for [iterations] times.",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
   "popup_html_balance": {
     "message": "$1 Balance",
     "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
@@ -417,6 +421,14 @@
   },
   "popup_html_transfer_memo": {
     "message": "Memo",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_confirm_rec": {
+    "message": "Recurrence",
+    "description": "On transfer confirmation page"
+  },
+  "popup_confirm_recurrence": {
+    "message": "Every $1 hours, $2 times.",
     "description": "On transfer confirmation page"
   },
   "popup_html_not_now": {
@@ -621,6 +633,10 @@
   },
   "popup_empty": {
     "message": "Empty",
+    "description": "On send HIVE/HBD confirmation page, when memo is empty"
+  },
+  "popup_none": {
+    "message": "None",
     "description": "On send HIVE/HBD confirmation page, when memo is empty"
   },
   "popup_encrypted": {

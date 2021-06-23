@@ -242,9 +242,15 @@ $("#send_transfer").click(function () {
 });
 
 function confirmTransfer() {
+  console.log(rpcs);
   const to = $("#recipient").val();
   const amount = $("#amt_send").val();
   const currency = $("#currency_send .select-selected").html();
+  const recurrent = $(".recurrent_transfer input[type=checkbox]").prop(
+    "checked"
+  );
+  const recurrence = $("#recurrence").val();
+  const iterations = $("#rec_iterations").val();
   let memo = $("#memo_send").val();
   transferValidator.validate(to, currency, memo.length);
   $("#confirm_send_div").show();
@@ -258,12 +264,28 @@ function confirmTransfer() {
         ? ` (${chrome.i18n.getMessage("popup_encrypted")})`
         : "")
   );
+  if (!recurrent) {
+    $("#rec_conf_transfer").text(chrome.i18n.getMessage("popup_none"));
+  } else {
+    $("#rec_conf_transfer").text(
+      chrome.i18n.getMessage("popup_confirm_recurrence", [
+        recurrence,
+        iterations,
+      ])
+    );
+  }
 }
 
 // Send STEEM or SBD to an user
 $("#confirm_send_transfer").click(function () {
   showLoader();
   sendTransfer();
+});
+
+$(".recurrent_transfer").click(() => {
+  $(".recurrent_transfer input[type=checkbox]").prop("checked")
+    ? $(".recurrent_transfer_checked").show()
+    : $(".recurrent_transfer_checked").hide();
 });
 
 // Vote for witnesses
@@ -310,6 +332,11 @@ async function sendTransfer() {
   const to = $("#recipient").val().replace(" ", "");
   const amount = $("#amt_send").val();
   const currency = $("#currency_send .select-selected").html();
+  const recurrent = $(".recurrent_transfer input[type=checkbox]").prop(
+    "checked"
+  );
+  const recurrence = $("#recurrence").val();
+  const iterations = $("#rec_iterations").val();
   let memo = $("#memo_send").val();
   if ((memo != "" && $("#encrypt_memo").prop("checked")) || memo[0] == "#") {
     try {

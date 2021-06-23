@@ -246,6 +246,12 @@ $("#confirm_new_pwd").attr(
 $("#confirm_change_pwd").text(chrome.i18n.getMessage("popup_html_save"));
 
 // transfers
+$(".recurrent_transfer div").text(
+  chrome.i18n.getMessage("dialog_title_recurrent_transfer")
+);
+$(".recurrent_transfer_checked p").text(
+  chrome.i18n.getMessage("popup_html_transfer_rec")
+);
 $("#send_div .back_enabled").text(
   chrome.i18n.getMessage("popup_html_transfer_funds")
 );
@@ -281,6 +287,9 @@ $("#confirm_send_div h3")
 $("#confirm_send_div h3")
   .eq(3)
   .text(chrome.i18n.getMessage("popup_html_transfer_memo"));
+$("#confirm_send_div h3")
+  .eq(4)
+  .text(chrome.i18n.getMessage("popup_html_transfer_confirm_rec"));
 $("#confirm_send_transfer").text(chrome.i18n.getMessage("popup_html_confirm"));
 
 //Claim

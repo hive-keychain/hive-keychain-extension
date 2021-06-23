@@ -957,6 +957,7 @@ input:focus {
 
 #send_transfer {
   display: block;
+  margin-top: 30px;
   padding: 0 20px 0 20px;
   font-size: 1em;
 }
@@ -2056,6 +2057,10 @@ input:focus {
   margin-bottom: 30px;
 }
 
+#confirm_send_div h3 {
+  margin-bottom: 8px;
+}
+
 #autocomplete_container {
   padding-top: -20px;
   position: relative;
@@ -2206,4 +2211,20 @@ input[type="checkbox"] {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+
+.checkbox_container div {
+  padding-top: 8px;
+}
+
+.recurrent_transfer_checked p {
+  font-size: 18px;
+}
+
+.recurrent_transfer_checked #recurrence {
+  width: 50%;
+  margin-right: 5px;
+}
+.recurrent_transfer_checked #rec_iterations {
+  width: 45%;
 }
