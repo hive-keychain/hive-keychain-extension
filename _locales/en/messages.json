@@ -376,7 +376,7 @@
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_transfer_rec": {
-    "message": "Transfers be made every [recurrence] in hours (min 24), for [iterations] times.",
+    "message": "Transfers be made every [recurrence] in hours (min 24), for [executions] times.",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_balance": {

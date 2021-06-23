@@ -336,7 +336,7 @@ async function sendTransfer() {
     "checked"
   );
   const recurrence = $("#recurrence").val();
-  const iterations = $("#rec_iterations").val();
+  const executions = $("#rec_iterations").val();
   let memo = $("#memo_send").val();
   if ((memo != "" && $("#encrypt_memo").prop("checked")) || memo[0] == "#") {
     try {
@@ -352,72 +352,92 @@ async function sendTransfer() {
       console.log(e);
     }
   }
-  if (to != "" && amount != "" && amount >= 0.001) {
-    hive.broadcast.transfer(
-      activeAccount.getKey("active"),
-      activeAccount.getName(),
-      to,
-      parseFloat(amount).toFixed(3) +
-        " " +
-        currency.replace("HIVE", "STEEM").replace("HBD", "SBD"),
-      memo,
-      async function (err, result) {
-        console.log(err, result);
-        $("#send_loader").hide();
-        $("#confirm_send_transfer").show();
-        if (err == null) {
-          const sender = await hive.api.getAccountsAsync([
-            activeAccount.getName(),
-          ]);
-          sbd = sender["0"].sbd_balance
-            ? sender["0"].sbd_balance.replace("SBD", "")
-            : sender["0"].hbd_balance.replace("HBD", "");
-          steem_p = sender["0"].balance.replace("STEEM", "");
-          $("#confirm_send_div").hide();
-          $("#send_div").show();
-          if (currency == "HBD") {
-            $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
-          } else if (currency == "HIVE") {
-            $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
-          }
-          $(".error_div").hide();
-          $(".success_div")
-            .html(chrome.i18n.getMessage("popup_transfer_success"))
-            .show();
-          chrome.storage.local.get(
-            { transfer_to: JSON.stringify({}) },
-            function (items) {
-              let transfer_to = JSON.parse(items.transfer_to);
-              if (!transfer_to[activeAccount.getName()])
-                transfer_to[activeAccount.getName()] = [];
-              console.log(transfer_to);
-              if (
-                transfer_to[activeAccount.getName()].filter((elt) => {
-                  return elt == to;
-                }).length == 0
-              )
-                transfer_to[activeAccount.getName()].push(to);
-              console.log(transfer_to);
-
-              console.log(JSON.stringify(transfer_to));
-              chrome.storage.local.set({
-                transfer_to: JSON.stringify(transfer_to),
-              });
-            }
-          );
-          setTimeout(function () {
-            $(".success_div").hide();
-          }, 5000);
-        } else {
-          $(".success_div").hide();
-          showError(chrome.i18n.getMessage("unknown_error"));
+  if (
+    to != "" &&
+    amount != "" &&
+    amount >= 0.001 &&
+    (!recurrent || (recurrent && (recurrence >= 24) & (iterations >= 1)))
+  ) {
+    if (!recurrent) {
+      console.log("normal transfer");
+      hive.broadcast.transfer(
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
+        to,
+        parseFloat(amount).toFixed(3) + " " + currency,
+        memo,
+        (err, result) => {
+          afterResult(err, result);
         }
-        $("#send_transfer").show();
-      }
-    );
+      );
+    } else {
+      //Recurrent transfer
+      console.log("recurrent");
+      hive.broadcast.recurrentTransfer(
+        activeAccount.getKey("active"),
+        activeAccount.getName(),
+        to,
+        parseFloat(amount).toFixed(3) + " " + currency,
+        memo,
+        parseInt(recurrence),
+        parseInt(executions),
+        [],
+        (err, result) => {
+          afterResult(err, result);
+        }
+      );
+    }
   } else {
     showError(chrome.i18n.getMessage("popup_accounts_fill"));
     $("#send_loader").hide();
     $("#send_transfer").show();
   }
+  const afterResult = async (err, result) => {
+    console.log(err, result);
+    $("#send_loader").hide();
+    $("#confirm_send_transfer").show();
+    if (err == null) {
+      const sender = await hive.api.getAccountsAsync([activeAccount.getName()]);
+      sbd = sender["0"].sbd_balance
+        ? sender["0"].sbd_balance.replace("SBD", "")
+        : sender["0"].hbd_balance.replace("HBD", "");
+      steem_p = sender["0"].balance.replace("STEEM", "");
+      $("#confirm_send_div").hide();
+      $("#send_div").show();
+      if (currency == "HBD") {
+        $(".transfer_balance div").eq(1).html(numberWithCommas(sbd));
+      } else if (currency == "HIVE") {
+        $(".transfer_balance div").eq(1).html(numberWithCommas(steem_p));
+      }
+      $(".error_div").hide();
+      $(".success_div")
+        .html(chrome.i18n.getMessage("popup_transfer_success"))
+        .show();
+      chrome.storage.local.get(
+        { transfer_to: JSON.stringify({}) },
+        function (items) {
+          let transfer_to = JSON.parse(items.transfer_to);
+          if (!transfer_to[activeAccount.getName()])
+            transfer_to[activeAccount.getName()] = [];
+          if (
+            transfer_to[activeAccount.getName()].filter((elt) => {
+              return elt == to;
+            }).length == 0
+          )
+            transfer_to[activeAccount.getName()].push(to);
+
+          chrome.storage.local.set({
+            transfer_to: JSON.stringify(transfer_to),
+          });
+        }
+      );
+      setTimeout(function () {
+        $(".success_div").hide();
+      }, 5000);
+    } else {
+      $(".success_div").hide();
+      showError(chrome.i18n.getMessage("unknown_error"));
+    }
+    $("#send_transfer").show();
+  };
 }
