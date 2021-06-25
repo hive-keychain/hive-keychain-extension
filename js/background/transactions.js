@@ -3,7 +3,7 @@ const performTransaction = async (data, tab, no_confirm) => {
   try {
     console.info("-- PERFORMING TRANSACTION --");
     console.info(data);
-    if (data.rpc) rpc.setOptions(data.rpc, true);
+    if (data.rpc) await rpc.setOptions(data.rpc, true);
     switch (data.type) {
       case "custom":
         message = await broadcastCustomJson(data);
