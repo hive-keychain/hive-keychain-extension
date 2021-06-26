@@ -575,6 +575,10 @@
     "message": "Veuillez réessayer plus tard!",
     "description": "Generic unknown error, user is invited to try again"
   },
+  "popup_accounts_no_key_selected": {
+    "message": "You didn't select any key. Please select at least one.",
+    "description": "when trying to save keys on selecting keys page"
+  },
   "popup_accounts_err_claim": {
     "message": "Vous devez entrer dans votre clé privée pour réclamer vos gains!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"

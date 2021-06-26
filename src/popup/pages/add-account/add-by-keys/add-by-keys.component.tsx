@@ -1,5 +1,5 @@
 import {setErrorMessage} from '@popup/actions/error-message.actions';
-import {navigateTo} from '@popup/actions/navigation.actions';
+import {navigateToWithParams} from '@popup/actions/navigation.actions';
 import {RootState} from '@popup/store';
 import React, {useState} from 'react';
 import {connect, ConnectedProps} from 'react-redux';
@@ -11,7 +11,11 @@ import {Screen} from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import './add-by-keys.component.css';
 
-const AddByKeys = ({setErrorMessage, navigateTo}: PropsFromRedux) => {
+const AddByKeys = ({
+  setErrorMessage,
+  navigateToWithParams,
+  localAccounts,
+}: PropsFromRedux) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
 
@@ -19,14 +23,14 @@ const AddByKeys = ({setErrorMessage, navigateTo}: PropsFromRedux) => {
     const keys = await AccountUtils.verifyAccount(
       username,
       privateKey,
+      localAccounts,
       setErrorMessage,
     );
-    console.log(keys);
     if (!keys) {
       return;
     }
     if (keys.active || keys.memo || keys.posting) {
-      navigateTo(Screen.ACCOUNT_PAGE_SELECT_KEYS);
+      navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, {keys, username});
     }
   };
 
@@ -64,10 +68,15 @@ const AddByKeys = ({setErrorMessage, navigateTo}: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    localAccounts: state.accounts,
+  };
 };
 
-const connector = connect(mapStateToProps, {setErrorMessage, navigateTo});
+const connector = connect(mapStateToProps, {
+  setErrorMessage,
+  navigateToWithParams,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AddByKeysComponent = connector(AddByKeys);

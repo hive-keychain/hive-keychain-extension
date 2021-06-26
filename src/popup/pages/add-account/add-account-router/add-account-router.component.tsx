@@ -33,9 +33,9 @@ const AddAccountRouter = ({currentPage}: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  console.log(state);
   return {
     currentPage: state.navigation.currentPage,
+    params: state.navigation.params,
   };
 };
 

@@ -575,6 +575,10 @@
     "message": "Bitte versuchen Sie es später erneut!",
     "description": "Generic unknown error, user is invited to try again"
   },
+  "popup_accounts_no_key_selected": {
+    "message": "You didn't select any key. Please select at least one.",
+    "description": "when trying to save keys on selecting keys page"
+  },
   "popup_accounts_err_claim": {
     "message": "Sie müssen Ihren privaten posting-key eingeben um Belohnungen abzuholen!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"

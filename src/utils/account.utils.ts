@@ -1,9 +1,12 @@
 import * as Hive from '@hiveio/dhive';
-import {Account, Keys} from 'src/interfaces/account.interface';
-import {LocalStorageKey} from 'src/reference-data/local-storage-key.enum';
-import AsyncUtils from './async.utils';
+import {Accounts} from 'src/interfaces/accounts.interface';
+import {Keys} from 'src/interfaces/keys.interface';
+import {LocalAccount} from 'src/interfaces/local-account.interface';
+import {LocalStorageKeyEnum} from 'src/reference-data/local-storage-key.enum';
+import EncryptUtils from 'src/utils/encrypt.utils';
 import HiveUtils from './hive.utils';
 import KeysUtils from './keys.utils';
+import LocalStorageUtils from './localStorage.utils';
 
 enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',
@@ -16,14 +19,14 @@ enum AccountErrorMessages {
 const verifyAccount = async (
   username: string,
   password: string,
+  existingAccounts: LocalAccount[],
   showError: (errorMessage: string, params: string[]) => void,
 ): Promise<Keys | null> => {
   if (username.length === 0 || password.length === 0) {
     showError(AccountErrorMessages.MISSING_FIELDS, []);
     return null;
   }
-  const localAccounts = await getAccounts();
-  if (isAccountNameAlreadyExisting(localAccounts, username)) {
+  if (isAccountNameAlreadyExisting(existingAccounts, username)) {
     showError(AccountErrorMessages.ALREADY_REGISTERED, [username]);
     return null;
   }
@@ -32,8 +35,6 @@ const verifyAccount = async (
     showError(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY, []);
     return null;
   }
-
-  // Get account through hive api
 
   const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
     username,
@@ -79,27 +80,47 @@ const verifyAccount = async (
   return keys;
 };
 
-const getAccounts = async () => {
-  return await AsyncUtils.getValueFromLocalStorage([LocalStorageKey.ACCOUNTS]);
+const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
+  const accounts: Accounts = {list: localAccounts};
+  const encyptedAccounts = await encryptAccounts(accounts, mk);
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.ACCOUNTS,
+    encyptedAccounts,
+  );
 };
 
-const addAccount = (account: Account): void => {};
+const getAccountsFromLocalStorage = async (
+  mk: string,
+): Promise<LocalAccount[]> => {
+  const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.ACCOUNTS,
+  );
+  console.log(encryptedAccounts);
+  const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
+  return accounts.list;
+};
 
-//TODO implement after checking format
 const isAccountNameAlreadyExisting = (
-  accounts: Account[],
+  existingAccounts: LocalAccount[],
   accountName: string,
 ): boolean => {
-  console.log(accounts);
-  if (!accounts) {
+  console.log(existingAccounts);
+  if (!existingAccounts || existingAccounts.length) {
     return false;
   }
-  return false;
+  return existingAccounts.some(
+    (account: LocalAccount) => account.name === accountName,
+  );
+};
+
+const encryptAccounts = async (accounts: Accounts, mk: string) => {
+  return EncryptUtils.encryptJson(accounts, mk);
 };
 
 const AccountUtils = {
   verifyAccount,
-  getAccounts,
+  getAccountsFromLocalStorage,
+  saveAccounts,
   AccountErrorMessages,
 };
 

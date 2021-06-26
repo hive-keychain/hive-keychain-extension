@@ -1,19 +1,19 @@
-import { getAccounts } from "@popup/actions/account.actions";
-import { setMk } from "@popup/actions/mk.actions";
-import { navigateTo } from "@popup/actions/navigation.actions";
-import { RootState } from "@popup/store";
-import React, { useEffect } from "react";
-import { connect, ConnectedProps } from "react-redux";
-import { BackgroundMessage } from "src/background/background-message.interface";
-import { BackgroundCommand } from "src/reference-data/background-message-key.enum";
-import { Screen } from "src/reference-data/screen.enum";
-import PopupUtils from "src/utils/popup.utils";
-import "./App.css";
-import { AddAccountRouterComponent } from "./pages/add-account/add-account-router/add-account-router.component";
-import { AppContainerComponent } from "./pages/app-container/app-container.component";
-import { ErrorMessageContainerComponent } from "./pages/error-message-container/error-message-container.component";
-import { SignInComponent } from "./pages/sign-in/sign-in.component";
-import { SignUpComponent } from "./pages/sign-up/sign-up.component";
+import {getAccounts} from '@popup/actions/account.actions';
+import {setMk} from '@popup/actions/mk.actions';
+import {navigateTo} from '@popup/actions/navigation.actions';
+import {RootState} from '@popup/store';
+import React, {useEffect} from 'react';
+import {connect, ConnectedProps} from 'react-redux';
+import {BackgroundMessage} from 'src/background/background-message.interface';
+import {BackgroundCommand} from 'src/reference-data/background-message-key.enum';
+import {Screen} from 'src/reference-data/screen.enum';
+import PopupUtils from 'src/utils/popup.utils';
+import './App.css';
+import {AddAccountRouterComponent} from './pages/add-account/add-account-router/add-account-router.component';
+import {AppContainerComponent} from './pages/app-container/app-container.component';
+import {ErrorMessageContainerComponent} from './pages/error-message-container/error-message-container.component';
+import {SignInComponent} from './pages/sign-in/sign-in.component';
+import {SignUpComponent} from './pages/sign-up/sign-up.component';
 
 const App = ({
   setMk,
@@ -23,21 +23,20 @@ const App = ({
   navigateTo,
 }: PropsFromRedux) => {
   useEffect(() => {
-    getAccounts();
-  }, [getAccounts]);
-
-  useEffect(() => {
-    chrome.runtime.sendMessage({ command: BackgroundCommand.GET_MK });
-    chrome.runtime.onMessage.addListener(onSendBackListener);
-  }, [setMk]);
-  useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
   }, []);
-  const onSendBackListener = (message: BackgroundMessage) => {
+
+  useEffect(() => {
+    chrome.runtime.sendMessage({command: BackgroundCommand.GET_MK});
+    chrome.runtime.onMessage.addListener(onSentBackMkListener);
+  }, [setMk]);
+
+  const onSentBackMkListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
       setMk(message.value);
     }
-    chrome.runtime.onMessage.removeListener(onSendBackListener);
+    getAccounts(mk);
+    chrome.runtime.onMessage.removeListener(onSentBackMkListener);
   };
 
   const renderMainLayoutNav = () => {
@@ -72,7 +71,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { setMk, getAccounts, navigateTo });
+const connector = connect(mapStateToProps, {setMk, getAccounts, navigateTo});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export default connector(App);

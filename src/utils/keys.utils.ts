@@ -1,6 +1,6 @@
 import * as Hive from '@hiveio/dhive';
 import {Account} from '@hiveio/dhive';
-import {Keys} from 'src/interfaces/account.interface';
+import {Keys} from 'src/interfaces/keys.interface';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
   try {
@@ -13,7 +13,6 @@ const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
 };
 
 const getPubkeyWeight = (publicKey: any, permissions: any) => {
-  console.log(publicKey, permissions);
   for (let n in permissions.key_auths) {
     const keyWeight = permissions.key_auths[n];
     const lpub = keyWeight['0'];
@@ -65,10 +64,15 @@ const derivateFromMasterPassword = (
   }
 };
 
+const hasKeys = (keys: Keys): boolean => {
+  return Object.keys(keys).length > 0;
+};
+
 const KeysUtils = {
   getPublicKeyFromPrivateKeyString,
   getPubkeyWeight,
   derivateFromMasterPassword,
+  hasKeys,
 };
 
 export default KeysUtils;

@@ -1,3 +1,3 @@
-export enum LocalStorageKey {
-    ACCOUNTS = "accounts"
+export enum LocalStorageKeyEnum {
+  ACCOUNTS = 'accounts',
 }
