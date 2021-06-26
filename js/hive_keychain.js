@@ -298,7 +298,7 @@ var hive_keychain = {
    * @param {String} account Hive account to perform the request
    * @param {String} permlink Permlink of the blog post
    * @param {String} author Author of the blog post
-   * @param {String} weight Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
+   * @param {Number} weight Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -412,7 +412,7 @@ var hive_keychain = {
    * Requests a delegation broadcast
    * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} delegatee Account to receive the delegation
-   * @param {number} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
+   * @param {String} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
    * @param {String} unit HP or VESTS
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
@@ -474,7 +474,7 @@ var hive_keychain = {
    * Request a power up
    * @param {String} username Hive account to perform the request
    * @param {String} recipient Account to receive the power up
-   * @param {number} hive Amount of HIVE to be powered up
+   * @param {String} hive Amount of HIVE to be powered up
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -491,7 +491,7 @@ var hive_keychain = {
   /**
    * Request a power down
    * @param {String} username Hive account to perform the request
-   * @param {number} hive_power Amount of HIVE to be powered down
+   * @param {String} hive_power Amount of HIVE to be powered down
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -546,9 +546,9 @@ var hive_keychain = {
    * @param {String} receiver Account receiving the funding if the proposal is voted
    * @param {String} subject Title of the DAO
    * @param {String} permlink Permlink to the proposal description
-   * @param {number} daily_pay Daily amount to be received by `receiver`
-   * @param {Date} start Starting date
-   * @param {Date} end Ending date
+   * @param {String} daily_pay Daily amount to be received by `receiver`
+   * @param {String} start Starting date
+   * @param {String} end Ending date
    * @param {String} extensions Stringified Array of extensions
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings

@@ -313,7 +313,7 @@ Requests a vote
 *   `account` **[String][69]** Hive account to perform the request
 *   `permlink` **[String][69]** Permlink of the blog post
 *   `author` **[String][69]** Author of the blog post
-*   `weight` **[String][69]** Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
+*   `weight` **[Number][71]** Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
 *   `callback` **[function][68]** Keychain's response to the request
 *   `rpc` **[String][69]** Override user's RPC settings (optional, default `null`)
 
@@ -368,7 +368,7 @@ Requests a delegation broadcast
 
 *   `username`  
 *   `delegatee` **[String][69]** Account to receive the delegation
-*   `amount` **[number][71]** Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
+*   `amount` **[String][69]** Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
 *   `unit` **[String][69]** HP or VESTS
 *   `callback` **[function][68]** Keychain's response to the request
 *   `rpc` **[String][69]** Override user's RPC settings (optional, default `null`)
@@ -407,7 +407,7 @@ Request a power up
 
 *   `username` **[String][69]** Hive account to perform the request
 *   `recipient` **[String][69]** Account to receive the power up
-*   `hive` **[number][71]** Amount of HIVE to be powered up
+*   `hive` **[String][69]** Amount of HIVE to be powered up
 *   `callback` **[function][68]** Keychain's response to the request
 *   `rpc` **[String][69]** Override user's RPC settings (optional, default `null`)
 
@@ -418,7 +418,7 @@ Request a power down
 ##### Parameters
 
 *   `username` **[String][69]** Hive account to perform the request
-*   `hive_power` **[number][71]** Amount of HIVE to be powered down
+*   `hive_power` **[String][69]** Amount of HIVE to be powered down
 *   `callback` **[function][68]** Keychain's response to the request
 *   `rpc` **[String][69]** Override user's RPC settings (optional, default `null`)
 
@@ -447,9 +447,9 @@ Request the creation of a DHF proposal
 *   `receiver` **[String][69]** Account receiving the funding if the proposal is voted
 *   `subject` **[String][69]** Title of the DAO
 *   `permlink` **[String][69]** Permlink to the proposal description
-*   `daily_pay` **[number][71]** Daily amount to be received by `receiver`
-*   `start` **[Date][75]** Starting date
-*   `end` **[Date][75]** Ending date
+*   `daily_pay` **[String][69]** Daily amount to be received by `receiver`
+*   `start` **[String][69]** Starting date
+*   `end` **[String][69]** Ending date
 *   `extensions` **[String][69]** Stringified Array of extensions
 *   `callback` **[function][68]** Keychain's response to the request
 *   `rpc` **[String][69]** Override user's RPC settings (optional, default `null`)
@@ -664,5 +664,3 @@ Request recurrent transfer
 [73]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 
 [74]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean
-
-[75]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Date
