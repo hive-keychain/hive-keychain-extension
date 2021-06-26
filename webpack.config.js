@@ -54,6 +54,7 @@ const config = {
     popup: './src/popup/index.tsx',
     dialog: './src/dialog/index.tsx',
     background: './src/background/index.ts',
+    import: './src/import/index.tsx',
   },
   output: { path: path.join(__dirname, 'dist'), filename: '[name]Bundle.js' },
   module: {
