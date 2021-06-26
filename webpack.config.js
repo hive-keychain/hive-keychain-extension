@@ -46,6 +46,7 @@ const webpack = require('webpack');
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const config = {
   mode: 'development',
@@ -54,7 +55,7 @@ const config = {
     dialog: './src/dialog/index.tsx',
     background: './src/background/index.ts',
   },
-  output: {path: path.join(__dirname, 'dist'), filename: '[name]Bundle.js'},
+  output: { path: path.join(__dirname, 'dist'), filename: '[name]Bundle.js' },
   module: {
     rules: [
       {
@@ -108,15 +109,16 @@ const config = {
     alias: {
       'react-dom': '@hot-loader/react-dom',
     },
-    plugins: [new TsconfigPathsPlugin({configFile: './tsconfig.json'})],
+    plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
   },
   devServer: {
     contentBase: './dist',
   },
   plugins: [
     new CopyPlugin({
-      patterns: [{from: 'public', to: '.'}],
+      patterns: [{ from: 'public', to: '.' }],
     }),
+    new NodePolyfillPlugin(),
   ],
 };
 
