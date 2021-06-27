@@ -65,7 +65,11 @@ const derivateFromMasterPassword = (
 };
 
 const hasKeys = (keys: Keys): boolean => {
-  return Object.keys(keys).length > 0;
+  return keysCount(keys) > 0;
+};
+
+const keysCount = (keys: Keys): number => {
+  return Object.keys(keys).length;
 };
 
 const KeysUtils = {
@@ -73,6 +77,7 @@ const KeysUtils = {
   getPubkeyWeight,
   derivateFromMasterPassword,
   hasKeys,
+  keysCount,
 };
 
 export default KeysUtils;

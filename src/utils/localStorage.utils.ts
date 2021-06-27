@@ -28,7 +28,6 @@ const saveValueInLocalStorage = (
 ): void => {
   const storageValue: LocaleStorageObject = {};
   storageValue[key] = value;
-  console.log(storageValue);
   chrome.storage.local.set(storageValue);
 };
 

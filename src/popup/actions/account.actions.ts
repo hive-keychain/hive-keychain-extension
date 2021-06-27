@@ -1,16 +1,17 @@
 import {LocalAccount} from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import {ActionType} from './action-type.enum';
-import {AppThunk} from './interfaces';
+import {actionPayload, AppThunk} from './interfaces';
 
-export const getAccounts =
+export const retrieveAccounts =
   (mk: string): AppThunk =>
-  async () => {
+  async (dispatch, getState) => {
     let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
-    return {
-      type: ActionType.GET_ACCOUNTS,
-      payload: accounts ?? [],
+    const action: actionPayload<LocalAccount[]> = {
+      type: ActionType.SET_ACCOUNTS,
+      payload: accounts,
     };
+    dispatch(action);
   };
 
 export const addAccount = (account: LocalAccount) => {

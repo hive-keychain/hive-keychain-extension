@@ -1,13 +1,13 @@
-import { navigateTo } from '@popup/actions/navigation.actions';
-import { RootState } from '@popup/store';
+import {navigateTo} from '@popup/actions/navigation.actions';
+import {RootState} from '@popup/store';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import {connect, ConnectedProps} from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { Screen } from 'src/reference-data/screen.enum';
+import {PageTitleComponent} from 'src/common-ui/page-title/page-title.component';
+import {Screen} from 'src/reference-data/screen.enum';
 import './add-account-main.component.css';
 
-const AddAccountMain = ({ navigateTo }: PropsFromRedux) => {
+const AddAccountMain = ({navigateTo, accounts}: PropsFromRedux) => {
   const handleAddByKeys = (): void => {
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
   };
@@ -48,10 +48,12 @@ const AddAccountMain = ({ navigateTo }: PropsFromRedux) => {
         label={'popup_html_add_by_keys'}
         onClick={handleAddByKeys}
       />
-      <ButtonComponent
-        label={'popup_html_add_by_auth'}
-        onClick={handleAddByAuth}
-      />
+      {accounts.length > 0 && (
+        <ButtonComponent
+          label={'popup_html_add_by_auth'}
+          onClick={handleAddByAuth}
+        />
+      )}
       <ButtonComponent
         label={'popup_html_import_keys'}
         onClick={handleImportKeys}
@@ -61,10 +63,10 @@ const AddAccountMain = ({ navigateTo }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {accounts: state.accounts};
 };
 
-const connector = connect(mapStateToProps, { navigateTo });
+const connector = connect(mapStateToProps, {navigateTo});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AddAccountMainComponent = connector(AddAccountMain);

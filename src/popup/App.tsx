@@ -1,4 +1,4 @@
-import {getAccounts} from '@popup/actions/account.actions';
+import {retrieveAccounts} from '@popup/actions/account.actions';
 import {setMk} from '@popup/actions/mk.actions';
 import {navigateTo} from '@popup/actions/navigation.actions';
 import {RootState} from '@popup/store';
@@ -18,7 +18,7 @@ import {SignUpComponent} from './pages/sign-up/sign-up.component';
 const App = ({
   setMk,
   mk,
-  getAccounts,
+  retrieveAccounts,
   accounts,
   navigateTo,
 }: PropsFromRedux) => {
@@ -34,9 +34,9 @@ const App = ({
   const onSentBackMkListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
       setMk(message.value);
+      retrieveAccounts(message.value);
+      chrome.runtime.onMessage.removeListener(onSentBackMkListener);
     }
-    getAccounts(mk);
-    chrome.runtime.onMessage.removeListener(onSentBackMkListener);
   };
 
   const renderMainLayoutNav = () => {
@@ -71,7 +71,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {setMk, getAccounts, navigateTo});
+const connector = connect(mapStateToProps, {
+  setMk,
+  retrieveAccounts,
+  navigateTo,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export default connector(App);

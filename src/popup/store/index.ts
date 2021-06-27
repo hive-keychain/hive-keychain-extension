@@ -10,7 +10,6 @@ const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 let previousAccounts = store.getState().accounts;
 store.subscribe(() => {
   const {accounts, mk} = store.getState();
-  console.log(accounts, previousAccounts);
   if (previousAccounts !== accounts) {
     previousAccounts = accounts;
     AccountUtils.saveAccounts(accounts, mk);

@@ -1,5 +1,6 @@
 import CryptoJS from 'crypto-js';
 import md5 from 'md5';
+import Logger from 'src/utils/logger.utils';
 
 const KEY_SIZE = 256;
 const IV_SIZE = 128;
@@ -52,9 +53,7 @@ function decrypt(transitmessage: string, pass: string) {
 const decryptToJson = (msg: string, pwd: string) => {
   try {
     const decrypted = decrypt(msg, pwd).toString(CryptoJS.enc.Utf8);
-    console.log(decrypted);
     const decryptedJSON: any = JSON.parse(decrypted);
-    console.log(decryptedJSON);
     if (
       decryptedJSON.hash != null &&
       decryptedJSON.hash == md5(decryptedJSON.list)
@@ -64,7 +63,7 @@ const decryptToJson = (msg: string, pwd: string) => {
       return null;
     }
   } catch (e) {
-    console.log(e);
+    Logger.error('Error while decrypting', e);
     return null;
   }
 };

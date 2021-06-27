@@ -1,3 +1,4 @@
+import {addAccount} from '@popup/actions/account.actions';
 import {setErrorMessage} from '@popup/actions/error-message.actions';
 import {navigateToWithParams} from '@popup/actions/navigation.actions';
 import {RootState} from '@popup/store';
@@ -9,12 +10,14 @@ import InputComponent from 'src/common-ui/input/input.component';
 import {PageTitleComponent} from 'src/common-ui/page-title/page-title.component';
 import {Screen} from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
+import KeysUtils from 'src/utils/keys.utils';
 import './add-by-keys.component.css';
 
 const AddByKeys = ({
   setErrorMessage,
   navigateToWithParams,
   localAccounts,
+  addAccount,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
@@ -29,8 +32,10 @@ const AddByKeys = ({
     if (!keys) {
       return;
     }
-    if (keys.active || keys.memo || keys.posting) {
+    if (KeysUtils.keysCount(keys) > 2) {
       navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, {keys, username});
+    } else {
+      addAccount({name: username, keys: keys});
     }
   };
 
@@ -76,6 +81,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setErrorMessage,
   navigateToWithParams,
+  addAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
