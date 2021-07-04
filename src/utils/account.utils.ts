@@ -96,14 +96,13 @@ const getAccountsFromLocalStorage = async (
     LocalStorageKeyEnum.ACCOUNTS,
   );
   const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
-  return accounts.list;
+  return accounts?.list;
 };
 
 const isAccountNameAlreadyExisting = (
   existingAccounts: LocalAccount[],
   accountName: string,
 ): boolean => {
-  console.log(existingAccounts);
   if (!existingAccounts || existingAccounts.length) {
     return false;
   }
@@ -116,10 +115,19 @@ const encryptAccounts = async (accounts: Accounts, mk: string) => {
   return EncryptUtils.encryptJson(accounts, mk);
 };
 
+const hasStoredAccounts = async () => {
+  return (
+    (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.ACCOUNTS,
+    )) !== undefined
+  );
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
   saveAccounts,
+  hasStoredAccounts,
   AccountErrorMessages,
 };
 

@@ -1,0 +1,24 @@
+.top-bar {
+  height: 72px;
+  padding: 16px 32px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+
+.button {
+  cursor: pointer;
+}
+
+.lock-button {
+  margin-right: 32px;
+}
+
+.spacer {
+  flex: 1;
+}
+
+img {
+  height: 32px;
+  width: auto;
+}

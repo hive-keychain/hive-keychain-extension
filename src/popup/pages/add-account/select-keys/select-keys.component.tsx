@@ -1,5 +1,6 @@
 import {addAccount} from '@popup/actions/account.actions';
 import {setErrorMessage} from '@popup/actions/error-message.actions';
+import {navigateTo} from '@popup/actions/navigation.actions';
 import {RootState} from '@popup/store';
 import React, {useState} from 'react';
 import {connect, ConnectedProps} from 'react-redux';
@@ -43,6 +44,7 @@ const SelectKeys = ({
       setErrorMessage('popup_accounts_no_key_selected');
     } else {
       addAccount({name: username, keys: keys});
+      navigateTo(Screen.HOME_PAGE);
     }
   };
 

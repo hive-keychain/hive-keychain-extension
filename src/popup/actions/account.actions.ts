@@ -20,3 +20,9 @@ export const addAccount = (account: LocalAccount) => {
     payload: account,
   };
 };
+
+export const resetAccount = () => {
+  return {
+    type: ActionType.RESET_ACCOUNT,
+  };
+};

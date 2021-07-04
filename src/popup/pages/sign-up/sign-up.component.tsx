@@ -6,17 +6,8 @@ import {connect, ConnectedProps} from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import {InputType} from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import MkUtils from 'src/utils/mk.utils';
 import './sign-up.component.css';
-
-const isPasswordValid = (password: string) => {
-  return (
-    password.length >= 16 ||
-    (password.length >= 8 &&
-      password.match(/.*[a-z].*/) &&
-      password.match(/.*[A-Z].*/) &&
-      password.match(/.*[0-9].*/))
-  );
-};
 
 const SignUp = ({setErrorMessage, setMk}: PropsFromRedux) => {
   const [newPassword, setNewPassword] = useState('');
@@ -24,7 +15,7 @@ const SignUp = ({setErrorMessage, setMk}: PropsFromRedux) => {
 
   const submitMk = (): any => {
     if (newPassword === newPasswordConfirm) {
-      if (isPasswordValid(newPassword)) {
+      if (MkUtils.isPasswordValid(newPassword)) {
         setMk(newPassword);
       } else {
         setErrorMessage('popup_password_regex');

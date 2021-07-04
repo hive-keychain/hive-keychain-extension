@@ -31,10 +31,15 @@ const saveValueInLocalStorage = (
   chrome.storage.local.set(storageValue);
 };
 
+const clearLocalStorage = async () => {
+  chrome.storage.local.clear();
+};
+
 const LocalStorageUtils = {
   getValueFromLocalStorage,
   saveValueInLocalStorage,
   getMultipleValueFromLocalStorage,
+  clearLocalStorage,
 };
 
 export default LocalStorageUtils;

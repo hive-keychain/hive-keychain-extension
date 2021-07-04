@@ -11,9 +11,9 @@ const warn = (message: string) => {
 };
 
 const error = (message: string, stacktrace: string) => {
-  console.error(`%c ${message} `, 'color: red');
-  console.error(`${message}`);
-  console.error(stacktrace);
+  console.log(`%c ${message} `, 'color: red');
+  // Activate if debug
+  // console.error(stacktrace);
 };
 
 // function timestamp() {

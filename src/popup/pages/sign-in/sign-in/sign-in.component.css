@@ -1,0 +1,10 @@
+.reset-password-link {
+  font-size: 18px;
+  float: right;
+  margin-top: 8px;
+  border-bottom: 2px dotted;
+  cursor: pointer;
+}
+.reset-password-link:hover {
+  color: #e31337;
+}

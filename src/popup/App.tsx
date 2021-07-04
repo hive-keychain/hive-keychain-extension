@@ -2,17 +2,18 @@ import {retrieveAccounts} from '@popup/actions/account.actions';
 import {setMk} from '@popup/actions/mk.actions';
 import {navigateTo} from '@popup/actions/navigation.actions';
 import {RootState} from '@popup/store';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect, ConnectedProps} from 'react-redux';
 import {BackgroundMessage} from 'src/background/background-message.interface';
 import {BackgroundCommand} from 'src/reference-data/background-message-key.enum';
 import {Screen} from 'src/reference-data/screen.enum';
+import AccountUtils from 'src/utils/account.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import './App.css';
 import {AddAccountRouterComponent} from './pages/add-account/add-account-router/add-account-router.component';
-import {AppContainerComponent} from './pages/app-container/app-container.component';
+import {AppRouterComponent} from './pages/app-container/app-router.component';
 import {ErrorMessageContainerComponent} from './pages/error-message-container/error-message-container.component';
-import {SignInComponent} from './pages/sign-in/sign-in.component';
+import {SignInRouterComponent} from './pages/sign-in/sign-in-router.component';
 import {SignUpComponent} from './pages/sign-up/sign-up.component';
 
 const App = ({
@@ -31,27 +32,35 @@ const App = ({
     chrome.runtime.onMessage.addListener(onSentBackMkListener);
   }, [setMk]);
 
-  const onSentBackMkListener = (message: BackgroundMessage) => {
+  const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
+
+  const onSentBackMkListener = async (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
-      setMk(message.value);
-      retrieveAccounts(message.value);
+      if (message.value?.length) {
+        setMk(message.value);
+        retrieveAccounts(message.value);
+      } else {
+        setHasStoredAccounts(await AccountUtils.hasStoredAccounts());
+      }
       chrome.runtime.onMessage.removeListener(onSentBackMkListener);
     }
   };
 
   const renderMainLayoutNav = () => {
     if (!mk) {
-      if (accounts.length === 0) {
+      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
         return <SignUpComponent />;
       } else {
-        return <SignInComponent />;
+        navigateTo(Screen.SIGN_IN_PAGE);
+        return <SignInRouterComponent />;
       }
     } else {
-      if (accounts.length === 0) {
+      if (accounts && accounts.length === 0) {
         navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT);
         return <AddAccountRouterComponent />;
       } else {
-        return <AppContainerComponent />;
+        navigateTo(Screen.HOME_PAGE);
+        return <AppRouterComponent />;
       }
     }
   };

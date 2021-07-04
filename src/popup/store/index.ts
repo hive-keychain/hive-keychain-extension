@@ -1,18 +1,26 @@
 import reducers from '@popup/reducers';
 import {applyMiddleware, createStore} from 'redux';
-import {composeWithDevTools} from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
+// import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/utils/account.utils';
 
-const composeEnhancers = composeWithDevTools({});
-const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
+// const composeEnhancers = composeWithDevTools({
+//   realtime: true,
+//   port: 8000,
+// });
+const store = createStore(
+  reducers,
+  /* preloadedState, */ applyMiddleware(thunk),
+);
 
 let previousAccounts = store.getState().accounts;
 store.subscribe(() => {
   const {accounts, mk} = store.getState();
   if (previousAccounts !== accounts) {
     previousAccounts = accounts;
-    AccountUtils.saveAccounts(accounts, mk);
+    if (accounts.length > 0) {
+      AccountUtils.saveAccounts(accounts, mk);
+    }
   }
 });
 
