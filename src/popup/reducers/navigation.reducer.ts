@@ -1,20 +1,29 @@
-import {ActionType} from '@popup/actions/action-type.enum';
-import {actionPayload} from '@popup/actions/interfaces';
-import {Screen} from 'src/reference-data/screen.enum';
+import { ActionType } from '@popup/actions/action-type.enum';
+import { actionPayload } from '@popup/actions/interfaces';
+import { Screen } from 'src/reference-data/screen.enum';
 
 export interface NavigationState {
-  currentPage: Screen;
+  currentPage?: Screen;
   secondaryPage?: Screen;
   params?: any;
 }
 
 export const NavigationReducer = (
-  state: NavigationState = {currentPage: Screen.HOME_PAGE},
-  {type, payload}: actionPayload<any>,
+  state: NavigationState = { currentPage: Screen.HOME_PAGE },
+  { type, payload }: actionPayload<any>,
 ): NavigationState => {
   switch (type) {
     case ActionType.NAVIGATE_TO:
-      return {...state, currentPage: payload.currentPage};
+      return {
+        ...state,
+        currentPage: payload.currentPage,
+        secondaryPage: payload.secondaryPage,
+      };
+    case ActionType.NAVIGATE_TO_SECONDARY:
+      return {
+        ...state,
+        secondaryPage: payload.secondaryPage,
+      };
     case ActionType.NAVIGATE_TO_WITH_PARAMS:
       return {
         ...state,

@@ -1,5 +1,5 @@
 import reducers from '@popup/reducers';
-import {applyMiddleware, createStore} from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
 // import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/utils/account.utils';
@@ -15,7 +15,8 @@ const store = createStore(
 
 let previousAccounts = store.getState().accounts;
 store.subscribe(() => {
-  const {accounts, mk} = store.getState();
+  const { accounts, mk, navigation } = store.getState();
+  console.log(navigation, mk, accounts);
   if (previousAccounts !== accounts) {
     previousAccounts = accounts;
     if (accounts.length > 0) {
@@ -24,7 +25,7 @@ store.subscribe(() => {
   }
 });
 
-export {store};
+export { store };
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

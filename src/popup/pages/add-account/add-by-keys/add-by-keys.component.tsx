@@ -1,24 +1,33 @@
-import {addAccount} from '@popup/actions/account.actions';
-import {setErrorMessage} from '@popup/actions/error-message.actions';
-import {navigateToWithParams} from '@popup/actions/navigation.actions';
-import {RootState} from '@popup/store';
-import React, {useState} from 'react';
-import {connect, ConnectedProps} from 'react-redux';
+import { addAccount } from '@popup/actions/account.actions';
+import { setErrorMessage } from '@popup/actions/error-message.actions';
+import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import { RootState } from '@popup/store';
+import React, { useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import {InputType} from 'src/common-ui/input/input-type.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import {PageTitleComponent} from 'src/common-ui/page-title/page-title.component';
-import {Screen} from 'src/reference-data/screen.enum';
+import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import KeysUtils from 'src/utils/keys.utils';
 import './add-by-keys.component.css';
+
+interface AddByKeyProps {
+  backEnabled: boolean;
+  backPage: Screen;
+  backSecondaryPage?: Screen;
+}
 
 const AddByKeys = ({
   setErrorMessage,
   navigateToWithParams,
   localAccounts,
   addAccount,
-}: PropsFromRedux) => {
+  backEnabled,
+  backPage,
+  backSecondaryPage,
+}: PropsType) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
 
@@ -33,18 +42,21 @@ const AddByKeys = ({
       return;
     }
     if (KeysUtils.keysCount(keys) > 2) {
-      navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, {keys, username});
+      navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, { keys, username });
     } else {
-      addAccount({name: username, keys: keys});
+      addAccount({ name: username, keys: keys });
     }
   };
+
+  console.log(backEnabled, backPage);
 
   return (
     <div className="add-by-keys-page">
       <PageTitleComponent
         title="popup_html_setup"
-        isBackButtonEnabled={true}
-        backScreen={Screen.ACCOUNT_PAGE_INIT_ACCOUNT}
+        isBackButtonEnabled={backEnabled}
+        backScreen={backPage}
+        backSecondaryScreen={backSecondaryPage}
       />
       <div
         className="caption"
@@ -83,6 +95,6 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addAccount,
 });
-type PropsFromRedux = ConnectedProps<typeof connector>;
+type PropsType = ConnectedProps<typeof connector> & AddByKeyProps;
 
 export const AddByKeysComponent = connector(AddByKeys);

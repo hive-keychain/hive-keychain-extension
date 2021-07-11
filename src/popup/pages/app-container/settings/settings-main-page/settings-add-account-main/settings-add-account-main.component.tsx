@@ -1,18 +1,21 @@
-import { navigateTo } from '@popup/actions/navigation.actions';
+import { navigateToSecondary } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
-import './add-account-main.component.css';
+import './settings-add-account-main.component.css';
 
-const AddAccountMain = ({ navigateTo, accounts }: PropsFromRedux) => {
+const SettingsAddAccountMain = ({
+  navigateToSecondary,
+  accounts,
+}: PropsFromRedux) => {
   const handleAddByKeys = (): void => {
-    navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
+    navigateToSecondary(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
   };
   const handleAddByAuth = (): void => {
-    navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_AUTH);
+    navigateToSecondary(Screen.ACCOUNT_PAGE_ADD_BY_AUTH);
   };
   const handleImportKeys = (): void => {
     //navigateTo(Screen.ACCOUNT_PAGE_IMPORT_KEYS);
@@ -66,7 +69,9 @@ const mapStateToProps = (state: RootState) => {
   return { accounts: state.accounts };
 };
 
-const connector = connect(mapStateToProps, { navigateTo });
+const connector = connect(mapStateToProps, { navigateToSecondary });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const AddAccountMainComponent = connector(AddAccountMain);
+export const SettingsAddAccountMainComponent = connector(
+  SettingsAddAccountMain,
+);

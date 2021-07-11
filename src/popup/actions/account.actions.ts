@@ -1,7 +1,7 @@
-import {LocalAccount} from 'src/interfaces/local-account.interface';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
-import {ActionType} from './action-type.enum';
-import {actionPayload, AppThunk} from './interfaces';
+import { ActionType } from './action-type.enum';
+import { actionPayload, AppThunk } from './interfaces';
 
 export const retrieveAccounts =
   (mk: string): AppThunk =>

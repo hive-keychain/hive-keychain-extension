@@ -1,11 +1,11 @@
-import {ResetPasswordPageComponent} from '@popup/pages/sign-in/reset-password/reset-password.component';
-import {SignInComponent} from '@popup/pages/sign-in/sign-in/sign-in.component';
-import {RootState} from '@popup/store';
+import { ResetPasswordPageComponent } from '@popup/pages/sign-in/reset-password/reset-password.component';
+import { SignInComponent } from '@popup/pages/sign-in/sign-in/sign-in.component';
+import { RootState } from '@popup/store';
 import React from 'react';
-import {connect, ConnectedProps} from 'react-redux';
-import {Screen} from 'src/reference-data/screen.enum';
+import { connect, ConnectedProps } from 'react-redux';
+import { Screen } from 'src/reference-data/screen.enum';
 
-const SignInRouter = ({currentPage}: PropsFromRedux) => {
+const SignInRouter = ({ currentPage }: PropsFromRedux) => {
   const renderSignInPage = (page: Screen) => {
     switch (page) {
       case Screen.SIGN_IN_PAGE:
@@ -16,12 +16,12 @@ const SignInRouter = ({currentPage}: PropsFromRedux) => {
   };
 
   return (
-    <div className="sign-in-router-page">{renderSignInPage(currentPage)}</div>
+    <div className="sign-in-router-page">{renderSignInPage(currentPage!)}</div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {currentPage: state.navigation.currentPage};
+  return { currentPage: state.navigation.currentPage };
 };
 
 const connector = connect(mapStateToProps, {});
