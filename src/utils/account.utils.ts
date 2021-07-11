@@ -1,8 +1,8 @@
 import * as Hive from '@hiveio/dhive';
-import {Accounts} from 'src/interfaces/accounts.interface';
-import {Keys} from 'src/interfaces/keys.interface';
-import {LocalAccount} from 'src/interfaces/local-account.interface';
-import {LocalStorageKeyEnum} from 'src/reference-data/local-storage-key.enum';
+import { Accounts } from 'src/interfaces/accounts.interface';
+import { Keys } from 'src/interfaces/keys.interface';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import HiveUtils from './hive.utils';
 import KeysUtils from './keys.utils';
@@ -81,7 +81,7 @@ const verifyAccount = async (
 };
 
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
-  const accounts: Accounts = {list: localAccounts};
+  const accounts: Accounts = { list: localAccounts };
   const encyptedAccounts = await encryptAccounts(accounts, mk);
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
@@ -123,11 +123,86 @@ const hasStoredAccounts = async () => {
   );
 };
 
+const addAuthorizedAccount = async (
+  username: string,
+  authorizedAccount: string,
+  existingAccounts: LocalAccount[],
+  showError: (errorMessage: string, params: string[]) => void,
+): Promise<Keys | null> => {
+  let localAuthorizedAccount: LocalAccount;
+
+  if (username === '' || authorizedAccount === '') {
+    showError('popup_accounts_fill', []);
+    return null;
+  }
+
+  if (
+    !existingAccounts
+      .map((localAccount: LocalAccount) => localAccount.name)
+      .includes(authorizedAccount)
+  ) {
+    showError('popup_no_auth_account', [authorizedAccount]);
+    return null;
+  } else {
+    localAuthorizedAccount = existingAccounts.find(
+      (localAccount: LocalAccount) => localAccount.name,
+    )!;
+  }
+
+  if (
+    existingAccounts
+      .map((localAccount: LocalAccount) => localAccount.name)
+      .includes(username)
+  ) {
+    showError('popup_accounts_already_registered', []);
+    return null;
+  }
+
+  const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
+    username,
+  ]);
+
+  if (!hiveAccounts || hiveAccounts.length === 0) {
+    showError('popup_accounts_incorrect_user', []);
+    return null;
+  }
+  let hiveAccount = hiveAccounts[0];
+
+  const activeKeyInfo = hiveAccount.active;
+  const postingKeyInfo = hiveAccount.posting;
+
+  let keys: Keys = {};
+
+  const activeAuth = activeKeyInfo.account_auths.find(
+    (accountAuth) => accountAuth[0] === authorizedAccount,
+  );
+  const postingAuth = postingKeyInfo.account_auths.find(
+    (accountAuth) => accountAuth[0] === authorizedAccount,
+  );
+
+  if (!activeAuth && !postingAuth) {
+    showError('popup_accounts_no_auth', [authorizedAccount, username]);
+    return null;
+  }
+
+  if (activeAuth && activeAuth[1] >= activeKeyInfo.weight_threshold) {
+    keys.active = localAuthorizedAccount.keys.active;
+    keys.activePubkey = `@${authorizedAccount}`;
+  }
+  if (postingAuth && postingAuth[1] >= postingKeyInfo.weight_threshold) {
+    keys.posting = localAuthorizedAccount.keys.posting;
+    keys.postingPubkey = `@${authorizedAccount}`;
+  }
+
+  return keys;
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
   saveAccounts,
   hasStoredAccounts,
+  addAuthorizedAccount,
   AccountErrorMessages,
 };
 
