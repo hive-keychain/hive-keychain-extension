@@ -1405,7 +1405,7 @@
     "description": "When clicking on the Hbd arrow menu"
   },
   "popup_html_convert_hive_intro": {
-    "message": "Your HIVE will take 3.5 days to get converted to HBD, based on its days median price during that period.",
+    "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
   },
   "popup_html_convert_max": {
