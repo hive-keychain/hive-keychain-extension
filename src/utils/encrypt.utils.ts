@@ -50,6 +50,20 @@ function decrypt(transitmessage: string, pass: string) {
   return decrypted;
 }
 
+const decryptToJsonWithoutMD5Check = (msg: string, pwd: string) => {
+  try {
+    const decrypted = decrypt(msg, pwd).toString(CryptoJS.enc.Utf8);
+    const decryptedJSON: any = JSON.parse(decrypted);
+    if (decryptedJSON.hash != null) return decryptedJSON;
+    else {
+      return null;
+    }
+  } catch (e) {
+    Logger.error('Error while decrypting', e);
+    return null;
+  }
+};
+
 const decryptToJson = (msg: string, pwd: string) => {
   try {
     const decrypted = decrypt(msg, pwd).toString(CryptoJS.enc.Utf8);
@@ -68,6 +82,12 @@ const decryptToJson = (msg: string, pwd: string) => {
   }
 };
 
-const EncryptUtils = {encryptJson, encrypt, decryptToJson, decrypt};
+const EncryptUtils = {
+  encryptJson,
+  encrypt,
+  decryptToJson,
+  decryptToJsonWithoutMD5Check,
+  decrypt,
+};
 
 export default EncryptUtils;

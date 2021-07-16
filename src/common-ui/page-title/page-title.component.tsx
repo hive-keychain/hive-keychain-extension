@@ -1,8 +1,8 @@
-import {navigateTo} from '@popup/actions/navigation.actions';
-import {RootState} from '@popup/store';
+import { navigateTo } from '@popup/actions/navigation.actions';
+import { RootState } from '@popup/store';
 import React from 'react';
-import {connect, ConnectedProps} from 'react-redux';
-import {Screen} from 'src/reference-data/screen.enum';
+import { connect, ConnectedProps } from 'react-redux';
+import { Screen } from 'src/reference-data/screen.enum';
 import './page-title.component.css';
 
 interface PageTitleProps {
@@ -39,7 +39,7 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, {navigateTo});
+const connector = connect(mapStateToProps, { navigateTo });
 type PropsType = ConnectedProps<typeof connector> & PageTitleProps;
 
 export const PageTitleComponent = connector(PageTitle);

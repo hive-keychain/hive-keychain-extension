@@ -1318,6 +1318,10 @@
     "message": "@$1 does not have authority over @$2.",
     "description": "When trying to add an account via authority"
   },
+  "import_html_title": {
+    "message": "Import keys",
+    "description": "Title of import keys popup"
+  },
   "import_html_text": {
     "message": "Import your keys from another Keychain instance using a .kc file.<br/><br/>You need to use the same master password on both instances to decrypt the keys."
   },

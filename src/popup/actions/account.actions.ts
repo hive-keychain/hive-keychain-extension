@@ -11,7 +11,9 @@ export const retrieveAccounts =
       type: ActionType.SET_ACCOUNTS,
       payload: accounts,
     };
-    dispatch(action);
+    if (accounts) {
+      dispatch(action);
+    }
   };
 
 export const addAccount = (account: LocalAccount) => {
@@ -24,5 +26,12 @@ export const addAccount = (account: LocalAccount) => {
 export const resetAccount = () => {
   return {
     type: ActionType.RESET_ACCOUNT,
+  };
+};
+
+export const setAccounts = (accounts: LocalAccount[]) => {
+  return {
+    type: ActionType.SET_ACCOUNTS,
+    payload: accounts,
   };
 };

@@ -5,7 +5,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Screen } from 'src/reference-data/screen.enum';
 
-const SignInRouter = ({ currentPage }: PropsFromRedux) => {
+const SignInRouter = ({ secondaryPage }: PropsFromRedux) => {
   const renderSignInPage = (page: Screen) => {
     switch (page) {
       case Screen.SIGN_IN_PAGE:
@@ -16,12 +16,14 @@ const SignInRouter = ({ currentPage }: PropsFromRedux) => {
   };
 
   return (
-    <div className="sign-in-router-page">{renderSignInPage(currentPage!)}</div>
+    <div className="sign-in-router-page">
+      {renderSignInPage(secondaryPage!)}
+    </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { currentPage: state.navigation.currentPage };
+  return { secondaryPage: state.navigation.secondaryPage };
 };
 
 const connector = connect(mapStateToProps, {});

@@ -14,10 +14,10 @@
 .menu-item:nth-child(odd) {
   background-color: rgba(227, 19, 55, 0.32);
 }
-.menu-item.icon {
+.menu-item .icon {
   height: 20px;
   margin-right: 36px;
 }
-.menu-item.menu-label {
+.menu-item .menu-label {
   font-size: 16px;
 }

@@ -10,7 +10,7 @@ export const AccountReducer = (
     case ActionType.GET_ACCOUNTS:
       return payload!;
     case ActionType.SET_ACCOUNTS:
-      return [...state, ...payload];
+      return payload;
     case ActionType.ADD_ACCOUNT:
       return [...state, payload];
     case ActionType.RESET_ACCOUNT:

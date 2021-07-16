@@ -1,17 +1,17 @@
-import {setErrorMessage} from '@popup/actions/error-message.actions';
-import {setMk} from '@popup/actions/mk.actions';
-import {navigateTo} from '@popup/actions/navigation.actions';
-import {RootState} from '@popup/store';
-import React, {useState} from 'react';
-import {connect, ConnectedProps} from 'react-redux';
+import { setErrorMessage } from '@popup/actions/error-message.actions';
+import { setMk } from '@popup/actions/mk.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
+import { RootState } from '@popup/store';
+import React, { useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import {InputType} from 'src/common-ui/input/input-type.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import {Screen} from 'src/reference-data/screen.enum';
+import { Screen } from 'src/reference-data/screen.enum';
 import MkUtils from 'src/utils/mk.utils';
 import './sign-in.component.css';
 
-const SignIn = ({setErrorMessage, setMk, navigateTo}: PropsFromRedux) => {
+const SignIn = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
   const [password, setPassword] = useState('');
 
   const login = async () => {
@@ -24,7 +24,7 @@ const SignIn = ({setErrorMessage, setMk, navigateTo}: PropsFromRedux) => {
   };
 
   const goToForgetPassword = () => {
-    navigateTo(Screen.RESET_PASSWORD_PAGE);
+    navigateTo(Screen.SIGN_IN_PAGE, Screen.RESET_PASSWORD_PAGE);
   };
 
   return (
