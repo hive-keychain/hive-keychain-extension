@@ -38,7 +38,7 @@ const AddAccountMain = ({
       //@ts-ignore
       if (typeof InstallTrigger === undefined) win.focused = true;
       const window = await chrome.windows.create(win);
-      setImportWindow(window.id);
+      // setImportWindow(window.id);
       chrome.runtime.onMessage.addListener(onSentBackAccountsListener);
     });
   };
@@ -52,7 +52,7 @@ const AddAccountMain = ({
             accounts,
           ),
         );
-        chrome.windows.remove(importWindow!);
+        // chrome.windows.remove(importWindow!);
       }
       chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
     }
@@ -60,10 +60,7 @@ const AddAccountMain = ({
 
   return (
     <div className="add-account-page">
-      <PageTitleComponent
-        title="popup_html_setup"
-        isBackButtonEnabled={false}
-      />
+      <PageTitleComponent title="popup_html_setup" isBackButtonEnabled={true} />
       <div
         className="caption"
         dangerouslySetInnerHTML={{

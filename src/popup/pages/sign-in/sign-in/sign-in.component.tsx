@@ -17,14 +17,13 @@ const SignIn = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
   const login = async () => {
     if (await MkUtils.login(password)) {
       setMk(password);
-      navigateTo(Screen.HOME_PAGE);
     } else {
       setErrorMessage('wrong_password');
     }
   };
 
   const goToForgetPassword = () => {
-    navigateTo(Screen.SIGN_IN_PAGE, Screen.RESET_PASSWORD_PAGE);
+    navigateTo(Screen.RESET_PASSWORD_PAGE);
   };
 
   return (

@@ -13,20 +13,11 @@ import AccountUtils from 'src/utils/account.utils';
 import KeysUtils from 'src/utils/keys.utils';
 import './add-by-keys.component.css';
 
-interface AddByKeyProps {
-  backEnabled: boolean;
-  backPage: Screen;
-  backSecondaryPage?: Screen;
-}
-
 const AddByKeys = ({
   setErrorMessage,
   navigateToWithParams,
   localAccounts,
   addAccount,
-  backEnabled,
-  backPage,
-  backSecondaryPage,
 }: PropsType) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
@@ -48,16 +39,9 @@ const AddByKeys = ({
     }
   };
 
-  console.log(backEnabled, backPage);
-
   return (
     <div className="add-by-keys-page">
-      <PageTitleComponent
-        title="popup_html_setup"
-        isBackButtonEnabled={backEnabled}
-        backScreen={backPage}
-        backSecondaryScreen={backSecondaryPage}
-      />
+      <PageTitleComponent title="popup_html_setup" isBackButtonEnabled={true} />
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -95,6 +79,6 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addAccount,
 });
-type PropsType = ConnectedProps<typeof connector> & AddByKeyProps;
+type PropsType = ConnectedProps<typeof connector>;
 
 export const AddByKeysComponent = connector(AddByKeys);

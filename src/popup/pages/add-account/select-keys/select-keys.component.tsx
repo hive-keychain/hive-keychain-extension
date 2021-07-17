@@ -1,6 +1,5 @@
 import { addAccount } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/error-message.actions';
-import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -8,7 +7,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Keys } from 'src/interfaces/keys.interface';
-import { Screen } from 'src/reference-data/screen.enum';
 import KeysUtils from 'src/utils/keys.utils';
 import './select-keys.component.css';
 
@@ -44,7 +42,6 @@ const SelectKeys = ({
       setErrorMessage('popup_accounts_no_key_selected');
     } else {
       addAccount({ name: username, keys: keysToImport });
-      navigateTo(Screen.HOME_PAGE);
     }
   };
 
@@ -53,7 +50,6 @@ const SelectKeys = ({
       <PageTitleComponent
         title="popup_html_import_keys"
         isBackButtonEnabled={true}
-        backScreen={Screen.ACCOUNT_PAGE_ADD_BY_KEYS}
       />
       <div
         className="caption"

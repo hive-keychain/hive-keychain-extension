@@ -15,12 +15,7 @@ const AddAccountRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
       case Screen.ACCOUNT_PAGE_INIT_ACCOUNT:
         return <AddAccountMainComponent />;
       case Screen.ACCOUNT_PAGE_ADD_BY_KEYS:
-        return (
-          <AddByKeysComponent
-            backEnabled={true}
-            backPage={Screen.ACCOUNT_PAGE_INIT_ACCOUNT}
-          />
-        );
+        return <AddByKeysComponent />;
       case Screen.ACCOUNT_PAGE_IMPORT_KEYS:
         return <ImportKeysComponent />;
       case Screen.ACCOUNT_PAGE_SELECT_KEYS:
@@ -37,7 +32,7 @@ const AddAccountRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    currentPage: state.navigation.currentPage,
+    currentPage: state.navigation.stack[0],
     params: state.navigation.params,
   };
 };

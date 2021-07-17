@@ -1,11 +1,16 @@
+import { navigateTo } from '@popup/actions/navigation.actions';
 import { ResetPasswordPageComponent } from '@popup/pages/sign-in/reset-password/reset-password.component';
 import { SignInComponent } from '@popup/pages/sign-in/sign-in/sign-in.component';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Screen } from 'src/reference-data/screen.enum';
 
-const SignInRouter = ({ secondaryPage }: PropsFromRedux) => {
+const SignInRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
+  useEffect(() => {
+    navigateTo(Screen.SIGN_IN_PAGE);
+  }, []);
+
   const renderSignInPage = (page: Screen) => {
     switch (page) {
       case Screen.SIGN_IN_PAGE:
@@ -16,17 +21,15 @@ const SignInRouter = ({ secondaryPage }: PropsFromRedux) => {
   };
 
   return (
-    <div className="sign-in-router-page">
-      {renderSignInPage(secondaryPage!)}
-    </div>
+    <div className="sign-in-router-page">{renderSignInPage(currentPage!)}</div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { secondaryPage: state.navigation.secondaryPage };
+  return { currentPage: state.navigation.stack[0] };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { navigateTo });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SignInRouterComponent = connector(SignInRouter);

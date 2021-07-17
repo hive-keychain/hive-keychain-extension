@@ -1,15 +1,17 @@
-import {setErrorMessage} from '@popup/actions/error-message.actions';
-import {setMk} from '@popup/actions/mk.actions';
-import {RootState} from '@popup/store';
-import React, {useState} from 'react';
-import {connect, ConnectedProps} from 'react-redux';
+import { setErrorMessage } from '@popup/actions/error-message.actions';
+import { setMk } from '@popup/actions/mk.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
+import { RootState } from '@popup/store';
+import React, { useState } from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import {InputType} from 'src/common-ui/input/input-type.enum';
+import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { Screen } from 'src/reference-data/screen.enum';
 import MkUtils from 'src/utils/mk.utils';
 import './sign-up.component.css';
 
-const SignUp = ({setErrorMessage, setMk}: PropsFromRedux) => {
+const SignUp = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
 
@@ -17,6 +19,7 @@ const SignUp = ({setErrorMessage, setMk}: PropsFromRedux) => {
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
         setMk(newPassword);
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
       } else {
         setErrorMessage('popup_password_regex');
       }
@@ -57,7 +60,11 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, {setErrorMessage, setMk});
+const connector = connect(mapStateToProps, {
+  setErrorMessage,
+  setMk,
+  navigateTo,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SignUpComponent = connector(SignUp);

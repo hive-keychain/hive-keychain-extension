@@ -13,20 +13,11 @@ import AccountUtils from 'src/utils/account.utils';
 import KeysUtils from 'src/utils/keys.utils';
 import './add-by-auth.component.css';
 
-interface AddByKeyProps {
-  backEnabled: boolean;
-  backPage: Screen;
-  backSecondaryPage?: Screen;
-}
-
 const AddByAuth = ({
   setErrorMessage,
   navigateTo,
   localAccounts,
   addAccount,
-  backEnabled,
-  backPage,
-  backSecondaryPage,
 }: PropsType) => {
   const [username, setUsername] = useState('');
   const [authorizedAccount, setAuthorizedAccount] = useState('');
@@ -41,18 +32,13 @@ const AddByAuth = ({
 
     if (keys && KeysUtils.keysCount(keys) >= 2) {
       addAccount({ name: username, keys: keys });
-      navigateTo(Screen.SETTINGS_ROUTER, Screen.SETTINGS_MAIN_PAGE);
+      navigateTo(Screen.SETTINGS_MAIN_PAGE);
     }
   };
 
   return (
     <div className="add-by-auth-page">
-      <PageTitleComponent
-        title="popup_html_setup"
-        isBackButtonEnabled={backEnabled}
-        backScreen={backPage}
-        backSecondaryScreen={backSecondaryPage}
-      />
+      <PageTitleComponent title="popup_html_setup" isBackButtonEnabled={true} />
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -90,6 +76,6 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   addAccount,
 });
-type PropsType = ConnectedProps<typeof connector> & AddByKeyProps;
+type PropsType = ConnectedProps<typeof connector>;
 
 export const AddByAuthComponent = connector(AddByAuth);

@@ -1,0 +1,5 @@
+.add-by-auth-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+}

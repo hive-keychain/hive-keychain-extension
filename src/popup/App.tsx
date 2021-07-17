@@ -21,8 +21,8 @@ const App = ({
   mk,
   retrieveAccounts,
   accounts,
-  navigateTo,
   currentPage,
+  navigateTo,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
 
@@ -33,23 +33,16 @@ const App = ({
   useEffect(() => {
     chrome.runtime.sendMessage({ command: BackgroundCommand.GET_MK });
     chrome.runtime.onMessage.addListener(onSentBackMkListener);
-  }, [setMk]);
+  }, [mk]);
 
   useEffect(() => {
-    if (!mk) {
-      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-        navigateTo(Screen.SIGN_UP_PAGE);
-      } else {
-        navigateTo(Screen.SIGN_IN_ROUTER, Screen.SIGN_IN_PAGE);
-      }
+    if (mk.length > 0 && accounts && accounts.length > 0) {
+      navigateTo(Screen.HOME_PAGE, true);
+    } else if (mk.length > 0) {
+      navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else {
-      if (accounts && accounts.length === 0) {
-        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT);
-      } else {
-        navigateTo(Screen.HOME_PAGE);
-      }
     }
-  }, [mk, accounts, hasStoredAccounts]);
+  }, [mk, accounts]);
 
   const onSentBackMkListener = async (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
@@ -64,16 +57,18 @@ const App = ({
   };
 
   const renderMainLayoutNav = (currentPage: Screen) => {
-    console.log(currentPage);
-    switch (currentPage) {
-      case Screen.HOME_PAGE:
-        return <AppRouterComponent />;
-      case Screen.SIGN_IN_ROUTER:
-        return <SignInRouterComponent />;
-      case Screen.SIGN_UP_PAGE:
+    if (!mk) {
+      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
         return <SignUpComponent />;
-      case Screen.ACCOUNT_PAGE_INIT_ACCOUNT:
+      } else {
+        return <SignInRouterComponent />;
+      }
+    } else {
+      if (accounts && accounts.length === 0) {
         return <AddAccountRouterComponent />;
+      } else {
+        return <AppRouterComponent />;
+      }
     }
   };
 
@@ -89,7 +84,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
     accounts: state.accounts,
-    currentPage: state.navigation.currentPage,
+    currentPage: state.navigation.stack[0],
   };
 };
 

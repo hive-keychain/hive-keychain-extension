@@ -1,5 +1,10 @@
+import { AddAccountRouterComponent } from '@popup/pages/add-account/add-account-router/add-account-router.component';
+import { AddByAuthComponent } from '@popup/pages/add-account/add-by-auth/add-by-auth.component';
+import { AddByKeysComponent } from '@popup/pages/add-account/add-by-keys/add-by-keys.component';
+import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import-keys.component';
+import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
-import { SettingsRouterComponent } from '@popup/pages/app-container/settings/settings-router.component';
+import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -10,8 +15,19 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
     switch (page) {
       case Screen.HOME_PAGE:
         return <HomeComponent />;
-      case Screen.SETTINGS_ROUTER:
-        return <SettingsRouterComponent />;
+      //Settings Routes
+      case Screen.SETTINGS_MAIN_PAGE:
+        return <SettingsMainPageComponent />;
+      case Screen.ACCOUNT_PAGE_INIT_ACCOUNT:
+        return <AddAccountRouterComponent />;
+      case Screen.ACCOUNT_PAGE_ADD_BY_KEYS:
+        return <AddByKeysComponent />;
+      case Screen.ACCOUNT_PAGE_ADD_BY_AUTH:
+        return <AddByAuthComponent />;
+      case Screen.ACCOUNT_PAGE_IMPORT_KEYS:
+        return <ImportKeysComponent />;
+      case Screen.ACCOUNT_PAGE_SELECT_KEYS:
+        return <SelectKeysComponent />;
     }
   };
 
@@ -23,7 +39,7 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { currentPage: state.navigation.currentPage };
+  return { currentPage: state.navigation.stack[0] };
 };
 
 const connector = connect(mapStateToProps, {});

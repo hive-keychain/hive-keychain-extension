@@ -1,12 +1,12 @@
-import {resetAccount} from '@popup/actions/account.actions';
-import {forgetMk} from '@popup/actions/mk.actions';
-import {navigateTo} from '@popup/actions/navigation.actions';
-import {RootState} from '@popup/store';
+import { resetAccount } from '@popup/actions/account.actions';
+import { forgetMk } from '@popup/actions/mk.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
+import { RootState } from '@popup/store';
 import React from 'react';
-import {connect, ConnectedProps} from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import {PageTitleComponent} from 'src/common-ui/page-title/page-title.component';
-import {Screen} from 'src/reference-data/screen.enum';
+import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import { Screen } from 'src/reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const ResetPasswordPage = ({
@@ -18,16 +18,12 @@ const ResetPasswordPage = ({
     forgetMk();
     resetAccount();
     LocalStorageUtils.clearLocalStorage();
-    navigateTo(Screen.SIGN_UP_PAGE);
+    navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
   return (
     <div className="reset-password-page">
-      <PageTitleComponent
-        title="popup_html_reset"
-        isBackButtonEnabled={true}
-        backScreen={Screen.SIGN_IN_PAGE}
-      />
+      <PageTitleComponent title="popup_html_reset" isBackButtonEnabled={true} />
 
       <p
         className="introduction"

@@ -255,7 +255,9 @@ const mergeImportedAccountsToExistingAccounts = (
     }
   }
 
-  return existingAccounts;
+  console.log(newAccounts);
+
+  return newAccounts;
 };
 
 const AccountUtils = {
