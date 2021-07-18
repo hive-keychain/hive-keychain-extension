@@ -15,8 +15,8 @@ const store = createStore(
 
 let previousAccounts = store.getState().accounts;
 store.subscribe(() => {
-  const { accounts, mk, navigation } = store.getState();
-  console.log(navigation, mk, accounts);
+  const { accounts, mk, navigation, activeAccount } = store.getState();
+  console.log(navigation, mk, accounts, activeAccount);
   if (previousAccounts !== accounts) {
     previousAccounts = accounts;
     if (accounts.length > 0) {

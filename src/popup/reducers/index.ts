@@ -1,12 +1,14 @@
-import { combineReducers } from "redux";
-import { AccountReducer } from "./account.reducer";
-import { ErrorMessageReducer } from "./error-message.reducer";
-import { MkReducer } from "./mk.reducer";
-import { NavigationReducer } from "./navigation.reducer";
+import ActiveAccountReducer from '@popup/reducers/active-account.reducer';
+import { combineReducers } from 'redux';
+import { AccountReducer } from './account.reducer';
+import { ErrorMessageReducer } from './error-message.reducer';
+import { MkReducer } from './mk.reducer';
+import { NavigationReducer } from './navigation.reducer';
 
 export default combineReducers({
   mk: MkReducer,
   accounts: AccountReducer,
+  activeAccount: ActiveAccountReducer,
   errorMessage: ErrorMessageReducer,
-  navigation: NavigationReducer
+  navigation: NavigationReducer,
 });

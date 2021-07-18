@@ -11,7 +11,6 @@ class App extends Component {
   state: ImportAccountState = {};
 
   handleFileUpload = (event: any) => {
-    console.log('handleFile');
     this.state.selectedFile = event.target.files[0];
   };
 

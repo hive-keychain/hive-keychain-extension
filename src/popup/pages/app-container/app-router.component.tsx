@@ -4,6 +4,7 @@ import { AddByKeysComponent } from '@popup/pages/add-account/add-by-keys/add-by-
 import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import-keys.component';
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
+import { ManageAccountComponent } from '@popup/pages/app-container/settings/manage-account/manage-account.component';
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -28,6 +29,8 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <ImportKeysComponent />;
       case Screen.ACCOUNT_PAGE_SELECT_KEYS:
         return <SelectKeysComponent />;
+      case Screen.SETTINGS_MANAGE_ACCOUNTS:
+        return <ManageAccountComponent />;
     }
   };
 

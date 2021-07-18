@@ -1,6 +1,6 @@
 import * as Hive from '@hiveio/dhive';
-import {Account} from '@hiveio/dhive';
-import {Keys} from 'src/interfaces/keys.interface';
+import { Account } from '@hiveio/dhive';
+import { Keys } from 'src/interfaces/keys.interface';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
   try {
@@ -72,12 +72,25 @@ const keysCount = (keys: Keys): number => {
   return Object.keys(keys).length;
 };
 
+const hasActive = (keys: Keys): boolean => {
+  return keys.active !== undefined;
+};
+const hasPosting = (keys: Keys): boolean => {
+  return keys.posting !== undefined;
+};
+const hasMemo = (keys: Keys): boolean => {
+  return keys.memo !== undefined;
+};
+
 const KeysUtils = {
   getPublicKeyFromPrivateKeyString,
   getPubkeyWeight,
   derivateFromMasterPassword,
   hasKeys,
   keysCount,
+  hasActive,
+  hasPosting,
+  hasMemo,
 };
 
 export default KeysUtils;
