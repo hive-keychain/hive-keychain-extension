@@ -58,10 +58,10 @@
         <div class="msg-data">
           <p id="transfer_warning"></p>
           <h3
-            class="addAccount encode decode vote post custom delegation addAccountAuthority removeAccountAuthority addKeyAuthority removeKeyAuthority broadcast signTx signBuffer signedCall witnessVote powerUp powerDown createProposal removeProposal updateProposalVote proxy"
+            class="addAccount convert recurrentTransfer encode decode vote post custom delegation addAccountAuthority removeAccountAuthority addKeyAuthority removeKeyAuthority broadcast signTx signBuffer signedCall witnessVote powerUp powerDown createProposal removeProposal updateProposalVote proxy"
           ></h3>
           <div
-            class="addAccount encode decode vote post custom delegation addAccountAuthority removeAccountAuthority addKeyAuthority removeKeyAuthority broadcast signTx signBuffer signedCall witnessVote powerUp powerDown createProposal removeProposal updateProposalVote proxy"
+            class="addAccount convert recurrentTransfer encode decode vote post custom delegation addAccountAuthority removeAccountAuthority addKeyAuthority removeKeyAuthority broadcast signTx signBuffer signedCall witnessVote powerUp powerDown createProposal removeProposal updateProposalVote proxy"
             id="username"
           ></div>
           <h3 class="removeProposal updateProposalVote"></h3>
@@ -112,10 +112,10 @@
             <pre />
             <div></div>
           </div>
-          <h3 class="transfer sendToken powerUp"></h3>
-          <div class="transfer sendToken powerUp" id="to"></div>
-          <h3 class="transfer sendToken powerUp powerDown"></h3>
-          <div class="transfer sendToken powerUp powerDown" id="amount"></div>
+          <h3 class="transfer sendToken powerUp recurrentTransfer"></h3>
+          <div class="transfer sendToken powerUp recurrentTransfer" id="to"></div>
+          <h3 class="transfer sendToken powerUp powerDown convert recurrentTransfer"></h3>
+          <div class="transfer sendToken powerUp powerDown convert recurrentTransfer" id="amount"></div>
           <h3 class="transfer sendToken  powerDown" id="balance_title"></h3>
           <img
             class="transfer sendToken  powerDown balance_loading"
@@ -133,8 +133,8 @@
           <div class="transfer sendToken  powerDown" id="balance_after"></div>
           <h3 class="createProposal"></h3>
           <div class="createProposal" id="daily_pay"></div>
-          <h3 class="transfer_memo sendToken"></h3>
-          <div class="transfer_memo sendToken" id="memo"></div>
+          <h3 class="transfer_memo sendToken recurrentTransfer"></h3>
+          <div class="transfer_memo sendToken recurrentTransfer" id="memo"></div>
           <h3 class="post createProposal"></h3>
           <div class="post createProposal" id="title"></div>
           <h3 class="post createProposal"></h3>
@@ -179,6 +179,10 @@
           <div class="witnessVote" id="voteWit"></div>
           <h3 class="addAccount"></h3>
           <div class="addAccount" id="keys"></div>
+          <h3 class="recurrentTransfer"></h3>
+          <div class="recurrentTransfer" id="recurrence"></div>
+          <h3 class="recurrentTransfer"></h3>
+          <div class="recurrentTransfer" id="executions"></div>
         </div>
       </div>
       <div id="confirm_footer">

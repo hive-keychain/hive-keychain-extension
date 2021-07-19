@@ -305,6 +305,66 @@
     >
     <input type="text" placeholder="extensions" id="vp_extensions" value="[]" />
     <button id="send_vp">Send</button>
+    <h3>Convert</h3>
+    <input
+      type="text"
+      placeholder="username"
+      id="con_username"
+      value="stoodkev"
+    />
+    <input
+      type="text"
+      placeholder="proposal_ids"
+      id="con_amount"
+      value="1.000"
+    />
+    <input type="checkbox" id="con_collaterized" /><label for="con_collaterized"
+      >Collaterized</label
+    >
+    <button id="send_con">Send</button>
+    <h3>Recurrent transfers</h3>
+    <input
+      type="text"
+      placeholder="username"
+      id="rec_username"
+      value="stoodkev"
+    />
+    <input
+    type="text"
+    placeholder="to"
+    id="rec_to"
+    value="lecaillon"
+    />
+    <input
+      type="text"
+      placeholder="amount"
+      id="rec_amount"
+      value="0.001"
+    />
+    <select id="rec_currency" >
+      <option>HIVE</option>
+      <option>HBD</option>
+      <option selected="selected">TESTS</option>
+      <option>TBD</option>
+    </select>
+    <input
+      type="text"
+      placeholder="memo"
+      id="rec_memo"
+      value=""
+    />
+    <input
+    type="number"
+    placeholder="recurrence"
+    id="rec_recurrence"
+    value=1
+  /><input
+  type="number"
+  placeholder="executions"
+  id="rec_ex"
+  value=2
+/>
+    <button id="send_rec">Send</button>
     <h3>Save account to keychain</h3>
     <input type="text" placeholder="username" id="save_username" />
     <input type="text" id="save_keys" />

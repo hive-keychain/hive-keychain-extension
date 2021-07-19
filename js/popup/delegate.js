@@ -3,7 +3,6 @@ const prepareDelegationTab = async () => {
     await activeAccount.getDelegatees(),
     await activeAccount.getDelegators()
   ];
-  console.log(delegatees, delegators);
   if (!activeAccount.hasKey("active")) {
     $("#send_del").addClass("disabled");
     $("#wrap_send_del").attr(

@@ -12,16 +12,14 @@ let interval = null;
 let rpc = new Rpcs();
 // Lock after the browser is idle for more than 10 minutes
 
-chrome.storage.local.get(["no_confirm"], (items) => {
-  console.log(items);
-});
+chrome.storage.local.get(["no_confirm"], (items) => {});
 chrome.storage.local.get(
   ["current_rpc", "autolock", "claimRewards", "claimAccounts"],
   (items) => {
     if (items.autolock) startAutolock(JSON.parse(items.autolock));
     startClaimRewards(items.claimRewards);
     startClaimAccounts(items.claimAccounts);
-    console.log("should set...", items.current_rpc);
+    console.info("should set...", items.current_rpc);
     rpc.setOptions(items.current_rpc || "DEFAULT");
   }
 );

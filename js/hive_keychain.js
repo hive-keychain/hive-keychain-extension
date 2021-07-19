@@ -287,7 +287,7 @@ var hive_keychain = {
    * @param {String} account Hive account to perform the request
    * @param {String} permlink Permlink of the blog post
    * @param {String} author Author of the blog post
-   * @param {String} weight Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
+   * @param {Number} weight Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -401,7 +401,7 @@ var hive_keychain = {
    * Requests a delegation broadcast
    * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} delegatee Account to receive the delegation
-   * @param {number} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
+   * @param {String} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
    * @param {String} unit HP or VESTS
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
@@ -463,7 +463,7 @@ var hive_keychain = {
    * Request a power up
    * @param {String} username Hive account to perform the request
    * @param {String} recipient Account to receive the power up
-   * @param {number} hive Amount of HIVE to be powered up
+   * @param {String} hive Amount of HIVE to be powered up
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -480,7 +480,7 @@ var hive_keychain = {
   /**
    * Request a power down
    * @param {String} username Hive account to perform the request
-   * @param {number} hive_power Amount of HIVE to be powered down
+   * @param {String} hive_power Amount of HIVE to be powered down
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -535,9 +535,9 @@ var hive_keychain = {
    * @param {String} receiver Account receiving the funding if the proposal is voted
    * @param {String} subject Title of the DAO
    * @param {String} permlink Permlink to the proposal description
-   * @param {number} daily_pay Daily amount to be received by `receiver`
-   * @param {Date} start Starting date
-   * @param {Date} end Ending date
+   * @param {String} daily_pay Daily amount to be received by `receiver`
+   * @param {String} start Starting date
+   * @param {String} end Ending date
    * @param {String} extensions Stringified Array of extensions
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
@@ -632,6 +632,62 @@ var hive_keychain = {
       type: 'addAccount',
       username,
       keys,
+    };
+
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+  /**
+   * Request currency conversion
+   * @param {String} username Hive account to perform the request
+   * @param {String} amount amount to be converted.
+   * @param {Boolean} collaterized true to convert HIVE to HBD. false to convert HBD to HIVE.
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestConversion: function (username, amount, collaterized, callback, rpc) {
+    const request = {
+      type: 'convert',
+      username,
+      amount,
+      collaterized,
+      rpc,
+    };
+
+    this.dispatchCustomEvent('swRequest_hive', request, callback);
+  },
+  /**
+   * Request recurrent transfer
+   * @param {String} [username=null] Hive account to perform the request
+   * @param {String} to Hive account receiving the transfers.
+   * @param {String} amount amount to be sent on each execution.
+   * @param {String} currency HIVE or HBD on mainnet.
+   * @param {String} memo transfer memo
+   * @param {Number} recurrence How often will the payment be triggered (in hours).
+   * @param {Number} executions The times the recurrent payment will be executed.
+   * @param {function} callback Keychain's response to the request
+   * @param {String} [rpc=null] Override user's RPC settings
+   */
+  requestRecurrentTransfer: function (
+    username,
+    to,
+    amount,
+    currency,
+    memo,
+    recurrence,
+    executions,
+    callback,
+    rpc,
+  ) {
+    const request = {
+      type: 'recurrentTransfer',
+      username,
+      to,
+      amount,
+      currency,
+      memo,
+      recurrence,
+      executions,
+      rpc,
     };
 
     this.dispatchCustomEvent('swRequest_hive', request, callback);
