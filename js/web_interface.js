@@ -3,38 +3,38 @@ let req = null;
 
 const setupInjection = () => {
   try {
-    var scriptTag = document.createElement("script");
-    scriptTag.src = chrome.runtime.getURL("js/hive_keychain.js");
+    var scriptTag = document.createElement('script');
+    scriptTag.src = chrome.runtime.getURL('js/hive_keychain.js');
     var container = document.head || document.documentElement;
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
-    console.error("Steem Keychain injection failed.", e);
+    console.error('Steem Keychain injection failed.', e);
   }
 };
 setupInjection();
 
 // Answering the handshakes
-document.addEventListener("swHandshake_hive", function (request) {
+document.addEventListener('swHandshake_hive', function (request) {
   const req = JSON.stringify(request.detail);
   if (request.detail.extension)
     chrome.runtime.sendMessage(request.detail.extension, req);
   else
     window.postMessage(
       {
-        type: "hive_keychain_handshake",
+        type: 'hive_keychain_handshake',
       },
-      window.location.origin
+      window.location.origin,
     );
 });
 
 // Answering the requests
-document.addEventListener("swRequest_hive", function (request) {
+document.addEventListener('swRequest_hive', function (request) {
   const prevReq = req;
   req = request.detail;
   // If all information are filled, send the request to the background, if not notify an error
   if (validate()) {
     chrome.runtime.sendMessage({
-      command: "sendRequest",
+      command: 'sendRequest',
       request: req,
       domain: req.extensionName || window.location.hostname,
       request_id: req.request_id,
@@ -42,9 +42,9 @@ document.addEventListener("swRequest_hive", function (request) {
     if (prevReq) {
       const response = {
         success: false,
-        error: "ignored",
+        error: 'ignored',
         result: null,
-        message: "User ignored this transaction",
+        message: 'User ignored this transaction',
         data: prevReq,
         request_id: prevReq.request_id,
       };
@@ -53,9 +53,9 @@ document.addEventListener("swRequest_hive", function (request) {
   } else {
     var response = {
       success: false,
-      error: "incomplete",
+      error: 'incomplete',
       result: null,
-      message: "Incomplete data or wrong format",
+      message: 'Incomplete data or wrong format',
       data: req,
       request_id: req.request_id,
     };
@@ -66,7 +66,7 @@ document.addEventListener("swRequest_hive", function (request) {
 
 // Get notification from the background upon request completion and pass it to the website.
 chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
-  if (obj.command === "answerRequest") {
+  if (obj.command === 'answerRequest') {
     sendResponse(obj.msg);
     req = null;
   }
@@ -76,17 +76,17 @@ const sendResponse = (response) => {
   if (response.data.extension && response.data.extensionName) {
     chrome.runtime.sendMessage(
       response.data.extension,
-      JSON.stringify(response)
+      JSON.stringify(response),
     );
   } else if (response.data.redirect_uri) {
     window.location = response.data.redirect_uri;
   } else {
     window.postMessage(
       {
-        type: "hive_keychain_response",
+        type: 'hive_keychain_response',
         response,
       },
-      window.location.origin
+      window.location.origin,
     );
   }
 };
@@ -95,26 +95,26 @@ const validate = () => {
   return (
     req &&
     req.type &&
-    ((req.type === "decode" &&
+    ((req.type === 'decode' &&
       isFilled(req.username) &&
       isFilled(req.message) &&
-      req.message[0] === "#" &&
+      req.message[0] === '#' &&
       isFilledKey(req.method)) ||
-      (req.type === "encode" &&
+      (req.type === 'encode' &&
         isFilled(req.username) &&
         isFilled(req.receiver) &&
         isFilled(req.message) &&
-        req.message[0] === "#" &&
+        req.message[0] === '#' &&
         isFilledKey(req.method)) ||
-      (req.type === "signBuffer" &&
+      (req.type === 'signBuffer' &&
         isFilled(req.message) &&
         isFilledKey(req.method)) ||
-      (req.type === "vote" &&
+      (req.type === 'vote' &&
         isFilled(req.username) &&
         isFilledWeight(req.weight) &&
         isFilled(req.permlink) &&
         isFilled(req.author)) ||
-      (req.type === "post" &&
+      (req.type === 'post' &&
         isFilled(req.username) &&
         isFilled(req.body) &&
         ((isFilled(req.title) &&
@@ -128,61 +128,61 @@ const validate = () => {
             isFilled(req.parent_perm) &&
             isFilledOrEmpty(req.json_metadata))) &&
         isCustomOptions(req)) ||
-      (req.type === "custom" && isFilled(req.json) && isFilled(req.id)) ||
-      (req.type === "addAccountAuthority" &&
+      (req.type === 'custom' && isFilled(req.json) && isFilled(req.id)) ||
+      (req.type === 'addAccountAuthority' &&
         isFilled(req.authorizedUsername) &&
         isFilled(req.role) &&
         isFilled(req.weight)) ||
-      (req.type === "removeAccountAuthority" &&
+      (req.type === 'removeAccountAuthority' &&
         isFilled(req.authorizedUsername) &&
         isFilled(req.role)) ||
-      (req.type === "addKeyAuthority" &&
+      (req.type === 'addKeyAuthority' &&
         isFilled(req.authorizedKey) &&
         isFilled(req.role) &&
         isFilled(req.weight)) ||
-      (req.type === "removeKeyAuthority" &&
+      (req.type === 'removeKeyAuthority' &&
         isFilled(req.authorizedKey) &&
         isFilled(req.role)) ||
-      (req.type === "broadcast" &&
+      (req.type === 'broadcast' &&
         isFilled(req.operations) &&
         isFilled(req.method)) ||
-      (req.type === "signTx" && isFilled(req.tx) && isFilled(req.method)) ||
-      (req.type === "signedCall" &&
+      (req.type === 'signTx' && isFilled(req.tx) && isFilled(req.method)) ||
+      (req.type === 'signedCall' &&
         isFilled(req.method) &&
         isFilled(req.params) &&
         isFilled(req.typeWif)) ||
-      (req.type === "witnessVote" &&
+      (req.type === 'witnessVote' &&
         isFilled(req.witness) &&
         isBoolean(req.vote)) ||
-      (req.type === "proxy" && isFilledOrEmpty(req.proxy)) ||
-      (req.type === "delegation" &&
+      (req.type === 'proxy' && isFilledOrEmpty(req.proxy)) ||
+      (req.type === 'delegation' &&
         isFilled(req.delegatee) &&
         isFilledAmtSP(req) &&
         isFilledDelegationMethod(req.unit)) ||
-      (req.type === "transfer" &&
+      (req.type === 'transfer' &&
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
         isFilledCurrency(req.currency) &&
         hasTransferInfo(req)) ||
-      (req.type === "sendToken" &&
+      (req.type === 'sendToken' &&
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
         isFilled(req.currency)) ||
-      (req.type === "powerUp" &&
+      (req.type === 'powerUp' &&
         isFilled(req.username) &&
         isFilledAmt(req.steem) &&
         isFilled(req.recipient)) ||
-      (req.type === "powerDown" &&
+      (req.type === 'powerDown' &&
         isFilled(req.username) &&
-        (isFilledAmt(req.steem_power) || req.steem_power === "0.000")) ||
-      (req.type === "createClaimedAccount" &&
+        (isFilledAmt(req.steem_power) || req.steem_power === '0.000')) ||
+      (req.type === 'createClaimedAccount' &&
         isFilled(req.username) &&
         isFilled(req.new_account) &&
         isFilled(req.owner) &&
         isFilled(req.active) &&
         isFilled(req.posting) &&
         isFilled(req.memo)) ||
-      (req.type === "createProposal" &&
+      (req.type === 'createProposal' &&
         isFilled(req.username) &&
         isFilled(req.receiver) &&
         isFilledDate(req.start) &&
@@ -190,18 +190,27 @@ const validate = () => {
         isFilled(req.subject) &&
         isFilled(req.permlink) &&
         isFilledAmtSBD(req.daily_pay)) ||
-      (req.type === "removeProposal" &&
+      (req.type === 'removeProposal' &&
         isFilled(req.username) &&
         isProposalIDs(req.proposal_ids)) ||
-      (req.type === "updateProposalVote" &&
+      (req.type === 'updateProposalVote' &&
         isFilled(req.username) &&
         isProposalIDs(req.proposal_ids) &&
         isBoolean(req.approve)) ||
-      (req.type === "sendToken" &&
+      (req.type === 'sendToken' &&
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
         isFilled(req.currency)) ||
-      (req.type === "addAccount" && isFilledKeys(req.keys)))
+      (req.type === 'addAccount' && isFilledKeys(req.keys)) ||
+      (req.type === 'convert' &&
+        isFilled(req.username) &&
+        isFilledAmt(req.amount) &&
+        isBoolean(req.collaterized)) ||
+      (req.type === 'recurrentTransfer' &&
+        (isFilledAmt(req.amount) || parseFloat(req.amount) === 0) &&
+        isFilledCurrency(req.currency) &&
+        isFilled(req.to) &&
+        Number.isInteger(req.executions)))
   );
 };
 
@@ -209,13 +218,13 @@ const validate = () => {
 
 const hasTransferInfo = (req) => {
   if (req.enforce) return isFilled(req.username);
-  else if (isFilled(req.memo) && req.memo[0] === "#")
+  else if (isFilled(req.memo) && req.memo[0] === '#')
     return isFilled(req.username);
   else return true;
 };
 
 const isFilled = (obj) => {
-  return obj != undefined && obj != null && obj != "";
+  return obj != undefined && obj != null && obj != '';
 };
 
 const isBoolean = (obj) => {
@@ -223,7 +232,7 @@ const isBoolean = (obj) => {
 };
 
 const isFilledOrEmpty = (obj) => {
-  return obj || obj === "";
+  return obj || obj === '';
 };
 
 const isProposalIDs = (obj) => {
@@ -232,17 +241,17 @@ const isProposalIDs = (obj) => {
 };
 
 const isFilledDelegationMethod = (obj) => {
-  return obj === "VESTS" || obj === "HP";
+  return obj === 'VESTS' || obj === 'HP';
 };
 
 const isFilledJSON = (obj) => {
   try {
     return (
       isFilled(obj) &&
-      JSON.parse(obj).hasOwnProperty("requiredAuths") &&
-      JSON.parse(obj).hasOwnProperty("requiredPostingAuths") &&
-      JSON.parse(obj).hasOwnProperty("id") &&
-      JSON.parse(obj).hasOwnProperty("json")
+      JSON.parse(obj).hasOwnProperty('requiredAuths') &&
+      JSON.parse(obj).hasOwnProperty('requiredPostingAuths') &&
+      JSON.parse(obj).hasOwnProperty('id') &&
+      JSON.parse(obj).hasOwnProperty('json')
     );
   } catch (e) {
     return false;
@@ -262,18 +271,18 @@ const isFilledAmtSP = (obj) => {
   return (
     isFilled(obj.amount) &&
     !isNaN(obj.amount) &&
-    ((countDecimals(obj.amount) === 3 && obj.unit === "HP") ||
-      (countDecimals(obj.amount) === 6 && obj.unit === "VESTS"))
+    ((countDecimals(obj.amount) === 3 && obj.unit === 'HP') ||
+      (countDecimals(obj.amount) === 6 && obj.unit === 'VESTS'))
   );
 };
 
 const isFilledAmtSBD = (amt) => {
   return (
     amt &&
-    amt.split(" ").length === 2 &&
-    !isNaN(amt.split(" ")[0]) &&
-    parseFloat(countDecimals(amt.split(" ")[0])) === 3 &&
-    amt.split(" ")[1] === "HBD"
+    amt.split(' ').length === 2 &&
+    !isNaN(amt.split(' ')[0]) &&
+    parseFloat(countDecimals(amt.split(' ')[0])) === 3 &&
+    amt.split(' ')[1] === 'HBD'
   );
 };
 
@@ -288,29 +297,29 @@ const isFilledWeight = (obj) => {
 };
 
 const isFilledCurrency = (obj) => {
-  return isFilled(obj) && (obj === "HIVE" || obj === "HBD");
+  return isFilled(obj) && (obj === 'HIVE' || obj === 'HBD');
 };
 
 const isFilledKey = (obj) => {
   return (
-    isFilled(obj) && (obj === "Memo" || obj === "Active" || obj === "Posting")
+    isFilled(obj) && (obj === 'Memo' || obj === 'Active' || obj === 'Posting')
   );
 };
 
 const isFilledKeys = (obj) => {
-  if (typeof obj !== "object") return false;
+  if (typeof obj !== 'object') return false;
   const keys = Object.keys(obj);
   if (!keys.length) return false;
   if (
-    keys.includes("posting") ||
-    keys.includes("active") ||
-    keys.includes("memo")
+    keys.includes('posting') ||
+    keys.includes('active') ||
+    keys.includes('memo')
   )
     return true;
 };
 
 const isCustomOptions = (obj) => {
-  if (obj.comment_options === "") return true;
+  if (obj.comment_options === '') return true;
   let comment_options = JSON.parse(obj.comment_options);
   if (
     comment_options.author != obj.username ||
@@ -318,17 +327,17 @@ const isCustomOptions = (obj) => {
   )
     return false;
   return (
-    comment_options.hasOwnProperty("max_accepted_payout") &&
-    (comment_options.hasOwnProperty("percent_steem_dollars") ||
-      comment_options.hasOwnProperty("percent_hbd")) &&
-    comment_options.hasOwnProperty("allow_votes") &&
-    comment_options.hasOwnProperty("allow_curation_rewards") &&
-    comment_options.hasOwnProperty("extensions")
+    comment_options.hasOwnProperty('max_accepted_payout') &&
+    (comment_options.hasOwnProperty('percent_steem_dollars') ||
+      comment_options.hasOwnProperty('percent_hbd')) &&
+    comment_options.hasOwnProperty('allow_votes') &&
+    comment_options.hasOwnProperty('allow_curation_rewards') &&
+    comment_options.hasOwnProperty('extensions')
   );
 };
 
 const countDecimals = (nb) => {
-  return nb.toString().split(".")[1] === undefined
+  return nb.toString().split('.')[1] === undefined
     ? 0
-    : nb.toString().split(".")[1].length || 0;
+    : nb.toString().split('.')[1].length || 0;
 };
