@@ -55,6 +55,7 @@ const config = {
     dialog: './src/dialog/index.tsx',
     background: './src/background/index.ts',
     import: './src/import/index.tsx',
+    web_interface: './src/content-scripts/web_interface.ts',
   },
   output: { path: path.join(__dirname, 'dist'), filename: '[name]Bundle.js' },
   module: {
