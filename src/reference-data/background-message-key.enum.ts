@@ -8,5 +8,8 @@ export enum BackgroundCommand {
   IMPORT_ACCOUNTS = 'importAccounts',
   SEND_BACK_IMPORTED_ACCOUNTS = 'sendBackimportedAccounts',
 
-  //
+  // Keychain Request
+  SEND_REQUEST = 'sendRequest',
+  UNLOCK_FROM_DIALOG = 'unlockFromDialog',
+  ACCEPT_TRANSACTION = 'acceptTransaction',
 }

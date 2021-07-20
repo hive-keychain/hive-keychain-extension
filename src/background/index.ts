@@ -18,6 +18,12 @@ const chromeMessageHandler = (
     case BackgroundCommand.IMPORT_ACCOUNTS:
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);
       break;
+    case BackgroundCommand.SEND_REQUEST:
+      break;
+    case BackgroundCommand.UNLOCK_FROM_DIALOG:
+      break;
+    case BackgroundCommand.ACCEPT_TRANSACTION:
+      break;
   }
 };
 
