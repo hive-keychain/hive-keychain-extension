@@ -40,24 +40,60 @@ const signBuffer = Joi.object({
   message: Joi.string().required(),
   method,
   rpc,
+  title: Joi.string(),
 });
 
 const vote = Joi.object({
   username,
   permlink: Joi.string().required(),
   author: username,
+  weight: Joi.number().required(),
   rpc,
 });
 
 //TODO : post
 const post = Joi.object({
-  username: Joi.string(),
+  username,
+  body: Joi.string().required(),
+  title: Joi.string(),
+  parent_username: Joi.alternatives().conditional('title', {
+    is: Joi.exist(),
+    then: null,
+    otherwise: Joi.string().required(),
+  }),
+  parent_perm: Joi.string().required(),
+  json_metadata: Joi.string().required(),
+  permlink: Joi.string().required(),
+  comment_options: Joi.object({
+    author: username,
+    permlink: Joi.string().required(),
+    max_accepted_payout: Joi.string().required(),
+    percent_steem_dollars: Joi.number(),
+    allow_votes: Joi.boolean().required(),
+    allow_curation_rewards: Joi.boolean().required(),
+    extensions: Joi.array().items(
+      Joi.array().items(
+        0,
+        Joi.object({
+          beneficiaries: Joi.array().items(
+            Joi.object({
+              account: username,
+              weight: Joi.number().required(),
+            }),
+          ),
+        }),
+      ),
+    ),
+  }).rename('percent_hbd', 'percent_seteem_dollars'),
+  rpc,
 });
 
 const custom = Joi.object({
   username: Joi.string(),
   json: Joi.string().required(),
   id: Joi.string().required(),
+  display_msg: Joi.string(),
+  method: Joi.string().valid('Posting', 'Active'),
   rpc,
 });
 
@@ -66,6 +102,7 @@ const addAccountAuthority = Joi.object({
   authorizedUsername: username,
   role: authority,
   weight: Joi.number().integer().required(),
+  method: Joi.string().valid('Active'),
   rpc,
 });
 
@@ -73,6 +110,7 @@ const removeAccountAuthority = Joi.object({
   username,
   authorizedUsername: username,
   role: authority,
+  method: Joi.string().valid('Active'),
   rpc,
 });
 
@@ -81,6 +119,7 @@ const addKeyAuthority = Joi.object({
   authorizedKey: Joi.string().required(),
   role: authority,
   weight: Joi.number().integer().required(),
+  method: Joi.string().valid('Active'),
   rpc,
 });
 
@@ -88,6 +127,7 @@ const removeKeyAuthority = Joi.object({
   username,
   authorizedKey: Joi.string().required(),
   role: authority,
+  method: Joi.string().valid('Active'),
   rpc,
 });
 
@@ -203,11 +243,13 @@ const createProposal = Joi.object({
   start: date,
   end: date,
   rpc,
+  extensions: Joi.array().default([]),
 });
 
 const removeProposal = Joi.object({
   username,
   proposal_ids,
+  extensions: Joi.array().default([]),
   rpc,
 });
 
@@ -215,6 +257,7 @@ const updateProposalVote = Joi.object({
   username,
   proposal_ids,
   approve: Joi.boolean().required(),
+  extensions: Joi.array().default([]),
   rpc,
 });
 
@@ -225,7 +268,6 @@ const addAccount = Joi.object({
     active: Joi.string(),
     memo: Joi.string(),
   }).min(1),
-  rpc,
 });
 
 const convert = Joi.object({
@@ -246,6 +288,7 @@ const recurrentTransfer = Joi.object({
       ),
     ),
   currency,
+  memo: Joi.string().required(),
   executions: Joi.number().integer().required(),
   recurrence: Joi.number().integer().required(),
   rpc,
@@ -281,6 +324,11 @@ const schemas = {
   addAccount,
   convert,
   recurrentTransfer,
+};
+
+export const commonRequestParams = {
+  request_id: Joi.number().required(),
+  type: Joi.string().required(),
 };
 
 export default schemas;
