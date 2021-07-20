@@ -8,49 +8,104 @@
     <h3>Handshake</h3>
     <button id="sw-handshake">Send handshake</button>
     <h3>Decode memo</h3>
-    <input type="text" placeholder="username" id="decode_user" />
+    <input
+      type="text"
+      placeholder="username"
+      id="decode_user"
+      value="stoodkev"
+    />
     <select id="decode_method">
       <option>Memo</option>
       <option>Posting</option>
       <option>Active</option>
     </select>
-    <input type="text" id="decode_message" placeholder="message" />
+    <input
+      type="text"
+      id="decode_message"
+      placeholder="message"
+      value="#AxhLDHagit9exL1ZuADKjzDFpe5G9vJJfjRyxtY7VELbNRJ954Up1VfwL1qrEWXu8f2EeLvKmJ9AB8xqAsntGS1BV42gRS298vjCHBQ2hnZi2faLW7bVgzSWQRtX65fJZ"
+    />
     <button id="send_decode">Send</button>
     <h3>Encode memo</h3>
-    <input type="text" placeholder="username" id="encode_user" />
-    <input type="text" placeholder="receiver" id="encode_receiver" />
+    <input
+      type="text"
+      placeholder="username"
+      id="encode_user"
+      value="stoodkev"
+    />
+    <input
+      type="text"
+      placeholder="receiver"
+      id="encode_receiver"
+      value="lecaillon"
+    />
     <select id="encode_method">
       <option>Memo</option>
       <option>Posting</option>
       <option>Active</option>
     </select>
-    <input type="text" id="encode_message" placeholder="message" />
+    <input type="text" id="encode_message" placeholder="message" value="#hi" />
     <button id="send_encode">Send</button>
     <h3>Post</h3>
-    <input type="text" placeholder="username" id="post_username" />
-    <input type="text" placeholder="title" id="post_title" />
-    <input type="text" placeholder="permlink" id="post_perm" />
-    <input type="text" placeholder="body" id="post_body" />
-    <input type="text" placeholder="json_metadata" id="post_json" />
+    <input
+      type="text"
+      placeholder="username"
+      id="post_username"
+      value="lecaillon"
+    />
+    <input type="text" placeholder="title" id="post_title" value="test" />
+    <input type="text" placeholder="permlink" id="post_perm" value="test" />
+    <input type="text" placeholder="body" id="post_body" value="test" />
+    <input
+      type="text"
+      placeholder="json_metadata"
+      id="post_json"
+      value="{'test':'test'}"
+    />
     <input type="text" placeholder="parent_username" id="post_pu" />
-    <input type="text" placeholder="parent_perm" id="post_pp" />
+    <input type="text" placeholder="parent_perm" id="post_pp" value="test" />
     <input type="text" placeholder="Comment options" id="comment_options" />
     <button id="send_post">Send</button>
     <h3>Vote</h3>
-    <input type="text" placeholder="username" id="vote_username" />
-    <input type="text" placeholder="author" id="vote_author" />
-    <input type="text" placeholder="permlink" id="vote_perm" />
-    <input type="number" placeholder="weight" id="vote_weight" />
+    <input
+      type="text"
+      placeholder="username"
+      id="vote_username"
+      value="stoodkev"
+    />
+    <input
+      type="text"
+      placeholder="author"
+      id="vote_author"
+      value="lecaillon"
+    />
+    <input type="text" placeholder="permlink" id="vote_perm" value="test" />
+    <input type="number" placeholder="weight" id="vote_weight" value="100" />
     <button id="send_vote">Send</button>
     <h3>Custom_JSON</h3>
-    <input type="text" placeholder="message" id="custom_message" />
-    <input type="text" placeholder="username" id="custom_username" />
+    <input
+      type="text"
+      placeholder="message"
+      id="custom_message"
+      value="Test message"
+    />
+    <input
+      type="text"
+      placeholder="username"
+      id="custom_username"
+      value="stoodkev"
+    />
     <select id="custom_method">
       <option>Posting</option>
       <option>Active</option>
     </select>
-    <input type="text" placeholder="id" id="custom_id" />
-    <input type="text" placeholder="custom_json" id="custom_json" />
+    <input type="text" placeholder="id" id="custom_id" value="custom" />
+    <input
+      type="text"
+      placeholder="custom_json"
+      id="custom_json"
+      value="{'hive':'keychain'}"
+    />
     <input type="text" placeholder="rpc" id="custom_rpc" />
     <button id="send_custom">Send</button>
     <h3>Transfer</h3>
@@ -72,8 +127,13 @@
     </select>
     <button id="send_tra">Send</button>
     <h3>Sign message</h3>
-    <input type="text" placeholder="username" id="sign_username" />
-    <input type="text" placeholder="message" id="sign_message" />
+    <input
+      type="text"
+      placeholder="username"
+      id="sign_username"
+      value="stoodkev"
+    />
+    <input type="text" placeholder="message" id="sign_message" value="test" />
     <select id="sign_method">
       <option>Memo</option>
       <option>Posting</option>
@@ -82,24 +142,36 @@
     <input type="text" placeholder="message" id="sign_message_title" />
     <button id="send_signature">Send</button>
     <h3>Add Account Authority</h3>
-    <input type="text" placeholder="username" id="addauth_username" />
+    <input
+      type="text"
+      placeholder="username"
+      id="addauth_username"
+      value="stoodkev"
+    />
     <input
       type="text"
       placeholder="authorized_username"
       id="addauth_authorized_username"
+      value="lecaillon"
     />
     <select id="addauth_role">
       <option>Posting</option>
       <option>Active</option>
     </select>
-    <input type="number" placeholder="1" id="addauth_weight" />
+    <input type="number" placeholder="1" id="addauth_weight" value="1" />
     <button id="send_addauth">Send</button>
     <h3>Remove Account Authority</h3>
-    <input type="text" placeholder="username" id="removeauth_username" />
+    <input
+      type="text"
+      placeholder="username"
+      id="removeauth_username"
+      value="stoodkev"
+    />
     <input
       type="text"
       placeholder="authorized_username"
       id="removeauth_authorized_username"
+      value="lecaillon"
     />
     <select id="removeauth_role">
       <option>Posting</option>
@@ -107,11 +179,17 @@
     </select>
     <button id="send_removeauth">Send</button>
     <h3>Add Key Authority</h3>
-    <input type="text" placeholder="username" id="addkey_username" />
+    <input
+      type="text"
+      placeholder="username"
+      id="addkey_username"
+      value="stoodkev"
+    />
     <input
       type="text"
       placeholder="authorized_key"
       id="addkey_authorized_key"
+      value="STM..."
     />
     <select id="addkey_role">
       <option>Posting</option>
@@ -120,11 +198,17 @@
     <input type="number" placeholder="1" id="addkey_weight" />
     <button id="send_addkey">Send</button>
     <h3>Remove Key Authority</h3>
-    <input type="text" placeholder="username" id="removekey_username" />
+    <input
+      type="text"
+      placeholder="username"
+      id="removekey_username"
+      value="stoodkev"
+    />
     <input
       type="text"
       placeholder="authorized_key"
       id="removekey_authorized_key"
+      value="STM..."
     />
     <select id="removekey_role">
       <option>Posting</option>
@@ -141,11 +225,17 @@
     </select>
     <button id="send_broadcast">Send</button>
     <h3>Broadcast Create New claimed account</h3>
-    <input type="text" placeholder="username" id="create_claimed_username" />
+    <input
+      type="text"
+      placeholder="username"
+      id="create_claimed_username"
+      value="stoodkev"
+    />
     <input
       type="text"
       placeholder="new_username"
       id="create_claimed_new_username"
+      value="new"
     />
     <input
       type="text"
@@ -173,9 +263,24 @@
     />
     <button id="send_create_claimed">Send</button>
     <h3>Signed Call</h3>
-    <input type="text" placeholder="username" id="signed_call_username" />
-    <input type="text" placeholder="method" id="signed_call_method" />
-    <input type="text" placeholder="params" id="signed_call_params" />
+    <input
+      type="text"
+      placeholder="username"
+      id="signed_call_username"
+      value="stoodkev"
+    />
+    <input
+      type="text"
+      placeholder="method"
+      id="signed_call_method"
+      value="call"
+    />
+    <input
+      type="text"
+      placeholder="params"
+      id="signed_call_params"
+      value='{"params":"..."}'
+    />
     <select id="signed_call_key_type">
       <option>Memo</option>
       <option>Posting</option>
@@ -183,49 +288,93 @@
     </select>
     <button id="send_signed_call">Send</button>
     <h3>SignTx</h3>
-    <input type="text" placeholder="username" id="tx_username" />
-    <input type="text" placeholder="tx" id="tx" />
+    <input
+      type="text"
+      placeholder="username"
+      id="tx_username"
+      value="stoodkev"
+    />
+    <input type="text" placeholder="tx" id="tx" value='{"test":"hi"}' />
     <select id="tx_type">
-      <option>Memo</option>
       <option>Posting</option>
       <option>Active</option>
     </select>
     <button id="send_sign_tx">Send</button>
     <h3>Delegate</h3>
-    <input type="text" placeholder="username" id="delegation_username" />
-    <input type="text" placeholder="delegatee" id="delegation_delegatee" />
-    <input type="number" placeholder="HP" id="delegation_sp" />
+    <input
+      type="text"
+      placeholder="username"
+      id="delegation_username"
+      value="stoodkev"
+    />
+    <input
+      type="text"
+      placeholder="delegatee"
+      id="delegation_delegatee"
+      value="lecaillon"
+    />
+    <input type="number" placeholder="HP" id="delegation_sp" value="10.000" />
     <select id="delegation_unit">
       <option>HP</option>
       <option>VESTS</option>
     </select>
     <button id="send_delegation">Send</button>
     <h3>Send Tokens</h3>
-    <input type="text" placeholder="username" id="tokens_username" />
-    <input type="text" placeholder="to" id="tokens_to" />
-    <input type="number" placeholder="1.000" id="tokens_qt" />
-    <input type="text" placeholder="tokens" id="tokens_unit" />
-    <input type="text" placeholder="memo" id="tokens_memo" />
+    <input
+      type="text"
+      placeholder="username"
+      id="tokens_username"
+      value="stoodkev"
+    />
+    <input type="text" placeholder="to" id="tokens_to" value="lecaillon" />
+    <input type="number" placeholder="1.000" id="tokens_qt" value="1.000" />
+    <input type="text" placeholder="tokens" id="tokens_unit" value="KEYCHAIN" />
+    <input type="text" placeholder="memo" id="tokens_memo" value="" />
     <button id="sendTokens">Send</button>
     <h3>Witness</h3>
-    <input type="text" placeholder="username" id="witness_username" />
-    <input type="text" placeholder="username" id="witness" />
+    <input
+      type="text"
+      placeholder="username"
+      id="witness_username"
+      value="lecaillon"
+    />
+    <input type="text" placeholder="username" id="witness" value="stoodkev" />
     <input type="checkbox" id="vote_wit" /><label for="vote_wit"
       >Vote for this witness</label
     >
     <button id="send_witness_vote">Send</button>
     <h3>Proxy</h3>
-    <input type="text" placeholder="username" id="proxy_username" />
-    <input type="text" placeholder="username" id="proxy" />
+    <input
+      type="text"
+      placeholder="username"
+      id="proxy_username"
+      value="lecaillon"
+    />
+    <input type="text" placeholder="username" id="proxy" value="stoodkev" />
     <button id="send_proxy">Send</button>
     <h3>Power Up</h3>
-    <input type="text" placeholder="username" id="pu_username" />
-    <input type="text" placeholder="recipient" id="pu_recipient" />
-    <input type="number" placeholder="steem" id="pu_steem" />
+    <input
+      type="text"
+      placeholder="username"
+      id="pu_username"
+      value="stoodkev"
+    />
+    <input
+      type="text"
+      placeholder="recipient"
+      id="pu_recipient"
+      value="stoodkev"
+    />
+    <input type="number" placeholder="steem" id="pu_steem" value="1.000" />
     <button id="send_pu">Send</button>
     <h3>Power Down</h3>
-    <input type="text" placeholder="username" id="pd_username" />
-    <input type="number" placeholder="hp" id="pd_sp" />
+    <input
+      type="text"
+      placeholder="username"
+      id="pd_username"
+      value="stoodkev"
+    />
+    <input type="number" placeholder="hp" id="pd_sp" value="1.000" />
     <button id="send_pd">Send</button>
     <h3>Create Proposal</h3>
     <input
@@ -329,45 +478,30 @@
       id="rec_username"
       value="stoodkev"
     />
-    <input
-    type="text"
-    placeholder="to"
-    id="rec_to"
-    value="lecaillon"
-    />
-    <input
-      type="text"
-      placeholder="amount"
-      id="rec_amount"
-      value="0.001"
-    />
-    <select id="rec_currency" >
+    <input type="text" placeholder="to" id="rec_to" value="lecaillon" />
+    <input type="text" placeholder="amount" id="rec_amount" value="0.001" />
+    <select id="rec_currency">
       <option>HIVE</option>
       <option>HBD</option>
       <option selected="selected">TESTS</option>
       <option>TBD</option>
     </select>
+    <input type="text" placeholder="memo" id="rec_memo" value="" />
     <input
-      type="text"
-      placeholder="memo"
-      id="rec_memo"
-      value=""
-    />
-    <input
-    type="number"
-    placeholder="recurrence"
-    id="rec_recurrence"
-    value=1
-  /><input
-  type="number"
-  placeholder="executions"
-  id="rec_ex"
-  value=2
-/>
+      type="number"
+      placeholder="recurrence"
+      id="rec_recurrence"
+      value="1"
+    /><input type="number" placeholder="executions" id="rec_ex" value="2" />
     <button id="send_rec">Send</button>
     <h3>Save account to keychain</h3>
-    <input type="text" placeholder="username" id="save_username" />
-    <input type="text" id="save_keys" />
+    <input
+      type="text"
+      placeholder="username"
+      id="save_username"
+      value="stoodkev"
+    />
+    <input type="text" id="save_keys" value='{"posting":"..."}' />
     <button id="send_save">Send</button>
 
     <script src="./jquery.js"></script>

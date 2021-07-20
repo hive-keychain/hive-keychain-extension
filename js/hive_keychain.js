@@ -497,9 +497,9 @@ var hive_keychain = {
    * Request the creation of an account using claimed tokens
    * @param {String} username Hive account to perform the request
    * @param {String} new_account New account to be created
-   * @param {object} owner owner authority object
-   * @param {object} active active authority object
-   * @param {object} posting posting authority object
+   * @param {String} owner owner authority object // eg : {"weight_threshold": 1,"account_auths": [],"key_auths":[["SMT...",1]]}
+   * @param {String} active active authority object
+   * @param {String} posting posting authority object
    * @param {String} memo public memo key
    * @param {function} callback Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings

@@ -1,5 +1,4 @@
 import Joi from 'joi';
-
 const username = Joi.string().required().min(3);
 const method = Joi.string().valid('Posting', 'Active', 'Memo').required();
 const authority = Joi.string().valid('Posting', 'Active').required();
@@ -7,21 +6,25 @@ const message = Joi.string().required().min(2).regex(/^#/);
 const currency = Joi.string().valid('HIVE', 'HBD', 'TESTS', 'TBD').required();
 const amount = Joi.string()
   .regex(/^\d+(\.\d{3})$/)
-  .required();
+  .required()
+  .error(new Error('Amount requires a string with 3 decimals'));
 const amountVests = Joi.string()
   .regex(/^\d+(\.\d{6})$/)
-  .required();
+  .required()
+  .error(new Error('Amount requires a string with 6 decimals'));
 const daily_pay = Joi.string()
   .regex(/^\d+(\.\d{3}) HBD$/)
-  .required();
-const rpc = Joi.string();
+  .required()
+  .error(new Error('Wrong daily_pay format. Ex: "1.000 HBD"'));
+const rpc = Joi.string().allow(null);
 const date = Joi.string()
   .regex(/\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d/)
-  .required();
+  .required()
+  .error(new Error('Wrong date format. Ex : "2021-07-25T00:00:00"'));
 
 const proposal_ids = Joi.string()
   .required()
-  .regex(/\[[0-9,]+[0-9]+\]/);
+  .regex(/\[[0-9,]*[0-9]+\]/);
 const decode = Joi.object({
   username,
   message,
@@ -36,11 +39,11 @@ const encode = Joi.object({
 });
 
 const signBuffer = Joi.object({
-  username: Joi.string(),
+  username: Joi.string().allow(null),
   message: Joi.string().required(),
   method,
   rpc,
-  title: Joi.string(),
+  title: Joi.string().allow(null),
 });
 
 const vote = Joi.object({
@@ -55,41 +58,42 @@ const vote = Joi.object({
 const post = Joi.object({
   username,
   body: Joi.string().required(),
-  title: Joi.string(),
+  title: Joi.string().allow(null),
   parent_username: Joi.alternatives().conditional('title', {
-    is: Joi.exist(),
-    then: null,
-    otherwise: Joi.string().required(),
+    is: Joi.valid(null),
+    then: Joi.string().required(),
+    otherwise: null,
   }),
   parent_perm: Joi.string().required(),
   json_metadata: Joi.string().required(),
   permlink: Joi.string().required(),
-  comment_options: Joi.object({
-    author: username,
-    permlink: Joi.string().required(),
-    max_accepted_payout: Joi.string().required(),
-    percent_steem_dollars: Joi.number(),
-    allow_votes: Joi.boolean().required(),
-    allow_curation_rewards: Joi.boolean().required(),
-    extensions: Joi.array().items(
-      Joi.array().items(
-        0,
-        Joi.object({
-          beneficiaries: Joi.array().items(
-            Joi.object({
-              account: username,
-              weight: Joi.number().required(),
-            }),
-          ),
-        }),
-      ),
-    ),
-  }).rename('percent_hbd', 'percent_seteem_dollars'),
+  comment_options: Joi.string().required(),
+  // comment_options: Joi.object({
+  //   author: username,
+  //   permlink: Joi.string().required(),
+  //   max_accepted_payout: Joi.string().required(),
+  //   percent_steem_dollars: Joi.number(),
+  //   allow_votes: Joi.boolean().required(),
+  //   allow_curation_rewards: Joi.boolean().required(),
+  //   extensions: Joi.array().items(
+  //     Joi.array().items(
+  //       0,
+  //       Joi.object({
+  //         beneficiaries: Joi.array().items(
+  //           Joi.object({
+  //             account: username,
+  //             weight: Joi.number().required(),
+  //           }),
+  //         ),
+  //       }),
+  //     ),
+  //   ),
+  // }).rename('percent_hbd', 'percent_seteem_dollars'),
   rpc,
 });
 
 const custom = Joi.object({
-  username: Joi.string(),
+  username: Joi.string().allow(null),
   json: Joi.string().required(),
   id: Joi.string().required(),
   display_msg: Joi.string(),
@@ -140,7 +144,7 @@ const broadcast = Joi.object({
 
 const signTx = Joi.object({
   username,
-  tx: Joi.string().required(),
+  tx: Joi.any().required(),
   method: authority,
   rpc,
 });
@@ -154,20 +158,20 @@ const signedCall = Joi.object({
 });
 
 const witnessVote = Joi.object({
-  username: Joi.string(),
+  username: Joi.string().allow(null),
   witness: username,
   vote: Joi.boolean(),
   rpc,
 });
 
 const proxy = Joi.object({
-  username: Joi.string(),
-  proxy: Joi.string(),
+  username: Joi.string().allow(null),
+  proxy: Joi.string().allow('').required(),
   rpc,
 });
 
 const delegation = Joi.object({
-  username: Joi.string(),
+  username: Joi.string().allow(null),
   delegatee: username,
   amount: Joi.alternatives().conditional('unit', {
     is: 'VESTS',
@@ -179,25 +183,23 @@ const delegation = Joi.object({
 });
 
 const transfer = Joi.object({
-  username: Joi.alternatives()
-    .conditional('enforce', {
-      is: true,
-      then: username,
-      otherwise: Joi.alternatives().conditional('memo', {
-        is: message,
-        then: username,
-        otherwise: Joi.string(),
-      }),
-    })
-    .error(
-      new Error(
-        'If the memo needs to be encoded (starts with #) or enforce is selected, the username needs to be specified.',
+  username: Joi.alternatives().conditional('enforce', {
+    is: true,
+    then: username,
+    otherwise: Joi.alternatives().conditional('memo', {
+      is: message,
+      then: username.error(
+        new Error(
+          'If the memo needs to be encoded (starts with #) or enforce is selected, the username needs to be specified.',
+        ),
       ),
-    ),
+      otherwise: Joi.string().allow(null),
+    }),
+  }),
   to: username,
   amount,
   currency,
-  memo: Joi.string(),
+  memo: Joi.string().allow(''),
   enforce: Joi.boolean(),
   rpc,
 });
@@ -207,7 +209,7 @@ const sendToken = Joi.object({
   to: username,
   amount,
   currency: Joi.string().required(),
-  memo: Joi.string(),
+  memo: Joi.string().allow(''),
   rpc,
 });
 
@@ -243,13 +245,13 @@ const createProposal = Joi.object({
   start: date,
   end: date,
   rpc,
-  extensions: Joi.array().default([]),
+  extensions: Joi.string(),
 });
 
 const removeProposal = Joi.object({
   username,
   proposal_ids,
-  extensions: Joi.array().default([]),
+  extensions: Joi.string(),
   rpc,
 });
 
@@ -257,7 +259,7 @@ const updateProposalVote = Joi.object({
   username,
   proposal_ids,
   approve: Joi.boolean().required(),
-  extensions: Joi.array().default([]),
+  extensions: Joi.string(),
   rpc,
 });
 
@@ -288,13 +290,11 @@ const recurrentTransfer = Joi.object({
       ),
     ),
   currency,
-  memo: Joi.string().required(),
+  memo: Joi.string().required().allow(''),
   executions: Joi.number().integer().required(),
   recurrence: Joi.number().integer().required(),
   rpc,
 });
-
-//TODO : Verify all schemas for optional params
 
 const schemas = {
   decode,

@@ -2,7 +2,7 @@
 
 import schemas, {
   commonRequestParams,
-} from 'src/content-scripts/web-interface/input_validation';
+} from 'src/content-scripts/web-interface/input-validation';
 import {
   cancelPreviousRequest,
   sendIncompleteDataResponse,
