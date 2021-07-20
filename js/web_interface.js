@@ -33,7 +33,7 @@ document.addEventListener('swRequest_hive', function (request) {
   req = request.detail;
   // If all information are filled, send the request to the background, if not notify an error
   if (validate()) {
-    console.log("validated");
+    console.log('validated');
     chrome.runtime.sendMessage({
       command: 'sendRequest',
       request: req,
@@ -52,7 +52,7 @@ document.addEventListener('swRequest_hive', function (request) {
       sendResponse(response);
     }
   } else {
-    console.log("not validated");
+    console.log('not validated');
     var response = {
       success: false,
       error: 'incomplete',
@@ -204,7 +204,6 @@ const validate = () => {
         isFilledAmt(req.amount) &&
         isFilled(req.to) &&
         isFilled(req.currency)) ||
-<<<<<<< HEAD
       (req.type === 'addAccount' && isFilledKeys(req.keys)) ||
       (req.type === 'convert' &&
         isFilled(req.username) &&
@@ -214,20 +213,8 @@ const validate = () => {
         (isFilledAmt(req.amount) || parseFloat(req.amount) === 0) &&
         isFilledCurrency(req.currency) &&
         isFilled(req.to) &&
-        Number.isInteger(req.executions)))
-=======
-      (req.type === "addAccount" && isFilledKeys(req.keys)) ||
-      (req.type === "convert" &&
-        isFilled(req.username) &&
-        isFilledAmt(req.amount) &&
-        isBoolean(req.collaterized)) ||
-      (req.type === "recurrentTransfer" &&
-        (isFilledAmt(req.amount) || parseFloat(req.amount) === 0) &&
-        isFilledCurrency(req.currency) &&
-        isFilled(req.to) &&
         Number.isInteger(req.executions) &&
         Number.isInteger(req.recurrence)))
->>>>>>> master
   );
 };
 
@@ -314,14 +301,10 @@ const isFilledWeight = (obj) => {
 };
 
 const isFilledCurrency = (obj) => {
-<<<<<<< HEAD
-  return isFilled(obj) && (obj === 'HIVE' || obj === 'HBD');
-=======
   return (
     isFilled(obj) &&
-    (obj === "HIVE" || obj === "HBD" || obj === "TESTS" || obj === "TBD")
+    (obj === 'HIVE' || obj === 'HBD' || obj === 'TESTS' || obj === 'TBD')
   );
->>>>>>> master
 };
 
 const isFilledKey = (obj) => {

@@ -4,11 +4,11 @@ const username = Joi.string().required().min(3);
 const method = Joi.string().valid('Posting', 'Active', 'Memo').required();
 const authority = Joi.string().valid('Posting', 'Active').required();
 const message = Joi.string().required().min(2).regex(/^#/);
-const currency = Joi.string().valid('HIVE', 'HBD').required();
+const currency = Joi.string().valid('HIVE', 'HBD', 'TESTS', 'TBD').required();
 const amount = Joi.string()
   .regex(/^\d+(\.\d{3})$/)
   .required();
-const amountHp = Joi.string()
+const amountVests = Joi.string()
   .regex(/^\d+(\.\d{6})$/)
   .required();
 const daily_pay = Joi.string()
@@ -50,6 +50,9 @@ const vote = Joi.object({
 });
 
 //TODO : post
+const post = Joi.object({
+  username: Joi.string(),
+});
 
 const custom = Joi.object({
   username: Joi.string(),
@@ -126,19 +129,37 @@ const proxy = Joi.object({
 const delegation = Joi.object({
   username: Joi.string(),
   delegatee: username,
+  amount: Joi.alternatives().conditional('unit', {
+    is: 'VESTS',
+    then: amountVests,
+    otherwise: amount,
+  }),
+  unit: Joi.string().required().valid('HP', 'VESTS', 'TP'),
   rpc,
-  //TODO : conditional rendering of the amounts
 });
 
 const transfer = Joi.object({
-  username: Joi.string(),
+  username: Joi.alternatives()
+    .conditional('enforce', {
+      is: true,
+      then: username,
+      otherwise: Joi.alternatives().conditional('memo', {
+        is: message,
+        then: username,
+        otherwise: Joi.string(),
+      }),
+    })
+    .error(
+      new Error(
+        'If the memo needs to be encoded (starts with #) or enforce is selected, the username needs to be specified.',
+      ),
+    ),
   to: username,
   amount,
   currency,
   memo: Joi.string(),
   enforce: Joi.boolean(),
   rpc,
-  //TODO : conditional rendering  memo / username
 });
 
 const sendToken = Joi.object({
@@ -149,7 +170,19 @@ const sendToken = Joi.object({
   memo: Joi.string(),
   rpc,
 });
-//TODO : powerup / down
+
+const powerUp = Joi.object({
+  username,
+  recipient: username,
+  steem: amount,
+  rpc,
+}).rename('hive', 'steem');
+
+const powerDown = Joi.object({
+  username,
+  steem_power: amount,
+  rpc,
+}).rename('hp', 'steem_power');
 
 const createClaimedAccount = Joi.object({
   username,
@@ -191,9 +224,31 @@ const addAccount = Joi.object({
     posting: Joi.string(),
     active: Joi.string(),
     memo: Joi.string(),
-  }),
+  }).min(1),
   rpc,
-  //TODO:check has one key
+});
+
+const convert = Joi.object({
+  username,
+  amount,
+  collaterized: Joi.boolean().required(),
+  rpc,
+});
+
+const recurrentTransfer = Joi.object({
+  username,
+  to: username,
+  amount: Joi.alternatives()
+    .try(amount, Joi.string().valid('0'))
+    .error(
+      new Error(
+        'Must either be equal to 0 (stop recurrent transfer) or have 3 decimals',
+      ),
+    ),
+  currency,
+  executions: Joi.number().integer().required(),
+  recurrence: Joi.number().integer().required(),
+  rpc,
 });
 
 //TODO : Verify all schemas for optional params
@@ -203,6 +258,7 @@ const schemas = {
   encode,
   signBuffer,
   vote,
+  post,
   custom,
   addAccountAuthority,
   removeAccountAuthority,
@@ -216,11 +272,15 @@ const schemas = {
   delegation,
   transfer,
   sendToken,
+  powerUp,
+  powerDown,
   createClaimedAccount,
   createProposal,
   removeProposal,
   updateProposalVote,
   addAccount,
+  convert,
+  recurrentTransfer,
 };
 
 export default schemas;

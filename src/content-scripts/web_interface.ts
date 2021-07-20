@@ -1,6 +1,8 @@
 // Content script interfacing the website and the extension
 
 import { CommentOptionsOperation } from '@hiveio/dhive';
+import Joi from 'joi';
+import schemas from 'src/content-scripts/input_validation';
 import {
   KeychainRequest,
   RequestAddAccountKeys,
@@ -15,7 +17,7 @@ let req: KeychainRequest | null = null;
 const setupInjection = () => {
   try {
     var scriptTag = document.createElement('script');
-    scriptTag.src = chrome.runtime.getURL('js/hive_keychain.js');
+    scriptTag.src = chrome.runtime.getURL('./hive_keychain.js');
     var container = document.head || document.documentElement;
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
@@ -43,15 +45,16 @@ type KeychainRequestWrapper = {
 document.addEventListener('swRequest_hive', (request: object) => {
   const prevReq = req;
   req = (request as KeychainRequestWrapper).detail;
-  // If all information are filled, send the request to the background, if not notify an error
-  if (validateRequest(req)) {
-    sendRequestToBackground(req);
+  const validation = validateRequest(req);
+  const { error, value } = validation;
+  if (!error) {
+    sendRequestToBackground(value);
     // cancel previous request if existing
     if (prevReq) {
       cancelPreviousRequest(prevReq);
     }
   } else {
-    sendIncompleteDataResponse(req);
+    sendIncompleteDataResponse(value, error);
     req = prevReq;
   }
 });
@@ -77,14 +80,18 @@ const sendRequestToBackground = (req: KeychainRequest) => {
   });
 };
 
-const sendIncompleteDataResponse = (req: KeychainRequest) => {
+const sendIncompleteDataResponse = (
+  value: KeychainRequest,
+  error: string | Joi.ValidationError,
+) => {
+  let message = typeof error === 'string' ? error : error.stack!;
   var response = {
     success: false,
     error: 'incomplete',
     result: null,
-    message: 'Incomplete data or wrong format',
-    data: req,
-    request_id: req.request_id,
+    message,
+    data: value,
+    request_id: value.request_id,
   };
   sendResponse(response);
 };
@@ -111,7 +118,13 @@ const sendResponse = (response: RequestResponse) => {
   }
 };
 
-export const validateRequest = (req: KeychainRequest) => {
+const validateRequest = (req: KeychainRequest) => {
+  if (!req) return { value: req, error: 'Missing request.' };
+  if (!req.type) return { value: req, error: 'Missing request type.' };
+  return schemas[req.type].validate(req);
+};
+
+export const OldValidateRequest = (req: KeychainRequest) => {
   return (
     req &&
     req.type &&
@@ -217,11 +230,17 @@ export const validateRequest = (req: KeychainRequest) => {
         isFilled(req.username) &&
         isProposalIDs(req.proposal_ids) &&
         isBoolean(req.approve)) ||
-      (req.type === 'sendToken' &&
+      (req.type === 'addAccount' && isFilledKeys(req.keys)) ||
+      (req.type === 'convert' &&
+        isFilled(req.username) &&
         isFilledAmt(req.amount) &&
+        isBoolean(req.collaterized)) ||
+      (req.type === 'recurrentTransfer' &&
+        (isFilledAmt(req.amount) || parseFloat(req.amount) === 0) &&
+        isFilledCurrency(req.currency) &&
         isFilled(req.to) &&
-        isFilled(req.currency)) ||
-      (req.type === 'addAccount' && isFilledKeys(req.keys)))
+        Number.isInteger(req.executions) &&
+        Number.isInteger(req.recurrence)))
   );
 };
 
