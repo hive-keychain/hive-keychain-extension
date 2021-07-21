@@ -327,3 +327,10 @@ export type RequestResponse = {
   error: any | null;
   result: any | null;
 } & (RequestSuccess | RequestError);
+
+export type KeychainRequestWrapper = {
+  command: string;
+  domain: string;
+  request: KeychainRequest;
+  request_id: number;
+};
