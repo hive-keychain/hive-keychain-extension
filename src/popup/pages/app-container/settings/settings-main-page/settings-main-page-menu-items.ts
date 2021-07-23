@@ -12,6 +12,11 @@ const SettingsMenuItems: MenuItem[] = [
     icon: 'accounts',
     nextScreen: Screen.SETTINGS_MANAGE_ACCOUNTS,
   },
+  {
+    label: 'popup_html_advanced_settings',
+    icon: 'accounts',
+    nextScreen: Screen.SETTINGS_ADVANCED,
+  },
 ];
 
 export default SettingsMenuItems;

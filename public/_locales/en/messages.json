@@ -1434,5 +1434,9 @@
   "popup_html_proposal_request": {
     "message": "Help support Keychain development through our DHF proposal",
     "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_advanced_settings": {
+    "message": "Advanced",
+    "description": "Advanced settings sub menu"
   }
 }

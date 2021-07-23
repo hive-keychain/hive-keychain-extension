@@ -1,43 +1,17 @@
-
-
-
 .title-section {
-    display: flex;
-    align-items: center;
-}
-
-.title {
-    margin-top: 15px;
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  .title {
     text-transform: uppercase;
     color: white;
     font-size: 20px;
-    line-height: 30px;
-    margin-bottom: 0;
-    padding-bottom: 0;
     pointer-events: none;
-}
+  }
 
-.icon-button {
-    margin-top: 15px;
-    text-transform: uppercase;
-    background: transparent;
+  .icon-button {
     color: white;
-    font-size: 20px;
-    line-height: 30px;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.icon-button::before {
-    background-image: url("/assets/images/left-arrow.png");
-    background-size: 35px 30px;
-    background-repeat: no-repeat;
-    display: inline-block;
-    content: "";
-    width: 34.88px;
-    height: 30px;
-    padding-right: 20px;
-    vertical-align: -25%;
-    pointer-events: all;
     cursor: pointer;
+    height: 20px;
+  }
 }

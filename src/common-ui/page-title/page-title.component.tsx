@@ -24,7 +24,11 @@ const PageTitle = ({
   return (
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
-        <div className="icon-button" onClick={handleBackButtonClick}></div>
+        <img
+          className="icon-button"
+          src="/assets/images/left-arrow.png"
+          onClick={handleBackButtonClick}
+        />
       )}
       <div className="title">{chrome.i18n.getMessage(title)}</div>
     </div>
