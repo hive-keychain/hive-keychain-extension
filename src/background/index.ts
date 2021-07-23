@@ -1,9 +1,9 @@
-import AccountModule from 'src/background/logic/account.module';
-import RequestsModule from 'src/background/logic/requests.logic';
-import { KeychainRequestWrapper } from 'src/interfaces/keychain.interface';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import AccountModule from '@background/account';
+import RequestsModule from '@background/requests';
+import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { BackgroundMessage } from './background-message.interface';
-import MkModule from './logic/mk.logic';
+import MkModule from './mk';
 
 const chromeMessageHandler = (
   backgroundMessage: BackgroundMessage,
