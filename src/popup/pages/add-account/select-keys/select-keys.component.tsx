@@ -1,5 +1,5 @@
 import { addAccount } from '@popup/actions/account.actions';
-import { setErrorMessage } from '@popup/actions/error-message.actions';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -8,7 +8,7 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Keys } from 'src/interfaces/keys.interface';
 import KeysUtils from 'src/utils/keys.utils';
-import './select-keys.component.css';
+import './select-keys.component.scss';
 
 const SelectKeys = ({
   keys,
@@ -58,16 +58,16 @@ const SelectKeys = ({
         }}></div>
 
       <CheckboxComponent
-        title="popup_html_active"
-        info="popup_html_active_info"
-        checked={importActive}
-        onChange={setImportActive}
-      />
-      <CheckboxComponent
         title="popup_html_posting"
         info="popup_html_posting_info"
         checked={importPosting}
         onChange={setImportPosting}
+      />
+      <CheckboxComponent
+        title="popup_html_active"
+        info="popup_html_active_info"
+        checked={importActive}
+        onChange={setImportActive}
       />
       <CheckboxComponent
         title="popup_html_memo"

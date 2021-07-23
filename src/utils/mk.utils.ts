@@ -10,15 +10,12 @@ const isPasswordValid = (password: string) => {
   );
 };
 
+// TODO fix
 const login = async (password: string): Promise<boolean> => {
-  try {
-    let test = await AccountUtils.getAccountsFromLocalStorage(password);
-  } catch (err) {
-    return false;
-  }
-  return true;
+  let accounts = await AccountUtils.getAccountsFromLocalStorage(password);
+  return accounts ? true : false;
 };
 
-const MkUtils = {isPasswordValid, login};
+const MkUtils = { isPasswordValid, login };
 
 export default MkUtils;

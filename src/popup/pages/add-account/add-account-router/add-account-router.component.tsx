@@ -7,7 +7,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 import { AddAccountMainComponent } from '../add-account-main/add-account-main.component';
 import { AddByKeysComponent } from '../add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from '../import-keys/import-keys.component';
-import './add-account-router.component.css';
+import './add-account-router.component.scss';
 
 const AddAccountRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
   const renderAccountPage = (page: Screen) => {

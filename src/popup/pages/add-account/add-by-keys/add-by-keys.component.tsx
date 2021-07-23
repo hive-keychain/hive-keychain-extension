@@ -1,5 +1,5 @@
 import { addAccount } from '@popup/actions/account.actions';
-import { setErrorMessage } from '@popup/actions/error-message.actions';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
@@ -11,7 +11,7 @@ import { PageTitleComponent } from 'src/common-ui/page-title/page-title.componen
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import KeysUtils from 'src/utils/keys.utils';
-import './add-by-keys.component.css';
+import './add-by-keys.component.scss';
 
 const AddByKeys = ({
   setErrorMessage,

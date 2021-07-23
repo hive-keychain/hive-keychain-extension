@@ -1,7 +1,7 @@
-import {RootState} from '@popup/store';
+import { RootState } from '@popup/store';
 import React from 'react';
-import {connect, ConnectedProps} from 'react-redux';
-import './wallet-info-section.component.css';
+import { connect, ConnectedProps } from 'react-redux';
+import './wallet-info-section.component.scss';
 
 const WalletInfoSection = ({}: PropsFromRedux) => {
   return <div className="wallet-info-section">Wallet info section</div>;

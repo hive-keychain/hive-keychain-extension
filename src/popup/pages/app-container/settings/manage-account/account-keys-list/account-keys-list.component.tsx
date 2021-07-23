@@ -3,7 +3,7 @@ import { AccountKeysListItemComponent } from '@popup/pages/app-container/setting
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import './account-keys-list.component.css';
+import './account-keys-list.component.scss';
 
 const AccountKeysList = ({ navigateTo, activeAccount }: PropsType) => {
   return (

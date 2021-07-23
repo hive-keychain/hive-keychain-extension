@@ -1,7 +1,7 @@
-import {RootState} from '@popup/store';
+import { RootState } from '@popup/store';
 import React from 'react';
-import {connect, ConnectedProps} from 'react-redux';
-import './resources-section.component.css';
+import { connect, ConnectedProps } from 'react-redux';
+import './resources-section.component.scss';
 
 const ResourcesSection = ({}: PropsFromRedux) => {
   return <div className="resources-section">Resources section</div>;

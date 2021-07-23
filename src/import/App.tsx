@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
-import './import-keys.css';
+import './import-keys.scss';
 
 interface ImportAccountState {
   selectedFile?: File;

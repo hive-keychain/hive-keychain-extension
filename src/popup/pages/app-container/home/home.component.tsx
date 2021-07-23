@@ -8,7 +8,7 @@ import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import './home.component.css';
+import './home.component.scss';
 
 const Home = ({
   activeAccount,

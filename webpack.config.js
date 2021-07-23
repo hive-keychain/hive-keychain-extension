@@ -1,47 +1,3 @@
-// const path = require("path");
-// const webpack = require("webpack");
-
-// module.exports = {
-//   entry: { popup: "./src/popup/index.tsx", dialog: "./src/dialog/index.tsx" },
-//   module: {
-//     rules: [
-//       {
-//         test: /\.ts(x)?$/,
-//         loader: "ts-loader",
-//         exclude: /node_modules/,
-//       },
-//       {
-//         test: /\.(js|jsx)$/,
-//         exclude: /(node_modules|bower_components)/,
-//         loader: "babel-loader",
-//         options: { presets: ["@babel/env"] },
-//       },
-//       {
-//         test: /\.css$/,
-//         use: ["style-loader", "css-loader"],
-//       },
-//     ],
-//   },
-//   resolve: {
-//     extensions: [".js", ".jsx", ".ts", ".tsx"],
-//     alias: {
-//       "react-dom": "@hot-loader/react-dom",
-//     },
-//   },
-//   output: {
-//     path: path.resolve(__dirname, "dist/"),
-//     publicPath: "/dist/",
-//     filename: "[name]Bundle.js",
-//   },
-//   devServer: {
-//     contentBase: path.join(__dirname, "public/"),
-//     port: 3000,
-//     publicPath: "http://localhost:3000/dist/",
-//     hotOnly: true,
-//   },
-//   plugins: [new webpack.HotModuleReplacementPlugin()],
-// };
-
 const webpack = require('webpack');
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
@@ -65,28 +21,23 @@ const config = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-        exclude: /\.module\.css$/,
+        test: /\.scss$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+          },
+          {
+            loader: 'sass-loader',
+          },
+        ],
       },
       {
         test: /\.ts(x)?$/,
         loader: 'ts-loader',
         exclude: /node_modules/,
-      },
-      {
-        test: /\.css$/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-              modules: true,
-            },
-          },
-        ],
-        include: /\.module\.css$/,
       },
       {
         test: /\.svg$/,

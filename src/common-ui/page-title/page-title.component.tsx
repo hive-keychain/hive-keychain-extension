@@ -2,7 +2,7 @@ import { goBack } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import './page-title.component.css';
+import './page-title.component.scss';
 
 interface PageTitleProps {
   title: string;

@@ -5,14 +5,15 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import PopupUtils from 'src/utils/popup.utils';
-import './App.css';
+import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from './pages/app-container/app-router.component';
-import { ErrorMessageContainerComponent } from './pages/error-message-container/error-message-container.component';
+import { MessageContainerComponent } from './pages/message-container/message-container.component';
 import { SignInRouterComponent } from './pages/sign-in/sign-in-router.component';
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
@@ -36,13 +37,22 @@ const App = ({
   }, [mk]);
 
   useEffect(() => {
+    selectComponent(mk, accounts);
+  }, [mk, accounts]);
+
+  const selectComponent = async (
+    mk: string,
+    accounts: LocalAccount[],
+  ): Promise<void> => {
+    setHasStoredAccounts(await AccountUtils.hasStoredAccounts());
     if (mk.length > 0 && accounts && accounts.length > 0) {
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk.length > 0) {
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
-    } else {
+    } else if (mk.length === 0 && accounts.length === 0) {
+      navigateTo(Screen.SIGN_UP_PAGE, true);
     }
-  }, [mk, accounts]);
+  };
 
   const onSentBackMkListener = async (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
@@ -75,7 +85,7 @@ const App = ({
   return (
     <div className="App">
       {renderMainLayoutNav(currentPage!)}
-      <ErrorMessageContainerComponent />
+      <MessageContainerComponent />
     </div>
   );
 };

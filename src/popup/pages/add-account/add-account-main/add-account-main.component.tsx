@@ -9,7 +9,7 @@ import { PageTitleComponent } from 'src/common-ui/page-title/page-title.componen
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
-import './add-account-main.component.css';
+import './add-account-main.component.scss';
 
 const AddAccountMain = ({
   navigateTo,

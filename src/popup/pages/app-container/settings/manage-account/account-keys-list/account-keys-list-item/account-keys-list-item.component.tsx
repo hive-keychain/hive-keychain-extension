@@ -1,8 +1,9 @@
+import { setInfoMessage } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Key } from 'src/interfaces/local-account.interface';
-import './account-keys-list-item.component.css';
+import './account-keys-list-item.component.scss';
 
 export interface KeyListItemProps {
   privateKey: Key;
@@ -10,11 +11,17 @@ export interface KeyListItemProps {
   keyName: string;
 }
 
-const AccountKeysListItem = ({ privateKey, publicKey, keyName }: PropsType) => {
+const AccountKeysListItem = ({
+  privateKey,
+  publicKey,
+  keyName,
+  setInfoMessage,
+}: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
 
   const copyToClipboard = (key: Key) => {
-    document.execCommand('copy');
+    navigator.clipboard.writeText(key!.toString());
+    setInfoMessage('popup_html_copied');
   };
 
   return (
@@ -26,7 +33,9 @@ const AccountKeysListItem = ({ privateKey, publicKey, keyName }: PropsType) => {
         </div>
       </div>
       <div
-        className="private-key key-field"
+        className={`private-key key-field ${
+          isPrivateHidden ? 'hidden' : 'show'
+        }`}
         onClick={() =>
           isPrivateHidden
             ? setIsPrivateHidden(false)
@@ -36,7 +45,9 @@ const AccountKeysListItem = ({ privateKey, publicKey, keyName }: PropsType) => {
           ? chrome.i18n.getMessage('popup_accounts_reveal_private')
           : privateKey}
       </div>
-      <div className="public-key" onClick={() => copyToClipboard(publicKey)}>
+      <div
+        className="public-key key-field"
+        onClick={() => copyToClipboard(publicKey)}>
         {publicKey}
       </div>
     </div>
@@ -47,7 +58,7 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { setInfoMessage });
 type PropsType = ConnectedProps<typeof connector> & KeyListItemProps;
 
 export const AccountKeysListItemComponent = connector(AccountKeysListItem);

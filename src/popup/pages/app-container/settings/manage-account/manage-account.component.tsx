@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import './manage-account.component.scss';
 
 const ManageAccount = ({}: PropsFromRedux) => {
   return (

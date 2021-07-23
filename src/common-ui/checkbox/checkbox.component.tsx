@@ -1,5 +1,5 @@
 import React from 'react';
-import './checkbox.component.css';
+import './checkbox.component.scss';
 
 interface CheckboxProps {
   onChange: (value: boolean) => void;

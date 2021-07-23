@@ -1,4 +1,4 @@
-import { setErrorMessage } from '@popup/actions/error-message.actions';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
@@ -9,7 +9,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import MkUtils from 'src/utils/mk.utils';
-import './sign-in.component.css';
+import './sign-in.component.scss';
 
 const SignIn = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
   const [password, setPassword] = useState('');

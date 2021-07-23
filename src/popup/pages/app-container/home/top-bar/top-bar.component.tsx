@@ -4,7 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Screen } from 'src/reference-data/screen.enum';
-import './top-bar.component.css';
+import './top-bar.component.scss';
 
 const TopBar = ({ forgetMk, navigateTo, resetNav }: PropsFromRedux) => {
   const lockPopup = (): void => {

@@ -4,7 +4,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import SettingsMenuItems from './settings-main-page-menu-items';
-import './settings-main-page.component.css';
+import './settings-main-page.component.scss';
 
 const SettingsMainPage = ({ navigateTo }: PropsFromRedux) => {
   return (
