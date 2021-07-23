@@ -1,4 +1,5 @@
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
+import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
 import { ResourcesSectionComponent } from '@popup/pages/app-container/home/resources-section/resources-section.component';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
@@ -8,35 +9,53 @@ import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import RpcUtils from 'src/utils/rpc.utils';
 import './home.component.scss';
 
 const Home = ({
   activeAccount,
   loadActiveAccount,
   accounts,
+  activeRpc,
+  setActiveRpc,
 }: PropsFromRedux) => {
   useEffect(() => {
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
       loadActiveAccount(accounts[0]);
     }
-  }, accounts);
+    if (!activeRpc || activeRpc.uri === 'NULL') {
+      initActiveRpc();
+    }
+  }, [accounts, activeRpc]);
+
+  const initActiveRpc = async () => {
+    setActiveRpc(await RpcUtils.getCurrentRpc());
+  };
 
   return (
     <div className="home-page">
-      <TopBarComponent />
-      <SelectAccountSectionComponent />
-      <ResourcesSectionComponent />
-      <WalletInfoSectionComponent />
-      <ActionsSectionComponent />
+      {activeRpc && activeRpc.uri !== 'NULL' && (
+        <div>
+          <TopBarComponent />
+          <SelectAccountSectionComponent />
+          <ResourcesSectionComponent />
+          <WalletInfoSectionComponent />
+          <ActionsSectionComponent />
+        </div>
+      )}
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount, accounts: state.accounts };
+  return {
+    activeAccount: state.activeAccount,
+    accounts: state.accounts,
+    activeRpc: state.activeRpc,
+  };
 };
 
-const connector = connect(mapStateToProps, { loadActiveAccount });
+const connector = connect(mapStateToProps, { loadActiveAccount, setActiveRpc });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const HomeComponent = connector(Home);

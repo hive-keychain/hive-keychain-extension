@@ -1,4 +1,5 @@
-import ActiveAccountReducer from '@popup/reducers/active-account.reducer';
+import { ActiveAccountReducer } from '@popup/reducers/active-account.reducer';
+import { ActiveRpcReducer } from '@popup/reducers/active-rpc.reducer';
 import { combineReducers } from 'redux';
 import { AccountReducer } from './account.reducer';
 import { MessageReducer } from './message.reducer';
@@ -11,4 +12,5 @@ export default combineReducers({
   activeAccount: ActiveAccountReducer,
   errorMessage: MessageReducer,
   navigation: NavigationReducer,
+  activeRpc: ActiveRpcReducer,
 });

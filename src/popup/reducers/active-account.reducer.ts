@@ -5,7 +5,7 @@ import { actionPayload } from '@popup/actions/interfaces';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { Keys } from 'src/interfaces/local-account.interface';
 
-const ActiveAccountReducer = (
+export const ActiveAccountReducer = (
   state: ActiveAccount = {
     account: {} as ExtendedAccount,
     keys: {} as Keys,
@@ -25,5 +25,3 @@ const ActiveAccountReducer = (
       return state;
   }
 };
-
-export default ActiveAccountReducer;

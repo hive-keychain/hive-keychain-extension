@@ -1438,5 +1438,9 @@
   "popup_html_advanced_settings": {
     "message": "Advanced",
     "description": "Advanced settings sub menu"
+  },
+  "popup_html_rpc_node_text": {
+    "message": "You can chose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.<br/><br/>Use 'DEFAULT' RPC to let Hive Keychain chose the best RPC node at a given time.",
+    "description": "Text on rpc node settings page"
   }
 }

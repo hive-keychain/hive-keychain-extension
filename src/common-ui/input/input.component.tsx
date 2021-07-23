@@ -5,21 +5,28 @@ import './input.component.scss';
 interface InputProps {
   onChange: (value: string) => void;
   value: string;
-  logo: string;
+  logo?: string;
   placeholder: string;
   type: InputType;
+  skipTranslation?: boolean;
 }
 
 const InputComponent = (props: InputProps) => {
   return (
-    <div className="input-container">
+    <div className={`input-container ${props.logo ? '' : 'no-logo'}`}>
       <input
         type={props.type}
-        placeholder={chrome.i18n.getMessage(props.placeholder)}
+        placeholder={
+          props.skipTranslation
+            ? props.placeholder
+            : chrome.i18n.getMessage(props.placeholder)
+        }
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
       />
-      <img src={`/assets/images/${props.logo}.png`} className="input-img" />
+      {props.logo && (
+        <img src={`/assets/images/${props.logo}.png`} className="input-img" />
+      )}
     </div>
   );
 };

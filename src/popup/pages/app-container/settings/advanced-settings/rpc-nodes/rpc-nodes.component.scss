@@ -1,0 +1,40 @@
+.select-rpc-node-select,
+.select-rpc-node-select:hover,
+.select-rpc-node-select:focus {
+  border: unset !important;
+  background: rgba(33, 37, 41, 0.68);
+}
+.select-rpc-node-select {
+  .react-dropdown-select-dropdown {
+    border: unset;
+    top: 54px;
+    background-color: black;
+  }
+}
+
+.selected-rpc-node-panel {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  padding: 12px 6px;
+  box-sizing: border-box;
+  width: 100%;
+}
+.selected-rpc-node-panel .selected-rpc-node,
+.select-rpc-item .rpc-name {
+  font-size: 18px;
+}
+
+.select-rpc-item {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  padding: 12px;
+  box-sizing: border-box;
+  background: rgba(33, 37, 41, 0.68);
+
+  &:hover,
+  &.selected {
+    background: #e31337;
+  }
+}

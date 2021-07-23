@@ -3,6 +3,7 @@ import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
 // import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/utils/account.utils';
+import RpcUtils from 'src/utils/rpc.utils';
 
 // const composeEnhancers = composeWithDevTools({
 //   realtime: true,
@@ -14,14 +15,19 @@ const store = createStore(
 );
 
 let previousAccounts = store.getState().accounts;
+let previousRpc = store.getState().activeRpc;
 store.subscribe(() => {
-  const { accounts, mk, navigation, activeAccount } = store.getState();
-  console.log(navigation, mk, accounts, activeAccount);
+  const { accounts, mk, navigation, activeAccount, activeRpc } =
+    store.getState();
+  console.log(navigation, mk, accounts, activeAccount, activeRpc);
   if (previousAccounts !== accounts) {
     previousAccounts = accounts;
     if (accounts.length > 0) {
       AccountUtils.saveAccounts(accounts, mk);
     }
+  }
+  if (previousRpc && previousRpc.uri !== activeRpc?.uri && activeRpc) {
+    RpcUtils.saveCurrentRpc(activeRpc);
   }
 });
 
