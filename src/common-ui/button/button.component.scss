@@ -16,6 +16,7 @@
   align-items: center;
   justify-content: center;
 
+  &.important,
   &:hover {
     background-color: #e31337;
     border: solid 1px #e31337;

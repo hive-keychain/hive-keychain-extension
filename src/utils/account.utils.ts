@@ -287,6 +287,15 @@ const deleteKey = (
   return accounts;
 };
 
+const deleteAccount = (
+  accountName: string,
+  accounts: LocalAccount[],
+): LocalAccount[] => {
+  return accounts.filter(
+    (account: LocalAccount) => account.name !== accountName,
+  );
+};
+
 export const isAccountListIdentical = (
   a: LocalAccount[],
   b: LocalAccount[],
@@ -304,6 +313,7 @@ const AccountUtils = {
   mergeImportedAccountsToExistingAccounts,
   deleteKey,
   isAccountListIdentical,
+  deleteAccount,
   AccountErrorMessages,
 };
 

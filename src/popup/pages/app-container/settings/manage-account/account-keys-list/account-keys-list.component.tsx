@@ -1,11 +1,30 @@
+import { setAccounts } from '@popup/actions/account.actions';
+import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import { KeyType } from 'src/interfaces/keys.interface';
+import AccountUtils from 'src/utils/account.utils';
 import './account-keys-list.component.scss';
 
-const AccountKeysList = ({ activeAccount }: PropsType) => {
+const AccountKeysList = ({
+  activeAccount,
+  accounts,
+  setAccounts,
+  loadActiveAccount,
+}: PropsType) => {
+  const deleteAccount = () => {
+    console.log('delete account');
+    const newAccounts = AccountUtils.deleteAccount(
+      activeAccount.name!,
+      accounts,
+    );
+    setAccounts(newAccounts);
+    loadActiveAccount(newAccounts[0]);
+  };
+
   return (
     <div className="account-keys-list">
       <AccountKeysListItemComponent
@@ -26,15 +45,22 @@ const AccountKeysList = ({ activeAccount }: PropsType) => {
         keyName={'popup_html_memo'}
         keyType={KeyType.MEMO}
       />
+      {accounts.length > 1 && (
+        <ButtonComponent
+          label="popup_html_delete_account"
+          important={true}
+          onClick={() => deleteAccount()}
+        />
+      )}
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return { activeAccount: state.activeAccount, accounts: state.accounts };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { setAccounts, loadActiveAccount });
 type PropsType = ConnectedProps<typeof connector>;
 
 export const AccountKeysListComponent = connector(AccountKeysList);
