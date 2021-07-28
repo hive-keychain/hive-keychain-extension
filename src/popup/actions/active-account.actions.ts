@@ -3,6 +3,15 @@ import { AppThunk } from '@popup/actions/interfaces';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import HiveUtils from 'src/utils/hive.utils';
 
+export const refreshActiveAccount =
+  (): AppThunk => async (dispatch, getState) => {
+    const account = getState().accounts.find(
+      (localAccount: LocalAccount) =>
+        localAccount.name === getState().activeAccount.name,
+    );
+    dispatch(loadActiveAccount(account));
+  };
+
 export const loadActiveAccount =
   (account: LocalAccount, initTransactions?: boolean): AppThunk =>
   async (dispatch, getState) => {

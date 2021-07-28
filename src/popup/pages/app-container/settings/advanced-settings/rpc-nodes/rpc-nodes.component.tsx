@@ -105,7 +105,7 @@ const RpcNodes = ({ activeRpc, setActiveRpc }: PropsFromRedux) => {
         }}>
         <div className="rpc-name">
           {selectProps.item.label}{' '}
-          {selectProps.item.rpc.testnet && <div>- TESTNET</div>}
+          {selectProps.item.rpc.testnet && <div>TESTNET</div>}
         </div>
       </div>
     );

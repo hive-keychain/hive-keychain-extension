@@ -8,3 +8,9 @@ export interface Keys {
   active?: Key;
   activePubkey?: Key;
 }
+
+export enum KeyType {
+  ACTIVE = 'ACTIVE',
+  POSTING = 'POSTING',
+  MEMO = 'MEMO',
+}

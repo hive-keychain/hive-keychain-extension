@@ -20,6 +20,7 @@ const SelectAccountSection = ({
   loadActiveAccount,
 }: PropsFromRedux) => {
   const defaultOptions: LocalAccountListItem[] = [];
+
   useEffect(() => {
     setOptions(
       accounts.map((account: LocalAccount) => {
@@ -84,6 +85,7 @@ const SelectAccountSection = ({
       </div>
     );
   };
+
   return (
     <div>
       {selectedLocalAccount && options && (

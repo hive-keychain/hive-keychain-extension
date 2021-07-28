@@ -20,7 +20,7 @@ store.subscribe(() => {
   const { accounts, mk, navigation, activeAccount, activeRpc } =
     store.getState();
   console.log(navigation, mk, accounts, activeAccount, activeRpc);
-  if (previousAccounts !== accounts) {
+  if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
     if (accounts.length > 0) {
       AccountUtils.saveAccounts(accounts, mk);

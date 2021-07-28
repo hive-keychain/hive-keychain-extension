@@ -2,30 +2,44 @@
   display: flex;
   flex-direction: column;
   row-gap: 8px;
-}
+  .top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 
-.top-panel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+    .key-name {
+      text-transform: uppercase;
+      font-size: 20px;
+    }
 
-.top-panel .key-name {
-  text-transform: uppercase;
-  font-size: 20px;
-}
-.top-panel .remove-button {
-  text-transform: uppercase;
-  color: #c93535;
-  cursor: pointer;
-  font-size: 18px;
-}
+    .remove-button {
+      text-transform: uppercase;
+      color: #c93535;
+      cursor: pointer;
+      font-size: 18px;
+    }
+  }
 
-.key-field {
-  font-size: 11px;
-  cursor: pointer;
-}
+  .keys-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
 
-.key-field.hidden {
-  font-size: 16px;
+    .key-field {
+      font-size: 11px;
+      cursor: pointer;
+
+      &.hidden {
+        font-size: 16px;
+      }
+    }
+  }
+
+  .add-key-icon {
+    text-align: center;
+    img {
+      height: 36px;
+      width: 36px;
+    }
+  }
 }

@@ -15,18 +15,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
 
-.submit-button:hover {
-  background-color: #e31337;
-  border: solid 1px #e31337;
-}
+  &:hover {
+    background-color: #e31337;
+    border: solid 1px #e31337;
+  }
 
-.submit-button .logo {
-  position: absolute;
-  right: 32px;
-}
+  .logo {
+    width: 32px;
+    margin-right: 6px;
+  }
 
-.submit-button .button-label {
-  width: 100%;
+  .button-label {
+    width: 100%;
+  }
 }

@@ -11,7 +11,9 @@ const ButtonComponent = (props: ButtonProps) => {
   return (
     <button className="submit-button" onClick={props.onClick}>
       <div className="button-label">{chrome.i18n.getMessage(props.label)} </div>
-      {props.logo && <img src={`/assets/images/${props.logo}.png`} />}
+      {props.logo && (
+        <img className="logo" src={`/assets/images/${props.logo}.png`} />
+      )}
     </button>
   );
 };

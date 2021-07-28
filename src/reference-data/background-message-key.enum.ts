@@ -7,4 +7,7 @@ export enum BackgroundCommand {
   // Import
   IMPORT_ACCOUNTS = 'importAccounts',
   SEND_BACK_IMPORTED_ACCOUNTS = 'sendBackimportedAccounts',
+
+  //RPC
+  SAVE_RPC = 'saveRPC',
 }

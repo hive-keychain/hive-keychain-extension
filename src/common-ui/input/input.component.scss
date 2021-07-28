@@ -17,21 +17,26 @@
     color: white;
     border-style: unset;
     border-bottom: solid 1px white;
+
+    &::placeholder {
+      color: #7e8c9a;
+      text-transform: uppercase;
+      font-family: Futura;
+      font-size: 20px;
+      padding-top: 10px;
+    }
+
+    &:focus {
+      outline: none !important;
+      box-shadow: 0 0 10px #719ece;
+    }
   }
 
-  & > input {
+  &.no-logo > input {
     padding-left: 12px;
   }
 
-  &::placeholder {
-    color: #7e8c9a;
-    text-transform: uppercase;
-    font-family: Futura;
-    font-size: 20px;
-    padding-top: 10px;
-  }
-
-  &.input-img {
+  .input-img {
     position: absolute;
     bottom: 30.07px;
     left: 20.41px;

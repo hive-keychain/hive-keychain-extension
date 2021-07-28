@@ -1,6 +1,7 @@
 import * as Hive from '@hiveio/dhive';
 import { Accounts } from 'src/interfaces/accounts.interface';
-import { Keys } from 'src/interfaces/keys.interface';
+import { ActiveAccount } from 'src/interfaces/active-account.interface';
+import { Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
@@ -260,6 +261,39 @@ const mergeImportedAccountsToExistingAccounts = (
   return newAccounts;
 };
 
+const deleteKey = (
+  keyType: KeyType,
+  accounts: LocalAccount[],
+  activeAccount: ActiveAccount,
+): LocalAccount[] => {
+  const account = accounts.find(
+    (account: LocalAccount) => account.name === activeAccount.name,
+  );
+
+  switch (keyType) {
+    case KeyType.ACTIVE:
+      delete account?.keys.active;
+      delete account?.keys.activePubkey;
+      break;
+    case KeyType.POSTING:
+      delete account?.keys.posting;
+      delete account?.keys.postingPubkey;
+      break;
+    case KeyType.MEMO:
+      delete account?.keys.memo;
+      delete account?.keys.memoPubkey;
+      break;
+  }
+  return accounts;
+};
+
+export const isAccountListIdentical = (
+  a: LocalAccount[],
+  b: LocalAccount[],
+): boolean => {
+  return JSON.stringify(a) === JSON.stringify(b);
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -268,6 +302,8 @@ const AccountUtils = {
   addAuthorizedAccount,
   getAccountsFromFileData,
   mergeImportedAccountsToExistingAccounts,
+  deleteKey,
+  isAccountListIdentical,
   AccountErrorMessages,
 };
 
