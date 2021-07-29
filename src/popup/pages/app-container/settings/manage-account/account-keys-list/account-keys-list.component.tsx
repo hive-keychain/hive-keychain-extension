@@ -2,10 +2,12 @@ import { setAccounts } from '@popup/actions/account.actions';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import QRCode from 'react-qr-code';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { KeyType } from 'src/interfaces/keys.interface';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import './account-keys-list.component.scss';
 
@@ -15,8 +17,18 @@ const AccountKeysList = ({
   setAccounts,
   loadActiveAccount,
 }: PropsType) => {
+  const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
+  const [account, setAccount] = useState(null);
+
+  useEffect(() => {
+    setAccount(
+      accounts.find(
+        (account: LocalAccount) => account.name === activeAccount.name,
+      ),
+    );
+  }, [activeAccount]);
+
   const deleteAccount = () => {
-    console.log('delete account');
     const newAccounts = AccountUtils.deleteAccount(
       activeAccount.name!,
       accounts,
@@ -45,6 +57,18 @@ const AccountKeysList = ({
         keyName={'popup_html_memo'}
         keyType={KeyType.MEMO}
       />
+
+      <ButtonComponent
+        label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}
+        onClick={() => setQRCodeDisplayed(!qrCodeDisplayed)}
+      />
+      {qrCodeDisplayed && (
+        <QRCode
+          className="qrcode"
+          value={`keychain://add_account=${JSON.stringify(account)}`}
+        />
+      )}
+
       {accounts.length > 1 && (
         <ButtonComponent
           label="popup_html_delete_account"

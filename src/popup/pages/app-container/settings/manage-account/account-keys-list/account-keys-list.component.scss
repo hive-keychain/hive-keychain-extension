@@ -2,10 +2,13 @@
   display: flex;
   flex-direction: column;
   row-gap: 16px;
+  .account-keys-list-item:nth-child(even) {
+    background: rgba(227, 19, 55, 0.32);
+    margin: 0px -24px;
+    padding: 6px 24px;
+  }
 }
 
-.account-keys-list-item:nth-child(even) {
-  background: rgba(227, 19, 55, 0.32);
-  margin: 0px -24px;
-  padding: 6px 24px;
+.qrcode {
+  align-self: center;
 }
