@@ -9,7 +9,8 @@
   height: 60px;
   width: 100%;
   padding: 0 32px 0 32px;
-  cursor: pointer;
+  cursor: pointer;+
+  box-sizing: border-box;
 }
 .menu-item:nth-child(odd) {
   background-color: rgba(227, 19, 55, 0.32);
