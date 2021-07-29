@@ -319,6 +319,10 @@
     "message": "Show QR Code",
     "description": "on manage accounts"
   },
+  "popup_html_hide_qr": {
+    "message": "Hide QR Code",
+    "description": "on manage accounts"
+  },
   "popup_html_select_rpc": {
     "message": "Select an RPC node",
     "description": "on preferences"
