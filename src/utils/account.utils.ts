@@ -1,9 +1,15 @@
 import * as Hive from '@hiveio/dhive';
+import { resetAccount } from '@popup/actions/account.actions';
+import { ActionType } from '@popup/actions/action-type.enum';
+import { navigateTo } from '@popup/actions/navigation.actions';
+import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
+import { Screen } from 'src/reference-data/screen.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import HiveUtils from './hive.utils';
 import KeysUtils from './keys.utils';
@@ -113,6 +119,7 @@ const isAccountNameAlreadyExisting = (
 };
 
 const encryptAccounts = async (accounts: Accounts, mk: string) => {
+  console.log(accounts, mk);
   return EncryptUtils.encryptJson(accounts, mk);
 };
 
@@ -203,6 +210,7 @@ const getAccountsFromFileData = (
   mk: string,
 ): LocalAccount[] => {
   const accounts = EncryptUtils.decryptToJsonWithoutMD5Check(fileContent, mk);
+  console.log(accounts);
   if (accounts) {
     return accounts?.list;
   } else {
@@ -296,11 +304,37 @@ const deleteAccount = (
   );
 };
 
-export const isAccountListIdentical = (
+const isAccountListIdentical = (
   a: LocalAccount[],
   b: LocalAccount[],
 ): boolean => {
   return JSON.stringify(a) === JSON.stringify(b);
+};
+
+const downloadAccounts = async () => {
+  const accounts = { list: store.getState().accounts };
+  var data = new Blob([await encryptAccounts(accounts, store.getState().mk)], {
+    type: 'text/plain',
+  });
+  var url = window.URL.createObjectURL(data);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'accounts.kc';
+  a.click();
+};
+
+const clearAllData = () => {
+  store.dispatch(resetAccount());
+  store.dispatch({
+    type: ActionType.SET_MK,
+    payload: '',
+  });
+  chrome.runtime.sendMessage({
+    command: BackgroundCommand.SAVE_MK,
+    value: '',
+  });
+  LocalStorageUtils.clearLocalStorage();
+  store.dispatch(navigateTo(Screen.SIGN_UP_PAGE, true));
 };
 
 const AccountUtils = {
@@ -314,6 +348,8 @@ const AccountUtils = {
   deleteKey,
   isAccountListIdentical,
   deleteAccount,
+  downloadAccounts,
+  clearAllData,
   AccountErrorMessages,
 };
 

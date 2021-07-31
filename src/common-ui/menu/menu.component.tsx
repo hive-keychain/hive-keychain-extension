@@ -18,6 +18,14 @@ const Menu = ({
   menuItems,
   navigateTo,
 }: PropsType) => {
+  const handleMenuItemClick = (menuItem: MenuItem) => {
+    if (menuItem.nextScreen) {
+      navigateTo(menuItem.nextScreen);
+    } else if (menuItem.action) {
+      menuItem.action();
+    }
+  };
+
   return (
     <div className="menu-page">
       <PageTitleComponent
@@ -29,7 +37,7 @@ const Menu = ({
           <div
             key={index}
             className="menu-item"
-            onClick={() => navigateTo(menuItem.nextScreen)}>
+            onClick={() => handleMenuItemClick(menuItem)}>
             <img className="icon" src={`/assets/images/${menuItem.icon}.png`} />
             <div className="menu-label">
               {chrome.i18n.getMessage(menuItem.label)}
