@@ -33,7 +33,6 @@ document.addEventListener("swRequest_hive", function (request) {
   req = request.detail;
   // If all information are filled, send the request to the background, if not notify an error
   if (validate()) {
-    console.log("validated");
     chrome.runtime.sendMessage({
       command: "sendRequest",
       request: req,
@@ -52,7 +51,6 @@ document.addEventListener("swRequest_hive", function (request) {
       sendResponse(response);
     }
   } else {
-    console.log("not validated");
     var response = {
       success: false,
       error: "incomplete",
@@ -61,7 +59,6 @@ document.addEventListener("swRequest_hive", function (request) {
       data: req,
       request_id: req.request_id,
     };
-    console.log(response);
     sendResponse(response);
     req = prevReq;
   }
