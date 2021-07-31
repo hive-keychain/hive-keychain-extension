@@ -51,6 +51,7 @@ const AddByAuth = ({
           logo="arobase"
           placeholder="popup_html_username"
           type={InputType.TEXT}
+          onEnterPress={submitForm}
         />
         <InputComponent
           value={authorizedAccount}
@@ -58,6 +59,7 @@ const AddByAuth = ({
           logo="arobase"
           placeholder="popup_html_auth_placeholder_username_auth"
           type={InputType.TEXT}
+          onEnterPress={submitForm}
         />
         <ButtonComponent label={'popup_html_submit'} onClick={submitForm} />
       </div>

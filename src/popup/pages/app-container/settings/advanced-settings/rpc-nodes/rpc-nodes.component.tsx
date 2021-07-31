@@ -152,6 +152,7 @@ const RpcNodes = ({ activeRpc, setActiveRpc }: PropsFromRedux) => {
             value={addRpcNodeUri}
             onChange={setAddRpcNodeUri}
             placeholder={'popup_html_rpc_node'}
+            onEnterPress={handleSaveNewRpcClicked}
           />
           <CheckboxComponent
             title="TESTNET"
@@ -165,6 +166,7 @@ const RpcNodes = ({ activeRpc, setActiveRpc }: PropsFromRedux) => {
             onChange={setAddRpcNodeChainId}
             placeholder="Chain Id"
             skipTranslation={true}
+            onEnterPress={handleSaveNewRpcClicked}
           />
 
           <ButtonComponent

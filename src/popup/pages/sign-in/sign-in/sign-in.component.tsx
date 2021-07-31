@@ -41,6 +41,7 @@ const SignIn = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
         logo="lock"
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
+        onEnterPress={login}
       />
       <ButtonComponent
         label={'popup_html_signin'}

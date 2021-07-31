@@ -54,6 +54,7 @@ const AddByKeys = ({
           logo="arobase"
           placeholder="popup_html_username"
           type={InputType.TEXT}
+          onEnterPress={submitForm}
         />
         <InputComponent
           value={privateKey}
@@ -61,6 +62,7 @@ const AddByKeys = ({
           logo="key"
           placeholder="popup_html_private_key"
           type={InputType.PASSWORD}
+          onEnterPress={submitForm}
         />
         <ButtonComponent label={'popup_html_submit'} onClick={submitForm} />
       </div>

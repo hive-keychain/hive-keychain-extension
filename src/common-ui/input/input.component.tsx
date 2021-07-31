@@ -9,6 +9,7 @@ interface InputProps {
   placeholder: string;
   type: InputType;
   skipTranslation?: boolean;
+  onEnterPress?(): any;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -23,6 +24,11 @@ const InputComponent = (props: InputProps) => {
         }
         value={props.value}
         onChange={(e) => props.onChange(e.target.value)}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter' && props.onEnterPress) {
+            props.onEnterPress();
+          }
+        }}
       />
       {props.logo && (
         <img src={`/assets/images/${props.logo}.png`} className="input-img" />

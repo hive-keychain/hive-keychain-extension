@@ -43,6 +43,7 @@ const SignUp = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
         logo="lock"
         placeholder="popup_html_new_password"
         type={InputType.PASSWORD}
+        onEnterPress={submitMk}
       />
       <InputComponent
         value={newPasswordConfirm}
@@ -50,6 +51,7 @@ const SignUp = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
         logo="lock"
         placeholder="popup_html_confirm"
         type={InputType.PASSWORD}
+        onEnterPress={submitMk}
       />
       <ButtonComponent label={'popup_html_submit'} onClick={submitMk} />
     </div>
