@@ -215,6 +215,10 @@
     "message": "Add Account",
     "description": "on settings page"
   },
+  "popup_html_accounts": {
+    "message": "Accounts",
+    "description": "on settings page"
+  },
   "popup_html_manage_accounts": {
     "message": "Manage Accounts",
     "description": "on settings page"

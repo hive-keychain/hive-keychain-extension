@@ -1,6 +1,6 @@
 import { setAccounts } from '@popup/actions/account.actions';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
-import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
+import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';

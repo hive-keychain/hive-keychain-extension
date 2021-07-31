@@ -4,6 +4,8 @@ import { AddByKeysComponent } from '@popup/pages/add-account/add-by-keys/add-by-
 import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import-keys.component';
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
+import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
+import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from '@popup/pages/app-container/settings/advanced-settings/advanced-settings.component';
 import { AutoLockComponent } from '@popup/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/pages/app-container/settings/advanced-settings/change-password/change-password.component';
@@ -11,7 +13,6 @@ import { ClearAllDataComponent } from '@popup/pages/app-container/settings/advan
 import { ImportExportComponent } from '@popup/pages/app-container/settings/advanced-settings/import-export/import-export.component';
 import { KeychainifyComponent } from '@popup/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
 import { RpcNodesComponent } from '@popup/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
-import { ManageAccountComponent } from '@popup/pages/app-container/settings/manage-account/manage-account.component';
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -26,6 +27,8 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;
+      case Screen.SETTINGS_ACCOUNTS:
+        return <AccountSubMenuComponent />;
       case Screen.ACCOUNT_PAGE_INIT_ACCOUNT:
         return <AddAccountRouterComponent />;
       case Screen.ACCOUNT_PAGE_ADD_BY_KEYS:

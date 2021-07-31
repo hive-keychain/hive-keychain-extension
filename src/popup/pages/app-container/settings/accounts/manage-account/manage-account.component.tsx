@@ -1,5 +1,5 @@
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
-import { AccountKeysListComponent } from '@popup/pages/app-container/settings/manage-account/account-keys-list/account-keys-list.component';
+import { AccountKeysListComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
