@@ -1,6 +1,7 @@
 import * as Hive from '@hiveio/dhive';
 import { resetAccount } from '@popup/actions/account.actions';
 import { ActionType } from '@popup/actions/action-type.enum';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
@@ -23,31 +24,20 @@ enum AccountErrorMessages {
   PASSWORD_IS_PUBLIC_KEY = 'popup_account_password_is_public_key',
 }
 
-const verifyAccount = async (
-  username: string,
-  password: string,
-  existingAccounts: LocalAccount[],
-  showError: (errorMessage: string, params: string[]) => void,
-): Promise<Keys | null> => {
-  if (username.length === 0 || password.length === 0) {
-    showError(AccountErrorMessages.MISSING_FIELDS, []);
-    return null;
-  }
-  if (isAccountNameAlreadyExisting(existingAccounts, username)) {
-    showError(AccountErrorMessages.ALREADY_REGISTERED, [username]);
-    return null;
-  }
-
+const getKeys = async (username: string, password: string) => {
   if (password.startsWith('STM')) {
-    showError(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY, []);
+    store.dispatch(
+      setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
+    );
     return null;
   }
-
+  console.log(username);
   const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
     username,
   ]);
+  console.log(hiveAccounts);
   if (hiveAccounts.length === 0) {
-    showError(AccountErrorMessages.INCORRECT_USER, []);
+    store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
     return null;
   }
   const activeInfo = hiveAccounts[0].active;
@@ -80,11 +70,30 @@ const verifyAccount = async (
     hiveAccounts[0],
   );
 
+  console.log(keys);
+
   if (!keys) {
-    showError(AccountErrorMessages.INCORRECT_KEY, []);
+    store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_KEY));
   }
 
   return keys;
+};
+
+const verifyAccount = async (
+  username: string,
+  password: string,
+  existingAccounts: LocalAccount[],
+): Promise<Keys | null> => {
+  if (username.length === 0 || password.length === 0) {
+    store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
+    return null;
+  }
+  if (isAccountNameAlreadyExisting(existingAccounts, username)) {
+    store.dispatch(setErrorMessage(AccountErrorMessages.ALREADY_REGISTERED));
+    return null;
+  }
+
+  return getKeys(username, password);
 };
 
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
@@ -119,7 +128,6 @@ const isAccountNameAlreadyExisting = (
 };
 
 const encryptAccounts = async (accounts: Accounts, mk: string) => {
-  console.log(accounts, mk);
   return EncryptUtils.encryptJson(accounts, mk);
 };
 
@@ -203,6 +211,20 @@ const addAuthorizedAccount = async (
   }
 
   return keys;
+};
+
+const addKey = async (account: LocalAccount, privateKey: string) => {
+  if (privateKey.length === 0 || privateKey.length === 0) {
+    store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
+    return null;
+  }
+
+  if (privateKey.startsWith('STM')) {
+    store.dispatch(
+      setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
+    );
+    return null;
+  }
 };
 
 const getAccountsFromFileData = (
@@ -350,6 +372,7 @@ const AccountUtils = {
   deleteAccount,
   downloadAccounts,
   clearAllData,
+  getKeys,
   AccountErrorMessages,
 };
 

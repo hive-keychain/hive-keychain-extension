@@ -5,6 +5,7 @@ import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
+import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from '@popup/pages/app-container/settings/advanced-settings/advanced-settings.component';
 import { AutoLockComponent } from '@popup/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
@@ -41,6 +42,8 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <SelectKeysComponent />;
       case Screen.SETTINGS_MANAGE_ACCOUNTS:
         return <ManageAccountComponent />;
+      case Screen.SETTINGS_ADD_KEY:
+        return <AddKeyComponent />;
       case Screen.SETTINGS_ADVANCED:
         return <AdvancedSettingsPageComponent />;
       case Screen.SETTINGS_CHANGE_PASSWORD:

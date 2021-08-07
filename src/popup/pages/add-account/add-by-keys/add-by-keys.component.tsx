@@ -1,5 +1,4 @@
 import { addAccount } from '@popup/actions/account.actions';
-import { setErrorMessage } from '@popup/actions/message.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
@@ -14,7 +13,6 @@ import KeysUtils from 'src/utils/keys.utils';
 import './add-by-keys.component.scss';
 
 const AddByKeys = ({
-  setErrorMessage,
   navigateToWithParams,
   localAccounts,
   addAccount,
@@ -27,7 +25,6 @@ const AddByKeys = ({
       username,
       privateKey,
       localAccounts,
-      setErrorMessage,
     );
     if (!keys) {
       return;
@@ -77,7 +74,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  setErrorMessage,
   navigateToWithParams,
   addAccount,
 });
