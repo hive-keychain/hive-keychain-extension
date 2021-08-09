@@ -1454,5 +1454,13 @@
   "popup_html_rpc_node_text": {
     "message": "You can chose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.<br/><br/>Use 'DEFAULT' RPC to let Hive Keychain chose the best RPC node at a given time.",
     "description": "Text on rpc node settings page"
+  },
+  "popup_html_rpc_missing_fields": {
+    "message": "You need to at least fill RPC Node",
+    "description": "Error message on rpc node settings page"
+  },
+  "popup_html_rpc_uri_already_existing": {
+    "message": "Rpc Node already existing",
+    "description": "Error message on rpc node settings page"
   }
 }

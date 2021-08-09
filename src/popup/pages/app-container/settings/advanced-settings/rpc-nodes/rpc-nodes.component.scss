@@ -28,6 +28,7 @@
 .select-rpc-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   column-gap: 16px;
   padding: 12px;
   box-sizing: border-box;
@@ -36,6 +37,16 @@
   &:hover,
   &.selected {
     background: #e31337;
+
+    .erase-button {
+      display: block;
+    }
+  }
+
+  .erase-button {
+    display: none;
+    height: 16px;
+    width: 16px;
   }
 }
 

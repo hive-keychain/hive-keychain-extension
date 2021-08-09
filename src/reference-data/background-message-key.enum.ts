@@ -10,4 +10,5 @@ export enum BackgroundCommand {
 
   //RPC
   SAVE_RPC = 'saveRPC',
+  SET_ACTIVE_RPC = 'setActiveRpc',
 }

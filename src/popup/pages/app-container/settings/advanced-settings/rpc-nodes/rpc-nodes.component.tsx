@@ -1,6 +1,7 @@
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
-import React, { useEffect, useState } from 'react';
+import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
@@ -12,6 +13,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
+import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import RpcUtils from 'src/utils/rpc.utils';
 import './rpc-nodes.component.scss';
 
@@ -21,7 +23,11 @@ interface RpcListItem {
   rpc: Rpc;
 }
 
-const RpcNodes = ({ activeRpc, setActiveRpc }: PropsFromRedux) => {
+const RpcNodes = ({
+  activeRpc,
+  setActiveRpc,
+  setErrorMessage,
+}: PropsFromRedux) => {
   const allRpc = RpcUtils.getFullList();
   let displayedRpcs = allRpc;
   const [customRpcs, setCustomRpcs] = useState([] as Rpc[]);
@@ -64,9 +70,33 @@ const RpcNodes = ({ activeRpc, setActiveRpc }: PropsFromRedux) => {
 
   const handleItemClicked = (rpc: Rpc) => {
     setActiveRpc(rpc);
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.SAVE_RPC,
+      value: rpc,
+    });
+  };
+
+  const deleteCustomRPC = (item: Rpc, event: BaseSyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (activeRpc?.uri === item.uri) {
+      setActiveRpc(customRpcs[0]);
+    }
+    const newRpcs = setCustomRpcs(RpcUtils.deleteCustomRpc(customRpcs, item));
+
+    return newRpcs;
   };
 
   const handleSaveNewRpcClicked = () => {
+    if (!addRpcNodeUri.length) {
+      setErrorMessage('popup_html_rpc_missing_fields');
+      return;
+    }
+    if (displayedRpcs.find((rpc) => rpc.uri === addRpcNodeUri)) {
+      setErrorMessage('popup_html_rpc_uri_already_existing');
+      return;
+    }
+
     const newCustomRpc = {
       uri: addRpcNodeUri,
       testnet: addRpcNodeTestnet,
@@ -105,6 +135,16 @@ const RpcNodes = ({ activeRpc, setActiveRpc }: PropsFromRedux) => {
           {selectProps.item.label}{' '}
           {selectProps.item.rpc.testnet && <div>TESTNET</div>}
         </div>
+        {!RpcUtils.isDefault(selectProps.item.rpc) &&
+          activeRpc?.uri !== selectProps.item.rpc.uri && (
+            <img
+              src="/assets/images/clear.png"
+              className="erase-button"
+              onClick={($event) =>
+                deleteCustomRPC(selectProps.item.rpc, $event)
+              }
+            />
+          )}
       </div>
     );
   };
@@ -181,7 +221,7 @@ const mapStateToProps = (state: RootState) => {
   return { activeRpc: state.activeRpc };
 };
 
-const connector = connect(mapStateToProps, { setActiveRpc });
+const connector = connect(mapStateToProps, { setActiveRpc, setErrorMessage });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const RpcNodesComponent = connector(RpcNodes);
