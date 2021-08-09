@@ -67,16 +67,14 @@ const RpcNodes = ({ activeRpc, setActiveRpc }: PropsFromRedux) => {
   };
 
   const handleSaveNewRpcClicked = () => {
+    const newCustomRpc = {
+      uri: addRpcNodeUri,
+      testnet: addRpcNodeTestnet,
+      chainId: addRpcNodeChainId.length ? addRpcNodeChainId : undefined,
+    };
     setIsAddRpcPanelDisplayed(false);
-    RpcUtils.addCustomRpc({ uri: addRpcNodeUri, testnet: addRpcNodeTestnet });
-    setCustomRpcs([
-      ...customRpcs,
-      {
-        uri: addRpcNodeUri,
-        testnet: addRpcNodeTestnet,
-        chainId: addRpcNodeChainId.length ? addRpcNodeChainId : undefined,
-      },
-    ]);
+    RpcUtils.addCustomRpc(newCustomRpc);
+    setCustomRpcs([...customRpcs, newCustomRpc]);
   };
 
   const customLabelRender = (selectProps: SelectRenderer<RpcListItem>) => {

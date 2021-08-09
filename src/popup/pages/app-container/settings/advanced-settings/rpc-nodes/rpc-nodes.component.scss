@@ -38,3 +38,9 @@
     background: #e31337;
   }
 }
+
+.add-rpc-panel {
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
+}

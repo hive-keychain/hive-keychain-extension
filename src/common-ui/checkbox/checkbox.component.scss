@@ -1,5 +1,5 @@
 .custom-checkbox {
-  padding: 4px 0px;
+  // padding: 4px 0px;
 }
 
 .checkbox_container {
@@ -13,6 +13,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  height: 32px;
 }
 
 .checkbox_container div {
@@ -25,6 +26,7 @@
   text-transform: uppercase;
   font-size: 18px;
   line-height: 18px;
+  place-self: center;
 }
 
 /* Hide the browser's default checkbox */
