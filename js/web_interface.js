@@ -8,7 +8,7 @@ const setupInjection = () => {
     var container = document.head || document.documentElement;
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
-    console.error("Steem Keychain injection failed.", e);
+    console.error("Hive Keychain injection failed.", e);
   }
 };
 setupInjection();
