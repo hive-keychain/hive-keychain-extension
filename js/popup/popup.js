@@ -67,6 +67,24 @@ function sendAutolock() {
   });
 }
 
+function initializeRequestCloseCheckbox() {
+  chrome.storage.local.get(
+    ["automatically_close_dialog"],
+    function ({ automatically_close_dialog }) {
+      console.log("close", automatically_close_dialog);
+      if (automatically_close_dialog) {
+        $(".checkbox_close_req input").prop("checked", true);
+      }
+    }
+  );
+}
+
+$(".checkbox_close_req").click(function () {
+  chrome.storage.local.set({
+    automatically_close_dialog: $(".checkbox_close_req input").prop("checked"),
+  });
+});
+
 function checkKeychainify() {
   chrome.storage.local.get(["keychainify_enabled"], function (items) {
     if (items.keychainify_enabled !== undefined) {
@@ -182,6 +200,7 @@ function acceptMP(mp) {
 function initializeMainMenu(options) {
   sendAutolock();
   checkKeychainify();
+  initializeRequestCloseCheckbox();
   manageKey = false;
   getPref = false;
   chrome.storage.local.get(

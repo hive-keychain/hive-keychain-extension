@@ -327,6 +327,14 @@
     "message": "Notification Preferences",
     "description": "on preferences"
   },
+  "popup_html_req_pref": {
+    "message": "Requests Preferences",
+    "description": "on preferences"
+  },
+  "popup_html_req_pref_check": {
+    "message": "Automatically close request window after 3 seconds.",
+    "description": "on preferences"
+  },
   "popup_html_pref_info": {
     "message": "View and update the websites and transaction types for which you have opted not to recieve a confirmation prompt.",
     "description": "on preferences"

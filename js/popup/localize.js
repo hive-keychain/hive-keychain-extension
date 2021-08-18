@@ -211,6 +211,10 @@ $("#new_rpc").attr(
   chrome.i18n.getMessage("popup_html_rpc_node")
 );
 $("#add_new_rpc").text(chrome.i18n.getMessage("popup_html_add_rpc"));
+$("#requests_prefs").text(chrome.i18n.getMessage("popup_html_req_pref"));
+$(".checkbox_close_req div").text(
+  chrome.i18n.getMessage("popup_html_req_pref_check")
+);
 
 // Add key
 $("#add_key_div .back_enabled").text(

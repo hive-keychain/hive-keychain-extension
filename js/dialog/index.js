@@ -587,6 +587,16 @@ chrome.runtime.onMessage.addListener(function (
         ? `${chrome.i18n.getMessage("dialog_header_success")} !`
         : `${chrome.i18n.getMessage("dialog_header_error")} !`
     );
+    chrome.storage.local.get(
+      ["automatically_close_dialog"],
+      function ({ automatically_close_dialog }) {
+        if (automatically_close_dialog) {
+          setTimeout(() => {
+            window.close();
+          }, 3000);
+        }
+      }
+    );
     $("#error_dialog").text(msg.message);
     $(".modal-body-error").show();
     $("#error-ok").click(function () {
