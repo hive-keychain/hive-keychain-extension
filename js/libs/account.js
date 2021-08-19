@@ -178,14 +178,18 @@ class Account {
 
   async getAccountValue() {
     const [hive, hbd] = await this.props.getPrices();
-    console.log(hive, hbd);
+
     return (
       numberWithCommas(
         "$ " +
           (
-            hbd * parseInt(await this.getHBD()) +
+            hbd *
+              (parseFloat(await this.getHBD()) +
+                parseFloat(await this.getHBDSavings())) +
             hive *
-              (parseInt(await this.getHP()) + parseInt(await this.getHive()))
+              (parseFloat(await this.getHP()) +
+                parseFloat(await this.getHiveSavings()) +
+                parseFloat(await this.getHive()))
           ).toFixed(2)
       ) + "\t  USD"
     );
