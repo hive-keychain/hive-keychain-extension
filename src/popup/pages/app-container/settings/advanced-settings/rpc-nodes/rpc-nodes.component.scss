@@ -54,4 +54,8 @@
   display: flex;
   flex-direction: column;
   row-gap: 12px;
+  .add-rpc-caption {
+    font-size: 18px;
+    margin-top: 12px;
+  }
 }

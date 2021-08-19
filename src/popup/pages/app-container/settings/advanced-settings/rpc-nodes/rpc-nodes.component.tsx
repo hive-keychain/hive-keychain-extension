@@ -1,6 +1,7 @@
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
+import { Switch, useCheckboxState } from 'pretty-checkbox-react';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -36,6 +37,17 @@ const RpcNodes = ({
   const [addRpcNodeUri, setAddRpcNodeUri] = useState('');
   const [addRpcNodeChainId, setAddRpcNodeChainId] = useState('');
   const [addRpcNodeTestnet, setAddRpcNodeTestnet] = useState(false);
+  const checkbox = useCheckboxState({ state: [] });
+
+  console.log(checkbox);
+
+  useEffect(() => {
+    if ((checkbox.state as string[]).includes('enable.dark')) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
+  }, [checkbox.state]);
 
   const [options, setOptions] = useState(
     allRpc.map((rpc) => {
@@ -88,7 +100,10 @@ const RpcNodes = ({
   };
 
   const handleSaveNewRpcClicked = () => {
-    if (!addRpcNodeUri.length) {
+    if (
+      !addRpcNodeUri.length ||
+      (addRpcNodeTestnet && !addRpcNodeChainId.length)
+    ) {
       setErrorMessage('popup_html_rpc_missing_fields');
       return;
     }
@@ -184,7 +199,9 @@ const RpcNodes = ({
 
       {isAddRpcPanelDisplayed && (
         <div className="add-rpc-panel">
-          <p>{chrome.i18n.getMessage('popup_html_add_rpc_text')}</p>
+          <div className="add-rpc-caption">
+            {chrome.i18n.getMessage('popup_html_add_rpc_text')}
+          </div>
           <InputComponent
             type={InputType.TEXT}
             value={addRpcNodeUri}
@@ -198,14 +215,19 @@ const RpcNodes = ({
             onChange={setAddRpcNodeTestnet}
             skipTranslation={true}
           />
-          <InputComponent
-            type={InputType.TEXT}
-            value={addRpcNodeChainId}
-            onChange={setAddRpcNodeChainId}
-            placeholder="Chain Id"
-            skipTranslation={true}
-            onEnterPress={handleSaveNewRpcClicked}
-          />
+          <Switch {...checkbox} value="enable.dark">
+            Test
+          </Switch>
+          {addRpcNodeTestnet && (
+            <InputComponent
+              type={InputType.TEXT}
+              value={addRpcNodeChainId}
+              onChange={setAddRpcNodeChainId}
+              placeholder="Chain Id"
+              skipTranslation={true}
+              onEnterPress={handleSaveNewRpcClicked}
+            />
+          )}
 
           <ButtonComponent
             label={'popup_html_save'}
