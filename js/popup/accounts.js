@@ -46,7 +46,7 @@ const loadAccount = async (name, options) => {
   });
   $("#send_form").toggle(activeAccount.hasKey("active"));
   $("#show_add_active").toggle(!activeAccount.hasKey("active"));
-  $(".wallet_infos").html("...");
+  $(".wallet_infos .main_currency").html("...");
   $("#vm_pct").html("...");
   $("#vm_val").html("");
   $("#rc").html("...");
@@ -533,15 +533,46 @@ const addKeys = (i, key, priv, pub, name) => {
 
 // show balance for this account
 const showBalances = async () => {
-  $("#wallet_amt div")
+  $("#wallet_amt .wallet_infos")
+    .eq(0)
+    .find("div")
     .eq(0)
     .html(numberWithCommas(await activeAccount.getHive()));
-  $("#wallet_amt div")
+
+  $("#wallet_amt .wallet_infos")
     .eq(1)
+    .find("div")
+    .eq(0)
     .html(numberWithCommas(await activeAccount.getHBD()));
-  $("#wallet_amt div")
+  $("#wallet_amt .wallet_infos")
     .eq(2)
+    .find("div")
+    .eq(0)
     .html(numberWithCommas(await activeAccount.getHP()));
+
+  if ((await activeAccount.getHiveSavings()) !== "0.000") {
+    $("#wallet_amt .wallet_infos")
+      .eq(0)
+      .find("div")
+      .eq(1)
+      .html(
+        numberWithCommas(
+          `+ ${await activeAccount.getHiveSavings()} <img class="savings_icon" src="../images/icon_info_white.png" title="This amount is stored in savings and is subject to a 3 days withdraw period.">`
+        )
+      );
+  }
+  if ((await activeAccount.getHBDSavings()) !== "0.000") {
+    $("#wallet_amt .wallet_infos")
+      .eq(1)
+      .find("div")
+      .eq(1)
+      .html(
+        numberWithCommas(`+ ${await activeAccount.getHBDSavings()}`) +
+          `<img class="savings_icon" src="../images/icon_info_white.png" title="This amount is stored in savings and is subject to a 3 days withdraw period. It will increase with a ${
+            (await activeAccount.props.getProp("hbd_interest_rate")) / 100
+          }% interest.">`
+      );
+  }
   $("#balance_loader").hide();
 };
 
@@ -555,12 +586,8 @@ const deleteAccount = (i) => {
 
 const claimRewards = async () => {
   console.log(`Check claim rewards for ${activeAccount.getName()}`);
-  const [
-    reward_hbd,
-    reward_hp,
-    reward_hive,
-    rewardText,
-  ] = await activeAccount.getAvailableRewards();
+  const [reward_hbd, reward_hp, reward_hive, rewardText] =
+    await activeAccount.getAvailableRewards();
   if (hasReward(reward_hbd, reward_hp, reward_hive)) {
     $("#claim_rewards button").prop("disabled", false);
     $("#claim").show();

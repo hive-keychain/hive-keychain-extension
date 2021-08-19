@@ -701,7 +701,17 @@ input:focus {
   padding: 13px 0;
 }
 
-#wallet_amt div,
+.additional_wallet_data {
+  font-size: 12px;
+  line-height: 12px;
+  height: 12px;
+  margin-top: 4px;
+  padding-bottom: 4px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
 .wallet_currency {
   margin-bottom: 20px;
 }
@@ -2227,4 +2237,9 @@ input[type="checkbox"] {
 }
 .recurrent_transfer_checked #rec_iterations {
   width: 45%;
+}
+
+.savings_icon {
+  height: 10px;
+  margin-left: 2px;
 }

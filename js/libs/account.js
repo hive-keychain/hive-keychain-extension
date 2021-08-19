@@ -89,11 +89,11 @@ class Account {
                 account: this.getName(),
                 reward_hive: this.reward_hive,
                 reward_hbd: this.reward_hbd,
-                reward_vests: this.reward_vests
-              }
-            ]
+                reward_vests: this.reward_vests,
+              },
+            ],
           ],
-          extensions: []
+          extensions: [],
         },
         { posting: this.getKey("posting") },
         callback
@@ -108,13 +108,31 @@ class Account {
   }
 
   async getHive() {
-    return (await this.getAccountInfo("balance")).replace(" HIVE", "").replace( " TESTS", "");
+    return (await this.getAccountInfo("balance"))
+      .replace(" HIVE", "")
+      .replace(" TESTS", "");
   }
 
+  async getHiveSavings() {
+    return (await this.getAccountInfo("savings_balance"))
+      .replace(" HIVE", "")
+      .replace(" TESTS", "");
+  }
+
+  async getHBDSavings() {
+    return (await this.getAccountInfo("savings_hbd_balance"))
+      .replace(" HBD", "")
+      .replace(" TBD", "");
+  }
   async getHBD() {
     if (await this.getAccountInfo("sbd_balance"))
-      return (await this.getAccountInfo("sbd_balance")).replace(" HBD", "").replace( " TBD", "");
-    else return (await this.getAccountInfo("hbd_balance")).replace(" HBD", "").replace( " TBD", "");
+      return (await this.getAccountInfo("sbd_balance"))
+        .replace(" HBD", "")
+        .replace(" TBD", "");
+    else
+      return (await this.getAccountInfo("hbd_balance"))
+        .replace(" HBD", "")
+        .replace(" TBD", "");
   }
 
   async getHP() {
@@ -132,10 +150,9 @@ class Account {
             (await this.getAccountInfo("vesting_shares")).replace(" VESTS", "")
           ) -
             parseFloat(
-              (await this.getAccountInfo("delegated_vesting_shares")).replace(
-                " VESTS",
-                ""
-              )
+              (
+                await this.getAccountInfo("delegated_vesting_shares")
+              ).replace(" VESTS", "")
             )
         )
       ) - 5
@@ -182,7 +199,7 @@ class Account {
       "4",
       null
     );
-    let transfers = result.filter(tx => tx[1].op[0] === "transfer");
+    let transfers = result.filter((tx) => tx[1].op[0] === "transfer");
     transfers = transfers.slice(-10).reverse();
     return transfers;
   }
@@ -248,12 +265,12 @@ class Account {
   async getDelegatees() {
     const that = this;
     let delegatees = await this.delegatees;
-    delegatees = delegatees.filter(function(elt) {
+    delegatees = delegatees.filter(function (elt) {
       return elt.vesting_shares != 0;
     });
     if (delegatees.length > 0)
       delegatees = await Promise.all(
-        delegatees.map(async elt => {
+        delegatees.map(async (elt) => {
           elt.hp = parseFloat(
             await this.toHP(
               parseFloat(elt.vesting_shares.replace(" VESTS", ""))
@@ -267,12 +284,12 @@ class Account {
   async getDelegators() {
     const that = this;
     let delegators = await this.delegators;
-    delegators = delegators.filter(function(elt) {
+    delegators = delegators.filter(function (elt) {
       return elt.vesting_shares != 0;
     });
     if (delegators.length > 0)
       delegators = await Promise.all(
-        delegators.map(async elt => {
+        delegators.map(async (elt) => {
           const hp = await that.toHP(elt.vesting_shares + " VESTS");
           elt.hp = parseFloat(hp).toFixed(3);
           return elt;
