@@ -20,6 +20,7 @@ export const ActiveAccountReducer = (
       return { ...state, rc: payload };
     case ActionType.FORGET_ACCOUNT:
     case ActionType.FORGET_ACCOUNTS:
+    case ActionType.RESET_ACTIVE_ACCOUNT:
       return { account: {} as ExtendedAccount, keys: {}, rc: {} as Manabar };
     default:
       return state;

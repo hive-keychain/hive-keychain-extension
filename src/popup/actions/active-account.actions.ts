@@ -63,3 +63,9 @@ export const getAccountRC =
       payload: rc,
     });
   };
+
+export const resetActiveAccount = () => {
+  return {
+    type: ActionType.RESET_ACTIVE_ACCOUNT,
+  };
+};
