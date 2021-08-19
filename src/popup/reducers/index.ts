@@ -1,5 +1,6 @@
 import { ActiveAccountReducer } from '@popup/reducers/active-account.reducer';
 import { ActiveRpcReducer } from '@popup/reducers/active-rpc.reducer';
+import BittrexReducer from '@popup/reducers/bittrex.reducer';
 import { combineReducers } from 'redux';
 import { AccountReducer } from './account.reducer';
 import { MessageReducer } from './message.reducer';
@@ -13,4 +14,5 @@ export default combineReducers({
   errorMessage: MessageReducer,
   navigation: NavigationReducer,
   activeRpc: ActiveRpcReducer,
+  bittrex: BittrexReducer,
 });

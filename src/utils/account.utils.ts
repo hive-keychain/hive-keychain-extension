@@ -1,7 +1,10 @@
 import * as Hive from '@hiveio/dhive';
 import { resetAccount } from '@popup/actions/account.actions';
 import { ActionType } from '@popup/actions/action-type.enum';
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
@@ -31,11 +34,9 @@ const getKeys = async (username: string, password: string) => {
     );
     return null;
   }
-  console.log(username);
   const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
     username,
   ]);
-  console.log(hiveAccounts);
   if (hiveAccounts.length === 0) {
     store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
     return null;
@@ -69,8 +70,6 @@ const getKeys = async (username: string, password: string) => {
     password,
     hiveAccounts[0],
   );
-
-  console.log(keys);
 
   if (!keys) {
     store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_KEY));
@@ -213,7 +212,12 @@ const addAuthorizedAccount = async (
   return keys;
 };
 
-const addKey = async (account: LocalAccount, privateKey: string) => {
+const addKey = async (
+  activeAccount: ActiveAccount,
+  accounts: LocalAccount[],
+  privateKey: string,
+  keyType: KeyType,
+) => {
   if (privateKey.length === 0 || privateKey.length === 0) {
     store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
     return null;
@@ -225,6 +229,46 @@ const addKey = async (account: LocalAccount, privateKey: string) => {
     );
     return null;
   }
+  const keys = await AccountUtils.getKeys(activeAccount.name!, privateKey);
+  let account = accounts.find(
+    (account: LocalAccount) => account.name === activeAccount.name,
+  );
+  if (keys && account) {
+    switch (keyType) {
+      case KeyType.ACTIVE:
+        if (!keys.active) {
+          setErrorMessage('popup_html_wrong_key', [
+            chrome.i18n.getMessage('active'),
+          ]);
+          return;
+        }
+        account.keys.active = keys.active;
+        account.keys.activePubkey = keys.activePubkey;
+        break;
+      case KeyType.POSTING:
+        if (!keys.posting) {
+          setErrorMessage('popup_html_wrong_key', [
+            chrome.i18n.getMessage('posting'),
+          ]);
+          return;
+        }
+        account.keys.posting = keys.posting;
+        account.keys.postingPubkey = keys.postingPubkey;
+        break;
+      case KeyType.MEMO:
+        if (!keys.memo) {
+          setErrorMessage('popup_html_wrong_key', [
+            chrome.i18n.getMessage('memo'),
+          ]);
+          return;
+        }
+        account.keys.memo = keys.memo;
+        account.keys.memoPubkey = keys.memoPubkey;
+        break;
+    }
+    store.dispatch(setSuccessMessage('import_html_success'));
+    return accounts;
+  }
 };
 
 const getAccountsFromFileData = (
@@ -232,7 +276,6 @@ const getAccountsFromFileData = (
   mk: string,
 ): LocalAccount[] => {
   const accounts = EncryptUtils.decryptToJsonWithoutMD5Check(fileContent, mk);
-  console.log(accounts);
   if (accounts) {
     return accounts?.list;
   } else {
@@ -367,6 +410,7 @@ const AccountUtils = {
   addAuthorizedAccount,
   getAccountsFromFileData,
   mergeImportedAccountsToExistingAccounts,
+  addKey,
   deleteKey,
   isAccountListIdentical,
   deleteAccount,

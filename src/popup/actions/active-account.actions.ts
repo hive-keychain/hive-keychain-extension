@@ -12,15 +12,19 @@ export const refreshActiveAccount =
     dispatch(loadActiveAccount(account));
   };
 
+export const refreshKeys = (localAccount: LocalAccount) => {
+  return {
+    type: ActionType.SET_ACTIVE_ACCOUNT,
+    payload: {
+      keys: localAccount.keys,
+    },
+  };
+};
+
 export const loadActiveAccount =
   (account: LocalAccount, initTransactions?: boolean): AppThunk =>
   async (dispatch, getState) => {
-    dispatch({
-      type: ActionType.SET_ACTIVE_ACCOUNT,
-      payload: {
-        name: account.name,
-      },
-    });
+    dispatch(refreshKeys(account));
     dispatch(getAccountRC(account.name));
     // if (initTransactions) {
     //   dispatch(initAccountTransactions(name));
@@ -32,7 +36,7 @@ export const loadActiveAccount =
       type: ActionType.SET_ACTIVE_ACCOUNT,
       payload: {
         account: extendedAccount,
-        keys: account.keys,
+        name: account.name,
       },
     });
   };

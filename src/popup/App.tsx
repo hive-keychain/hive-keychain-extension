@@ -1,4 +1,7 @@
 import { retrieveAccounts } from '@popup/actions/account.actions';
+import { refreshActiveAccount } from '@popup/actions/active-account.actions';
+import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
+import { loadGlobalProperties } from '@popup/actions/global-properties.reducer';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
@@ -24,12 +27,23 @@ const App = ({
   accounts,
   currentPage,
   navigateTo,
+  activeAccountUsername,
+  activeRpc,
+  refreshActiveAccount,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
   }, []);
+
+  useEffect(() => {
+    loadBittrexPrices();
+    loadGlobalProperties();
+    if (activeAccountUsername) {
+      refreshActiveAccount();
+    }
+  }, [activeAccountUsername, activeRpc]);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ command: BackgroundCommand.GET_MK });
@@ -93,8 +107,10 @@ const App = ({
 const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
-    accounts: state.accounts,
+    accounts: state.accounts as LocalAccount[],
     currentPage: state.navigation.stack[0],
+    activeRpc: state.activeRpc,
+    activeAccountUsername: state.activeAccount?.name,
   };
 };
 
@@ -102,6 +118,7 @@ const connector = connect(mapStateToProps, {
   setMk,
   retrieveAccounts,
   navigateTo,
+  refreshActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

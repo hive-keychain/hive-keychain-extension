@@ -1,5 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 
-export default axios.create({
-  baseURL: "https://api.hive-keychain.com/",
+const KeychainApi = axios.create({
+  baseURL: 'https://api.hive-keychain.com/',
 });
+
+export default KeychainApi;

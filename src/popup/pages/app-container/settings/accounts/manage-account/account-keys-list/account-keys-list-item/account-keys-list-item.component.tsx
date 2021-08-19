@@ -1,5 +1,4 @@
-import { setAccounts } from '@popup/actions/account.actions';
-import { refreshActiveAccount } from '@popup/actions/active-account.actions';
+import { removeKey, setAccounts } from '@popup/actions/account.actions';
 import { setInfoMessage } from '@popup/actions/message.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
@@ -8,7 +7,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { Key } from 'src/interfaces/local-account.interface';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
 import './account-keys-list-item.component.scss';
 
 export interface KeyListItemProps {
@@ -24,11 +22,8 @@ const AccountKeysListItem = ({
   keyName,
   keyType,
   setInfoMessage,
-  setAccounts,
-  refreshActiveAccount,
-  activeAccount,
-  accounts,
   navigateToWithParams,
+  removeKey,
 }: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
 
@@ -39,9 +34,8 @@ const AccountKeysListItem = ({
     }
   };
 
-  const removeKey = () => {
-    setAccounts(AccountUtils.deleteKey(keyType, accounts, activeAccount));
-    refreshActiveAccount();
+  const handleClickOnRemoveKey = () => {
+    removeKey(keyType);
   };
 
   return (
@@ -49,7 +43,9 @@ const AccountKeysListItem = ({
       <div className="top-panel">
         <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
         {publicKey && privateKey && (
-          <div className="remove-button" onClick={() => removeKey()}>
+          <div
+            className="remove-button"
+            onClick={() => handleClickOnRemoveKey()}>
             {chrome.i18n.getMessage('popup_html_remove')}
           </div>
         )}
@@ -95,8 +91,8 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setInfoMessage,
   setAccounts,
-  refreshActiveAccount,
   navigateToWithParams,
+  removeKey,
 });
 type PropsType = ConnectedProps<typeof connector> & KeyListItemProps;
 
