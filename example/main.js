@@ -110,7 +110,9 @@ $("#sendTokens").click(function () {
     function (response) {
       console.log("main js response - tokens");
       console.log(response);
-    }
+    },
+    null,
+    JSON.parse($("#tokens_meta").val())
   );
 });
 

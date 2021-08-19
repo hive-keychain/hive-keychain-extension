@@ -1,15 +1,16 @@
-const broadcastSendToken = data => {
+const broadcastSendToken = (data) => {
   return new Promise((resolve, reject) => {
     const id = config.mainNet;
     const json = {
       contractName: "tokens",
       contractAction: "transfer",
+      metadata: data.metadata,
       contractPayload: {
         symbol: data.currency,
         to: data.to,
         quantity: data.amount,
-        memo: data.memo
-      }
+        memo: data.memo,
+      },
     };
     hive.broadcast.customJson(
       key,

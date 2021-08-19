@@ -395,7 +395,8 @@ var hive_keychain = {
     memo,
     currency,
     callback,
-    rpc
+    rpc,
+    metadata
   ) {
     var request = {
       type: "sendToken",
@@ -405,6 +406,7 @@ var hive_keychain = {
       memo,
       currency,
       rpc,
+      metadata,
     };
     this.dispatchCustomEvent("swRequest_hive", request, callback);
   },
