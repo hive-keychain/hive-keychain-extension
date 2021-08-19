@@ -1,7 +1,7 @@
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
-import { Switch, useCheckboxState } from 'pretty-checkbox-react';
+import { Switch } from 'pretty-checkbox-react';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -37,17 +37,6 @@ const RpcNodes = ({
   const [addRpcNodeUri, setAddRpcNodeUri] = useState('');
   const [addRpcNodeChainId, setAddRpcNodeChainId] = useState('');
   const [addRpcNodeTestnet, setAddRpcNodeTestnet] = useState(false);
-  const checkbox = useCheckboxState({ state: [] });
-
-  console.log(checkbox);
-
-  useEffect(() => {
-    if ((checkbox.state as string[]).includes('enable.dark')) {
-      document.body.classList.add('dark');
-    } else {
-      document.body.classList.remove('dark');
-    }
-  }, [checkbox.state]);
 
   const [options, setOptions] = useState(
     allRpc.map((rpc) => {
@@ -215,8 +204,13 @@ const RpcNodes = ({
             onChange={setAddRpcNodeTestnet}
             skipTranslation={true}
           />
-          <Switch {...checkbox} value="enable.dark">
-            Test
+          <Switch
+            style={{ fontSize: 20 }}
+            onChange={(e) => {
+              setAddRpcNodeTestnet(e.target.checked);
+            }}
+            checked={addRpcNodeTestnet}>
+            TESTNET
           </Switch>
           {addRpcNodeTestnet && (
             <InputComponent
