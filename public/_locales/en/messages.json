@@ -102,6 +102,10 @@
     "message": "If you forgot your password, you can clear your data but will have to enter all your keys again.",
     "description": "text after clicking forgot password"
   },
+  "popup_html_clear_all_data_desc": {
+    "message": "By confirming, all your data will be lost. Make sure you have your keys saved outside of Keychain",
+    "description": "description of clear all data confirm page"
+  },
   "popup_html_vm": {
     "message": "Voting Mana",
     "description": "on Keychain popup main page"

@@ -20,13 +20,6 @@ const AccountSubMenuItems: MenuItem[] = [
       AccountUtils.downloadAccounts();
     },
   },
-  {
-    label: 'popup_html_clear',
-    icon: 'accounts',
-    action: async () => {
-      AccountUtils.clearAllData();
-    },
-  },
 ];
 
 export default AccountSubMenuItems;

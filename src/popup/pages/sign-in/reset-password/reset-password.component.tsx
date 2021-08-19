@@ -1,24 +1,13 @@
-import { resetAccount } from '@popup/actions/account.actions';
-import { forgetMk } from '@popup/actions/mk.actions';
-import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { Screen } from 'src/reference-data/screen.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import AccountUtils from 'src/utils/account.utils';
 
-const ResetPasswordPage = ({
-  forgetMk,
-  resetAccount,
-  navigateTo,
-}: PropsFromRedux) => {
+const ResetPasswordPage = ({}: PropsFromRedux) => {
   const reset = () => {
-    forgetMk();
-    resetAccount();
-    LocalStorageUtils.clearLocalStorage();
-    navigateTo(Screen.SIGN_UP_PAGE, true);
+    AccountUtils.clearAllData();
   };
 
   return (
@@ -40,11 +29,7 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, {
-  forgetMk,
-  resetAccount,
-  navigateTo,
-});
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const ResetPasswordPageComponent = connector(ResetPasswordPage);
