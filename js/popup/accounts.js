@@ -555,10 +555,14 @@ const showBalances = async () => {
       .eq(0)
       .find("div")
       .eq(1)
-      .html(
-        numberWithCommas(
-          `+ ${await activeAccount.getHiveSavings()} <img class="savings_icon" src="../images/icon_info_white.png" title="This amount is stored in savings and is subject to a 3 days withdraw period.">`
-        )
+      .html(numberWithCommas(`+ ${await activeAccount.getHiveSavings()}`));
+    $("#wallet_amt .wallet_infos")
+      .eq(0)
+      .find("div")
+      .eq(1)
+      .prop(
+        "title",
+        `This amount is stored in savings and is subject to a 3 days withdraw period.`
       );
   } else {
     $("#wallet_amt .wallet_infos").eq(0).find("div").eq(1).html("");
@@ -568,11 +572,16 @@ const showBalances = async () => {
       .eq(1)
       .find("div")
       .eq(1)
-      .html(
-        numberWithCommas(`+ ${await activeAccount.getHBDSavings()}`) +
-          `<img class="savings_icon" src="../images/icon_info_white.png" title="This amount is stored in savings and is subject to a 3 days withdraw period. It will increase with a ${
-            (await activeAccount.props.getProp("hbd_interest_rate")) / 100
-          }% interest.">`
+      .html(numberWithCommas(`+ ${await activeAccount.getHBDSavings()}`));
+    $("#wallet_amt .wallet_infos")
+      .eq(1)
+      .find("div")
+      .eq(1)
+      .prop(
+        "title",
+        `This amount is stored in savings and is subject to a 3 days withdraw period. It will increase with a ${
+          (await activeAccount.props.getProp("hbd_interest_rate")) / 100
+        }% interest.`
       );
   } else {
     $("#wallet_amt .wallet_infos").eq(1).find("div").eq(1).html("");
