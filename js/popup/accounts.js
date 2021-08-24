@@ -560,6 +560,8 @@ const showBalances = async () => {
           `+ ${await activeAccount.getHiveSavings()} <img class="savings_icon" src="../images/icon_info_white.png" title="This amount is stored in savings and is subject to a 3 days withdraw period.">`
         )
       );
+  } else {
+    $("#wallet_amt .wallet_infos").eq(0).find("div").eq(1).html("");
   }
   if ((await activeAccount.getHBDSavings()) !== "0.000") {
     $("#wallet_amt .wallet_infos")
@@ -572,6 +574,8 @@ const showBalances = async () => {
             (await activeAccount.props.getProp("hbd_interest_rate")) / 100
           }% interest.">`
       );
+  } else {
+    $("#wallet_amt .wallet_infos").eq(1).find("div").eq(1).html("");
   }
   $("#balance_loader").hide();
 };
