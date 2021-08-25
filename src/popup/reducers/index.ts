@@ -1,6 +1,7 @@
 import { ActiveAccountReducer } from '@popup/reducers/active-account.reducer';
 import { ActiveRpcReducer } from '@popup/reducers/active-rpc.reducer';
 import BittrexReducer from '@popup/reducers/bittrex.reducer';
+import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
 import { combineReducers } from 'redux';
 import { AccountReducer } from './account.reducer';
 import { MessageReducer } from './message.reducer';
@@ -15,4 +16,5 @@ export default combineReducers({
   navigation: NavigationReducer,
   activeRpc: ActiveRpcReducer,
   bittrex: BittrexReducer,
+  globalProperties: GlobalPropertiesReducer,
 });

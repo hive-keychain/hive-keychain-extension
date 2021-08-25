@@ -17,9 +17,8 @@ const store = createStore(
 let previousAccounts = store.getState().accounts;
 let previousRpc = store.getState().activeRpc;
 store.subscribe(() => {
-  const { accounts, mk, navigation, activeAccount, activeRpc, bittrex } =
-    store.getState();
-  console.log(navigation, mk, accounts, activeAccount, activeRpc, bittrex);
+  const { accounts, mk, activeRpc } = store.getState();
+  console.log(store.getState());
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
     if (accounts.length > 0) {

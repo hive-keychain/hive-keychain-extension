@@ -1,7 +1,7 @@
 import { retrieveAccounts } from '@popup/actions/account.actions';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
-import { loadGlobalProperties } from '@popup/actions/global-properties.reducer';
+import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';

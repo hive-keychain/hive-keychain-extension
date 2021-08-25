@@ -1,0 +1,23 @@
+.estimated-account-value-section {
+  height: 60px;
+  background: rgba(227, 19, 55, 0.32);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  .label-panel {
+    display: flex;
+    align-items: center;
+    column-gap: 8px;
+    .label {
+      font-size: 16px;
+    }
+    .icon {
+      height: 16px;
+      width: 16px;
+    }
+  }
+  .value {
+    font-size: 24px;
+  }
+}

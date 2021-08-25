@@ -1,4 +1,5 @@
 import * as Hive from '@hiveio/dhive';
+import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { resetAccount } from '@popup/actions/account.actions';
 import { resetActiveAccount } from '@popup/actions/active-account.actions';
 import {
@@ -10,11 +11,13 @@ import { navigateTo } from '@popup/actions/navigation.actions';
 import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
+import { Bittrex } from 'src/interfaces/bittrex.interface';
 import { Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
+import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from './hive.utils';
 import KeysUtils from './keys.utils';
 import LocalStorageUtils from './localStorage.utils';
@@ -396,6 +399,20 @@ const clearAllData = () => {
   store.dispatch(navigateTo(Screen.SIGN_UP_PAGE, true));
 };
 
+const getAccountValue = (
+  { hbd_balance, balance, vesting_shares }: ExtendedAccount,
+  { hive, hbd }: Bittrex,
+  props: DynamicGlobalProperties,
+) => {
+  if (!hbd.Usd || !hive.Usd) return 0;
+  return (
+    parseFloat(hbd_balance as string) * parseFloat(hbd.Usd) +
+    (FormatUtils.toHP(vesting_shares as string, props) +
+      parseFloat(balance as string)) *
+      parseFloat(hive.Usd)
+  ).toFixed(3);
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -411,6 +428,7 @@ const AccountUtils = {
   downloadAccounts,
   clearAllData,
   getKeys,
+  getAccountValue,
   AccountErrorMessages,
 };
 

@@ -3,6 +3,7 @@ import { AddByAuthComponent } from '@popup/pages/add-account/add-by-auth/add-by-
 import { AddByKeysComponent } from '@popup/pages/add-account/add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import-keys.component';
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
+import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
@@ -25,6 +26,8 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
     switch (page) {
       case Screen.HOME_PAGE:
         return <HomeComponent />;
+      case Screen.ACCOUNT_VALUE_EXPLANATION:
+        return <AccountValueExplanationComponent />;
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;

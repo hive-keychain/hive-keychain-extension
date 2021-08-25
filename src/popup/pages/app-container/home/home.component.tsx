@@ -1,8 +1,9 @@
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
-import { loadGlobalProperties } from '@popup/actions/global-properties.reducer';
+import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
+import { EstimatedAccountValueSectionComponent } from '@popup/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import { ResourcesSectionComponent } from '@popup/pages/app-container/home/resources-section/resources-section.component';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { TopBarComponent } from '@popup/pages/app-container/home/top-bar/top-bar.component';
@@ -21,6 +22,7 @@ const Home = ({
   activeRpc,
   setActiveRpc,
   loadBittrexPrices,
+  loadGlobalProperties,
 }: PropsFromRedux) => {
   useEffect(() => {
     loadBittrexPrices();
@@ -48,6 +50,7 @@ const Home = ({
           <SelectAccountSectionComponent />
           <ResourcesSectionComponent />
           <WalletInfoSectionComponent />
+          <EstimatedAccountValueSectionComponent />
           <ActionsSectionComponent />
         </div>
       )}
@@ -67,6 +70,7 @@ const connector = connect(mapStateToProps, {
   loadActiveAccount,
   setActiveRpc,
   loadBittrexPrices,
+  loadGlobalProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
