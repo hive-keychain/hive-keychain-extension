@@ -1,0 +1,25 @@
+.wallet-info-section {
+  background-color: rgba(255, 255, 255, 0.2);
+  .wallet-info-row {
+    display: flex;
+    align-items: center;
+    height: 50px;
+    column-gap: 16px;
+    justify-content: flex-end;
+    margin-right: 32px;
+
+    .dropdown-arrow {
+      padding-bottom: 3px;
+      transform: rotate(180deg);
+      width: 20px;
+      height: auto;
+    }
+
+    .value,
+    .currency {
+      width: 70px;
+      font-size: 24px;
+      text-align: right;
+    }
+  }
+}

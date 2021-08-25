@@ -16,7 +16,7 @@ const ResourceItem = ({ icon, label, value, tooltipText }: PropsType) => {
     <div className="resource-item">
       <div className="top">
         <img className="icon" src={`/assets/images/${icon}.png`} />
-        <div>{chrome.i18n.getMessage(label)}</div>
+        <div className="label">{chrome.i18n.getMessage(label)}</div>
         <img
           className="tooltip-icon"
           src="/assets/images/info.png"

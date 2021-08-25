@@ -1,4 +1,4 @@
-import { DynamicGlobalProperties } from '@hiveio/dhive';
+import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 
 const withCommas = (nb: string, decimals = 3) =>
   parseFloat(parseFloat(nb).toFixed(decimals))
@@ -15,10 +15,18 @@ const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   (parseFloat(hp) / parseFloat(props.total_vesting_fund_hive + '')) *
   parseFloat(props.total_vesting_shares + '');
 
+const formatCurrencyValue = (value: string | Asset) => {
+  if (!value) {
+    return '...';
+  }
+  return value.toString().replace('HBD', '').replace('HIVE', '').trim();
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
   fromHP,
+  formatCurrencyValue,
 };
 
 export default FormatUtils;
