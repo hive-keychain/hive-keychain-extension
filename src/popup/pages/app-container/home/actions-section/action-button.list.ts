@@ -4,23 +4,23 @@ import { Screen } from 'src/reference-data/screen.enum';
 export const ActionButtonList: ActionButton[] = [
   {
     label: 'popup_html_send_transfer',
-    nextScreen: Screen.SETTINGS_MAIN_PAGE,
+    nextScreen: Screen.TRANSFER_FUND_PAGE,
     icon: 'btn-bg_send',
   },
   {
     label: 'popup_html_history',
     icon: 'btn-bg_history',
-    nextScreen: Screen.SETTINGS_MAIN_PAGE,
+    nextScreen: Screen.WALLET_HISTORY_PAGE,
   },
   {
     label: 'popup_html_tokens',
     icon: 'btn-bg_tokens',
-    nextScreen: Screen.SETTINGS_MAIN_PAGE,
+    nextScreen: Screen.TOKENS_PAGE,
   },
 
   {
     label: 'popup_html_witness',
     icon: 'solo',
-    nextScreen: Screen.SETTINGS_MAIN_PAGE,
+    nextScreen: Screen.WITNESS_PAGE,
   },
 ];

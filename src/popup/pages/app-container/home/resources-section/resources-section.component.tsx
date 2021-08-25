@@ -18,15 +18,14 @@ const ResourcesSection = ({
       activeAccount?.account?.voting_manabar?.current_mana &&
       activeAccount.rc?.percentage
     ) {
-      setVotingMana(HiveUtils.getVP(activeAccount.account) + ' %');
-      setVotingValue(
-        HiveUtils.getVotingDollarsPerAccount(
-          100,
-          globalProperties,
-          activeAccount.account,
-          false,
-        ) + ' $',
-      );
+      setVotingMana(HiveUtils.getVP(activeAccount.account)?.toFixed(2) + ' %');
+      const manaValue = HiveUtils.getVotingDollarsPerAccount(
+        100,
+        globalProperties,
+        activeAccount.account,
+        false,
+      ) as string;
+      setVotingValue(parseFloat(manaValue).toFixed(2) + ' $');
       setRc((activeAccount.rc.percentage / 100).toFixed(2) + ' %');
     }
   }, [activeAccount]);

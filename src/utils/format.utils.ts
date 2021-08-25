@@ -19,7 +19,9 @@ const formatCurrencyValue = (value: string | Asset) => {
   if (!value) {
     return '...';
   }
-  return value.toString().replace('HBD', '').replace('HIVE', '').trim();
+  return withCommas(
+    value.toString().replace('HBD', '').replace('HIVE', '').trim(),
+  );
 };
 
 const FormatUtils = {

@@ -5,6 +5,10 @@ import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
+import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.component';
+import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
+import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
+import { WitnessVotingComponent } from '@popup/pages/app-container/home/witness-voting/witness-voting.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
@@ -28,6 +32,14 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <HomeComponent />;
       case Screen.ACCOUNT_VALUE_EXPLANATION:
         return <AccountValueExplanationComponent />;
+      case Screen.WITNESS_PAGE:
+        return <WitnessVotingComponent />;
+      case Screen.TRANSFER_FUND_PAGE:
+        return <TransferFundsComponent />;
+      case Screen.TOKENS_PAGE:
+        return <TokensComponent />;
+      case Screen.WALLET_HISTORY_PAGE:
+        return <WalletHistoryComponent />;
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;

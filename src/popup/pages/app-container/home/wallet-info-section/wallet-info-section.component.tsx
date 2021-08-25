@@ -28,10 +28,12 @@ const WalletInfoSection = ({
       </div>
       <div className="wallet-info-row wallet-info-hp">
         <div className="value">
-          {FormatUtils.toHP(
-            activeAccount.account.vesting_shares as string,
-            globalProperties.globals,
-          ).toFixed(3)}
+          {FormatUtils.withCommas(
+            FormatUtils.toHP(
+              activeAccount.account.vesting_shares as string,
+              globalProperties.globals,
+            ).toString(),
+          )}
         </div>
         <div className="currency">{currencyLabels.hp}</div>
         <img className="dropdown-arrow" src="/assets/images/uparrow.png" />
