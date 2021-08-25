@@ -18,3 +18,11 @@
   box-sizing: border-box;
   overflow: auto;
 }
+
+.react-dropdown-select-dropdown-handle {
+  width: 48px;
+  svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+}

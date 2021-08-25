@@ -1,7 +1,6 @@
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
-import { Switch } from 'pretty-checkbox-react';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -9,10 +8,10 @@ import Select, {
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import SwitchComponent from 'src/common-ui/switch/switch.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import RpcUtils from 'src/utils/rpc.utils';
@@ -198,20 +197,11 @@ const RpcNodes = ({
             placeholder={'popup_html_rpc_node'}
             onEnterPress={handleSaveNewRpcClicked}
           />
-          <CheckboxComponent
+          <SwitchComponent
             title="TESTNET"
             checked={addRpcNodeTestnet}
             onChange={setAddRpcNodeTestnet}
-            skipTranslation={true}
-          />
-          <Switch
-            style={{ fontSize: 20 }}
-            onChange={(e) => {
-              setAddRpcNodeTestnet(e.target.checked);
-            }}
-            checked={addRpcNodeTestnet}>
-            TESTNET
-          </Switch>
+            skipTranslation={true}></SwitchComponent>
           {addRpcNodeTestnet && (
             <InputComponent
               type={InputType.TEXT}
