@@ -1,0 +1,30 @@
+.action-button {
+  height: 50px;
+  color: white;
+  font-size: 18px;
+  line-height: 25px;
+  cursor: pointer;
+  text-transform: uppercase;
+  border: 1px transparent;
+  border-radius: 5px;
+  background-color: #7e8c9a;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background-color: #e31337;
+  }
+
+  .icon {
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .label {
+    font-size: 20px;
+  }
+}
