@@ -1396,6 +1396,14 @@
     "message": "Buy HIVE",
     "description": "When clicking on the Hive arrow menu"
   },
+  "popup_html_save_hive": {
+    "message": "HIVE Savings",
+    "description": "When clicking on the Hive arrow menu"
+  },
+  "popup_html_save_hbd": {
+    "message": "HBD Savings",
+    "description": "When clicking on the HBD arrow menu"
+  },
   "popup_html_buy_hbd": {
     "message": "Buy HBD",
     "description": "When clicking on the Hbd arrow menu"

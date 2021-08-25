@@ -510,6 +510,10 @@ $("#amt_convert_max").text(chrome.i18n.getMessage("popup_html_convert_max"));
 $("#buy_hive ").append(chrome.i18n.getMessage("popup_html_buy_hive"));
 $("#buy_hbd ").append(chrome.i18n.getMessage("popup_html_buy_hbd"));
 
+//savings
+$("#save_hive").append(chrome.i18n.getMessage("popup_html_save_hive"));
+$("#save_hbd").append(chrome.i18n.getMessage("popup_html_save_hbd"));
+
 $("#buy_moonpay h2").text(
   chrome.i18n.getMessage("popup_html_buy_moonpay_title")
 );

@@ -92,6 +92,7 @@
               <div id="powerup"><img src="../images/powerup.png" /></div>
               <div id="buy_hive"><img src="../images/buy.svg" /></div>
               <div id="convert_hive" class="hf25"><img src="../images/import.svg" /></div>
+              <div id="save_hive" class="hf25"><img src="../images/savings.png" /></div>
             </div>
           </div>
           <div class="currency-section">
@@ -100,6 +101,7 @@
               <div id="send_sbd"><img src="../images/transfer.png" /></div>
               <div id="buy_hbd"><img src="../images/buy.svg" /></div>
               <div id="convert_hbd"><img src="../images/import.svg" /></div>
+              <div id="save_hbd" class="hf25"><img src="../images/savings.png" /></div>
             </div>
           </div>
           <div class="currency-section">
@@ -505,6 +507,7 @@
       </div>
       <div id="show_add_active"></div>
     </div>
+    
     <div id="confirm_send_div" class="hide-at-start">
       <div class="back_enabled"></div>
       <p></p>
@@ -522,6 +525,39 @@
       <button id="confirm_send_transfer"></button>
       <div class="loader" id="send_loader" style="display:none">
         <div><img src="../images/loading.gif" /></div>
+      </div>
+    </div>
+    <div id="savings_div" class="hide-at-start">
+      <div class="back_menu back_enabled"></div>
+      <div class="transfer_balance">
+        <div id="balance"></div>
+        <div id="savings_balance"></div>
+      </div>
+      <div id="savings_form">
+        <div class="input_container">
+          <input id="recipient_savings" autocomplete="off" />
+          <img src="../images/arobase.png" class="input_img" />
+        </div>
+        <div id="autocomplete_container"></div>
+        <input
+          type="number"
+          id="amt_savings"
+          autocomplete="off"
+          placeholder="0.000"
+        />
+
+        <div class="custom-select" id="currency_savings">
+          <select>
+            <option value="HIVE">HIVE</option>
+            <option value="HBD">HBD</option>
+          </select>
+        </div>
+        <div class="send_max_div">
+          <span class="send_max" id="amt_save_max"></span>
+        </div>
+        
+       
+        <button id="send_savings"></button>
       </div>
     </div>
     <div id="convert_div" class="hide-at-start">
@@ -851,6 +887,7 @@
     <script src="../js/config.js"></script>
     <script src="../js/popup/tokens.js"></script>
     <script src="../js/popup/conversion.js"></script>
+    <script src="../js/popup/savings.js"></script>
     <script src="../js/popup/popup.js"></script>
   </body>
 </html>
