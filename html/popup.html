@@ -529,11 +529,24 @@
     </div>
     <div id="savings_div" class="hide-at-start">
       <div class="back_menu back_enabled"></div>
-      <div class="transfer_balance">
-        <div id="balance"></div>
-        <div id="savings_balance"></div>
+      <div class="power">
+        <div>
+          <span class="power_left"></span
+          ><span class="power_right" id="available_savings"></span>
+        </div>
+        <div>
+          <span class="power_left"></span
+          ><span class="power_right" id='current_savings'></span>
+        </div>
+      </div>
+      <div class="custom-select" >
+      <select>
+        <option value="deposit">Deposit </option>
+        <option value="withdraw">Withdraw </option>
+      </select>
       </div>
       <div id="savings_form">
+        
         <div class="input_container">
           <input id="recipient_savings" autocomplete="off" />
           <img src="../images/arobase.png" class="input_img" />
@@ -545,13 +558,8 @@
           autocomplete="off"
           placeholder="0.000"
         />
-
-        <div class="custom-select" id="currency_savings">
-          <select>
-            <option value="HIVE">HIVE</option>
-            <option value="HBD">HBD</option>
-          </select>
-        </div>
+      <div class="sp_del" id="currency_savings">
+      </div>
         <div class="send_max_div">
           <span class="send_max" id="amt_save_max"></span>
         </div>

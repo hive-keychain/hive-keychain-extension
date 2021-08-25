@@ -1404,6 +1404,14 @@
     "message": "HBD Savings",
     "description": "When clicking on the HBD arrow menu"
   },
+  "popup_html_deposit": {
+    "message": "Deposit $1",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw": {
+    "message": "Withdraw $1",
+    "description": "On savings menu"
+  },
   "popup_html_buy_hbd": {
     "message": "Buy HBD",
     "description": "When clicking on the Hbd arrow menu"

@@ -81,7 +81,8 @@ body {
 #add_auth_account_div,
 #convert_div,
 #convert_hive_div,
-#buy_div {
+#buy_div,
+#savings_div {
   scrollbar-width: none;
   width: 350px;
   height: 100%;
@@ -181,7 +182,8 @@ input:focus {
 #add_account_types_div input,
 #add_auth_account_div input,
 #convert_div input,
-#convert_hive_div input {
+#convert_hive_div input,
+#savings_div input {
   width: 100%;
   height: 48.43px;
   box-sizing: border-box;
@@ -250,7 +252,8 @@ input:focus {
 #import_settings button,
 #automated_ops_div button,
 #convert_div button,
-#convert_hive_div button {
+#convert_hive_div button,
+#savings_div button {
   border-radius: 5px;
   width: 100%;
   height: 48.43px;
@@ -288,7 +291,8 @@ input:focus {
 #confirm_send_div button:hover,
 #add_account_types_div button:hover,
 #add_auth_account_div button:hover,
-#import_settings button:hover {
+#import_settings button:hover,
+#savings_div button:hover {
   background-color: #e31337;
   border: solid 1px #e31337;
 }
@@ -1860,6 +1864,7 @@ input:focus {
 
 #powerup_div #amt_pu,
 #powerdown_div #amt_pd,
+#amt_savings,
 #amt_convert,
 #amt_convert_hive {
   padding-left: 0px !important;
@@ -2242,4 +2247,22 @@ input[type="checkbox"] {
 .savings_icon {
   height: 10px;
   margin-left: 2px;
+}
+
+#savings_div .custom-select {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+#savings_div .select-selected::before {
+  content: none;
+  padding: 0;
+}
+
+#amt_savings {
+  margin-bottom: 10px !important;
+}
+
+#savings_div button {
+  margin-top: 30px;
 }

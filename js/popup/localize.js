@@ -513,7 +513,14 @@ $("#buy_hbd ").append(chrome.i18n.getMessage("popup_html_buy_hbd"));
 //savings
 $("#save_hive").append(chrome.i18n.getMessage("popup_html_save_hive"));
 $("#save_hbd").append(chrome.i18n.getMessage("popup_html_save_hbd"));
+$("#savings_div .power_left")
+  .eq(0)
+  .text(chrome.i18n.getMessage("popup_html_available"));
+$("#savings_div .power_left")
+  .eq(1)
+  .text(chrome.i18n.getMessage("popup_html_current"));
 
+//others
 $("#buy_moonpay h2").text(
   chrome.i18n.getMessage("popup_html_buy_moonpay_title")
 );

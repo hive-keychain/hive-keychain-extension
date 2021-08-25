@@ -3,15 +3,15 @@ const STEEM_VOTING_MANA_REGENERATION_SECONDS = 432000;
 const CLAIM_ACCOUNT_RC = 6 * 10 ** 12;
 
 // get VM only
-var getVotingMana = function(account) {
-  return new Promise(function(fulfill, reject) {
+var getVotingMana = function (account) {
+  return new Promise(function (fulfill, reject) {
     const mana = getVotingManaData(account);
     fulfill(mana.estimated_pct.toFixed(2));
   });
 };
 
 // get all information regarding VM
-var getVotingManaData = function(account) {
+var getVotingManaData = function (account) {
   const estimated_max =
     (getEffectiveVestingSharesPerAccount(account) -
       parseFloat(account.vesting_withdraw_rate)) *
@@ -29,12 +29,12 @@ var getVotingManaData = function(account) {
     last_update_time: last_update_time,
     estimated_mana: estimated_mana,
     estimated_max: estimated_max,
-    estimated_pct: isNaN(estimated_pct) ? 100 : estimated_pct
+    estimated_pct: isNaN(estimated_pct) ? 100 : estimated_pct,
   };
 };
 
 // get SP + received delegations - delegations sent
-var getEffectiveVestingSharesPerAccount = function(account) {
+var getEffectiveVestingSharesPerAccount = function (account) {
   var effective_vesting_shares =
     parseFloat(account.vesting_shares.replace(" VESTS", "")) +
     parseFloat(account.received_vesting_shares.replace(" VESTS", "")) -
@@ -43,7 +43,7 @@ var getEffectiveVestingSharesPerAccount = function(account) {
 };
 
 // get SP of the account
-var getHivePowerPerAccount = function(
+var getHivePowerPerAccount = function (
   account,
   totalVestingFund,
   totalVestingShares
@@ -106,7 +106,7 @@ function calculateVoteValue(
 
 // get the voting dollars of a vote for a certain account, if full is set
 // to true, the VM will be set to 100%, otherwise it will use the current VM
-var getVotingDollarsPerAccount = async function(
+var getVotingDollarsPerAccount = async function (
   voteWeight,
   account,
   rewardBalance,
@@ -116,7 +116,7 @@ var getVotingDollarsPerAccount = async function(
   full
 ) {
   const vm = (await getVotingMana(account)) * 100;
-  return new Promise(async function(fulfill, reject) {
+  return new Promise(async function (fulfill, reject) {
     if (rewardBalance && recentClaims && steemPrice && votePowerReserveRate) {
       var effective_vesting_shares = Math.round(
         getEffectiveVestingSharesPerAccount(account) * 1000000
@@ -143,23 +143,23 @@ var getVotingDollarsPerAccount = async function(
 };
 
 // get Resource Credits
-const getRC = name => {
+const getRC = (name) => {
   let data = {
     jsonrpc: "2.0",
     id: 1,
     method: "rc_api.find_rc_accounts",
     params: {
-      accounts: [name]
-    }
+      accounts: [name],
+    },
   };
   let url = rpcs.getCurrent();
   if (url === "DEFAULT") url = "https://api.hive.blog/";
-  return new Promise(function(fulfill, reject) {
+  return new Promise(function (fulfill, reject) {
     $.ajax({
       url: url,
       type: "POST",
       data: JSON.stringify(data),
-      success: function(response) {
+      success: function (response) {
         console.log(response);
         const STEEM_RC_MANA_REGENERATION_SECONDS = 432000;
         const estimated_max = parseFloat(
@@ -187,13 +187,13 @@ const getRC = name => {
           estimated_mana: estimated_mana,
           estimated_max: estimated_max,
           estimated_pct: estimated_pct.toFixed(2),
-          fullin: getTimeBeforeFull(estimated_pct * 100)
+          fullin: getTimeBeforeFull(estimated_pct * 100),
         };
         fulfill(res);
       },
-      error: function(e) {
+      error: function (e) {
         console.log(e);
-      }
+      },
     });
   });
 };
@@ -238,40 +238,40 @@ function getTimeBeforeFull(votingPower) {
 
 // Get STEEM price from Bittrex
 function getPricesAsync() {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     $.ajax({
       type: "GET",
-      beforeSend: function(xhttp) {
+      beforeSend: function (xhttp) {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
       url: "https://api.hive-keychain.com/hive/bittrex",
-      success: function(response) {
+      success: function (response) {
         resolve(response);
       },
-      error: function(msg) {
+      error: function (msg) {
         resolve(null);
-      }
+      },
     });
   });
 }
 
 // get Witness Ranks from SteemPlus API
 function getWitnessRanks() {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     $.ajax({
       type: "GET",
-      beforeSend: function(xhttp) {
+      beforeSend: function (xhttp) {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
       url: "https://api.hive-keychain.com/hive/witnesses-ranks",
-      success: function(response) {
+      success: function (response) {
         resolve(response);
       },
-      error: function(msg) {
+      error: function (msg) {
         resolve(msg);
-      }
+      },
     });
   });
 }
@@ -280,7 +280,7 @@ function getWitnessRanks() {
 function showError(message) {
   $(".error_div").html(message);
   $(".error_div").show();
-  setTimeout(function() {
+  setTimeout(function () {
     $(".error_div").hide();
   }, 5000);
 }
@@ -288,7 +288,7 @@ function showError(message) {
 function showConfirm(message) {
   $(".success_div").html(message);
   $(".success_div").show();
-  setTimeout(function() {
+  setTimeout(function () {
     $(".success_div").hide();
   }, 5000);
 }
@@ -318,7 +318,7 @@ function initiateCustomSelect(options, current_rpc) {
       create a new DIV that will act as an option item:*/
       c = document.createElement("DIV");
       c.innerHTML = selElmnt.options[j].innerHTML;
-      c.addEventListener("click", function(e) {
+      c.addEventListener("click", function (e) {
         /*when an item is clicked, update the original select box,
         and the selected item:*/
         var y, i, k, s, h;
@@ -345,7 +345,7 @@ function initiateCustomSelect(options, current_rpc) {
     if (i === 0) {
       loadAccount(a.innerHTML, options);
     }
-    a.addEventListener("click", async function(e) {
+    a.addEventListener("click", async function (e) {
       /*when the select box is clicked, close any other select boxes,
       and open/close the current select box:*/
       e.stopPropagation();
@@ -358,9 +358,7 @@ function initiateCustomSelect(options, current_rpc) {
         $("#add_import_keys").hide();
         showAddAccount();
       } else if (
-        $(this)
-          .parent()
-          .attr("id") === "custom_select_automated_ops"
+        $(this).parent().attr("id") === "custom_select_automated_ops"
       ) {
         showAutomatedTasks(this.innerHTML);
       } else if (
@@ -369,11 +367,13 @@ function initiateCustomSelect(options, current_rpc) {
         !this.classList.contains("select-arrow-active") &&
         this.innerHTML !== "HBD" &&
         this.innerHTML !== "HIVE" &&
+        this.innerHTML !== "Deposit " &&
+        this.innerHTML !== "Withdraw " &&
         this.innerHTML !== chrome.i18n.getMessage("popup_html_witness_vote") &&
         this.innerHTML !== chrome.i18n.getMessage("popup_html_chose_proxy")
       ) {
         chrome.storage.local.set({
-          last_account: this.innerHTML
+          last_account: this.innerHTML,
         });
         loadAccount(this.innerHTML, options);
       } else if (this.innerHTML === "HBD") {
@@ -381,9 +381,7 @@ function initiateCustomSelect(options, current_rpc) {
         $(".transfer_balance div")
           .eq(0)
           .text(chrome.i18n.getMessage("popup_html_balance", ["HBD"]));
-        $(".transfer_balance div")
-          .eq(1)
-          .html(numberWithCommas(balance));
+        $(".transfer_balance div").eq(1).html(numberWithCommas(balance));
         $("#amt_send_max")
           .unbind("click")
           .click(() => {
@@ -395,9 +393,7 @@ function initiateCustomSelect(options, current_rpc) {
         $(".transfer_balance div")
           .eq(0)
           .text(chrome.i18n.getMessage("popup_html_balance", ["HIVE"]));
-        $(".transfer_balance div")
-          .eq(1)
-          .html(numberWithCommas(balance));
+        $(".transfer_balance div").eq(1).html(numberWithCommas(balance));
         $("#amt_send_max")
           .unbind("click")
           .click(() => {
@@ -412,16 +408,12 @@ function initiateCustomSelect(options, current_rpc) {
         $("#qrcode_export").html("");
       } else if (
         getPref &&
-        $(this)
-          .parent()
-          .attr("id") != "custom_select_rpc"
+        $(this).parent().attr("id") != "custom_select_rpc"
       ) {
         setPreferences(this.innerHTML);
       } else if (
         getPref &&
-        $(this)
-          .parent()
-          .attr("id") == "custom_select_rpc"
+        $(this).parent().attr("id") == "custom_select_rpc"
       ) {
         if (this.innerHTML !== chrome.i18n.getMessage("popup_rpc_add")) {
           chrome.storage.local.set({ current_rpc: this.innerHTML });
@@ -431,6 +423,20 @@ function initiateCustomSelect(options, current_rpc) {
           $("#pref_div").hide();
           $("#add_rpc_div").show();
         }
+      } else if (this.innerHTML === "Deposit ") {
+        $("#savings_div .input_container").show();
+        $("#savings_div button").text(
+          chrome.i18n.getMessage("popup_html_deposit", [
+            $("#currency_savings").text(),
+          ])
+        );
+      } else if (this.innerHTML === "Withdraw ") {
+        $("#savings_div .input_container").hide();
+        $("#savings_div button").text(
+          chrome.i18n.getMessage("popup_html_withdraw", [
+            $("#currency_savings").text(),
+          ])
+        );
       }
     });
   }
@@ -488,7 +494,7 @@ function isMemoWif(pwd, memo) {
   return hive.auth.wifToPublic(pwd) == memo;
 }
 
-let numberWithCommas = x => {
+let numberWithCommas = (x) => {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 };
 
@@ -496,32 +502,32 @@ function nFormatter(num, digits) {
   var si = [
     {
       value: 1,
-      symbol: ""
+      symbol: "",
     },
     {
       value: 1e3,
-      symbol: "k"
+      symbol: "k",
     },
     {
       value: 1e6,
-      symbol: "M"
+      symbol: "M",
     },
     {
       value: 1e9,
-      symbol: "G"
+      symbol: "G",
     },
     {
       value: 1e12,
-      symbol: "T"
+      symbol: "T",
     },
     {
       value: 1e15,
-      symbol: "P"
+      symbol: "P",
     },
     {
       value: 1e18,
-      symbol: "E"
-    }
+      symbol: "E",
+    },
   ];
   var rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
   var i;
@@ -549,75 +555,77 @@ function addCommas(nStr, currency) {
 }
 
 function getDelegatees(name) {
-  return new Promise(function(fulfill, reject) {
-    hive.api.getVestingDelegations(name, null, 1000, function(
-      err,
-      outgoingDelegations
-    ) {
-      if (!err) fulfill(outgoingDelegations);
-      else reject(err);
-    });
+  return new Promise(function (fulfill, reject) {
+    hive.api.getVestingDelegations(
+      name,
+      null,
+      1000,
+      function (err, outgoingDelegations) {
+        if (!err) fulfill(outgoingDelegations);
+        else reject(err);
+      }
+    );
   });
 }
 
 function getDelegators(name) {
-  return new Promise(function(fulfill, reject) {
+  return new Promise(function (fulfill, reject) {
     $.ajax({
       type: "GET",
-      beforeSend: function(xhttp) {
+      beforeSend: function (xhttp) {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
       url: "https://api.hive-keychain.com/hive/delegators/" + name,
-      success: function(incomingDelegations) {
+      success: function (incomingDelegations) {
         fulfill(incomingDelegations);
       },
-      error: function(msg) {
+      error: function (msg) {
         console.log(msg);
         reject(msg);
-      }
+      },
     });
   });
 }
 
 const getPhishingAccounts = async () => {
-  return new Promise(function(fulfill, reject) {
+  return new Promise(function (fulfill, reject) {
     $.ajax({
       type: "GET",
-      beforeSend: function(xhttp) {
+      beforeSend: function (xhttp) {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
       url: "https://api.hive-keychain.com/hive/phishingAccounts",
-      success: function(phishingAccounts) {
+      success: function (phishingAccounts) {
         fulfill(phishingAccounts);
       },
-      error: function(msg) {
+      error: function (msg) {
         console.log(msg);
         reject(msg);
-      }
+      },
     });
   });
 };
 
-const getBittrexCurrency = async currency => {
-  return new Promise(function(fulfill, reject) {
+const getBittrexCurrency = async (currency) => {
+  return new Promise(function (fulfill, reject) {
     $.ajax({
       type: "GET",
-      beforeSend: function(xhttp) {
+      beforeSend: function (xhttp) {
         xhttp.setRequestHeader("Content-type", "application/json");
         xhttp.setRequestHeader("X-Parse-Application-Id", chrome.runtime.id);
       },
       url: "https://api.bittrex.com/api/v1.1/public/getcurrencies",
-      success: function(currencies) {
+      success: function (currencies) {
         if (currencies.success) {
-          fulfill(currencies.result.find(o => o.Currency == currency));
+          fulfill(currencies.result.find((o) => o.Currency == currency));
         }
       },
-      error: function(msg) {
+      error: function (msg) {
         console.log(msg);
         reject(msg);
-      }
+      },
     });
   });
 };
