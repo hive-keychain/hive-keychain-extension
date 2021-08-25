@@ -2,10 +2,15 @@ import { ResourceItemComponent } from '@popup/pages/app-container/home/resources
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import HiveUtils from 'src/utils/hive.utils';
 import './resources-section.component.scss';
 
-const ResourcesSection = ({ activeAccount }: PropsFromRedux) => {
+const ResourcesSection = ({
+  activeAccount,
+  globalProperties,
+}: PropsFromRedux) => {
   const [votingMana, setVotingMana] = useState('--');
+  const [votingValue, setVotingValue] = useState<any>();
   const [rc, setRc] = useState('--');
 
   useEffect(() => {
@@ -13,13 +18,15 @@ const ResourcesSection = ({ activeAccount }: PropsFromRedux) => {
       activeAccount?.account?.voting_manabar?.current_mana &&
       activeAccount.rc?.percentage
     ) {
-      const currentMana = parseFloat(
-        activeAccount.account.voting_manabar.current_mana.toString(),
+      setVotingMana(HiveUtils.getVP(activeAccount.account) + ' %');
+      setVotingValue(
+        HiveUtils.getVotingDollarsPerAccount(
+          100,
+          globalProperties,
+          activeAccount.account,
+          false,
+        ) + ' $',
       );
-      setVotingMana(
-        ((activeAccount.rc.max_mana / currentMana) * 100).toFixed(2) + ' %',
-      );
-
       setRc((activeAccount.rc.percentage / 100).toFixed(2) + ' %');
     }
   }, [activeAccount]);
@@ -29,6 +36,7 @@ const ResourcesSection = ({ activeAccount }: PropsFromRedux) => {
       <ResourceItemComponent
         label={'popup_html_vm'}
         value={votingMana}
+        secondaryValue={votingValue}
         icon={'bg_voting'}
         tooltipText={'Heelo'}
       />
@@ -45,6 +53,7 @@ const ResourcesSection = ({ activeAccount }: PropsFromRedux) => {
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
+    globalProperties: state.globalProperties,
   };
 };
 

@@ -9,9 +9,16 @@ interface ResourceItemProps {
   label: string;
   value: string;
   tooltipText: string;
+  secondaryValue?: string;
 }
 
-const ResourceItem = ({ icon, label, value, tooltipText }: PropsType) => {
+const ResourceItem = ({
+  icon,
+  label,
+  value,
+  tooltipText,
+  secondaryValue,
+}: PropsType) => {
   return (
     <div className="resource-item">
       <div className="top">
@@ -25,7 +32,9 @@ const ResourceItem = ({ icon, label, value, tooltipText }: PropsType) => {
           data-iscapture="true"
         />
       </div>
-      <div className="bottom">{value}</div>
+      <div className="bottom">
+        {value} {secondaryValue && `(${secondaryValue})`}
+      </div>
       <ReactTooltip
         id="tooltip"
         place="top"
