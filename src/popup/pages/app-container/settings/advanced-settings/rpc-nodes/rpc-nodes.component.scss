@@ -1,3 +1,5 @@
+@import '/src/popup/variable.scss';
+
 .select-rpc-node-select,
 .select-rpc-node-select:hover,
 .select-rpc-node-select:focus {
@@ -36,7 +38,7 @@
 
   &:hover,
   &.selected {
-    background: #e31337;
+    background: $red;
 
     .erase-button {
       display: block;

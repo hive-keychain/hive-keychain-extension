@@ -1,3 +1,5 @@
+@import '/src/popup/variable.scss';
+
 .reset-password-link {
   font-size: 18px;
   float: right;
@@ -6,5 +8,5 @@
   cursor: pointer;
 }
 .reset-password-link:hover {
-  color: #e31337;
+  color: $red;
 }

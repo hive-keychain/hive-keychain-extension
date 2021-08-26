@@ -1,3 +1,5 @@
+@import '/src/popup/variable.scss';
+
 .select-account-select,
 .select-account-select:hover,
 .select-account-select:focus {
@@ -40,7 +42,7 @@
 
   &:hover,
   &.selected {
-    background: #e31337;
+    background: $red;
   }
 
   img {
