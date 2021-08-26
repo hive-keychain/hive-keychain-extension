@@ -5,6 +5,9 @@ class GlobalProps {
     this.fund = hive.api.getRewardFundAsync("post");
     this.prices = this.initGetPrice();
   }
+  async getProps() {
+    return await this.props;
+  }
   async getProp(key) {
     return (await this.props)[key];
   }

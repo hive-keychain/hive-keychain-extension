@@ -430,12 +430,20 @@ function initiateCustomSelect(options, current_rpc) {
             $("#currency_savings").text(),
           ])
         );
+        if ($("#currency_savings").text() === "HBD")
+          $("#savings_div p").text(
+            chrome.i18n.getMessage("popup_html_deposit_hbd_text")
+          );
+        else $("#savings_div p").text("");
       } else if (this.innerHTML === "Withdraw ") {
         $("#savings_div .input_container").hide();
         $("#savings_div button").text(
           chrome.i18n.getMessage("popup_html_withdraw", [
             $("#currency_savings").text(),
           ])
+        );
+        $("#savings_div p").text(
+          chrome.i18n.getMessage("popup_html_withdraw_text")
         );
       }
     });
