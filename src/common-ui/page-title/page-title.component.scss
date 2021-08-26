@@ -3,9 +3,10 @@
   align-items: center;
   column-gap: 16px;
   .title {
+    flex: 1;
     text-transform: uppercase;
     color: white;
-    font-size: 20px;
+    font-size: 16px;
     pointer-events: none;
   }
 
