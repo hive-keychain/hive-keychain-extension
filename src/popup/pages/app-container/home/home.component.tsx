@@ -11,6 +11,7 @@ import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wall
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import './home.component.scss';
@@ -31,12 +32,21 @@ const Home = ({
 
   useEffect(() => {
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
-      loadActiveAccount(accounts[0]);
+      initActiveAccount();
     }
     if (!activeRpc || activeRpc.uri === 'NULL') {
       initActiveRpc();
     }
   }, [accounts, activeRpc]);
+
+  const initActiveAccount = async () => {
+    const lastActiveAccountName =
+      await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
+    const lastActiveAccount = accounts.find(
+      (account: LocalAccount) => lastActiveAccountName === account.name,
+    );
+    loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
+  };
 
   const initActiveRpc = async () => {
     setActiveRpc(await RpcUtils.getCurrentRpc());
