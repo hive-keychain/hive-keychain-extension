@@ -14,16 +14,40 @@ const WalletInfoSection = ({
     <div className="wallet-info-section">
       <div className="wallet-info-row wallet-info-hive">
         <div className="value">
-          {FormatUtils.formatCurrencyValue(activeAccount.account.balance)}
+          <div className="balance">
+            {FormatUtils.formatCurrencyValue(activeAccount.account.balance)}
+          </div>
+          <div className="savings">
+            {FormatUtils.formatCurrencyValue(
+              activeAccount.account.savings_balance,
+            )}
+          </div>
         </div>
-        <div className="currency">{currencyLabels.hive}</div>
+        <div className="currency">
+          <div className="balance">{currencyLabels.hive}</div>
+          <div className="savings">
+            ({chrome.i18n.getMessage('popup_html_wallet_savings')})
+          </div>
+        </div>
         <img className="dropdown-arrow" src="/assets/images/uparrow.png" />
       </div>
       <div className="wallet-info-row wallet-info-hdb">
         <div className="value">
-          {FormatUtils.formatCurrencyValue(activeAccount.account.hbd_balance)}
+          <div className="balance">
+            {FormatUtils.formatCurrencyValue(activeAccount.account.hbd_balance)}
+          </div>
+          <div className="savings">
+            {FormatUtils.formatCurrencyValue(
+              activeAccount.account.savings_hbd_balance,
+            )}
+          </div>
         </div>
-        <div className="currency">{currencyLabels.hbd}</div>
+        <div className="currency">
+          <div className="balance">{currencyLabels.hbd}</div>
+          <div className="savings">
+            ({chrome.i18n.getMessage('popup_html_wallet_savings')})
+          </div>
+        </div>
         <img className="dropdown-arrow" src="/assets/images/uparrow.png" />
       </div>
       <div className="wallet-info-row wallet-info-hp">

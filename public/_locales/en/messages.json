@@ -1470,5 +1470,9 @@
   "popup_html_rpc_uri_already_existing": {
     "message": "Rpc Node already existing",
     "description": "Error message on rpc node settings page"
+  },
+  "popup_html_wallet_savings": {
+    "message": "savings",
+    "description": "In wallet"
   }
 }
