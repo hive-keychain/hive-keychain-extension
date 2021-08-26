@@ -37,6 +37,8 @@ const RpcNodes = ({
   const [addRpcNodeChainId, setAddRpcNodeChainId] = useState('');
   const [addRpcNodeTestnet, setAddRpcNodeTestnet] = useState(false);
 
+  const [setNewRpcAsActive, setSetNewRpcAsActive] = useState(false);
+
   const [options, setOptions] = useState(
     allRpc.map((rpc) => {
       return {
@@ -108,6 +110,7 @@ const RpcNodes = ({
     setIsAddRpcPanelDisplayed(false);
     RpcUtils.addCustomRpc(newCustomRpc);
     setCustomRpcs([...customRpcs, newCustomRpc]);
+    setActiveRpc(newCustomRpc);
   };
 
   const customLabelRender = (selectProps: SelectRenderer<RpcListItem>) => {
@@ -212,6 +215,11 @@ const RpcNodes = ({
               onEnterPress={handleSaveNewRpcClicked}
             />
           )}
+
+          <SwitchComponent
+            title="popup_html_set_new_rpc_as_active"
+            checked={setNewRpcAsActive}
+            onChange={setSetNewRpcAsActive}></SwitchComponent>
 
           <ButtonComponent
             label={'popup_html_save'}

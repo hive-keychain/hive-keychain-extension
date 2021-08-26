@@ -339,6 +339,10 @@
     "message": "Select an RPC node",
     "description": "on preferences"
   },
+  "popup_html_set_new_rpc_as_active": {
+    "message": "Set new RPC node as active",
+    "description": "in add rpc node screen"
+  },
   "popup_html_notif_pref": {
     "message": "Notification Preferences",
     "description": "on preferences"
