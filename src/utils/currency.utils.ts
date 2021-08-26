@@ -6,8 +6,8 @@ export interface CurrencyLabels {
 
 const getCurrencyLabels = (isTestnet: boolean): CurrencyLabels => {
   return {
-    hive: isTestnet ? 'TEST' : 'HIVE',
-    hbd: isTestnet ? 'HBT' : 'HDB',
+    hive: isTestnet ? 'TESTS' : 'HIVE',
+    hbd: isTestnet ? 'TBD' : 'HDB',
     hp: isTestnet ? 'TP' : 'HP',
   };
 };
