@@ -21,7 +21,7 @@ const DropdownMenu = ({ dropdownMenuItems, position }: DropdownMenuProps) => {
       className="dropdown-menu"
       style={{
         position: 'absolute',
-        top: position.y,
+        top: position.y + 3,
         left: position.x - DROPDOWN_MENU_WIDTH,
         width: DROPDOWN_MENU_WIDTH,
       }}>

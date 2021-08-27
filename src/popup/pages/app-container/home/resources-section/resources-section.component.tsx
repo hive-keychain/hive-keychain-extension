@@ -12,21 +12,31 @@ const ResourcesSection = ({
   const [votingMana, setVotingMana] = useState('--');
   const [votingValue, setVotingValue] = useState<any>();
   const [rc, setRc] = useState('--');
+  const [manaReadyIn, setManaReadyIn] = useState('');
+  const [rcReadyIn, setRcReadyIn] = useState('');
 
   useEffect(() => {
     if (
       activeAccount?.account?.voting_manabar?.current_mana &&
       activeAccount.rc?.percentage
     ) {
-      setVotingMana(HiveUtils.getVP(activeAccount.account)?.toFixed(2) + ' %');
+      const mana = HiveUtils.getVP(activeAccount.account);
       const manaValue = HiveUtils.getVotingDollarsPerAccount(
         100,
         globalProperties,
         activeAccount.account,
         false,
       ) as string;
-      setVotingValue(parseFloat(manaValue).toFixed(2) + ' $');
-      setRc((activeAccount.rc.percentage / 100).toFixed(2) + ' %');
+
+      const voting = parseFloat(manaValue);
+      const resources = activeAccount.rc.percentage / 100;
+
+      setVotingMana(mana?.toFixed(2) + ' %');
+      setVotingValue(voting.toFixed(2) + ' $');
+      setRc(resources.toFixed(2) + ' %');
+
+      setManaReadyIn(HiveUtils.getTimeBeforeFull(mana!));
+      setRcReadyIn(HiveUtils.getTimeBeforeFull(resources));
     }
   }, [activeAccount]);
 
@@ -37,13 +47,13 @@ const ResourcesSection = ({
         value={votingMana}
         secondaryValue={votingValue}
         icon={'bg_voting'}
-        tooltipText={'Heelo'}
+        tooltipText={manaReadyIn}
       />
       <ResourceItemComponent
         label={'popup_html_rc'}
         value={rc}
         icon={'bg_rc'}
-        tooltipText={'hello'}
+        tooltipText={rcReadyIn}
       />
     </div>
   );

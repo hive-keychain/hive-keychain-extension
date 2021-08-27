@@ -111,11 +111,54 @@ const getVotePowerReserveRate = (properties: GlobalProperties) => {
   return properties.globals!.vote_power_reserve_rate;
 };
 
+const getTimeBeforeFull = (votingPower: number) => {
+  let fullInString;
+  let remainingPowerToGet = 100.0 - votingPower;
+
+  // 1% every 72minutes
+  let minutesNeeded = remainingPowerToGet * 72;
+  if (minutesNeeded === 0) {
+    return chrome.i18n.getMessage('popup_utils_full');
+  } else {
+    let fullInDays = parseInt((minutesNeeded / 1440).toString());
+    let fullInHours = parseInt(
+      ((minutesNeeded - fullInDays * 1440) / 60).toString(),
+    );
+    let fullInMinutes = parseInt(
+      (minutesNeeded - fullInDays * 1440 - fullInHours * 60).toString(),
+    );
+
+    fullInString =
+      (fullInDays === 0
+        ? ' '
+        : fullInDays +
+          (fullInDays > 1
+            ? ` ${chrome.i18n.getMessage('days')} `
+            : ` ${chrome.i18n.getMessage('day')} `)) +
+      (fullInHours === 0
+        ? ' '
+        : fullInHours +
+          (fullInHours > 1
+            ? ` ${chrome.i18n.getMessage('hours')} `
+            : ` ${chrome.i18n.getMessage('hour')} `)) +
+      (fullInMinutes === 0
+        ? ' '
+        : fullInMinutes +
+          (fullInMinutes > 1
+            ? ` ${chrome.i18n.getMessage('minutes')} `
+            : ` ${chrome.i18n.getMessage('minute')} `));
+  }
+  return chrome.i18n.getMessage('full_in', [
+    fullInString.replace(/\s+/g, ' ').trim(),
+  ]);
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
   getVP,
   getVotingDollarsPerAccount,
+  getTimeBeforeFull,
 };
 
 export default HiveUtils;
