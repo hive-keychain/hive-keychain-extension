@@ -1,4 +1,7 @@
 import { Client, ExtendedAccount } from '@hiveio/dhive';
+import KeychainApi from '@popup/api/keychain';
+import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
+import { Delegator } from 'src/interfaces/delegations.interface';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 
@@ -153,12 +156,53 @@ const getTimeBeforeFull = (votingPower: number) => {
   ]);
 };
 
+export const getConversionRequests = async (name: string) => {
+  const [hbdConversions, hiveConversions] = await Promise.all([
+    getClient().database.call('get_conversion_requests', [name]),
+    getClient().database.call('get_collateralized_conversion_requests', [name]),
+  ]);
+
+  return [
+    ...hiveConversions.map((e: CollateralizedConversion) => ({
+      amount: e.collateral_amount,
+      conversion_date: e.conversion_date,
+      id: e.id,
+      owner: e.owner,
+      requestid: e.requestid,
+      collaterized: true,
+    })),
+    ...hbdConversions,
+  ].sort(
+    (a, b) =>
+      new Date(a.conversion_date).getTime() -
+      new Date(b.conversion_date).getTime(),
+  );
+};
+
+export const getDelegators = async (name: string) => {
+  return (
+    (await KeychainApi.get(`/hive/delegators/${name}`)).data as Delegator[]
+  )
+    .filter((e) => e.vesting_shares !== 0)
+    .sort((a, b) => b.vesting_shares - a.vesting_shares);
+};
+
+export const getDelegatees = async (name: string) => {
+  return (await getClient().database.getVestingDelegations(name, '', 1000))
+    .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
+    .sort(
+      (a, b) =>
+        parseFloat(b.vesting_shares + '') - parseFloat(a.vesting_shares + ''),
+    );
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
   getVP,
   getVotingDollarsPerAccount,
   getTimeBeforeFull,
+  getConversionRequests,
 };
 
 export default HiveUtils;
