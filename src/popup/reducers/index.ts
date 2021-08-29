@@ -1,7 +1,10 @@
 import { ActiveAccountReducer } from '@popup/reducers/active-account.reducer';
 import { ActiveRpcReducer } from '@popup/reducers/active-rpc.reducer';
 import BittrexReducer from '@popup/reducers/bittrex.reducer';
+import ConversionsReducer from '@popup/reducers/conversion.reducer';
+import DelegationsReducer from '@popup/reducers/delegation.reducer';
 import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
+import TokenHistoryReducer from '@popup/reducers/token-history.reducer';
 import { combineReducers } from 'redux';
 import { AccountReducer } from './account.reducer';
 import { MessageReducer } from './message.reducer';
@@ -17,4 +20,7 @@ export default combineReducers({
   activeRpc: ActiveRpcReducer,
   bittrex: BittrexReducer,
   globalProperties: GlobalPropertiesReducer,
+  delegations: DelegationsReducer,
+  tokenHistory: TokenHistoryReducer,
+  conversions: ConversionsReducer,
 });

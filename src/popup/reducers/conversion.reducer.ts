@@ -2,7 +2,7 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { actionPayload } from '@popup/actions/interfaces';
 import { Conversion } from 'src/interfaces/conversion.interface';
 
-const ConversionReducer = (
+const ConversionsReducer = (
   state: Conversion[] = [],
   { type, payload }: actionPayload<Conversion[]>,
 ) => {
@@ -14,4 +14,4 @@ const ConversionReducer = (
   }
 };
 
-export default ConversionReducer;
+export default ConversionsReducer;
