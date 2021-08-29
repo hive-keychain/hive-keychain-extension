@@ -49,17 +49,30 @@ const WalletInfoSection = ({
           <div className="balance">
             {FormatUtils.formatCurrencyValue(activeAccount.account.balance)}
           </div>
-          <div className="savings">
-            {FormatUtils.formatCurrencyValue(
+          {parseFloat(
+            FormatUtils.formatCurrencyValue(
               activeAccount.account.savings_balance,
-            )}
-          </div>
+            ),
+          ) > 0 && (
+            <div className="savings">
+              {'+ '}
+              {FormatUtils.formatCurrencyValue(
+                activeAccount.account.savings_balance,
+              )}
+            </div>
+          )}
         </div>
         <div className="currency">
           <div className="balance">{currencyLabels.hive}</div>
-          <div className="savings">
-            ({chrome.i18n.getMessage('popup_html_wallet_savings')})
-          </div>
+          {parseFloat(
+            FormatUtils.formatCurrencyValue(
+              activeAccount.account.savings_balance,
+            ),
+          ) > 0 && (
+            <div className="savings">
+              ({chrome.i18n.getMessage('popup_html_wallet_savings')})
+            </div>
+          )}
         </div>
         <img
           className="dropdown-arrow"
@@ -72,17 +85,30 @@ const WalletInfoSection = ({
           <div className="balance">
             {FormatUtils.formatCurrencyValue(activeAccount.account.hbd_balance)}
           </div>
-          <div className="savings">
-            {FormatUtils.formatCurrencyValue(
+          {parseFloat(
+            FormatUtils.formatCurrencyValue(
               activeAccount.account.savings_hbd_balance,
-            )}
-          </div>
+            ),
+          ) > 0 && (
+            <div className="savings">
+              {'+ '}
+              {FormatUtils.formatCurrencyValue(
+                activeAccount.account.savings_hbd_balance,
+              )}
+            </div>
+          )}
         </div>
         <div className="currency">
           <div className="balance">{currencyLabels.hbd}</div>
-          <div className="savings">
-            ({chrome.i18n.getMessage('popup_html_wallet_savings')})
-          </div>
+          {parseFloat(
+            FormatUtils.formatCurrencyValue(
+              activeAccount.account.savings_hbd_balance,
+            ),
+          ) > 0 && (
+            <div className="savings">
+              ({chrome.i18n.getMessage('popup_html_wallet_savings')})
+            </div>
+          )}
         </div>
         <img
           className="dropdown-arrow"
