@@ -10,6 +10,8 @@ let idleListenerReady = false;
 let autolock = null;
 let interval = null;
 let rpc = new Rpcs();
+let lastMessage = {};
+let lastMessageTime = 0;
 // Lock after the browser is idle for more than 10 minutes
 
 chrome.storage.local.get(["no_confirm"], (items) => {});
@@ -72,6 +74,18 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
     case "acceptTransaction":
       if (msg.keep) saveNoConfirm(msg);
       confirmed = true;
+      if (
+        Object.entries(msg).sort().toString() ===
+          Object.entries(lastMessage).sort().toString() &&
+        lastMessageTime + 3500 > Date.now() &&
+        getRequiredWifType(msg.data) === "active"
+      ) {
+        console.log("cancel second one");
+        return;
+      }
+      lastMessage = msg;
+      lastMessageTime = Date.now();
+
       performTransaction(msg.data, msg.tab, false);
       // upon receiving the confirmation from user, perform the transaction and notify content_script. Content script will then notify the website.
       break;
