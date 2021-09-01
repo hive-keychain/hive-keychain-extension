@@ -34,7 +34,7 @@ const broadcastTransfer = (data) => {
       (err, result) => {
         console.log(result, err);
         let err_message = "";
-        if (err) {
+        if (err && err.data.stack && err.data.stack[0].context.method) {
           console.log(err.data.stack[0].context.method);
           switch (err.data.stack[0].context.method) {
             case "adjust_balance":
@@ -55,6 +55,8 @@ const broadcastTransfer = (data) => {
               );
               break;
           }
+        } else if (err && err.message) {
+          err_message = err.message;
         }
         const message = createMessage(
           err,
