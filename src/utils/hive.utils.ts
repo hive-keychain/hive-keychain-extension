@@ -1,9 +1,22 @@
-import { Client, ExtendedAccount } from '@hiveio/dhive';
+import {
+  Asset,
+  ClaimRewardBalanceOperation,
+  Client,
+  ExtendedAccount,
+  PrivateKey,
+} from '@hiveio/dhive';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import KeychainApi from '@popup/api/keychain';
+import { store } from '@popup/store';
+import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
 import { Delegator } from 'src/interfaces/delegations.interface';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
+import FormatUtils from 'src/utils/format.utils';
 
 const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
@@ -196,6 +209,46 @@ export const getDelegatees = async (name: string) => {
     );
 };
 
+const claimRewards = async (
+  activeAccount: ActiveAccount,
+  rewardHive: string | Asset,
+  rewardHBD: string | Asset,
+  rewardVests: string | Asset,
+): Promise<boolean> => {
+  console.log(rewardHive, rewardHBD, rewardVests);
+  try {
+    await getClient().broadcast.sendOperations(
+      [
+        [
+          'claim_reward_balance',
+          {
+            account: activeAccount.name,
+            reward_hive: rewardHive,
+            reward_hbd: rewardHBD,
+            reward_vests: rewardVests,
+          },
+        ] as ClaimRewardBalanceOperation,
+      ],
+      PrivateKey.fromString(activeAccount.keys.posting as string),
+    );
+    const rewardHp =
+      FormatUtils.toHP(
+        rewardVests.toString().replace('VESTS', ''),
+        store.getState().globalProperties.globals,
+      ) + ' HP';
+
+    store.dispatch(
+      setSuccessMessage('popup_html_claim_success', [
+        [rewardHBD, rewardHive, rewardHp].join(', '),
+      ]),
+    );
+    return true;
+  } catch (err) {
+    store.dispatch(setErrorMessage('popup_html_claim_error'));
+    return false;
+  }
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -203,6 +256,7 @@ const HiveUtils = {
   getVotingDollarsPerAccount,
   getTimeBeforeFull,
   getConversionRequests,
+  claimRewards,
 };
 
 export default HiveUtils;

@@ -16,10 +16,13 @@ const SwitchComponent = (props: SwitchProps) => {
       onChange={(e) => {
         props.onChange(e.target.checked);
       }}
-      checked={props.checked}>
-      {props.skipTranslation
-        ? props.title
-        : chrome.i18n.getMessage(props.title)}
+      checked={props.checked}
+      className={props.checked ? 'checked' : 'not-checked'}>
+      <div className="toto">
+        {props.skipTranslation
+          ? props.title
+          : chrome.i18n.getMessage(props.title)}
+      </div>
     </Switch>
   );
 };

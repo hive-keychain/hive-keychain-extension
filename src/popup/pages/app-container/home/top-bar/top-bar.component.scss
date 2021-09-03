@@ -1,9 +1,28 @@
+@import '/src/popup/variable.scss';
 .top-bar {
   height: 72px;
   padding: 16px 32px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
+
+  img {
+    height: 32px;
+    width: auto;
+  }
+
+  .claim-button {
+    margin-right: 32px;
+    background-color: $red-dark;
+    box-shadow: $red-dark;
+    height: 24px;
+    padding: 4px;
+    border-radius: 4px;
+
+    &:hover {
+      background: $red;
+    }
+  }
 }
 
 .button {
@@ -16,9 +35,4 @@
 
 .spacer {
   flex: 1;
-}
-
-.top-bar > img {
-  height: 32px;
-  width: auto;
 }

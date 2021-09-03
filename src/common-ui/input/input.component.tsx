@@ -3,11 +3,12 @@ import { InputType } from './input-type.enum';
 import './input.component.scss';
 
 interface InputProps {
-  onChange: (value: string) => void;
-  value: string;
+  onChange: (value: any) => void;
+  value: any;
   logo?: string;
   placeholder: string;
   type: InputType;
+  step?: number;
   skipTranslation?: boolean;
   onEnterPress?(): any;
 }
@@ -23,6 +24,7 @@ const InputComponent = (props: InputProps) => {
             : chrome.i18n.getMessage(props.placeholder)
         }
         value={props.value}
+        step={props.step}
         onChange={(e) => props.onChange(e.target.value)}
         onKeyPress={(e) => {
           if (e.key === 'Enter' && props.onEnterPress) {
