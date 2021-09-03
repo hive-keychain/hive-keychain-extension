@@ -455,7 +455,8 @@ async function sendTransfer() {
       }, 5000);
     } else {
       $(".success_div").hide();
-      showError(chrome.i18n.getMessage("unknown_error"));
+      if (err.message) showError(err.message);
+      else showError(chrome.i18n.getMessage("unknown_error"));
     }
     $("#send_transfer").show();
   };
