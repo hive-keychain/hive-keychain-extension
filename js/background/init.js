@@ -74,9 +74,20 @@ const chromeMessageHandler = (msg, sender, sendResp) => {
     case "acceptTransaction":
       if (msg.keep) saveNoConfirm(msg);
       confirmed = true;
+      // console.log(msg);
+      // console.log(lastMessage);
+      // console.log(Object.entries(msg.data).sort().toString());
+      // console.log(
+      //   Object.entries(lastMessage.data || {})
+      //     .sort()
+      //     .toString()
+      // );
       if (
-        Object.entries(msg).sort().toString() ===
-          Object.entries(lastMessage).sort().toString() &&
+        Object.entries(msg.data).sort().toString() ===
+          Object.entries(lastMessage.data || {})
+            .sort()
+            .toString() &&
+        msg.tab === lastMessage.tab &&
         lastMessageTime + 3500 > Date.now() &&
         getRequiredWifType(msg.data) === "active"
       ) {
