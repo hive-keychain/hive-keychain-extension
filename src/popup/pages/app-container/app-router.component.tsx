@@ -3,8 +3,10 @@ import { AddByAuthComponent } from '@popup/pages/add-account/add-by-auth/add-by-
 import { AddByKeysComponent } from '@popup/pages/add-account/add-by-keys/add-by-keys.component';
 import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import-keys.component';
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
+import { BuyCoinsComponent } from '@popup/pages/app-container/home/buy-coins/buy-coins.component';
 import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
+import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.component';
 import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
@@ -23,6 +25,7 @@ import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/s
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { Screen } from 'src/reference-data/screen.enum';
 
 const AppRouter = ({ currentPage }: PropsFromRedux) => {
@@ -36,10 +39,18 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <WitnessVotingComponent />;
       case Screen.TRANSFER_FUND_PAGE:
         return <TransferFundsComponent />;
+      case Screen.POWER_UP_PAGE:
+        return <PowerUpDownComponent />;
+      case Screen.POWER_DOWN_PAGE:
+        return <PowerUpDownComponent />;
+      case Screen.BUY_COINS_PAGE:
+        return <BuyCoinsComponent />;
       case Screen.TOKENS_PAGE:
         return <TokensComponent />;
       case Screen.WALLET_HISTORY_PAGE:
         return <WalletHistoryComponent />;
+      case Screen.CONFIRMATION_PAGE:
+        return <ConfirmationPageComponent />;
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;

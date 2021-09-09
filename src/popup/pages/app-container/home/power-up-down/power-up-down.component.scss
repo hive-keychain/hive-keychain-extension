@@ -1,0 +1,39 @@
+@import '/src/popup/variable.scss';
+.power-up-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  .max {
+    align-self: flex-end;
+    text-transform: uppercase;
+    font-size: 14px;
+    float: right;
+    margin-top: 8px;
+    border-bottom: 2px dotted;
+    cursor: pointer;
+    &:hover {
+      color: $red;
+    }
+  }
+
+  .text {
+    font-size: 18px;
+  }
+
+  .amount-panel {
+    display: flex;
+    column-gap: 16px;
+    align-items: baseline;
+
+    .currency {
+      font-size: 20px;
+      padding: 11px;
+      border-radius: 8px 8px 0px 0px;
+      background: $black;
+      border: unset;
+      border-bottom: white solid 1px !important;
+      cursor: not-allowed;
+    }
+  }
+}

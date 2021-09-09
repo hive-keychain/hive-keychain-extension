@@ -1,0 +1,17 @@
+@import '/src/popup/variable.scss';
+
+.power-up-down-top-panel {
+  min-height: 70px;
+  background-color: $grey-transparent;
+  margin: 0px -24px;
+  padding: 16px 32px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  .panel-row {
+    display: flex;
+    font-size: 22px;
+    justify-content: space-between;
+  }
+}

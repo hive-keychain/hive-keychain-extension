@@ -6,7 +6,7 @@ import {
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { DropdownMenuItem } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
+import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import DropdownMenu, {
   DropdownPosition,
 } from 'src/common-ui/dropdown-menu/dropdown-menu.component';
@@ -21,9 +21,14 @@ const WalletInfoSection = ({
 }: PropsFromRedux) => {
   const [displayDropdown, setDisplayDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>();
-  const [dropdownItems, setDropdownItems] = useState<DropdownMenuItem[]>([]);
+  const [dropdownItems, setDropdownItems] = useState<
+    DropdownMenuItemInterface[]
+  >([]);
 
-  const toggleDropdown = (event: any, menuItems: DropdownMenuItem[]) => {
+  const toggleDropdown = (
+    event: any,
+    menuItems: DropdownMenuItemInterface[],
+  ) => {
     event.stopPropagation();
     setDisplayDropdown(!displayDropdown);
     setDropdownPosition({

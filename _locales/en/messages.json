@@ -1438,12 +1438,5 @@
   "popup_html_proposal_request": {
     "message": "Help support Keychain development through our DHF proposal",
     "description": "When user doesnt vote for proposal"
-  },
-  "popup_html_claim_error": {
-    "message": "Claim has failed. Please try again later",
-    "description": "Error message while trying to claim rewards"
-  },
-  "popup_html_claim_success": {
-    "message": "Claim rewards was a success. You claimed $1! Congratulations!"
   }
 }

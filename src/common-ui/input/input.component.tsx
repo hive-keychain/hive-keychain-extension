@@ -9,7 +9,10 @@ interface InputProps {
   placeholder: string;
   type: InputType;
   step?: number;
+  min?: number;
   skipTranslation?: boolean;
+  hint?: string;
+  skipHintTranslation?: boolean;
   onEnterPress?(): any;
 }
 
@@ -25,6 +28,7 @@ const InputComponent = (props: InputProps) => {
         }
         value={props.value}
         step={props.step}
+        min={props.min}
         onChange={(e) => props.onChange(e.target.value)}
         onKeyPress={(e) => {
           if (e.key === 'Enter' && props.onEnterPress) {
@@ -32,6 +36,13 @@ const InputComponent = (props: InputProps) => {
           }
         }}
       />
+      {props.hint && (
+        <div className="hint">
+          {props.skipHintTranslation
+            ? props.hint
+            : chrome.i18n.getMessage(props.hint)}
+        </div>
+      )}
       {props.logo && (
         <img src={`/assets/images/${props.logo}.png`} className="input-img" />
       )}

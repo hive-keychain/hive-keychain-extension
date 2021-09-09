@@ -4,6 +4,9 @@ import {
   Client,
   ExtendedAccount,
   PrivateKey,
+  RecurrentTransferOperation,
+  TransferToVestingOperation,
+  WithdrawVestingOperation,
 } from '@hiveio/dhive';
 import {
   setErrorMessage,
@@ -215,7 +218,6 @@ const claimRewards = async (
   rewardHBD: string | Asset,
   rewardVests: string | Asset,
 ): Promise<boolean> => {
-  console.log(rewardHive, rewardHBD, rewardVests);
   try {
     await getClient().broadcast.sendOperations(
       [
@@ -232,9 +234,11 @@ const claimRewards = async (
       PrivateKey.fromString(activeAccount.keys.posting as string),
     );
     const rewardHp =
-      FormatUtils.toHP(
-        rewardVests.toString().replace('VESTS', ''),
-        store.getState().globalProperties.globals,
+      FormatUtils.withCommas(
+        FormatUtils.toHP(
+          rewardVests.toString().replace('VESTS', ''),
+          store.getState().globalProperties.globals,
+        ).toString(),
       ) + ' HP';
 
     store.dispatch(
@@ -249,6 +253,100 @@ const claimRewards = async (
   }
 };
 
+const powerUp = async (username: string, amount: string) => {
+  try {
+    await getClient().broadcast.sendOperations(
+      [
+        [
+          'transfer_to_vesting',
+          {
+            from: username,
+            to: username,
+            amount: amount,
+          },
+        ] as TransferToVestingOperation,
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    );
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
+const powerDown = async (username: string, amount: string) => {
+  try {
+    await getClient().broadcast.sendOperations(
+      [
+        [
+          'withdraw_vesting',
+          {
+            account: username,
+            vesting_shares: amount,
+          },
+        ] as WithdrawVestingOperation,
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    );
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
+const transfer = async (
+  sender: string,
+  receiver: string,
+  amount: string,
+  memo: string,
+  recurrent: boolean,
+  iterations: number,
+  frequency: number,
+) => {
+  try {
+    if (!recurrent) {
+      await getClient().broadcast.transfer(
+        {
+          from: sender,
+          to: receiver,
+          amount: amount,
+          memo: memo,
+        },
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
+      );
+    } else {
+      await getClient().broadcast.sendOperations(
+        [
+          [
+            'recurrent_transfer',
+            {
+              from: sender,
+              to: receiver,
+              amount: amount,
+              memo: memo,
+              recurrence: frequency,
+              executions: iterations,
+              extensions: [],
+            },
+          ] as RecurrentTransferOperation,
+        ],
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
+      );
+    }
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -257,6 +355,9 @@ const HiveUtils = {
   getTimeBeforeFull,
   getConversionRequests,
   claimRewards,
+  powerUp,
+  powerDown,
+  transfer,
 };
 
 export default HiveUtils;

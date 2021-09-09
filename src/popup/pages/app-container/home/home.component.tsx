@@ -1,4 +1,7 @@
-import { loadActiveAccount } from '@popup/actions/active-account.actions';
+import {
+  loadActiveAccount,
+  refreshActiveAccount,
+} from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
 import { fetchConversionRequests } from '@popup/actions/conversion.actions';
@@ -26,10 +29,14 @@ const Home = ({
   loadBittrexPrices,
   loadGlobalProperties,
   fetchConversionRequests,
+  refreshActiveAccount,
 }: PropsFromRedux) => {
   useEffect(() => {
     loadBittrexPrices();
     loadGlobalProperties();
+    if (!ActiveAccountUtils.isEmpty(activeAccount)) {
+      refreshActiveAccount();
+    }
   }, []);
 
   useEffect(() => {
@@ -85,6 +92,7 @@ const connector = connect(mapStateToProps, {
   loadBittrexPrices,
   loadGlobalProperties,
   fetchConversionRequests,
+  refreshActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

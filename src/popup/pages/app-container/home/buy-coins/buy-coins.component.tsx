@@ -3,9 +3,9 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 
-const TransferFunds = ({}: PropsFromRedux) => {
+const BuyCoins = ({}: PropsFromRedux) => {
   return (
-    <div className="transfer-funds-page">
+    <div className="buy-coins-page">
       <PageTitleComponent
         title="popup_html_transfer_funds"
         isBackButtonEnabled={true}
@@ -21,4 +21,4 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const TransferFundsComponent = connector(TransferFunds);
+export const BuyCoinsComponent = connector(BuyCoins);

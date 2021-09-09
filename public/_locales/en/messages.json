@@ -388,7 +388,7 @@
     "description": "on change password"
   },
   "popup_html_send_max": {
-    "message": "Send Max",
+    "message": "Max",
     "description": "on transfer"
   },
   "popup_html_transfer_funds": {
@@ -1474,5 +1474,45 @@
   "popup_html_wallet_savings": {
     "message": "savings",
     "description": "In wallet"
+  },
+  "popup_html_claim_error": {
+    "message": "Claim has failed. Please try again later",
+    "description": "Error message while trying to claim rewards"
+  },
+  "popup_html_claim_success": {
+    "message": "Claim rewards was a success. You claimed $1! Congratulations!",
+    "description": "On main page"
+  },
+  "popup_html_confirm_power_up_down_message": {
+    "message": "You are about to $1 $2. Click on confirm to start the operation.",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_power_up_down_fail": {
+    "message": "There was an error while executing $1. Try again later. If error persist, contact support.",
+    "description": "Error while power down or up"
+  },
+  "popup_html_power_up_down_success": {
+    "message": "$1 successful !",
+    "description": "Success of power down or up"
+  },
+  "popup_html_power_up_down_error": {
+    "message": "Value is greater than what's available",
+    "description": "Error  power down or up"
+  },
+  "popup_html_recurrent_transfer": {
+    "message": "Recurrent transfer",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfer_frequency": {
+    "message": "Frequency (in hours). Minimum 24 hours",
+    "description": "In transfer fund page"
+  },
+  "popup_html_transfer_successful": {
+    "message": "Transfer successful",
+    "description": "In transfer fund page"
+  },
+  "popup_html_transfer_failed": {
+    "message": "Transfer failed",
+    "description": "In transfer fund page"
   }
 }

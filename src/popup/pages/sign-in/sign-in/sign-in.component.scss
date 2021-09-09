@@ -6,7 +6,7 @@
   margin-top: 8px;
   border-bottom: 2px dotted;
   cursor: pointer;
-}
-.reset-password-link:hover {
-  color: $red;
+  &:hover {
+    color: $red;
+  }
 }

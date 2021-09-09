@@ -1,10 +1,10 @@
 import React from 'react';
 import { DropdownMenuItemComponent } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.component';
-import { DropdownMenuItem } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
+import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import './dropdown-menu.component.scss';
 
 export interface DropdownMenuProps {
-  dropdownMenuItems: DropdownMenuItem[];
+  dropdownMenuItems: DropdownMenuItemInterface[];
   position: DropdownPosition;
 }
 
@@ -31,6 +31,7 @@ const DropdownMenu = ({ dropdownMenuItems, position }: DropdownMenuProps) => {
           label={dropdownMenuItem.label}
           icon={dropdownMenuItem.icon}
           nextScreen={dropdownMenuItem.nextScreen}
+          nextScreenParams={dropdownMenuItem.nextScreenParams}
         />
       ))}
     </div>

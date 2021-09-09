@@ -1,7 +1,8 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 
 const withCommas = (nb: string, decimals = 3) =>
-  parseFloat(parseFloat(nb).toFixed(decimals))
+  parseFloat(nb)
+    .toFixed(decimals)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 
