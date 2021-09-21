@@ -429,6 +429,30 @@ const getPublicMemo = async (username: string): Promise<string> => {
   return extendedAccounts[0].memo_key;
 };
 
+const getPowerDown = (
+  account: ExtendedAccount,
+  globalProperties: DynamicGlobalProperties,
+) => {
+  const totalSteem = Number(
+    globalProperties.total_vesting_fund_hive.toString().split(' ')[0],
+  );
+  const totalVests = Number(
+    globalProperties.total_vesting_shares.toString().split(' ')[0],
+  );
+
+  const withdrawn = (
+    ((Number(account.withdrawn) / totalVests) * totalSteem) /
+    1000000
+  ).toFixed(0);
+
+  const total_withdrawing = (
+    ((Number(account.to_withdraw) / totalVests) * totalSteem) /
+    1000000
+  ).toFixed(0);
+  const next_vesting_withdrawal = account.next_vesting_withdrawal;
+  return [withdrawn, total_withdrawing, next_vesting_withdrawal];
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -446,6 +470,7 @@ const AccountUtils = {
   getKeys,
   getAccountValue,
   getPublicMemo,
+  getPowerDown,
   AccountErrorMessages,
 };
 

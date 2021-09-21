@@ -21,6 +21,33 @@
     font-size: 18px;
   }
 
+  .power-down-panel {
+    background-color: rgba(255, 255, 255, 0.2);
+    margin: 0px -24px;
+    padding: 16px 32px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
+    .power-down-text {
+      flex: 1;
+    }
+
+    .icon-button {
+      display: none;
+      height: 16px;
+      width: 16px;
+      font-size: 16px;
+    }
+
+    &:hover {
+      .icon-button {
+        display: block;
+      }
+    }
+  }
+
   .amount-panel {
     display: flex;
     column-gap: 16px;

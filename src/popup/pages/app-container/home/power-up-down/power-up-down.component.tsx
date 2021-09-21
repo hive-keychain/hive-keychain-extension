@@ -11,11 +11,13 @@ import { PowerUpDownTopPanelComponent } from '@popup/pages/app-container/home/po
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
+import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -35,6 +37,11 @@ const PowerUpDown = ({
   const [value, setValue] = useState<string | number>(0);
   const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
+
+  const powerDownInfo = AccountUtils.getPowerDown(
+    activeAccount.account,
+    globalProperties.globals!,
+  );
 
   const currency =
     powerType === PowerType.POWER_UP ? currencyLabels.hive : currencyLabels.hp;
@@ -65,6 +72,13 @@ const PowerUpDown = ({
       : 'popup_html_powerdown_text';
 
   const handleButtonClick = () => {
+    if (
+      powerType === PowerType.POWER_DOWN &&
+      Number(value).toFixed(3) === '0.000'
+    ) {
+      return handleCancelButtonClick();
+    }
+
     if (parseFloat(value.toString()) > parseFloat(available.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
@@ -95,7 +109,7 @@ const PowerUpDown = ({
             success = await HiveUtils.powerDown(
               username,
               `${FormatUtils.fromHP(
-                value.toString(),
+                Number(value).toFixed(3),
                 globalProperties.globals!,
               ).toFixed(6)} VESTS`,
             );
@@ -118,6 +132,30 @@ const PowerUpDown = ({
     setValue(available);
   };
 
+  const handleCancelButtonClick = () => {
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage(
+        'popup_html_confirm_cancel_power_down_message',
+      ),
+      fields: [],
+      afterConfirmAction: async () => {
+        let success = await HiveUtils.powerDown(
+          username,
+          `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
+            6,
+          )} VESTS`,
+        );
+
+        navigateTo(Screen.HOME_PAGE, true);
+        if (success) {
+          setSuccessMessage('popup_html_cancel_power_down_success');
+        } else {
+          setErrorMessage('popup_html_cancel_power_down_fail');
+        }
+      },
+    });
+  };
+
   return (
     <div className="power-up-page">
       <PageTitleComponent title={title} isBackButtonEnabled={true} />
@@ -127,6 +165,28 @@ const PowerUpDown = ({
         current={current}
       />
       <div className="text">{chrome.i18n.getMessage(text)}</div>
+
+      {powerType === PowerType.POWER_DOWN &&
+        powerDownInfo &&
+        powerDownInfo[1] !== '0' && (
+          <div
+            className="power-down-panel"
+            data-for="tooltip"
+            data-tip={chrome.i18n.getMessage('popup_next_powerdown', [
+              powerDownInfo[2],
+            ])}
+            data-iscapture="true">
+            <div className="power-down-text">
+              {powerDownInfo[0]}/{powerDownInfo[1]} {currencyLabels.hp}
+            </div>
+            <img
+              className="icon-button"
+              src="/assets/images/delete.png"
+              onClick={handleCancelButtonClick}
+            />
+          </div>
+        )}
+
       <InputComponent
         type={InputType.TEXT}
         placeholder="popup_html_username"
@@ -150,6 +210,14 @@ const PowerUpDown = ({
       </div>
 
       <ButtonComponent label={title} onClick={() => handleButtonClick()} />
+
+      <ReactTooltip
+        id="tooltip"
+        place="top"
+        type="light"
+        effect="solid"
+        multiline={true}
+      />
     </div>
   );
 };

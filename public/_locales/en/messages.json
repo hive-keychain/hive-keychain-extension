@@ -1499,12 +1499,24 @@
     "message": "Please confirm $1.",
     "description": "while confirming power up and down"
   },
+  "popup_html_confirm_cancel_power_down_message": {
+    "message": "Please confirm cancel power down.",
+    "description": "while confirming power up and down"
+  },
   "popup_html_power_up_down_fail": {
     "message": "There was an error while executing $1. Try again later. If error persist, contact support.",
     "description": "Error while power down or up"
   },
   "popup_html_power_up_down_success": {
     "message": "$1 successful !",
+    "description": "Success of power down or up"
+  },
+  "popup_html_cancel_power_down_success": {
+    "message": "Cancel power down successful !",
+    "description": "Success of power down or up"
+  },
+  "popup_html_cancel_power_down_fail": {
+    "message": "Cancel power down failed !",
     "description": "Success of power down or up"
   },
   "popup_html_power_up_down_error": {
