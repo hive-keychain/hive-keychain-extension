@@ -26,7 +26,7 @@ export const HiveDropdownMenuItems: DropdownMenuItemInterface[] = [
     label: 'popup_html_convert_hive',
     icon: 'import.svg',
     nextScreen: Screen.CONVERSION_PAGE,
-    nextScreenParams: { conversionType: ConversionType.CONVERT_HIVE },
+    nextScreenParams: { conversionType: ConversionType.CONVERT_HIVE_TO_HBD },
   },
 ];
 export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
@@ -46,7 +46,7 @@ export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
     label: 'popup_html_convert_hbd',
     icon: 'import.svg',
     nextScreen: Screen.CONVERSION_PAGE,
-    nextScreenParams: { conversionType: ConversionType.CONVERT_HBD },
+    nextScreenParams: { conversionType: ConversionType.CONVERT_HBD_TO_HIVE },
   },
 ];
 export const HpDropdownMenuItems: DropdownMenuItemInterface[] = [

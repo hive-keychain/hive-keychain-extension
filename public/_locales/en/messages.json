@@ -1411,6 +1411,10 @@
     "message": "Your HBD will take 3.5 days to get converted to approximately $1 USD worth of HIVE tokens, based on its 3.5 days median price.",
     "description": "When clicking on the Hbd arrow menu"
   },
+  "popup_html_convert_hive_intro": {
+    "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
+    "description": "When clicking on the HIVE arrow menu"
+  },
   "popup_html_convert_max": {
     "message": "Convert Max",
     "description": "When clicking on the Hbd arrow menu"

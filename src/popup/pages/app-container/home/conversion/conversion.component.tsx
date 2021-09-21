@@ -15,8 +15,8 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import { Conversion } from 'src/interfaces/conversion.interface';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -26,73 +26,52 @@ const Conversion = ({
   currencyLabels,
   activeAccount,
   conversionType,
-  globalProperties,
+  conversions,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState(activeAccount.name!);
   const [value, setValue] = useState<string | number>(0);
-  const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
 
-  const powerDownInfo = AccountUtils.getPowerDown(
-    activeAccount.account,
-    globalProperties.globals!,
-  );
-
   const currency =
-    conversionType === ConversionType.CONVERT_HIVE
+    conversionType === ConversionType.CONVERT_HIVE_TO_HBD
       ? currencyLabels.hive
-      : currencyLabels.hp;
+      : currencyLabels.hbd;
 
   useEffect(() => {
     const hiveBalance = FormatUtils.formatCurrencyValue(
       activeAccount.account.balance,
     );
-
-    const hpBalance = FormatUtils.withCommas(
-      (
-        FormatUtils.toHP(
-          activeAccount.account.vesting_shares.toString().replace('VESTS', ''),
-          globalProperties.globals,
-        ) - (conversionType === ConversionType.CONVERT_HIVE ? 0 : 5)
-      ).toString(),
+    const hbdBalance = FormatUtils.formatCurrencyValue(
+      activeAccount.account.hbd_balance,
     );
 
     setAvailable(
-      conversionType === ConversionType.CONVERT_HIVE ? hiveBalance : hpBalance,
-    );
-    setCurrent(
-      conversionType === ConversionType.CONVERT_HIVE ? hpBalance : hiveBalance,
+      conversionType === ConversionType.CONVERT_HIVE_TO_HBD
+        ? hiveBalance
+        : hbdBalance,
     );
   }, [activeAccount]);
 
   const title =
-    conversionType === ConversionType.CONVERT_HIVE
+    conversionType === ConversionType.CONVERT_HIVE_TO_HBD
       ? 'popup_html_convert_hive'
       : 'popup_html_convert_hbd';
   const text =
-    conversionType === ConversionType.CONVERT_HIVE
+    conversionType === ConversionType.CONVERT_HIVE_TO_HBD
       ? 'popup_html_convert_hive_intro'
       : 'popup_html_convert_hbd_intro';
 
   const handleButtonClick = () => {
-    if (
-      conversionType === ConversionType.CONVERT_HIVE &&
-      Number(value).toFixed(3) === '0.000'
-    ) {
-      return handleCancelButtonClick();
-    }
-
     if (parseFloat(value.toString()) > parseFloat(available.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
     const operationString = chrome.i18n
       .getMessage(
-        conversionType === ConversionType.CONVERT_HIVE
+        conversionType === ConversionType.CONVERT_HIVE_TO_HBD
           ? 'popup_html_convert_hive'
           : 'popup_html_convert_hbd',
       )
@@ -109,21 +88,12 @@ const Conversion = ({
         { label: 'popup_html_value', value: valueS },
       ],
       afterConfirmAction: async () => {
-        let success = false;
-        switch (conversionType) {
-          case ConversionType.CONVERT_HIVE:
-            success = await HiveUtils.powerUp(username, valueS);
-            break;
-          case ConversionType.CONVERT_HBD:
-            success = await HiveUtils.powerDown(
-              username,
-              `${FormatUtils.fromHP(
-                Number(value).toFixed(3),
-                globalProperties.globals!,
-              ).toFixed(6)} VESTS`,
-            );
-            break;
-        }
+        let success = await HiveUtils.convertOperation(
+          activeAccount,
+          conversions,
+          valueS,
+          conversionType,
+        );
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
@@ -141,41 +111,11 @@ const Conversion = ({
     setValue(available);
   };
 
-  const handleCancelButtonClick = () => {
-    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
-        'popup_html_confirm_cancel_power_down_message',
-      ),
-      fields: [],
-      afterConfirmAction: async () => {
-        let success = await HiveUtils.powerDown(
-          username,
-          `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
-            6,
-          )} VESTS`,
-        );
-
-        navigateTo(Screen.HOME_PAGE, true);
-        if (success) {
-          setSuccessMessage('popup_html_cancel_power_down_success');
-        } else {
-          setErrorMessage('popup_html_cancel_power_down_fail');
-        }
-      },
-    });
-  };
-
   return (
     <div className="power-up-page">
       <PageTitleComponent title={title} isBackButtonEnabled={true} />
       <div className="text">{chrome.i18n.getMessage(text)}</div>
 
-      <InputComponent
-        type={InputType.TEXT}
-        placeholder="popup_html_username"
-        value={username}
-        onChange={setUsername}
-      />
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
@@ -210,7 +150,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     conversionType: state.navigation.params.conversionType as ConversionType,
-    globalProperties: state.globalProperties,
+    conversions: state.conversions as Conversion[],
   };
 };
 

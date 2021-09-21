@@ -2,6 +2,7 @@ import {
   Asset,
   ClaimRewardBalanceOperation,
   Client,
+  CollateralizedConvertOperation,
   ExtendedAccount,
   PrivateKey,
   RecurrentTransferOperation,
@@ -14,9 +15,11 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import KeychainApi from '@popup/api/keychain';
+import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { store } from '@popup/store';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
+import { Conversion } from 'src/interfaces/conversion.interface';
 import { Delegator } from 'src/interfaces/delegations.interface';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
@@ -349,6 +352,36 @@ const transfer = async (
   }
 };
 
+const convertOperation = async (
+  activeAccount: ActiveAccount,
+  conversions: Conversion[],
+  amount: string,
+  conversionType: ConversionType,
+) => {
+  const requestid = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
+  try {
+    await getClient().broadcast.sendOperations(
+      [
+        [
+          conversionType,
+          {
+            owner: activeAccount.name,
+            requestid: requestid,
+            amount: amount,
+          },
+        ] as CollateralizedConvertOperation,
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    );
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
 const encodeMemo = (
   memo: string,
   privateKey: string,
@@ -369,6 +402,7 @@ const HiveUtils = {
   powerDown,
   transfer,
   encodeMemo,
+  convertOperation,
 };
 
 export default HiveUtils;
