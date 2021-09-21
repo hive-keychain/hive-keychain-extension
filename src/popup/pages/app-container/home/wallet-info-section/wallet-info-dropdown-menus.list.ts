@@ -28,6 +28,12 @@ export const HiveDropdownMenuItems: DropdownMenuItemInterface[] = [
     nextScreen: Screen.CONVERSION_PAGE,
     nextScreenParams: { conversionType: ConversionType.CONVERT_HIVE_TO_HBD },
   },
+  {
+    label: 'popup_html_save_hive',
+    icon: 'savings.png',
+    nextScreen: Screen.SAVINGS_PAGE,
+    nextScreenParams: { selectedCurrency: 'hive' },
+  },
 ];
 export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
   {
@@ -47,6 +53,12 @@ export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
     icon: 'import.svg',
     nextScreen: Screen.CONVERSION_PAGE,
     nextScreenParams: { conversionType: ConversionType.CONVERT_HBD_TO_HIVE },
+  },
+  {
+    label: 'popup_html_save_hbd',
+    icon: 'savings.png',
+    nextScreen: Screen.SAVINGS_PAGE,
+    nextScreenParams: { selectedCurrency: 'hbd' },
   },
 ];
 export const HpDropdownMenuItems: DropdownMenuItemInterface[] = [

@@ -8,6 +8,7 @@ import { ConversionComponent } from '@popup/pages/app-container/home/conversion/
 import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
+import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.component';
 import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
@@ -54,6 +55,8 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <ConfirmationPageComponent />;
       case Screen.CONVERSION_PAGE:
         return <ConversionComponent />;
+      case Screen.SAVINGS_PAGE:
+        return <SavingsPageComponent />;
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;

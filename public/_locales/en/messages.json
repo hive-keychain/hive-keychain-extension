@@ -1431,6 +1431,35 @@
     "message": "Something went wrong!",
     "description": "When clicking on the Hbd arrow menu"
   },
+  "popup_html_save_hive": {
+    "message": "HIVE Savings",
+    "description": "When clicking on the Hive arrow menu"
+  },
+  "popup_html_save_hbd": {
+    "message": "HBD Savings",
+    "description": "When clicking on the HBD arrow menu"
+  },
+  "popup_html_deposit_amount": {
+    "message": "Deposit $1",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_amount": {
+    "message": "Withdraw $1",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit": {
+    "message": "Deposit",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw": {
+    "message": "Withdraw",
+    "description": "On savings menu"
+  },
+
+  "popup_html_savings": {
+    "message": "$1 savings",
+    "description": "Saving page title"
+  },
   "popup_html_buy_intro": {
     "message": "Chose your favorite method and buy $1 fast and easily. Keychain do not take any additional fees on the transactions.",
     "description": "When accessing the buy HIVE/HBD page"

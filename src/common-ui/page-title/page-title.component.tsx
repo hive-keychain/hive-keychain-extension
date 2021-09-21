@@ -7,11 +7,13 @@ import './page-title.component.scss';
 
 interface PageTitleProps {
   title: string;
+  titleParams?: string[];
   isBackButtonEnabled: boolean;
 }
 
 const PageTitle = ({
   title,
+  titleParams,
   isBackButtonEnabled,
   goBack,
   navigateTo,
@@ -35,7 +37,7 @@ const PageTitle = ({
           onClick={handleBackButtonClick}
         />
       )}
-      <div className="title">{chrome.i18n.getMessage(title)}</div>
+      <div className="title">{chrome.i18n.getMessage(title, titleParams)}</div>
       <img
         className="icon-button"
         src="/assets/images/delete.png"
