@@ -422,6 +422,13 @@ const getAccountValue = (
   ).toFixed(3);
 };
 
+const getPublicMemo = async (username: string): Promise<string> => {
+  const extendedAccounts = await HiveUtils.getClient().database.getAccounts([
+    username,
+  ]);
+  return extendedAccounts[0].memo_key;
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -438,6 +445,7 @@ const AccountUtils = {
   clearAllData,
   getKeys,
   getAccountValue,
+  getPublicMemo,
   AccountErrorMessages,
 };
 

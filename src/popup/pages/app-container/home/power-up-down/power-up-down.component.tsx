@@ -79,8 +79,12 @@ const PowerUpDown = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_confirm_power_up_down_message',
-        [operationString, valueS],
+        [operationString],
       ),
+      fields: [
+        { label: 'popup_html_operation', value: operationString },
+        { label: 'popup_html_value', value: valueS },
+      ],
       afterConfirmAction: async () => {
         let success = false;
         switch (powerType) {

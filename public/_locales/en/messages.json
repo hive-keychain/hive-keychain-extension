@@ -411,6 +411,10 @@
     "message": "Encrypt Memo",
     "description": "When initiating a HIVE or HBD transfer"
   },
+  "popup_html_memo_key_missing": {
+    "message": "Your memo key is missing",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
   "popup_html_add_active": {
     "message": "Please add an active key to send HIVE or HBD.",
     "description": "When trying to send HIVE or HBD but active key was not stored"
@@ -437,6 +441,14 @@
   },
   "popup_html_transfer_memo": {
     "message": "Memo",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_recurrence": {
+    "message": "Recurrence",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_recurrence_value": {
+    "message": "Every $1 hours, $2 times",
     "description": "On transfer confirmation page"
   },
   "popup_html_not_now": {
@@ -1360,7 +1372,7 @@
     "message": "No account with active authority."
   },
   "popup_warning_phishing": {
-    "message": "This account has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
+    "message": "@$1 has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.",
     "description": "When trying to transfer to a blacklisted account"
   },
   "popup_warning_exchange_deposit": {
@@ -1484,7 +1496,7 @@
     "description": "On main page"
   },
   "popup_html_confirm_power_up_down_message": {
-    "message": "You are about to $1 $2. Click on confirm to start the operation.",
+    "message": "Please confirm $1.",
     "description": "while confirming power up and down"
   },
   "popup_html_power_up_down_fail": {
@@ -1514,5 +1526,13 @@
   "popup_html_transfer_failed": {
     "message": "Transfer failed",
     "description": "In transfer fund page"
+  },
+  "popup_html_operation": {
+    "message": "Operation",
+    "description": "In confirmation page"
+  },
+  "popup_html_value": {
+    "message": "Value",
+    "description": "In confirmation page"
   }
 }

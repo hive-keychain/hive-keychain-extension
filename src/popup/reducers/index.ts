@@ -4,6 +4,7 @@ import BittrexReducer from '@popup/reducers/bittrex.reducer';
 import ConversionsReducer from '@popup/reducers/conversion.reducer';
 import DelegationsReducer from '@popup/reducers/delegation.reducer';
 import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
+import { PhishingReducer } from '@popup/reducers/phishing.reducer';
 import TokenHistoryReducer from '@popup/reducers/token-history.reducer';
 import { combineReducers } from 'redux';
 import { AccountReducer } from './account.reducer';
@@ -23,4 +24,5 @@ export default combineReducers({
   delegations: DelegationsReducer,
   tokenHistory: TokenHistoryReducer,
   conversions: ConversionsReducer,
+  phishing: PhishingReducer,
 });

@@ -5,6 +5,12 @@
   flex-direction: column;
   row-gap: 16px;
 
+  .recurrent-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
   .balance-panel {
     margin: 0px -24px;
     background-color: $grey-transparent;

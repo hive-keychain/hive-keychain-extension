@@ -28,6 +28,7 @@
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
     "@hiveio/dhive": "^1.0.1",
+    "@hiveio/hive-js": "^2.0.4",
     "@types/chrome": "0.0.151",
     "@types/crypto-js": "^4.0.2",
     "axios": "^0.21.1",

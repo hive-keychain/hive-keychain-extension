@@ -8,6 +8,7 @@ import {
   TransferToVestingOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';
+import * as hive from '@hiveio/hive-js';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -343,8 +344,17 @@ const transfer = async (
     }
     return true;
   } catch (err) {
+    console.log(err);
     return false;
   }
+};
+
+const encodeMemo = (
+  memo: string,
+  privateKey: string,
+  receiverPublicKey: string,
+) => {
+  return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
 
 const HiveUtils = {
@@ -358,6 +368,7 @@ const HiveUtils = {
   powerUp,
   powerDown,
   transfer,
+  encodeMemo,
 };
 
 export default HiveUtils;
