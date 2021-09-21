@@ -8,6 +8,7 @@ import './dropdown-menu-item.component.scss';
 const DropdownMenuItem = ({
   icon,
   label,
+  labelParams,
   nextScreen,
   nextScreenParams,
   navigateToWithParams,
@@ -22,7 +23,7 @@ const DropdownMenuItem = ({
       className="dropdown-menu-item"
       onClick={(event) => handleClickOnMenuItem(event)}>
       <img className="icon" src={`/assets/images/${icon}`} />
-      <div className="label">{chrome.i18n.getMessage(label)}</div>
+      <div className="label">{chrome.i18n.getMessage(label, labelParams)}</div>
     </div>
   );
 };

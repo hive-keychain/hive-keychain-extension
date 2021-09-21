@@ -4,6 +4,7 @@ import { AddByKeysComponent } from '@popup/pages/add-account/add-by-keys/add-by-
 import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import-keys.component';
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { BuyCoinsComponent } from '@popup/pages/app-container/home/buy-coins/buy-coins.component';
+import { ConversionComponent } from '@popup/pages/app-container/home/conversion/conversion.component';
 import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
@@ -51,6 +52,8 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <WalletHistoryComponent />;
       case Screen.CONFIRMATION_PAGE:
         return <ConfirmationPageComponent />;
+      case Screen.CONVERSION_PAGE:
+        return <ConversionComponent />;
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;

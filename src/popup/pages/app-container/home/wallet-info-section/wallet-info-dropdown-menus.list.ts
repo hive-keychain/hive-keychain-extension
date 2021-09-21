@@ -1,3 +1,4 @@
+import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -22,9 +23,10 @@ export const HiveDropdownMenuItems: DropdownMenuItemInterface[] = [
     nextScreen: Screen.BUY_COINS_PAGE,
   },
   {
-    label: 'popup_html_convert_hbd',
+    label: 'popup_html_convert_hive',
     icon: 'import.svg',
-    nextScreen: Screen.TRANSFER_FUND_PAGE,
+    nextScreen: Screen.CONVERSION_PAGE,
+    nextScreenParams: { conversionType: ConversionType.CONVERT_HIVE },
   },
 ];
 export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
@@ -43,7 +45,8 @@ export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
   {
     label: 'popup_html_convert_hbd',
     icon: 'import.svg',
-    nextScreen: Screen.TRANSFER_FUND_PAGE,
+    nextScreen: Screen.CONVERSION_PAGE,
+    nextScreenParams: { conversionType: ConversionType.CONVERT_HBD },
   },
 ];
 export const HpDropdownMenuItems: DropdownMenuItemInterface[] = [

@@ -1399,6 +1399,14 @@
     "message": "Convert HBD",
     "description": "When clicking on the Hbd arrow menu"
   },
+  "popup_html_convert_hive": {
+    "message": "Convert HIVE",
+    "description": "When clicking on the Hbd arrow menu"
+  },
+  "popup_html_convert_title": {
+    "message": "Convert $1",
+    "description": "When clicking on the arrow menu"
+  },
   "popup_html_convert_hbd_intro": {
     "message": "Your HBD will take 3.5 days to get converted to approximately $1 USD worth of HIVE tokens, based on its 3.5 days median price.",
     "description": "When clicking on the Hbd arrow menu"
