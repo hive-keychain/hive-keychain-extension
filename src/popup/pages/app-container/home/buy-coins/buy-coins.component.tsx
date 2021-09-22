@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import './buy-coins.component.scss';
 
 const BuyCoins = ({ buyCoinType }: PropsFromRedux) => {
   return (
@@ -17,7 +18,7 @@ const BuyCoins = ({ buyCoinType }: PropsFromRedux) => {
           </h2>
           <div className="items">
             {category.items.map((item) => (
-              <a href={item.link} key={item.image}>
+              <a href={item.link} key={item.image} target="_blank">
                 <img src={`/assets/images/${item.image}`} />
               </a>
             ))}

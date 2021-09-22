@@ -1,0 +1,25 @@
+.buy-coins-page {
+  .category {
+    .items {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 16px;
+      row-gap: 16px;
+      align-items: center;
+      justify-content: center;
+      margin: 0px -24px;
+      a {
+        padding: 8px;
+        background: white;
+        border-radius: 8px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        img {
+          max-width: 130px;
+          max-height: 50px;
+        }
+      }
+    }
+  }
+}
