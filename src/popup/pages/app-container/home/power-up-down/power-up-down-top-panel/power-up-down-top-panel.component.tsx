@@ -1,44 +1,41 @@
-import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import CurrencyUtils from 'src/utils/currency.utils';
 import './power-up-down-top-panel.component.scss';
 
 interface PanelProps {
   current: number | string;
   available: number | string;
-  powerType: PowerType;
+  currentLabel: string;
+  currentCurrency: string;
+  availableLabel: string;
+  availableCurrency: string;
 }
 
-const PowerUpDownTopPanel = ({
-  currencyLabels,
+const AvailableCurrentPanel = ({
   current,
+  currentLabel,
+  currentCurrency,
   available,
-  powerType,
+  availableLabel,
+  availableCurrency,
 }: PropsType) => {
   return (
     <div className="power-up-down-top-panel">
       <div className="current panel-row">
         <div className="current-title">
-          {chrome.i18n.getMessage('popup_html_current')}
+          {chrome.i18n.getMessage(currentLabel)}
         </div>
         <div className="current-value">
-          {current}{' '}
-          {powerType === PowerType.POWER_UP
-            ? currencyLabels.hp
-            : currencyLabels.hive}
+          {current} {currentCurrency}
         </div>
       </div>
       <div className="available panel-row">
         <div className="available-title">
-          {chrome.i18n.getMessage('popup_html_available')}
+          {chrome.i18n.getMessage(availableLabel)}
         </div>
         <div className="available-value">
-          {available}{' '}
-          {powerType === PowerType.POWER_UP
-            ? currencyLabels.hive
-            : currencyLabels.hp}
+          {available} {availableCurrency}
         </div>
       </div>
     </div>
@@ -46,12 +43,10 @@ const PowerUpDownTopPanel = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-  };
+  return {};
 };
 
 const connector = connect(mapStateToProps, {});
 type PropsType = ConnectedProps<typeof connector> & PanelProps;
 
-export const PowerUpDownTopPanelComponent = connector(PowerUpDownTopPanel);
+export const AvailableCurrentPanelComponent = connector(AvailableCurrentPanel);

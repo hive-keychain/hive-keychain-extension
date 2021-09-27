@@ -6,6 +6,8 @@ import {
   ExtendedAccount,
   PrivateKey,
   RecurrentTransferOperation,
+  TransferFromSavingsOperation,
+  TransferToSavingsOperation,
   TransferToVestingOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';
@@ -390,6 +392,87 @@ const encodeMemo = (
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
 
+const deposit = async (activeAccount: ActiveAccount, amount: string) => {
+  const savings = await hive.api.getSavingsWithdrawFromAsync(
+    activeAccount.name,
+  );
+  const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
+  try {
+    await getClient().broadcast.sendOperations(
+      [
+        [
+          'transfer_to_savings',
+          {
+            amount: amount,
+            from: activeAccount.name,
+            memo: '',
+            request_id: requestId,
+            to: activeAccount.name,
+          },
+        ] as TransferToSavingsOperation,
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    );
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
+  const savings = await hive.api.getSavingsWithdrawFromAsync(
+    activeAccount.name,
+  );
+  const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
+
+  try {
+    await getClient().broadcast.sendOperations(
+      [
+        [
+          'transfer_from_savings',
+          {
+            amount: amount,
+            from: activeAccount.name,
+            memo: '',
+            request_id: requestId,
+            to: activeAccount.name,
+          },
+        ] as TransferFromSavingsOperation,
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    );
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
+const delegateVestingShares = async (
+  activeAccount: ActiveAccount,
+  delegatee: string,
+  vestingShares: string,
+) => {
+  try {
+    await getClient().broadcast.delegateVestingShares(
+      {
+        delegatee: delegatee,
+        delegator: activeAccount.name!,
+        vesting_shares: vestingShares,
+      },
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    );
+
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -403,6 +486,9 @@ const HiveUtils = {
   transfer,
   encodeMemo,
   convertOperation,
+  withdraw,
+  deposit,
+  delegateVestingShares,
 };
 
 export default HiveUtils;

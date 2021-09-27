@@ -7,7 +7,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
-import { PowerUpDownTopPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -159,10 +159,21 @@ const PowerUpDown = ({
   return (
     <div className="power-up-page">
       <PageTitleComponent title={title} isBackButtonEnabled={true} />
-      <PowerUpDownTopPanelComponent
-        powerType={powerType}
+      <AvailableCurrentPanelComponent
         available={available}
+        availableCurrency={
+          powerType === PowerType.POWER_UP
+            ? currencyLabels.hive
+            : currencyLabels.hp
+        }
+        availableLabel={'popup_html_available'}
         current={current}
+        currentCurrency={
+          powerType === PowerType.POWER_UP
+            ? currencyLabels.hp
+            : currencyLabels.hive
+        }
+        currentLabel={'popup_html_current'}
       />
       <div className="text">{chrome.i18n.getMessage(text)}</div>
 

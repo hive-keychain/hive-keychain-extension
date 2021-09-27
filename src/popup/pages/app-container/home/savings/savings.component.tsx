@@ -7,7 +7,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
-import { PowerUpDownTopPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -24,7 +24,6 @@ import { PageTitleComponent } from 'src/common-ui/page-title/page-title.componen
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import './savings.component.scss';
 
@@ -32,7 +31,6 @@ const SavingsPage = ({
   currencyLabels,
   paramsSelectedCurrency,
   activeAccount,
-  powerType,
   globalProperties,
   navigateToWithParams,
   navigateTo,
@@ -40,6 +38,7 @@ const SavingsPage = ({
   setErrorMessage,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState(activeAccount.name!);
+  const [text, setText] = useState('');
   const [value, setValue] = useState<string | number>(0);
   const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
@@ -56,57 +55,59 @@ const SavingsPage = ({
   ];
   const savingOperationTypeOptions = [
     {
-      label: SavingOperationType.WITHDRAW,
+      label: chrome.i18n.getMessage(SavingOperationType.WITHDRAW),
       value: SavingOperationType.WITHDRAW as string,
     },
     {
-      label: SavingOperationType.DEPOSIT,
+      label: chrome.i18n.getMessage(SavingOperationType.DEPOSIT),
       value: SavingOperationType.DEPOSIT as string,
     },
   ];
 
   useEffect(() => {
-    const hiveBalance = FormatUtils.formatCurrencyValue(
-      activeAccount.account.balance,
-    );
+    const hbdSavings = activeAccount.account.savings_hbd_balance
+      .toString()
+      .split(' ')[0];
+    const hiveSavings = activeAccount.account.savings_balance
+      .toString()
+      .split(' ')[0];
 
-    const hpBalance = FormatUtils.withCommas(
-      (
-        FormatUtils.toHP(
-          activeAccount.account.vesting_shares.toString().replace('VESTS', ''),
-          globalProperties.globals,
-        ) - (powerType === PowerType.POWER_UP ? 0 : 5)
-      ).toString(),
-    );
+    const hbd = activeAccount.account.hbd_balance.toString().split(' ')[0];
+    const hive = activeAccount.account.balance.toString().split(' ')[0];
 
-    setAvailable(powerType === PowerType.POWER_UP ? hiveBalance : hpBalance);
-    setCurrent(powerType === PowerType.POWER_UP ? hpBalance : hiveBalance);
-  }, [activeAccount]);
+    setAvailable(selectedCurrency === 'hive' ? hive : hbd);
+    setCurrent(selectedCurrency === 'hive' ? hiveSavings : hbdSavings);
+  }, [selectedCurrency]);
+
+  useEffect(() => {
+    let text = '';
+    if (selectedSavingOperationType === SavingOperationType.DEPOSIT) {
+      if (selectedCurrency === 'hbd') {
+        text = chrome.i18n.getMessage(
+          'popup_html_deposit_hbd_text',
+          Number(globalProperties.globals?.hbd_interest_rate) / 100,
+        );
+      }
+    } else {
+      text = chrome.i18n.getMessage('popup_html_withdraw_text');
+    }
+    setText(text);
+  }, [selectedCurrency, selectedSavingOperationType]);
 
   const currency = currencyLabels[selectedCurrency];
 
-  const text =
-    powerType === PowerType.POWER_UP
-      ? 'popup_html_powerup_text'
-      : 'popup_html_powerdown_text';
-
   const handleButtonClick = () => {
-    if (
-      powerType === PowerType.POWER_DOWN &&
-      Number(value).toFixed(3) === '0.000'
-    ) {
-      return handleCancelButtonClick();
-    }
-
     if (parseFloat(value.toString()) > parseFloat(available.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    const operationString = chrome.i18n
-      .getMessage(
-        powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
-      )
-      .toLowerCase();
+    let operationString = chrome.i18n.getMessage(
+      selectedSavingOperationType === SavingOperationType.WITHDRAW
+        ? 'popup_html_withdraw_param'
+        : 'popup_html_deposit_param',
+      [currency],
+    );
+
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
@@ -120,18 +121,13 @@ const SavingsPage = ({
       ],
       afterConfirmAction: async () => {
         let success = false;
-        switch (powerType) {
-          case PowerType.POWER_UP:
-            success = await HiveUtils.powerUp(username, valueS);
+
+        switch (selectedSavingOperationType) {
+          case SavingOperationType.DEPOSIT:
+            success = await HiveUtils.deposit(activeAccount, valueS);
             break;
-          case PowerType.POWER_DOWN:
-            success = await HiveUtils.powerDown(
-              username,
-              `${FormatUtils.fromHP(
-                Number(value).toFixed(3),
-                globalProperties.globals!,
-              ).toFixed(6)} VESTS`,
-            );
+          case SavingOperationType.WITHDRAW:
+            success = await HiveUtils.withdraw(activeAccount, valueS);
             break;
         }
 
@@ -148,25 +144,11 @@ const SavingsPage = ({
   };
 
   const setToMax = () => {
-    setValue(available);
-  };
-
-  const handleCancelButtonClick = () => {
-    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
-        'popup_html_confirm_cancel_power_down_message',
-      ),
-      fields: [],
-      afterConfirmAction: async () => {
-        let success = false;
-        navigateTo(Screen.HOME_PAGE, true);
-        if (success) {
-          setSuccessMessage('popup_html_cancel_power_down_success');
-        } else {
-          setErrorMessage('popup_html_cancel_power_down_fail');
-        }
-      },
-    });
+    if (selectedSavingOperationType === SavingOperationType.WITHDRAW) {
+      setValue(current);
+    } else {
+      setValue(available);
+    }
   };
 
   const customCurrencyLabelRender = (
@@ -196,7 +178,6 @@ const SavingsPage = ({
   const customSavingOperationTimeItemRender = (
     selectProps: SelectItemRenderer<any>,
   ) => {
-    console.log(selectProps);
     return (
       <div
         className={`select-account-item ${
@@ -236,10 +217,13 @@ const SavingsPage = ({
         titleParams={[currency]}
         isBackButtonEnabled={true}
       />
-      <PowerUpDownTopPanelComponent
-        powerType={powerType}
+      <AvailableCurrentPanelComponent
         available={available}
+        availableCurrency={currency}
+        availableLabel={'popup_html_savings_available'}
         current={current}
+        currentCurrency={currency}
+        currentLabel={'popup_html_savings_current'}
       />
 
       <Select
@@ -283,7 +267,11 @@ const SavingsPage = ({
       </div>
 
       <ButtonComponent
-        label={'popup_html_savings'}
+        label={
+          selectedSavingOperationType === SavingOperationType.WITHDRAW
+            ? 'popup_html_withdraw_param'
+            : 'popup_html_deposit_param'
+        }
         labelParams={[currency]}
         onClick={() => handleButtonClick()}
       />
