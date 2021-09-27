@@ -74,6 +74,21 @@ const Delegations = ({
     setAvailable(totalHp - Number(totalOutgoing) - 5);
   }, [delegations]);
 
+  const setToMax = () => {
+    setValue(Number(available).toFixed(3));
+  };
+
+  const goToIncomings = () => {
+    navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
+      delegationType: DelegationType.INCOMING,
+    });
+  };
+  const goToOutgoing = () => {
+    navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
+      delegationType: DelegationType.OUTGOING,
+    });
+  };
+
   const handleButtonClick = () => {
     if (parseFloat(value.toString()) > parseFloat(available.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
@@ -98,6 +113,7 @@ const Delegations = ({
       ),
       fields: [
         { label: 'popup_html_operation', value: operationString },
+        { label: 'popup_html_transfer_to', value: username },
         { label: 'popup_html_value', value: valueS },
       ],
       afterConfirmAction: async () => {
@@ -120,21 +136,6 @@ const Delegations = ({
     });
   };
 
-  const setToMax = () => {
-    setValue(Number(available).toFixed(3));
-  };
-
-  const goToIncomings = () => {
-    navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
-      delegationType: DelegationType.INCOMING,
-    });
-  };
-  const goToOutgoing = () => {
-    navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
-      delegationType: DelegationType.OUTGOING,
-    });
-  };
-
   const cancelDelegation = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
@@ -145,6 +146,7 @@ const Delegations = ({
           label: 'popup_html_operation',
           value: 'popup_html_cancel_delegation',
         },
+        { label: 'popup_html_transfer_to', value: username },
       ],
       afterConfirmAction: async () => {
         let success = await HiveUtils.delegateVestingShares(
@@ -168,7 +170,7 @@ const Delegations = ({
   };
 
   return (
-    <div className="power-up-page">
+    <div className="delegations-page">
       <PageTitleComponent
         title={'popup_html_delegations'}
         isBackButtonEnabled={true}

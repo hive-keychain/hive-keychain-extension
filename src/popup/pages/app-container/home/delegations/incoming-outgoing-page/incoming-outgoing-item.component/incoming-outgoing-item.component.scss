@@ -1,0 +1,40 @@
+@import '../../../../../../variable.scss';
+
+.delegation-row {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  padding: 12px;
+  background-color: $red-transparent;
+  &:nth-child(even) {
+    background-color: $black-transparent;
+  }
+
+  .to-from {
+    flex: 1;
+  }
+
+  .right-panel {
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+
+    .icon {
+      cursor: pointer;
+      display: none;
+      height: 16px;
+      width: 16px;
+      font-size: 16px;
+    }
+  }
+
+  .input-container {
+    width: 150px !important;
+  }
+
+  &:hover {
+    .icon {
+      display: block;
+    }
+  }
+}

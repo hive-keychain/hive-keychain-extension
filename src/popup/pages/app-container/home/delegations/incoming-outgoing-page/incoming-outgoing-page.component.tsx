@@ -1,4 +1,3 @@
-import { VestingDelegation } from '@hiveio/dhive';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -8,14 +7,13 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
+import { IncomingOutgoingItemComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import './incoming-outgoing-page.component.scss';
 
 const IncomingOutgoingPage = ({
@@ -23,11 +21,6 @@ const IncomingOutgoingPage = ({
   delegations,
   globalProperties,
   currencyLabels,
-  activeAccount,
-  navigateToWithParams,
-  navigateTo,
-  setSuccessMessage,
-  setErrorMessage,
 }: PropsFromRedux) => {
   const header =
     delegationType === DelegationType.INCOMING
@@ -59,38 +52,6 @@ const IncomingOutgoingPage = ({
     setTotalHP(FormatUtils.toHP(totalVests.toString(), globalProperties));
   }, []);
 
-  const cancelDelegation = (delegation: VestingDelegation) => {
-    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
-        'popup_html_confirm_cancel_delegation_message',
-      ),
-      fields: [
-        {
-          label: 'popup_html_operation',
-          value: 'popup_html_cancel_delegation',
-        },
-      ],
-      afterConfirmAction: async () => {
-        let success = await HiveUtils.delegateVestingShares(
-          activeAccount,
-          delegation.delegatee,
-          '0.000000 VESTS',
-        );
-
-        navigateTo(Screen.HOME_PAGE, true);
-        if (success) {
-          setSuccessMessage('popup_html_power_up_down_success', [
-            'popup_html_cancel_delegation',
-          ]);
-        } else {
-          setErrorMessage('popup_html_power_up_down_fail', [
-            'popup_html_cancel_delegation',
-          ]);
-        }
-      },
-    });
-  };
-
   return (
     <div className="incoming-outgoing-page">
       <PageTitleComponent title={delegationType} isBackButtonEnabled={true} />
@@ -104,36 +65,15 @@ const IncomingOutgoingPage = ({
 
       <div className="list">
         {delegationList.map((delegation, index) => (
-          <div className="delegation-row" key={index}>
-            <div className="to-from">
-              {delegationType === DelegationType.INCOMING
+          <IncomingOutgoingItemComponent
+            key={index}
+            delegationType={delegationType}
+            username={
+              delegationType === DelegationType.INCOMING
                 ? delegation.delegator
-                : delegation.delegatee}
-            </div>
-            <div className="right-panel">
-              <div className="value">
-                {FormatUtils.withCommas(
-                  FormatUtils.toHP(
-                    delegation.vesting_shares.toString().replace(' VESTS', ''),
-                    globalProperties,
-                  ).toString(),
-                )}
-              </div>
-              {delegationType === DelegationType.OUTGOING && (
-                <img
-                  className="icon edit-delegation"
-                  src="/assets/images/edit.png"
-                />
-              )}
-              {delegationType === DelegationType.OUTGOING && (
-                <img
-                  className="icon erase-delegation"
-                  src="/assets/images/clear.png"
-                  onClick={() => cancelDelegation(delegation)}
-                />
-              )}
-            </div>
-          </div>
+                : delegation.delegatee
+            }
+            amount={delegation.vesting_shares}></IncomingOutgoingItemComponent>
         ))}
       </div>
     </div>
