@@ -1,0 +1,50 @@
+@import '../../../../../variable.scss';
+
+.incoming-outgoing-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+
+  .total {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+  }
+
+  .list {
+    margin: 0px -24px;
+    .delegation-row {
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      padding: 12px;
+      background-color: $red-transparent;
+      &:nth-child(even) {
+        background-color: $black-transparent;
+      }
+
+      .to-from {
+        flex: 1;
+      }
+
+      .right-panel {
+        display: flex;
+        column-gap: 8px;
+        align-items: center;
+
+        .icon {
+          cursor: pointer;
+          display: none;
+          height: 16px;
+          width: 16px;
+          font-size: 16px;
+        }
+      }
+      &:hover {
+        .icon {
+          display: block;
+        }
+      }
+    }
+  }
+}

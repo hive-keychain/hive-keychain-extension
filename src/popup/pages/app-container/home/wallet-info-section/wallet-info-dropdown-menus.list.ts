@@ -68,7 +68,7 @@ export const HpDropdownMenuItems: DropdownMenuItemInterface[] = [
   {
     label: 'popup_html_delegate',
     icon: 'delegate.png',
-    nextScreen: Screen.TRANSFER_FUND_PAGE,
+    nextScreen: Screen.DELEGATION_PAGE,
   },
   {
     label: 'dialog_title_powerdown',

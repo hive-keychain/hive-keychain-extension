@@ -16,7 +16,7 @@ const ConfirmationPage = ({
     <div className="confirmation-page">
       <PageTitleComponent
         title={'popup_html_confirm'}
-        isBackButtonEnabled={true}></PageTitleComponent>
+        isBackButtonEnabled={false}></PageTitleComponent>
 
       <div
         className="introduction"

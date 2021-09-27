@@ -1439,13 +1439,25 @@
     "message": "HBD Savings",
     "description": "When clicking on the HBD arrow menu"
   },
-  "popup_html_deposit_amount": {
+  "popup_html_deposit_param": {
     "message": "Deposit $1",
     "description": "On savings menu"
   },
-  "popup_html_withdraw_amount": {
+  "popup_html_withdraw_param": {
     "message": "Withdraw $1",
     "description": "On savings menu"
+  },
+  "popup_html_savings_available": {
+    "message": "Liquid",
+    "description": "On savings menu"
+  },
+  "popup_html_savings_current": {
+    "message": "Savings",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_text": {
+    "message": "Withdrawing funds from savings will take 3.5 days.",
+    "description": "when withdrawing from savings"
   },
   "popup_html_deposit": {
     "message": "Deposit",
@@ -1455,7 +1467,10 @@
     "message": "Withdraw",
     "description": "On savings menu"
   },
-
+  "popup_html_deposit_hbd_text": {
+    "message": "Depositing HBD to savings currently yields a $1% APR determined by the witnesses.",
+    "description": "when withdrawing from savings"
+  },
   "popup_html_savings": {
     "message": "$1 savings",
     "description": "Saving page title"
@@ -1542,6 +1557,14 @@
   },
   "popup_html_confirm_cancel_power_down_message": {
     "message": "Please confirm cancel power down.",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_confirm_cancel_delegation_message": {
+    "message": "Please confirm cancel delegation.",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_cancel_delegation": {
+    "message": "Cancel delegation.",
     "description": "while confirming power up and down"
   },
   "popup_html_power_up_down_fail": {

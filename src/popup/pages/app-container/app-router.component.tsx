@@ -5,6 +5,8 @@ import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { BuyCoinsComponent } from '@popup/pages/app-container/home/buy-coins/buy-coins.component';
 import { ConversionComponent } from '@popup/pages/app-container/home/conversion/conversion.component';
+import { DelegationsComponent } from '@popup/pages/app-container/home/delegations/delegations.component';
+import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
@@ -57,6 +59,10 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <ConversionComponent />;
       case Screen.SAVINGS_PAGE:
         return <SavingsPageComponent />;
+      case Screen.DELEGATION_PAGE:
+        return <DelegationsComponent />;
+      case Screen.INCOMING_OUTGOING_PAGE:
+        return <IncomingOutgoingPageComponent />;
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;
