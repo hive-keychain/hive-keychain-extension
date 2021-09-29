@@ -45,7 +45,7 @@ const AddKey = ({ navParams, goBack, addKey }: PropsType) => {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    navParams: state.navigation.params as KeyType,
+    navParams: state.navigation.stack[0].params as KeyType,
   };
 };
 

@@ -16,11 +16,14 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import './power-up-down.component.scss';
 
 const PowerUpDown = ({
@@ -37,6 +40,21 @@ const PowerUpDown = ({
   const [value, setValue] = useState<string | number>(0);
   const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
+  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
+    useState([]);
+
+  const loadAutocompleteTransferUsernames = async () => {
+    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+    );
+    setAutocompleteTransferUsernames(
+      transferTo ? transferTo[activeAccount.name!] : [],
+    );
+  };
+
+  useEffect(() => {
+    loadAutocompleteTransferUsernames();
+  }, []);
 
   const powerDownInfo = AccountUtils.getPowerDown(
     activeAccount.account,
@@ -115,6 +133,7 @@ const PowerUpDown = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
           ]);
@@ -145,6 +164,7 @@ const PowerUpDown = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_cancel_power_down_success');
         } else {
           setErrorMessage('popup_html_cancel_power_down_fail');
@@ -200,6 +220,7 @@ const PowerUpDown = ({
         placeholder="popup_html_username"
         value={username}
         onChange={setUsername}
+        autocompleteValues={autocompleteTransferUsernames}
       />
       <div className="amount-panel">
         <div className="amount-input-panel">
@@ -234,7 +255,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    powerType: state.navigation.params.powerType as PowerType,
+    powerType: state.navigation.stack[0].params.powerType as PowerType,
     globalProperties: state.globalProperties,
   };
 };

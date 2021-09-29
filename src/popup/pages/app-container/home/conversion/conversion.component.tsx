@@ -1,10 +1,10 @@
 import {
   setErrorMessage,
-  setSuccessMessage
+  setSuccessMessage,
 } from '@popup/actions/message.actions';
 import {
   navigateTo,
-  navigateToWithParams
+  navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { RootState } from '@popup/store';
@@ -83,9 +83,7 @@ const Conversion = ({
         'popup_html_confirm_power_up_down_message',
         [operationString],
       ),
-      fields: [
-        { label: 'popup_html_value', value: valueS },
-      ],
+      fields: [{ label: 'popup_html_value', value: valueS }],
       afterConfirmAction: async () => {
         let success = await HiveUtils.convertOperation(
           activeAccount,
@@ -148,7 +146,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    conversionType: state.navigation.params.conversionType as ConversionType,
+    conversionType: state.navigation.stack[0].params
+      .conversionType as ConversionType,
     conversions: state.conversions as Conversion[],
   };
 };

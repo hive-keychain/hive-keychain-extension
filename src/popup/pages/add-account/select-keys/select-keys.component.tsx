@@ -82,8 +82,8 @@ const SelectKeys = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    keys: state.navigation.params.keys,
-    username: state.navigation.params.username,
+    keys: state.navigation.stack[0].params.keys,
+    username: state.navigation.stack[0].params.username,
     mk: state.mk,
   };
 };

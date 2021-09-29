@@ -26,7 +26,11 @@ const SignInRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { currentPage: state.navigation.stack[0] };
+  return {
+    currentPage: state.navigation.stack[0]
+      ? state.navigation.stack[0].currentPage
+      : Screen.UNDEFINED,
+  };
 };
 
 const connector = connect(mapStateToProps, { navigateTo });

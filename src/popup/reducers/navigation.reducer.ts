@@ -3,7 +3,12 @@ import { actionPayload } from '@popup/actions/interfaces';
 import { Screen } from 'src/reference-data/screen.enum';
 
 export interface NavigationState {
-  stack: Screen[];
+  stack: Navigation[];
+  params?: any;
+}
+
+export interface Navigation {
+  currentPage: Screen;
   params?: any;
 }
 
@@ -26,9 +31,17 @@ export const NavigationReducer = (
       if (payload?.resetStack) {
         oldStack = [];
       }
-      if (payload && payload.nextPage && payload.nextPage !== state.stack[0]) {
+      if (
+        payload &&
+        payload.nextPage &&
+        ((state.stack[0] && payload.nextPage !== state.stack[0].currentPage) ||
+          !state.stack[0])
+      ) {
         return {
-          stack: [payload.nextPage, ...oldStack],
+          stack: [
+            { currentPage: payload.nextPage, params: payload.params },
+            ...oldStack,
+          ],
           params: payload.params,
         };
       } else {

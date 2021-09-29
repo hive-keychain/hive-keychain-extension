@@ -30,7 +30,9 @@ const BuyCoins = ({ buyCoinType }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { buyCoinType: state.navigation.params.buyCoinType as BuyCoinType };
+  return {
+    buyCoinType: state.navigation.stack[0].params.buyCoinType as BuyCoinType,
+  };
 };
 
 const connector = connect(mapStateToProps, {});

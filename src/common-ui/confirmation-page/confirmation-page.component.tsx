@@ -16,7 +16,7 @@ const ConfirmationPage = ({
     <div className="confirmation-page">
       <PageTitleComponent
         title={'popup_html_confirm'}
-        isBackButtonEnabled={false}></PageTitleComponent>
+        isBackButtonEnabled={true}></PageTitleComponent>
 
       <div
         className="introduction"
@@ -44,10 +44,10 @@ const ConfirmationPage = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    message: state.navigation.params.message as string,
-    fields: state.navigation.params.fields as ConfirmationPageFields[],
-    warningMessage: state.navigation.params.warningMessage as string,
-    afterConfirmAction: state.navigation.params.afterConfirmAction,
+    message: state.navigation.stack[0].params.message as string,
+    fields: state.navigation.stack[0].params.fields as ConfirmationPageFields[],
+    warningMessage: state.navigation.stack[0].params.warningMessage as string,
+    afterConfirmAction: state.navigation.stack[0].params.afterConfirmAction,
   };
 };
 

@@ -20,10 +20,13 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import './delegations.component.scss';
 
 const Delegations = ({
@@ -45,10 +48,23 @@ const Delegations = ({
   const [totalIncoming, setTotalIncoming] = useState<string | number>('...');
   const [totalOutgoing, setTotalOutgoing] = useState<string | number>('...');
 
+  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
+    useState([]);
+
+  const loadAutocompleteTransferUsernames = async () => {
+    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+    );
+    setAutocompleteTransferUsernames(
+      transferTo ? transferTo[activeAccount.name!] : [],
+    );
+  };
+
   useEffect(() => {
     loadDelegators(activeAccount.name!);
     loadDelegatees(activeAccount.name!);
     setAvailable(0);
+    loadAutocompleteTransferUsernames();
   }, []);
 
   useEffect(() => {
@@ -125,6 +141,7 @@ const Delegations = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
           ]);
@@ -150,6 +167,7 @@ const Delegations = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             'popup_html_cancel_delegation',
           ]);
@@ -208,6 +226,7 @@ const Delegations = ({
         logo="arobase"
         placeholder="popup_html_username"
         type={InputType.TEXT}
+        autocompleteValues={autocompleteTransferUsernames}
       />
 
       <div className="amount-panel">

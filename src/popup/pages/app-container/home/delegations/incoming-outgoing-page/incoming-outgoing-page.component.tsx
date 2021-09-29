@@ -83,7 +83,8 @@ const IncomingOutgoingPage = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
-    delegationType: state.navigation.params.delegationType as DelegationType,
+    delegationType: state.navigation.stack[0].params
+      .delegationType as DelegationType,
     delegations: state.delegations,
     globalProperties: state.globalProperties.globals,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),

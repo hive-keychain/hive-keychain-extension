@@ -288,9 +288,9 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    powerType: state.navigation.params.powerType as PowerType,
+    powerType: state.navigation.stack[0].params.powerType as PowerType,
     globalProperties: state.globalProperties,
-    paramsSelectedCurrency: state.navigation.params
+    paramsSelectedCurrency: state.navigation.stack[0].params
       .selectedCurrency as keyof CurrencyLabels,
   };
 };

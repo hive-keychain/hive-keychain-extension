@@ -303,7 +303,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    navParams: state.navigation.params,
+    navParams: state.navigation.stack[0].params,
     phishing: state.phishing,
   };
 };

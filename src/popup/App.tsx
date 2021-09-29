@@ -25,7 +25,6 @@ const App = ({
   mk,
   retrieveAccounts,
   accounts,
-  currentPage,
   navigateTo,
   activeAccountUsername,
   activeRpc,
@@ -80,7 +79,7 @@ const App = ({
     }
   };
 
-  const renderMainLayoutNav = (currentPage: Screen) => {
+  const renderMainLayoutNav = () => {
     if (!mk) {
       if (accounts && accounts.length === 0 && !hasStoredAccounts) {
         return <SignUpComponent />;
@@ -98,7 +97,7 @@ const App = ({
 
   return (
     <div className="App">
-      {renderMainLayoutNav(currentPage!)}
+      {renderMainLayoutNav()}
       <MessageContainerComponent />
     </div>
   );
@@ -108,7 +107,6 @@ const mapStateToProps = (state: RootState) => {
   return {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
-    currentPage: state.navigation.stack[0],
     activeRpc: state.activeRpc,
     activeAccountUsername: state.activeAccount?.name,
   };

@@ -32,8 +32,10 @@ const AddAccountRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
 
 const mapStateToProps = (state: RootState) => {
   return {
-    currentPage: state.navigation.stack[0],
-    params: state.navigation.params,
+    currentPage: state.navigation.stack[0]
+      ? state.navigation.stack[0].currentPage
+      : Screen.UNDEFINED,
+    params: state.navigation.stack[0] ? state.navigation.stack[0].params : {},
   };
 };
 
