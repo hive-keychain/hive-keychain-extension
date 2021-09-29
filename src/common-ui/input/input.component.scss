@@ -1,5 +1,7 @@
 @import '/src/popup/variable.scss';
 
+$autoCompleteItemHeight: 30px;
+
 .input-container {
   position: relative;
   width: 100%;
@@ -30,6 +32,29 @@
     &:focus {
       outline: none !important;
       box-shadow: 0 0 10px #719ece;
+    }
+  }
+
+  .autocomplete-panel {
+    position: absolute;
+    width: 100%;
+    z-index: 2;
+    font-size: 18px;
+    background-color: $black;
+    color: white;
+    box-sizing: border-box;
+    max-height: $autoCompleteItemHeight * 5;
+    overflow: auto;
+
+    .value {
+      height: 30px;
+      cursor: pointer;
+      padding-left: 16px;
+      display: flex;
+      align-items: center;
+      &:hover {
+        background-color: $red-dark;
+      }
     }
   }
 

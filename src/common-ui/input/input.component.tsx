@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
@@ -13,10 +13,34 @@ interface InputProps {
   skipTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
+  autocompleteValues?: any[];
   onEnterPress?(): any;
 }
 
 const InputComponent = (props: InputProps) => {
+  const [filteredValues, setFilteredValues] = useState<any[]>(
+    props.autocompleteValues ? props.autocompleteValues : [],
+  );
+
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (props.autocompleteValues) {
+      setFilteredValues(
+        props.autocompleteValues.filter((val) =>
+          val.toLowerCase().includes(props.value),
+        ),
+      );
+    }
+  }, [props.value, props.autocompleteValues]);
+
+  const handleOnBlur = () => {
+    setTimeout(() => setIsFocused(false), 100);
+  };
+  const handleOnFocus = () => {
+    setIsFocused(true);
+  };
+
   return (
     <div className={`input-container ${props.logo ? '' : 'no-logo'}`}>
       <input
@@ -35,7 +59,21 @@ const InputComponent = (props: InputProps) => {
             props.onEnterPress();
           }
         }}
+        onFocus={() => handleOnFocus()}
+        onBlur={() => handleOnBlur()}
       />
+      {isFocused && filteredValues && filteredValues.length > 0 && (
+        <div className="autocomplete-panel">
+          {filteredValues.map((val, index) => (
+            <div
+              key={index}
+              className="value"
+              onClick={() => props.onChange(val)}>
+              {val}
+            </div>
+          ))}
+        </div>
+      )}
       {props.hint && (
         <div className="hint">
           {props.skipHintTranslation

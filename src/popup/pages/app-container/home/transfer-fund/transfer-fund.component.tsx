@@ -20,11 +20,13 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './transfer-fund.component.scss';
 
@@ -49,6 +51,8 @@ const TransferFunds = ({
   const [isRecurrent, setIsRecurrent] = useState(false);
   const [frequency, setFrequency] = useState(24);
   const [iteration, setIterations] = useState(2);
+  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
+    useState([]);
 
   let balances = {
     hive: FormatUtils.formatCurrencyValue(activeAccount.account.balance),
@@ -58,6 +62,7 @@ const TransferFunds = ({
 
   useEffect(() => {
     fetchPhishingAccounts();
+    loadAutocompleteTransferUsernames();
   }, []);
 
   useEffect(() => {
@@ -68,6 +73,15 @@ const TransferFunds = ({
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
     { label: currencyLabels.hbd, value: 'hbd' as keyof CurrencyLabels },
   ];
+
+  const loadAutocompleteTransferUsernames = async () => {
+    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+    );
+    setAutocompleteTransferUsernames(
+      transferTo ? transferTo[activeAccount.name!] : [],
+    );
+  };
 
   const setAmountToMaxValue = () => {
     setAmount(parseFloat(balance.toString()));
@@ -158,6 +172,11 @@ const TransferFunds = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          await TransferUtils.saveTransferRecipient(
+            receiverUsername,
+            activeAccount,
+          );
+
           setSuccessMessage('popup_html_transfer_successful');
         } else {
           setErrorMessage('popup_html_transfer_failed');
@@ -215,6 +234,7 @@ const TransferFunds = ({
         placeholder="popup_html_username"
         value={receiverUsername}
         onChange={setReceiverUsername}
+        autocompleteValues={autocompleteTransferUsernames}
       />
       <div className="value-panel">
         <div className="value-input-panel">

@@ -1,4 +1,7 @@
+import { ActiveAccount } from 'src/interfaces/active-account.interface';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import BittRexUtils from 'src/utils/bittrex.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getExchangeValidationWarning = async (
   account: string,
@@ -35,8 +38,32 @@ const getExchangeValidationWarning = async (
   return null;
 };
 
+const saveTransferRecipient = async (
+  username: string,
+  activeAccount: ActiveAccount,
+) => {
+  let transferTo = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+  );
+  if (!transferTo) {
+    transferTo = { [activeAccount.name!]: [] };
+  }
+  if (!transferTo[activeAccount.name!]) {
+    transferTo[activeAccount.name!] = [];
+  }
+
+  if (!transferTo[activeAccount.name!].includes(username)) {
+    transferTo[activeAccount.name!].push(username);
+  }
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+    transferTo,
+  );
+};
+
 const TransferUtils = {
   getExchangeValidationWarning,
+  saveTransferRecipient,
 };
 
 export default TransferUtils;
