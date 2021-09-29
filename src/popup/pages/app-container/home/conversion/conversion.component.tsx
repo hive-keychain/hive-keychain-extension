@@ -1,10 +1,10 @@
 import {
   setErrorMessage,
-  setSuccessMessage,
+  setSuccessMessage
 } from '@popup/actions/message.actions';
 import {
   navigateTo,
-  navigateToWithParams,
+  navigateToWithParams
 } from '@popup/actions/navigation.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { RootState } from '@popup/store';
@@ -84,7 +84,6 @@ const Conversion = ({
         [operationString],
       ),
       fields: [
-        { label: 'popup_html_operation', value: operationString },
         { label: 'popup_html_value', value: valueS },
       ],
       afterConfirmAction: async () => {

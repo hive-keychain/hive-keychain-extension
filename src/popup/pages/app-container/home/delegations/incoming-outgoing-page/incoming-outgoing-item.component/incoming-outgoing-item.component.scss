@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   font-size: 18px;
-  padding: 12px;
+  padding: 12px 24px;
   background-color: $red-transparent;
   &:nth-child(even) {
     background-color: $black-transparent;
@@ -25,11 +25,25 @@
       height: 16px;
       width: 16px;
       font-size: 16px;
+
+      &.cancel {
+        height: 14px;
+        width: 14px;
+        font-size: 14px;
+      }
+
+      &.always-displayed {
+        display: block;
+      }
     }
   }
 
   .input-container {
     width: 150px !important;
+    input {
+      height: 30px;
+      font-size: 18px;
+    }
   }
 
   &:hover {

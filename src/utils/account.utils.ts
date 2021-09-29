@@ -411,15 +411,17 @@ const getAccountValue = (
   props: DynamicGlobalProperties,
 ) => {
   if (!hbd.Usd || !hive.Usd) return 0;
-  return (
-    (parseFloat(hbd_balance as string) +
-      parseFloat(savings_hbd_balance as string)) *
-      parseFloat(hbd.Usd) +
-    (FormatUtils.toHP(vesting_shares as string, props) +
-      parseFloat(balance as string) +
-      parseFloat(savings_balance as string)) *
-      parseFloat(hive.Usd)
-  ).toFixed(3);
+  return FormatUtils.withCommas(
+    (
+      (parseFloat(hbd_balance as string) +
+        parseFloat(savings_hbd_balance as string)) *
+        parseFloat(hbd.Usd) +
+      (FormatUtils.toHP(vesting_shares as string, props) +
+        parseFloat(balance as string) +
+        parseFloat(savings_balance as string)) *
+        parseFloat(hive.Usd)
+    ).toString(),
+  );
 };
 
 const getPublicMemo = async (username: string): Promise<string> => {

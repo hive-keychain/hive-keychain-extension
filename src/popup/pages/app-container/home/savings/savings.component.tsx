@@ -115,10 +115,7 @@ const SavingsPage = ({
         'popup_html_confirm_power_up_down_message',
         [operationString],
       ),
-      fields: [
-        { label: 'popup_html_operation', value: operationString },
-        { label: 'popup_html_value', value: valueS },
-      ],
+      fields: [{ label: 'popup_html_value', value: valueS }],
       afterConfirmAction: async () => {
         let success = false;
 

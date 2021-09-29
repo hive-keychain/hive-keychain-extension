@@ -50,13 +50,7 @@ const IncomingOutgoing = ({
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
-      fields: [
-        {
-          label: 'popup_html_operation',
-          value: 'popup_html_cancel_delegation',
-        },
-        { label: 'popup_html_transfer_to', value: username },
-      ],
+      fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
@@ -109,8 +103,7 @@ const IncomingOutgoing = ({
         [operationString],
       ),
       fields: [
-        { label: 'popup_html_operation', value: operationString },
-        { label: 'popup_html_transfer_to', value: username },
+        { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: valueS },
       ],
       afterConfirmAction: async () => {
@@ -170,14 +163,14 @@ const IncomingOutgoing = ({
         )}
         {delegationType === DelegationType.OUTGOING && editModeActivated && (
           <img
-            className="icon edit-delegation"
+            className={'icon always-displayed submit'}
             src="/assets/images/submit.png"
             onClick={saveChanges}
           />
         )}
         {delegationType === DelegationType.OUTGOING && editModeActivated && (
           <img
-            className="icon erase-delegation"
+            className="icon always-displayed cancel"
             src="/assets/images/delete.png"
             onClick={cancelEdit}
           />

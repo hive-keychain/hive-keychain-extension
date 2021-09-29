@@ -112,8 +112,7 @@ const Delegations = ({
         [operationString],
       ),
       fields: [
-        { label: 'popup_html_operation', value: operationString },
-        { label: 'popup_html_transfer_to', value: username },
+        { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: valueS },
       ],
       afterConfirmAction: async () => {
@@ -141,13 +140,7 @@ const Delegations = ({
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
-      fields: [
-        {
-          label: 'popup_html_operation',
-          value: 'popup_html_cancel_delegation',
-        },
-        { label: 'popup_html_transfer_to', value: username },
-      ],
+      fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,

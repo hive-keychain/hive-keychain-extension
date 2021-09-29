@@ -96,12 +96,8 @@ const TransferFunds = ({
     }
 
     const fields = [
-      {
-        label: 'popup_html_operation',
-        value: chrome.i18n.getMessage('popup_html_transfer'),
-      },
-      { label: 'popup_html_transfer_from', value: activeAccount.name },
-      { label: 'popup_html_transfer_to', value: receiverUsername },
+      { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
+      { label: 'popup_html_transfer_to', value: `@${receiverUsername}` },
       { label: 'popup_html_transfer_amount', value: formattedAmount },
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
