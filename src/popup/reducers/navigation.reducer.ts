@@ -10,6 +10,7 @@ export interface NavigationState {
 export interface Navigation {
   currentPage: Screen;
   params?: any;
+  previousParams?: any;
 }
 
 export interface NavigatePayload {
@@ -49,6 +50,9 @@ export const NavigationReducer = (
       }
     case ActionType.GO_BACK:
       const newStack = state.stack;
+      if (newStack.length > 1) {
+        newStack[1].previousParams = newStack[0].params;
+      }
       newStack.shift();
       return {
         stack: newStack,
