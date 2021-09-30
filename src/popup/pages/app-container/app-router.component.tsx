@@ -106,7 +106,7 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
   };
 
   return (
-    <div className="add-account-router-page">
+    <div className="add-router" style={{ height: '100%' }}>
       {renderAccountPage(currentPage!)}
     </div>
   );

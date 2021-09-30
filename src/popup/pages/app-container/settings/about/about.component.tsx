@@ -16,6 +16,10 @@ const AboutPage = ({}: PropsFromRedux) => {
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_about_text'),
         }}></div>
+      <div className="version">
+        {chrome.runtime.getManifest().name +
+          chrome.runtime.getManifest().version}
+      </div>
     </div>
   );
 };

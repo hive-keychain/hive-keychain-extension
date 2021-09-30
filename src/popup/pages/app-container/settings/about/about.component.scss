@@ -1,12 +1,20 @@
 @import '../../../../variable.scss';
 
 .about-page {
+  display: grid;
+  /* flex-direction: column; */
+  height: 100%;
+  grid-template-rows: auto 1fr auto;
   .content {
     margin-top: 32px;
     font-size: 16px;
+    text-align: justify;
     a {
       color: $red-dark;
       text-decoration: none;
     }
+  }
+  .version {
+    text-align: center;
   }
 }
