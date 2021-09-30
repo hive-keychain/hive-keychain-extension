@@ -38,7 +38,14 @@ const Menu = ({
             key={index}
             className="menu-item"
             onClick={() => handleMenuItemClick(menuItem)}>
-            <img className="icon" src={`/assets/images/${menuItem.icon}.png`} />
+            <img
+              className="icon"
+              src={`/assets/images/${menuItem.icon}.png`}
+              onError={(e: any) => {
+                e.target.onerror = null;
+                e.target.src = `/assets/images/${menuItem.icon}.svg`;
+              }}
+            />
             <div className="menu-label">
               {chrome.i18n.getMessage(menuItem.label)}
             </div>

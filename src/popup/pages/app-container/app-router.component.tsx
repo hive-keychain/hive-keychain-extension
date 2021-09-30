@@ -15,6 +15,7 @@ import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.c
 import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { WitnessVotingComponent } from '@popup/pages/app-container/home/witness-voting/witness-voting.component';
+import { AboutPageComponent } from '@popup/pages/app-container/settings/about/about.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
@@ -26,6 +27,7 @@ import { ImportExportComponent } from '@popup/pages/app-container/settings/advan
 import { KeychainifyComponent } from '@popup/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
 import { RpcNodesComponent } from '@popup/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
+import { UserPreferencesPageComponent } from '@popup/pages/app-container/settings/user-preferences/user-preferences.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -96,6 +98,10 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <ClearAllDataComponent />;
       case Screen.SETTINGS_IMPORT_EXPORT:
         return <ImportExportComponent />;
+      case Screen.SETTINGS_USER_PREFERENCES:
+        return <UserPreferencesPageComponent />;
+      case Screen.SETTINGS_ABOUT:
+        return <AboutPageComponent />;
     }
   };
 

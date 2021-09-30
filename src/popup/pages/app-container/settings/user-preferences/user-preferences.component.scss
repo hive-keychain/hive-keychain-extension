@@ -1,0 +1,23 @@
+.menu {
+  margin: 32px -24px 0px -24px;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(33, 37, 41, 0.68);
+  height: 60px;
+  width: 100%;
+  padding: 0 32px 0 32px;
+  cursor: pointer;
+}
+.menu-item:nth-child(odd) {
+  background-color: rgba(227, 19, 55, 0.32);
+}
+.menu-item .icon {
+  height: 20px;
+  margin-right: 36px;
+}
+.menu-item .menu-label {
+  font-size: 16px;
+}

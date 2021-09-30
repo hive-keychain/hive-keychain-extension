@@ -1610,5 +1610,9 @@
   "popup_html_value": {
     "message": "Value",
     "description": "In confirmation page"
+  },
+  "popup_html_user_preferences": {
+    "message": "User preferences",
+    "description": "In settings menu"
   }
 }

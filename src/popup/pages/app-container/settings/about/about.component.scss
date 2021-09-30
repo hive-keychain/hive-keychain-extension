@@ -1,0 +1,12 @@
+@import '../../../../variable.scss';
+
+.about-page {
+  .content {
+    margin-top: 32px;
+    font-size: 16px;
+    a {
+      color: $red-dark;
+      text-decoration: none;
+    }
+  }
+}

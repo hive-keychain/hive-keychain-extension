@@ -8,9 +8,19 @@ const SettingsMenuItems: MenuItem[] = [
     nextScreen: Screen.SETTINGS_ACCOUNTS,
   },
   {
+    label: 'popup_html_user_preferences',
+    icon: 'preferences',
+    nextScreen: Screen.SETTINGS_USER_PREFERENCES,
+  },
+  {
     label: 'popup_html_advanced_settings',
-    icon: 'accounts',
+    icon: 'preferences',
     nextScreen: Screen.SETTINGS_ADVANCED,
+  },
+  {
+    label: 'popup_html_about',
+    icon: 'info',
+    nextScreen: Screen.SETTINGS_ABOUT,
   },
 ];
 
