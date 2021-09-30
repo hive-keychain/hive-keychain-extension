@@ -34,6 +34,7 @@ const Delegations = ({
   activeAccount,
   delegations,
   globalProperties,
+  formParams,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
@@ -41,8 +42,12 @@ const Delegations = ({
   loadDelegators,
   loadDelegatees,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState<string>('');
-  const [value, setValue] = useState<string | number>(0);
+  const [username, setUsername] = useState<string>(
+    formParams.username ? formParams.username : '',
+  );
+  const [value, setValue] = useState<string | number>(
+    formParams.value ? formParams.value : 0,
+  );
   const [available, setAvailable] = useState<string | number>('...');
 
   const [totalIncoming, setTotalIncoming] = useState<string | number>('...');
@@ -131,6 +136,7 @@ const Delegations = ({
         { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: valueS },
       ],
+      formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
@@ -139,8 +145,8 @@ const Delegations = ({
             ' VESTS',
         );
 
-        navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          navigateTo(Screen.HOME_PAGE, true);
           await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
@@ -158,6 +164,7 @@ const Delegations = ({
         'popup_html_confirm_cancel_delegation_message',
       ),
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
+      formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
@@ -165,8 +172,8 @@ const Delegations = ({
           '0.000000 VESTS',
         );
 
-        navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          navigateTo(Screen.HOME_PAGE, true);
           await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             'popup_html_cancel_delegation',
@@ -178,6 +185,13 @@ const Delegations = ({
         }
       },
     });
+  };
+
+  const getFormParams = () => {
+    return {
+      value: value,
+      username: username,
+    };
   };
 
   return (
@@ -267,6 +281,9 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     delegations: state.delegations,
     globalProperties: state.globalProperties.globals,
+    formParams: state.navigation.stack[0].previousParams?.formParams
+      ? state.navigation.stack[0].previousParams?.formParams
+      : {},
   };
 };
 

@@ -31,13 +31,18 @@ const PowerUpDown = ({
   activeAccount,
   powerType,
   globalProperties,
+  formParams,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState(activeAccount.name!);
-  const [value, setValue] = useState<string | number>(0);
+  const [username, setUsername] = useState(
+    formParams.username ? formParams.username : activeAccount.name!,
+  );
+  const [value, setValue] = useState<string | number>(
+    formParams.value ? formParams.value : 0,
+  );
   const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
@@ -114,6 +119,7 @@ const PowerUpDown = ({
         [operationString],
       ),
       fields: [{ label: 'popup_html_value', value: valueS }],
+      formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
         switch (powerType) {
@@ -131,8 +137,8 @@ const PowerUpDown = ({
             break;
         }
 
-        navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          navigateTo(Screen.HOME_PAGE, true);
           await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
@@ -148,12 +154,20 @@ const PowerUpDown = ({
     setValue(available);
   };
 
+  const getFormParams = () => {
+    return {
+      username: username,
+      value: value,
+    };
+  };
+
   const handleCancelButtonClick = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_power_down_message',
       ),
       fields: [],
+      formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = await HiveUtils.powerDown(
           username,
@@ -162,8 +176,8 @@ const PowerUpDown = ({
           )} VESTS`,
         );
 
-        navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          navigateTo(Screen.HOME_PAGE, true);
           await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage('popup_html_cancel_power_down_success');
         } else {
@@ -257,6 +271,9 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     powerType: state.navigation.stack[0].params.powerType as PowerType,
     globalProperties: state.globalProperties,
+    formParams: state.navigation.stack[0].previousParams?.formParams
+      ? state.navigation.stack[0].previousParams?.formParams
+      : {},
   };
 };
 

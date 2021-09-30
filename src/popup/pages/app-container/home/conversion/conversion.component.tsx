@@ -27,12 +27,15 @@ const Conversion = ({
   activeAccount,
   conversionType,
   conversions,
+  formParams,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
 }: PropsFromRedux) => {
-  const [value, setValue] = useState<string | number>(0);
+  const [value, setValue] = useState<string | number>(
+    formParams.value ? formParams.value : 0,
+  );
   const [available, setAvailable] = useState<string | number>('...');
 
   const currency =
@@ -84,6 +87,7 @@ const Conversion = ({
         [operationString],
       ),
       fields: [{ label: 'popup_html_value', value: valueS }],
+      formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = await HiveUtils.convertOperation(
           activeAccount,
@@ -92,8 +96,8 @@ const Conversion = ({
           conversionType,
         );
 
-        navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          navigateTo(Screen.HOME_PAGE, true);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
           ]);
@@ -106,6 +110,12 @@ const Conversion = ({
 
   const setToMax = () => {
     setValue(available);
+  };
+
+  const getFormParams = () => {
+    return {
+      value: value,
+    };
   };
 
   return (
@@ -149,6 +159,9 @@ const mapStateToProps = (state: RootState) => {
     conversionType: state.navigation.stack[0].params
       .conversionType as ConversionType,
     conversions: state.conversions as Conversion[],
+    formParams: state.navigation.stack[0].previousParams?.formParams
+      ? state.navigation.stack[0].previousParams?.formParams
+      : {},
   };
 };
 

@@ -35,22 +35,37 @@ const TransferFunds = ({
   navParams,
   currencyLabels,
   phishing,
+  formParams,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
   navigateTo,
   fetchPhishingAccounts,
 }: PropsFromRedux) => {
-  const [receiverUsername, setReceiverUsername] = useState('');
-  const [amount, setAmount] = useState(0.0);
+  const [receiverUsername, setReceiverUsername] = useState(
+    formParams.receiverUsername ? formParams.receiverUsername : '',
+  );
+  const [amount, setAmount] = useState(
+    formParams.amount ? formParams.amount : 0.0,
+  );
   const [balance, setBalance] = useState<string | number>('...');
   const [selectedCurrency, setSelectedCurrency] = useState<
     keyof CurrencyLabels
-  >(navParams.selectedCurrency);
-  const [memo, setMemo] = useState('');
-  const [isRecurrent, setIsRecurrent] = useState(false);
-  const [frequency, setFrequency] = useState(24);
-  const [iteration, setIterations] = useState(2);
+  >(
+    formParams.selectedCurrency
+      ? formParams.selectedCurrency
+      : navParams.selectedCurrency,
+  );
+  const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
+  const [isRecurrent, setIsRecurrent] = useState(
+    formParams.isRecurrent ? formParams.isRecurrent : false,
+  );
+  const [frequency, setFrequency] = useState(
+    formParams.frequency ? formParams.frequency : 24,
+  );
+  const [iteration, setIterations] = useState(
+    formParams.iteration ? formParams.iteration : 2,
+  );
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
     useState([]);
 
@@ -85,6 +100,18 @@ const TransferFunds = ({
 
   const setAmountToMaxValue = () => {
     setAmount(parseFloat(balance.toString()));
+  };
+
+  const getFormParams = () => {
+    return {
+      receiverUsername: receiverUsername,
+      amount: amount,
+      selectedCurrency: selectedCurrency,
+      memo: memo,
+      isRecurrent: isRecurrent,
+      iteration: iteration,
+      frequency: frequency,
+    };
   };
 
   const handleClickOnSend = async () => {
@@ -142,6 +169,7 @@ const TransferFunds = ({
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
+      formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
         let memoParam = memo;
@@ -170,8 +198,8 @@ const TransferFunds = ({
           parseInt(frequency.toString()),
         );
 
-        navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          navigateTo(Screen.HOME_PAGE, true);
           await TransferUtils.saveTransferRecipient(
             receiverUsername,
             activeAccount,
@@ -304,6 +332,9 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     navParams: state.navigation.stack[0].params,
+    formParams: state.navigation.stack[0].previousParams?.formParams
+      ? state.navigation.stack[0].previousParams?.formParams
+      : {},
     phishing: state.phishing,
   };
 };
