@@ -28,17 +28,20 @@ const App = ({
   navigateTo,
   activeAccountUsername,
   activeRpc,
+  isAppReady,
   refreshActiveAccount,
+  loadBittrexPrices,
+  loadGlobalProperties,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
+    loadBittrexPrices();
+    loadGlobalProperties();
   }, []);
 
   useEffect(() => {
-    loadBittrexPrices();
-    loadGlobalProperties();
     if (activeAccountUsername) {
       refreshActiveAccount();
     }
@@ -80,18 +83,27 @@ const App = ({
   };
 
   const renderMainLayoutNav = () => {
-    if (!mk) {
-      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-        return <SignUpComponent />;
+    if (isAppReady) {
+      if (!mk) {
+        if (accounts && accounts.length === 0 && !hasStoredAccounts) {
+          return <SignUpComponent />;
+        } else {
+          return <SignInRouterComponent />;
+        }
       } else {
-        return <SignInRouterComponent />;
+        if (accounts && accounts.length === 0) {
+          return <AddAccountRouterComponent />;
+        } else {
+          return <AppRouterComponent />;
+        }
       }
     } else {
-      if (accounts && accounts.length === 0) {
-        return <AddAccountRouterComponent />;
-      } else {
-        return <AppRouterComponent />;
-      }
+      return (
+        <div className="loading">
+          <img src="/assets/images/iconhive.png" />
+          <div className="caption">HIVE KEYCHAIN</div>
+        </div>
+      );
     }
   };
 
@@ -109,6 +121,11 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
     activeAccountUsername: state.activeAccount?.name,
+    isAppReady:
+      Object.keys(state.globalProperties).length &&
+      Object.keys(state.bittrex.btc).length &&
+      Object.keys(state.bittrex.hbd).length &&
+      Object.keys(state.bittrex.hive).length,
   };
 };
 
@@ -117,6 +134,8 @@ const connector = connect(mapStateToProps, {
   retrieveAccounts,
   navigateTo,
   refreshActiveAccount,
+  loadGlobalProperties,
+  loadBittrexPrices,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -17,6 +17,26 @@
   padding: 24px;
   box-sizing: border-box;
   overflow: auto;
+
+  .loading {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 32px;
+
+    img {
+      width: 80px;
+      height: 80px;
+      animation: rotate-stop 4s infinite linear;
+      transform: rotate();
+    }
+    .caption {
+      font-size: 32px;
+      color: white;
+    }
+  }
 }
 
 .react-dropdown-select-dropdown-handle {
@@ -24,5 +44,14 @@
   svg {
     width: 20px !important;
     height: 20px !important;
+  }
+}
+
+@keyframes rotate-stop {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

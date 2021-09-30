@@ -4,6 +4,7 @@ import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import HiveUtils from 'src/utils/hive.utils';
 
 export const loadGlobalProperties = (): AppThunk => async (dispatch) => {
+  console.log('loadGlobalProperties');
   const [globals, price, rewardFund] = await Promise.all([
     HiveUtils.getClient().database.getDynamicGlobalProperties(),
     HiveUtils.getClient().database.getCurrentMedianHistoryPrice(),
