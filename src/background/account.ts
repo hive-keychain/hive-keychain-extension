@@ -1,4 +1,4 @@
-import MkModule from 'src/background/logic/mk.module';
+import MkModule from 'src/background/mk';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import AccountUtils from 'src/utils/account.utils';
 

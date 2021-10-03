@@ -167,11 +167,11 @@ $("#import_settings button")
   .eq(1)
   .html(chrome.i18n.getMessage("popup_html_export"));
 $("#import_settings button")
-    .eq(2)
-    .html(chrome.i18n.getMessage("popup_html_import_permissions"));
+  .eq(2)
+  .html(chrome.i18n.getMessage("popup_html_import_permissions"));
 $("#import_settings button")
-    .eq(3)
-    .html(chrome.i18n.getMessage("popup_html_export_permissions"));
+  .eq(3)
+  .html(chrome.i18n.getMessage("popup_html_export_permissions"));
 
 //about
 $("#about_div .back_enabled").text(chrome.i18n.getMessage("popup_html_about"));
@@ -246,6 +246,12 @@ $("#confirm_new_pwd").attr(
 $("#confirm_change_pwd").text(chrome.i18n.getMessage("popup_html_save"));
 
 // transfers
+$(".recurrent_transfer div").text(
+  chrome.i18n.getMessage("dialog_title_recurrent_transfer")
+);
+$(".recurrent_transfer_checked p").text(
+  chrome.i18n.getMessage("popup_html_transfer_rec")
+);
 $("#send_div .back_enabled").text(
   chrome.i18n.getMessage("popup_html_transfer_funds")
 );
@@ -281,6 +287,9 @@ $("#confirm_send_div h3")
 $("#confirm_send_div h3")
   .eq(3)
   .text(chrome.i18n.getMessage("popup_html_transfer_memo"));
+$("#confirm_send_div h3")
+  .eq(4)
+  .text(chrome.i18n.getMessage("popup_html_transfer_confirm_rec"));
 $("#confirm_send_transfer").text(chrome.i18n.getMessage("popup_html_confirm"));
 
 //Claim
@@ -467,6 +476,19 @@ $("#add_auth_account_div button").text(
 );
 
 // convert
+$("#convert_hive").append(chrome.i18n.getMessage("popup_html_convert_hive"));
+$("#convert_hive_div .back_enabled").append(
+  chrome.i18n.getMessage("popup_html_convert_hive")
+);
+$("#convert_hive_div p").text(
+  chrome.i18n.getMessage("popup_html_convert_hive_intro")
+);
+$("#convert_hive_div button").text(
+  chrome.i18n.getMessage("popup_html_convert_button")
+);
+$("#amt_convert_max_hive").text(
+  chrome.i18n.getMessage("popup_html_convert_max")
+);
 
 $("#convert_hbd ").append(chrome.i18n.getMessage("popup_html_convert_hbd"));
 $("#convert_div .back_enabled").append(
@@ -481,7 +503,6 @@ $("#convert_div button").text(
 $("#amt_convert_max").text(chrome.i18n.getMessage("popup_html_convert_max"));
 
 // buy
-
 $("#buy_hive ").append(chrome.i18n.getMessage("popup_html_buy_hive"));
 $("#buy_hbd ").append(chrome.i18n.getMessage("popup_html_buy_hbd"));
 

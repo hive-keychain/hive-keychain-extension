@@ -11,4 +11,8 @@ export enum BackgroundCommand {
   //RPC
   SAVE_RPC = 'saveRPC',
   SET_ACTIVE_RPC = 'setActiveRpc',
+  // Keychain Request
+  SEND_REQUEST = 'sendRequest',
+  UNLOCK_FROM_DIALOG = 'unlockFromDialog',
+  ACCEPT_TRANSACTION = 'acceptTransaction',
 }

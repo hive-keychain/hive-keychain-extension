@@ -86,11 +86,12 @@
         </div>
         <div id="wallet_currency">
           <div class="currency-section">
-            <div class="wallet_currency">HBD</div>
+            <div class="wallet_currency">HIVE</div>
             <div class="dropdown">
               <div id="send_steem"><img src="../images/transfer.png" /></div>
               <div id="powerup"><img src="../images/powerup.png" /></div>
               <div id="buy_hive"><img src="../images/buy.svg" /></div>
+              <div id="convert_hive" class="hf25"><img src="../images/import.svg" /></div>
             </div>
           </div>
           <div class="currency-section">
@@ -471,12 +472,26 @@
           <span class="send_max" id="amt_send_max"></span>
         </div>
         <input type="text" id="memo_send" />
-        <div class="checkbox_memo">
-          <label for="encrypt_memo" class="checkbox_container">
+        <div class="recurrent_transfer hf25">
+          <label for="recurrent_transfer_checkbox" class="checkbox_container">
             <div></div>
-            <input type="checkbox" id="encrypt_memo" />
+            <input type="checkbox" id="recurrent_transfer_checkbox" />
             <span class="checkmark" />
           </label>
+        </div>
+        <div class="recurrent_transfer_checked hide-at-start ">
+          <p></p>
+          <input
+          type="number"
+          id="recurrence"
+          autocomplete="off"
+          placeholder="recurrence"
+        /><input
+        type="number"
+        id="rec_iterations"
+        autocomplete="off"
+        placeholder="executions"
+      />
         </div>
         <button id="send_transfer"></button>
       </div>
@@ -494,6 +509,8 @@
       <div id="amt_conf_transfer"></div>
       <h3></h3>
       <div id="memo_conf_transfer"></div>
+      <h3></h3>
+      <div id="rec_conf_transfer"></div>
       <button id="confirm_send_transfer"></button>
       <div class="loader" id="send_loader" style="display:none">
         <div><img src="../images/loading.gif" /></div>
@@ -516,6 +533,26 @@
       </div>
       <button id="send_convert"></button>
       <div class="loader" id="convert_loading" style="display:none">
+        <div><img src="../images/loading.gif" /></div>
+      </div>
+    </div>
+    <div id="convert_hive_div" class="hide-at-start">
+      <div class="back_menu back_enabled"></div>
+      <p></p>
+      <input
+        type="number"
+        id="amt_convert_hive"
+        autocomplete="off"
+        placeholder="0.000"
+      />
+
+      <div class="sp_del">HIVE</div>
+
+      <div class="send_max_div">
+        <span class="convert_max" id="amt_convert_max_hive"></span>
+      </div>
+      <button id="send_convert_hive"></button>
+      <div class="loader" id="convert_hive_loading" style="display:none">
         <div><img src="../images/loading.gif" /></div>
       </div>
     </div>

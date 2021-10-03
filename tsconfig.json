@@ -1,20 +1,23 @@
 {
-    "compilerOptions": {
-      "allowJs": true,
-      "allowSyntheticDefaultImports": true,
-      "esModuleInterop": true,
-      "isolatedModules": true,
-      "jsx": "react",
-      "lib": ["ES6","DOM"],
-      "moduleResolution": "node",
-      "noEmit": false,
-      "strict": true,
-      "target": "ES6",
-      "resolveJsonModule": true,
-      "baseUrl": ".",
-      "paths": {
-          "@popup/*":["./src/popup/*"],
-      }
-    },            
-    "include": ["src/**/*"]
-  }
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "lib": ["ES6", "DOM"],
+    "moduleResolution": "node",
+    "noEmit": false,
+    "strict": true,
+    "target": "ES6",
+    "resolveJsonModule": true,
+    "baseUrl": ".",
+    "paths": {
+      "@popup/*": ["./src/popup/*"],
+      "@background/*": ["./src/background/*"],
+      "@interfaces/*": ["./src/interfaces/*"],
+      "@reference-data/*": ["./src/reference-data/*"]
+    }
+  },
+  "include": ["src/**/*"]
+}
