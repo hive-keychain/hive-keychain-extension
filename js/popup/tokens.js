@@ -3,7 +3,7 @@ let accountTokenBalances = [];
 const urlSSC = ["https://api.hive-engine.com/rpc"];
 const ssc = new SSC(urlSSC[0]);
 let hidden_tokens = [];
-const hiveEngine = "https://accounts.hive-engine.com/accountHistory?account=";
+const hiveEngine = "https://history.hive-engine.com/accountHistory?account=";
 const CHAIN_ID = config.mainNet;
 // TODO : extract token logic
 chrome.storage.local.get(["hidden_tokens"], function (items) {
