@@ -12,6 +12,7 @@ const config = {
     background: './src/background/index.ts',
     import: './src/import/index.tsx',
     web_interface: './src/content-scripts/web-interface/index.ts',
+    keychainify: './src/content-scripts/keychainify/index.ts',
   },
   output: { path: path.join(__dirname, 'dist'), filename: '[name]Bundle.js' },
   module: {
