@@ -255,6 +255,14 @@
     "message": "Automated Tasks",
     "description": "on settings page"
   },
+  "popup_html_authorized_operations": {
+    "message": "Authorized Operations",
+    "description": "on settings page"
+  },
+  "popup_html_operation_popup": {
+    "message": "Operation Popup",
+    "description": "on settings page"
+  },
   "popup_html_about": {
     "message": "About Hive Keychain",
     "description": "on settings page"

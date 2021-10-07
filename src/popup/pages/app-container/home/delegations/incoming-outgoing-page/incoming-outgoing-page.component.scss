@@ -1,9 +1,7 @@
 @import '../../../../../variable.scss';
 
 .incoming-outgoing-page {
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
+  @include pageLayout;
 
   .total {
     display: flex;

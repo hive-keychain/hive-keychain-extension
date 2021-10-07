@@ -27,6 +27,9 @@ import { ImportExportComponent } from '@popup/pages/app-container/settings/advan
 import { KeychainifyComponent } from '@popup/pages/app-container/settings/advanced-settings/keychainify/keychainify.component';
 import { RpcNodesComponent } from '@popup/pages/app-container/settings/advanced-settings/rpc-nodes/rpc-nodes.component';
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
+import { AuthorizedOperationsComponent } from '@popup/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
+import { AutomatedTasksComponent } from '@popup/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
+import { OperationPopupComponent } from '@popup/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
 import { UserPreferencesPageComponent } from '@popup/pages/app-container/settings/user-preferences/user-preferences.component';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -100,6 +103,12 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <ImportExportComponent />;
       case Screen.SETTINGS_USER_PREFERENCES:
         return <UserPreferencesPageComponent />;
+      case Screen.SETTINGS_AUTHORIZED_OPERATIONS:
+        return <AuthorizedOperationsComponent />;
+      case Screen.SETTINGS_OPERATION_POPUP:
+        return <OperationPopupComponent />;
+      case Screen.SETTINGS_AUTOMATED_TASKS:
+        return <AutomatedTasksComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
     }

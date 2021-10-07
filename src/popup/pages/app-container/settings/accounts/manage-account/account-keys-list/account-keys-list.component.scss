@@ -1,7 +1,7 @@
+@import '../../../../../../variable.scss';
+
 .account-keys-list {
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
+  @include pageLayout;
   .account-keys-list-item:nth-child(even) {
     background: rgba(227, 19, 55, 0.32);
     margin: 0px -24px;

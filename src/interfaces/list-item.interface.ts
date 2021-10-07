@@ -9,3 +9,8 @@ export interface SavingOperationTypeListItem {
   label: string;
   value: string;
 }
+
+export interface LocalAccountListItem {
+  label: string;
+  value: string;
+}

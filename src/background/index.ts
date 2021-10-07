@@ -1,10 +1,12 @@
 import AccountModule from '@background/account';
+import ClaimModule from '@background/claim.module';
+import KeychainifyModule from '@background/keychainify.module';
 import RequestsModule from '@background/requests';
 import RPCModule from '@background/rpc.module';
 import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { BackgroundMessage } from './background-message.interface';
-import MkModule from './mk';
+import MkModule from './mk.module';
 
 const chromeMessageHandler = (
   backgroundMessage: BackgroundMessage,
@@ -32,6 +34,12 @@ const chromeMessageHandler = (
     case BackgroundCommand.UNLOCK_FROM_DIALOG:
       break;
     case BackgroundCommand.ACCEPT_TRANSACTION:
+      break;
+    case BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY:
+      KeychainifyModule.saveKeychainify(backgroundMessage.value);
+      break;
+    case BackgroundCommand.UPDATE_CLAIMS:
+      ClaimModule.updateClaims(backgroundMessage.value);
       break;
   }
 };

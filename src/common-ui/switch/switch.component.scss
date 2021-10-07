@@ -11,3 +11,10 @@
 .pretty.p-switch input:checked ~ .state label:after {
   background-color: $red !important;
 }
+
+.switch-container {
+  .hint {
+    margin-top: 8px;
+    font-size: 14px;
+  }
+}

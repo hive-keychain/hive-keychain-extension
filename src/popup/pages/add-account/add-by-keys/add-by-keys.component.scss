@@ -1,3 +1,5 @@
+@import '../../../variable.scss';
+
 .add-by-keys-page {
   display: flex;
   flex-direction: column;
@@ -5,7 +7,5 @@
 }
 
 .form-container {
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
+  @include pageLayout;
 }

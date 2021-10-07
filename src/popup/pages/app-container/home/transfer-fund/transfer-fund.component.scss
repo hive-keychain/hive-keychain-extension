@@ -1,9 +1,7 @@
 @import '/src/popup/variable.scss';
 
 .transfer-funds-page {
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
+  @include pageLayout;
 
   .recurrent-panel {
     display: flex;

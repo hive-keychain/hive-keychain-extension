@@ -47,6 +47,10 @@
   }
 }
 
+.pretty.p-switch .state:before {
+  top: calc((0% - (100% - 1em)) - 12%) !important;
+}
+
 @keyframes rotate-stop {
   0% {
     transform: rotate(0deg);

@@ -7,23 +7,34 @@ interface SwitchProps {
   title: string;
   checked: boolean;
   skipTranslation?: boolean;
+  hint?: string;
+  skipHintTranslation?: boolean;
 }
 
 const SwitchComponent = (props: SwitchProps) => {
   return (
-    <Switch
-      style={{ fontSize: 18 }}
-      onChange={(e) => {
-        props.onChange(e.target.checked);
-      }}
-      checked={props.checked}
-      className={props.checked ? 'checked' : 'not-checked'}>
-      <div className="toto">
-        {props.skipTranslation
-          ? props.title
-          : chrome.i18n.getMessage(props.title)}
-      </div>
-    </Switch>
+    <div className="switch-container">
+      <Switch
+        style={{ fontSize: 18 }}
+        onChange={(e) => {
+          props.onChange(e.target.checked);
+        }}
+        checked={props.checked}
+        className={props.checked ? 'checked' : 'not-checked'}>
+        <div>
+          {props.skipTranslation
+            ? props.title
+            : chrome.i18n.getMessage(props.title)}
+        </div>
+      </Switch>
+      {props.hint && (
+        <div className="hint">
+          {props.skipHintTranslation
+            ? props.title
+            : chrome.i18n.getMessage(props.hint)}
+        </div>
+      )}
+    </div>
   );
 };
 

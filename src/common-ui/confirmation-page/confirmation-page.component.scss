@@ -1,9 +1,7 @@
 @import '/src/popup/variable.scss';
 
 .confirmation-page {
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
+  @include pageLayout;
   .introduction {
     font-size: 16px;
     margin-bottom: 8px;

@@ -1,8 +1,6 @@
 @import '/src/popup/variable.scss';
 .power-up-page {
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
+  @include pageLayout;
 
   .max {
     align-self: flex-end;

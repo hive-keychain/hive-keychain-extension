@@ -1,3 +1,4 @@
+import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -8,11 +9,6 @@ import Select, {
 import { connect, ConnectedProps } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import './select-account-section.component.scss';
-
-interface LocalAccountListItem {
-  label: string;
-  value: string;
-}
 
 const SelectAccountSection = ({
   accounts,

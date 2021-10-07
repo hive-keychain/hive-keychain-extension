@@ -8,3 +8,9 @@ $black-transparent: rgba(33, 37, 41, 0.68);
 $message-container-success: #005c09;
 $message-container-info: black;
 $message-container-error: $red;
+
+@mixin pageLayout {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+}

@@ -1,9 +1,13 @@
 @import '../../../../../variable.scss';
 
-.keychainify-page {
+.automated-tasks-page {
   @include pageLayout;
 
   .intro {
     font-size: 16px;
+  }
+
+  .select {
+    margin: 0px -24px;
   }
 }
