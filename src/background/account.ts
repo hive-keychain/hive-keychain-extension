@@ -5,7 +5,7 @@ import AccountUtils from 'src/utils/account.utils';
 const sendBackImportedAccounts = (fileContent: string) => {
   const importedAccounts = AccountUtils.getAccountsFromFileData(
     fileContent,
-    MkModule.getMk(),
+    MkModule.getMk()!,
   );
   chrome.runtime.sendMessage({
     command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,

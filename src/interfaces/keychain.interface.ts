@@ -36,6 +36,12 @@ export enum KeychainKeyTypes {
   memo = 'Memo',
 }
 
+export enum KeychainKeyTypesLC {
+  posting = 'posting',
+  active = 'active',
+  memo = 'memo',
+}
+
 type CommonRequestParams = {
   rpc?: string;
   domain: string;

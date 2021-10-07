@@ -8,4 +8,5 @@ export enum LocalStorageKeyEnum {
   CLAIM_REWARDS = 'claimRewards',
   CLAIM_ACCOUNTS = 'claimAccounts',
   AUTOLOCK = 'autolock',
+  NO_CONFIRM = 'no_confirm',
 }

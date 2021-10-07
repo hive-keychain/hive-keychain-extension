@@ -6,9 +6,9 @@ const MkModule = {
   getMk,
 };
 
-let mk: string = '';
+let mk: string | null = null;
 
-function getMk(): string {
+function getMk(): string | null {
   return mk;
 }
 
