@@ -1,6 +1,7 @@
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const requestWithConfirmation = (
   tab: number,
@@ -10,7 +11,7 @@ export const requestWithConfirmation = (
 ) => {
   const callback = () => {
     chrome.runtime.sendMessage({
-      command: 'sendDialogConfirm',
+      command: DialogCommand.SEND_DIALOG_CONFIRM,
       data: request,
       domain,
       tab,

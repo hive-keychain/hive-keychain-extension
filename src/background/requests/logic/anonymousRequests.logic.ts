@@ -3,6 +3,7 @@ import sendErrors from '@background/requests/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
 export const anonymousRequests = (
@@ -29,7 +30,7 @@ export const anonymousRequests = (
   } else {
     const callback = () => {
       chrome.runtime.sendMessage({
-        command: 'sendDialogConfirm',
+        command: DialogCommand.SEND_DIALOG_CONFIRM,
         data: request,
         domain,
         accounts: account_candidates,

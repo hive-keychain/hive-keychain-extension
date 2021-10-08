@@ -1,13 +1,19 @@
-import React, { Component } from "react";
+import React, { useEffect } from 'react';
+import './dialog.scss';
+const App = () => {
+  useEffect(() => {
+    chrome.runtime.onMessage.addListener(function (
+      { msg, accounts, command, data, tab, domain, request_id, testnet },
+      sender,
+      sendResp,
+    ) {});
+  }, []);
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <h1> Hello, World from dialog! </h1>
-      </div>
-    );
-  }
-}
+  return (
+    <div className="dialog">
+      <h1> Hello, World from dialog! </h1>
+    </div>
+  );
+};
 
 export default App;

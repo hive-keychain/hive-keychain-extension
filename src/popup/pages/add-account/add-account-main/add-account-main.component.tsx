@@ -29,7 +29,7 @@ const AddAccountMain = ({
       const win: chrome.windows.CreateData = {
         url: chrome.runtime.getURL('import.html'),
         type: 'popup',
-        height: 650,
+        height: 614,
         width: 350,
         left: currentWindow.width! - 350 + currentWindow.left!,
         top: currentWindow.top,

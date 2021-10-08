@@ -1,5 +1,6 @@
 import RequestsModule from '@background/requests';
 import { KeychainRequest } from '@interfaces/keychain.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 // Send errors back to the content_script, it will forward it to website
 const sendErrors = (
@@ -13,7 +14,7 @@ const sendErrors = (
   // clearInterval(interval);
   // interval = setInterval(() => {
   chrome.runtime.sendMessage({
-    command: 'sendDialogError',
+    command: DialogCommand.SEND_DIALOG_ERROR,
     msg: {
       success: false,
       error: error,

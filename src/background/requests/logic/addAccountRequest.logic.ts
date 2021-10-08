@@ -2,6 +2,7 @@ import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const addAccountRequest = (
   tab: number,
@@ -24,7 +25,7 @@ export const addAccountRequest = (
   } else {
     const callback = () => {
       chrome.runtime.sendMessage({
-        command: 'sendDialogConfirm',
+        command: DialogCommand.SEND_DIALOG_CONFIRM,
         data: request,
         domain,
         tab,
