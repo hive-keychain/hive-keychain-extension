@@ -17,7 +17,9 @@ type RequestModule = {
   preferences?: UserPreference[];
   key?: string;
   publicKey?: string;
-
+  windowId?: number;
+  setWindowId: (windowId?: number) => void;
+  setConfirmed: (confirmed: boolean) => void;
   sendRequest: (
     sender: chrome.runtime.MessageSender,
     msg: KeychainRequestWrapper,
@@ -28,6 +30,7 @@ type RequestModule = {
     preferences: UserPreference[],
   ) => void;
   setKeys: (key: string, publicKey: string) => void;
+  reset: () => void;
 };
 
 const RequestsModule: RequestModule = {
@@ -40,6 +43,14 @@ const RequestsModule: RequestModule = {
   preferences: undefined,
   key: undefined,
   publicKey: undefined,
+  reset: function () {
+    this.key = undefined;
+    this.publicKey = undefined;
+    this.accounts = [];
+    this.request = undefined;
+    this.request_id = undefined;
+    this.tab = undefined;
+  },
   initializeParams: function (
     accounts: LocalAccount[],
     rpc: Rpc,
@@ -50,6 +61,12 @@ const RequestsModule: RequestModule = {
     this.rpc = rpc;
     this.preferences = preferences;
     console.log(this);
+  },
+  setConfirmed: function (confirmed: boolean) {
+    this.confirmed = confirmed;
+  },
+  setWindowId: function (windowId?: number) {
+    this.windowId = windowId;
   },
   setKeys: function (key: string, publicKey: string) {
     this.key = key;

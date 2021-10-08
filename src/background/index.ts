@@ -26,6 +26,7 @@ const chromeMessageHandler = (
     case BackgroundCommand.SAVE_RPC:
       RPCModule.setActiveRpc(backgroundMessage.value);
     case BackgroundCommand.SEND_REQUEST:
+      //TODO : add check for avoiding double transaction
       RequestsModule.sendRequest(
         sender,
         backgroundMessage as KeychainRequestWrapper,

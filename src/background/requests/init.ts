@@ -3,8 +3,9 @@ import RequestsModule from '@background/requests';
 import {
   KeychainRequest,
   KeychainRequestTypes,
+  RequestTransfer,
 } from '@interfaces/keychain.interface';
-import { LocalAccount } from '@interfaces/local-account.interface';
+import { Key, LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
@@ -57,7 +58,7 @@ export default async (
     } else if (type === KeychainRequestTypes.transfer) {
       Logic.transferRequest(
         tab!,
-        request,
+        request as RequestTransfer,
         domain,
         accounts,
         items.current_rpc,
@@ -84,7 +85,8 @@ export default async (
         if (!account.keys[typeWif]) {
           Logic.missingKey(tab!, request, username!, typeWif);
         } else {
-          const publicKey = account.keys[`${typeWif}Pubkey`];
+          //@ts-ignore
+          const publicKey: Key = account.keys[`${typeWif}Pubkey`]!;
           const key = account.keys[typeWif];
           RequestsModule.setKeys(key!, publicKey!);
 

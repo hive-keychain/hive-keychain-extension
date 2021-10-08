@@ -1,3 +1,4 @@
+import RequestsModule from '@background/requests';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 // Send errors back to the content_script, it will forward it to website
@@ -8,27 +9,27 @@ const sendErrors = (
   display_msg: string,
   request: KeychainRequest,
 ) => {
+  // TODO: Cleanup if interval is not needed
+  // clearInterval(interval);
+  // interval = setInterval(() => {
+  chrome.runtime.sendMessage({
+    command: 'sendDialogError',
+    msg: {
+      success: false,
+      error: error,
+      result: null,
+      data: request,
+      message: message,
+      display_msg: display_msg,
+      request_id: RequestsModule.request_id,
+    },
+    tab: tab,
+  });
+  // }, 200);
+  // setTimeout(() => {
   //   clearInterval(interval);
-  //   interval = setInterval(() => {
-  //     chrome.runtime.sendMessage({
-  //       command: 'sendDialogError',
-  //       msg: {
-  //         success: false,
-  //         error: error,
-  //         result: null,
-  //         data: request,
-  //         message: message,
-  //         display_msg: display_msg,
-  //         request_id: request_id,
-  //       },
-  //       tab: tab,
-  //     });
-  //   }, 200);
-  //   setTimeout(() => {
-  //     clearInterval(interval);
-  //   }, 2000);
-  //   key = null;
-  //   accounts = new AccountsList();
+  // }, 2000);
+  RequestsModule.reset();
 };
 
 export default sendErrors;
