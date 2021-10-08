@@ -14,7 +14,10 @@ type RequestModule = {
   confirmed: boolean;
   accounts: LocalAccount[];
   rpc: Rpc | null;
-  preferences?: UserPreference[]; //TODO: Change any
+  preferences?: UserPreference[];
+  key?: string;
+  publicKey?: string;
+
   sendRequest: (
     sender: chrome.runtime.MessageSender,
     msg: KeychainRequestWrapper,
@@ -24,6 +27,7 @@ type RequestModule = {
     rpc: Rpc,
     preferences: UserPreference[],
   ) => void;
+  setKeys: (key: string, publicKey: string) => void;
 };
 
 const RequestsModule: RequestModule = {
@@ -34,7 +38,8 @@ const RequestsModule: RequestModule = {
   accounts: [],
   rpc: null,
   preferences: undefined,
-
+  key: undefined,
+  publicKey: undefined,
   initializeParams: function (
     accounts: LocalAccount[],
     rpc: Rpc,
@@ -46,7 +51,10 @@ const RequestsModule: RequestModule = {
     this.preferences = preferences;
     console.log(this);
   },
-
+  setKeys: function (key: string, publicKey: string) {
+    this.key = key;
+    this.publicKey = this.publicKey;
+  },
   sendRequest: function (
     sender: chrome.runtime.MessageSender,
     msg: KeychainRequestWrapper,

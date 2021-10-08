@@ -45,6 +45,7 @@ export enum KeychainKeyTypesLC {
 type CommonRequestParams = {
   rpc?: string;
   domain: string;
+  key?: string;
 };
 
 export type RequestDecode = CommonRequestParams & {
