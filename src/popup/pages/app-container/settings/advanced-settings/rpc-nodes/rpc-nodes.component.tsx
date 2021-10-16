@@ -13,7 +13,6 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import RpcUtils from 'src/utils/rpc.utils';
 import './rpc-nodes.component.scss';
 
@@ -72,10 +71,6 @@ const RpcNodes = ({
 
   const handleItemClicked = (rpc: Rpc) => {
     setActiveRpc(rpc);
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.SAVE_RPC,
-      value: rpc,
-    });
   };
 
   const deleteCustomRPC = (item: Rpc, event: BaseSyntheticEvent) => {

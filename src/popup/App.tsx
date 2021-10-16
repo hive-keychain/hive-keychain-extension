@@ -12,6 +12,7 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
+import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
@@ -39,6 +40,7 @@ const App = ({
     PopupUtils.fixPopupOnMacOs();
     loadBittrexPrices();
     loadGlobalProperties();
+    AutomatedTasksUtils.initBackgroundClaims();
   }, []);
 
   useEffect(() => {

@@ -41,6 +41,7 @@ const chromeMessageHandler = (
       break;
     case BackgroundCommand.UPDATE_CLAIMS:
       ClaimModule.updateClaims(backgroundMessage.value);
+      ClaimModule.initAutoClaim();
       break;
   }
 };

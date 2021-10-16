@@ -2,7 +2,7 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { RootState } from '@popup/store';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -14,7 +14,11 @@ import SwitchComponent from 'src/common-ui/switch/switch.component';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import './automated-tasks.component.scss';
 
-const AutomatedTasks = ({ accounts, activeAccount }: PropsFromRedux) => {
+const AutomatedTasks = ({
+  accounts,
+  activeAccount,
+  loadActiveAccount,
+}: PropsFromRedux) => {
   const defaultOptions: LocalAccountListItem[] = [];
   const [options, setOptions] = useState(defaultOptions);
   const [claimRewards, setClaimRewards] = useState(false);
@@ -24,6 +28,7 @@ const AutomatedTasks = ({ accounts, activeAccount }: PropsFromRedux) => {
   );
 
   useEffect(() => {
+    console.log('init');
     init();
     setOptions(
       accounts.map((account: LocalAccount) => {
@@ -34,32 +39,28 @@ const AutomatedTasks = ({ accounts, activeAccount }: PropsFromRedux) => {
     setSelectedLocalAccount(activeAccount.name);
   }, [accounts, activeAccount]);
 
-  useEffect(() => {
-    AutomatedTasksUtils.saveClaims(
+  const saveClaims = async (claimRewards: boolean, claimAccounts: boolean) => {
+    setClaimAccounts(claimAccounts);
+    setClaimRewards(claimRewards);
+
+    await AutomatedTasksUtils.saveClaims(
       claimRewards,
       claimAccounts,
       activeAccount.name!,
     );
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.UPDATE_CLAIMS,
-      value: {
-        [activeAccount.name!]: {
-          claimRewards: claimRewards,
-          claimAccounts: claimAccounts,
-        },
-      },
-    });
-  }, [claimAccounts, claimRewards]);
+  };
 
   const init = async () => {
-    const test = await AutomatedTasksUtils.getClaims(activeAccount.name!);
-    console.log(test);
+    const values = await AutomatedTasksUtils.getClaims(activeAccount.name!);
+    setClaimRewards(values[LocalStorageKeyEnum.CLAIM_REWARDS]);
+    setClaimAccounts(values[LocalStorageKeyEnum.CLAIM_ACCOUNTS]);
   };
 
   const handleItemClicked = (accountName: string) => {
     const itemClicked = accounts.find(
       (account: LocalAccount) => account.name === accountName,
     );
+    console.log(itemClicked);
     loadActiveAccount(itemClicked);
   };
 
@@ -132,13 +133,13 @@ const AutomatedTasks = ({ accounts, activeAccount }: PropsFromRedux) => {
       <SwitchComponent
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
-        onChange={setClaimRewards}
+        onChange={(value) => saveClaims(value, claimAccounts)}
         hint="popup_html_enable_autoclaim_rewards_info"></SwitchComponent>
 
       <SwitchComponent
         title="popup_html_enable_autoclaim_accounts"
         checked={claimAccounts}
-        onChange={setClaimAccounts}
+        onChange={(value) => saveClaims(claimRewards, value)}
         hint="popup_html_enable_autoclaim_accounts_info"></SwitchComponent>
     </div>
   );
@@ -148,7 +149,7 @@ const mapStateToProps = (state: RootState) => {
   return { accounts: state.accounts, activeAccount: state.activeAccount };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { loadActiveAccount });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AutomatedTasksComponent = connector(AutomatedTasks);

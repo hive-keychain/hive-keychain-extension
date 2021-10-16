@@ -111,8 +111,8 @@ const getVotingDollarsPerAccount = (
     return;
   }
 };
-export const getRC = async (account: ExtendedAccount) => {
-  const rcAcc = await getClient().rc.findRCAccounts([account.name]);
+const getRC = async (accountName: string) => {
+  const rcAcc = await getClient().rc.findRCAccounts([accountName]);
   const rc = await getClient().rc.calculateRCMana(rcAcc[0]);
   return rc;
 };
@@ -474,10 +474,36 @@ const delegateVestingShares = async (
   }
 };
 
+const claimAccounts = async (rc: any, activeAccount: ActiveAccount) => {
+  try {
+    const CLAIM_ACCOUNT_RC = 6 * 10 ** 12;
+
+    if (
+      parseFloat(rc.estimated_pct) > 95 &&
+      rc.estimated_max / CLAIM_ACCOUNT_RC > 1.42
+    ) {
+      await getClient().broadcast.sendOperations(
+        [
+          [
+            'claim_account',
+            {
+              creator: activeAccount.name,
+              extensions: [],
+              fee: '0.000 HIVE',
+            },
+          ],
+        ],
+        PrivateKey.fromString(activeAccount.keys.active as string),
+      );
+    }
+  } catch (err) {}
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
   getVP,
+  getRC,
   getVotingDollarsPerAccount,
   getTimeBeforeFull,
   getConversionRequests,
@@ -490,6 +516,7 @@ const HiveUtils = {
   withdraw,
   deposit,
   delegateVestingShares,
+  claimAccounts,
 };
 
 export default HiveUtils;
