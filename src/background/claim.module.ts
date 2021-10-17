@@ -5,6 +5,7 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import axios from 'axios';
 import AccountUtils from 'src/utils/account.utils';
+import ActiveAccountUtils from 'src/utils/active-account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -79,7 +80,16 @@ const iterateClaimRewards = async (users: string[]) => {
     await AccountUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
-    if (activeAccount) {
+    if (
+      activeAccount &&
+      ActiveAccountUtils.hasReward(
+        activeAccount.account.reward_hbd_balance as string,
+        activeAccount.account.reward_vesting_balance
+          .toString()
+          .replace('VESTS', ''),
+        activeAccount.account.reward_hive_balance as string,
+      )
+    ) {
       await HiveUtils.claimRewards(
         activeAccount,
         userAccount.reward_hive_balance,
