@@ -20,4 +20,6 @@ export enum BackgroundCommand {
   // User preferences
   UPDATE_CLAIMS = 'updateClaims',
   SAVE_ENABLE_KEYCHAINIFY = 'saveEnableKeychainify',
+  UPDATE_AUTOLOCK = 'updateAutoLock',
+  LOCK_APP = 'lockApp',
 }

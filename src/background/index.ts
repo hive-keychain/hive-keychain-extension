@@ -1,4 +1,5 @@
 import AccountModule from '@background/account';
+import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import KeychainifyModule from '@background/keychainify.module';
 import RequestsModule from '@background/requests';
@@ -7,6 +8,10 @@ import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
+
+const initBackgroundTasks = () => {
+  ClaimModule.initAutoClaim();
+};
 
 const chromeMessageHandler = (
   backgroundMessage: BackgroundMessage,
@@ -43,7 +48,10 @@ const chromeMessageHandler = (
       ClaimModule.updateClaims(backgroundMessage.value);
       ClaimModule.initAutoClaim();
       break;
+    case BackgroundCommand.UPDATE_AUTOLOCK:
+      AutolockModule.startAutolock(backgroundMessage.value);
   }
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
+initBackgroundTasks();

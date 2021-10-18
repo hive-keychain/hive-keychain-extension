@@ -4,6 +4,7 @@ const MkModule = {
   sendBackMk,
   saveMk,
   getMk,
+  resetMk,
 };
 
 let mk: string | null = null;
@@ -21,6 +22,10 @@ function sendBackMk(): void {
 
 function saveMk(newMk: string): void {
   mk = newMk;
+}
+
+function resetMk(): void {
+  mk = '';
 }
 
 export default MkModule;

@@ -1622,5 +1622,9 @@
   "popup_html_user_preferences": {
     "message": "User preferences",
     "description": "In settings menu"
+  },
+  "popup_html_save_successful": {
+    "message": "Save successful",
+    "description": "General message"
   }
 }

@@ -1,3 +1,4 @@
+import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { retrieveAccounts } from '@popup/actions/account.actions';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
@@ -5,6 +6,7 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
@@ -12,7 +14,9 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
+import AutolockUtils from 'src/utils/autolock.utils';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
@@ -41,6 +45,9 @@ const App = ({
     loadBittrexPrices();
     loadGlobalProperties();
     AutomatedTasksUtils.initBackgroundClaims();
+    AutolockUtils.initBackgroundAutolock();
+
+    initAutoLock();
   }, []);
 
   useEffect(() => {
@@ -57,6 +64,23 @@ const App = ({
   useEffect(() => {
     selectComponent(mk, accounts);
   }, [mk, accounts]);
+
+  const initAutoLock = async () => {
+    let autolock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.AUTOLOCK,
+    );
+    if (
+      [AutoLockType.DEVICE_LOCK, AutoLockType.IDLE_LOCK].includes(autolock.type)
+    ) {
+      chrome.runtime.onMessage.addListener(onReceivedAutolockCmd);
+    }
+  };
+  const onReceivedAutolockCmd = (message: BackgroundMessage) => {
+    if (message.command === BackgroundCommand.LOCK_APP) {
+      setMk('');
+      chrome.runtime.onMessage.removeListener(onReceivedAutolockCmd);
+    }
+  };
 
   const selectComponent = async (
     mk: string,
