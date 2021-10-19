@@ -1,21 +1,54 @@
+import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './authorized-operations.component.scss';
 
-const AuthorizedOperations = ({}: PropsFromRedux) => {
+export interface NoConfirmType {
+  [key: string]: NoConfirmWebsiteType;
+}
+
+export interface NoConfirmWebsiteType {
+  [key: string]: NoConfirmWebsiteOperationType;
+}
+
+export interface NoConfirmWebsiteOperationType {
+  [key: string]: boolean;
+}
+
+const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
+  const [noConfirm, setNoConfirm] = useState({} as NoConfirmType);
+  const [websites, setWebsites] = useState({} as NoConfirmWebsiteType);
+
   useEffect(() => {
     init();
   }, []);
 
+  useEffect(() => {
+    if (noConfirm) {
+      setWebsites(noConfirm[activeAccount.name!]);
+    }
+  }, [activeAccount, noConfirm]);
+
   const init = async () => {
-    const noConfirm = await LocalStorageUtils.getValueFromLocalStorage(
+    let res = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_CONFIRM,
     );
-    console.log(noConfirm);
+    setNoConfirm(res);
+  };
+
+  const handleEraseButtonClick = (website: string, operation: string) => {
+    const oldWebsites = websites;
+    oldWebsites[website][operation] = false;
+    setNoConfirm({ ...noConfirm, [activeAccount.name!]: oldWebsites });
+
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.NO_CONFIRM,
+      noConfirm,
+    );
   };
 
   return (
@@ -30,12 +63,45 @@ const AuthorizedOperations = ({}: PropsFromRedux) => {
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_pref_info'),
         }}></div>
+
+      <SelectAccountSectionComponent></SelectAccountSectionComponent>
+
+      {websites && Object.keys(websites).length > 0 && (
+        <div className="preferences">
+          {Object.keys(websites).map((website) => (
+            <div className="website" key={website}>
+              <div className="name">
+                {chrome.i18n.getMessage('popup_website')}: {website}
+              </div>
+              {Object.keys(websites[website]).map((operation) => {
+                return (
+                  websites[website][operation] && (
+                    <div className="operation" key={operation}>
+                      <div className="operation-name">{operation}</div>
+                      <img
+                        className="operation-action"
+                        src="/assets/images/delete.png"
+                        onClick={() =>
+                          handleEraseButtonClick(website, operation)
+                        }
+                      />
+                    </div>
+                  )
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      )}
+      {websites && Object.keys(websites).length === 0 && (
+        <div>{chrome.i18n.getMessage('popup_html_no_pref')}</div>
+      )}
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return { activeAccount: state.activeAccount };
 };
 
 const connector = connect(mapStateToProps, {});

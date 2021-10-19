@@ -7,4 +7,49 @@
     margin-bottom: 8px;
     margin-top: 20px;
   }
+
+  .select-account-section {
+    margin: 0px -24px;
+  }
+
+  .preferences {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    margin: 0px -24px;
+    .website {
+      .name {
+        padding: 0px 24px;
+        font-size: 18px;
+      }
+      .operation {
+        padding-left: 40px;
+        padding-right: 24px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        background: $red-transparent;
+        height: 30px;
+        .operation-name {
+          flex: 1;
+        }
+        .operation-action {
+          display: none;
+          height: 14px;
+          width: 14px;
+          cursor: pointer;
+        }
+
+        &:hover {
+          .operation-action {
+            display: block;
+          }
+        }
+
+        &:nth-child(odd) {
+          background: $black-transparent;
+        }
+      }
+    }
+  }
 }
