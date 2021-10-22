@@ -1,3 +1,4 @@
+import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -67,7 +68,7 @@ const TransferFunds = ({
     formParams.iteration ? formParams.iteration : 2,
   );
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState([]);
+    useState<string[]>([]);
 
   let balances = {
     hive: FormatUtils.formatCurrencyValue(activeAccount.account.balance),
@@ -90,9 +91,10 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
-    );
+    const transferTo: TransferToItems =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+      );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
     );

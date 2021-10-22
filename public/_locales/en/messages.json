@@ -176,7 +176,7 @@
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
-    "message": "Import Permissions",
+    "message": "Import Settings",
     "description": "Import permissions"
   },
   "popup_html_import_key": {
@@ -251,6 +251,10 @@
     "message": "Import / Export",
     "description": "on settings page"
   },
+  "popup_html_import_export_settings": {
+    "message": "Import / Export settings",
+    "description": "on settings page"
+  },
   "popup_html_automated_tasks": {
     "message": "Automated Tasks",
     "description": "on settings page"
@@ -320,7 +324,7 @@
     "description": "on import / export settings"
   },
   "popup_html_export_permissions": {
-    "message": "Export permissions",
+    "message": "Export settings",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
@@ -1367,14 +1371,17 @@
   "import_html_error": {
     "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
   },
+  "import_permissions_html_title": {
+    "message": "Import settings"
+  },
   "import_permissions_html_text": {
-    "message": "Import your permissions from another Keychain instance using a .kc.json file."
+    "message": "Import your settings from another Keychain instance using a .kc.json file."
   },
   "import_permissions_html_success": {
-    "message": "You succesfully imported your permissions!"
+    "message": "You successfully imported your settings!"
   },
   "import_permissions_html_error": {
-    "message": "There was an error importing your permissions."
+    "message": "There was an error importing your settings."
   },
   "bgd_auth_no_active": {
     "message": "No account with active authority."

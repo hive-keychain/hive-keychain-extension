@@ -30,7 +30,6 @@ export default async (
     LocalStorageKeyEnum.NO_CONFIRM,
     LocalStorageKeyEnum.CURRENT_RPC,
   ]);
-  console.log(items);
   const { username, type } = request;
   if (!items.accounts && type !== KeychainRequestTypes.addAccount) {
     // Wallet not initialized

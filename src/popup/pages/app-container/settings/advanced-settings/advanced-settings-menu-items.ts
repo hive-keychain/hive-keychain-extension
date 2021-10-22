@@ -23,7 +23,7 @@ const AdvancedSettingsMenuItems: MenuItem[] = [
     nextScreen: Screen.SETTINGS_KEYCHAINIFY,
   },
   {
-    label: 'popup_html_import_export',
+    label: 'popup_html_import_export_settings',
     icon: 'import',
     nextScreen: Screen.SETTINGS_IMPORT_EXPORT,
   },

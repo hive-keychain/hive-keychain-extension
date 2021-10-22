@@ -12,6 +12,7 @@ import AccountUtils from 'src/utils/account.utils';
 import './add-account-main.component.scss';
 
 const AddAccountMain = ({
+  mk,
   navigateTo,
   accounts,
   setAccounts,
@@ -27,7 +28,7 @@ const AddAccountMain = ({
   const handleImportKeys = (): void => {
     chrome.windows.getCurrent(async (currentWindow) => {
       const win: chrome.windows.CreateData = {
-        url: chrome.runtime.getURL('import.html'),
+        url: chrome.runtime.getURL('import-accounts.html'),
         type: 'popup',
         height: 614,
         width: 350,
@@ -46,9 +47,13 @@ const AddAccountMain = ({
   const onSentBackAccountsListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
       if (message.value?.length) {
+        const importedAccounts = AccountUtils.getAccountsFromFileData(
+          message.value,
+          mk,
+        );
         setAccounts(
           AccountUtils.mergeImportedAccountsToExistingAccounts(
-            message.value,
+            importedAccounts,
             accounts,
           ),
         );
@@ -86,7 +91,7 @@ const AddAccountMain = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts };
+  return { accounts: state.accounts, mk: state.mk };
 };
 
 const connector = connect(mapStateToProps, { navigateTo, setAccounts });

@@ -1,3 +1,4 @@
+import { NoConfirm, NoConfirmWebsite } from '@interfaces/no-confirm.interface';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -7,21 +8,9 @@ import { PageTitleComponent } from 'src/common-ui/page-title/page-title.componen
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './authorized-operations.component.scss';
 
-export interface NoConfirmType {
-  [key: string]: NoConfirmWebsiteType;
-}
-
-export interface NoConfirmWebsiteType {
-  [key: string]: NoConfirmWebsiteOperationType;
-}
-
-export interface NoConfirmWebsiteOperationType {
-  [key: string]: boolean;
-}
-
 const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
-  const [noConfirm, setNoConfirm] = useState({} as NoConfirmType);
-  const [websites, setWebsites] = useState({} as NoConfirmWebsiteType);
+  const [noConfirm, setNoConfirm] = useState({} as NoConfirm);
+  const [websites, setWebsites] = useState({} as NoConfirmWebsite);
 
   useEffect(() => {
     init();

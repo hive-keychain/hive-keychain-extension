@@ -3,19 +3,15 @@ import RPCModule from '@background/rpc.module';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import {
+  LocalStorageClaim,
+  LocalStorageClaimItem,
+} from '@interfaces/local-storage-claim-item.interface';
 import axios from 'axios';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
-
-interface LocalStorageClaimItem {
-  [key: string]: boolean;
-}
-interface LocalStorageClaim {
-  claimRewards: LocalStorageClaimItem;
-  claimAccounts: LocalStorageClaimItem;
-}
 
 let claimRewards: LocalStorageClaimItem = {};
 let claimAccounts: LocalStorageClaimItem = {};
