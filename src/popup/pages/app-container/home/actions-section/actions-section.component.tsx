@@ -14,6 +14,7 @@ const ActionsSection = ({}: PropsFromRedux) => {
           label={actionButton.label}
           icon={actionButton.icon}
           nextScreen={actionButton.nextScreen}
+          nextScreenParams={actionButton.nextScreenParams}
         />
       ))}
     </div>

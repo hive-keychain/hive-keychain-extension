@@ -5,6 +5,7 @@ export const ActionButtonList: ActionButton[] = [
   {
     label: 'popup_html_send_transfer',
     nextScreen: Screen.TRANSFER_FUND_PAGE,
+    nextScreenParams: { selectedCurrency: 'hive' },
     icon: 'btn-bg_send',
   },
   {
