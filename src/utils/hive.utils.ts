@@ -392,6 +392,10 @@ const encodeMemo = (
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
 
+const decodeMemo = (memo: string, privateKey: string) => {
+  return hive.memo.decode(privateKey, memo);
+};
+
 const deposit = async (activeAccount: ActiveAccount, amount: string) => {
   const savings = await hive.api.getSavingsWithdrawFromAsync(
     activeAccount.name,
@@ -512,6 +516,7 @@ const HiveUtils = {
   powerDown,
   transfer,
   encodeMemo,
+  decodeMemo,
   convertOperation,
   withdraw,
   deposit,

@@ -6,6 +6,7 @@ import DelegationsReducer from '@popup/reducers/delegation.reducer';
 import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
 import { PhishingReducer } from '@popup/reducers/phishing.reducer';
 import TokenHistoryReducer from '@popup/reducers/token-history.reducer';
+import transactionsReducer from '@popup/reducers/transactions.reducer';
 import { combineReducers } from 'redux';
 import { AccountReducer } from './account.reducer';
 import { MessageReducer } from './message.reducer';
@@ -25,4 +26,5 @@ export default combineReducers({
   tokenHistory: TokenHistoryReducer,
   conversions: ConversionsReducer,
   phishing: PhishingReducer,
+  transactions: transactionsReducer,
 });

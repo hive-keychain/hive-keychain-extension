@@ -1,9 +1,9 @@
-import {ActionType} from '@popup/actions/action-type.enum';
-import {actionPayload} from '@popup/actions/interfaces';
+import { ActionType } from '@popup/actions/action-type.enum';
+import { ActionPayload } from '@popup/actions/interfaces';
 
 export const MkReducer = (
   state = '',
-  {type, payload}: actionPayload<string>,
+  { type, payload }: ActionPayload<string>,
 ): string => {
   switch (type) {
     case ActionType.SET_MK:

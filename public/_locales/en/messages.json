@@ -1633,5 +1633,9 @@
   "popup_html_save_successful": {
     "message": "Save successful",
     "description": "General message"
+  },
+  "popup_html_wallet_add_memo": {
+    "message": "Please add your memo key to decrypt this message.",
+    "description": "Wallet error message"
   }
 }

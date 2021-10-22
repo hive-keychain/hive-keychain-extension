@@ -35,7 +35,7 @@ const SelectAccountSection = ({
     const itemClicked = accounts.find(
       (account: LocalAccount) => account.name === accountName,
     );
-    loadActiveAccount(itemClicked);
+    loadActiveAccount(itemClicked, true);
   };
 
   const customLabelRender = (

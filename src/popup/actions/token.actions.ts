@@ -1,5 +1,5 @@
 import { ActionType } from '@popup/actions/action-type.enum';
-import { actionPayload, AppThunk } from '@popup/actions/interfaces';
+import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
 import { hiveEngineAPI, hsc } from '@popup/api/hiveEngine';
 import {
   Token,
@@ -9,7 +9,7 @@ import {
 } from 'src/interfaces/tokens.interface';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
-  const action: actionPayload<Token[]> = {
+  const action: ActionPayload<Token[]> = {
     type: ActionType.LOAD_TOKENS,
     payload: await hsc.find('tokens', 'tokens', {}, 1000, 0, []),
   };
@@ -17,7 +17,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
 };
 
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
-  const action: actionPayload<TokenMarket[]> = {
+  const action: ActionPayload<TokenMarket[]> = {
     type: ActionType.LOAD_TOKENS_MARKET,
     payload: await hsc.find('market', 'metrics', {}, 1000, 0, []),
   };
@@ -37,7 +37,7 @@ export const loadUserTokens =
       tokensBalance = tokensBalance
         .filter((t) => parseFloat(t.balance) !== 0)
         .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
-      const action: actionPayload<TokenBalance[]> = {
+      const action: ActionPayload<TokenBalance[]> = {
         type: ActionType.LOAD_USER_TOKENS,
         payload: tokensBalance,
       };
@@ -59,7 +59,7 @@ export const loadTokenHistory =
       e.amount = `${e.quantity} ${e.symbol}`;
       return e;
     });
-    const action: actionPayload<TokenTransaction[]> = {
+    const action: ActionPayload<TokenTransaction[]> = {
       type: ActionType.LOAD_TOKEN_HISTORY,
       payload: tokenHistory,
     };

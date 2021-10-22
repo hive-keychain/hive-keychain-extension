@@ -2,14 +2,16 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { AppThunk } from '@popup/actions/interfaces';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import TransactionUtils from 'src/utils/transaction.utils';
 
 export const refreshActiveAccount =
-  (): AppThunk => async (dispatch, getState) => {
+  (initTransactions?: boolean): AppThunk =>
+  async (dispatch, getState) => {
     const account = getState().accounts.find(
       (localAccount: LocalAccount) =>
         localAccount.name === getState().activeAccount.name,
     );
-    dispatch(loadActiveAccount(account));
+    dispatch(loadActiveAccount(account, initTransactions));
   };
 
 export const refreshKeys = (localAccount: LocalAccount) => {
@@ -26,9 +28,9 @@ export const loadActiveAccount =
   async (dispatch, getState) => {
     dispatch(refreshKeys(account));
     dispatch(getAccountRC(account.name));
-    // if (initTransactions) {
-    //   dispatch(initAccountTransactions(name));
-    // }
+    if (initTransactions) {
+      dispatch(initAccountTransactions(account.name));
+    }
     const extendedAccount = (
       await HiveUtils.getClient().database.getAccounts([account.name])
     )[0];
@@ -41,18 +43,23 @@ export const loadActiveAccount =
     });
   };
 
-// export const initAccountTransactions =
-//   (accountName: string): AppThunk =>
-//   async (dispatch, getState) => {
-//     const memoKey = getState().accounts.find((a) => a.name === accountName)!
-//       .keys.memo;
-//     const transfers = await getAccountTransactions(accountName, null, memoKey);
+export const initAccountTransactions =
+  (accountName: string): AppThunk =>
+  async (dispatch, getState) => {
+    const memoKey = getState().accounts.find(
+      (a: LocalAccount) => a.name === accountName,
+    )!.keys.memo;
+    const transfers = await TransactionUtils.getAccountTransactions(
+      accountName,
+      null,
+      memoKey,
+    );
 
-//     dispatch({
-//       type: INIT_TRANSACTIONS,
-//       payload: transfers,
-//     });
-//   };
+    dispatch({
+      type: ActionType.INIT_TRANSACTIONS,
+      payload: transfers,
+    });
+  };
 
 export const getAccountRC =
   (username: string): AppThunk =>

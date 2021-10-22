@@ -3,13 +3,13 @@ import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import { ActionType } from './action-type.enum';
-import { actionPayload, AppThunk } from './interfaces';
+import { ActionPayload, AppThunk } from './interfaces';
 
 export const retrieveAccounts =
   (mk: string): AppThunk =>
   async (dispatch, getState) => {
     let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
-    const action: actionPayload<LocalAccount[]> = {
+    const action: ActionPayload<LocalAccount[]> = {
       type: ActionType.SET_ACCOUNTS,
       payload: accounts,
     };
@@ -57,7 +57,7 @@ export const addKey =
     );
 
     if (newAccounts) {
-      const action: actionPayload<LocalAccount[]> = {
+      const action: ActionPayload<LocalAccount[]> = {
         type: ActionType.SET_ACCOUNTS,
         payload: newAccounts,
       };
@@ -74,7 +74,7 @@ export const removeKey =
       (account: LocalAccount) => account.name === activeAccount.name,
     );
 
-    const action: actionPayload<LocalAccount[]> = {
+    const action: ActionPayload<LocalAccount[]> = {
       type: ActionType.SET_ACCOUNTS,
       payload: AccountUtils.deleteKey(type, accounts, activeAccount),
     };

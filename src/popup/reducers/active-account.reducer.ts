@@ -1,7 +1,7 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { ActionType } from '@popup/actions/action-type.enum';
-import { actionPayload } from '@popup/actions/interfaces';
+import { ActionPayload } from '@popup/actions/interfaces';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { Keys } from 'src/interfaces/local-account.interface';
 
@@ -11,7 +11,7 @@ export const ActiveAccountReducer = (
     keys: {} as Keys,
     rc: {} as Manabar,
   },
-  { type, payload }: actionPayload<any>,
+  { type, payload }: ActionPayload<any>,
 ): ActiveAccount => {
   switch (type) {
     case ActionType.SET_ACTIVE_ACCOUNT:

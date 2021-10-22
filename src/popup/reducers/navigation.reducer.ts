@@ -1,5 +1,5 @@
 import { ActionType } from '@popup/actions/action-type.enum';
-import { actionPayload } from '@popup/actions/interfaces';
+import { ActionPayload } from '@popup/actions/interfaces';
 import { Screen } from 'src/reference-data/screen.enum';
 
 export interface NavigationState {
@@ -21,7 +21,7 @@ export interface NavigatePayload {
 
 export const NavigationReducer = (
   state: NavigationState = { stack: [] },
-  { type, payload }: actionPayload<NavigatePayload>,
+  { type, payload }: ActionPayload<NavigatePayload>,
 ): NavigationState => {
   switch (type) {
     case ActionType.RESET_NAV:

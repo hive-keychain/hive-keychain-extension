@@ -1,10 +1,10 @@
 import { Account } from '@hiveio/dhive';
 import { ActionType } from '@popup/actions/action-type.enum';
-import { actionPayload } from '@popup/actions/interfaces';
+import { ActionPayload } from '@popup/actions/interfaces';
 
 export const AccountReducer = (
   state: Account[] = [],
-  { type, payload }: actionPayload<any>,
+  { type, payload }: ActionPayload<any>,
 ) => {
   switch (type) {
     case ActionType.GET_ACCOUNTS:

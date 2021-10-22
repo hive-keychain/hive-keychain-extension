@@ -60,8 +60,7 @@ const AutomatedTasks = ({
     const itemClicked = accounts.find(
       (account: LocalAccount) => account.name === accountName,
     );
-    console.log(itemClicked);
-    loadActiveAccount(itemClicked);
+    loadActiveAccount(itemClicked, true);
   };
 
   const customLabelRender = (

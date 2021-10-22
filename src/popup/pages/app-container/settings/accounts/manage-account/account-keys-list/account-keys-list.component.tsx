@@ -34,7 +34,7 @@ const AccountKeysList = ({
       accounts,
     );
     setAccounts(newAccounts);
-    loadActiveAccount(newAccounts[0]);
+    loadActiveAccount(newAccounts[0], true);
   };
 
   return (

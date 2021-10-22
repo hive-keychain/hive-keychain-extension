@@ -1,10 +1,10 @@
 import { ActionType } from '@popup/actions/action-type.enum';
-import { actionPayload } from '@popup/actions/interfaces';
+import { ActionPayload } from '@popup/actions/interfaces';
 import { Conversion } from 'src/interfaces/conversion.interface';
 
 const ConversionsReducer = (
   state: Conversion[] = [],
-  { type, payload }: actionPayload<Conversion[]>,
+  { type, payload }: ActionPayload<Conversion[]>,
 ) => {
   switch (type) {
     case ActionType.FETCH_CONVERSION_REQUESTS:

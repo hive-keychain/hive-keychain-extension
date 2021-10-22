@@ -36,6 +36,7 @@
     "documentation": "^13.0.0",
     "joi": "^17.4.1",
     "md5": "^2.3.0",
+    "moment": "^2.29.1",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "pretty-checkbox": "^3.0.3",
     "pretty-checkbox-react": "^3.2.0",

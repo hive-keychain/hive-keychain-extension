@@ -36,7 +36,7 @@ const Home = ({
     loadBittrexPrices();
     loadGlobalProperties();
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
-      refreshActiveAccount();
+      refreshActiveAccount(true);
     }
   }, []);
 
@@ -55,7 +55,10 @@ const Home = ({
     const lastActiveAccount = accounts.find(
       (account: LocalAccount) => lastActiveAccountName === account.name,
     );
-    loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
+    loadActiveAccount(
+      lastActiveAccount ? lastActiveAccount : accounts[0],
+      true,
+    );
     fetchConversionRequests(lastActiveAccountName);
   };
 
