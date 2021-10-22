@@ -30,6 +30,7 @@ const Home = ({
   loadGlobalProperties,
   fetchConversionRequests,
   refreshActiveAccount,
+  isAppReady,
 }: PropsFromRedux) => {
   useEffect(() => {
     loadBittrexPrices();
@@ -64,7 +65,7 @@ const Home = ({
 
   return (
     <div className="home-page">
-      {activeRpc && activeRpc.uri !== 'NULL' && (
+      {isAppReady && activeRpc && activeRpc.uri !== 'NULL' && (
         <div>
           <TopBarComponent />
           <SelectAccountSectionComponent />
@@ -72,6 +73,13 @@ const Home = ({
           <WalletInfoSectionComponent />
           <EstimatedAccountValueSectionComponent />
           <ActionsSectionComponent />
+        </div>
+      )}
+
+      {!isAppReady && (
+        <div className="loading">
+          <img src="/assets/images/iconhive.png" />
+          <div className="caption">HIVE KEYCHAIN</div>
         </div>
       )}
     </div>
@@ -83,6 +91,9 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     accounts: state.accounts,
     activeRpc: state.activeRpc,
+    isAppReady:
+      Object.keys(state.globalProperties).length &&
+      !ActiveAccountUtils.isEmpty(state.activeAccount),
   };
 };
 

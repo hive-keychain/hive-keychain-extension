@@ -33,7 +33,6 @@ const App = ({
   navigateTo,
   activeAccountUsername,
   activeRpc,
-  isAppReady,
   refreshActiveAccount,
   loadBittrexPrices,
   loadGlobalProperties,
@@ -109,27 +108,18 @@ const App = ({
   };
 
   const renderMainLayoutNav = () => {
-    if (isAppReady) {
-      if (!mk) {
-        if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-          return <SignUpComponent />;
-        } else {
-          return <SignInRouterComponent />;
-        }
+    if (!mk) {
+      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
+        return <SignUpComponent />;
       } else {
-        if (accounts && accounts.length === 0) {
-          return <AddAccountRouterComponent />;
-        } else {
-          return <AppRouterComponent />;
-        }
+        return <SignInRouterComponent />;
       }
     } else {
-      return (
-        <div className="loading">
-          <img src="/assets/images/iconhive.png" />
-          <div className="caption">HIVE KEYCHAIN</div>
-        </div>
-      );
+      if (accounts && accounts.length === 0) {
+        return <AddAccountRouterComponent />;
+      } else {
+        return <AppRouterComponent />;
+      }
     }
   };
 
@@ -147,11 +137,6 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
     activeAccountUsername: state.activeAccount?.name,
-    isAppReady:
-      Object.keys(state.globalProperties).length &&
-      Object.keys(state.bittrex.btc).length &&
-      Object.keys(state.bittrex.hbd).length &&
-      Object.keys(state.bittrex.hive).length,
   };
 };
 
