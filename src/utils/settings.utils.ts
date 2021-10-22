@@ -113,6 +113,7 @@ const onSentBackAccountsListener = async (message: BackgroundMessage) => {
         existingNoConfirm,
       );
     }
+
     if (settings.rpc) {
       let existingRpc: Rpc[] = await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.RPC_LIST,
@@ -123,6 +124,7 @@ const onSentBackAccountsListener = async (message: BackgroundMessage) => {
         [...existingRpc, settings.rpc],
       );
     }
+
     if (settings.transfer_to) {
       let existingTransferTo: TransferToItems =
         await LocalStorageUtils.getValueFromLocalStorage(

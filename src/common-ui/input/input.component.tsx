@@ -23,6 +23,7 @@ const InputComponent = (props: InputProps) => {
   );
 
   const [isFocused, setIsFocused] = useState(false);
+  const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
 
   useEffect(() => {
     if (props.autocompleteValues) {
@@ -44,7 +45,11 @@ const InputComponent = (props: InputProps) => {
   return (
     <div className={`input-container ${props.logo ? '' : 'no-logo'}`}>
       <input
-        type={props.type}
+        type={
+          props.type === InputType.PASSWORD && isPasswordDisplay
+            ? InputType.TEXT
+            : props.type
+        }
         placeholder={
           props.skipTranslation
             ? props.placeholder
@@ -62,6 +67,20 @@ const InputComponent = (props: InputProps) => {
         onFocus={() => handleOnFocus()}
         onBlur={() => handleOnBlur()}
       />
+      {props.type === InputType.PASSWORD && !isPasswordDisplay && (
+        <img
+          src={`/assets/images/eye.png`}
+          className="input-img display-password"
+          onClick={() => setPasswordDisplayed(true)}
+        />
+      )}
+      {props.type === InputType.PASSWORD && isPasswordDisplay && (
+        <img
+          src={`/assets/images/hide.png`}
+          className="input-img display-password"
+          onClick={() => setPasswordDisplayed(false)}
+        />
+      )}
       {isFocused && filteredValues && filteredValues.length > 0 && (
         <div className="autocomplete-panel">
           {filteredValues.map((val, index) => (

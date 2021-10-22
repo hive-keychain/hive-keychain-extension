@@ -70,6 +70,13 @@ $autoCompleteItemHeight: 30px;
     height: 30px;
   }
 
+  .display-password {
+    left: unset;
+    right: 20px;
+    cursor: pointer;
+    width: 28px;
+  }
+
   .hint {
     font-style: italic;
     margin-top: 2px;
