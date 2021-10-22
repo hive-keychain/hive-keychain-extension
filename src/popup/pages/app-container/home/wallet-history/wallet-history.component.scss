@@ -2,41 +2,10 @@
 
 .wallet-history-page {
   .page-content {
-    .transaction {
-      background: $black-transparent;
-      min-height: 48px;
-      display: flex;
-      flex-direction: column;
-      margin: 0px -24px;
-      padding: 8px 16px;
+    margin-top: 16px;
+  }
 
-      .information-panel {
-        display: flex;
-        flex-direction: column;
-        row-gap: 8px;
-        .top-row,
-        .bottom-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          font-size: 16px;
-          .date {
-          }
-          .amount {
-          }
-          .from-to {
-          }
-          .currency {
-          }
-        }
-      }
-      .memo-panel {
-        display: none;
-      }
-
-      &:nth-child(even) {
-        background: $red-transparent;
-      }
-    }
+  .transaction:nth-child(even) {
+    background: $red-transparent;
   }
 }
