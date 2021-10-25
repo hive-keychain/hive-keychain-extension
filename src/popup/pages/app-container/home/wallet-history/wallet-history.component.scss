@@ -3,9 +3,89 @@
 .wallet-history-page {
   .page-content {
     margin-top: 16px;
+
+    .filter-panel {
+      .title-panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        margin-bottom: 16px;
+        .title {
+          font-size: 16px;
+        }
+        .icon {
+          height: 10px;
+          width: 20px;
+          transition-duration: 0.25s;
+          transition-property: transform;
+        }
+      }
+
+      .filters {
+        display: grid;
+        grid-template-columns: 3fr 1px 1fr;
+        max-height: 0;
+        transition: max-height 0.25s;
+        overflow: hidden;
+        margin-bottom: 16px;
+        column-gap: 16px;
+
+        .vertical-divider {
+          width: 1px;
+          height: 100%;
+          background: white;
+        }
+
+        .types {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
+          grid-template-rows: max-content;
+          row-gap: 8px;
+          column-gap: 8px;
+        }
+
+        .in-out-panel {
+          display: flex;
+          flex-direction: column;
+          row-gap: 8px;
+        }
+        .filter-button {
+          padding: 4px;
+          border: 1px solid white;
+          border-radius: 12px;
+          text-align: center;
+          font-size: 14px;
+          cursor: pointer;
+
+          &.selected,
+          &:hover {
+            background: white;
+            color: black;
+          }
+        }
+      }
+
+      &.filter-opened {
+        .title-panel {
+          .icon {
+            transform: rotate(180deg);
+          }
+        }
+
+        .filters {
+          max-height: 500px;
+          transition: max-height 0.25s;
+        }
+      }
+    }
   }
 
-  .transaction:nth-child(even) {
+  .wallet-history-item {
+    background: $black-transparent;
+  }
+
+  .wallet-history-item:nth-child(even) {
     background: $red-transparent;
   }
 }

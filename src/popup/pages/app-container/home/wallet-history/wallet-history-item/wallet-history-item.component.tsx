@@ -45,7 +45,8 @@ const WalletHistoryItem = ({
             <div className="currency">{transaction.amount.split(' ')[1]}</div>
           </div>
         </div>
-        <div className={'memo-panel ' + isMemoOpened ? 'opened' : 'closed'}>
+        <div
+          className={isMemoOpened ? 'memo-panel opened' : 'memo-panel closed'}>
           {transaction.memo}
         </div>
       </div>

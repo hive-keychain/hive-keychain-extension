@@ -1637,5 +1637,21 @@
   "popup_html_wallet_add_memo": {
     "message": "Please add your memo key to decrypt this message.",
     "description": "Wallet error message"
+  },
+  "popup_html_filter_in": {
+    "message": "In",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_out": {
+    "message": "Out",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer": {
+    "message": "Transfer",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_vote": {
+    "message": "Vote",
+    "description": "Wallet filters"
   }
 }

@@ -1,12 +1,96 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import './wallet-history.component.scss';
 
+interface FilterTransactionTypes {
+  [key: string]: boolean;
+}
+
+const FILTER_TRANSACTION_TYPES: FilterTransactionTypes = {
+  transfer: false,
+  vote: false,
+};
+
+const HAS_IN_OUT_TRANSACTIONS = ['transfers', 'delegate_vesting_shares'];
+
 const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
+  const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
+
+  const [inSelected, setInSelected] = useState(false);
+  const [outSelected, setOutSelected] = useState(false);
+  const [selectedTransactionType, setSelectedTransactionType] =
+    useState<FilterTransactionTypes>(FILTER_TRANSACTION_TYPES);
+
+  const [displayedTransactions, setDisplayedTransactions] = useState<
+    Transaction[]
+  >(transactions.list);
+
+  const toggleFilter = () => {
+    setIsFilterPanelOpened(!isFilterOpened);
+  };
+
+  const toggleFilterType = (transactionName: string) => {
+    const newValue = !selectedTransactionType[transactionName];
+    setSelectedTransactionType({
+      ...selectedTransactionType,
+      [transactionName]: newValue,
+    });
+  };
+
+  useEffect(() => {
+    filterTransactions();
+  }, [inSelected, outSelected, selectedTransactionType, transactions]);
+
+  const filterTransactions = () => {
+    const selectedTransactionsTypes = Object.keys(
+      selectedTransactionType,
+    ).filter((transactionName) => selectedTransactionType[transactionName]);
+    if (selectedTransactionsTypes.length === 0) {
+      setDisplayedTransactions(transactions.list);
+    } else {
+      let filteredTransactions = transactions.list.filter(
+        (transaction: Transaction) => {
+          const isInOrOutSelected = inSelected || outSelected;
+          if (selectedTransactionsTypes.includes(transaction.type)) {
+            console.log(
+              transaction,
+              isInOrOutSelected,
+              HAS_IN_OUT_TRANSACTIONS.includes(transaction.type),
+            );
+            if (
+              HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
+              !isInOrOutSelected
+            ) {
+              console.log(
+                inSelected,
+                transaction.to,
+                activeAccountName,
+                transaction.to === activeAccountName,
+              );
+              console.log(
+                outSelected,
+                transaction.from,
+                activeAccountName,
+                transaction.from === activeAccountName,
+              );
+              return (
+                (inSelected && transaction.to === activeAccountName) ||
+                (outSelected && transaction.from === activeAccountName)
+              );
+            } else {
+              return true;
+            }
+          }
+        },
+      );
+      setDisplayedTransactions(filteredTransactions);
+    }
+  };
+
   return (
     <div className="wallet-history-page">
       <PageTitleComponent
@@ -15,7 +99,57 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
       />
 
       <div className="page-content">
-        {transactions.list.map((transaction: Transaction) => (
+        <div
+          className={
+            'filter-panel ' +
+            (isFilterOpened ? 'filter-opened' : 'filter-closed')
+          }>
+          <div className="title-panel" onClick={() => toggleFilter()}>
+            <div className="title">Filter</div>
+            <img className={'icon'} src="/assets/images/downarrow.png" />
+          </div>
+          <div className="filters">
+            <div className="types">
+              {selectedTransactionType &&
+                Object.keys(selectedTransactionType).map(
+                  (filterOperationType) => (
+                    <div
+                      key={filterOperationType}
+                      className={
+                        'filter-button ' +
+                        (selectedTransactionType[filterOperationType]
+                          ? 'selected'
+                          : 'not-selected')
+                      }
+                      onClick={() => toggleFilterType(filterOperationType)}>
+                      {chrome.i18n.getMessage(
+                        `popup_html_filter_type_${filterOperationType}`,
+                      )}
+                    </div>
+                  ),
+                )}
+            </div>
+            <div className="vertical-divider"></div>
+            <div className="in-out-panel">
+              <div
+                className={
+                  'filter-button ' + (inSelected ? 'selected' : 'not-selected')
+                }
+                onClick={() => setInSelected(!inSelected)}>
+                {chrome.i18n.getMessage(`popup_html_filter_in`)}
+              </div>
+              <div
+                className={
+                  'filter-button ' + (outSelected ? 'selected' : 'not-selected')
+                }
+                onClick={() => setOutSelected(!outSelected)}>
+                {chrome.i18n.getMessage(`popup_html_filter_out`)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {displayedTransactions.map((transaction: Transaction) => (
           <WalletHistoryItemComponent
             key={transaction.key}
             transaction={transaction}></WalletHistoryItemComponent>

@@ -1,34 +1,36 @@
 @import '../../../../../variable.scss';
 
-.transaction {
-  background: $black-transparent;
-  min-height: 48px;
-  display: flex;
-  flex-direction: column;
+.wallet-history-item {
   margin: 0px -24px;
   padding: 8px 16px;
-
-  .information-panel {
+  cursor: pointer;
+  .transaction {
+    min-height: 48px;
     display: flex;
     flex-direction: column;
-    row-gap: 8px;
-    .top-row,
-    .bottom-row {
+
+    .information-panel {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 16px;
-      .date {
-      }
-      .amount {
-      }
-      .from-to {
-      }
-      .currency {
+      flex-direction: column;
+      row-gap: 8px;
+      .top-row,
+      .bottom-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
       }
     }
-  }
-  .memo-panel {
-    display: none;
+    .memo-panel {
+      max-height: 0;
+      transition: max-height 0.5s ease-out;
+      overflow: hidden;
+      font-size: 14px;
+
+      &.opened {
+        max-height: 500px;
+        transition: max-height 0.5s ease-in;
+      }
+    }
   }
 }
