@@ -85,29 +85,27 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
     const selectedTransactionsTypes = Object.keys(
       selectedTransactionType,
     ).filter((transactionName) => selectedTransactionType[transactionName]);
-    let filteredTransactions;
-    if (selectedTransactionsTypes.length === 0) {
-      filteredTransactions = transactions.list;
-    } else {
-      filteredTransactions = transactions.list.filter(
-        (transaction: Transaction) => {
-          const isInOrOutSelected = inSelected || outSelected;
-          if (selectedTransactionsTypes.includes(transaction.type)) {
-            if (
-              HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
-              isInOrOutSelected
-            ) {
-              return (
-                (inSelected && transaction.to === activeAccountName) ||
-                (outSelected && transaction.from === activeAccountName)
-              );
-            } else {
-              return true;
-            }
+    let filteredTransactions = transactions.list.filter(
+      (transaction: Transaction) => {
+        const isInOrOutSelected = inSelected || outSelected;
+        if (
+          selectedTransactionsTypes.includes(transaction.type) ||
+          selectedTransactionsTypes.length === 0
+        ) {
+          if (
+            HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
+            isInOrOutSelected
+          ) {
+            return (
+              (inSelected && transaction.to === activeAccountName) ||
+              (outSelected && transaction.from === activeAccountName)
+            );
+          } else {
+            return true;
           }
-        },
-      );
-    }
+        }
+      },
+    );
     filteredTransactions = filteredTransactions.filter((transaction) => {
       return (
         transaction.memo?.toLowerCase().includes(filterValue.toLowerCase()) ||
