@@ -229,13 +229,15 @@ const PowerUpDown = ({
           </div>
         )}
 
-      <InputComponent
-        type={InputType.TEXT}
-        placeholder="popup_html_username"
-        value={username}
-        onChange={setUsername}
-        autocompleteValues={autocompleteTransferUsernames}
-      />
+      {powerType === PowerType.POWER_UP && (
+        <InputComponent
+          type={InputType.TEXT}
+          placeholder="popup_html_username"
+          value={username}
+          onChange={setUsername}
+          autocompleteValues={autocompleteTransferUsernames}
+        />
+      )}
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
