@@ -119,10 +119,10 @@
     "description": "ex: Send HIVE"
   },
   "popup_html_pu": {
-    "message": "Power Up"
+    "message": "Power up"
   },
   "popup_html_pd": {
-    "message": "Power Down"
+    "message": "Power down"
   },
   "popup_html_delegate": {
     "message": "Delegate"
@@ -1646,8 +1646,8 @@
     "message": "Out",
     "description": "Wallet filters"
   },
-  "popup_html_filter": {
-    "message": "Filter",
+  "popup_html_search": {
+    "message": "Search",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_transfer": {
@@ -1656,6 +1656,10 @@
   },
   "popup_html_filter_type_vote": {
     "message": "Vote",
+    "description": "Wallet filters"
+  },
+  "popup_html_clear_filters": {
+    "message": "Clear",
     "description": "Wallet filters"
   }
 }

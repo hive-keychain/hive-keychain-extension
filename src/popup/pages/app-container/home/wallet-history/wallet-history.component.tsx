@@ -125,6 +125,13 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
     setDisplayedTransactions(filteredTransactions);
   };
 
+  const clearFilters = () => {
+    setFilterValue('');
+    setInSelected(false);
+    setOutSelected(false);
+    setSelectedTransactionType(FILTER_TRANSACTION_TYPES);
+  };
+
   return (
     <div className="wallet-history-page">
       <PageTitleComponent
@@ -144,12 +151,17 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
               <img className={'icon'} src="/assets/images/downarrow.png" />
             </div>
             <div className="filters">
-              <InputComponent
-                type={InputType.TEXT}
-                placeholder="popup_html_filter"
-                value={filterValue}
-                onChange={setFilterValue}
-              />
+              <div className="search-panel">
+                <InputComponent
+                  type={InputType.TEXT}
+                  placeholder="popup_html_filter"
+                  value={filterValue}
+                  onChange={setFilterValue}
+                />
+                <div className={'filter-button'} onClick={() => clearFilters()}>
+                  {chrome.i18n.getMessage(`popup_html_clear_filters`)}
+                </div>
+              </div>
               <div className="filter-selectors">
                 <div className="types">
                   {selectedTransactionType &&
@@ -201,7 +213,11 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
           ))}
         </div>
       )}
-      {transactions.loading && <RotatingLogoComponent></RotatingLogoComponent>}
+      {transactions.loading && (
+        <div className="logo-container">
+          <RotatingLogoComponent></RotatingLogoComponent>
+        </div>
+      )}
     </div>
   );
 };

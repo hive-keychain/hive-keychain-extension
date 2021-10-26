@@ -46,7 +46,7 @@ const getAccountTransactions = async (
       if (memo[0] === '#') {
         if (memoKey) {
           try {
-            transfer.memo = HiveUtils.decodeMemo(memoKey, memo);
+            transfer.memo = HiveUtils.decodeMemo(memo, memoKey);
           } catch (e) {}
         } else {
           transfer.memo = chrome.i18n.getMessage('wallet.add_memo');

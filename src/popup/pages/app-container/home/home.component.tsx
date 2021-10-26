@@ -96,7 +96,7 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.accounts,
     activeRpc: state.activeRpc,
     isAppReady:
-      Object.keys(state.globalProperties).length &&
+      Object.keys(state.globalProperties).length > 0 &&
       !ActiveAccountUtils.isEmpty(state.activeAccount),
   };
 };

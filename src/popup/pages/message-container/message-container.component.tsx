@@ -18,13 +18,13 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   return (
     <div>
       {errorMessage.key.length > 0 && (
-        <div className={`error-container ${errorMessage.type}`}>
+        <div className={`container ${errorMessage.type}`}>
           <div className="barHolder">
             <div
               className="bar"
               style={{ width: progressBarWidth + '%' }}></div>
           </div>
-          <div className="error-message">
+          <div className="message">
             {chrome.i18n.getMessage(errorMessage.key, errorMessage.params)}
           </div>
         </div>

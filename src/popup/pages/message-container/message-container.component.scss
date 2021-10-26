@@ -1,6 +1,6 @@
 @import '/src/popup/variable.scss';
 
-.error-container {
+.container {
   display: flex;
   flex-direction: column;
   height: auto;
@@ -20,7 +20,7 @@
   }
 }
 
-.error-message {
+.message {
   flex: 1;
   display: flex;
   align-items: center;
@@ -28,7 +28,6 @@
   padding: 8px;
   box-sizing: border-box;
   font-size: 14px;
-  text-transform: capitalize;
 }
 
 .barHolder {
