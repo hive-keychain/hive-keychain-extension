@@ -81,6 +81,13 @@ const InputComponent = (props: InputProps) => {
           onClick={() => setPasswordDisplayed(false)}
         />
       )}
+      {props.type !== InputType.PASSWORD && props.value.length > 0 && (
+        <img
+          src={`/assets/images/delete.png`}
+          className="input-img erase"
+          onClick={() => props.onChange('')}
+        />
+      )}
       {isFocused && filteredValues && filteredValues.length > 0 && (
         <div className="autocomplete-panel">
           {filteredValues.map((val, index) => (
