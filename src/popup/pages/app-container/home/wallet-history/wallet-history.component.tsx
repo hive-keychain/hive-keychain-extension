@@ -2,6 +2,7 @@ import { Transaction, Transactions } from '@interfaces/transaction.interface';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -52,7 +53,13 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
   useEffect(() => {
     saveFilterInLocalStorage();
     filterTransactions();
-  }, [inSelected, outSelected, selectedTransactionType, transactions]);
+  }, [
+    inSelected,
+    outSelected,
+    selectedTransactionType,
+    transactions,
+    filterValue,
+  ]);
 
   const initFilters = async () => {
     const filters = await LocalStorageUtils.getValueFromLocalStorage(
@@ -79,10 +86,11 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
     const selectedTransactionsTypes = Object.keys(
       selectedTransactionType,
     ).filter((transactionName) => selectedTransactionType[transactionName]);
+    let filteredTransactions;
     if (selectedTransactionsTypes.length === 0) {
-      setDisplayedTransactions(transactions.list);
+      filteredTransactions = transactions.list;
     } else {
-      let filteredTransactions = transactions.list.filter(
+      filteredTransactions = transactions.list.filter(
         (transaction: Transaction) => {
           const isInOrOutSelected = inSelected || outSelected;
           if (selectedTransactionsTypes.includes(transaction.type)) {
@@ -100,8 +108,24 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
           }
         },
       );
-      setDisplayedTransactions(filteredTransactions);
     }
+    filteredTransactions = filteredTransactions.filter((transaction) => {
+      return (
+        transaction.memo?.toLowerCase().includes(filterValue.toLowerCase()) ||
+        transaction.amount?.toLowerCase().includes(filterValue.toLowerCase()) ||
+        (transaction.to !== activeAccountName &&
+          transaction.to?.toLowerCase().includes(filterValue.toLowerCase())) ||
+        (transaction.from !== activeAccountName &&
+          transaction.from
+            ?.toLowerCase()
+            .includes(filterValue.toLowerCase())) ||
+        (transaction.timestamp &&
+          moment(transaction.timestamp)
+            .format('L')
+            .includes(filterValue.toLowerCase()))
+      );
+    });
+    setDisplayedTransactions(filteredTransactions);
   };
 
   return (
