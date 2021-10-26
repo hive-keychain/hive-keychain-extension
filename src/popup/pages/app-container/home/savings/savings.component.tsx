@@ -236,6 +236,7 @@ const SavingsPage = ({
 
       <InputComponent
         type={InputType.TEXT}
+        logo="arobase"
         placeholder="popup_html_username"
         value={username}
         onChange={setUsername}

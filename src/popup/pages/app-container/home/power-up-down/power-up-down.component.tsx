@@ -37,8 +37,8 @@ const PowerUpDown = ({
   setSuccessMessage,
   setErrorMessage,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState(
-    formParams.username ? formParams.username : activeAccount.name!,
+  const [receiver, setReceiver] = useState(
+    formParams.receiver ? formParams.receiver : activeAccount.name!,
   );
   const [value, setValue] = useState<string | number>(
     formParams.value ? formParams.value : 0,
@@ -106,29 +106,41 @@ const PowerUpDown = ({
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    const operationString = chrome.i18n
-      .getMessage(
-        powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
-      )
-      .toLowerCase();
+    const operationString = chrome.i18n.getMessage(
+      powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd',
+    );
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
+
+    const fields = [{ label: 'popup_html_value', value: valueS }];
+
+    if (powerType === PowerType.POWER_UP) {
+      fields.push({
+        label: 'popup_html_transfer_from',
+        value: `@${activeAccount.name}`,
+      });
+      fields.push({ label: 'popup_html_transfer_to', value: `@${receiver}` });
+    }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_confirm_power_up_down_message',
-        [operationString],
+        [operationString.toLowerCase()],
       ),
-      fields: [{ label: 'popup_html_value', value: valueS }],
+      fields: fields,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
         switch (powerType) {
           case PowerType.POWER_UP:
-            success = await HiveUtils.powerUp(username, valueS);
+            success = await HiveUtils.powerUp(
+              activeAccount.name!,
+              receiver,
+              valueS,
+            );
             break;
           case PowerType.POWER_DOWN:
             success = await HiveUtils.powerDown(
-              username,
+              activeAccount.name!,
               `${FormatUtils.fromHP(
                 Number(value).toFixed(3),
                 globalProperties.globals!,
@@ -139,7 +151,7 @@ const PowerUpDown = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveTransferRecipient(receiver, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
           ]);
@@ -156,7 +168,7 @@ const PowerUpDown = ({
 
   const getFormParams = () => {
     return {
-      username: username,
+      receiver: receiver,
       value: value,
     };
   };
@@ -170,7 +182,7 @@ const PowerUpDown = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = await HiveUtils.powerDown(
-          username,
+          receiver,
           `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
             6,
           )} VESTS`,
@@ -178,7 +190,7 @@ const PowerUpDown = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveTransferRecipient(receiver, activeAccount);
           setSuccessMessage('popup_html_cancel_power_down_success');
         } else {
           setErrorMessage('popup_html_cancel_power_down_fail');
@@ -232,9 +244,10 @@ const PowerUpDown = ({
       {powerType === PowerType.POWER_UP && (
         <InputComponent
           type={InputType.TEXT}
-          placeholder="popup_html_username"
-          value={username}
-          onChange={setUsername}
+          logo="arobase"
+          placeholder="popup_html_receiver"
+          value={receiver}
+          onChange={setReceiver}
           autocompleteValues={autocompleteTransferUsernames}
         />
       )}

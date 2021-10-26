@@ -1,6 +1,7 @@
 @import '/src/popup/variable.scss';
 .power-up-page {
   @include pageLayout;
+  row-gap: 32px;
 
   .max {
     align-self: flex-end;
@@ -17,7 +18,6 @@
 
   .text {
     font-size: 18px;
-    margin: 16px 0px;
   }
 
   .power-down-panel {

@@ -1661,5 +1661,9 @@
   "popup_html_clear_filters": {
     "message": "Clear",
     "description": "Wallet filters"
+  },
+  "popup_html_receiver": {
+    "message": "Receiver",
+    "description": "General word"
   }
 }

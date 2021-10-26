@@ -259,15 +259,15 @@ const claimRewards = async (
   }
 };
 
-const powerUp = async (username: string, amount: string) => {
+const powerUp = async (from: string, to: string, amount: string) => {
   try {
     await getClient().broadcast.sendOperations(
       [
         [
           'transfer_to_vesting',
           {
-            from: username,
-            to: username,
+            from: from,
+            to: to,
             amount: amount,
           },
         ] as TransferToVestingOperation,
