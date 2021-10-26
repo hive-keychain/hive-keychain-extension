@@ -8,6 +8,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wallet-history.component.scss';
 
@@ -51,15 +52,13 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
   }, []);
 
   useEffect(() => {
+    setDisplayedTransactions(transactions.list);
+  }, [transactions]);
+
+  useEffect(() => {
     saveFilterInLocalStorage();
     filterTransactions();
-  }, [
-    inSelected,
-    outSelected,
-    selectedTransactionType,
-    transactions,
-    filterValue,
-  ]);
+  }, [inSelected, outSelected, selectedTransactionType, filterValue]);
 
   const initFilters = async () => {
     const filters = await LocalStorageUtils.getValueFromLocalStorage(
@@ -135,73 +134,76 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
         isBackButtonEnabled={true}
       />
 
-      <div className="page-content">
-        <div
-          className={
-            'filter-panel ' +
-            (isFilterOpened ? 'filter-opened' : 'filter-closed')
-          }>
-          <div className="title-panel" onClick={() => toggleFilter()}>
-            <div className="title">Filter</div>
-            <img className={'icon'} src="/assets/images/downarrow.png" />
-          </div>
-          <div className="filters">
-            <InputComponent
-              type={InputType.TEXT}
-              placeholder="popup_html_filter"
-              value={filterValue}
-              onChange={setFilterValue}
-            />
-            <div className="filter-selectors">
-              <div className="types">
-                {selectedTransactionType &&
-                  Object.keys(selectedTransactionType).map(
-                    (filterOperationType) => (
-                      <div
-                        key={filterOperationType}
-                        className={
-                          'filter-button ' +
-                          (selectedTransactionType[filterOperationType]
-                            ? 'selected'
-                            : 'not-selected')
-                        }
-                        onClick={() => toggleFilterType(filterOperationType)}>
-                        {chrome.i18n.getMessage(
-                          `popup_html_filter_type_${filterOperationType}`,
-                        )}
-                      </div>
-                    ),
-                  )}
-              </div>
-              <div className="vertical-divider"></div>
-              <div className="in-out-panel">
-                <div
-                  className={
-                    'filter-button ' +
-                    (inSelected ? 'selected' : 'not-selected')
-                  }
-                  onClick={() => setInSelected(!inSelected)}>
-                  {chrome.i18n.getMessage(`popup_html_filter_in`)}
+      {!transactions.loading && (
+        <div className="page-content">
+          <div
+            className={
+              'filter-panel ' +
+              (isFilterOpened ? 'filter-opened' : 'filter-closed')
+            }>
+            <div className="title-panel" onClick={() => toggleFilter()}>
+              <div className="title">Filter</div>
+              <img className={'icon'} src="/assets/images/downarrow.png" />
+            </div>
+            <div className="filters">
+              <InputComponent
+                type={InputType.TEXT}
+                placeholder="popup_html_filter"
+                value={filterValue}
+                onChange={setFilterValue}
+              />
+              <div className="filter-selectors">
+                <div className="types">
+                  {selectedTransactionType &&
+                    Object.keys(selectedTransactionType).map(
+                      (filterOperationType) => (
+                        <div
+                          key={filterOperationType}
+                          className={
+                            'filter-button ' +
+                            (selectedTransactionType[filterOperationType]
+                              ? 'selected'
+                              : 'not-selected')
+                          }
+                          onClick={() => toggleFilterType(filterOperationType)}>
+                          {chrome.i18n.getMessage(
+                            `popup_html_filter_type_${filterOperationType}`,
+                          )}
+                        </div>
+                      ),
+                    )}
                 </div>
-                <div
-                  className={
-                    'filter-button ' +
-                    (outSelected ? 'selected' : 'not-selected')
-                  }
-                  onClick={() => setOutSelected(!outSelected)}>
-                  {chrome.i18n.getMessage(`popup_html_filter_out`)}
+                <div className="vertical-divider"></div>
+                <div className="in-out-panel">
+                  <div
+                    className={
+                      'filter-button ' +
+                      (inSelected ? 'selected' : 'not-selected')
+                    }
+                    onClick={() => setInSelected(!inSelected)}>
+                    {chrome.i18n.getMessage(`popup_html_filter_in`)}
+                  </div>
+                  <div
+                    className={
+                      'filter-button ' +
+                      (outSelected ? 'selected' : 'not-selected')
+                    }
+                    onClick={() => setOutSelected(!outSelected)}>
+                    {chrome.i18n.getMessage(`popup_html_filter_out`)}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {displayedTransactions.map((transaction: Transaction) => (
-          <WalletHistoryItemComponent
-            key={transaction.key}
-            transaction={transaction}></WalletHistoryItemComponent>
-        ))}
-      </div>
+          {displayedTransactions.map((transaction: Transaction) => (
+            <WalletHistoryItemComponent
+              key={transaction.key}
+              transaction={transaction}></WalletHistoryItemComponent>
+          ))}
+        </div>
+      )}
+      {transactions.loading && <RotatingLogoComponent></RotatingLogoComponent>}
     </div>
   );
 };

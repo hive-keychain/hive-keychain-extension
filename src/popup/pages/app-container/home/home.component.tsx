@@ -15,6 +15,7 @@ import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wall
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import RpcUtils from 'src/utils/rpc.utils';
@@ -81,7 +82,7 @@ const Home = ({
 
       {!isAppReady && (
         <div className="loading">
-          <img src="/assets/images/iconhive.png" />
+          <RotatingLogoComponent></RotatingLogoComponent>
           <div className="caption">HIVE KEYCHAIN</div>
         </div>
       )}

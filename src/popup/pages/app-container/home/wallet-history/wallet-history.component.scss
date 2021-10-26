@@ -32,6 +32,9 @@
             height: 30px;
             font-size: 14px;
           }
+          input::-webkit-input-placeholder {
+            font-size: 14px;
+          }
           margin-bottom: 16px;
         }
 
