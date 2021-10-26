@@ -1,9 +1,11 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wallet-history.component.scss';
 
 interface FilterTransactionTypes {
@@ -12,10 +14,9 @@ interface FilterTransactionTypes {
 
 const FILTER_TRANSACTION_TYPES: FilterTransactionTypes = {
   transfer: false,
-  vote: false,
 };
 
-const HAS_IN_OUT_TRANSACTIONS = ['transfers', 'delegate_vesting_shares'];
+const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 
 const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
@@ -42,8 +43,31 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
   };
 
   useEffect(() => {
+    initFilters();
+  }, []);
+
+  useEffect(() => {
+    saveFilterInLocalStorage();
     filterTransactions();
   }, [inSelected, outSelected, selectedTransactionType, transactions]);
+
+  const initFilters = async () => {
+    const filters = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
+    );
+    if (filters) {
+      setSelectedTransactionType(filters.types);
+      setInSelected(filters.in);
+      setOutSelected(filters.out);
+    }
+  };
+
+  const saveFilterInLocalStorage = () => {
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
+      { types: selectedTransactionType, in: inSelected, out: outSelected },
+    );
+  };
 
   const filterTransactions = () => {
     const selectedTransactionsTypes = Object.keys(
@@ -56,27 +80,10 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
         (transaction: Transaction) => {
           const isInOrOutSelected = inSelected || outSelected;
           if (selectedTransactionsTypes.includes(transaction.type)) {
-            console.log(
-              transaction,
-              isInOrOutSelected,
-              HAS_IN_OUT_TRANSACTIONS.includes(transaction.type),
-            );
             if (
               HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
-              !isInOrOutSelected
+              isInOrOutSelected
             ) {
-              console.log(
-                inSelected,
-                transaction.to,
-                activeAccountName,
-                transaction.to === activeAccountName,
-              );
-              console.log(
-                outSelected,
-                transaction.from,
-                activeAccountName,
-                transaction.from === activeAccountName,
-              );
               return (
                 (inSelected && transaction.to === activeAccountName) ||
                 (outSelected && transaction.from === activeAccountName)
