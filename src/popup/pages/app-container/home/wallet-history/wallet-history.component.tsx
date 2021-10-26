@@ -4,6 +4,8 @@ import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wallet-history.component.scss';
@@ -21,6 +23,7 @@ const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
 
+  const [filterValue, setFilterValue] = useState('');
   const [inSelected, setInSelected] = useState(false);
   const [outSelected, setOutSelected] = useState(false);
   const [selectedTransactionType, setSelectedTransactionType] =
@@ -56,7 +59,10 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
       LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
     );
     if (filters) {
-      setSelectedTransactionType(filters.types);
+      setSelectedTransactionType({
+        ...FILTER_TRANSACTION_TYPES,
+        ...filters.types,
+      });
       setInSelected(filters.in);
       setOutSelected(filters.out);
     }
@@ -116,41 +122,51 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
             <img className={'icon'} src="/assets/images/downarrow.png" />
           </div>
           <div className="filters">
-            <div className="types">
-              {selectedTransactionType &&
-                Object.keys(selectedTransactionType).map(
-                  (filterOperationType) => (
-                    <div
-                      key={filterOperationType}
-                      className={
-                        'filter-button ' +
-                        (selectedTransactionType[filterOperationType]
-                          ? 'selected'
-                          : 'not-selected')
-                      }
-                      onClick={() => toggleFilterType(filterOperationType)}>
-                      {chrome.i18n.getMessage(
-                        `popup_html_filter_type_${filterOperationType}`,
-                      )}
-                    </div>
-                  ),
-                )}
-            </div>
-            <div className="vertical-divider"></div>
-            <div className="in-out-panel">
-              <div
-                className={
-                  'filter-button ' + (inSelected ? 'selected' : 'not-selected')
-                }
-                onClick={() => setInSelected(!inSelected)}>
-                {chrome.i18n.getMessage(`popup_html_filter_in`)}
+            <InputComponent
+              type={InputType.TEXT}
+              placeholder="popup_html_filter"
+              value={filterValue}
+              onChange={setFilterValue}
+            />
+            <div className="filter-selectors">
+              <div className="types">
+                {selectedTransactionType &&
+                  Object.keys(selectedTransactionType).map(
+                    (filterOperationType) => (
+                      <div
+                        key={filterOperationType}
+                        className={
+                          'filter-button ' +
+                          (selectedTransactionType[filterOperationType]
+                            ? 'selected'
+                            : 'not-selected')
+                        }
+                        onClick={() => toggleFilterType(filterOperationType)}>
+                        {chrome.i18n.getMessage(
+                          `popup_html_filter_type_${filterOperationType}`,
+                        )}
+                      </div>
+                    ),
+                  )}
               </div>
-              <div
-                className={
-                  'filter-button ' + (outSelected ? 'selected' : 'not-selected')
-                }
-                onClick={() => setOutSelected(!outSelected)}>
-                {chrome.i18n.getMessage(`popup_html_filter_out`)}
+              <div className="vertical-divider"></div>
+              <div className="in-out-panel">
+                <div
+                  className={
+                    'filter-button ' +
+                    (inSelected ? 'selected' : 'not-selected')
+                  }
+                  onClick={() => setInSelected(!inSelected)}>
+                  {chrome.i18n.getMessage(`popup_html_filter_in`)}
+                </div>
+                <div
+                  className={
+                    'filter-button ' +
+                    (outSelected ? 'selected' : 'not-selected')
+                  }
+                  onClick={() => setOutSelected(!outSelected)}>
+                  {chrome.i18n.getMessage(`popup_html_filter_out`)}
+                </div>
               </div>
             </div>
           </div>
