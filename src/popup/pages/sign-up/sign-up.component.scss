@@ -1,19 +1,29 @@
-.logo-white {
-  width: 100%;
-  height: auto;
-  opacity: 0.8;
-}
+@import '/src/popup/variable.scss';
+.sign-up-page {
+  .logo-white {
+    width: 100%;
+    height: auto;
+    opacity: 0.8;
+  }
 
-.introduction {
-  margin-bottom: 40px;
-  margin-top: 40px;
-  font-size: 16px;
-}
+  .introduction {
+    margin-bottom: 40px;
+    margin-top: 40px;
+    font-size: 16px;
+  }
 
-.submit-button {
-  margin-top: 40px;
-}
+  .submit-button {
+    margin-top: 40px;
+  }
 
-.reset-password-link {
-  margin-top: 20px;
+  .reset-password-link {
+    font-size: 18px;
+    float: right;
+    margin-top: 20px;
+    border-bottom: 2px dotted;
+    cursor: pointer;
+    &:hover {
+      color: $red;
+    }
+  }
 }
