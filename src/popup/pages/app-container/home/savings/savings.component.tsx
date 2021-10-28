@@ -32,22 +32,35 @@ const SavingsPage = ({
   paramsSelectedCurrency,
   activeAccount,
   globalProperties,
+  formParams,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState(activeAccount.name!);
+  const [username, setUsername] = useState(
+    formParams.username ? formParams.username : activeAccount.name!,
+  );
   const [text, setText] = useState('');
-  const [value, setValue] = useState<string | number>(0);
+  const [value, setValue] = useState<string | number>(
+    formParams.value ? formParams.value : 0,
+  );
   const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
-    useState<string>(SavingOperationType.WITHDRAW);
+    useState<string>(
+      formParams.selectedSavingOperationType
+        ? formParams.selectedSavingOperationType
+        : SavingOperationType.WITHDRAW,
+    );
   const [selectedCurrency, setSelectedCurrency] = useState<
     keyof CurrencyLabels
-  >(paramsSelectedCurrency);
+  >(
+    formParams.selectedCurrency
+      ? formParams.selectedCurrency
+      : paramsSelectedCurrency,
+  );
 
   const currencyOptions = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
@@ -116,6 +129,7 @@ const SavingsPage = ({
         [operationString],
       ),
       fields: [{ label: 'popup_html_value', value: valueS }],
+      formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
 
@@ -138,6 +152,15 @@ const SavingsPage = ({
         }
       },
     });
+  };
+
+  const getFormParams = () => {
+    return {
+      username: username,
+      value: value,
+      selectedSavingOperationType: selectedSavingOperationType,
+      selectedCurrency: selectedCurrency,
+    };
   };
 
   const setToMax = () => {
@@ -293,6 +316,9 @@ const mapStateToProps = (state: RootState) => {
     globalProperties: state.globalProperties,
     paramsSelectedCurrency: state.navigation.stack[0].params
       .selectedCurrency as keyof CurrencyLabels,
+    formParams: state.navigation.stack[0].previousParams?.formParams
+      ? state.navigation.stack[0].previousParams?.formParams
+      : {},
   };
 };
 
