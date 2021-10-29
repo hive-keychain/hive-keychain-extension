@@ -1665,5 +1665,29 @@
   "popup_html_receiver": {
     "message": "Receiver",
     "description": "General word"
+  },
+  "popup_html_confirm_hive_to_hbd_conversion": {
+    "message": "Please confirm your conversion from HIVE to HBD",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_confirm_hbd_to_hive_conversion": {
+    "message": "Please confirm your conversion from HBD to HIVE",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hive_to_hbd_conversion_success": {
+    "message": "Conversion from HIVE to HBD succeeded!",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hive_to_hbd_conversion_fail": {
+    "message": "Conversion from HIVE to HBD failed!",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hbd_to_hive_conversion_success": {
+    "message": "Conversion from HBD to HIVE succeeded!",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hbd_to_hive_conversion_fail": {
+    "message": "Conversion from HBD to HIVE failed!",
+    "description": "Conversion confirm page"
   }
 }

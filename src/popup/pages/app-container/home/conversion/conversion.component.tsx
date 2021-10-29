@@ -83,10 +83,14 @@ const Conversion = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
-        'popup_html_confirm_power_up_down_message',
-        [operationString],
+        conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+          ? 'popup_html_confirm_hbd_to_hive_conversion'
+          : 'popup_html_confirm_hive_to_hbd_conversion',
       ),
-      fields: [{ label: 'popup_html_value', value: valueS }],
+      fields: [
+        { label: 'popup_html_value', value: valueS },
+        { label: 'popup_html_username', value: `@${activeAccount.name!}` },
+      ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = await HiveUtils.convertOperation(
@@ -98,11 +102,17 @@ const Conversion = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          setSuccessMessage('popup_html_power_up_down_success', [
-            operationString,
-          ]);
+          setSuccessMessage(
+            ConversionType.CONVERT_HBD_TO_HIVE
+              ? 'popup_html_hbd_to_hive_conversion_success'
+              : 'popup_html_hive_to_hbd_conversion_success',
+          );
         } else {
-          setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+          setErrorMessage(
+            ConversionType.CONVERT_HBD_TO_HIVE
+              ? 'popup_html_hbd_to_hive_conversion_fail'
+              : 'popup_html_hive_to_hbd_conversion_fail',
+          );
         }
       },
     });
@@ -119,7 +129,7 @@ const Conversion = ({
   };
 
   return (
-    <div className="power-up-page">
+    <div className="conversion-page">
       <PageTitleComponent title={title} isBackButtonEnabled={true} />
       <div className="text">{chrome.i18n.getMessage(text)}</div>
 

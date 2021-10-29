@@ -1,6 +1,6 @@
 @import '/src/popup/variable.scss';
-.power-up-page {
-  @include pageLayout;
+.conversion-page {
+  @include pageLayoutRowGap;
 
   .max {
     align-self: flex-end;
