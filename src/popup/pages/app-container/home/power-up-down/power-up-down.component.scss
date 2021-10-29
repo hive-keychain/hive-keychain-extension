@@ -1,7 +1,9 @@
 @import '/src/popup/variable.scss';
 .power-up-page {
   @include pageLayout;
-
+  .submit-button {
+    margin-bottom: 30px;
+  }
   .max {
     align-self: flex-end;
     text-transform: uppercase;
