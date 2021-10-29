@@ -18,6 +18,7 @@ const AboutPage = ({}: PropsFromRedux) => {
         }}></div>
       <div className="version">
         {chrome.runtime.getManifest().name +
+          ' ' +
           chrome.runtime.getManifest().version}
       </div>
     </div>

@@ -2,7 +2,6 @@
 
 .about-page {
   display: grid;
-  /* flex-direction: column; */
   height: 100%;
   grid-template-rows: auto 1fr auto;
   .content {
@@ -10,7 +9,7 @@
     font-size: 16px;
     text-align: justify;
     a {
-      color: $red-dark;
+      color: $red;
       text-decoration: none;
     }
   }
