@@ -3,7 +3,9 @@
 .wallet-history-item {
   margin: 0px -24px;
   padding: 8px 16px;
-  cursor: pointer;
+  &.has-memo {
+    cursor: pointer;
+  }
   .transaction {
     min-height: 48px;
     display: flex;
