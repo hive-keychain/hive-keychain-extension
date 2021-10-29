@@ -104,6 +104,7 @@ const SavingsPage = ({
     } else {
       text = chrome.i18n.getMessage('popup_html_withdraw_text');
     }
+    console.log(text);
     setText(text);
   }, [selectedCurrency, selectedSavingOperationType]);
 
@@ -255,7 +256,7 @@ const SavingsPage = ({
         className="select-operation-type select-dropdown"
       />
 
-      <div className="text">{chrome.i18n.getMessage(text)}</div>
+      <div className="text">{text}</div>
 
       <InputComponent
         type={InputType.TEXT}

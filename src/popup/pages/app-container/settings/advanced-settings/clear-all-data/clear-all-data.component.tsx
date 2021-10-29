@@ -12,7 +12,7 @@ const ClearAllData = ({}: PropsFromRedux) => {
   };
 
   return (
-    <div className="actions-section">
+    <div className="clear-all-data-page">
       <PageTitleComponent title="popup_html_clear" isBackButtonEnabled={true} />
 
       <p

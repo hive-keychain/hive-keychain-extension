@@ -1,7 +1,8 @@
 @import '../../../../../../variable.scss';
 
 .account-keys-list {
-  @include pageLayout;
+  @include pageLayoutRowGap;
+
   .account-keys-list-item:nth-child(even) {
     background: rgba(227, 19, 55, 0.32);
     margin: 0px -24px;
@@ -10,6 +11,7 @@
 }
 
 .qrcode {
+  margin: 16px 0px;
   align-self: center;
   border: solid 3px white;
 }

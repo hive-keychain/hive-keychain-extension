@@ -2,7 +2,7 @@
 
 .incoming-outgoing-page {
   @include pageLayout;
-
+  row-gap: 32px;
   .total {
     display: flex;
     justify-content: space-between;

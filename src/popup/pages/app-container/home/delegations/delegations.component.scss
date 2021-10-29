@@ -58,6 +58,10 @@
       display: flex;
       justify-content: space-between;
       font-size: 20px;
+    }
+
+    .total-incoming,
+    .total-outgoing {
       cursor: pointer;
     }
 

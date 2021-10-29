@@ -12,5 +12,12 @@ $message-container-error: $red;
 @mixin pageLayout {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+@mixin pageLayoutRowGap {
+  display: flex;
+  flex-direction: column;
   row-gap: 16px;
 }

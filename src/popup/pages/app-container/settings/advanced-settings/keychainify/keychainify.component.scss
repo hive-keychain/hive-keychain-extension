@@ -1,7 +1,7 @@
 @import '../../../../../variable.scss';
 
 .keychainify-page {
-  @include pageLayout;
+  @include pageLayoutRowGap;
 
   .intro {
     font-size: 16px;

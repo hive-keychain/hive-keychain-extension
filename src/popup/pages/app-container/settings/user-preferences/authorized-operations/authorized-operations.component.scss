@@ -1,7 +1,10 @@
 @import '../../../../../variable.scss';
 
 .authorized-operations-page {
-  @include pageLayout;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  row-gap: 16px;
   .introduction {
     font-size: 16px;
     margin-bottom: 8px;
