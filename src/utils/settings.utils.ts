@@ -30,10 +30,12 @@ const exportSettings = async () => {
 };
 const importSettings = async () => {
   chrome.windows.getCurrent(async (currentWindow) => {
+    console.log(chrome.runtime.getURL('import-preferences.html'));
+
     const win: chrome.windows.CreateData = {
       url: chrome.runtime.getURL('import-preferences.html'),
       type: 'popup',
-      height: 614,
+      height: 566,
       width: 350,
       left: currentWindow.width! - 350 + currentWindow.left!,
       top: currentWindow.top,

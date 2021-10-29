@@ -18,7 +18,7 @@ export const createPopup = (
       {
         url: chrome.runtime.getURL(popupHtml),
         type: 'popup',
-        height: 614,
+        height: 566,
         width: width,
         left: w.width! - width + w.left!,
         top: w.top,
