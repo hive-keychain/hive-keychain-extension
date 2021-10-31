@@ -1,6 +1,13 @@
 .home-page {
   margin: -24px;
   height: 100%;
+
+  .select-account-select {
+    padding: 2px 16px !important;
+    .selected-account-panel {
+      padding: 12px 10px !important;
+    }
+  }
 }
 
 .loading {

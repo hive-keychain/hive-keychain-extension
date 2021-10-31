@@ -36,7 +36,7 @@ const InputComponent = (props: InputProps) => {
   }, [props.value, props.autocompleteValues]);
 
   const handleOnBlur = () => {
-    setTimeout(() => setIsFocused(false), 100);
+    setTimeout(() => setIsFocused(false), 200);
   };
   const handleOnFocus = () => {
     setIsFocused(true);

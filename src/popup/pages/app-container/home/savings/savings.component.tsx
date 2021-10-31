@@ -96,10 +96,9 @@ const SavingsPage = ({
     let text = '';
     if (selectedSavingOperationType === SavingOperationType.DEPOSIT) {
       if (selectedCurrency === 'hbd') {
-        text = chrome.i18n.getMessage(
-          'popup_html_deposit_hbd_text',
+        text = chrome.i18n.getMessage('popup_html_deposit_hbd_text', [
           Number(globalProperties.globals?.hbd_interest_rate) / 100,
-        );
+        ]);
       }
     } else {
       text = chrome.i18n.getMessage('popup_html_withdraw_text');

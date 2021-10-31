@@ -1,6 +1,7 @@
 @import '/src/popup/variable.scss';
 .conversion-page {
   @include pageLayoutRowGap;
+  row-gap: 32px;
 
   .max {
     align-self: flex-end;

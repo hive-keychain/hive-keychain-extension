@@ -41,7 +41,7 @@ const PowerUpDown = ({
     formParams.receiver ? formParams.receiver : activeAccount.name!,
   );
   const [value, setValue] = useState<string | number>(
-    formParams.value ? formParams.value : 0,
+    formParams.value ? formParams.value : '',
   );
   const [current, setCurrent] = useState<string | number>('...');
   const [available, setAvailable] = useState<string | number>('...');
@@ -111,7 +111,7 @@ const PowerUpDown = ({
     );
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
 
-    const fields = [{ label: 'popup_html_value', value: valueS }];
+    const fields = [];
 
     if (powerType === PowerType.POWER_UP) {
       fields.push({
@@ -120,6 +120,8 @@ const PowerUpDown = ({
       });
       fields.push({ label: 'popup_html_transfer_to', value: `@${receiver}` });
     }
+
+    fields.push({ label: 'popup_html_amount', value: valueS });
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
@@ -231,7 +233,7 @@ const PowerUpDown = ({
             ])}
             data-iscapture="true">
             <div className="power-down-text">
-              {powerDownInfo[0]}/{powerDownInfo[1]} {currencyLabels.hp}
+              {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
             </div>
             <img
               className="icon-button"

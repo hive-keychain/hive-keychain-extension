@@ -78,12 +78,19 @@ $autoCompleteItemHeight: 30px;
   }
 
   .erase {
-    top: 14px;
+    display: none;
+    top: 18px;
     left: unset;
     right: 20px;
     cursor: pointer;
-    height: 20px;
-    width: 20px;
+    height: 14px;
+    width: 14px;
+  }
+
+  &:hover {
+    .erase {
+      display: block;
+    }
   }
 
   .hint {

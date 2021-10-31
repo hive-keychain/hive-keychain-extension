@@ -1689,5 +1689,9 @@
   "popup_html_hbd_to_hive_conversion_fail": {
     "message": "Conversion from HBD to HIVE failed!",
     "description": "Conversion confirm page"
+  },
+  "popup_html_amount": {
+    "message": "Amount",
+    "description": "General word"
   }
 }
