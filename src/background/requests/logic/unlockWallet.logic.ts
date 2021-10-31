@@ -9,7 +9,7 @@ export const unlockWallet = (
 ) => {
   createPopup(() => {
     chrome.runtime.sendMessage({
-      command: DialogCommand.SEND_DIALOG_ERROR,
+      command: DialogCommand.UNLOCK,
       msg: {
         success: false,
         error: 'locked',
