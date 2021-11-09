@@ -47,7 +47,7 @@ const TransferFunds = ({
     formParams.receiverUsername ? formParams.receiverUsername : '',
   );
   const [amount, setAmount] = useState(
-    formParams.amount ? formParams.amount : 0.0,
+    formParams.amount ? formParams.amount : '',
   );
   const [balance, setBalance] = useState<string | number>('...');
   const [selectedCurrency, setSelectedCurrency] = useState<
@@ -62,10 +62,10 @@ const TransferFunds = ({
     formParams.isRecurrent ? formParams.isRecurrent : false,
   );
   const [frequency, setFrequency] = useState(
-    formParams.frequency ? formParams.frequency : 24,
+    formParams.frequency ? formParams.frequency : '',
   );
   const [iteration, setIterations] = useState(
-    formParams.iteration ? formParams.iteration : 2,
+    formParams.iteration ? formParams.iteration : '',
   );
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
     useState<string[]>([]);
@@ -207,7 +207,19 @@ const TransferFunds = ({
             activeAccount,
           );
 
-          setSuccessMessage('popup_html_transfer_successful');
+          if (!isRecurrent) {
+            setSuccessMessage('popup_html_transfer_successful', [
+              `@${receiverUsername}`,
+              formattedAmount,
+            ]);
+          } else {
+            setSuccessMessage('popup_html_transfer_recurrent_successful', [
+              `@${receiverUsername}`,
+              formattedAmount,
+              frequency,
+              iteration,
+            ]);
+          }
         } else {
           setErrorMessage('popup_html_transfer_failed');
         }
@@ -308,7 +320,7 @@ const TransferFunds = ({
             step={1}
             value={frequency}
             onChange={setFrequency}
-            hint={'popup_html_recurrent_transfer_frequency'}
+            hint={'popup_html_recurrent_transfer_frequency_hint'}
           />
           <InputComponent
             type={InputType.NUMBER}

@@ -1607,11 +1607,19 @@
     "description": "In transfer fund page"
   },
   "popup_html_recurrent_transfer_frequency": {
+    "message": "Frequency",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfer_frequency_hint": {
     "message": "Frequency (in hours). Minimum 24 hours",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_successful": {
-    "message": "Transfer successful",
+    "message": "Transfer to $1 ($2) successful",
+    "description": "In transfer fund page"
+  },
+  "popup_html_transfer_recurrent_successful": {
+    "message": "Recurrent transfer to $1 ($2) successful! It will happen every $3 hours $4 times",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_failed": {
@@ -1693,5 +1701,13 @@
   "popup_html_amount": {
     "message": "Amount",
     "description": "General word"
+  },
+  "popup_html_recurrent_transfer_iterations": {
+    "message": "Iterations",
+    "decription": "In transfer page"
+  },
+  "popup_html_recurrent_transfer_iterations_hint": {
+    "message": "Iterations. Minimum 2",
+    "decription": "In transfer page"
   }
 }
