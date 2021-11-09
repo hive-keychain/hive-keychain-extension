@@ -128,10 +128,10 @@ const Delegations = ({
     }`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
-        'popup_html_confirm_power_up_down_message',
-        [operationString],
-      ),
+      message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
+        valueS,
+        `@${username}`,
+      ]),
       fields: [
         { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
         { label: 'popup_html_transfer_to', value: `@${username}` },

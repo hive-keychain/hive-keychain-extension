@@ -4,7 +4,7 @@ import {
   HpDropdownMenuItems,
 } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import DropdownMenu, {
@@ -18,12 +18,40 @@ const WalletInfoSection = ({
   activeAccount,
   currencyLabels,
   globalProperties,
+  delegations,
 }: PropsFromRedux) => {
   const [displayDropdown, setDisplayDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>();
   const [dropdownItems, setDropdownItems] = useState<
     DropdownMenuItemInterface[]
   >([]);
+
+  const [delegationAmount, setDelegationAmount] = useState('...');
+
+  useEffect(() => {
+    const delegatedVestingShares = parseFloat(
+      activeAccount.account.delegated_vesting_shares
+        .toString()
+        .replace(' VESTS', ''),
+    );
+    const receivedVestingShares = parseFloat(
+      activeAccount.account.received_vesting_shares
+        .toString()
+        .replace(' VESTS', ''),
+    );
+    const delegationVestingShares = (
+      delegatedVestingShares - receivedVestingShares
+    ).toFixed(3);
+
+    const delegation = FormatUtils.toHP(
+      delegationVestingShares,
+      globalProperties.globals,
+    );
+
+    setDelegationAmount(
+      `${delegation > 0 ? '+' : '-'} ${Math.abs(delegation).toFixed(3)}`,
+    );
+  }, []);
 
   const toggleDropdown = (
     event: any,
@@ -123,14 +151,22 @@ const WalletInfoSection = ({
       </div>
       <div className="wallet-info-row wallet-info-hp">
         <div className="value">
-          {FormatUtils.withCommas(
-            FormatUtils.toHP(
-              activeAccount.account.vesting_shares as string,
-              globalProperties.globals,
-            ).toString(),
-          )}
+          <div className="balance">
+            {FormatUtils.withCommas(
+              FormatUtils.toHP(
+                activeAccount.account.vesting_shares as string,
+                globalProperties.globals,
+              ).toString(),
+            )}
+          </div>
+          <div className="savings">{delegationAmount}</div>
         </div>
-        <div className="currency">{currencyLabels.hp}</div>
+        <div className="currency">
+          <div className="balance">{currencyLabels.hp}</div>
+          <div className="savings">
+            ({chrome.i18n.getMessage('popup_html_delegations')})
+          </div>
+        </div>
         <img
           className="dropdown-arrow"
           src="/assets/images/uparrow.png"
@@ -146,6 +182,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     globalProperties: state.globalProperties,
+    delegations: state.delegations,
   };
 };
 

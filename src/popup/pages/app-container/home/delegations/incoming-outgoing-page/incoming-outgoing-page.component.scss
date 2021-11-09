@@ -1,7 +1,7 @@
 @import '../../../../../variable.scss';
 
 .incoming-outgoing-page {
-  @include pageLayout;
+  @include pageLayoutRowGap;
   row-gap: 32px;
   .total {
     display: flex;

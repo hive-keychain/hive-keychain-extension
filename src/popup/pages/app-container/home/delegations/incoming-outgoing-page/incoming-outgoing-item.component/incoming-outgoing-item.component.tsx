@@ -98,10 +98,10 @@ const IncomingOutgoing = ({
     }`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
-        'popup_html_confirm_power_up_down_message',
-        [operationString],
-      ),
+      message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
+        value,
+        `@${username}`,
+      ]),
       fields: [
         { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: valueS },
@@ -128,7 +128,7 @@ const IncomingOutgoing = ({
 
   return (
     <div className="delegation-row" key={username}>
-      <div className="to-from">{username}</div>
+      <div className="to-from">@{username}</div>
       <div className="right-panel">
         {!editModeActivated && (
           <div

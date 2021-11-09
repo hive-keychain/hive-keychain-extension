@@ -1575,7 +1575,7 @@
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_delegation_message": {
-    "message": "Please confirm cancel delegation.",
+    "message": "Please confirm that you want to cancel this delegation.",
     "description": "while confirming power up and down"
   },
   "popup_html_cancel_delegation": {
@@ -1716,6 +1716,10 @@
   },
   "popup_html_confirm_savings_deposit": {
     "message": "Please confirm that you want to deposit $1 to savings",
+    "description": "Withdraw savings confirmation message"
+  },
+  "popup_html_confirm_delegation": {
+    "message": "Please confirm that you want to delegate $1 to $2",
     "description": "Withdraw savings confirmation message"
   }
 }
