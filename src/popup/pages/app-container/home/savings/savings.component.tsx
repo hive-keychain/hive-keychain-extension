@@ -103,7 +103,6 @@ const SavingsPage = ({
     } else {
       text = chrome.i18n.getMessage('popup_html_withdraw_text');
     }
-    console.log(text);
     setText(text);
   }, [selectedCurrency, selectedSavingOperationType]);
 
@@ -125,10 +124,15 @@ const SavingsPage = ({
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
-        'popup_html_confirm_power_up_down_message',
-        [operationString],
+        selectedSavingOperationType === SavingOperationType.WITHDRAW
+          ? 'popup_html_confirm_savings_withdraw'
+          : 'popup_html_confirm_savings_deposit',
+        [currency],
       ),
-      fields: [{ label: 'popup_html_value', value: valueS }],
+      fields: [
+        { label: 'popup_html_value', value: valueS },
+        { label: 'popup_html_username', value: `@${username}` },
+      ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
@@ -255,7 +259,7 @@ const SavingsPage = ({
         className="select-operation-type select-dropdown"
       />
 
-      <div className="text">{text}</div>
+      {text.length > 0 && <div className="text">{text}</div>}
 
       <InputComponent
         type={InputType.TEXT}
