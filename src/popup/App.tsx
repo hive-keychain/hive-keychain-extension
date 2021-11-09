@@ -92,7 +92,7 @@ const App = ({
 
   const onSentBackMkListener = async (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
-      if (message.value?.length) {
+      if (message.value?.length && message.value.length !== mk) {
         setMk(message.value);
         retrieveAccounts(message.value);
       } else {

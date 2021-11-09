@@ -34,12 +34,12 @@ const loadClaims = async () => {
     LocalStorageKeyEnum.CLAIM_ACCOUNTS,
     LocalStorageKeyEnum.CLAIM_REWARDS,
   ]);
+
   updateClaims(claims);
 };
 
 const initAutoClaim = () => {
   Logger.log('Init auto claim');
-  console.log(claimRewards, claimAccounts);
   startClaimRewards(claimRewards);
   startClaimAccounts(claimAccounts);
 };
@@ -116,8 +116,8 @@ const iterateClaimRewards = async (users: string[]) => {
 const startClaimAccounts = (claimAccounts: LocalStorageClaimItem) => {
   if (claimAccounts) {
     clearInterval(claimAccountsInterval);
-    const users = Object.keys(claimRewards).filter(
-      (user) => claimRewards[user] === true,
+    const users = Object.keys(claimAccounts).filter(
+      (user) => claimAccounts[user] === true,
     );
     iterateClaimAccounts(users);
     console.log(claimAccountsInterval);
