@@ -7,10 +7,12 @@ import {
   LocalStorageClaim,
   LocalStorageClaimItem,
 } from '@interfaces/local-storage-claim-item.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import axios from 'axios';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 let claimRewards: LocalStorageClaimItem = {};
@@ -24,18 +26,31 @@ const INTERVAL = 1200 * 1000;
 const updateClaims = (claims: LocalStorageClaim) => {
   claimRewards = claims.claimRewards;
   claimAccounts = claims.claimAccounts;
+  initAutoClaim();
+};
+
+const loadClaims = async () => {
+  const claims = await LocalStorageUtils.getMultipleValueFromLocalStorage([
+    LocalStorageKeyEnum.CLAIM_ACCOUNTS,
+    LocalStorageKeyEnum.CLAIM_REWARDS,
+  ]);
+  updateClaims(claims);
 };
 
 const initAutoClaim = () => {
   Logger.log('Init auto claim');
+  console.log(claimRewards, claimAccounts);
   startClaimRewards(claimRewards);
   startClaimAccounts(claimAccounts);
 };
 
 const startClaimRewards = (claimRewards: LocalStorageClaimItem) => {
   if (claimRewards) {
-    if (claimRewardsInterval) clearTimeout(claimRewardsInterval);
-    const users = Object.keys(claimRewards);
+    clearInterval(claimRewardsInterval);
+    const users = Object.keys(claimRewards).filter(
+      (user) => claimRewards[user] === true,
+    );
+    console.log(claimRewardsInterval);
     iterateClaimRewards(users);
     claimRewardsInterval = setInterval(async () => {
       iterateClaimRewards(users);
@@ -58,7 +73,8 @@ const iterateClaimAccounts = async (users: string[]) => {
   for (const userAccount of userExtendedAccounts) {
     const rc = await getRC(userAccount.name);
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
-    if (activeAccount) {
+    if (activeAccount && parseFloat(rc.estimated_pct) > 95) {
+      console.log(`claim accounts for ${activeAccount.name}`);
       await HiveUtils.claimAccounts(rc, activeAccount);
     }
   }
@@ -86,6 +102,7 @@ const iterateClaimRewards = async (users: string[]) => {
         activeAccount.account.reward_hive_balance as string,
       )
     ) {
+      console.log(`claim rewards for ${activeAccount.name}`);
       await HiveUtils.claimRewards(
         activeAccount,
         userAccount.reward_hive_balance,
@@ -98,9 +115,12 @@ const iterateClaimRewards = async (users: string[]) => {
 
 const startClaimAccounts = (claimAccounts: LocalStorageClaimItem) => {
   if (claimAccounts) {
-    if (claimAccountsInterval) clearTimeout(claimAccountsInterval);
-    const users = Object.keys(claimAccounts);
+    clearInterval(claimAccountsInterval);
+    const users = Object.keys(claimRewards).filter(
+      (user) => claimRewards[user] === true,
+    );
     iterateClaimAccounts(users);
+    console.log(claimAccountsInterval);
     claimAccountsInterval = setInterval(() => {
       iterateClaimAccounts(users);
     }, INTERVAL);
@@ -168,6 +188,7 @@ const getRC = async (username: string) => {
 const ClaimModule = {
   updateClaims,
   initAutoClaim,
+  loadClaims,
 };
 
 export default ClaimModule;

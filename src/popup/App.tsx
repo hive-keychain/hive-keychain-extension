@@ -14,8 +14,6 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
-import AutolockUtils from 'src/utils/autolock.utils';
-import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import './App.scss';
@@ -43,9 +41,6 @@ const App = ({
     PopupUtils.fixPopupOnMacOs();
     loadBittrexPrices();
     loadGlobalProperties();
-    AutomatedTasksUtils.initBackgroundClaims();
-    AutolockUtils.initBackgroundAutolock();
-
     initAutoLock();
   }, []);
 

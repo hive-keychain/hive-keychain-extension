@@ -10,8 +10,9 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
-const initBackgroundTasks = () => {
-  ClaimModule.initAutoClaim();
+const initBackgroundTasks = async () => {
+  console.log('init background tasks');
+  await ClaimModule.loadClaims();
 };
 
 const chromeMessageHandler = (
@@ -25,12 +26,14 @@ const chromeMessageHandler = (
       break;
     case BackgroundCommand.SAVE_MK:
       MkModule.saveMk(backgroundMessage.value);
+      ClaimModule.loadClaims();
       break;
     case BackgroundCommand.IMPORT_ACCOUNTS:
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);
       break;
     case BackgroundCommand.SAVE_RPC:
       RPCModule.setActiveRpc(backgroundMessage.value);
+      break;
     case BackgroundCommand.SEND_REQUEST:
       //TODO : add check for avoiding double transaction
       RequestsModule.sendRequest(
@@ -47,7 +50,6 @@ const chromeMessageHandler = (
       break;
     case BackgroundCommand.UPDATE_CLAIMS:
       ClaimModule.updateClaims(backgroundMessage.value);
-      ClaimModule.initAutoClaim();
       break;
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.startAutolock(backgroundMessage.value);
