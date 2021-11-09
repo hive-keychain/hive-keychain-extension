@@ -18,7 +18,6 @@ const WalletInfoSection = ({
   activeAccount,
   currencyLabels,
   globalProperties,
-  delegations,
 }: PropsFromRedux) => {
   const [displayDropdown, setDisplayDropdown] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>();
@@ -40,16 +39,17 @@ const WalletInfoSection = ({
         .replace(' VESTS', ''),
     );
     const delegationVestingShares = (
-      delegatedVestingShares - receivedVestingShares
+      receivedVestingShares - delegatedVestingShares
     ).toFixed(3);
 
-    const delegation = FormatUtils.toHP(
-      delegationVestingShares,
-      globalProperties.globals,
+    const delegation = Math.abs(
+      FormatUtils.toHP(delegationVestingShares, globalProperties.globals),
     );
 
     setDelegationAmount(
-      `${delegation > 0 ? '+' : '-'} ${Math.abs(delegation).toFixed(3)}`,
+      `${delegation > 0 ? '+' : '-'} ${FormatUtils.withCommas(
+        delegation.toFixed(3),
+      )}`,
     );
   }, []);
 
