@@ -476,11 +476,11 @@
     "description": "On witness page"
   },
   "popup_html_witness_disclaimer": {
-    "message": "You may vote for up to 30 witnesses.",
+    "message": "You may vote for up to $1 witnesses.",
     "description": "On witness page"
   },
   "popup_html_witness_remaining": {
-    "message": "Votes remaining: <span>30</span>",
+    "message": "Votes remaining: $1",
     "description": "On witness page"
   },
   "popup_html_witness_voted": {

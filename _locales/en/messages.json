@@ -448,7 +448,7 @@
     "description": "On witness page"
   },
   "popup_html_witness_remaining": {
-    "message": "Votes remaining: <span>30</span>",
+    "message": "Votes remaining: $1",
     "description": "On witness page"
   },
   "popup_html_witness_voted": {
