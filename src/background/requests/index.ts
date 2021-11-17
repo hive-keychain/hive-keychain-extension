@@ -84,4 +84,5 @@ const RequestsModule: RequestModule = {
   },
 };
 
+export const getRequestModule = () => RequestsModule;
 export default RequestsModule;

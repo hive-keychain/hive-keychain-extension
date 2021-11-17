@@ -1,5 +1,6 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
+import DialogError from 'src/dialog/pages/error';
 import Unlock from 'src/dialog/pages/unlock';
 import './dialog.scss';
 
@@ -23,6 +24,8 @@ const App = () => {
             wrongMk={data.command === DialogCommand.WRONG_MK}
           />
         );
+      case DialogCommand.SEND_DIALOG_ERROR:
+        return <DialogError data={data} />;
       default:
         return null;
     }

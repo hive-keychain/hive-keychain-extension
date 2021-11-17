@@ -1,4 +1,4 @@
-import RequestsModule from '@background/requests';
+import { getRequestModule } from '@background/requests';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
@@ -22,7 +22,7 @@ const sendErrors = (
       data: request,
       message: message,
       display_msg: display_msg,
-      request_id: RequestsModule.request_id,
+      request_id: getRequestModule().request_id,
     },
     tab: tab,
   });
@@ -30,7 +30,7 @@ const sendErrors = (
   // setTimeout(() => {
   //   clearInterval(interval);
   // }, 2000);
-  RequestsModule.reset();
+  getRequestModule().reset();
 };
 
 export default sendErrors;

@@ -29,7 +29,18 @@ type UnlockMessage = {
 export default ({ data, wrongMk }: Props) => {
   console.log(data);
   const [password, setPassword] = useState('');
-  const login = () => {};
+  const login = () => {
+    chrome.runtime.sendMessage({
+      command: BackgroundCommand.UNLOCK_FROM_DIALOG,
+      value: {
+        data: data.msg.data,
+        tab: data.tab,
+        mk: password,
+        domain: data.domain,
+        request_id: data.msg.data.request_id,
+      },
+    });
+  };
   return (
     <>
       <DialogHeader title={chrome.i18n.getMessage('dialog_header_unlock')} />
@@ -43,22 +54,7 @@ export default ({ data, wrongMk }: Props) => {
         onEnterPress={login}
       />
       <p>{wrongMk && chrome.i18n.getMessage('dialog_header_wrong_pwd')}</p>
-      <ButtonComponent
-        label={'dialog_unlock'}
-        onClick={() => {
-          console.log(password);
-          chrome.runtime.sendMessage({
-            command: BackgroundCommand.UNLOCK_FROM_DIALOG,
-            value: {
-              data: data.msg.data,
-              tab: data.tab,
-              mk: password,
-              domain: data.domain,
-              request_id: data.msg.data.request_id,
-            },
-          });
-        }}
-      />
+      <ButtonComponent label={'dialog_unlock'} onClick={login} />
       <ButtonComponent
         label={'dialog_cancel'}
         onClick={() => {
