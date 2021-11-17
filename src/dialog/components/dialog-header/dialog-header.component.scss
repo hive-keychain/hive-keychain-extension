@@ -1,0 +1,22 @@
+.dialog-header {
+  display: inline-block;
+  margin: 10px 0 20px 0;
+  width: 100%;
+  font-size: 20px;
+  line-height: 25px;
+  text-transform: uppercase;
+  color: 'red';
+}
+
+.dialog-header::before {
+  content: '';
+  width: 41.21px;
+  height: 30px;
+  opacity: 0.8;
+  background-repeat: no-repeat;
+  background-image: url('/assets/images/keychain_icon_small.png');
+  background-size: 41.21px 30px;
+  padding-right: 60px;
+  vertical-align: 0%;
+  background-size: contain;
+}

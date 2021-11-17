@@ -1,6 +1,6 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
-import Unlock from 'src/dialog/pages/Unlock';
+import Unlock from 'src/dialog/pages/unlock';
 import './dialog.scss';
 
 const App = () => {
@@ -16,7 +16,13 @@ const App = () => {
     console.log(data);
     switch (data.command) {
       case DialogCommand.UNLOCK:
-        return <Unlock data={data} />;
+      case DialogCommand.WRONG_MK:
+        return (
+          <Unlock
+            data={data}
+            wrongMk={data.command === DialogCommand.WRONG_MK}
+          />
+        );
       default:
         return null;
     }
