@@ -1,15 +1,15 @@
-import { getRequestModule } from '@background/requests';
+import { getRequestHandler } from '@background/requests';
 
 export const createPopup = (
   callback: () => void,
   popupHtml = 'dialog.html',
 ) => {
   let width = 350;
-  getRequestModule().setConfirmed(false);
+  getRequestHandler().setConfirmed(false);
   //Ensuring only one window is opened by the extension at a time.
-  if (getRequestModule().windowId) {
-    removeWindow(getRequestModule().windowId!);
-    getRequestModule().setWindowId(undefined);
+  if (getRequestHandler().windowId) {
+    removeWindow(getRequestHandler().windowId!);
+    getRequestHandler().setWindowId(undefined);
   }
   //Create new window on the top right of the screen
   chrome.windows.getCurrent((w) => {
@@ -25,7 +25,7 @@ export const createPopup = (
       },
       (win) => {
         if (!win) return; //TODO: Check if that doesnt cause issue
-        getRequestModule().setWindowId(win.id);
+        getRequestHandler().setWindowId(win.id);
         // Window create fails to take into account window size so it s updated afterwhile.
         chrome.windows.update(
           win.id!,
@@ -53,23 +53,9 @@ export const createPopup = (
 };
 
 chrome.windows.onRemoved.addListener((id: number) => {
-  console.log('removing window', getRequestModule());
-
-  const { windowId, request, request_id, tab, confirmed } = getRequestModule();
+  const { windowId, request, request_id, tab, confirmed } = getRequestHandler();
 
   if (id == windowId && !confirmed) {
-    console.log('removed window');
-    console.log(tab!, {
-      command: 'answerRequest',
-      msg: {
-        success: false,
-        error: 'user_cancel',
-        result: null,
-        data: request,
-        message: chrome.i18n.getMessage('bgd_lifecycle_request_canceled'),
-        request_id: request_id,
-      },
-    });
     chrome.tabs.sendMessage(tab!, {
       command: 'answerRequest',
       msg: {
@@ -81,6 +67,8 @@ chrome.windows.onRemoved.addListener((id: number) => {
         request_id: request_id,
       },
     });
+
+    getRequestHandler().reset();
   }
 });
 

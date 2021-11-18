@@ -1,5 +1,5 @@
 import MkModule from '@background/mk.module';
-import { getRequestModule } from '@background/requests';
+import { getRequestHandler } from '@background/requests';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -48,7 +48,7 @@ export default async (
       MkModule.getMk()!,
     ).list as LocalAccount[];
     console.log(accounts);
-    getRequestModule().initializeParams(
+    getRequestHandler().initializeParameters(
       accounts,
       items.current_rpc,
       JSON.parse(items.no_confirm || '[]'),
@@ -90,7 +90,7 @@ export default async (
           //@ts-ignore
           const publicKey: Key = account.keys[`${typeWif}Pubkey`]!;
           const key = account.keys[typeWif];
-          getRequestModule().setKeys(key!, publicKey!);
+          getRequestHandler().setKeys(key!, publicKey!);
 
           if (!hasNoConfirm(items.no_confirm, req, domain, items.current_rpc)) {
             Logic.requestWithConfirmation(tab!, req, domain, items.current_rpc);
