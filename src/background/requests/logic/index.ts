@@ -12,7 +12,7 @@ export * from './unlockWallet.logic';
 //TODO : Check all possible cases
 
 // addAccountRequest
-// addAccountToEmptyWallet
+// addAccountToEmptyWallet          OK
 // initializeWallet                 OK
 // missingKey                       OK
 // missingUser                      OK

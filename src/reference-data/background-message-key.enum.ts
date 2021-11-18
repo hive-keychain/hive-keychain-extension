@@ -16,6 +16,7 @@ export enum BackgroundCommand {
   // Keychain Request
   SEND_REQUEST = 'sendRequest',
   UNLOCK_FROM_DIALOG = 'unlockFromDialog',
+  REGISTER_FROM_DIALOG = 'registerFromDialog',
   ACCEPT_TRANSACTION = 'acceptTransaction',
 
   // User preferences

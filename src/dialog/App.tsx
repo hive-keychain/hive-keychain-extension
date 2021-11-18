@@ -1,6 +1,7 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import DialogError from 'src/dialog/pages/error';
+import Register from 'src/dialog/pages/register';
 import Unlock from 'src/dialog/pages/unlock';
 import './dialog.scss';
 
@@ -26,6 +27,8 @@ const App = () => {
         );
       case DialogCommand.SEND_DIALOG_ERROR:
         return <DialogError data={data} />;
+      case DialogCommand.REGISTER:
+        return <Register data={data} />;
       default:
         return null;
     }

@@ -9,6 +9,7 @@ import SettingsModule from '@background/settings.module';
 import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import Logger from 'src/utils/logger.utils';
 import MkUtils from 'src/utils/mk.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
@@ -46,15 +47,26 @@ const chromeMessageHandler = async (
       );
       break;
     case BackgroundCommand.UNLOCK_FROM_DIALOG:
-      const { mk, domain, data, tab } = backgroundMessage.value;
-      console.log('unlocked:', backgroundMessage.value);
-      if (await MkUtils.login(mk)) {
+      {
+        const { mk, domain, data, tab } = backgroundMessage.value;
+        if (await MkUtils.login(mk)) {
+          MkModule.saveMk(mk);
+          init(data, tab, domain);
+        } else {
+          chrome.runtime.sendMessage({
+            command: DialogCommand.WRONG_MK,
+          });
+        }
+      }
+      break;
+    case BackgroundCommand.REGISTER_FROM_DIALOG:
+      {
+        Logger.log('Registrating from dialog');
+        const { mk, domain, data, tab } = backgroundMessage.value;
         MkModule.saveMk(mk);
+
+        Logger.log(mk, domain, data, tab);
         init(data, tab, domain);
-      } else {
-        chrome.runtime.sendMessage({
-          command: DialogCommand.WRONG_MK,
-        });
       }
       break;
     case BackgroundCommand.ACCEPT_TRANSACTION:

@@ -7,32 +7,6 @@ import {
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
 
-// type RequestModule = {
-//   tab?: number;
-//   request?: KeychainRequest;
-//   request_id?: number;
-//   confirmed: boolean;
-//   accounts: LocalAccount[];
-//   rpc: Rpc | null;
-//   preferences?: UserPreference[];
-//   key?: string;
-//   publicKey?: string;
-//   windowId?: number;
-//   setWindowId: (windowId?: number) => void;
-//   setConfirmed: (confirmed: boolean) => void;
-//   sendRequest: (
-//     sender: chrome.runtime.MessageSender,
-//     msg: KeychainRequestWrapper,
-//   ) => void;
-//   initializeParams: (
-//     accounts: LocalAccount[],
-//     rpc: Rpc,
-//     preferences: UserPreference[],
-//   ) => void;
-//   setKeys: (key: string, publicKey: string) => void;
-//   reset: () => void;
-// };
-
 class RequestsHandler {
   tab?: number;
   request?: KeychainRequest;

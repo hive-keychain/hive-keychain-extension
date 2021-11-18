@@ -1,7 +1,7 @@
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
-import './unlock.scss';
+//import './unlock.scss';
 
 type Props = {
   data: ErrorMessage;
