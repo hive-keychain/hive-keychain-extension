@@ -4,7 +4,15 @@
   @include pageLayoutRowGap;
   row-gap: 32px;
   .disclaimer {
-    font-size: 20px;
+    font-size: 18px;
+  }
+
+  .settings {
+    height: 24px;
+    width: 24px;
+    cursor: pointer;
+    align-self: flex-end;
+    margin-bottom: -18px;
   }
 
   .my-tokens {
@@ -27,6 +35,9 @@
         height: 24px;
         width: 24px;
         cursor: pointer;
+      }
+      .send {
+        justify-self: flex-end;
       }
     }
   }

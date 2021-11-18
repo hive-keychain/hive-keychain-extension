@@ -10,4 +10,5 @@ export enum LocalStorageKeyEnum {
   AUTOLOCK = 'autolock',
   NO_CONFIRM = 'no_confirm',
   WALLET_HISTORY_FILTERS = 'walletHistoryFilters',
+  HIDDEN_TOKENS = 'hidden_tokens',
 }

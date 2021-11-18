@@ -11,6 +11,9 @@ import { AccountValueExplanationComponent } from '@popup/pages/app-container/hom
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
+import { TokensHistoryComponent } from '@popup/pages/app-container/home/tokens/tokens-history/tokens-history.component';
+import { TokensSettingsComponent } from '@popup/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
+import { TokensTransferComponent } from '@popup/pages/app-container/home/tokens/tokens-transfer/tokens-transfer.component';
 import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.component';
 import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
@@ -54,8 +57,6 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <PowerUpDownComponent />;
       case Screen.BUY_COINS_PAGE:
         return <BuyCoinsComponent />;
-      case Screen.TOKENS_PAGE:
-        return <TokensComponent />;
       case Screen.WALLET_HISTORY_PAGE:
         return <WalletHistoryComponent />;
       case Screen.CONFIRMATION_PAGE:
@@ -68,6 +69,16 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <DelegationsComponent />;
       case Screen.INCOMING_OUTGOING_PAGE:
         return <IncomingOutgoingPageComponent />;
+      //Tokens
+      case Screen.TOKENS_PAGE:
+        return <TokensComponent />;
+      case Screen.TOKENS_HISTORY:
+        return <TokensHistoryComponent />;
+      case Screen.TOKENS_SETTINGS:
+        return <TokensSettingsComponent />;
+      case Screen.TOKENS_TRANSFER:
+        return <TokensTransferComponent />;
+
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
         return <SettingsMainPageComponent />;
