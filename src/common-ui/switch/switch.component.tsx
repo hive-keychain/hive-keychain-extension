@@ -4,7 +4,7 @@ import './switch.component.scss';
 
 interface SwitchProps {
   onChange: (value: boolean) => void;
-  title: string;
+  title?: string;
   checked: boolean;
   skipTranslation?: boolean;
   hint?: string;
@@ -21,11 +21,13 @@ const SwitchComponent = (props: SwitchProps) => {
         }}
         checked={props.checked}
         className={props.checked ? 'checked' : 'not-checked'}>
-        <div>
-          {props.skipTranslation
-            ? props.title
-            : chrome.i18n.getMessage(props.title)}
-        </div>
+        {props.title && (
+          <div>
+            {props.skipTranslation
+              ? props.title
+              : chrome.i18n.getMessage(props.title)}
+          </div>
+        )}
       </Switch>
       {props.hint && (
         <div className="hint">

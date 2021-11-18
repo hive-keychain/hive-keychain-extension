@@ -1721,5 +1721,9 @@
   "popup_html_confirm_delegation": {
     "message": "Please confirm that you want to delegate $1 to $2",
     "description": "Withdraw savings confirmation message"
+  },
+  "popup_html_tokens_history": {
+    "message": "$1 history",
+    "description": "Tokens history title"
   }
 }

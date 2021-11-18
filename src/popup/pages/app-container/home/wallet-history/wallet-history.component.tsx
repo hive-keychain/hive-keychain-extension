@@ -154,7 +154,7 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
               <div className="search-panel">
                 <InputComponent
                   type={InputType.TEXT}
-                  placeholder="popup_html_filter"
+                  placeholder="popup_html_search"
                   value={filterValue}
                   onChange={setFilterValue}
                 />
