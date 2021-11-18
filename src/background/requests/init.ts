@@ -16,6 +16,7 @@ import {
   hasNoConfirm,
 } from 'src/utils/requests.utils';
 import * as Logic from './logic';
+
 export default async (
   request: KeychainRequest,
   tab: number | undefined,
@@ -41,14 +42,16 @@ export default async (
     // if locked
     Logic.unlockWallet(tab!, request, domain);
   } else {
+    console.log(items.accounts, MkModule.getMk());
     const accounts = EncryptUtils.decryptToJson(
       items.accounts,
       MkModule.getMk()!,
-    ) as LocalAccount[];
+    ).list as LocalAccount[];
+    console.log(accounts);
     RequestsModule.initializeParams(
       accounts,
       items.current_rpc,
-      JSON.parse(items.no_confirm),
+      JSON.parse(items.no_confirm || '[]'),
     );
 
     let account = accounts.find((e) => e.name === username);

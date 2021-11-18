@@ -1,5 +1,11 @@
 @import '/src/popup/variable.scss';
 
+@font-face {
+  font-family: Futura;
+  src: url('/assets/fonts/Futura-Boo.otf');
+  font-weight: 400;
+}
+
 html {
   height: 100%;
 }
@@ -15,7 +21,6 @@ body {
 .dialog {
   font-family: Futura !important;
   height: 100%;
-  font-weight: 400;
   background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
       padding-box,
     linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0% no-repeat
@@ -25,6 +30,5 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  row-gap: 32px;
   font-size: 16px;
 }
