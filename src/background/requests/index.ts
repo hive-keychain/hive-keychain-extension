@@ -60,7 +60,6 @@ class RequestsHandler {
   }
 
   reset() {
-    console.log('resetting');
     this.key = undefined;
     this.publicKey = undefined;
     this.accounts = [];
@@ -87,11 +86,8 @@ class RequestsHandler {
     msg: KeychainRequestWrapper,
   ) {
     this.tab = sender.tab!.id;
-    console.log(msg);
     this.request = msg.request;
     this.request_id = msg.request_id;
-    console.log(this);
-    console.log(msg.request, msg.request_id, sender.tab!.id, 'a');
     init(msg.request, this.tab, msg.domain);
   }
 }

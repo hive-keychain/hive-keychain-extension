@@ -1,5 +1,3 @@
-// Handled
-
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';

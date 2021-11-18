@@ -1,5 +1,3 @@
-//Handled
-
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
