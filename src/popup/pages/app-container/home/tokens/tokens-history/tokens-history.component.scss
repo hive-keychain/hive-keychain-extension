@@ -1,1 +1,12 @@
 @import '../../../../../variable.scss';
+
+.tokens-history {
+  @include pageLayoutRowGap;
+  .token-history-item {
+    background: $black-transparent;
+  }
+
+  .token-history-item:nth-child(even) {
+    background: $red-transparent;
+  }
+}
