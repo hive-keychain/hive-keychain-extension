@@ -46,29 +46,29 @@ const chromeMessageHandler = async (
         backgroundMessage as KeychainRequestWrapper,
       );
       break;
-    case BackgroundCommand.UNLOCK_FROM_DIALOG:
-      {
-        const { mk, domain, data, tab } = backgroundMessage.value;
-        if (await MkUtils.login(mk)) {
-          MkModule.saveMk(mk);
-          init(data, tab, domain);
-        } else {
-          chrome.runtime.sendMessage({
-            command: DialogCommand.WRONG_MK,
-          });
-        }
-      }
-      break;
-    case BackgroundCommand.REGISTER_FROM_DIALOG:
-      {
-        Logger.log('Registrating from dialog');
-        const { mk, domain, data, tab } = backgroundMessage.value;
+    case BackgroundCommand.UNLOCK_FROM_DIALOG: {
+      const { mk, domain, data, tab } = backgroundMessage.value;
+      if (await MkUtils.login(mk)) {
         MkModule.saveMk(mk);
-
-        Logger.log(mk, domain, data, tab);
         init(data, tab, domain);
+      } else {
+        chrome.runtime.sendMessage({
+          command: DialogCommand.WRONG_MK,
+        });
       }
+
       break;
+    }
+    case BackgroundCommand.REGISTER_FROM_DIALOG: {
+      Logger.log('Registrating from dialog');
+      const { mk, domain, data, tab } = backgroundMessage.value;
+      MkModule.saveMk(mk);
+
+      Logger.log(mk, domain, data, tab);
+      init(data, tab, domain);
+
+      break;
+    }
     case BackgroundCommand.ACCEPT_TRANSACTION:
       break;
     case BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY:
