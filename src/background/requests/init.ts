@@ -1,5 +1,5 @@
 import MkModule from '@background/mk.module';
-import RequestsModule from '@background/requests';
+import { getRequestHandler } from '@background/requests';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -42,13 +42,11 @@ export default async (
     // if locked
     Logic.unlockWallet(tab!, request, domain);
   } else {
-    console.log(items.accounts, MkModule.getMk());
-    const accounts = EncryptUtils.decryptToJson(
-      items.accounts,
-      MkModule.getMk()!,
-    ).list as LocalAccount[];
-    console.log(accounts);
-    RequestsModule.initializeParams(
+    const accounts = items.accounts
+      ? (EncryptUtils.decryptToJson(items.accounts, MkModule.getMk()!)
+          .list as LocalAccount[])
+      : [];
+    getRequestHandler().initializeParameters(
       accounts,
       items.current_rpc,
       JSON.parse(items.no_confirm || '[]'),
@@ -90,7 +88,7 @@ export default async (
           //@ts-ignore
           const publicKey: Key = account.keys[`${typeWif}Pubkey`]!;
           const key = account.keys[typeWif];
-          RequestsModule.setKeys(key!, publicKey!);
+          getRequestHandler().setKeys(key!, publicKey!);
 
           if (!hasNoConfirm(items.no_confirm, req, domain, items.current_rpc)) {
             Logic.requestWithConfirmation(tab!, req, domain, items.current_rpc);

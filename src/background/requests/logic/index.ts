@@ -8,3 +8,15 @@ export * from './requestWithConfirmation.logic';
 export * from './requestWithoutConfirmation.logic';
 export * from './transferRequest.logic';
 export * from './unlockWallet.logic';
+
+//TODO : Check all possible cases
+
+// addAccountRequest
+// addAccountToEmptyWallet          OK
+// initializeWallet                 OK
+// missingKey                       OK
+// missingUser                      OK
+// requestWithConfirmation
+// requestWithoutConfirmation
+// transferRequest
+// unlockWallet                     OK

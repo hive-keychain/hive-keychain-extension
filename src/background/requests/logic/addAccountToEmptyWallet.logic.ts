@@ -9,7 +9,7 @@ export const addAccountToEmptyWallet = (
 ) => {
   createPopup(() => {
     chrome.runtime.sendMessage({
-      command: DialogCommand.SEND_DIALOG_ERROR,
+      command: DialogCommand.REGISTER,
       msg: {
         success: false,
         error: 'register',

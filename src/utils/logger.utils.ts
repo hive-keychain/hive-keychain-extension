@@ -1,5 +1,5 @@
-const log = (message: string) => {
-  console.log(`${message}`);
+const log = (...message: any[]) => {
+  console.log(...message);
 };
 
 const info = (message: string) => {
@@ -20,6 +20,6 @@ const error = (message: string, stacktrace: string) => {
 //     return moment().format('L') + ' ' + moment().format('HH:mm:ss');
 // }
 
-const Logger = {log, info, warn, error};
+const Logger = { log, info, warn, error };
 
 export default Logger;
