@@ -30,6 +30,10 @@
         flex-direction: column;
         .name {
           font-size: 18px;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+          max-width: 240px;
         }
         .issued-by {
           font-size: 16px;

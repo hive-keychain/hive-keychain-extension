@@ -1,6 +1,6 @@
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
-import { hiveEngineAPI, hsc } from '@popup/api/hiveEngine';
+import { historyHiveEngineAPI, hsc } from '@popup/api/hiveEngine';
 import {
   Token,
   TokenBalance,
@@ -51,8 +51,14 @@ export const loadTokenHistory =
   (account: string, currency: string): AppThunk =>
   async (dispatch) => {
     let tokenHistory: TokenTransaction[] = (
-      await hiveEngineAPI.get('accountHistory', {
-        params: { account, symbol: currency, type: 'user' },
+      await historyHiveEngineAPI.get('accountHistory', {
+        params: {
+          account,
+          symbol: currency,
+          type: 'user',
+          limit: 20,
+          offset: 0,
+        },
       })
     ).data;
     tokenHistory = tokenHistory.map((e) => {

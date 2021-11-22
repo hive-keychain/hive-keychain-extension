@@ -455,6 +455,12 @@ const getPowerDown = (
   return [withdrawn, total_withdrawing, next_vesting_withdrawal];
 };
 
+const doesAccountExist = async (username: string) => {
+  return (
+    (await HiveUtils.getClient().database.getAccounts([username])).length > 0
+  );
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -473,6 +479,7 @@ const AccountUtils = {
   getAccountValue,
   getPublicMemo,
   getPowerDown,
+  doesAccountExist,
   AccountErrorMessages,
 };
 
