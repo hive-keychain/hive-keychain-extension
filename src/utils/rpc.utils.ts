@@ -52,6 +52,11 @@ const saveCurrentRpc = (rpc: Rpc) => {
   );
 };
 
+const findRpc = async (uri: string) => {
+  const list = [...getFullList(), ...(await getCustomRpcs())];
+  return list.find((e) => e.uri === uri);
+};
+
 const RpcUtils = {
   getFullList,
   addCustomRpc,
@@ -61,6 +66,7 @@ const RpcUtils = {
   isDefault,
   saveCustomRpc,
   deleteCustomRpc,
+  findRpc,
 };
 
 export default RpcUtils;

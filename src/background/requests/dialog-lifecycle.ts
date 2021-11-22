@@ -36,7 +36,7 @@ export const createPopup = (
             left: w.width! - width + w.left!,
           },
           () => {
-            setTimeout(callback, 200);
+            setTimeout(callback, 500);
           },
         );
         //TODO : Check if the implementation is better
@@ -73,7 +73,7 @@ chrome.windows.onRemoved.addListener((id: number) => {
 });
 
 // check if win exists before removing it
-const removeWindow = (windowId: number) => {
+export const removeWindow = (windowId: number) => {
   chrome.windows.getAll((windows) => {
     const hasWin = windows.filter((win) => {
       return win.id == windowId;

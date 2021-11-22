@@ -1,20 +1,22 @@
-import { RequestAddAccount } from '@interfaces/keychain.interface';
+import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import React from 'react';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 
 type Props = {
-  data: RequestAddAccount;
+  data: RequestAddAccount & RequestId;
   domain: string;
   tab: number;
   testnet: boolean;
 };
 
-const AddAccount = ({ data, domain, tab, testnet }: Props) => {
+const AddAccount = (props: Props) => {
+  const { data, domain, tab, testnet } = props;
+  console.log(props);
   return (
     <Operation
       title={chrome.i18n.getMessage('popup_html_add_account')}
-      onConfirm={() => {}}>
+      {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem
         title="dialog_keys"

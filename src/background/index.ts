@@ -4,6 +4,7 @@ import ClaimModule from '@background/claim.module';
 import KeychainifyModule from '@background/keychainify.module';
 import { initRequestHandler } from '@background/requests';
 import init from '@background/requests/init';
+import { performOperation } from '@background/requests/operations';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
 import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
@@ -70,6 +71,8 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:
+      const { keep, data, tab } = backgroundMessage.value;
+      performOperation(data, tab, keep);
       break;
     case BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY:
       KeychainifyModule.saveKeychainify(backgroundMessage.value);
