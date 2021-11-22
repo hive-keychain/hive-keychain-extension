@@ -1,4 +1,6 @@
 import init from '@background/requests/init';
+import RPCModule from '@background/rpc.module';
+import hive, { Client } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { UserPreference } from '@interfaces/preferences.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -6,7 +8,6 @@ import {
   KeychainRequest,
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
-
 class RequestsHandler {
   tab?: number;
   request?: KeychainRequest;
@@ -18,9 +19,13 @@ class RequestsHandler {
   key?: string;
   publicKey?: string;
   windowId?: number;
+  hiveClient: Client;
 
   constructor() {
     this.confirmed = false;
+    this.hiveClient = new hive.Client(RPCModule.getActiveRpc().uri, {
+      chainId: RPCModule.getActiveRpc().chainId,
+    });
   }
 
   initializeParameters(
@@ -30,6 +35,7 @@ class RequestsHandler {
   ) {
     this.accounts = accounts;
     this.rpc = rpc;
+    this.hiveClient = new hive.Client(rpc.uri, { chainId: rpc.chainId });
     this.preferences = preferences;
   }
 
@@ -63,6 +69,10 @@ class RequestsHandler {
     this.request = msg.request;
     this.request_id = msg.request_id;
     init(msg.request, this.tab, msg.domain);
+  }
+
+  getHiveClient() {
+    return this.hiveClient;
   }
 }
 let requestHandler: RequestsHandler;

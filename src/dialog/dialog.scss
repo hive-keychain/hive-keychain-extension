@@ -26,9 +26,23 @@ body {
     linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0% no-repeat
       padding-box !important;
   color: white;
-  padding: 24px;
+  padding: 32px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   font-size: 16px;
+}
+
+pre {
+  font-family: Futura !important;
+  margin: 0;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #ff0000;
 }

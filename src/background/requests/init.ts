@@ -15,6 +15,7 @@ import {
   getRequiredWifType,
   hasNoConfirm,
 } from 'src/utils/requests.utils';
+import RpcUtils from 'src/utils/rpc.utils';
 import * as Logic from './logic';
 
 export default async (
@@ -31,6 +32,13 @@ export default async (
     LocalStorageKeyEnum.NO_CONFIRM,
     LocalStorageKeyEnum.CURRENT_RPC,
   ]);
+  let rpc = items.current_rpc;
+  if (request.rpc) {
+    const override_rpc = await RpcUtils.findRpc(request.rpc);
+    if (override_rpc) {
+      rpc = override_rpc;
+    }
+  }
   const { username, type } = request;
   if (!items.accounts && type !== KeychainRequestTypes.addAccount) {
     // Wallet not initialized
@@ -48,7 +56,7 @@ export default async (
       : [];
     getRequestHandler().initializeParameters(
       accounts,
-      items.current_rpc,
+      rpc,
       JSON.parse(items.no_confirm || '[]'),
     );
 
@@ -61,18 +69,12 @@ export default async (
         request as RequestTransfer,
         domain,
         accounts,
-        items.current_rpc,
+        rpc,
         account,
       );
     } else if (anonymous_requests.includes(type) && !username) {
       // if no username specified for anonymous requests
-      Logic.anonymousRequests(
-        tab!,
-        request,
-        domain,
-        accounts,
-        items.current_rpc,
-      );
+      Logic.anonymousRequests(tab!, request, domain, accounts, rpc);
     } else {
       // Default case
       if (!account) {
@@ -90,8 +92,8 @@ export default async (
           const key = account.keys[typeWif];
           getRequestHandler().setKeys(key!, publicKey!);
 
-          if (!hasNoConfirm(items.no_confirm, req, domain, items.current_rpc)) {
-            Logic.requestWithConfirmation(tab!, req, domain, items.current_rpc);
+          if (!hasNoConfirm(items.no_confirm, req, domain, rpc)) {
+            Logic.requestWithConfirmation(tab!, req, domain, rpc);
           } else {
             Logic.requestWithoutConfirmation(tab!, req);
           }

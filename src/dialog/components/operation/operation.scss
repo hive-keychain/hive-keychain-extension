@@ -1,0 +1,38 @@
+.operation_body {
+  max-height: 285px;
+  overflow-y: scroll;
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 10px 32px;
+  margin-left: -32px;
+  margin-right: -32px;
+}
+
+h3 {
+  font-size: 16px;
+  line-height: 16px;
+  text-transform: uppercase;
+  margin-block-end: 0.5em;
+}
+
+.operation_item_content {
+  font-style: italic;
+}
+
+.operation_footer {
+  display: block;
+  width: 100%;
+  position: absolute;
+  box-sizing: border-box;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin-left: -32px;
+  padding: 32px;
+
+  .operation_buttons {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+  }
+}
