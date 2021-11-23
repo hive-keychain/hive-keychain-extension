@@ -505,17 +505,13 @@ const claimAccounts = async (rc: any, activeAccount: ActiveAccount) => {
 };
 
 const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
-  console.log({
-    id: Config.mainNet,
-    required_auths: [activeAccount.name!],
-    required_posting_auths: activeAccount.keys.active!,
-    json: JSON.stringify(json),
-  });
   return await getClient().broadcast.json(
     {
       id: Config.mainNet,
       required_auths: [activeAccount.name!],
-      required_posting_auths: [activeAccount.keys.active!],
+      required_posting_auths: activeAccount.keys.active
+        ? []
+        : [activeAccount.name!],
       json: JSON.stringify(json),
     },
     PrivateKey.fromString(activeAccount.keys.active as string),

@@ -1,5 +1,6 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
+import { setLoading } from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -35,6 +36,7 @@ const TokensTransfer = ({
   navigateToWithParams,
   navigateTo,
   fetchPhishingAccounts,
+  setLoading,
 }: PropsFromRedux) => {
   const [receiverUsername, setReceiverUsername] = useState(
     formParams.receiverUsername ? formParams.receiverUsername : '',
@@ -131,7 +133,6 @@ const TokensTransfer = ({
       warningMessage: warningMessage,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        let success = false;
         let memoParam = memo;
         if (memo.length) {
           if (memo.startsWith('#')) {
@@ -159,9 +160,10 @@ const TokensTransfer = ({
           },
         };
 
+        setLoading(true);
         let result = await HiveUtils.sendCustomJson(json, activeAccount);
-        console.log(result);
-        if (success) {
+        setLoading(false);
+        if (result.id) {
           navigateTo(Screen.HOME_PAGE, true);
           await TransferUtils.saveTransferRecipient(
             receiverUsername,
@@ -251,6 +253,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   navigateTo,
   fetchPhishingAccounts,
+  setLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

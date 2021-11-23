@@ -5,6 +5,7 @@ import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { LoadingComponent } from '@popup/pages/app-container/home/loading/loading.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -34,6 +35,7 @@ const App = ({
   refreshActiveAccount,
   loadBittrexPrices,
   loadGlobalProperties,
+  loading,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
 
@@ -122,6 +124,7 @@ const App = ({
     <div className="App">
       {renderMainLayoutNav()}
       <MessageContainerComponent />
+      {loading && <LoadingComponent />}
     </div>
   );
 };
@@ -132,6 +135,7 @@ const mapStateToProps = (state: RootState) => {
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
     activeAccountUsername: state.activeAccount?.name,
+    loading: state.loading,
   };
 };
 

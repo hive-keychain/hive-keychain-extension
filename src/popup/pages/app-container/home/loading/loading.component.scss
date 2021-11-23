@@ -1,0 +1,24 @@
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  .overlay {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    background: black;
+    opacity: 0.75;
+  }
+  .loading-text {
+    font-size: 20px;
+    margin-top: 16px;
+    color: white;
+    z-index: 1;
+  }
+}
