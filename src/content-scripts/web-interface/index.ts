@@ -1,5 +1,6 @@
 // Content script interfacing the website and the extension
 
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import schemas, {
   commonRequestParams,
 } from 'src/content-scripts/web-interface/input-validation';
@@ -61,7 +62,7 @@ document.addEventListener('swRequest_hive', (request: object) => {
 
 // Get notification from the background upon request completion and pass it back to the dApp.
 chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
-  if (obj.command === 'answerRequest') {
+  if (obj.command === DialogCommand.ANSWER_REQUEST) {
     sendResponse(obj.msg);
     req = null;
   }

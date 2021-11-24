@@ -1,4 +1,5 @@
 import { KeychainRequestData, RequestId } from '@interfaces/keychain.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createMessage = (
   err: any,
@@ -10,7 +11,7 @@ export const createMessage = (
 ) => {
   const { request_id, ...data } = datas;
   return {
-    command: 'answerRequest',
+    command: DialogCommand.ANSWER_REQUEST,
     msg: {
       success: !err,
       error: err,

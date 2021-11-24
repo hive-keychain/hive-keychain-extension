@@ -1,4 +1,5 @@
 import { getRequestHandler } from '@background/requests';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createPopup = (
   callback: () => void,
@@ -57,7 +58,7 @@ chrome.windows.onRemoved.addListener((id: number) => {
 
   if (id == windowId && !confirmed) {
     chrome.tabs.sendMessage(tab!, {
-      command: 'answerRequest',
+      command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
         error: 'user_cancel',

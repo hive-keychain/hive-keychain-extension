@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import DialogError from 'src/dialog/pages/error';
 import Register from 'src/dialog/pages/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
+import RequestResponse from 'src/dialog/pages/request-response';
 import Unlock from 'src/dialog/pages/unlock';
 import './dialog.scss';
 
@@ -32,6 +33,8 @@ const App = () => {
         return <Register data={data} />;
       case DialogCommand.SEND_DIALOG_CONFIRM:
         return <RequestConfirmation data={data} />;
+      case DialogCommand.ANSWER_REQUEST:
+        return <RequestResponse data={data} />;
       default:
         return null;
     }
