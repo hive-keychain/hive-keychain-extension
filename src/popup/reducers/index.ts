@@ -4,6 +4,7 @@ import BittrexReducer from '@popup/reducers/bittrex.reducer';
 import ConversionsReducer from '@popup/reducers/conversion.reducer';
 import DelegationsReducer from '@popup/reducers/delegation.reducer';
 import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
+import { LoadingReducer } from '@popup/reducers/loading.reducer';
 import { PhishingReducer } from '@popup/reducers/phishing.reducer';
 import TokenHistoryReducer from '@popup/reducers/token-history.reducer';
 import TokenMarketReducer from '@popup/reducers/token-market.reducer';
@@ -33,4 +34,5 @@ export default combineReducers({
   tokens: TokensReducer,
   tokenHistory: TokenHistoryReducer,
   tokenMarket: TokenMarketReducer,
+  loading: LoadingReducer,
 });

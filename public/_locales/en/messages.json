@@ -1725,5 +1725,9 @@
   "popup_html_tokens_history": {
     "message": "$1 history",
     "description": "Tokens history title"
+  },
+  "popup_html_tokens_no_tokens": {
+    "message": "You currently don't have any custom tokens. Click on the settings wheel to get information about the tokens available.",
+    "description": "If no tokens"
   }
 }

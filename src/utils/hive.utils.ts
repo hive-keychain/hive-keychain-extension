@@ -19,6 +19,7 @@ import {
 } from '@popup/actions/message.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { store } from '@popup/store';
+import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
 import { Conversion } from 'src/interfaces/conversion.interface';
@@ -503,6 +504,20 @@ const claimAccounts = async (rc: any, activeAccount: ActiveAccount) => {
   } catch (err) {}
 };
 
+const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
+  return await getClient().broadcast.json(
+    {
+      id: Config.mainNet,
+      required_auths: [activeAccount.name!],
+      required_posting_auths: activeAccount.keys.active
+        ? []
+        : [activeAccount.name!],
+      json: JSON.stringify(json),
+    },
+    PrivateKey.fromString(activeAccount.keys.active as string),
+  );
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -522,6 +537,7 @@ const HiveUtils = {
   deposit,
   delegateVestingShares,
   claimAccounts,
+  sendCustomJson,
 };
 
 export default HiveUtils;

@@ -42,16 +42,17 @@ const WalletInfoSection = ({
       receivedVestingShares - delegatedVestingShares
     ).toFixed(3);
 
-    const delegation = Math.abs(
-      FormatUtils.toHP(delegationVestingShares, globalProperties.globals),
+    const delegation = FormatUtils.toHP(
+      delegationVestingShares,
+      globalProperties.globals,
     );
 
     setDelegationAmount(
       `${delegation > 0 ? '+' : '-'} ${FormatUtils.withCommas(
-        delegation.toFixed(3),
+        Math.abs(delegation).toFixed(3),
       )}`,
     );
-  }, []);
+  }, [activeAccount]);
 
   const toggleDropdown = (
     event: any,
