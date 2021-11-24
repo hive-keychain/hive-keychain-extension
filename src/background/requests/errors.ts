@@ -10,9 +10,6 @@ const sendErrors = (
   display_msg: string,
   request: KeychainRequest,
 ) => {
-  // TODO: Cleanup if interval is not needed
-  // clearInterval(interval);
-  // interval = setInterval(() => {
   chrome.runtime.sendMessage({
     command: DialogCommand.SEND_DIALOG_ERROR,
     msg: {
@@ -26,10 +23,6 @@ const sendErrors = (
     },
     tab: tab,
   });
-  // }, 200);
-  // setTimeout(() => {
-  //   clearInterval(interval);
-  // }, 2000);
 };
 
 export default sendErrors;

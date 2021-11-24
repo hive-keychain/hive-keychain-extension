@@ -25,7 +25,7 @@ export const createPopup = (
         top: w.top,
       },
       (win) => {
-        if (!win) return; //TODO: Check if that doesnt cause issue
+        if (!win) return;
         getRequestHandler().setWindowId(win.id);
         // Window create fails to take into account window size so it s updated afterwhile.
         chrome.windows.update(
@@ -40,14 +40,6 @@ export const createPopup = (
             setTimeout(callback, 500);
           },
         );
-        //TODO : Check if the implementation is better
-        // if (typeof callback === 'function') {
-        //   clearInterval(interval);
-        //   interval = setInterval(callback, 200);
-        //   setTimeout(() => {
-        //     clearInterval(interval);
-        //   }, 2000);
-        // }
       },
     );
   });
