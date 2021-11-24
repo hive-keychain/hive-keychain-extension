@@ -23,6 +23,7 @@ class RequestsHandler {
 
   constructor() {
     this.confirmed = false;
+    console.log(RPCModule.getActiveRpc());
     this.hiveClient = new hive.Client(RPCModule.getActiveRpc().uri, {
       chainId: RPCModule.getActiveRpc().chainId,
     });

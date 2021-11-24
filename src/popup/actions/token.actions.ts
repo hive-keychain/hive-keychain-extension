@@ -1,6 +1,6 @@
+import { hiveEngineAPI, hsc } from '@api/hiveEngine';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
-import { hiveEngineAPI, hsc } from '@popup/api/hiveEngine';
 import {
   Token,
   TokenBalance,

@@ -1,3 +1,4 @@
+import KeychainApi from '@api/keychain';
 import {
   Asset,
   ClaimRewardBalanceOperation,
@@ -16,7 +17,6 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import KeychainApi from '@popup/api/keychain';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { store } from '@popup/store';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';

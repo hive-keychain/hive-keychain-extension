@@ -114,6 +114,5 @@ export const performOperation = async (
       }
     } else chrome.runtime.sendMessage(message);
     getRequestHandler().reset();
-    // TODO: rpc.rollback();
   }
 };
