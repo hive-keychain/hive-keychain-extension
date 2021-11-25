@@ -1,4 +1,4 @@
-import { hsc } from '@popup/api/hiveEngine';
+import { hsc } from '@api/hiveEngine';
 
 const tryConfirmTransaction = (trxId: string) => {
   let result: any;
