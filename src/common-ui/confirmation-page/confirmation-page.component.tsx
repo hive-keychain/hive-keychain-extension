@@ -28,12 +28,13 @@ const ConfirmationPage = ({
         <div className="warning-message">{warningMessage}</div>
       )}
 
-      {fields.map((field) => (
-        <div className="field" key={field.label}>
-          <div className="label">{chrome.i18n.getMessage(field.label)}</div>
-          <div className="value">{field.value}</div>
-        </div>
-      ))}
+      {fields &&
+        fields.map((field) => (
+          <div className="field" key={field.label}>
+            <div className="label">{chrome.i18n.getMessage(field.label)}</div>
+            <div className="value">{field.value}</div>
+          </div>
+        ))}
 
       <ButtonComponent
         label={'popup_html_confirm'}

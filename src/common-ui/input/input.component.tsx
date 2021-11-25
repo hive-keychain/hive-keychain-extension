@@ -43,7 +43,7 @@ const InputComponent = (props: InputProps) => {
   };
 
   return (
-    <div className={`input-container ${props.logo ? '' : 'no-logo'}`}>
+    <div className={`input-container ${props.logo ? '' : 'no-logo'} ${props.type === InputType.PASSWORD ? 'password-type' : ''}`}>
       <input
         type={
           props.type === InputType.PASSWORD && isPasswordDisplay

@@ -1,7 +1,9 @@
 import { setAccounts } from '@popup/actions/account.actions';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
+import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { connect, ConnectedProps } from 'react-redux';
@@ -16,6 +18,7 @@ const AccountKeysList = ({
   accounts,
   setAccounts,
   loadActiveAccount,
+  navigateToWithParams,
 }: PropsType) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
   const [account, setAccount] = useState(null);
@@ -29,12 +32,20 @@ const AccountKeysList = ({
   }, [activeAccount]);
 
   const deleteAccount = () => {
-    const newAccounts = AccountUtils.deleteAccount(
-      activeAccount.name!,
-      accounts,
-    );
-    setAccounts(newAccounts);
-    loadActiveAccount(newAccounts[0], true);
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage(
+        'popup_html_delete_account_confirmation_message',
+        [activeAccount.name!],
+      ),
+      afterConfirmAction: async () => {
+        const newAccounts = AccountUtils.deleteAccount(
+          activeAccount.name!,
+          accounts,
+        );
+        setAccounts(newAccounts);
+        loadActiveAccount(newAccounts[0], true);
+      },
+    });
   };
 
   return (
@@ -84,7 +95,11 @@ const mapStateToProps = (state: RootState) => {
   return { activeAccount: state.activeAccount, accounts: state.accounts };
 };
 
-const connector = connect(mapStateToProps, { setAccounts, loadActiveAccount });
+const connector = connect(mapStateToProps, {
+  setAccounts,
+  loadActiveAccount,
+  navigateToWithParams,
+});
 type PropsType = ConnectedProps<typeof connector>;
 
 export const AccountKeysListComponent = connector(AccountKeysList);
