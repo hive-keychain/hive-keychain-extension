@@ -1,3 +1,4 @@
+import { loadDelegatees } from '@popup/actions/delegations.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -32,10 +33,12 @@ const PowerUpDown = ({
   powerType,
   globalProperties,
   formParams,
+  delegations,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
+  loadDelegatees,
 }: PropsFromRedux) => {
   const [receiver, setReceiver] = useState(
     formParams.receiver ? formParams.receiver : activeAccount.name!,
@@ -58,6 +61,7 @@ const PowerUpDown = ({
   };
 
   useEffect(() => {
+    loadDelegatees(activeAccount.name!);
     loadAutocompleteTransferUsernames();
   }, []);
 
@@ -74,10 +78,23 @@ const PowerUpDown = ({
       activeAccount.account.balance,
     );
 
+    let totalOutgoingVestingShares = 0;
+    for (const delegation of delegations.outgoing) {
+      totalOutgoingVestingShares += parseFloat(
+        delegation.vesting_shares.toString().split(' ')[0],
+      );
+    }
+
     const hpBalance = FormatUtils.withCommas(
       (
         FormatUtils.toHP(
-          activeAccount.account.vesting_shares.toString().replace('VESTS', ''),
+          (
+            parseFloat(
+              activeAccount.account.vesting_shares
+                .toString()
+                .replace('VESTS', ''),
+            ) - totalOutgoingVestingShares
+          ).toString(),
           globalProperties.globals,
         ) - (powerType === PowerType.POWER_UP ? 0 : 5)
       ).toString(),
@@ -85,7 +102,7 @@ const PowerUpDown = ({
 
     setAvailable(powerType === PowerType.POWER_UP ? hiveBalance : hpBalance);
     setCurrent(powerType === PowerType.POWER_UP ? hpBalance : hiveBalance);
-  }, [activeAccount]);
+  }, [activeAccount, delegations]);
 
   const title =
     powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd';
@@ -291,6 +308,7 @@ const mapStateToProps = (state: RootState) => {
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
+    delegations: state.delegations,
   };
 };
 
@@ -299,6 +317,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
+  loadDelegatees,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
