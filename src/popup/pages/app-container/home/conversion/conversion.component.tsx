@@ -1,3 +1,4 @@
+import { setLoading } from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -32,6 +33,7 @@ const Conversion = ({
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
+  setLoading,
 }: PropsFromRedux) => {
   const [value, setValue] = useState<string | number>(
     formParams.value ? formParams.value : 0,
@@ -93,12 +95,14 @@ const Conversion = ({
       ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = await HiveUtils.convertOperation(
           activeAccount,
           conversions,
           valueS,
           conversionType,
         );
+        setLoading(false);
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -180,6 +184,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
+  setLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

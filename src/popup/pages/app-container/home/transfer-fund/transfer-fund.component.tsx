@@ -1,4 +1,5 @@
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
+import { setLoading } from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -42,6 +43,7 @@ const TransferFunds = ({
   navigateToWithParams,
   navigateTo,
   fetchPhishingAccounts,
+  setLoading,
 }: PropsFromRedux) => {
   const [receiverUsername, setReceiverUsername] = useState(
     formParams.receiverUsername ? formParams.receiverUsername : '',
@@ -173,6 +175,7 @@ const TransferFunds = ({
       warningMessage: warningMessage,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = false;
         let memoParam = memo;
         if (memo.length) {
@@ -199,6 +202,8 @@ const TransferFunds = ({
           parseInt(iteration.toString()),
           parseInt(frequency.toString()),
         );
+
+        setLoading(false);
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -359,6 +364,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   navigateTo,
   fetchPhishingAccounts,
+  setLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

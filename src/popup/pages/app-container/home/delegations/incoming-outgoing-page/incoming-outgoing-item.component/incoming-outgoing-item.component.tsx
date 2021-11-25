@@ -1,3 +1,4 @@
+import { setLoading } from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -35,6 +36,7 @@ const IncomingOutgoing = ({
   navigateTo,
   setErrorMessage,
   setSuccessMessage,
+  setLoading,
 }: PropsType) => {
   const [editModeActivated, setEditModeActivated] = useState(false);
   const [value, setValue] = useState('');
@@ -52,11 +54,13 @@ const IncomingOutgoing = ({
       ),
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
           username,
           '0.000000 VESTS',
         );
+        setLoading(false);
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
@@ -107,12 +111,14 @@ const IncomingOutgoing = ({
         { label: 'popup_html_value', value: valueS },
       ],
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
           username,
           FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
             ' VESTS',
         );
+        setLoading(false);
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
@@ -193,6 +199,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setErrorMessage,
   setSuccessMessage,
+  setLoading,
 });
 type PropsType = ConnectedProps<typeof connector> & IncomingOutgoingProps;
 

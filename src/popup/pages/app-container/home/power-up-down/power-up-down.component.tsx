@@ -1,4 +1,5 @@
 import { loadDelegatees } from '@popup/actions/delegations.actions';
+import { setLoading } from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -39,6 +40,7 @@ const PowerUpDown = ({
   setSuccessMessage,
   setErrorMessage,
   loadDelegatees,
+  setLoading,
 }: PropsFromRedux) => {
   const [receiver, setReceiver] = useState(
     formParams.receiver ? formParams.receiver : activeAccount.name!,
@@ -148,6 +150,7 @@ const PowerUpDown = ({
       fields: fields,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = false;
         switch (powerType) {
           case PowerType.POWER_UP:
@@ -167,6 +170,7 @@ const PowerUpDown = ({
             );
             break;
         }
+        setLoading(false);
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -200,12 +204,15 @@ const PowerUpDown = ({
       fields: [],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = await HiveUtils.powerDown(
           receiver,
           `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
             6,
           )} VESTS`,
         );
+
+        setLoading(false);
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -318,6 +325,7 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   setErrorMessage,
   loadDelegatees,
+  setLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

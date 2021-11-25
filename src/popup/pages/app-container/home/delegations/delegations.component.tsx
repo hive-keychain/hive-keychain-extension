@@ -2,6 +2,7 @@ import {
   loadDelegatees,
   loadDelegators,
 } from '@popup/actions/delegations.actions';
+import { setLoading } from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -41,6 +42,7 @@ const Delegations = ({
   setErrorMessage,
   loadDelegators,
   loadDelegatees,
+  setLoading,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState<string>(
     formParams.username ? formParams.username : '',
@@ -139,12 +141,14 @@ const Delegations = ({
       ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
           username,
           FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
             ' VESTS',
         );
+        setLoading(false);
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -170,11 +174,14 @@ const Delegations = ({
       ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
+        setLoading(true);
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
           username,
           '0.000000 VESTS',
         );
+
+        setLoading(false);
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -298,6 +305,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   loadDelegators,
   loadDelegatees,
+  setLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
