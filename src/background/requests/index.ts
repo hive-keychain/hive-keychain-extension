@@ -75,7 +75,7 @@ class RequestsHandler {
 
   setKeys(key: string, publicKey: string) {
     this.key = key;
-    this.publicKey = this.publicKey;
+    this.publicKey = publicKey;
   }
 
   sendRequest(

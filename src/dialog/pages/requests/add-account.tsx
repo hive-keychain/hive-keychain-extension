@@ -11,7 +11,7 @@ type Props = {
 };
 
 const AddAccount = (props: Props) => {
-  const { data, domain, tab, testnet } = props;
+  const { data } = props;
   console.log(props);
   return (
     <Operation
