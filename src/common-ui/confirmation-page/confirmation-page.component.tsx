@@ -14,27 +14,29 @@ const ConfirmationPage = ({
 }: PropsType) => {
   return (
     <div className="confirmation-page">
-      <PageTitleComponent
-        title={'popup_html_confirm'}
-        isBackButtonEnabled={true}></PageTitleComponent>
+      <div className="confirmation-top">
+        <PageTitleComponent
+          title={'popup_html_confirm'}
+          isBackButtonEnabled={true}></PageTitleComponent>
 
-      <div
-        className="introduction"
-        dangerouslySetInnerHTML={{
-          __html: message,
-        }}></div>
+        <div
+          className="introduction"
+          dangerouslySetInnerHTML={{
+            __html: message,
+          }}></div>
 
-      {warningMessage && (
-        <div className="warning-message">{warningMessage}</div>
-      )}
+        {warningMessage && (
+          <div className="warning-message">{warningMessage}</div>
+        )}
 
-      {fields &&
-        fields.map((field) => (
-          <div className="field" key={field.label}>
-            <div className="label">{chrome.i18n.getMessage(field.label)}</div>
-            <div className="value">{field.value}</div>
-          </div>
-        ))}
+        {fields &&
+          fields.map((field) => (
+            <div className="field" key={field.label}>
+              <div className="label">{chrome.i18n.getMessage(field.label)}</div>
+              <div className="value">{field.value}</div>
+            </div>
+          ))}
+      </div>
 
       <ButtonComponent
         label={'popup_html_confirm'}

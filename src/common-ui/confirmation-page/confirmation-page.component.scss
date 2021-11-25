@@ -2,24 +2,27 @@
 
 .confirmation-page {
   @include pageLayoutRowGap;
-  .introduction {
-    font-size: 18px;
-    margin-bottom: 8px;
-    margin-top: 20px;
-  }
-
-  .warning-message {
-    font-size: 18px;
-    color: $red;
-  }
-
-  .field {
-    .label {
+  .confirmation-top {
+    min-height: 475px;
+    .introduction {
       font-size: 18px;
-      font-weight: bold;
+      margin-bottom: 8px;
+      margin-top: 20px;
     }
-    .value {
-      font-size: 16px;
+
+    .warning-message {
+      font-size: 18px;
+      color: $red;
+    }
+
+    .field {
+      .label {
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .value {
+        font-size: 16px;
+      }
     }
   }
 }
