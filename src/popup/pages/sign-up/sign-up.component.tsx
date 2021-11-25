@@ -36,22 +36,23 @@ const SignUp = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_register'),
         }}></p>
-
-      <InputComponent
-        value={newPassword}
-        onChange={setNewPassword}
-        logo="lock"
-        placeholder="popup_html_new_password"
-        type={InputType.PASSWORD}
-      />
-      <InputComponent
-        value={newPasswordConfirm}
-        onChange={setNewPasswordConfirm}
-        logo="lock"
-        placeholder="popup_html_confirm"
-        type={InputType.PASSWORD}
-        onEnterPress={submitMk}
-      />
+      <div className="inputs-panel">
+        <InputComponent
+          value={newPassword}
+          onChange={setNewPassword}
+          logo="lock"
+          placeholder="popup_html_new_password"
+          type={InputType.PASSWORD}
+        />
+        <InputComponent
+          value={newPasswordConfirm}
+          onChange={setNewPasswordConfirm}
+          logo="lock"
+          placeholder="popup_html_confirm"
+          type={InputType.PASSWORD}
+          onEnterPress={submitMk}
+        />
+      </div>
       <ButtonComponent label={'popup_html_submit'} onClick={submitMk} />
     </div>
   );

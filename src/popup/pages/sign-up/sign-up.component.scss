@@ -12,6 +12,12 @@
     font-size: 16px;
   }
 
+  .inputs-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+  }
+
   .submit-button {
     margin-top: 40px;
   }
