@@ -18,7 +18,8 @@
           "@popup": "./src/popup",
           "@background": "./src/background",
           "@interfaces": "./src/interfaces",
-          "@reference-data": "./src/reference-data"
+          "@reference-data": "./src/reference-data",
+          "@api": "./src/api"
         },
         "extensions": [".js", ".json", ".ts", ".jsx"]
       }

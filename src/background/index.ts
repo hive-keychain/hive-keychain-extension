@@ -10,6 +10,8 @@ import SettingsModule from '@background/settings.module';
 import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import MkUtils from 'src/utils/mk.utils';
 import { BackgroundMessage } from './background-message.interface';
@@ -18,6 +20,11 @@ import MkModule from './mk.module';
 const initBackgroundTasks = async () => {
   console.log('init background tasks');
   await ClaimModule.loadClaims();
+  await RPCModule.setActiveRpc(
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.CURRENT_RPC,
+    ),
+  );
 };
 
 const chromeMessageHandler = async (

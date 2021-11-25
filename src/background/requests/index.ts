@@ -1,6 +1,7 @@
+import KeychainApi from '@api/keychain';
 import init from '@background/requests/init';
 import RPCModule from '@background/rpc.module';
-import hive, { Client } from '@hiveio/dhive';
+import { Client } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { UserPreference } from '@interfaces/preferences.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -23,9 +24,23 @@ class RequestsHandler {
 
   constructor() {
     this.confirmed = false;
-    this.hiveClient = new hive.Client(RPCModule.getActiveRpc().uri, {
-      chainId: RPCModule.getActiveRpc().chainId,
-    });
+    this.hiveClient = new Client('https://api.hive.blog/');
+    const rpc = RPCModule.getActiveRpc();
+    this.setupRpc(rpc);
+  }
+
+  setupRpc(rpc: Rpc) {
+    if (rpc.uri === 'DEFAULT') {
+      KeychainApi.get('/hive/rpc').then((res) => {
+        this.hiveClient = new Client(JSON.parse(res.data).rpc, {
+          chainId: rpc.chainId,
+        });
+      });
+    } else {
+      this.hiveClient = new Client(rpc.uri, {
+        chainId: rpc.chainId,
+      });
+    }
   }
 
   initializeParameters(
@@ -35,7 +50,7 @@ class RequestsHandler {
   ) {
     this.accounts = accounts;
     this.rpc = rpc;
-    this.hiveClient = new hive.Client(rpc.uri, { chainId: rpc.chainId });
+    this.setupRpc(rpc);
     this.preferences = preferences;
   }
 
@@ -58,7 +73,7 @@ class RequestsHandler {
 
   setKeys(key: string, publicKey: string) {
     this.key = key;
-    this.publicKey = this.publicKey;
+    this.publicKey = publicKey;
   }
 
   sendRequest(

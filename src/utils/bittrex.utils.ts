@@ -1,4 +1,4 @@
-import KeychainApi from '@popup/api/keychain';
+import KeychainApi from '@api/keychain';
 import axios from 'axios';
 
 const getBittrexPrices = async () => {

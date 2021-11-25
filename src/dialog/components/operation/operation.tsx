@@ -1,9 +1,9 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import FooterButton from 'src/dialog/components/footer-button/footer-button';
-import Logger from 'src/utils/logger.utils';
 import './operation.scss';
 
 type Props = {
@@ -28,8 +28,10 @@ const Operation = ({
   canKeep = false,
 }: Props) => {
   const [keep, setKeep] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const genericOnConfirm = () => {
-    Logger.log('generic');
+    setLoading(true);
     chrome.runtime.sendMessage({
       command: BackgroundCommand.ACCEPT_TRANSACTION,
       value: {
@@ -40,12 +42,25 @@ const Operation = ({
       },
     });
   };
+  console.log();
   return (
     <>
       <DialogHeader title={title} />
       <div className="operation_body">{...children}</div>
       <div className="operation_footer">
-        <div className="operation_buttons">
+        <div className={`whitelist_operation`}>
+          <CheckboxComponent
+            onChange={setKeep}
+            checked={keep}
+            skipTranslation
+            title={chrome.i18n.getMessage('dialog_no_prompt', [
+              data.type,
+              data.username,
+              domain,
+            ])}
+          />
+        </div>
+        <div className={`operation_buttons ${loading ? 'hide' : ''}`}>
           <FooterButton
             label="dialog_cancel"
             grey
@@ -58,6 +73,9 @@ const Operation = ({
             onClick={onConfirm || genericOnConfirm}
           />
         </div>
+        {
+          //TODO:add loader
+        }
       </div>
     </>
   );

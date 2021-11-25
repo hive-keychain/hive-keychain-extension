@@ -5,6 +5,7 @@ import {
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import AddAccount from 'src/dialog/pages/requests/add-account';
+import Vote from 'src/dialog/pages/requests/vote';
 import './unlock.scss';
 
 type Props = {
@@ -24,6 +25,15 @@ const RequestConfirmation = ({ data }: Props) => {
     case KeychainRequestTypes.addAccount:
       return (
         <AddAccount
+          data={data.data}
+          testnet={data.testnet}
+          tab={data.tab}
+          domain={data.domain}
+        />
+      );
+    case KeychainRequestTypes.vote:
+      return (
+        <Vote
           data={data.data}
           testnet={data.testnet}
           tab={data.tab}

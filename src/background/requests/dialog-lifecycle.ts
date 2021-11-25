@@ -1,4 +1,5 @@
 import { getRequestHandler } from '@background/requests';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createPopup = (
   callback: () => void,
@@ -24,7 +25,7 @@ export const createPopup = (
         top: w.top,
       },
       (win) => {
-        if (!win) return; //TODO: Check if that doesnt cause issue
+        if (!win) return;
         getRequestHandler().setWindowId(win.id);
         // Window create fails to take into account window size so it s updated afterwhile.
         chrome.windows.update(
@@ -39,14 +40,6 @@ export const createPopup = (
             setTimeout(callback, 500);
           },
         );
-        //TODO : Check if the implementation is better
-        // if (typeof callback === 'function') {
-        //   clearInterval(interval);
-        //   interval = setInterval(callback, 200);
-        //   setTimeout(() => {
-        //     clearInterval(interval);
-        //   }, 2000);
-        // }
       },
     );
   });
@@ -57,7 +50,7 @@ chrome.windows.onRemoved.addListener((id: number) => {
 
   if (id == windowId && !confirmed) {
     chrome.tabs.sendMessage(tab!, {
-      command: 'answerRequest',
+      command: DialogCommand.ANSWER_REQUEST,
       msg: {
         success: false,
         error: 'user_cancel',

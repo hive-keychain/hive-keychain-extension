@@ -2,6 +2,7 @@ import { getRequestHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
+import { broadcastVote } from '@background/requests/operations/ops/vote';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export const performOperation = async (
@@ -13,14 +14,16 @@ export const performOperation = async (
   try {
     console.info('-- PERFORMING TRANSACTION --');
     console.info(data);
-    //   if (data.rpc) await rpc.setOptions(data.rpc, true);
     switch (data.type) {
+      case 'addAccount':
+        message = await addAccount(data);
+        break;
       //     case "custom":
       //       message = await broadcastCustomJson(data);
       //       break;
-      //     case "vote":
-      //       message = await broadcastVote(data);
-      //       break;
+      case 'vote':
+        message = await broadcastVote(data);
+        break;
       //     case "transfer":
       //       message = await broadcastTransfer(data);
       //       break;
@@ -87,9 +90,7 @@ export const performOperation = async (
       //     case "signTx":
       //       message = await signTx(data);
       //       break;
-      case 'addAccount':
-        message = await addAccount(data);
-        break;
+
       //     case "convert":
       //       message = await convert(data);
       //       break;
@@ -114,6 +115,5 @@ export const performOperation = async (
       }
     } else chrome.runtime.sendMessage(message);
     getRequestHandler().reset();
-    // TODO: rpc.rollback();
   }
 };

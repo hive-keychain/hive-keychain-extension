@@ -64,6 +64,7 @@ $('#send_vote').click(function () {
       console.log('main js response - vote');
       console.log(response);
     },
+    $('#vote_rpc').val().length ? $('#vote_rpc').val() : undefined,
   );
 });
 

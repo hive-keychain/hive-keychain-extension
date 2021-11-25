@@ -5,4 +5,5 @@ export enum DialogCommand {
   REGISTER = 'register',
   BROADCASTING_WITHOUT_CONFIRMATION = 'broadcastingNoConfirm',
   WRONG_MK = 'WRONG_MK',
+  ANSWER_REQUEST = 'answerRequest',
 }
