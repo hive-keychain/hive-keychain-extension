@@ -19,6 +19,8 @@ h3 {
 }
 
 .operation_footer {
+  display: flex;
+  flex-direction: column;
   display: block;
   width: 100%;
   position: absolute;
@@ -26,7 +28,7 @@ h3 {
   bottom: 0;
   background-color: rgba(255, 255, 255, 0.2);
   margin-left: -32px;
-  padding: 32px;
+  padding: 20px 32px;
   min-height: 120px;
 
   .operation_buttons {
@@ -39,5 +41,15 @@ h3 {
 
   .hide {
     display: none;
+  }
+
+  .checkbox_container {
+    height: auto;
+    margin-bottom: 20px;
+    .title {
+      text-transform: none;
+      font-size: 17px;
+      text-align: justify;
+    }
   }
 }

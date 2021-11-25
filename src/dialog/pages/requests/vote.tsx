@@ -16,7 +16,7 @@ const Vote = (props: Props) => {
   return (
     <Operation title={chrome.i18n.getMessage('dialog_vote')} {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
-      <RequestItem title="dialog_author" content={data.author} />
+      <RequestItem title="dialog_author" content={`@${data.author}`} />
       <RequestItem title="dialog_permlink" content={data.permlink} />
       <RequestItem title="dialog_weight" content={`${+data.weight / 100}%`} />
     </Operation>
