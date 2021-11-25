@@ -27,6 +27,7 @@ h3 {
   background-color: rgba(255, 255, 255, 0.2);
   margin-left: -32px;
   padding: 32px;
+  min-height: 120px;
 
   .operation_buttons {
     display: flex;
@@ -34,5 +35,9 @@ h3 {
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
+  }
+
+  .hide {
+    display: none;
   }
 }
