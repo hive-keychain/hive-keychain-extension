@@ -44,25 +44,23 @@ const AddByAuth = ({
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_auth_text'),
         }}></div>
-      <div className="form-container">
-        <InputComponent
-          value={username}
-          onChange={setUsername}
-          logo="arobase"
-          placeholder="popup_html_username"
-          type={InputType.TEXT}
-          onEnterPress={submitForm}
-        />
-        <InputComponent
-          value={authorizedAccount}
-          onChange={setAuthorizedAccount}
-          logo="arobase"
-          placeholder="popup_html_auth_placeholder_username_auth"
-          type={InputType.TEXT}
-          onEnterPress={submitForm}
-        />
-        <ButtonComponent label={'popup_html_submit'} onClick={submitForm} />
-      </div>
+      <InputComponent
+        value={username}
+        onChange={setUsername}
+        logo="arobase"
+        placeholder="popup_html_username"
+        type={InputType.TEXT}
+        onEnterPress={submitForm}
+      />
+      <InputComponent
+        value={authorizedAccount}
+        onChange={setAuthorizedAccount}
+        logo="arobase"
+        placeholder="popup_html_auth_placeholder_username_auth"
+        type={InputType.TEXT}
+        onEnterPress={submitForm}
+      />
+      <ButtonComponent label={'popup_html_submit'} onClick={submitForm} />
     </div>
   );
 };
