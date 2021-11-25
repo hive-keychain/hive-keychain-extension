@@ -24,7 +24,6 @@ class RequestsHandler {
 
   constructor() {
     this.confirmed = false;
-    console.log('pb here?');
     this.hiveClient = new Client('https://api.hive.blog/');
     const rpc = RPCModule.getActiveRpc();
     this.setupRpc(rpc);
@@ -33,7 +32,6 @@ class RequestsHandler {
   setupRpc(rpc: Rpc) {
     if (rpc.uri === 'DEFAULT') {
       KeychainApi.get('/hive/rpc').then((res) => {
-        console.log(res.data);
         this.hiveClient = new Client(JSON.parse(res.data).rpc, {
           chainId: rpc.chainId,
         });
