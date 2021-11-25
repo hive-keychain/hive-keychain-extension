@@ -35,7 +35,7 @@ const TopBar = ({
         ),
       );
     }
-  }, [activeAccount]);
+  }, []);
 
   const lockPopup = (): void => {
     resetNav();

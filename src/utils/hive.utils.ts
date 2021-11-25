@@ -248,9 +248,13 @@ const claimRewards = async (
         ).toString(),
       ) + ' HP';
 
+    let claimedResources = [rewardHBD, rewardHive, rewardHp].filter(
+      (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
+    );
+
     store.dispatch(
       setSuccessMessage('popup_html_claim_success', [
-        [rewardHBD, rewardHive, rewardHp].join(', '),
+        claimedResources.join(', '),
       ]),
     );
     return true;
