@@ -23,6 +23,7 @@ import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './tokens-transfer.component.scss';
 
@@ -161,20 +162,32 @@ const TokensTransfer = ({
         };
 
         setLoading(true);
-        let result = await HiveUtils.sendCustomJson(json, activeAccount);
-        setLoading(false);
-        if (result.id) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(
-            receiverUsername,
-            activeAccount,
-          );
+        let sendTokenResult: any = await HiveUtils.sendCustomJson(
+          json,
+          activeAccount,
+        );
 
-          setSuccessMessage('popup_html_transfer_successful', [
-            `@${receiverUsername}`,
-            formattedAmount,
-          ]);
+        if (sendTokenResult.id) {
+          let confirmationResult: any = await TokensUtils.tryConfirmTransaction(
+            sendTokenResult.id,
+          );
+          setLoading(false);
+          if (confirmationResult.confirmed) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await TransferUtils.saveTransferRecipient(
+              receiverUsername,
+              activeAccount,
+            );
+
+            setSuccessMessage('popup_html_transfer_successful', [
+              `@${receiverUsername}`,
+              formattedAmount,
+            ]);
+          } else {
+            setErrorMessage('popup_token_timeout');
+          }
         } else {
+          setLoading(false);
           setErrorMessage('popup_html_transfer_failed');
         }
       },
