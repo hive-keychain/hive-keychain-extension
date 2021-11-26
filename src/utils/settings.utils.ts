@@ -28,6 +28,7 @@ const exportSettings = async () => {
   a.download = 'settings.kc';
   a.click();
 };
+
 const importSettings = async () => {
   chrome.windows.getCurrent(async (currentWindow) => {
     console.log(chrome.runtime.getURL('import-preferences.html'));
