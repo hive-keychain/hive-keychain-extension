@@ -2,7 +2,7 @@ import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import KeychainifyModule from '@background/keychainify.module';
-import { initRequestHandler } from '@background/requests';
+import { getRequestHandler, initRequestHandler } from '@background/requests';
 import init from '@background/requests/init';
 import { performOperation } from '@background/requests/operations';
 import RPCModule from '@background/rpc.module';
@@ -49,6 +49,10 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SEND_REQUEST:
       //TODO : add check for avoiding double transaction
       console.log(backgroundMessage);
+      const requestHandler = getRequestHandler();
+      if (requestHandler) {
+        requestHandler.closeWindow();
+      }
       initRequestHandler().sendRequest(
         sender,
         backgroundMessage as KeychainRequestWrapper,
