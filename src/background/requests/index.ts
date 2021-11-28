@@ -1,4 +1,5 @@
 import KeychainApi from '@api/keychain';
+import { removeWindow } from '@background/requests/dialog-lifecycle';
 import init from '@background/requests/init';
 import RPCModule from '@background/rpc.module';
 import { Client } from '@hiveio/dhive';
@@ -54,6 +55,12 @@ class RequestsHandler {
     this.preferences = preferences;
   }
 
+  closeWindow() {
+    if (this.windowId) {
+      removeWindow(this.windowId);
+    }
+  }
+
   reset() {
     this.key = undefined;
     this.publicKey = undefined;
@@ -61,6 +68,7 @@ class RequestsHandler {
     this.request = undefined;
     this.request_id = undefined;
     this.tab = undefined;
+    this.windowId = undefined;
   }
 
   setConfirmed(confirmed: boolean) {

@@ -8,7 +8,7 @@ ReactDOM.render(
     title={'import_permissions_html_title'}
     text={'import_permissions_html_text'}
     command={BackgroundCommand.SEND_BACK_SETTINGS}
-    accept={'.kc.json,.kc'}
+    accept={'.json , .kc'}
   />,
   document.getElementById('root'),
 );
