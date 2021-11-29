@@ -20,8 +20,8 @@ export const ActionButtonList: ActionButton[] = [
   },
 
   {
-    label: 'popup_html_witness',
+    label: 'popup_html_governance',
     icon: 'solo',
-    nextScreen: Screen.WITNESS_PAGE,
+    nextScreen: Screen.GOVERNANCE_PAGE,
   },
 ];

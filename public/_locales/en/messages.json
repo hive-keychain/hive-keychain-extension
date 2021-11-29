@@ -1733,5 +1733,49 @@
   "popup_html_tokens_no_tokens": {
     "message": "You currently don't have any custom tokens. Click on the settings wheel to get information about the tokens available.",
     "description": "If no tokens"
+  },
+  "popup_html_governance": {
+    "message": "Governance",
+    "description": "Governance"
+  },
+  "popup_html_proxy": {
+    "message": "Proxy",
+    "description": "Governance"
+  },
+  "popup_html_proposal": {
+    "message": "Proposal",
+    "description": "Governance"
+  },
+  "html_popup_witness_display_voted_only": {
+    "message": "Only voted for",
+    "description": "Governance"
+  },
+  "html_popup_witness_vote_error_proxy": {
+    "message": "A proxy is currently set, please clear the proxy before voting for a witness",
+    "description": "Governance"
+  },
+  "html_popup_currently_using_proxy": {
+    "message": "You are currently using @$1 as a proxy. His/her votes are displayed.",
+    "description": "Governance"
+  },
+  "html_popup_witness_hide_inactive": {
+    "message": "Hive inactive",
+    "description": "Governance"
+  },
+  "html_popup_witness_proxy_definition": {
+    "message": "Adding an account as a proxy means that the proxy account can use the weight of your HP in governance matters (voting for witnesses and proposals). This will not affect your HP regarding curation, and you can remove the proxy at any given moment. ",
+    "description": "Proxy tab"
+  },
+  "html_popup_witness_has_proxy": {
+    "message": "The proxy account makes governance decisions on your behalf. If you wish to vote for witnesses and proposals by yourself, you must first remove the proxy.",
+    "description": "Governance"
+  },
+  "html_popup_set_as_proxy": {
+    "message": "Set as proxy",
+    "description": "Proxy"
+  },
+  "html_popup_clear_proxy": {
+    "message": "Clear proxy",
+    "description": "Governance"
   }
 }
