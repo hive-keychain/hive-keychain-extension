@@ -57,6 +57,9 @@
             &.voted {
               opacity: 1;
             }
+            &.using-proxy {
+              cursor: not-allowed;
+            }
           }
         }
 

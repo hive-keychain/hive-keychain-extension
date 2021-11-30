@@ -7,6 +7,7 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import ReactTooltip from 'react-tooltip';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
@@ -92,7 +93,6 @@ const WitnessTab = ({
 
   const handleVotedButtonClick = async (witness: Witness) => {
     if (usingProxy) {
-      setErrorMessage('html_popup_witness_vote_error_proxy');
       return;
     }
     if (activeAccount.account.witness_votes.includes(witness.name)) {
@@ -165,18 +165,32 @@ const WitnessTab = ({
               <div className="action">
                 <img
                   className={
-                    votedWitnesses.includes(witness.name)
+                    (votedWitnesses.includes(witness.name)
                       ? 'voted'
-                      : 'not-voted'
+                      : 'not-voted') +
+                    ' ' +
+                    (usingProxy ? 'using-proxy' : '')
                   }
                   src="assets/images/voted.png"
                   onClick={() => handleVotedButtonClick(witness)}
+                  data-for="tooltip"
+                  data-tip={chrome.i18n.getMessage(
+                    'html_popup_witness_vote_error_proxy',
+                  )}
+                  data-iscapture="true"
                 />
               </div>
             </div>
           ))}
         </div>
       </div>
+      <ReactTooltip
+        id="tooltip"
+        place="top"
+        type="light"
+        effect="solid"
+        multiline={true}
+      />
     </div>
   );
 };

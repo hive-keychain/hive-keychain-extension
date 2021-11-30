@@ -1,4 +1,8 @@
-import { AccountWitnessVoteOperation, PrivateKey } from '@hiveio/dhive';
+import {
+  AccountWitnessProxyOperation,
+  AccountWitnessVoteOperation,
+  PrivateKey,
+} from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Witness } from '@interfaces/witness.interface';
 import HiveUtils from 'src/utils/hive.utils';
@@ -30,6 +34,22 @@ const unvoteWitness = async (
   );
 };
 
-const WitnessUtils = { unvoteWitness, voteWitness };
+const setAsProxy = async (proxyName: string, activeAccount: ActiveAccount) => {
+  return HiveUtils.getClient().broadcast.sendOperations(
+    [
+      [
+        'account_witness_proxy',
+        { account: activeAccount.name, proxy: proxyName },
+      ] as AccountWitnessProxyOperation,
+    ],
+    PrivateKey.fromString(activeAccount.keys.active as string),
+  );
+};
+
+const removeProxy = async (activeAccount: ActiveAccount) => {
+  return setAsProxy('', activeAccount);
+};
+
+const WitnessUtils = { unvoteWitness, voteWitness, setAsProxy, removeProxy };
 
 export default WitnessUtils;

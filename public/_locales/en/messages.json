@@ -1777,5 +1777,17 @@
   "html_popup_clear_proxy": {
     "message": "Clear proxy",
     "description": "Governance"
+  },
+  "html_popup_clear_proxy_success": {
+    "message": "Successfully removed proxy",
+    "description": "Clear proxy success"
+  },
+  "html_popup_clear_proxy_error": {
+    "message": "Error while removing proxy",
+    "description": "Clear proxy error"
+  },
+  "html_popup_proxy_requires_active_key": {
+    "message": "To change your proxy, you must first add your account active key",
+    "description": "Proxy error"
   }
 }
