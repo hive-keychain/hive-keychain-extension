@@ -1,7 +1,11 @@
 import Joi from 'joi';
 const username = Joi.string().required().min(3);
-const method = Joi.string().valid('Posting', 'Active', 'Memo').required();
-const authority = Joi.string().valid('Posting', 'Active').required();
+const method = Joi.string()
+  .valid('Posting', 'Active', 'Memo', 'posting', 'active', 'memo')
+  .required();
+const authority = Joi.string()
+  .valid('Posting', 'Active', 'posting', 'active')
+  .required();
 const message = Joi.string().required().min(2).regex(/^#/);
 const currency = Joi.string().valid('HIVE', 'HBD', 'TESTS', 'TBD').required();
 const amount = Joi.string()
@@ -58,7 +62,7 @@ const vote = Joi.object({
 const post = Joi.object({
   username,
   body: Joi.string().required(),
-  title: Joi.string().allow(null),
+  title: Joi.string().allow(''),
   parent_username: Joi.alternatives().conditional('title', {
     is: Joi.valid(null),
     then: Joi.string().required(),
@@ -137,7 +141,7 @@ const removeKeyAuthority = Joi.object({
 
 const broadcast = Joi.object({
   username,
-  operations: Joi.string().required(),
+  operations: Joi.array().items(Joi.array()).required(),
   method: authority,
   rpc,
 });
