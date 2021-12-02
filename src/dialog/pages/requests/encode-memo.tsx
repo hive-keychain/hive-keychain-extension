@@ -20,7 +20,7 @@ const EncodeMemo = (props: Props) => {
     <Operation
       title={chrome.i18n.getMessage('dialog_title_encode')}
       {...props}
-      canKeep={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
+      canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem title="dialog_receiver" content={`@${data.receiver}`} />
       <RequestItem title="dialog_key" content={data.method} />

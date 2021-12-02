@@ -47,7 +47,7 @@ const Operation = ({
   };
 
   return (
-    <>
+    <div className="operation">
       <DialogHeader title={title} />
       {header && <div className="operation_header">{header}</div>}
       <div className="operation_body">{...children}</div>
@@ -81,7 +81,7 @@ const Operation = ({
         </div>
       </div>
       <LoadingComponent hide={!loading} />
-    </>
+    </div>
   );
 };
 

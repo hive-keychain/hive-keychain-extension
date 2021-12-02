@@ -13,7 +13,10 @@ type Props = {
 const Vote = (props: Props) => {
   const { data } = props;
   return (
-    <Operation title={chrome.i18n.getMessage('dialog_vote')} {...props} canKeep>
+    <Operation
+      title={chrome.i18n.getMessage('dialog_vote')}
+      {...props}
+      canWhitelist>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem title="dialog_author" content={`@${data.author}`} />
       <RequestItem title="dialog_permlink" content={data.permlink} />
