@@ -1,5 +1,4 @@
 import KeychainApi from '@api/keychain';
-import { ExtendedAccount } from '@hiveio/dhive';
 import { Witness } from '@interfaces/witness.interface';
 import { setLoading } from '@popup/actions/loading.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
@@ -29,9 +28,7 @@ const WitnessTab = ({
   const [filteredRanking, setFilteredRanking] = useState<Witness[]>([]);
   const [filterValue, setFilterValue] = useState('');
   const [votedWitnesses, setVotedWitnesses] = useState<string[]>([]);
-  const [votedWitnessesAccounts, setVotedWitnessesAccounts] = useState<
-    ExtendedAccount[]
-  >([]);
+
   const [usingProxy, setUsingProxy] = useState<boolean>(false);
 
   useEffect(() => {
@@ -48,16 +45,6 @@ const WitnessTab = ({
   }, []);
 
   useEffect(() => {
-    downloadVotedWitnessAccounts();
-  }, [votedWitnesses]);
-
-  const downloadVotedWitnessAccounts = async () => {
-    setVotedWitnessesAccounts(
-      await HiveUtils.getClient().database.getAccounts(votedWitnesses),
-    );
-  };
-
-  useEffect(() => {
     setFilteredRanking(
       ranking.filter((witness) => {
         return (
@@ -66,9 +53,7 @@ const WitnessTab = ({
           ((displayVotedOnly && votedWitnesses.includes(witness.name)) ||
             !displayVotedOnly) &&
           ((hideNonActive &&
-            votedWitnessesAccounts
-              .find((account) => account.name === witness.name)
-              ?.active.key_auths[0].toString() !==
+            witness.signing_key !==
               'STM1111111111111111111111111111111114T1Anm') ||
             !hideNonActive)
         );
@@ -85,7 +70,7 @@ const WitnessTab = ({
 
   const initWitnessRanking = async () => {
     setLoading(true);
-    const ranking = (await KeychainApi.get('/hive/witnesses-ranks')).data;
+    const ranking = (await KeychainApi.get('/hive/v2/witnesses-ranks')).data;
     setRanking(ranking);
     setFilteredRanking(ranking);
     setLoading(false);
@@ -153,16 +138,20 @@ const WitnessTab = ({
               <div
                 className={
                   'name ' +
-                    votedWitnessesAccounts
-                      .find((w) => w.name === witness.name)
-                      ?.active.key_auths[0].toString() ===
+                  (witness.signing_key ===
                   'STM1111111111111111111111111111111114T1Anm'
                     ? 'not-active'
-                    : ''
+                    : '')
                 }>
                 @{witness.name}
               </div>
-              <div className="action">
+              <div
+                className="action"
+                data-for="tooltip"
+                data-tip={chrome.i18n.getMessage(
+                  'html_popup_witness_vote_error_proxy',
+                )}
+                data-iscapture="true">
                 <img
                   className={
                     (votedWitnesses.includes(witness.name)
@@ -173,11 +162,6 @@ const WitnessTab = ({
                   }
                   src="assets/images/voted.png"
                   onClick={() => handleVotedButtonClick(witness)}
-                  data-for="tooltip"
-                  data-tip={chrome.i18n.getMessage(
-                    'html_popup_witness_vote_error_proxy',
-                  )}
-                  data-iscapture="true"
                 />
               </div>
             </div>

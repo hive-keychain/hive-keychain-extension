@@ -3,4 +3,5 @@ export interface Witness {
   rank: string;
   votes: number;
   votes_count: number;
+  signing_key: string;
 }
