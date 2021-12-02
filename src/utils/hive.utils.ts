@@ -37,8 +37,12 @@ let client = new Client(DEFAULT_RPC);
 const getClient = (): Client => {
   return client;
 };
-const setRpc = (rpc: Rpc) => {
-  client = new Client(rpc.uri === 'DEFAULT' ? DEFAULT_RPC : rpc.uri);
+const setRpc = async (rpc: Rpc) => {
+  client = new Client(
+    rpc.uri === 'DEFAULT'
+      ? (await KeychainApi.get('/hive/rpc')).data.rpc
+      : rpc.uri,
+  );
 };
 
 const getVP = (account: ExtendedAccount) => {

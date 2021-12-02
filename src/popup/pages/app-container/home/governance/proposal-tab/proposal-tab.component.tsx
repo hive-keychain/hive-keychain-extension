@@ -2,10 +2,14 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import './witness-voting-top-hundred-tab.component.scss';
+import './proposal-tab.component.scss';
 
-const WitnessVotingTopHundredTab = ({}: PropsFromRedux) => {
-  return <div className="witness-voting-top-hundred-tab">Top 100</div>;
+const ProposalTab = ({}: PropsFromRedux) => {
+  return (
+    <div className="proposal-tab">
+      {chrome.i18n.getMessage('popup_html_proposal')}
+    </div>
+  );
 };
 
 const mapStateToProps = (state: RootState) => {
@@ -15,6 +19,4 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const WitnessVotingTopHundredTabComponent = connector(
-  WitnessVotingTopHundredTab,
-);
+export const ProposalTabComponent = connector(ProposalTab);

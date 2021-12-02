@@ -8,6 +8,7 @@ import { ConversionComponent } from '@popup/pages/app-container/home/conversion/
 import { DelegationsComponent } from '@popup/pages/app-container/home/delegations/delegations.component';
 import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
+import { GovernanceComponent } from '@popup/pages/app-container/home/governance/governance.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
@@ -17,7 +18,6 @@ import { TokensTransferComponent } from '@popup/pages/app-container/home/tokens/
 import { TokensComponent } from '@popup/pages/app-container/home/tokens/tokens.component';
 import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer-fund/transfer-fund.component';
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
-import { WitnessVotingComponent } from '@popup/pages/app-container/home/witness-voting/witness-voting.component';
 import { AboutPageComponent } from '@popup/pages/app-container/settings/about/about.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
@@ -47,8 +47,8 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
         return <HomeComponent />;
       case Screen.ACCOUNT_VALUE_EXPLANATION:
         return <AccountValueExplanationComponent />;
-      case Screen.WITNESS_PAGE:
-        return <WitnessVotingComponent />;
+      case Screen.GOVERNANCE_PAGE:
+        return <GovernanceComponent />;
       case Screen.TRANSFER_FUND_PAGE:
         return <TransferFundsComponent />;
       case Screen.POWER_UP_PAGE:

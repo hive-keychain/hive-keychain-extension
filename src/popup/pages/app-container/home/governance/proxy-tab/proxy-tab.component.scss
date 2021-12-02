@@ -1,0 +1,9 @@
+@import '../../../../../variable.scss';
+
+.proxy-tab {
+  @include pageLayoutRowGap;
+  .introduction,
+  .proxy-name {
+    font-size: 16px;
+  }
+}
