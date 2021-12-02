@@ -16,6 +16,7 @@ type Props = {
   tab: number;
   testnet: boolean;
   canKeep?: boolean;
+  header?: string;
 };
 
 const Operation = ({
@@ -25,6 +26,7 @@ const Operation = ({
   domain,
   tab,
   data,
+  header,
   testnet, //TODO: what do we do on testnet?
   canKeep = false,
 }: Props) => {
@@ -47,6 +49,7 @@ const Operation = ({
   return (
     <>
       <DialogHeader title={title} />
+      {header && <div className="operation_header">{header}</div>}
       <div className="operation_body">{...children}</div>
       <div className="operation_footer">
         <div className={`whitelist_operation`}>

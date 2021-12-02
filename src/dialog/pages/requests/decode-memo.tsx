@@ -13,7 +13,14 @@ type Props = {
 const DecodeMemo = (props: Props) => {
   const { data } = props;
   return (
-    <Operation title={chrome.i18n.getMessage('dialog_title_decode')} {...props}>
+    <Operation
+      title={chrome.i18n.getMessage('dialog_title_decode')}
+      header={chrome.i18n.getMessage('dialog_desc_verify', [
+        data.domain,
+        data.method,
+        data.username,
+      ])}
+      {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem title="dialog_key" content={data.method} />
       <RequestItem title="dialog_message" content={data.message} />

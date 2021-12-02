@@ -1,10 +1,10 @@
 .operation_body {
-  max-height: 250px;
   overflow-y: scroll;
   background-color: rgba(255, 255, 255, 0.2);
   padding: 10px 32px;
   margin-left: -32px;
   margin-right: -32px;
+  margin-bottom: 170px;
 }
 
 h3 {
@@ -19,6 +19,10 @@ h3 {
   overflow-wrap: break-word;
 }
 
+.operation_header {
+  font-size: 18px;
+  margin-bottom: 0.5em;
+}
 .operation_footer {
   display: flex;
   flex-direction: column;
