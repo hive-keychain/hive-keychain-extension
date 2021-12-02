@@ -15,7 +15,7 @@ type Props = {
   domain: string;
   tab: number;
   testnet: boolean;
-  canKeep?: boolean;
+  canWhitelist?: boolean;
   header?: string;
 };
 
@@ -28,7 +28,7 @@ const Operation = ({
   data,
   header,
   testnet, //TODO: what do we do on testnet?
-  canKeep = false,
+  canWhitelist = false,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,16 +53,18 @@ const Operation = ({
       <div className="operation_body">{...children}</div>
       <div className="operation_footer">
         <div className={`whitelist_operation`}>
-          <CheckboxComponent
-            onChange={setKeep}
-            checked={keep}
-            skipTranslation
-            title={chrome.i18n.getMessage('dialog_no_prompt', [
-              data.type,
-              data.username,
-              domain,
-            ])}
-          />
+          {canWhitelist && (
+            <CheckboxComponent
+              onChange={setKeep}
+              checked={keep}
+              skipTranslation
+              title={chrome.i18n.getMessage('dialog_no_prompt', [
+                data.type,
+                data.username,
+                domain,
+              ])}
+            />
+          )}
         </div>
         <div className={`operation_buttons ${loading ? 'hide' : ''}`}>
           <FooterButton
