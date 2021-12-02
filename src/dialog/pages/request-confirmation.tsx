@@ -5,6 +5,7 @@ import {
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import AddAccount from 'src/dialog/pages/requests/add-account';
+import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
 import Vote from 'src/dialog/pages/requests/vote';
@@ -32,6 +33,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <DecodeMemo {...data} data={data.data} />;
     case KeychainRequestTypes.encode:
       return <EncodeMemo {...data} data={data.data} />;
+    case KeychainRequestTypes.custom:
+      return <CustomJson {...data} data={data.data} />;
     default:
       return null;
   }
