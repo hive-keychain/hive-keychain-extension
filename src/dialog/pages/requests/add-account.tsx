@@ -12,7 +12,6 @@ type Props = {
 
 const AddAccount = (props: Props) => {
   const { data } = props;
-  console.log(props);
   return (
     <Operation
       title={chrome.i18n.getMessage('popup_html_add_account')}

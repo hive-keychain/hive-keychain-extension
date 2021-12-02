@@ -5,6 +5,8 @@ import {
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import AddAccount from 'src/dialog/pages/requests/add-account';
+import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
+import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
 import Vote from 'src/dialog/pages/requests/vote';
 import './unlock.scss';
 
@@ -23,23 +25,13 @@ type RequestMessage = {
 const RequestConfirmation = ({ data }: Props) => {
   switch (data.data.type) {
     case KeychainRequestTypes.addAccount:
-      return (
-        <AddAccount
-          data={data.data}
-          testnet={data.testnet}
-          tab={data.tab}
-          domain={data.domain}
-        />
-      );
+      return <AddAccount {...data} data={data.data} />;
     case KeychainRequestTypes.vote:
-      return (
-        <Vote
-          data={data.data}
-          testnet={data.testnet}
-          tab={data.tab}
-          domain={data.domain}
-        />
-      );
+      return <Vote {...data} data={data.data} />;
+    case KeychainRequestTypes.decode:
+      return <DecodeMemo {...data} data={data.data} />;
+    case KeychainRequestTypes.encode:
+      return <EncodeMemo {...data} data={data.data} />;
     default:
       return null;
   }

@@ -43,7 +43,7 @@ const Operation = ({
       },
     });
   };
-  console.log();
+
   return (
     <>
       <DialogHeader title={title} />

@@ -2,8 +2,13 @@ import { getRequestHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
+import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
+import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
-import { KeychainRequest } from '@interfaces/keychain.interface';
+import {
+  KeychainRequest,
+  KeychainRequestTypes,
+} from '@interfaces/keychain.interface';
 
 export const performOperation = async (
   data: KeychainRequest,
@@ -15,13 +20,13 @@ export const performOperation = async (
     console.info('-- PERFORMING TRANSACTION --');
     console.info(data);
     switch (data.type) {
-      case 'addAccount':
+      case KeychainRequestTypes.addAccount:
         message = await addAccount(data);
         break;
       //     case "custom":
       //       message = await broadcastCustomJson(data);
       //       break;
-      case 'vote':
+      case KeychainRequestTypes.vote:
         message = await broadcastVote(data);
         break;
       //     case "transfer":
@@ -78,12 +83,12 @@ export const performOperation = async (
       //     case "removeProposal":
       //       message = await broadcastRemoveProposal(data);
       //       break;
-      //     case "decode":
-      //       message = await decodeMessage(data);
-      //       break;
-      //     case "encode":
-      //       message = await encodeMessage(data);
-      //       break;
+      case KeychainRequestTypes.decode:
+        message = await decodeMessage(data);
+        break;
+      case KeychainRequestTypes.encode:
+        message = await encodeMessage(data);
+        break;
       //     case "signBuffer":
       //       message = await signBuffer(data);
       //       break;
