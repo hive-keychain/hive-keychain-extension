@@ -52,6 +52,9 @@ const WitnessTab = ({
 
   useEffect(() => {
     setVotedWitnesses(activeAccount.account.witness_votes);
+    setRemainingVotes(
+      MAX_WITNESS_VOTE - activeAccount.account.witnesses_voted_for,
+    );
   }, [activeAccount]);
 
   useEffect(() => {
@@ -80,7 +83,9 @@ const WitnessTab = ({
 
   const initWitnessRanking = async () => {
     setLoading(true);
-    const ranking = (await KeychainApi.get('/hive/v2/witnesses-ranks')).data;
+    const ranking = (
+      await KeychainApi.get('/hive/v2/witnesses-ranks')
+    ).data.splice(0, 100);
     setRanking(ranking);
     setFilteredRanking(ranking);
     setLoading(false);
@@ -167,7 +172,12 @@ const WitnessTab = ({
           data-iscapture="true">
           {filteredRanking.map((witness) => (
             <div className="ranking-item" key={witness.name}>
-              <div className="rank">{witness.rank}</div>
+              <div className="rank">
+                {witness.active_rank}{' '}
+                {parseInt(witness.active_rank) !== parseInt(witness.rank) && (
+                  <span className="including-inactive">({witness.rank})</span>
+                )}
+              </div>
               <div
                 className={
                   'name ' +

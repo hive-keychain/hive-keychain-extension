@@ -1767,7 +1767,7 @@
     "description": "Governance"
   },
   "html_popup_witness_hide_inactive": {
-    "message": "Hive inactive",
+    "message": "Hide inactive",
     "description": "Governance"
   },
   "html_popup_witness_proxy_definition": {

@@ -36,6 +36,12 @@
         font-size: 18px;
         height: 48px;
 
+        .rank {
+          .including-inactive {
+            font-size: 12px;
+          }
+        }
+
         .rank,
         .action {
           text-align: center;
