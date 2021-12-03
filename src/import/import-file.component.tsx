@@ -25,6 +25,7 @@ const ImportFile = ({ title, text, command, accept }: PropsType) => {
         command: command,
         value: fileData,
       });
+      window.close();
     }
   };
 
