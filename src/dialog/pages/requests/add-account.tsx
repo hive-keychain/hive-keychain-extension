@@ -12,11 +12,11 @@ type Props = {
 
 const AddAccount = (props: Props) => {
   const { data } = props;
-  console.log(props);
   return (
     <Operation
       title={chrome.i18n.getMessage('popup_html_add_account')}
-      {...props}>
+      {...props}
+      canWhitelist>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem
         title="dialog_keys"
