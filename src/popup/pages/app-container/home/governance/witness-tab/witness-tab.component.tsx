@@ -85,7 +85,7 @@ const WitnessTab = ({
     setLoading(true);
     const ranking = (
       await KeychainApi.get('/hive/v2/witnesses-ranks')
-    ).data.splice(0, 100);
+    ).data.splice(0, 200);
     setRanking(ranking);
     setFilteredRanking(ranking);
     setLoading(false);
@@ -173,10 +173,16 @@ const WitnessTab = ({
           {filteredRanking.map((witness) => (
             <div className="ranking-item" key={witness.name}>
               <div className="rank">
-                {witness.active_rank}{' '}
-                {parseInt(witness.active_rank) !== parseInt(witness.rank) && (
-                  <span className="including-inactive">({witness.rank})</span>
-                )}
+                {!hideNonActive
+                  ? witness.rank
+                  : witness.active_rank
+                  ? witness.active_rank
+                  : witness.rank}{' '}
+                {witness.active_rank &&
+                  hideNonActive &&
+                  parseInt(witness.active_rank) !== parseInt(witness.rank) && (
+                    <span className="including-inactive">({witness.rank})</span>
+                  )}
               </div>
               <div
                 className={
