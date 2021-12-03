@@ -1,7 +1,11 @@
 import KeychainApi from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
+import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { setLoading } from '@popup/actions/loading.actions';
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -20,6 +24,8 @@ const WitnessTab = ({
   activeAccount,
   setLoading,
   setErrorMessage,
+  setSuccessMessage,
+  refreshActiveAccount,
 }: PropsFromRedux) => {
   const [displayVotedOnly, setDisplayVotedOnly] = useState(false);
   const [hideNonActive, setHideNonActive] = useState(true);
@@ -43,6 +49,10 @@ const WitnessTab = ({
       setVotedWitnesses(activeAccount.account.witness_votes);
     }
   }, []);
+
+  useEffect(() => {
+    setVotedWitnesses(activeAccount.account.witness_votes);
+  }, [activeAccount]);
 
   useEffect(() => {
     setFilteredRanking(
@@ -80,13 +90,28 @@ const WitnessTab = ({
     if (usingProxy) {
       return;
     }
+    setLoading(true);
     if (activeAccount.account.witness_votes.includes(witness.name)) {
-      await WitnessUtils.unvoteWitness(witness, activeAccount);
+      try {
+        await WitnessUtils.unvoteWitness(witness, activeAccount);
+        setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
+        refreshActiveAccount();
+      } catch (err) {
+        setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
     } else {
       try {
-        const response = await WitnessUtils.voteWitness(witness, activeAccount);
+        await WitnessUtils.voteWitness(witness, activeAccount);
+        setSuccessMessage('popup_success_wit', [`${witness.name}`]);
+        refreshActiveAccount();
       } catch (err) {
+        setErrorMessage('popup_error_wit', [`${witness.name}`]);
         console.log(err);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -131,7 +156,15 @@ const WitnessTab = ({
               }}></SwitchComponent>
           </div>
         </div>
-        <div className="ranking">
+        <div
+          className="ranking"
+          data-for={`no-private-key-tooltip`}
+          data-tip={
+            activeAccount.keys.active
+              ? ''
+              : chrome.i18n.getMessage('popup_witness_key')
+          }
+          data-iscapture="true">
           {filteredRanking.map((witness) => (
             <div className="ranking-item" key={witness.name}>
               <div className="rank">{witness.rank}</div>
@@ -145,13 +178,7 @@ const WitnessTab = ({
                 }>
                 @{witness.name}
               </div>
-              <div
-                className="action"
-                data-for="tooltip"
-                data-tip={chrome.i18n.getMessage(
-                  'html_popup_witness_vote_error_proxy',
-                )}
-                data-iscapture="true">
+              <div className="action">
                 <img
                   className={
                     (votedWitnesses.includes(witness.name)
@@ -162,19 +189,35 @@ const WitnessTab = ({
                   }
                   src="assets/images/voted.png"
                   onClick={() => handleVotedButtonClick(witness)}
+                  data-for={`${witness.name}-tooltip`}
+                  data-tip={
+                    usingProxy
+                      ? chrome.i18n.getMessage(
+                          'html_popup_witness_vote_error_proxy',
+                        )
+                      : ''
+                  }
+                  data-iscapture="true"
+                />
+                <ReactTooltip
+                  id={`${witness.name}-tooltip`}
+                  place="top"
+                  type="light"
+                  effect="solid"
+                  multiline={true}
                 />
               </div>
             </div>
           ))}
         </div>
+        <ReactTooltip
+          id={`no-private-key-tooltip`}
+          place="top"
+          type="light"
+          effect="solid"
+          multiline={true}
+        />
       </div>
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
-      />
     </div>
   );
 };
@@ -183,7 +226,12 @@ const mapStateToProps = (state: RootState) => {
   return { activeAccount: state.activeAccount };
 };
 
-const connector = connect(mapStateToProps, { setLoading, setErrorMessage });
+const connector = connect(mapStateToProps, {
+  setLoading,
+  setErrorMessage,
+  setSuccessMessage,
+  refreshActiveAccount,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const WitnessTabComponent = connector(WitnessTab);

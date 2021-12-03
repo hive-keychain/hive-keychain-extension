@@ -831,6 +831,14 @@
     "message": "Succesfully unvoted @$1 as a witness.",
     "description": "on witness page when unvoting a witness"
   },
+  "popup_error_wit": {
+    "message": "Error while voting for @$1 as a witness.",
+    "description": "on witness page "
+  },
+  "popup_error_unvote_wit": {
+    "message": "Error while unvoting @$1 as a witness.",
+    "description": "on witness page when unvoting a witness"
+  },
   "popup_success_proxy": {
     "message": "Succesfully chose @$1 for proxy.",
     "description": "on tokens page when chosing a proxy"

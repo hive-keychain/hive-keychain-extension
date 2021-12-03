@@ -6,17 +6,26 @@ import './message-container.component.scss';
 
 const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const [progressBarWidth, setProgressBarWidth] = useState(0);
+  const [timeoutId, setTimeoutId] = useState<any>();
   useEffect(() => {
     if (errorMessage.key) {
       setProgressBarWidth(100);
-      setTimeout(() => {
+      const t = setTimeout(() => {
         resetMessage();
         setProgressBarWidth(0);
       }, 5000);
+      setTimeoutId(t);
     }
   }, [errorMessage]);
+
+  const close = () => {
+    clearTimeout(timeoutId);
+    resetMessage();
+    setProgressBarWidth(0);
+  };
+
   return (
-    <div>
+    <div className="message-container" onClick={() => close()}>
       {errorMessage.key.length > 0 && (
         <div className={`container ${errorMessage.type}`}>
           <div className="barHolder">
