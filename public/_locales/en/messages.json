@@ -1789,5 +1789,13 @@
   "html_popup_proxy_requires_active_key": {
     "message": "To change your proxy, you must first add your account active key",
     "description": "Proxy error"
+  },
+  "html_popup_coming_soon": {
+    "message": "Coming soon",
+    "description": "General"
+  },
+  "html_popup_work_in_progress": {
+    "message": "Working in progress...",
+    "description": "General"
   }
 }

@@ -1,0 +1,13 @@
+.proposal-tab {
+  display: flex;
+  flex-direction: column;
+  img {
+    margin-top: 40px;
+    height: 140px;
+    margin-bottom: 20px;
+  }
+  div {
+    text-align: center;
+    font-size: 18px;
+  }
+}

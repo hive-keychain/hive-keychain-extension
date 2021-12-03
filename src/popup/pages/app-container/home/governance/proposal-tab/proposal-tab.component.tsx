@@ -7,7 +7,9 @@ import './proposal-tab.component.scss';
 const ProposalTab = ({}: PropsFromRedux) => {
   return (
     <div className="proposal-tab">
-      {chrome.i18n.getMessage('popup_html_proposal')}
+      <img src="/assets/images/construction.svg" />
+      <div>{chrome.i18n.getMessage('html_popup_work_in_progress')}</div>
+      <div>{chrome.i18n.getMessage('html_popup_coming_soon')}</div>
     </div>
   );
 };

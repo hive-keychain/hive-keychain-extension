@@ -21,7 +21,7 @@ let previousActiveAccountName = store.getState().activeAccount?.name;
 
 store.subscribe(() => {
   const { accounts, mk, activeRpc, activeAccount } = store.getState();
-  console.log(store.getState());
+  // console.log(store.getState());
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
     if (accounts.length > 0) {

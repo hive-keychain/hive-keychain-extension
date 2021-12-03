@@ -66,6 +66,7 @@ const App = ({
       LocalStorageKeyEnum.AUTOLOCK,
     );
     if (
+      autolock &&
       [AutoLockType.DEVICE_LOCK, AutoLockType.IDLE_LOCK].includes(autolock.type)
     ) {
       chrome.runtime.onMessage.addListener(onReceivedAutolockCmd);
