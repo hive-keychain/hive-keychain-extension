@@ -1805,5 +1805,13 @@
   "html_popup_work_in_progress": {
     "message": "Working in progress...",
     "description": "General"
+  },
+  "html_popup_import_settings_successful": {
+    "message": "Import settings successful",
+    "description": "Import settings success message"
+  },
+  "html_popup_import_settings_error": {
+    "message": "Import settings failed",
+    "description": "Import settings failed message"
   }
 }

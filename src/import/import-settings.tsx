@@ -9,6 +9,7 @@ ReactDOM.render(
     text={'import_permissions_html_text'}
     command={BackgroundCommand.SEND_BACK_SETTINGS}
     accept={'.json , .kc'}
+    callBackCommand={BackgroundCommand.IMPORT_SETTINGS_CALLBACK}
   />,
   document.getElementById('root'),
 );
