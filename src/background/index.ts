@@ -2,6 +2,7 @@ import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import KeychainifyModule from '@background/keychainify.module';
+import LocalStorageModule from '@background/local-storage.module';
 import { getRequestHandler, initRequestHandler } from '@background/requests';
 import init from '@background/requests/init';
 import { performOperation } from '@background/requests/operations';
@@ -25,6 +26,8 @@ const initBackgroundTasks = async () => {
       LocalStorageKeyEnum.CURRENT_RPC,
     ),
   );
+
+  await LocalStorageModule.checkAndUpdateLocalStorage();
 };
 
 const chromeMessageHandler = async (
