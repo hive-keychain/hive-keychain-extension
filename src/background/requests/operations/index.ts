@@ -2,6 +2,7 @@ import { getRequestHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
+import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
@@ -9,6 +10,7 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import { addToWhitelist } from 'src/utils/requests.utils';
 
 export const performOperation = async (
   data: KeychainRequest,
@@ -23,9 +25,9 @@ export const performOperation = async (
       case KeychainRequestTypes.addAccount:
         message = await addAccount(data);
         break;
-      //     case "custom":
-      //       message = await broadcastCustomJson(data);
-      //       break;
+      case KeychainRequestTypes.custom:
+        message = await broadcastCustomJson(data);
+        break;
       case KeychainRequestTypes.vote:
         message = await broadcastVote(data);
         break;
@@ -115,6 +117,7 @@ export const performOperation = async (
     );
   } finally {
     if (no_confirm) {
+      addToWhitelist(data.username!, data.domain, data.type);
       if (!!getRequestHandler().windowId) {
         removeWindow(getRequestHandler().windowId!);
       }

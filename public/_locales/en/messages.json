@@ -1575,7 +1575,7 @@
     "description": "Error message while trying to claim rewards"
   },
   "popup_html_claim_success": {
-    "message": "Claim rewards was a success. You claimed $1! Congratulations!",
+    "message": "Successfully claimed $1! Congratulations!",
     "description": "On main page"
   },
   "popup_html_confirm_power_up_down_message": {

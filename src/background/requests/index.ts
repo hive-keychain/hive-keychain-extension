@@ -4,7 +4,7 @@ import init from '@background/requests/init';
 import RPCModule from '@background/rpc.module';
 import { Client } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { UserPreference } from '@interfaces/preferences.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import {
   KeychainRequest,
@@ -17,7 +17,7 @@ class RequestsHandler {
   confirmed: boolean;
   accounts?: LocalAccount[];
   rpc?: Rpc | null;
-  preferences?: UserPreference[];
+  preferences?: NoConfirm;
   key?: string;
   publicKey?: string;
   windowId?: number;
@@ -47,7 +47,7 @@ class RequestsHandler {
   initializeParameters(
     accounts: LocalAccount[],
     rpc: Rpc,
-    preferences: UserPreference[],
+    preferences: NoConfirm,
   ) {
     this.accounts = accounts;
     this.rpc = rpc;

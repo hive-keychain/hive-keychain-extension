@@ -6,6 +6,7 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import { Key, LocalAccount } from '@interfaces/local-account.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
@@ -13,7 +14,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
   anonymous_requests,
   getRequiredWifType,
-  hasNoConfirm,
+  isWhitelisted,
 } from 'src/utils/requests.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import * as Logic from './logic';
@@ -26,7 +27,7 @@ export default async (
   const items: {
     accounts: string;
     current_rpc: Rpc;
-    no_confirm: string;
+    no_confirm: NoConfirm;
   } = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.ACCOUNTS,
     LocalStorageKeyEnum.NO_CONFIRM,
@@ -57,7 +58,7 @@ export default async (
     getRequestHandler().initializeParameters(
       accounts,
       rpc,
-      JSON.parse(items.no_confirm || '[]'),
+      items.no_confirm || [],
     );
 
     let account = accounts.find((e) => e.name === username);
@@ -92,7 +93,7 @@ export default async (
           const key = account.keys[typeWif];
           getRequestHandler().setKeys(key!, publicKey!);
 
-          if (!hasNoConfirm(items.no_confirm, req, domain, rpc)) {
+          if (!isWhitelisted(items.no_confirm, req, domain, rpc)) {
             Logic.requestWithConfirmation(tab!, req, domain, rpc);
           } else {
             Logic.requestWithoutConfirmation(tab!, req);

@@ -8,7 +8,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const sendBackImportedFileContent = async (fileContent: any) => {
   const settings: Settings = fileContent;
-
+  console.log('Saving new preferences');
   if (
     settings &&
     !Object.values(LocalStorageKeyEnum).includes(
