@@ -9,5 +9,5 @@ export const requestWithoutConfirmation = (
   chrome.runtime.sendMessage({
     command: DialogCommand.BROADCASTING_WITHOUT_CONFIRMATION,
   });
-  performOperation(request, tab!, request.domain, true);
+  performOperation(request, tab!, request.domain, false);
 };
