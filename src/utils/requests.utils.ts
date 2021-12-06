@@ -43,7 +43,7 @@ export const addToWhitelist = (
   type: string,
 ) => {
   chrome.storage.local.get([LocalStorageKeyEnum.NO_CONFIRM], (items) => {
-    let keep = !items.no_confirm ? {} : JSON.parse(items.no_confirm);
+    let keep = !items.no_confirm ? {} : items.no_confirm;
     if (keep[username] == undefined) {
       keep[username] = {};
     }

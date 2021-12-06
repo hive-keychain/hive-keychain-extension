@@ -85,8 +85,8 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:
-      const { keep, data, tab } = backgroundMessage.value;
-      performOperation(data, tab, keep);
+      const { keep, data, tab, domain } = backgroundMessage.value;
+      performOperation(data, tab, domain, keep);
       break;
     case BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY:
       KeychainifyModule.saveKeychainify(backgroundMessage.value);

@@ -15,6 +15,7 @@ import { addToWhitelist } from 'src/utils/requests.utils';
 export const performOperation = async (
   data: KeychainRequest,
   tab: number,
+  domain: string,
   no_confirm: boolean,
 ) => {
   let message = null;
@@ -117,7 +118,8 @@ export const performOperation = async (
     );
   } finally {
     if (no_confirm) {
-      addToWhitelist(data.username!, data.domain, data.type);
+      console.log(data);
+      addToWhitelist(data.username!, domain, data.type);
       if (!!getRequestHandler().windowId) {
         removeWindow(getRequestHandler().windowId!);
       }
