@@ -11,10 +11,10 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { isWhitelisted } from 'src/utils/preferences.utils';
 import {
   anonymous_requests,
   getRequiredWifType,
-  isWhitelisted,
 } from 'src/utils/requests.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import * as Logic from './logic';

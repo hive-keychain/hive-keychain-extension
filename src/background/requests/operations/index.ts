@@ -10,7 +10,7 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
-import { addToWhitelist } from 'src/utils/requests.utils';
+import { addToWhitelist } from 'src/utils/preferences.utils';
 
 export const performOperation = async (
   data: KeychainRequest,
