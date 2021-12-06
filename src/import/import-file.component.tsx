@@ -1,3 +1,4 @@
+import { BackgroundMessage } from '@background/background-message.interface';
 import React, { useState } from 'react';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
@@ -8,10 +9,18 @@ interface PropsType {
   text: string;
   command: BackgroundCommand;
   accept: string;
+  callBackCommand?: BackgroundCommand;
 }
 
-const ImportFile = ({ title, text, command, accept }: PropsType) => {
+const ImportFile = ({
+  title,
+  text,
+  command,
+  accept,
+  callBackCommand,
+}: PropsType) => {
   const [selectedFile, setSelectedFile] = useState<File>();
+  const [feedback, setFeedBack] = useState('');
 
   const handleFileUpload = (event: any) => {
     setSelectedFile(event.target.files[0]);
@@ -25,7 +34,27 @@ const ImportFile = ({ title, text, command, accept }: PropsType) => {
         command: command,
         value: fileData,
       });
-      window.close();
+      if (callBackCommand) {
+        chrome.runtime.onMessage.addListener(onCallBackCommandeMessageListener);
+      } else {
+        window.close();
+      }
+    }
+  };
+
+  const onCallBackCommandeMessageListener = (
+    backgroundMessage: BackgroundMessage,
+    sender: chrome.runtime.MessageSender,
+    sendResp: (response?: any) => void,
+  ) => {
+    if (backgroundMessage.command === callBackCommand) {
+      setFeedBack(backgroundMessage.value);
+      setTimeout(() => {
+        window.close();
+      }, 3000);
+      chrome.runtime.onMessage.removeListener(
+        onCallBackCommandeMessageListener,
+      );
     }
   };
 
@@ -52,6 +81,8 @@ const ImportFile = ({ title, text, command, accept }: PropsType) => {
       <button id="proceed" onClick={importKeysFromFile}>
         {chrome.i18n.getMessage('popup_html_import')}
       </button>
+
+      <div className="feedback">{chrome.i18n.getMessage(feedback)}</div>
     </div>
   );
 };

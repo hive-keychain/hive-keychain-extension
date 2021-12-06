@@ -8,6 +8,7 @@ export enum BackgroundCommand {
   IMPORT_ACCOUNTS = 'importAccounts',
   SEND_BACK_IMPORTED_ACCOUNTS = 'sendBackimportedAccounts',
   SEND_BACK_SETTINGS = 'sendBackSettings',
+  IMPORT_SETTINGS_CALLBACK = 'importSettingsCallback',
 
   //RPC
   SAVE_RPC = 'saveRPC',
