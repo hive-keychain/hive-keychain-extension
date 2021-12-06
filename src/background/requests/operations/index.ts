@@ -5,6 +5,7 @@ import { addAccount } from '@background/requests/operations/ops/add-account';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
+import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import {
   KeychainRequest,
@@ -92,9 +93,9 @@ export const performOperation = async (
       case KeychainRequestTypes.encode:
         message = await encodeMessage(data);
         break;
-      //     case "signBuffer":
-      //       message = await signBuffer(data);
-      //       break;
+      case KeychainRequestTypes.signBuffer:
+        message = await signBuffer(data);
+        break;
       //     case "signTx":
       //       message = await signTx(data);
       //       break;

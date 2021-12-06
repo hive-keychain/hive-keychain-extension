@@ -8,6 +8,7 @@ import AddAccount from 'src/dialog/pages/requests/add-account';
 import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
+import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
 import Vote from 'src/dialog/pages/requests/vote';
 import './unlock.scss';
 
@@ -35,6 +36,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <EncodeMemo {...data} data={data.data} />;
     case KeychainRequestTypes.custom:
       return <CustomJson {...data} data={data.data} />;
+    case KeychainRequestTypes.signBuffer:
+      return <SignBuffer {...data} data={data.data} />;
     default:
       return null;
   }

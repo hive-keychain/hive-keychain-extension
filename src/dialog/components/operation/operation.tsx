@@ -17,6 +17,7 @@ type Props = {
   testnet: boolean;
   canWhitelist?: boolean;
   header?: string;
+  checkboxLabel?: string;
 };
 
 const Operation = ({
@@ -27,6 +28,7 @@ const Operation = ({
   tab,
   data,
   header,
+  checkboxLabel,
   testnet, //TODO: what do we do on testnet?
   canWhitelist = false,
 }: Props) => {
@@ -58,11 +60,14 @@ const Operation = ({
               onChange={setKeep}
               checked={keep}
               skipTranslation
-              title={chrome.i18n.getMessage('dialog_no_prompt', [
-                data.type,
-                data.username,
-                domain,
-              ])}
+              title={
+                checkboxLabel ||
+                chrome.i18n.getMessage('dialog_no_prompt', [
+                  data.type,
+                  data.username,
+                  domain,
+                ])
+              }
             />
           )}
         </div>
