@@ -5,6 +5,7 @@ import {
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
 export const isWhitelisted = (
@@ -48,4 +49,22 @@ export const addToWhitelist = (
       no_confirm: keep,
     });
   });
+};
+
+export const removeFromWhitelist = (
+  noConfirm: NoConfirm,
+  username: string,
+  domain: string,
+  operation: string,
+) => {
+  console.log(noConfirm);
+  delete noConfirm[username][domain][operation];
+  if (!Object.keys(noConfirm[username][domain]).length) {
+    delete noConfirm[username][domain];
+  }
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.NO_CONFIRM,
+    noConfirm,
+  );
+  return noConfirm;
 };
