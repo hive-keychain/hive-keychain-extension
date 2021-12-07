@@ -2,7 +2,6 @@ import {
   KeychainKeyTypesLC,
   KeychainRequest,
 } from '@interfaces/keychain.interface';
-import { Rpc } from '@interfaces/rpc.interface';
 
 export const anonymous_requests = [
   'delegation',
@@ -12,27 +11,6 @@ export const anonymous_requests = [
   'signBuffer',
   'recurrentTransfer',
 ];
-export const hasNoConfirm = (
-  arr: string,
-  data: KeychainRequest,
-  domain: string,
-  current_rpc: Rpc,
-) => {
-  try {
-    if (
-      getRequiredWifType(data) === KeychainKeyTypesLC.active ||
-      !arr ||
-      current_rpc.testnet
-    ) {
-      return false;
-    } else {
-      return JSON.parse(arr)[data.username!][domain][data.type] === true;
-    }
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-};
 
 // Get the key needed for each type of transaction
 export const getRequiredWifType = (request: KeychainRequest) => {

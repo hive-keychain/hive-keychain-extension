@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { removeFromWhitelist } from 'src/utils/preferences.utils';
 import './authorized-operations.component.scss';
 
 const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
@@ -30,14 +31,14 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
   };
 
   const handleEraseButtonClick = (website: string, operation: string) => {
-    const oldWebsites = websites;
-    oldWebsites[website][operation] = false;
-    setNoConfirm({ ...noConfirm, [activeAccount.name!]: oldWebsites });
-
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.NO_CONFIRM,
-      noConfirm,
+    const newList = removeFromWhitelist(
+      { ...noConfirm },
+      activeAccount.name!,
+      website,
+      operation,
     );
+    console.log(newList);
+    setNoConfirm(newList);
   };
 
   return (
@@ -83,7 +84,9 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
         </div>
       )}
       {websites && Object.keys(websites).length === 0 && (
-        <div>{chrome.i18n.getMessage('popup_html_no_pref')}</div>
+        <div className="no_pref">
+          {chrome.i18n.getMessage('popup_html_no_pref')}
+        </div>
       )}
     </div>
   );

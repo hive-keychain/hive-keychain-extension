@@ -17,7 +17,6 @@ const CollaspsibleItem = ({ title, content, pre, preContent }: Props) => {
           setCollapsed(!collapsed);
         }}></h3>
       <div className={collapsed ? 'hide' : ''}>
-        {preContent && <div>{preContent}</div>}
         {pre ? (
           <div className="operation_item_content">
             <pre>{content}</pre>

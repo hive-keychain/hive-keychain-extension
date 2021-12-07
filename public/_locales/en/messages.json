@@ -15,6 +15,14 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "common_yes": {
+    "message": "Yes",
+    "description": "Generic"
+  },
+  "common_no": {
+    "message": "No",
+    "description": "Generic"
+  },
   "memo": {
     "message": "memo",
     "description": "type of key"
@@ -1575,7 +1583,7 @@
     "description": "Error message while trying to claim rewards"
   },
   "popup_html_claim_success": {
-    "message": "Claim rewards was a success. You claimed $1! Congratulations!",
+    "message": "Successfully claimed $1! Congratulations!",
     "description": "On main page"
   },
   "popup_html_confirm_power_up_down_message": {

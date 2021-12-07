@@ -27,6 +27,7 @@ import { Delegator } from 'src/interfaces/delegations.interface';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
+const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
@@ -405,6 +406,31 @@ const decodeMemo = (memo: string, privateKey: string) => {
   return hive.memo.decode(privateKey, memo);
 };
 
+const signMessage = (message: string, privateKey: string) => {
+  let buf;
+  try {
+    const o = JSON.parse(message, (k, v) => {
+      if (
+        v !== null &&
+        typeof v === 'object' &&
+        'type' in v &&
+        v.type === 'Buffer' &&
+        'data' in v &&
+        Array.isArray(v.data)
+      ) {
+        return Buffer.from(v.data);
+      }
+      return v;
+    });
+    if (Buffer.isBuffer(o)) {
+      buf = o;
+    }
+  } catch (e) {
+    buf = message;
+  }
+  return signature.Signature.signBuffer(buf, privateKey).toHex();
+};
+
 const deposit = async (activeAccount: ActiveAccount, amount: string) => {
   const savings = await hive.api.getSavingsWithdrawFromAsync(
     activeAccount.name,
@@ -546,6 +572,7 @@ const HiveUtils = {
   delegateVestingShares,
   claimAccounts,
   sendCustomJson,
+  signMessage,
 };
 
 export default HiveUtils;

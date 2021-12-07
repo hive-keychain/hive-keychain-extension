@@ -2,17 +2,22 @@ import { getRequestHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
+import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
+import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
+import { broadcastUpdateProposalVote } from '@background/requests/operations/ops/updapte-proposal-vote';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import { addToWhitelist } from 'src/utils/preferences.utils';
 
 export const performOperation = async (
   data: KeychainRequest,
   tab: number,
+  domain: string,
   no_confirm: boolean,
 ) => {
   let message = null;
@@ -23,9 +28,9 @@ export const performOperation = async (
       case KeychainRequestTypes.addAccount:
         message = await addAccount(data);
         break;
-      //     case "custom":
-      //       message = await broadcastCustomJson(data);
-      //       break;
+      case KeychainRequestTypes.custom:
+        message = await broadcastCustomJson(data);
+        break;
       case KeychainRequestTypes.vote:
         message = await broadcastVote(data);
         break;
@@ -77,9 +82,9 @@ export const performOperation = async (
       //     case "createProposal":
       //       message = await broadcastCreateProposal(data);
       //       break;
-      //     case "updateProposalVote":
-      //       message = await broadcastUpdateProposalVote(data);
-      //       break;
+      case KeychainRequestTypes.updateProposalVote:
+        message = await broadcastUpdateProposalVote(data);
+        break;
       //     case "removeProposal":
       //       message = await broadcastRemoveProposal(data);
       //       break;
@@ -89,9 +94,9 @@ export const performOperation = async (
       case KeychainRequestTypes.encode:
         message = await encodeMessage(data);
         break;
-      //     case "signBuffer":
-      //       message = await signBuffer(data);
-      //       break;
+      case KeychainRequestTypes.signBuffer:
+        message = await signBuffer(data);
+        break;
       //     case "signTx":
       //       message = await signTx(data);
       //       break;
@@ -115,6 +120,8 @@ export const performOperation = async (
     );
   } finally {
     if (no_confirm) {
+      console.log(data);
+      addToWhitelist(data.username!, domain, data.type);
       if (!!getRequestHandler().windowId) {
         removeWindow(getRequestHandler().windowId!);
       }

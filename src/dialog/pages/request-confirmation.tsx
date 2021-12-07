@@ -8,6 +8,8 @@ import AddAccount from 'src/dialog/pages/requests/add-account';
 import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
+import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
+import UpdateProposalVote from 'src/dialog/pages/requests/update-proposal-vote';
 import Vote from 'src/dialog/pages/requests/vote';
 import './unlock.scss';
 
@@ -21,6 +23,7 @@ type RequestMessage = {
   testnet: boolean;
   tab: number;
   domain: string;
+  accounts?: string[];
 };
 
 const RequestConfirmation = ({ data }: Props) => {
@@ -35,6 +38,10 @@ const RequestConfirmation = ({ data }: Props) => {
       return <EncodeMemo {...data} data={data.data} />;
     case KeychainRequestTypes.custom:
       return <CustomJson {...data} data={data.data} />;
+    case KeychainRequestTypes.signBuffer:
+      return <SignBuffer {...data} data={data.data} />;
+    case KeychainRequestTypes.updateProposalVote:
+      return <UpdateProposalVote {...data} data={data.data} />;
     default:
       return null;
   }

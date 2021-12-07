@@ -46,6 +46,6 @@ export const broadcastCustomJson = async (
     chrome.i18n.getMessage('bgd_ops_broadcast'),
     err_message,
   );
-  console.log('m', message);
+
   return message;
 };

@@ -4,9 +4,10 @@ import init from '@background/requests/init';
 import RPCModule from '@background/rpc.module';
 import { Client } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { UserPreference } from '@interfaces/preferences.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import {
+  KeychainKeyTypesLC,
   KeychainRequest,
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
@@ -17,7 +18,7 @@ class RequestsHandler {
   confirmed: boolean;
   accounts?: LocalAccount[];
   rpc?: Rpc | null;
-  preferences?: UserPreference[];
+  preferences?: NoConfirm;
   key?: string;
   publicKey?: string;
   windowId?: number;
@@ -33,7 +34,8 @@ class RequestsHandler {
   setupRpc(rpc: Rpc) {
     if (rpc.uri === 'DEFAULT') {
       KeychainApi.get('/hive/rpc').then((res) => {
-        this.hiveClient = new Client(JSON.parse(res.data).rpc, {
+        console.log(res);
+        this.hiveClient = new Client(res.data.rpc, {
           chainId: rpc.chainId,
         });
       });
@@ -47,7 +49,7 @@ class RequestsHandler {
   initializeParameters(
     accounts: LocalAccount[],
     rpc: Rpc,
-    preferences: UserPreference[],
+    preferences: NoConfirm,
   ) {
     this.accounts = accounts;
     this.rpc = rpc;
@@ -96,6 +98,13 @@ class RequestsHandler {
 
   getHiveClient() {
     return this.hiveClient;
+  }
+
+  getUserKey(username: string, keyType: KeychainKeyTypesLC) {
+    return [
+      this.accounts?.find((e) => e.name === username)?.keys[keyType],
+      this.accounts?.find((e) => e.name === username)?.keys[`${keyType}Pubkey`],
+    ];
   }
 }
 let requestHandler: RequestsHandler;

@@ -12,6 +12,7 @@
     padding: 10px 32px;
     margin-left: -32px;
     margin-right: -32px;
+    min-height: 100px;
   }
 
   h3 {
@@ -29,6 +30,7 @@
   .operation_header {
     font-size: 18px;
     margin-bottom: 0.5em;
+    text-align: center;
   }
   .operation_footer {
     display: flex;
