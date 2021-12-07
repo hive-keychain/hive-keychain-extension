@@ -45,9 +45,9 @@ const SignBuffer = (props: Props) => {
         data.username,
         domain,
       ])}
+      canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}
       {...props}
-      {...anonymousProps}
-      canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
+      {...anonymousProps}>
       {renderUsername()}
       <RequestItem title="dialog_message" content={data.message} />
     </Operation>

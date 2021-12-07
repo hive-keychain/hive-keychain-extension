@@ -13,6 +13,7 @@ export const useAnonymousRequest = (
       setUsername(accounts![0]);
     }
   }, [accounts, data.username]);
+
   const anonymousProps = {
     accounts,
     username,
@@ -21,5 +22,6 @@ export const useAnonymousRequest = (
       setUsername(us);
     },
   };
+
   return anonymousProps;
 };
