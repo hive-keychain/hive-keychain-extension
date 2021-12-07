@@ -328,7 +328,7 @@ $('#send_rp').click(function () {
 $('#send_vp').click(function () {
   hive_keychain.requestUpdateProposalVote(
     $('#vp_username').val(),
-    $('#vp_proposal_ids').val(),
+    JSON.parse($('#vp_proposal_ids').val()),
     $('#vp_approve').is(':checked'),
     $('#vp_extensions').val(),
     function (response) {

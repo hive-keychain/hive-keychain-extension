@@ -3,7 +3,7 @@ import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
+import { PrivateKey, UpdateProposalVotesOperation } from '@hiveio/dhive';
 import {
   RequestId,
   RequestUpdateProposalVote,
@@ -16,15 +16,22 @@ export const broadcastUpdateProposalVote = (
   const key = getRequestHandler().key;
   let result, err;
   try {
+    let a: UpdateProposalVotesOperation;
     result = client.broadcast.sendOperations(
       [
         [
           'update_proposal_votes',
           {
             voter: data.username,
-            proposal_ids: data.proposal_ids,
+            proposal_ids:
+              typeof data.proposal_ids === 'string'
+                ? JSON.parse(data.proposal_ids)
+                : data.proposal_ids,
             approve: data.approve,
-            extensions: data.extensions,
+            extensions:
+              typeof data.extensions === 'string'
+                ? JSON.parse(data.extensions)
+                : data.extensions,
           },
         ],
       ],
@@ -35,7 +42,10 @@ export const broadcastUpdateProposalVote = (
   } finally {
     const err_message = beautifyErrorMessage(err);
     let messageText = '';
-    const ids = JSON.parse(data.proposal_ids);
+    const ids =
+      typeof data.proposal_ids === 'string'
+        ? JSON.parse(data.proposal_ids)
+        : data.proposal_ids;
     if (data.approve) {
       if (ids.length === 1)
         messageText = chrome.i18n.getMessage('bgd_ops_proposal_vote', [ids[0]]);

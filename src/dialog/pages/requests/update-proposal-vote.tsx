@@ -22,7 +22,11 @@ const UpdateProposalVote = (props: Props) => {
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem
         title="dialog_proposal_ids"
-        content={JSON.parse(data.proposal_ids).join(', ')}
+        content={
+          typeof data.proposal_ids === 'string'
+            ? JSON.parse(data.proposal_ids).join(', ')
+            : data.proposal_ids.join(', ')
+        }
       />
       <RequestItem
         title="dialog_approve"

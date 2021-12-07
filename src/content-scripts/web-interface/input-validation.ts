@@ -26,9 +26,12 @@ const date = Joi.string()
   .required()
   .error(new Error('Wrong date format. Ex : "2021-07-25T00:00:00"'));
 
-const proposal_ids = Joi.string()
-  .required()
-  .regex(/\[[0-9,]*[0-9]+\]/);
+const proposal_ids = Joi.alternatives(
+  Joi.string()
+    .required()
+    .regex(/\[[0-9,]*[0-9]+\]/),
+  Joi.array().items(Joi.number()),
+);
 const decode = Joi.object({
   username,
   message,
@@ -263,7 +266,7 @@ const updateProposalVote = Joi.object({
   username,
   proposal_ids,
   approve: Joi.boolean().required(),
-  extensions: Joi.string(),
+  extensions: Joi.alternatives(Joi.array(), Joi.string()),
   rpc,
 });
 
