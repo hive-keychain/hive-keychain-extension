@@ -12,6 +12,7 @@ const exportSettings = async () => {
     LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
     LocalStorageKeyEnum.RPC_LIST,
     LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
+    LocalStorageKeyEnum.CURRENT_RPC,
   ]);
 
   var data = new Blob([JSON.stringify(val)], {
