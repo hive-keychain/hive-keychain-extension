@@ -15,6 +15,14 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "common_yes": {
+    "message": "Yes",
+    "description": "Generic"
+  },
+  "common_no": {
+    "message": "No",
+    "description": "Generic"
+  },
   "memo": {
     "message": "memo",
     "description": "type of key"
