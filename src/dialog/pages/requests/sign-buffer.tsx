@@ -3,7 +3,7 @@ import {
   RequestId,
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 
@@ -12,10 +12,26 @@ type Props = {
   domain: string;
   tab: number;
   testnet: boolean;
+  accounts?: string[];
 };
 
 const SignBuffer = (props: Props) => {
-  const { data, domain } = props;
+  const { data, domain, accounts } = props;
+  const [username, setUsername] = useState('');
+  useEffect(() => {
+    if (data.username) setUsername(data.username);
+    else {
+      data.username = accounts![0];
+      setUsername(accounts![0]);
+    }
+  }, [accounts, data.username]);
+  const renderUsername = () => {
+    return !accounts ? (
+      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+    ) : (
+      <></>
+    );
+  };
   return (
     <Operation
       title={data.title || chrome.i18n.getMessage('dialog_title_sign')}
@@ -36,8 +52,14 @@ const SignBuffer = (props: Props) => {
         domain,
       ])}
       {...props}
-      canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
-      <RequestItem title="dialog_account" content={`@${data.username}`} />
+      canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}
+      accounts={accounts}
+      username={username}
+      setUsername={(us: string) => {
+        data.username = us;
+        setUsername(us);
+      }}>
+      {renderUsername()}
       <RequestItem title="dialog_message" content={data.message} />
     </Operation>
   );

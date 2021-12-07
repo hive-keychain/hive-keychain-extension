@@ -133,7 +133,7 @@ $('#send_delegation').click(function () {
 
 $('#send_signature').click(function () {
   hive_keychain.requestSignBuffer(
-    $('#sign_username').val(),
+    $('#sign_username').val().length ? $('#sign_username').val() : null,
     $('#sign_message').val(),
     $('#sign_method option:selected').text(),
     function (response) {

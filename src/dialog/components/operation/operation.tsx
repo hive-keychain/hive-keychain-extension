@@ -5,6 +5,7 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import FooterButton from 'src/dialog/components/footer-button/footer-button';
+import RequestUsername from 'src/dialog/components/request-username/request-username';
 import './operation.scss';
 
 type Props = {
@@ -18,6 +19,9 @@ type Props = {
   canWhitelist?: boolean;
   header?: string;
   checkboxLabel?: string;
+  accounts?: string[];
+  username?: string;
+  setUsername?: (username: string) => void;
 };
 
 const Operation = ({
@@ -31,6 +35,9 @@ const Operation = ({
   checkboxLabel,
   testnet, //TODO: what do we do on testnet?
   canWhitelist = false,
+  accounts,
+  username,
+  setUsername,
 }: Props) => {
   const [keep, setKeep] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,8 +57,18 @@ const Operation = ({
 
   return (
     <div className="operation">
-      <DialogHeader title={title} />
-      {header && <div className="operation_header">{header}</div>}
+      <div>
+        <DialogHeader title={title} />
+        {header && <div className="operation_header">{header}</div>}
+        {accounts && (
+          <RequestUsername
+            accounts={accounts}
+            username={username!}
+            setUsername={setUsername!}
+          />
+        )}
+      </div>
+
       <div className="operation_body">{...children}</div>
       <div className="operation_footer">
         <div className={`whitelist_operation`}>

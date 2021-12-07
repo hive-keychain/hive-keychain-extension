@@ -1,0 +1,48 @@
+@import '/src/popup/variable.scss';
+
+.select-account-select,
+.select-account-select:hover,
+.select-account-select:focus {
+  border: unset !important;
+  background: rgba(33, 37, 41, 0.68);
+}
+.select-account-select {
+  .react-dropdown-select-dropdown {
+    border: unset;
+    top: 72px;
+    background-color: black;
+  }
+}
+
+.selected-account-panel {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  padding: 12px 26px;
+  box-sizing: border-box;
+  width: 100%;
+
+  img {
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+  }
+}
+.selected-account-panel .selected-account-name,
+.select-account-item .account-name {
+  font-size: 18px;
+}
+
+.select-account-item {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  padding: 12px 26px;
+  box-sizing: border-box;
+  background: rgba(33, 37, 41, 0.68);
+
+  &:hover,
+  &.selected {
+    background: $red;
+  }
+}

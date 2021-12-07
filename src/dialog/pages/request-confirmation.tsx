@@ -22,6 +22,7 @@ type RequestMessage = {
   testnet: boolean;
   tab: number;
   domain: string;
+  accounts?: string[];
 };
 
 const RequestConfirmation = ({ data }: Props) => {
