@@ -7,6 +7,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import {
+  KeychainKeyTypesLC,
   KeychainRequest,
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
@@ -97,6 +98,13 @@ class RequestsHandler {
 
   getHiveClient() {
     return this.hiveClient;
+  }
+
+  getUserKey(username: string, keyType: KeychainKeyTypesLC) {
+    return [
+      this.accounts?.find((e) => e.name === username)?.keys[keyType],
+      this.accounts?.find((e) => e.name === username)?.keys[`${keyType}Pubkey`],
+    ];
   }
 }
 let requestHandler: RequestsHandler;
