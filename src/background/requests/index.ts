@@ -101,9 +101,11 @@ class RequestsHandler {
   }
 
   getUserKey(username: string, keyType: KeychainKeyTypesLC) {
+    const pubKey: string = `${keyType}Pubkey`;
     return [
       this.accounts?.find((e) => e.name === username)?.keys[keyType],
-      this.accounts?.find((e) => e.name === username)?.keys[`${keyType}Pubkey`],
+      //@ts-ignore
+      this.accounts?.find((e) => e.name === username)?.keys[pubKey!],
     ];
   }
 }
