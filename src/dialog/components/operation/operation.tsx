@@ -18,7 +18,7 @@ type Props = {
   testnet: boolean;
   canWhitelist?: boolean;
   header?: string;
-  checkboxLabel?: string;
+  checkboxLabelOverride?: string;
   accounts?: string[];
   username?: string;
   setUsername?: (username: string) => void;
@@ -32,7 +32,7 @@ const Operation = ({
   tab,
   data,
   header,
-  checkboxLabel,
+  checkboxLabelOverride,
   testnet, //TODO: what do we do on testnet?
   canWhitelist = false,
   accounts,
@@ -78,7 +78,7 @@ const Operation = ({
               checked={keep}
               skipTranslation
               title={
-                checkboxLabel ||
+                checkboxLabelOverride ||
                 chrome.i18n.getMessage('dialog_no_prompt', [
                   data.type,
                   data.username,

@@ -1,53 +1,54 @@
 import {
   KeychainKeyTypesLC,
   KeychainRequest,
+  KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
 
 export const anonymous_requests = [
-  'delegation',
-  'witnessVote',
-  'proxy',
-  'custom',
-  'signBuffer',
-  'recurrentTransfer',
+  KeychainRequestTypes.delegation,
+  KeychainRequestTypes.witnessVote,
+  KeychainRequestTypes.proxy,
+  KeychainRequestTypes.custom,
+  KeychainRequestTypes.signBuffer,
+  KeychainRequestTypes.recurrentTransfer,
 ];
 
 // Get the key needed for each type of transaction
 export const getRequiredWifType = (request: KeychainRequest) => {
   switch (request.type) {
-    case 'decode':
-    case 'encode':
-    case 'signBuffer':
-    case 'broadcast':
-    case 'addAccountAuthority':
-    case 'removeAccountAuthority':
-    case 'removeKeyAuthority':
-    case 'addKeyAuthority':
-    case 'signTx':
+    case KeychainRequestTypes.decode:
+    case KeychainRequestTypes.encode:
+    case KeychainRequestTypes.signBuffer:
+    case KeychainRequestTypes.broadcast:
+    case KeychainRequestTypes.addAccountAuthority:
+    case KeychainRequestTypes.removeAccountAuthority:
+    case KeychainRequestTypes.removeKeyAuthority:
+    case KeychainRequestTypes.addKeyAuthority:
+    case KeychainRequestTypes.signTx:
       return request.method.toLowerCase() as KeychainKeyTypesLC;
-    case 'post':
-    case 'vote':
+    case KeychainRequestTypes.post:
+    case KeychainRequestTypes.vote:
       return KeychainKeyTypesLC.posting;
-    case 'custom':
+    case KeychainRequestTypes.custom:
       return !request.method
         ? KeychainKeyTypesLC.posting
         : (request.method.toLowerCase() as KeychainKeyTypesLC);
 
-    case 'signedCall':
+    case KeychainRequestTypes.signedCall:
       return request.typeWif.toLowerCase() as KeychainKeyTypesLC;
-    case 'transfer':
-    case 'sendToken':
-    case 'delegation':
-    case 'witnessVote':
-    case 'proxy':
-    case 'powerUp':
-    case 'powerDown':
-    case 'createClaimedAccount':
-    case 'createProposal':
-    case 'removeProposal':
-    case 'updateProposalVote':
-    case 'convert':
-    case 'recurrentTransfer':
+    case KeychainRequestTypes.transfer:
+    case KeychainRequestTypes.sendToken:
+    case KeychainRequestTypes.delegation:
+    case KeychainRequestTypes.witnessVote:
+    case KeychainRequestTypes.proxy:
+    case KeychainRequestTypes.powerUp:
+    case KeychainRequestTypes.powerDown:
+    case KeychainRequestTypes.createClaimedAccount:
+    case KeychainRequestTypes.createProposal:
+    case KeychainRequestTypes.removeProposal:
+    case KeychainRequestTypes.updateProposalVote:
+    case KeychainRequestTypes.convert:
+    case KeychainRequestTypes.recurrentTransfer:
     default:
       return KeychainKeyTypesLC.active;
   }

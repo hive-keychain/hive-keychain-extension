@@ -41,7 +41,7 @@ const SignBuffer = (props: Props) => {
               data.method.toLowerCase(),
             ])
       }
-      checkboxLabel={chrome.i18n.getMessage('dialog_no_prompt_verify', [
+      checkboxLabelOverride={chrome.i18n.getMessage('dialog_no_prompt_verify', [
         data.username,
         domain,
       ])}
