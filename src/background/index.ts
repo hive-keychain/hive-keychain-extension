@@ -20,6 +20,11 @@ import MkModule from './mk.module';
 
 const initBackgroundTasks = async () => {
   console.log('init background tasks');
+  console.log(
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.RPC_LIST,
+    ),
+  );
   await ClaimModule.loadClaims();
   await RPCModule.setActiveRpc(
     await LocalStorageUtils.getValueFromLocalStorage(

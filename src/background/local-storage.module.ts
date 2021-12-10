@@ -6,7 +6,21 @@ const checkAndUpdateLocalStorage = async () => {
     LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
   );
   if (!localStorageVersion) {
-    // Update localStorage
+    const autolock = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.AUTOLOCK,
+    );
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.AUTOLOCK,
+      JSON.parse(autolock),
+    );
+
+    const rpcList = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.RPC_LIST,
+    );
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.RPC_LIST,
+      JSON.parse(rpcList),
+    );
   }
 };
 

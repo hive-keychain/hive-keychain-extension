@@ -22,10 +22,12 @@ const addCustomRpc = async (rpc: Rpc): Promise<void> => {
   const savedCustomRpc = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.RPC_LIST,
   );
-  LocalStorageUtils.saveValueInLocalStorage(LocalStorageKeyEnum.RPC_LIST, [
-    ...(savedCustomRpc ? savedCustomRpc : []),
-    rpc,
-  ]);
+  const newRpcList = savedCustomRpc ? savedCustomRpc : [];
+  newRpcList.push(rpc);
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.RPC_LIST,
+    newRpcList,
+  );
 };
 
 const deleteCustomRpc = (rpcs: Rpc[], rpc: Rpc) => {
