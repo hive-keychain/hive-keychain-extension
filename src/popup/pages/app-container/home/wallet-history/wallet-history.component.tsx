@@ -1,4 +1,5 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
+import { initAccountTransactions } from '@popup/actions/transaction.actions';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -22,7 +23,11 @@ const FILTER_TRANSACTION_TYPES: FilterTransactionTypes = {
 
 const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 
-const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
+const WalletHistory = ({
+  transactions,
+  activeAccountName,
+  initAccountTransactions,
+}: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
 
   const [filterValue, setFilterValue] = useState('');
@@ -48,6 +53,7 @@ const WalletHistory = ({ transactions, activeAccountName }: PropsFromRedux) => {
   };
 
   useEffect(() => {
+    initAccountTransactions(activeAccountName!);
     initFilters();
   }, []);
 
@@ -229,7 +235,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { initAccountTransactions });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const WalletHistoryComponent = connector(WalletHistory);
