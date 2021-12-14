@@ -21,6 +21,11 @@ const checkAndUpdateLocalStorage = async () => {
       LocalStorageKeyEnum.RPC_LIST,
       JSON.parse(rpcList),
     );
+
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+      2,
+    );
   }
 };
 

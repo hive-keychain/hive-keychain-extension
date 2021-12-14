@@ -27,6 +27,7 @@ import { Delegator } from 'src/interfaces/delegations.interface';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';
@@ -263,7 +264,8 @@ const claimRewards = async (
       ]),
     );
     return true;
-  } catch (err) {
+  } catch (err: any) {
+    Logger.error('Error while claiming rewards', err.toString());
     store.dispatch(setErrorMessage('popup_html_claim_error'));
     return false;
   }

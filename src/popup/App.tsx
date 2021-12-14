@@ -1,8 +1,7 @@
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { retrieveAccounts } from '@popup/actions/account.actions';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
-import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
-import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
+import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
@@ -17,6 +16,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import PopupUtils from 'src/utils/popup.utils';
+import RpcUtils from 'src/utils/rpc.utils';
 import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from './pages/app-container/app-router.component';
@@ -33,16 +33,15 @@ const App = ({
   activeAccountUsername,
   activeRpc,
   refreshActiveAccount,
-  loadBittrexPrices,
-  loadGlobalProperties,
   loading,
+  setActiveRpc,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
+  const [isActiveRpcLoaded, setActiveRpcLoaded] = useState(false);
 
   useEffect(() => {
+    initActiveRpc();
     PopupUtils.fixPopupOnMacOs();
-    loadBittrexPrices();
-    loadGlobalProperties();
     initAutoLock();
   }, []);
 
@@ -50,7 +49,7 @@ const App = ({
     if (activeAccountUsername) {
       refreshActiveAccount(true);
     }
-  }, [activeAccountUsername, activeRpc]);
+  }, [activeRpc]);
 
   useEffect(() => {
     chrome.runtime.sendMessage({ command: BackgroundCommand.GET_MK });
@@ -60,6 +59,11 @@ const App = ({
   useEffect(() => {
     selectComponent(mk, accounts);
   }, [mk, accounts]);
+
+  const initActiveRpc = async () => {
+    setActiveRpc(await RpcUtils.getCurrentRpc());
+    setActiveRpcLoaded(true);
+  };
 
   const initAutoLock = async () => {
     let autolock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
@@ -125,7 +129,7 @@ const App = ({
     <div className="App">
       {renderMainLayoutNav()}
       <MessageContainerComponent />
-      {loading && <LoadingComponent />}
+      {(loading || !isActiveRpcLoaded) && <LoadingComponent />}
     </div>
   );
 };
@@ -135,8 +139,8 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
-    activeAccountUsername: state.activeAccount?.name,
     loading: state.loading,
+    activeAccountUsername: state.activeAccount.name,
   };
 };
 
@@ -144,9 +148,8 @@ const connector = connect(mapStateToProps, {
   setMk,
   retrieveAccounts,
   navigateTo,
+  setActiveRpc,
   refreshActiveAccount,
-  loadGlobalProperties,
-  loadBittrexPrices,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

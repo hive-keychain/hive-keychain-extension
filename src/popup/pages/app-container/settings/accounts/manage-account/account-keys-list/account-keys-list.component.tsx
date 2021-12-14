@@ -5,7 +5,7 @@ import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -23,7 +23,9 @@ const AccountKeysList = ({
   setLoading,
 }: PropsType) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
-  const [account, setAccount] = useState(null);
+  const [account, setAccount] = useState();
+
+  const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setAccount(
@@ -52,6 +54,13 @@ const AccountKeysList = ({
     });
   };
 
+  const toggleQRCode = () => {
+    setQRCodeDisplayed(!qrCodeDisplayed);
+    setTimeout(() => {
+      if (qrCodeRef && qrCodeRef.current) qrCodeRef.current.scrollIntoView();
+    }, 100);
+  };
+
   return (
     <div className="account-keys-list">
       <AccountKeysListItemComponent
@@ -75,13 +84,16 @@ const AccountKeysList = ({
 
       <ButtonComponent
         label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}
-        onClick={() => setQRCodeDisplayed(!qrCodeDisplayed)}
+        onClick={() => toggleQRCode()}
       />
       {qrCodeDisplayed && (
-        <QRCode
-          className="qrcode"
-          value={`keychain://add_account=${JSON.stringify(account)}`}
-        />
+        <>
+          <div ref={qrCodeRef}></div>
+          <QRCode
+            className="qrcode"
+            value={`keychain://add_account=${JSON.stringify(account)}`}
+          />
+        </>
       )}
 
       {accounts.length > 1 && (

@@ -2,7 +2,7 @@ import { removeKey, setAccounts } from '@popup/actions/account.actions';
 import { setInfoMessage } from '@popup/actions/message.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { Key } from 'src/interfaces/local-account.interface';
@@ -21,11 +21,16 @@ const AccountKeysListItem = ({
   publicKey,
   keyName,
   keyType,
+  activeAccount,
   setInfoMessage,
   navigateToWithParams,
   removeKey,
 }: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
+
+  useEffect(() => {
+    setIsPrivateHidden(true);
+  }, [activeAccount]);
 
   const copyToClipboard = (key: Key | undefined) => {
     if (key) {

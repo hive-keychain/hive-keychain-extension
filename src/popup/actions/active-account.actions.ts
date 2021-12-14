@@ -28,6 +28,8 @@ export const loadActiveAccount =
   async (dispatch, getState) => {
     dispatch(refreshKeys(account));
     dispatch(getAccountRC(account.name));
+    // TODO : Remove initTransactions ?
+    initTransactions = false;
     if (initTransactions) {
       dispatch(initAccountTransactions(account.name));
     }

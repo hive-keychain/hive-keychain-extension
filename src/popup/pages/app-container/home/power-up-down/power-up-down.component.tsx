@@ -185,6 +185,7 @@ const PowerUpDown = ({
     });
   };
 
+  // TODO : Fix setToMax => Real Value in state + Format in html
   const setToMax = () => {
     setValue(available);
   };

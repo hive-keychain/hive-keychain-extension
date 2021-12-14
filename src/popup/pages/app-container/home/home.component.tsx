@@ -2,9 +2,7 @@ import {
   loadActiveAccount,
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
-import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
-import { fetchConversionRequests } from '@popup/actions/conversion.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from '@popup/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
@@ -18,7 +16,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import RpcUtils from 'src/utils/rpc.utils';
 import './home.component.scss';
 
 const Home = ({
@@ -26,10 +23,8 @@ const Home = ({
   loadActiveAccount,
   accounts,
   activeRpc,
-  setActiveRpc,
   loadBittrexPrices,
   loadGlobalProperties,
-  fetchConversionRequests,
   refreshActiveAccount,
   isAppReady,
 }: PropsFromRedux) => {
@@ -37,18 +32,18 @@ const Home = ({
     loadBittrexPrices();
     loadGlobalProperties();
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
+      console.log('HOME => refreshActiveAccount');
       refreshActiveAccount(true);
     }
   }, []);
 
   useEffect(() => {
+    console.log(accounts, activeRpc);
+    console.log(ActiveAccountUtils.isEmpty(activeAccount), accounts.length);
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
       initActiveAccount();
     }
-    if (!activeRpc || activeRpc.uri === 'NULL') {
-      initActiveRpc();
-    }
-  }, [accounts, activeRpc]);
+  }, []);
 
   const initActiveAccount = async () => {
     const lastActiveAccountName =
@@ -56,15 +51,11 @@ const Home = ({
     const lastActiveAccount = accounts.find(
       (account: LocalAccount) => lastActiveAccountName === account.name,
     );
+    console.log('HOME => loadActiveAccount');
     loadActiveAccount(
       lastActiveAccount ? lastActiveAccount : accounts[0],
-      true,
+      false,
     );
-    fetchConversionRequests(lastActiveAccountName);
-  };
-
-  const initActiveRpc = async () => {
-    setActiveRpc(await RpcUtils.getCurrentRpc());
   };
 
   return (
@@ -103,10 +94,8 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
-  setActiveRpc,
   loadBittrexPrices,
   loadGlobalProperties,
-  fetchConversionRequests,
   refreshActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
