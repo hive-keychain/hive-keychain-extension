@@ -5,6 +5,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { loadUserTokens } from '@popup/actions/token.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
@@ -64,11 +65,11 @@ const Tokens = ({
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_view_tokens_balance'),
         }}></div>
-      <img
-        className="settings"
-        src="/assets/images/settings.png"
-        onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
-      />
+      <span
+        className="material-icons-outlined settings"
+        onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}>
+        {Icons.SETTINGS}
+      </span>
       {filteredTokenList.length > 0 && (
         <div className="my-tokens">
           {userTokens.list.map((token) => (
@@ -95,20 +96,21 @@ const Tokens = ({
                 multiline={true}
               />
               <div className="symbol">{token.symbol}</div>
-              <img
-                className="history"
-                src="/assets/images/history.png"
+              <span
+                className="material-icons-outlined history"
                 onClick={() =>
                   navigateToWithParams(Screen.TOKENS_HISTORY, { token })
-                }
-              />
-              <img
-                className="send"
-                src="/assets/images/transfer.png"
+                }>
+                {Icons.HISTORY}
+              </span>
+
+              <span
+                className="material-icons-outlined send"
                 onClick={() =>
                   navigateToWithParams(Screen.TOKENS_TRANSFER, { token })
-                }
-              />
+                }>
+                {Icons.SEND}
+              </span>
             </div>
           ))}
         </div>

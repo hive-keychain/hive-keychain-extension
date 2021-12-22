@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
@@ -43,7 +44,10 @@ const InputComponent = (props: InputProps) => {
   };
 
   return (
-    <div className={`input-container ${props.logo ? '' : 'no-logo'} ${props.type === InputType.PASSWORD ? 'password-type' : ''}`}>
+    <div
+      className={`input-container ${props.logo ? '' : 'no-logo'} ${
+        props.type === InputType.PASSWORD ? 'password-type' : ''
+      }`}>
       <input
         type={
           props.type === InputType.PASSWORD && isPasswordDisplay
@@ -68,25 +72,25 @@ const InputComponent = (props: InputProps) => {
         onBlur={() => handleOnBlur()}
       />
       {props.type === InputType.PASSWORD && !isPasswordDisplay && (
-        <img
-          src={`/assets/images/eye.png`}
-          className="input-img display-password"
-          onClick={() => setPasswordDisplayed(true)}
-        />
+        <span
+          className="material-icons-outlined input-img display-password"
+          onClick={() => setPasswordDisplayed(true)}>
+          {Icons.VISIBLE}
+        </span>
       )}
       {props.type === InputType.PASSWORD && isPasswordDisplay && (
-        <img
-          src={`/assets/images/hide.png`}
-          className="input-img display-password"
-          onClick={() => setPasswordDisplayed(false)}
-        />
+        <span
+          className="material-icons-outlined input-img display-password"
+          onClick={() => setPasswordDisplayed(false)}>
+          {Icons.HIDDEN}
+        </span>
       )}
       {props.type !== InputType.PASSWORD && props.value.length > 0 && (
-        <img
-          src={`/assets/images/delete.png`}
-          className="input-img erase"
-          onClick={() => props.onChange('')}
-        />
+        <span
+          className="material-icons-outlined input-img erase"
+          onClick={() => props.onChange('')}>
+          {Icons.CLEAR}
+        </span>
       )}
       {isFocused && filteredValues && filteredValues.length > 0 && (
         <div className="autocomplete-panel">
@@ -108,7 +112,11 @@ const InputComponent = (props: InputProps) => {
         </div>
       )}
       {props.logo && (
-        <img src={`/assets/images/${props.logo}.png`} className="input-img" />
+        <span
+          className="material-icons-outlined input-img"
+          onClick={() => props.onChange('')}>
+          {props.logo}
+        </span>
       )}
     </div>
   );

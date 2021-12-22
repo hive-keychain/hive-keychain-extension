@@ -8,6 +8,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { RootState } from '@popup/store';
@@ -271,7 +272,7 @@ const PowerUpDown = ({
       {powerType === PowerType.POWER_UP && (
         <InputComponent
           type={InputType.TEXT}
-          logo="arobase"
+          logo={Icons.AT}
           placeholder="popup_html_receiver"
           value={receiver}
           onChange={setReceiver}

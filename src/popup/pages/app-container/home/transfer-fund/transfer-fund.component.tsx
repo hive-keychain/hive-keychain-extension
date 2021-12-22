@@ -9,6 +9,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select, {
@@ -277,7 +278,7 @@ const TransferFunds = ({
       </div>
       <InputComponent
         type={InputType.TEXT}
-        logo="arobase"
+        logo={Icons.AT}
         placeholder="popup_html_username"
         value={receiverUsername}
         onChange={setReceiverUsername}

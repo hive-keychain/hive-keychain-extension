@@ -119,7 +119,7 @@
     "description": "on Keychain popup main page"
   },
   "popup_html_rc": {
-    "message": "Resource credits",
+    "message": "Resource Credits",
     "description": "on Keychain popup main page"
   },
   "popup_html_send": {
@@ -1751,6 +1751,10 @@
     "description": "If no tokens"
   },
   "popup_html_governance": {
+    "message": "Governance",
+    "description": "Governance"
+  },
+  "popup_html_gov": {
     "message": "Gov.",
     "description": "Governance"
   },

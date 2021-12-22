@@ -13,7 +13,7 @@ const Governance = ({}: PropsFromRedux) => {
   return (
     <div className="witness-voting-page">
       <PageTitleComponent
-        title="popup_html_witness_title"
+        title="popup_html_governance"
         isBackButtonEnabled={true}
       />
 

@@ -1,6 +1,7 @@
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -56,7 +57,7 @@ const ChangePassword = ({
       <InputComponent
         value={oldPassword}
         onChange={setOldPassword}
-        logo="lock"
+        logo={Icons.PASSWORD}
         placeholder="popup_html_old_password"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
@@ -64,7 +65,7 @@ const ChangePassword = ({
       <InputComponent
         value={newPassword}
         onChange={setNewPassword}
-        logo="lock"
+        logo={Icons.PASSWORD}
         placeholder="popup_html_new_password"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
@@ -72,17 +73,13 @@ const ChangePassword = ({
       <InputComponent
         value={newPasswordConfirm}
         onChange={setNewPasswordConfirm}
-        logo="lock"
+        logo={Icons.PASSWORD}
         placeholder="popup_html_confirm"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
       />
 
-      <ButtonComponent
-        label={'popup_html_submit'}
-        logo="submit"
-        onClick={submitMk}
-      />
+      <ButtonComponent label={'popup_html_submit'} onClick={submitMk} />
     </div>
   );
 };

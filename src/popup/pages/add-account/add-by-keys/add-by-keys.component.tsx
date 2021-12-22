@@ -1,5 +1,6 @@
 import { addAccount } from '@popup/actions/account.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -48,7 +49,7 @@ const AddByKeys = ({
         <InputComponent
           value={username}
           onChange={setUsername}
-          logo="arobase"
+          logo={Icons.AT}
           placeholder="popup_html_username"
           type={InputType.TEXT}
           onEnterPress={submitForm}
@@ -56,7 +57,7 @@ const AddByKeys = ({
         <InputComponent
           value={privateKey}
           onChange={setPrivateKey}
-          logo="key"
+          logo={Icons.KEY}
           placeholder="popup_html_private_key"
           type={InputType.PASSWORD}
           onEnterPress={submitForm}

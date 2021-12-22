@@ -1,6 +1,7 @@
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -38,14 +39,14 @@ const SignIn = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
       <InputComponent
         value={password}
         onChange={setPassword}
-        logo="lock"
+        logo={Icons.PASSWORD}
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}
       />
       <ButtonComponent
         label={'popup_html_signin'}
-        logo="submit"
+        logo={Icons.LOGIN}
         onClick={login}
       />
       <div className="reset-password-link" onClick={goToForgetPassword}>

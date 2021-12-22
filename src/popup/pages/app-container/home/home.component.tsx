@@ -61,8 +61,8 @@ const Home = ({
           <TopBarComponent />
           <SelectAccountSectionComponent />
           <ResourcesSectionComponent />
-          <WalletInfoSectionComponent />
           <EstimatedAccountValueSectionComponent />
+          <WalletInfoSectionComponent />
           <ActionsSectionComponent />
         </div>
       )}

@@ -1,4 +1,5 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
+import { Icons } from '@popup/icons.enum';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useState } from 'react';
@@ -48,7 +49,7 @@ export default ({ data, wrongMk }: Props) => {
       <InputComponent
         value={password}
         onChange={setPassword}
-        logo="lock"
+        logo={Icons.PASSWORD}
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}

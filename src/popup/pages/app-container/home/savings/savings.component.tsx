@@ -7,6 +7,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
@@ -266,7 +267,7 @@ const SavingsPage = ({
 
       <InputComponent
         type={InputType.TEXT}
-        logo="arobase"
+        logo={Icons.AT}
         placeholder="popup_html_username"
         value={username}
         onChange={setUsername}

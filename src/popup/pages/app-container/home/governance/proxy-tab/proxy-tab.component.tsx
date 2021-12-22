@@ -3,6 +3,7 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -73,7 +74,7 @@ const ProxyTab = ({
         <InputComponent
           value={proxyUsername}
           onChange={setProxyUsername}
-          logo="arobase"
+          logo={Icons.AT}
           placeholder="popup_html_proxy"
           type={InputType.TEXT}
         />

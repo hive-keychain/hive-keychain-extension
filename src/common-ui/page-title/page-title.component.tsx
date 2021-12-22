@@ -1,4 +1,5 @@
 import { goBack, navigateTo } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -31,18 +32,18 @@ const PageTitle = ({
   return (
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
-        <img
-          className="icon-button"
-          src="/assets/images/left-arrow.png"
-          onClick={handleBackButtonClick}
-        />
+        <span
+          className="material-icons-outlined icon-button"
+          onClick={handleBackButtonClick}>
+          {Icons.BACK}
+        </span>
       )}
       <div className="title">{chrome.i18n.getMessage(title, titleParams)}</div>
-      <img
-        className="icon-button"
-        src="/assets/images/delete.png"
-        onClick={handleCloseButtonClick}
-      />
+      <span
+        className="material-icons-outlined icon-button"
+        onClick={handleCloseButtonClick}>
+        {Icons.CLOSE}
+      </span>
     </div>
   );
 };

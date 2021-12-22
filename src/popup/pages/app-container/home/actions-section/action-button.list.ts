@@ -21,7 +21,7 @@ export const ActionButtonList: ActionButton[] = [
     nextScreen: Screen.TOKENS_PAGE,
   },
   {
-    label: 'popup_html_governance',
+    label: 'popup_html_gov',
     icon: 'hive-brands.svg',
     importedIcon: true,
     nextScreen: Screen.GOVERNANCE_PAGE,

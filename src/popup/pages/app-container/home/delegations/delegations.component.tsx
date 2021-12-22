@@ -11,6 +11,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -248,7 +249,7 @@ const Delegations = ({
       <InputComponent
         value={username}
         onChange={setUsername}
-        logo="arobase"
+        logo={Icons.AT}
         placeholder="popup_html_username"
         type={InputType.TEXT}
         autocompleteValues={autocompleteTransferUsernames}

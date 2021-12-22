@@ -1,6 +1,7 @@
 import { addAccount } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -47,7 +48,7 @@ const AddByAuth = ({
       <InputComponent
         value={username}
         onChange={setUsername}
-        logo="arobase"
+        logo={Icons.AT}
         placeholder="popup_html_username"
         type={InputType.TEXT}
         onEnterPress={submitForm}
@@ -55,7 +56,7 @@ const AddByAuth = ({
       <InputComponent
         value={authorizedAccount}
         onChange={setAuthorizedAccount}
-        logo="arobase"
+        logo={Icons.AT}
         placeholder="popup_html_auth_placeholder_username_auth"
         type={InputType.TEXT}
         onEnterPress={submitForm}
