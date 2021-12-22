@@ -1,6 +1,7 @@
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -60,22 +61,22 @@ const TopBar = ({
       <img src="/assets/images/keychain_icon_small.png" />
       <div className="spacer"></div>
       {hasRewardToClaim && (
-        <img
-          className="button claim-button"
-          src="/assets/images/claim.png"
-          onClick={() => claim()}
-        />
+        <span
+          className="material-icons button claim-button"
+          onClick={() => claim()}>
+          {Icons.CLAIM}
+        </span>
       )}
-      <img
-        className="button lock-button"
-        src="/assets/images/lock_wallet.png"
-        onClick={() => lockPopup()}
-      />
-      <img
-        className="button settings-button"
-        src="/assets/images/squares.png"
-        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
-      />
+      <span
+        className="material-icons button lock-button"
+        onClick={() => lockPopup()}>
+        {Icons.LOCK}
+      </span>
+      <span
+        className="material-icons button settings-button"
+        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}>
+        {Icons.MENU}
+      </span>
     </div>
   );
 };

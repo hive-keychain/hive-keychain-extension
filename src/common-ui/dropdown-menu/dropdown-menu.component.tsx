@@ -17,23 +17,26 @@ const DROPDOWN_MENU_WIDTH = 200;
 
 const DropdownMenu = ({ dropdownMenuItems, position }: DropdownMenuProps) => {
   return (
-    <div
-      className="dropdown-menu"
-      style={{
-        position: 'absolute',
-        top: position.y + 3,
-        left: position.x - DROPDOWN_MENU_WIDTH,
-        width: DROPDOWN_MENU_WIDTH,
-      }}>
-      {dropdownMenuItems.map((dropdownMenuItem, index) => (
-        <DropdownMenuItemComponent
-          key={index}
-          label={dropdownMenuItem.label}
-          icon={dropdownMenuItem.icon}
-          nextScreen={dropdownMenuItem.nextScreen}
-          nextScreenParams={dropdownMenuItem.nextScreenParams}
-        />
-      ))}
+    <div className="dropdown-menu-container">
+      <div className="overlay"></div>
+      <div
+        className="dropdown-menu"
+        style={{
+          position: 'absolute',
+          top: position.y + 3,
+          left: position.x - DROPDOWN_MENU_WIDTH,
+          width: DROPDOWN_MENU_WIDTH,
+        }}>
+        {dropdownMenuItems.map((dropdownMenuItem, index) => (
+          <DropdownMenuItemComponent
+            key={index}
+            label={dropdownMenuItem.label}
+            icon={dropdownMenuItem.icon}
+            nextScreen={dropdownMenuItem.nextScreen}
+            nextScreenParams={dropdownMenuItem.nextScreenParams}
+          />
+        ))}
+      </div>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -5,7 +6,7 @@ import ReactTooltip from 'react-tooltip';
 import './resource-item.component.scss';
 
 interface ResourceItemProps {
-  icon: string;
+  icon: Icons;
   label: string;
   value: string;
   tooltipText: string;
@@ -20,20 +21,19 @@ const ResourceItem = ({
   secondaryValue,
 }: PropsType) => {
   return (
-    <div className="resource-item">
-      <div className="top">
-        <img className="icon" src={`/assets/images/${icon}.png`} />
-        <div className="label">{chrome.i18n.getMessage(label)}</div>
-        <img
-          className="tooltip-icon"
-          src="/assets/images/info.png"
-          data-for="tooltip"
-          data-tip={tooltipText}
-          data-iscapture="true"
-        />
-      </div>
-      <div className="bottom">
-        {value} {secondaryValue && `(${secondaryValue})`}
+    <div
+      className="resource-item"
+      data-for="tooltip"
+      data-tip={tooltipText}
+      data-iscapture="true">
+      <span className="material-icons icon">{icon}</span>
+      <div className="right-panel">
+        <div className="top">
+          <div className="label">{chrome.i18n.getMessage(label)}</div>
+        </div>
+        <div className="bottom">
+          {value} {secondaryValue && `(${secondaryValue})`}
+        </div>
       </div>
       <ReactTooltip
         id="tooltip"

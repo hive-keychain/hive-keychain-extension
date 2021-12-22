@@ -21,3 +21,13 @@ $message-container-error: $red;
   flex-direction: column;
   row-gap: 16px;
 }
+
+@mixin link {
+  color: white;
+  text-decoration: none;
+  border-bottom: white 2px dotted;
+  &:hover {
+    border-bottom: $red 2px dotted;
+    color: $red;
+  }
+}

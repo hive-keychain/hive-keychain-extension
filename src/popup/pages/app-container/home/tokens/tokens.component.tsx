@@ -1,4 +1,5 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
+import { setLoading } from '@popup/actions/loading.actions';
 import {
   navigateTo,
   navigateToWithParams,
@@ -9,6 +10,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -20,6 +22,7 @@ const Tokens = ({
   loadUserTokens,
   navigateTo,
   navigateToWithParams,
+  setLoading,
 }: PropsFromRedux) => {
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>(
     [],
@@ -35,11 +38,13 @@ const Tokens = ({
   };
 
   useEffect(() => {
+    setLoading(true);
     loadHiddenTokens();
     loadUserTokens(activeAccount.name!);
   }, []);
 
   useEffect(() => {
+    setLoading(userTokens.loading);
     if (userTokens.list) {
       setFilteredTokenList(
         userTokens.list.filter((token) => !hiddenTokens.includes(token.symbol)),
@@ -68,9 +73,27 @@ const Tokens = ({
         <div className="my-tokens">
           {userTokens.list.map((token) => (
             <div className="token" key={token.symbol}>
-              <div className="balance">
-                {FormatUtils.withCommas(token.balance, 8)}
+              <div
+                className="balance"
+                data-for={`full-balance-tooltip`}
+                data-tip={
+                  FormatUtils.hasMoreThanXDecimal(parseFloat(token.balance), 3)
+                    ? FormatUtils.withCommas(token.balance, 8)
+                    : null
+                }
+                data-iscapture="true">
+                {FormatUtils.withCommas(token.balance, 3)}
+                {FormatUtils.hasMoreThanXDecimal(parseFloat(token.balance), 3)
+                  ? '...'
+                  : null}
               </div>
+              <ReactTooltip
+                id="full-balance-tooltip"
+                place="top"
+                type="light"
+                effect="solid"
+                multiline={true}
+              />
               <div className="symbol">{token.symbol}</div>
               <img
                 className="history"
@@ -107,6 +130,7 @@ const connector = connect(mapStateToProps, {
   loadUserTokens,
   navigateTo,
   navigateToWithParams,
+  setLoading,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

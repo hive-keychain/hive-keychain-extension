@@ -5,8 +5,7 @@
   .disclaimer {
     font-size: 18px;
     a {
-      color: $red;
-      text-decoration: none;
+      @include link;
     }
   }
 

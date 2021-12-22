@@ -67,12 +67,18 @@ const nFormatter = (num: number, digits: number) => {
   return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol;
 };
 
+const hasMoreThanXDecimal = (number: number, decimal: number) => {
+  const splitedNumber = number.toString().split('.');
+  return splitedNumber.length > 1 ? splitedNumber[1].length > decimal : false;
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
   fromHP,
   formatCurrencyValue,
   nFormatter,
+  hasMoreThanXDecimal,
 };
 
 export default FormatUtils;

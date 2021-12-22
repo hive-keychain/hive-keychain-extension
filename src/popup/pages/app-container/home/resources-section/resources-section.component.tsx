@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import { ResourceItemComponent } from '@popup/pages/app-container/home/resources-section/resource-item/resource-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -46,13 +47,13 @@ const ResourcesSection = ({
         label={'popup_html_vm'}
         value={votingMana}
         secondaryValue={votingValue}
-        icon={'bg_voting'}
+        icon={Icons.ARROW_UP}
         tooltipText={manaReadyIn}
       />
       <ResourceItemComponent
         label={'popup_html_rc'}
         value={rc}
-        icon={'bg_rc'}
+        icon={Icons.RC}
         tooltipText={rcReadyIn}
       />
     </div>

@@ -32,14 +32,11 @@ const Home = ({
     loadBittrexPrices();
     loadGlobalProperties();
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
-      console.log('HOME => refreshActiveAccount');
       refreshActiveAccount(true);
     }
   }, []);
 
   useEffect(() => {
-    console.log(accounts, activeRpc);
-    console.log(ActiveAccountUtils.isEmpty(activeAccount), accounts.length);
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
       initActiveAccount();
     }
@@ -51,7 +48,6 @@ const Home = ({
     const lastActiveAccount = accounts.find(
       (account: LocalAccount) => lastActiveAccountName === account.name,
     );
-    console.log('HOME => loadActiveAccount');
     loadActiveAccount(
       lastActiveAccount ? lastActiveAccount : accounts[0],
       false,

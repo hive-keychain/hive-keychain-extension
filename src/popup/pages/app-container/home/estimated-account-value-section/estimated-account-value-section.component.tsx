@@ -2,7 +2,7 @@ import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Screen } from 'src/reference-data/screen.enum';
+import ReactTooltip from 'react-tooltip';
 import AccountUtils from 'src/utils/account.utils';
 import './estimated-account-value-section.component.scss';
 
@@ -24,21 +24,31 @@ const EstimatedAccountValueSection = ({
   }, [activeAccount, bittrex, globalProperties]);
 
   return (
-    <div className="estimated-account-value-section">
-      <div className="label-panel">
-        <div className="label">
-          {chrome.i18n.getMessage('popup_html_estimation')}
+    <>
+      <div
+        className="estimated-account-value-section"
+        data-for={`estimated-account-value-tooltip`}
+        data-tip={chrome.i18n.getMessage('popup_html_estimation_info_text')}
+        data-iscapture="true">
+        <div className="label-panel">
+          <div className="label">
+            {chrome.i18n.getMessage('popup_html_estimation')}
+          </div>
         </div>
-        <img
-          className="icon"
-          src="/assets/images/info.png"
-          onClick={() => navigateTo(Screen.ACCOUNT_VALUE_EXPLANATION)}
-        />
+        <div className="value">
+          {accountValue ? `$ ${accountValue} USD` : '...'}
+        </div>
       </div>
-      <div className="value">
-        {accountValue ? `$ ${accountValue} USD` : '...'}
-      </div>
-    </div>
+      <ReactTooltip
+        id="estimated-account-value-tooltip"
+        place="top"
+        type="light"
+        effect="solid"
+        multiline={true}
+        delayShow={500}
+        className="estimated-account-value-tooltip"
+      />
+    </>
   );
 };
 
