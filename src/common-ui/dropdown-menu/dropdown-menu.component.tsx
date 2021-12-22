@@ -32,6 +32,7 @@ const DropdownMenu = ({ dropdownMenuItems, position }: DropdownMenuProps) => {
             key={index}
             label={dropdownMenuItem.label}
             icon={dropdownMenuItem.icon}
+            importedIcon={dropdownMenuItem.importedIcon}
             nextScreen={dropdownMenuItem.nextScreen}
             nextScreenParams={dropdownMenuItem.nextScreenParams}
           />

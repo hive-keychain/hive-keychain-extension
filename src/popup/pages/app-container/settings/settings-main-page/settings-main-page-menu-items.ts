@@ -1,25 +1,26 @@
+import { Icons } from '@popup/icons.enum';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 
 const SettingsMenuItems: MenuItem[] = [
   {
     label: 'popup_html_accounts',
-    icon: 'accounts',
+    icon: Icons.ACCOUNTS,
     nextScreen: Screen.SETTINGS_ACCOUNTS,
   },
   {
     label: 'popup_html_user_preferences',
-    icon: 'preferences',
+    icon: Icons.PREFERENCES,
     nextScreen: Screen.SETTINGS_USER_PREFERENCES,
   },
   {
     label: 'popup_html_advanced_settings',
-    icon: 'preferences',
+    icon: Icons.SETTINGS,
     nextScreen: Screen.SETTINGS_ADVANCED,
   },
   {
     label: 'popup_html_about',
-    icon: 'info',
+    icon: Icons.INFO,
     nextScreen: Screen.SETTINGS_ABOUT,
   },
 ];
