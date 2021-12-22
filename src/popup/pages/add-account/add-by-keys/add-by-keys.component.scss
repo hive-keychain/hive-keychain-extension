@@ -4,8 +4,8 @@
   display: flex;
   flex-direction: column;
   row-gap: 24px;
-}
-
-.form-container {
-  @include pageLayout;
+  .form-container {
+    @include pageLayoutRowGap;
+    row-gap: 32px;
+  }
 }
