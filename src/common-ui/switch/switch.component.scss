@@ -1,15 +1,27 @@
 @import '/src/popup/variable.scss';
 
+.pretty.p-switch {
+  .state {
+    &::before {
+      border-color: $grey-transparent !important;
+    }
+  }
+}
+
+.pretty.p-switch input ~ .state label:after {
+  background-color: $grey-transparent !important;
+}
+
 .pretty.p-switch.checked {
   .state {
     &::before {
-      border-color: $red !important;
+      border-color: white !important;
     }
   }
 }
 
 .pretty.p-switch input:checked ~ .state label:after {
-  background-color: $red !important;
+  background-color: white !important;
 }
 
 .switch-container {
