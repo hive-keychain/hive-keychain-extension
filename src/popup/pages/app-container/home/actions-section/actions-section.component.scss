@@ -1,9 +1,5 @@
 .actions-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-  align-items: center;
-  row-gap: 16px;
-  column-gap: 16px;
-  padding: 0px 32px;
-  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  padding: 32px;
 }

@@ -8,6 +8,7 @@ import './action-button.component.scss';
 const ActionButton = ({
   label,
   icon,
+  importedIcon,
   nextScreen,
   nextScreenParams,
   navigateToWithParams,
@@ -16,7 +17,17 @@ const ActionButton = ({
     <div
       className="action-button"
       onClick={() => navigateToWithParams(nextScreen, nextScreenParams)}>
-      <img className="icon" src={`/assets/images/${icon}.png`} />
+      <div className="icon-container">
+        {!importedIcon && (
+          <span className="material-icons-outlined icon">{icon}</span>
+        )}
+        {importedIcon && (
+          <img
+            className="icon imported-icon"
+            src={`/assets/images/${icon}.png`}
+          />
+        )}
+      </div>
       <div className="label">{chrome.i18n.getMessage(label)}</div>
     </div>
   );

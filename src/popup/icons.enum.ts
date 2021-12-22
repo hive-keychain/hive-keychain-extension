@@ -31,6 +31,7 @@ export enum Icons {
   SEARCH = 'search',
   SETTINGS = 'settings',
   SEND = 'send',
+  TOKENS = 'generating_tokens',
   VISIBLE = 'visibility',
   WARNING = 'warning',
 }
