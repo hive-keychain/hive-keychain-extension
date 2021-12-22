@@ -25,13 +25,13 @@ const EstimatedAccountValueSection = ({
 
   return (
     <>
-      <div
-        className="estimated-account-value-section"
-        data-for={`estimated-account-value-tooltip`}
-        data-tip={chrome.i18n.getMessage('popup_html_estimation_info_text')}
-        data-iscapture="true">
+      <div className="estimated-account-value-section">
         <div className="label-panel">
-          <div className="label">
+          <div
+            className="label"
+            data-for={`estimated-account-value-tooltip`}
+            data-tip={chrome.i18n.getMessage('popup_html_estimation_info_text')}
+            data-iscapture="true">
             {chrome.i18n.getMessage('popup_html_estimation')}
           </div>
         </div>

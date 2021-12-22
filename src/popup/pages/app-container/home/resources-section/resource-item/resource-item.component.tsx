@@ -41,6 +41,7 @@ const ResourceItem = ({
         type="light"
         effect="solid"
         multiline={true}
+        delayShow={500}
       />
     </div>
   );
