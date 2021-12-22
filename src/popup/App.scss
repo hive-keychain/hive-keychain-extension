@@ -17,6 +17,13 @@
   padding: 24px;
   box-sizing: border-box;
   overflow: auto;
+
+  &.homepage {
+    background: url(/assets/images/hive-watermark.png) 0% 0% no-repeat
+        padding-box,
+      linear-gradient(to bottom, #000000, #59626c, #000000) 0% 0% no-repeat
+        padding-box !important;
+  }
 }
 
 .react-dropdown-select-dropdown-handle {

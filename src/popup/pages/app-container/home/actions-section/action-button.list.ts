@@ -16,12 +16,13 @@ export const ActionButtonList: ActionButton[] = [
   },
   {
     label: 'popup_html_tokens',
-    icon: Icons.TOKENS,
+    icon: 'hive-engine.svg',
+    importedIcon: true,
     nextScreen: Screen.TOKENS_PAGE,
   },
   {
     label: 'popup_html_governance',
-    icon: 'solo',
+    icon: 'hive-brands.svg',
     importedIcon: true,
     nextScreen: Screen.GOVERNANCE_PAGE,
   },

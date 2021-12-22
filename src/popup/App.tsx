@@ -35,6 +35,7 @@ const App = ({
   refreshActiveAccount,
   loading,
   setActiveRpc,
+  isCurrentPageHomePage,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isActiveRpcLoaded, setActiveRpcLoaded] = useState(false);
@@ -126,7 +127,7 @@ const App = ({
   };
 
   return (
-    <div className="App">
+    <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {renderMainLayoutNav()}
       <MessageContainerComponent />
       {(loading || !isActiveRpcLoaded) && <LoadingComponent />}
@@ -141,6 +142,8 @@ const mapStateToProps = (state: RootState) => {
     activeRpc: state.activeRpc,
     loading: state.loading,
     activeAccountUsername: state.activeAccount.name,
+    isCurrentPageHomePage:
+      state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
   };
 };
 

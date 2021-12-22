@@ -22,10 +22,7 @@ const ActionButton = ({
           <span className="material-icons-outlined icon">{icon}</span>
         )}
         {importedIcon && (
-          <img
-            className="icon imported-icon"
-            src={`/assets/images/${icon}.png`}
-          />
+          <img className="icon imported-icon" src={`/assets/images/${icon}`} />
         )}
       </div>
       <div className="label">{chrome.i18n.getMessage(label)}</div>

@@ -11,12 +11,17 @@
   .icon-container {
     height: 50px;
     width: 50px;
-    border: 1px solid $red-dark;
+    border: 1px solid $red-transparent;
     border-radius: 50%;
-    background: $red-dark;
+    background: $red-transparent;
     display: flex;
     align-items: center;
     justify-content: center;
+
+    &:hover {
+      background: $red-dark;
+      border-color: $red-dark;
+    }
     .icon {
       color: white;
       font-size: 24px;
@@ -30,5 +35,6 @@
   .label {
     font-size: 14px;
     color: white;
+    text-transform: uppercase;
   }
 }
