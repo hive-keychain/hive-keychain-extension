@@ -6,6 +6,20 @@
   .using-proxy {
     font-size: 16px;
   }
+  .link-to-arcange {
+    cursor: pointer;
+    a,
+    span {
+      font-size: 16px;
+      color: white;
+      text-decoration: none;
+    }
+
+    span {
+      vertical-align: bottom;
+      margin-left: 4px;
+    }
+  }
 
   .ranking-container {
     margin: 0px -24px;
@@ -25,7 +39,7 @@
     }
 
     .ranking {
-      height: 330px;
+      height: 275px;
       overflow: auto;
 
       .ranking-item {

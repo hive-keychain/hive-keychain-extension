@@ -1825,5 +1825,9 @@
   "html_popup_import_settings_error": {
     "message": "Import settings failed",
     "description": "Import settings failed message"
+  },
+  "html_popup_link_to_witness_website": {
+    "message": "For more information, click here to access witness database",
+    "description": "Link to witness website"
   }
 }

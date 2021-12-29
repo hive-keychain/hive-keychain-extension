@@ -6,6 +6,7 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
@@ -187,6 +188,20 @@ const WitnessTab = ({
           ])}
         </div>
       )}
+
+      <div
+        onClick={() =>
+          chrome.tabs.create({ url: 'https://hive.arcange.eu/witnesses/' })
+        }
+        className="link-to-arcange">
+        <a>
+          {' '}
+          {chrome.i18n.getMessage('html_popup_link_to_witness_website')}
+          <span className="material-icons-outlined outside-link">
+            {Icons.OPEN_IN_NEW}
+          </span>
+        </a>
+      </div>
 
       <div className="ranking-container">
         <div className="ranking-filter">

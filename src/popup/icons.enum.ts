@@ -34,6 +34,7 @@ export enum Icons {
   LOGOUT = 'logout',
   MANAGE_ACCOUNTS = 'manage_accounts',
   MENU = 'menu',
+  OPEN_IN_NEW = 'open_in_new',
   PASSWORD = 'password',
   PREFERENCES = 'tune',
   RC = 'speed',
