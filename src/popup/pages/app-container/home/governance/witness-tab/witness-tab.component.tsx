@@ -124,7 +124,14 @@ const WitnessTab = ({
     return (
       <div className="ranking-item" key={witness.name}>
         <div className="rank">
-          {!hideNonActive
+          <div className="active-rank">
+            {witness.active_rank ? witness.active_rank : '-'}{' '}
+          </div>
+          {!hideNonActive &&
+            witness.active_rank?.toString() !== witness.rank && (
+              <div className="including-inactive">({witness.rank})</div>
+            )}
+          {/* {!hideNonActive
             ? witness.rank
             : witness.active_rank
             ? witness.active_rank
@@ -133,7 +140,7 @@ const WitnessTab = ({
             hideNonActive &&
             parseInt(witness.active_rank) !== parseInt(witness.rank) && (
               <span className="including-inactive">({witness.rank})</span>
-            )}
+            )} */}
         </div>
         <div
           className={

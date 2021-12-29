@@ -30,14 +30,22 @@
 
       .ranking-item {
         display: grid;
-        grid-template-columns: 60px 1fr 40px;
+        grid-template-columns: 70px 1fr 40px;
         align-items: center;
         background: $black-transparent;
         font-size: 18px;
         height: 48px;
 
         .rank {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          .active-rank {
+            font-size: 16px;
+            width: 30px;
+          }
           .including-inactive {
+            width: 30px;
             font-size: 12px;
           }
         }
