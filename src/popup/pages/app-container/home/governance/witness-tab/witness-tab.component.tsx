@@ -7,6 +7,7 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
+import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -83,9 +84,7 @@ const WitnessTab = ({
 
   const initWitnessRanking = async () => {
     setLoading(true);
-    const ranking = (
-      await KeychainApi.get('/hive/v2/witnesses-ranks')
-    ).data.splice(0, 200);
+    const ranking = (await KeychainApi.get('/hive/v2/witnesses-ranks')).data;
     setRanking(ranking);
     setFilteredRanking(ranking);
     setLoading(false);
@@ -119,6 +118,60 @@ const WitnessTab = ({
         setLoading(false);
       }
     }
+  };
+
+  const renderWitnessItem = (witness: Witness) => {
+    return (
+      <div className="ranking-item" key={witness.name}>
+        <div className="rank">
+          {!hideNonActive
+            ? witness.rank
+            : witness.active_rank
+            ? witness.active_rank
+            : witness.rank}{' '}
+          {witness.active_rank &&
+            hideNonActive &&
+            parseInt(witness.active_rank) !== parseInt(witness.rank) && (
+              <span className="including-inactive">({witness.rank})</span>
+            )}
+        </div>
+        <div
+          className={
+            'name ' +
+            (witness.signing_key ===
+            'STM1111111111111111111111111111111114T1Anm'
+              ? 'not-active'
+              : '')
+          }>
+          @{witness.name}
+        </div>
+        <div className="action">
+          <img
+            className={
+              (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
+              ' ' +
+              (usingProxy ? 'using-proxy' : '')
+            }
+            src="assets/images/voted.png"
+            onClick={() => handleVotedButtonClick(witness)}
+            data-for={`${witness.name}-tooltip`}
+            data-tip={
+              usingProxy
+                ? chrome.i18n.getMessage('html_popup_witness_vote_error_proxy')
+                : ''
+            }
+            data-iscapture="true"
+          />
+          <ReactTooltip
+            id={`${witness.name}-tooltip`}
+            place="top"
+            type="light"
+            effect="solid"
+            multiline={true}
+          />
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -170,61 +223,11 @@ const WitnessTab = ({
               : chrome.i18n.getMessage('popup_witness_key')
           }
           data-iscapture="true">
-          {filteredRanking.map((witness) => (
-            <div className="ranking-item" key={witness.name}>
-              <div className="rank">
-                {!hideNonActive
-                  ? witness.rank
-                  : witness.active_rank
-                  ? witness.active_rank
-                  : witness.rank}{' '}
-                {witness.active_rank &&
-                  hideNonActive &&
-                  parseInt(witness.active_rank) !== parseInt(witness.rank) && (
-                    <span className="including-inactive">({witness.rank})</span>
-                  )}
-              </div>
-              <div
-                className={
-                  'name ' +
-                  (witness.signing_key ===
-                  'STM1111111111111111111111111111111114T1Anm'
-                    ? 'not-active'
-                    : '')
-                }>
-                @{witness.name}
-              </div>
-              <div className="action">
-                <img
-                  className={
-                    (votedWitnesses.includes(witness.name)
-                      ? 'voted'
-                      : 'not-voted') +
-                    ' ' +
-                    (usingProxy ? 'using-proxy' : '')
-                  }
-                  src="assets/images/voted.png"
-                  onClick={() => handleVotedButtonClick(witness)}
-                  data-for={`${witness.name}-tooltip`}
-                  data-tip={
-                    usingProxy
-                      ? chrome.i18n.getMessage(
-                          'html_popup_witness_vote_error_proxy',
-                        )
-                      : ''
-                  }
-                  data-iscapture="true"
-                />
-                <ReactTooltip
-                  id={`${witness.name}-tooltip`}
-                  place="top"
-                  type="light"
-                  effect="solid"
-                  multiline={true}
-                />
-              </div>
-            </div>
-          ))}
+          <FlatList
+            list={filteredRanking}
+            renderItem={renderWitnessItem}
+            renderOnScroll
+          />
         </div>
         <ReactTooltip
           id={`no-private-key-tooltip`}
