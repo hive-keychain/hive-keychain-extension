@@ -10,8 +10,15 @@
     cursor: pointer;
     box-sizing: border-box;
 
+    &:hover {
+      background-color: rgba(56, 63, 70, 0.68);
+    }
+
     &:nth-child(odd) {
       background-color: rgba(227, 19, 55, 0.32);
+      &:hover {
+        background-color: rgba(227, 19, 55, 0.45);
+      }
     }
 
     .icon {
