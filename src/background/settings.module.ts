@@ -5,6 +5,7 @@ import { Settings } from '@interfaces/settings.interface';
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const sendBackImportedFileContent = async (fileContent: any) => {
@@ -106,7 +107,7 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         if (!existingRpc) existingRpc = [];
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.RPC_LIST,
-          [...existingRpc, settings.rpc],
+          ArrayUtils.mergeWithoutDuplicate(existingRpc, settings.rpc, 'uri'),
         );
       }
 
