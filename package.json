@@ -51,7 +51,8 @@
     "redux": "^4.1.0",
     "redux-thunk": "^2.3.0",
     "sscjs": "^0.0.8",
-    "url-loader": "^4.1.1"
+    "url-loader": "^4.1.1",
+    "valid-url": "^1.0.9"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",

@@ -5,4 +5,5 @@ export interface Witness {
   votes: number;
   votes_count: number;
   signing_key: string;
+  url: string;
 }

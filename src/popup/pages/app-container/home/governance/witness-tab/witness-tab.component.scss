@@ -70,8 +70,19 @@
         }
 
         .name {
+          display: flex;
+          align-items: center;
+          column-gap: 4px;
+
+          .link-to-witness-page {
+            cursor: pointer;
+            font-size: 16px;
+          }
+
           &.not-active {
-            text-decoration: line-through;
+            .witness-name {
+              text-decoration: line-through;
+            }
           }
         }
 

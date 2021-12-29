@@ -18,6 +18,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import HiveUtils from 'src/utils/hive.utils';
 import WitnessUtils from 'src/utils/witness.utils';
+import * as ValidUrl from 'valid-url';
 import './witness-tab.component.scss';
 
 const MAX_WITNESS_VOTE = 30;
@@ -86,6 +87,7 @@ const WitnessTab = ({
   const initWitnessRanking = async () => {
     setLoading(true);
     const ranking = (await KeychainApi.get('/hive/v2/witnesses-ranks')).data;
+    console.log(ranking);
     setRanking(ranking);
     setFilteredRanking(ranking);
     setLoading(false);
@@ -141,7 +143,14 @@ const WitnessTab = ({
               ? 'not-active'
               : '')
           }>
-          @{witness.name}
+          <div className="witness-name">@{witness.name}</div>
+          {witness.url && ValidUrl.isWebUri(witness.url) && (
+            <span
+              onClick={() => chrome.tabs.create({ url: witness.url })}
+              className="material-icons-outlined link-to-witness-page">
+              {Icons.OPEN_IN_NEW}
+            </span>
+          )}
         </div>
         <div className="action">
           <img
