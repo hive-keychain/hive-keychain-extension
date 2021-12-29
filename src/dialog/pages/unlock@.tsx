@@ -48,7 +48,7 @@ export default ({ data, wrongMk }: Props) => {
       <InputComponent
         value={password}
         onChange={setPassword}
-        logo="lock"
+        logo=""
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}
