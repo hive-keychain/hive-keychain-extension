@@ -17,7 +17,6 @@ const App = () => {
   const [data, setData] = useState<any>({});
 
   const renderDialogContent = () => {
-    console.log(data);
     switch (data.command) {
       case DialogCommand.UNLOCK:
       case DialogCommand.WRONG_MK:
