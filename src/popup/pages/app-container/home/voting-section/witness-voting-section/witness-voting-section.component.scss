@@ -1,0 +1,24 @@
+@import '../../../../../variable.scss';
+
+.witness-voting-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  row-gap: 8px;
+  position: fixed;
+  bottom: 16px;
+  left: 0px;
+  width: 100%;
+
+  .submit-button {
+    width: 70%;
+    font-size: 14px;
+    height: 30px;
+    border: 1px solid white;
+  }
+
+  .text {
+    font-size: 16px;
+  }
+}

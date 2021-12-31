@@ -1829,5 +1829,29 @@
   "html_popup_link_to_witness_website": {
     "message": "For more information, click here to access witness database",
     "description": "Link to witness website"
+  },
+  "html_popup_vote_for_witness": {
+    "message": "Vote @stoodkev as witness",
+    "description": "On main page, in the vote witness section"
+  },
+  "html_popup_made_with_love_by_stoodkev": {
+    "message": "Made with ❤ by Keychain team",
+    "description": "Footer"
+  },
+  "html_popup_vote_stoodkev_witness_error_30_votes": {
+    "message": "You already voted for 30 witnesses. Please remove one before voting for @stoodkev",
+    "description": "Error message when vote for stoodkev as witness with 30 votes"
+  },
+  "html_popup_vote_stoodkev_witness_success": {
+    "message": "Successfully voted @stoodkev as a witness. Thank you for the support! ",
+    "description": "Success message when vote for stoodkev as witness"
+  },
+  "html_popup_witness_vote_transaction_not_had_error": {
+    "message": "There was an error while confirming your vote. Please wait a moment and refresh your extension",
+    "description": "Error while trying to confirm vote for witness"
+  },
+  "html_popup_witness_unvote_transaction_not_had_error": {
+    "message": "There was an error while confirming your vote. Please wait a moment and refresh your extension",
+    "description": "Error while trying to confirm unvote witness"
   }
 }

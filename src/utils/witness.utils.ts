@@ -2,12 +2,16 @@ import {
   AccountWitnessProxyOperation,
   AccountWitnessVoteOperation,
   PrivateKey,
+  TransactionConfirmation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Witness } from '@interfaces/witness.interface';
 import HiveUtils from 'src/utils/hive.utils';
 
-const voteWitness = async (witness: Witness, activeAccount: ActiveAccount) => {
+const voteWitness = async (
+  witness: Witness,
+  activeAccount: ActiveAccount,
+): Promise<TransactionConfirmation> => {
   return HiveUtils.getClient().broadcast.sendOperations(
     [
       [

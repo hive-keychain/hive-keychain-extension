@@ -1,6 +1,13 @@
 import { hsc } from '@api/hiveEngine';
 
-const tryConfirmTransaction = (trxId: string) => {
+export interface TransactionConfirmationResult {
+  confirmed: boolean;
+  error: any;
+}
+
+const tryConfirmTransaction = (
+  trxId: string,
+): Promise<TransactionConfirmationResult> => {
   let result: any;
   return new Promise(async function (fulfill, reject) {
     for (let i = 0; i < 20; i++) {
@@ -27,6 +34,6 @@ const getDelayedTransactionInfo = (trxID: string) => {
   });
 };
 
-const TokensUtils = { tryConfirmTransaction };
+const BlockchainTransactionUtils = { tryConfirmTransaction };
 
-export default TokensUtils;
+export default BlockchainTransactionUtils;

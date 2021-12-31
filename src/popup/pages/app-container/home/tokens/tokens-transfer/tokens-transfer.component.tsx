@@ -24,7 +24,7 @@ import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import TokensUtils from 'src/utils/tokens.utils';
+import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './tokens-transfer.component.scss';
 
@@ -169,9 +169,10 @@ const TokensTransfer = ({
         );
 
         if (sendTokenResult.id) {
-          let confirmationResult: any = await TokensUtils.tryConfirmTransaction(
-            sendTokenResult.id,
-          );
+          let confirmationResult: any =
+            await BlockchainTransactionUtils.tryConfirmTransaction(
+              sendTokenResult.id,
+            );
           setLoading(false);
           if (confirmationResult.confirmed) {
             navigateTo(Screen.HOME_PAGE, true);

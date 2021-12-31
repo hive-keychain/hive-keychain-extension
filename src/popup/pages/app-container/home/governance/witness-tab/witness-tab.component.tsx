@@ -17,6 +17,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import HiveUtils from 'src/utils/hive.utils';
+import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
 import './witness-tab.component.scss';
@@ -87,7 +88,6 @@ const WitnessTab = ({
   const initWitnessRanking = async () => {
     setLoading(true);
     const ranking = (await KeychainApi.get('/hive/v2/witnesses-ranks')).data;
-    console.log(ranking);
     setRanking(ranking);
     setFilteredRanking(ranking);
     setLoading(false);
@@ -100,9 +100,23 @@ const WitnessTab = ({
     setLoading(true);
     if (activeAccount.account.witness_votes.includes(witness.name)) {
       try {
-        await WitnessUtils.unvoteWitness(witness, activeAccount);
-        setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
-        refreshActiveAccount();
+        const transactionResult = await WitnessUtils.unvoteWitness(
+          witness,
+          activeAccount,
+        );
+        const transactionConfirmResult =
+          await BlockchainTransactionUtils.tryConfirmTransaction(
+            transactionResult.id,
+          );
+
+        if (transactionConfirmResult.error) {
+          setErrorMessage(
+            'html_popup_witness_unvote_transaction_not_had_error',
+          );
+        } else {
+          refreshActiveAccount();
+          setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
+        }
       } catch (err) {
         setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
         console.log(err);
@@ -111,9 +125,22 @@ const WitnessTab = ({
       }
     } else {
       try {
-        await WitnessUtils.voteWitness(witness, activeAccount);
-        setSuccessMessage('popup_success_wit', [`${witness.name}`]);
-        refreshActiveAccount();
+        const transactionResult = await WitnessUtils.voteWitness(
+          witness,
+          activeAccount,
+        );
+
+        const transactionConfirmResult =
+          await BlockchainTransactionUtils.tryConfirmTransaction(
+            transactionResult.id,
+          );
+
+        if (transactionConfirmResult.error) {
+          setErrorMessage('html_popup_witness_vote_transaction_not_had_error');
+        } else {
+          refreshActiveAccount();
+          setSuccessMessage('popup_success_wit', [`${witness.name}`]);
+        }
       } catch (err) {
         setErrorMessage('popup_error_wit', [`${witness.name}`]);
         console.log(err);
