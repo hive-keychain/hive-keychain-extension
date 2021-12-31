@@ -1,5 +1,8 @@
 import { loadDelegatees } from '@popup/actions/delegations.actions';
-import { setLoading } from '@popup/actions/loading.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -41,7 +44,8 @@ const PowerUpDown = ({
   setSuccessMessage,
   setErrorMessage,
   loadDelegatees,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [receiver, setReceiver] = useState(
     formParams.receiver ? formParams.receiver : activeAccount.name!,
@@ -151,17 +155,19 @@ const PowerUpDown = ({
       fields: fields,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        setLoading(true);
         let success = false;
         switch (powerType) {
           case PowerType.POWER_UP:
+            addToLoadingList('html_popup_power_up_operation');
             success = await HiveUtils.powerUp(
               activeAccount.name!,
               receiver,
               valueS,
             );
+            removeFromLoadingList('html_popup_power_up_operation');
             break;
           case PowerType.POWER_DOWN:
+            addToLoadingList('html_popup_power_down_operation');
             success = await HiveUtils.powerDown(
               activeAccount.name!,
               `${FormatUtils.fromHP(
@@ -169,9 +175,8 @@ const PowerUpDown = ({
                 globalProperties.globals!,
               ).toFixed(6)} VESTS`,
             );
-            break;
+            removeFromLoadingList('html_popup_power_down_operation');
         }
-        setLoading(false);
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -206,7 +211,7 @@ const PowerUpDown = ({
       fields: [],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        setLoading(true);
+        addToLoadingList('html_popup_power_down_operation');
         let success = await HiveUtils.powerDown(
           receiver,
           `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
@@ -214,7 +219,7 @@ const PowerUpDown = ({
           )} VESTS`,
         );
 
-        setLoading(false);
+        removeFromLoadingList('html_popup_power_down_operation');
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -327,7 +332,8 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   setErrorMessage,
   loadDelegatees,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

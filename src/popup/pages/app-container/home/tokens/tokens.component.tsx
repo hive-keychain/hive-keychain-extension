@@ -1,5 +1,8 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
-import { setLoading } from '@popup/actions/loading.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import {
   navigateTo,
   navigateToWithParams,
@@ -23,7 +26,8 @@ const Tokens = ({
   loadUserTokens,
   navigateTo,
   navigateToWithParams,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>(
     [],
@@ -39,13 +43,16 @@ const Tokens = ({
   };
 
   useEffect(() => {
-    setLoading(true);
     loadHiddenTokens();
     loadUserTokens(activeAccount.name!);
   }, []);
 
   useEffect(() => {
-    setLoading(userTokens.loading);
+    if (userTokens.loading) {
+      addToLoadingList('html_popup_loading_tokens_operation');
+    } else {
+    }
+    removeFromLoadingList('html_popup_loading_tokens_operation');
     if (userTokens.list) {
       setFilteredTokenList(
         userTokens.list.filter((token) => !hiddenTokens.includes(token.symbol)),
@@ -132,7 +139,8 @@ const connector = connect(mapStateToProps, {
   loadUserTokens,
   navigateTo,
   navigateToWithParams,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

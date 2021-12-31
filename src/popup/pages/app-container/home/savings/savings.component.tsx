@@ -1,4 +1,7 @@
-import { setLoading } from '@popup/actions/loading.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -39,7 +42,8 @@ const SavingsPage = ({
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState(
     formParams.username ? formParams.username : activeAccount.name!,
@@ -139,16 +143,18 @@ const SavingsPage = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
-        setLoading(true);
         switch (selectedSavingOperationType) {
           case SavingOperationType.DEPOSIT:
+            addToLoadingList('html_popup_deposit_to_savings_operation');
             success = await HiveUtils.deposit(activeAccount, valueS);
+            removeFromLoadingList('html_popup_deposit_to_savings_operation');
             break;
           case SavingOperationType.WITHDRAW:
+            addToLoadingList('html_popup_withdraw_from_savings_operation');
             success = await HiveUtils.withdraw(activeAccount, valueS);
+            removeFromLoadingList('html_popup_withdraw_from_savings_operation');
             break;
         }
-        setLoading(false);
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
@@ -335,7 +341,8 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setSuccessMessage,
   setErrorMessage,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

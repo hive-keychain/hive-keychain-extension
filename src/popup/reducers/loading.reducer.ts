@@ -2,12 +2,14 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
 
 export const LoadingReducer = (
-  state = false,
-  { type, payload }: ActionPayload<boolean>,
-): boolean => {
+  state: string[] = [],
+  { type, payload }: ActionPayload<string>,
+): string[] => {
   switch (type) {
-    case ActionType.SET_LOADING:
-      return payload!;
+    case ActionType.ADD_TO_LOADING_LIST:
+      return [...state, payload!];
+    case ActionType.REMOVE_FROM_LOADING_LIST:
+      return state.filter((item) => item !== payload!);
     default:
       return state;
   }

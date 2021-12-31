@@ -2,7 +2,10 @@ import {
   loadDelegatees,
   loadDelegators,
 } from '@popup/actions/delegations.actions';
-import { setLoading } from '@popup/actions/loading.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -43,7 +46,8 @@ const Delegations = ({
   setErrorMessage,
   loadDelegators,
   loadDelegatees,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState<string>(
     formParams.username ? formParams.username : '',
@@ -142,14 +146,14 @@ const Delegations = ({
       ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        setLoading(true);
+        addToLoadingList('html_popup_delegation_operation');
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
           username,
           FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
             ' VESTS',
         );
-        setLoading(false);
+        removeFromLoadingList('html_popup_delegation_operation');
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -175,14 +179,14 @@ const Delegations = ({
       ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        setLoading(true);
+        addToLoadingList('html_popup_cancel_delegation_operation');
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
           username,
           '0.000000 VESTS',
         );
 
-        setLoading(false);
+        removeFromLoadingList('html_popup_cancel_delegation_operation');
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -306,7 +310,8 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   loadDelegators,
   loadDelegatees,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -1,6 +1,9 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
-import { setLoading } from '@popup/actions/loading.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -38,7 +41,8 @@ const TokensTransfer = ({
   navigateToWithParams,
   navigateTo,
   fetchPhishingAccounts,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [receiverUsername, setReceiverUsername] = useState(
     formParams.receiverUsername ? formParams.receiverUsername : '',
@@ -162,18 +166,20 @@ const TokensTransfer = ({
           },
         };
 
-        setLoading(true);
+        addToLoadingList('html_popup_transfer_token_operation');
         let sendTokenResult: any = await HiveUtils.sendCustomJson(
           json,
           activeAccount,
         );
 
         if (sendTokenResult.id) {
+          addToLoadingList('html_popup_confirm_transaction_operation');
+          removeFromLoadingList('html_popup_transfer_token_operation');
           let confirmationResult: any =
             await BlockchainTransactionUtils.tryConfirmTransaction(
               sendTokenResult.id,
             );
-          setLoading(false);
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
           if (confirmationResult.confirmed) {
             navigateTo(Screen.HOME_PAGE, true);
             await TransferUtils.saveTransferRecipient(
@@ -189,7 +195,7 @@ const TokensTransfer = ({
             setErrorMessage('popup_token_timeout');
           }
         } else {
-          setLoading(false);
+          removeFromLoadingList('html_popup_transfer_token_operation');
           setErrorMessage('popup_html_transfer_failed');
         }
       },
@@ -268,7 +274,8 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   navigateTo,
   fetchPhishingAccounts,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

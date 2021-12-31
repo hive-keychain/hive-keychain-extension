@@ -1853,5 +1853,65 @@
   "html_popup_witness_unvote_transaction_not_had_error": {
     "message": "There was an error while confirming your vote. Please wait a moment and refresh your extension",
     "description": "Error while trying to confirm unvote witness"
+  },
+  "html_popup_conversion_operation": {
+    "message": "Conversion operation",
+    "description": "conversion operation"
+  },
+  "html_popup_delegation_operation": {
+    "message": "Delegation operation",
+    "description": "delegation operation"
+  },
+  "html_popup_cancel_delegation_operation": {
+    "message": "Cancel delegation operation",
+    "description": "delegation operation"
+  },
+  "html_popup_load_witness_ranking_operation": {
+    "message": "Load witness ranking",
+    "description": "load witness ranking operation"
+  },
+  "html_popup_vote_witness_operation": {
+    "message": "Vote witness operation",
+    "description": "vote witness operation"
+  },
+  "html_popup_unvote_witness_operation": {
+    "message": "Unvote witness operation",
+    "description": "unvote witness operation"
+  },
+  "html_popup_confirm_transaction_operation": {
+    "message": "Confirm transaction operation",
+    "description": "Confirmation transaction operation"
+  },
+  "html_popup_delete_account_operation": {
+    "message": "Delete account operation",
+    "description": "delete account operation"
+  },
+  "html_popup_transfer_fund_operation": {
+    "message": "Transfer fund operation",
+    "description": "Transfer fund operation"
+  },
+  "html_popup_transfer_token_operation": {
+    "message": "Transfer token operation",
+    "description": "Transfer token operation"
+  },
+  "html_popup_loading_tokens_operation": {
+    "message": "Loading tokens operation",
+    "description": "Loading tokens operation"
+  },
+  "html_popup_deposit_to_savings_operation": {
+    "message": "Deposit to savings operation",
+    "description": "Deposit to savings operation"
+  },
+  "html_popup_withdraw_from_savings_operation": {
+    "message": "Withdraw from savings operation",
+    "description": "Withdraw from savings operation"
+  },
+  "html_popup_power_up_operation": {
+    "message": "Power up operation",
+    "description": "Power up operation"
+  },
+  "html_popup_power_down_operation": {
+    "message": "Power down operation",
+    "description": "Power down operation"
   }
 }

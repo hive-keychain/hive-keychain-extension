@@ -1,7 +1,10 @@
 import KeychainApi from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
-import { setLoading } from '@popup/actions/loading.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -26,7 +29,8 @@ const MAX_WITNESS_VOTE = 30;
 
 const WitnessTab = ({
   activeAccount,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
@@ -86,29 +90,31 @@ const WitnessTab = ({
   };
 
   const initWitnessRanking = async () => {
-    setLoading(true);
+    addToLoadingList('html_popup_load_witness_ranking_operation');
     const ranking = (await KeychainApi.get('/hive/v2/witnesses-ranks')).data;
     setRanking(ranking);
     setFilteredRanking(ranking);
-    setLoading(false);
+    removeFromLoadingList('html_popup_load_witness_ranking_operation');
   };
 
   const handleVotedButtonClick = async (witness: Witness) => {
     if (usingProxy) {
       return;
     }
-    setLoading(true);
     if (activeAccount.account.witness_votes.includes(witness.name)) {
       try {
+        addToLoadingList('html_popup_unvote_witness_operation');
         const transactionResult = await WitnessUtils.unvoteWitness(
           witness,
           activeAccount,
         );
+        addToLoadingList('html_popup_confirm_transaction_operation');
+        removeFromLoadingList('html_popup_unvote_witness_operation');
         const transactionConfirmResult =
           await BlockchainTransactionUtils.tryConfirmTransaction(
             transactionResult.id,
           );
-
+        removeFromLoadingList('html_popup_confirm_transaction_operation');
         if (transactionConfirmResult.error) {
           setErrorMessage(
             'html_popup_witness_unvote_transaction_not_had_error',
@@ -121,19 +127,24 @@ const WitnessTab = ({
         setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
         console.log(err);
       } finally {
-        setLoading(false);
+        removeFromLoadingList('html_popup_unvote_witness_operation');
+        removeFromLoadingList('html_popup_confirm_transaction_operation');
       }
     } else {
       try {
+        addToLoadingList('html_popup_vote_witness_operation');
         const transactionResult = await WitnessUtils.voteWitness(
           witness,
           activeAccount,
         );
 
+        addToLoadingList('html_popup_confirm_transaction_operation');
+        removeFromLoadingList('html_popup_vote_witness_operation');
         const transactionConfirmResult =
           await BlockchainTransactionUtils.tryConfirmTransaction(
             transactionResult.id,
           );
+        removeFromLoadingList('html_popup_confirm_transaction_operation');
 
         if (transactionConfirmResult.error) {
           setErrorMessage('html_popup_witness_vote_transaction_not_had_error');
@@ -145,7 +156,8 @@ const WitnessTab = ({
         setErrorMessage('popup_error_wit', [`${witness.name}`]);
         console.log(err);
       } finally {
-        setLoading(false);
+        removeFromLoadingList('html_popup_vote_witness_operation');
+        removeFromLoadingList('html_popup_confirm_transaction_operation');
       }
     }
   };
@@ -294,7 +306,8 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,

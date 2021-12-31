@@ -21,6 +21,19 @@
     color: white;
     z-index: 1;
   }
+
+  .operations {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+    span {
+      font-style: italic;
+      font-size: 18px;
+      color: white;
+      z-index: 1;
+    }
+  }
 }
 .hide {
   display: none;

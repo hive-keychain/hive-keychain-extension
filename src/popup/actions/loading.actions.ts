@@ -1,8 +1,15 @@
 import { ActionType } from '@popup/actions/action-type.enum';
 
-export const setLoading = (value: boolean) => {
+export const addToLoadingList = (item: string) => {
   return {
-    type: ActionType.SET_LOADING,
-    payload: value,
+    type: ActionType.ADD_TO_LOADING_LIST,
+    payload: item,
+  };
+};
+
+export const removeFromLoadingList = (item: string) => {
+  return {
+    type: ActionType.REMOVE_FROM_LOADING_LIST,
+    payload: item,
   };
 };

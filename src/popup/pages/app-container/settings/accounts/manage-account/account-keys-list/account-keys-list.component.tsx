@@ -1,6 +1,9 @@
 import { setAccounts } from '@popup/actions/account.actions';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
-import { setLoading } from '@popup/actions/loading.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { AccountKeysListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-keys-list/account-keys-list-item/account-keys-list-item.component';
 import { RootState } from '@popup/store';
@@ -20,7 +23,8 @@ const AccountKeysList = ({
   setAccounts,
   loadActiveAccount,
   navigateToWithParams,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsType) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
   const [account, setAccount] = useState();
@@ -42,14 +46,14 @@ const AccountKeysList = ({
         [activeAccount.name!],
       ),
       afterConfirmAction: async () => {
-        setLoading(true);
+        addToLoadingList('html_popup_delete_account_operation');
         const newAccounts = AccountUtils.deleteAccount(
           activeAccount.name!,
           accounts,
         );
         setAccounts(newAccounts);
         loadActiveAccount(newAccounts[0], true);
-        setLoading(false);
+        removeFromLoadingList('html_popup_delete_account_operation');
       },
     });
   };
@@ -115,7 +119,8 @@ const connector = connect(mapStateToProps, {
   setAccounts,
   loadActiveAccount,
   navigateToWithParams,
-  setLoading,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsType = ConnectedProps<typeof connector>;
 
