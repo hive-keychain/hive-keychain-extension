@@ -1,9 +1,10 @@
+import { LoadingOperation } from '@popup/reducers/loading.reducer';
 import React from 'react';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import './loading.component.scss';
 
 type Props = {
-  operations?: string[];
+  operations?: LoadingOperation[];
   hide?: boolean;
 };
 const Loading = ({ hide, operations }: Props) => {
@@ -17,7 +18,10 @@ const Loading = ({ hide, operations }: Props) => {
       <div className="operations">
         {operations &&
           operations.map((operation) => (
-            <span key={operation}>{chrome.i18n.getMessage(operation)}...</span>
+            <span key={operation.name}>
+              {chrome.i18n.getMessage(operation.name)}
+              {operation.done ? ' OK' : '...'}
+            </span>
           ))}
       </div>
     </div>
