@@ -42,10 +42,6 @@ const Home = ({
     }
   }, []);
 
-  useEffect(() => {
-    console.log(activeAccount);
-  }, [activeAccount]);
-
   const initActiveAccount = async () => {
     const lastActiveAccountName =
       await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();

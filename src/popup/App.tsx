@@ -4,6 +4,7 @@ import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -131,6 +132,7 @@ const App = ({
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {renderMainLayoutNav()}
       <MessageContainerComponent />
+      <ProposalVotingSectionComponent />
       {(loading || !isActiveRpcLoaded) && (
         <LoadingComponent operations={loadingOperation} />
       )}

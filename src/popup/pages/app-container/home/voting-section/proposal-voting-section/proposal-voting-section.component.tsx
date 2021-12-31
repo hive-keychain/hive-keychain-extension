@@ -1,14 +1,71 @@
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-voting-section.component.scss';
 
-const ProposalVotingSection = ({}: PropsFromRedux) => {
-  return <div className="proposal-voting-section"></div>;
+const ProposalVotingSection = ({
+  activeAccount,
+  isMessageContainerDisplayed,
+}: PropsFromRedux) => {
+  const [hasVoted, sethasVoted] = useState(true);
+  const [forceClosed, setForcedClosed] = useState(false);
+
+  useEffect(() => {
+    if (activeAccount.name) {
+      initHasVotedForProposal();
+    }
+  }, [activeAccount]);
+
+  const initHasVotedForProposal = async () => {
+    sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount));
+  };
+
+  const handleVoteForProposalClicked = async () => {
+    const res = await ProposalUtils.voteForProposal(activeAccount);
+    console.log(res);
+  };
+
+  const handleReadClicked = () => {
+    chrome.tabs.create({
+      url: 'https://peakd.com/me/proposals/174',
+    });
+  };
+
+  return (
+    <div
+      className={`proposal-voting-section ${
+        isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
+      }`}>
+      <span
+        className="material-icons close"
+        onClick={() => setForcedClosed(true)}>
+        {Icons.CLOSE}
+      </span>
+      <div className="text">
+        {chrome.i18n.getMessage('popup_html_proposal_request')}
+      </div>
+      <div className="button-panel">
+        <ButtonComponent
+          onClick={handleReadClicked}
+          label={'html_popup_read'}
+        />
+        <ButtonComponent
+          onClick={handleVoteForProposalClicked}
+          label={'html_popup_vote'}
+        />
+      </div>
+    </div>
+  );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    activeAccount: state.activeAccount,
+    isMessageContainerDisplayed: state.errorMessage.key.length > 0,
+  };
 };
 
 const connector = connect(mapStateToProps, {});

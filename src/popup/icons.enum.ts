@@ -19,6 +19,7 @@ export enum Icons {
   COPY = 'file_copy',
   DELEGATIONS = 'swap_horiz',
   DELETE = 'delete',
+  DONE = 'done',
   EDIT = 'edit',
   ERROR = 'error',
   EXPORT = 'file_download',

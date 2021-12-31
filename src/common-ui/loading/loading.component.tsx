@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import { LoadingOperation } from '@popup/reducers/loading.reducer';
 import React from 'react';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -20,7 +21,11 @@ const Loading = ({ hide, operations }: Props) => {
           operations.map((operation) => (
             <span key={operation.name}>
               {chrome.i18n.getMessage(operation.name)}
-              {operation.done ? ' OK' : '...'}
+              {operation.done ? (
+                <span className="material-icons done">{Icons.DONE}</span>
+              ) : (
+                '...'
+              )}
             </span>
           ))}
       </div>

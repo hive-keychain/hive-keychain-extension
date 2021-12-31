@@ -554,6 +554,31 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   );
 };
 
+const voteForProposal = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+) => {
+  return await hive.broadcast.send(
+    {
+      operations: [
+        [
+          'update_proposal_votes',
+          {
+            voter: activeAccount.name,
+            proposal_ids: [`${proposalId}`],
+            approve: 'true',
+          },
+        ],
+      ],
+      extensions: [],
+    },
+    { active: PrivateKey.fromString(activeAccount.keys.active as string) },
+    (err: any, res: any) => {
+      console.log(err, res);
+    },
+  );
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -575,6 +600,7 @@ const HiveUtils = {
   claimAccounts,
   sendCustomJson,
   signMessage,
+  voteForProposal,
 };
 
 export default HiveUtils;

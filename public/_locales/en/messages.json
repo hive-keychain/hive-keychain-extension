@@ -1913,5 +1913,13 @@
   "html_popup_power_down_operation": {
     "message": "Power down operation",
     "description": "Power down operation"
+  },
+  "html_popup_read": {
+    "message": "Read",
+    "description": "read"
+  },
+  "html_popup_vote": {
+    "message": "Vote",
+    "description": "vote"
   }
 }
