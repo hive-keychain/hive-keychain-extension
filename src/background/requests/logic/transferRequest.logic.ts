@@ -60,7 +60,7 @@ export const transferRequest = (
         command: DialogCommand.SEND_DIALOG_CONFIRM,
         data: request,
         domain,
-        accounts: active_accounts,
+        accounts: encode || enforce ? undefined : active_accounts,
         tab,
         rpc: current_rpc,
       });
