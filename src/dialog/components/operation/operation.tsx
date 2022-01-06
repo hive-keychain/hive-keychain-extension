@@ -71,7 +71,7 @@ const Operation = ({
       </div>
 
       <div className="operation_body">{...children}</div>
-      <div className="operation_footer">
+      <div className={`operation_footer ${canWhitelist ? '' : 'no-whitelist'}`}>
         <div className={`whitelist_operation`}>
           {canWhitelist && (
             <CheckboxComponent
