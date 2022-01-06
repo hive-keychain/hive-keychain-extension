@@ -1,4 +1,5 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
@@ -15,7 +16,7 @@ type Props = {
   data: KeychainRequest;
   domain: string;
   tab: number;
-  testnet: boolean;
+  rpc: Rpc;
   canWhitelist?: boolean;
   header?: string;
   checkboxLabelOverride?: string;
@@ -33,7 +34,7 @@ const Operation = ({
   data,
   header,
   checkboxLabelOverride,
-  testnet, //TODO: what do we do on testnet?
+  rpc, //TODO: what do we do on testnet?
   canWhitelist = false,
   accounts,
   username,

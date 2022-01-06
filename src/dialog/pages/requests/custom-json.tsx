@@ -3,6 +3,7 @@ import {
   RequestCustomJSON,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import CollaspsibleItem from 'src/dialog/components/collapsible-item/collapsible-item';
 import Operation from 'src/dialog/components/operation/operation';
@@ -12,7 +13,7 @@ type Props = {
   data: RequestCustomJSON & RequestId;
   domain: string;
   tab: number;
-  testnet: boolean;
+  rpc: Rpc;
 };
 
 const CustomJson = (props: Props) => {

@@ -6,6 +6,7 @@ import { broadcastCustomJson } from '@background/requests/operations/ops/custom-
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
+import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastUpdateProposalVote } from '@background/requests/operations/ops/updapte-proposal-vote';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import {
@@ -34,9 +35,9 @@ export const performOperation = async (
       case KeychainRequestTypes.vote:
         message = await broadcastVote(data);
         break;
-      //     case "transfer":
-      //       message = await broadcastTransfer(data);
-      //       break;
+      case KeychainRequestTypes.transfer:
+        message = await broadcastTransfer(data);
+        break;
       //     case "post":
       //       message = await broadcastPost(data);
       //       break;

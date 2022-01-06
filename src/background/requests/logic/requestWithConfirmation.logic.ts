@@ -15,7 +15,7 @@ export const requestWithConfirmation = (
       data: request,
       domain,
       tab,
-      testnet: current_rpc.testnet,
+      rpc: current_rpc,
     });
   };
   createPopup(callback);
