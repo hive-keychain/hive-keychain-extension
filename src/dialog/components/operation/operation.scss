@@ -1,3 +1,5 @@
+@import '/src/popup/variable.scss';
+
 .operation {
   display: flex;
   flex-direction: column;
@@ -26,7 +28,9 @@
     font-style: italic;
     overflow-wrap: break-word;
   }
-
+  .operation-red {
+    color: $red;
+  }
   .operation_header {
     font-size: 18px;
     margin-bottom: 0.5em;

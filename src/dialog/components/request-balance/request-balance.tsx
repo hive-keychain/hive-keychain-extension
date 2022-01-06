@@ -12,7 +12,8 @@ type Props = {
 };
 
 const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
-  const [balance, setBalance] = useState('...');
+  const [balance, setBalance] = useState('');
+  const [newBalance, setNewBalance] = useState('');
   const cur = currency.toLowerCase();
   useEffect(() => {
     if (username) {
@@ -30,14 +31,19 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
             ? account.balance
             : account.hbd_balance) as string
         ).split(' ')[0];
-        const newBalance = parseFloat(currentBalance) - amount;
-        setBalance(
-          `${currentBalance} ${currencyParsed} => ${newBalance} ${currencyParsed}`,
-        );
+        const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
+        setBalance(`${currentBalance} ${currencyParsed}`);
+        setNewBalance(`${newBalance} ${currencyParsed}`);
       });
     }
   }, [username]);
-  return <RequestItem title="dialog_balance" content={balance} />;
+  return (
+    <RequestItem
+      title="dialog_balance"
+      content={balance.length ? `${balance} => ${newBalance}` : '...'}
+      red={parseFloat(newBalance) < 0}
+    />
+  );
 };
 
 export default RequestBalance;
