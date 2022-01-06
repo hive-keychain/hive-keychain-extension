@@ -2,6 +2,7 @@ import { RequestId, RequestTransfer } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import Operation from 'src/dialog/components/operation/operation';
+import RequestBalance from 'src/dialog/components/request-balance/request-balance';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 
@@ -35,6 +36,12 @@ const Transfer = (props: Props) => {
       <RequestItem
         title="dialog_amount"
         content={`${data.amount} ${data.currency}`}
+      />
+      <RequestBalance
+        username={anonymousProps.username}
+        rpc={props.rpc}
+        amount={parseFloat(data.amount)}
+        currency={data.currency}
       />
       {data.memo && data.memo.length ? (
         <RequestItem title="dialog_memo" content={`${memoField}`} />

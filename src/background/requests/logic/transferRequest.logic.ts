@@ -62,7 +62,7 @@ export const transferRequest = (
         domain,
         accounts: active_accounts,
         tab,
-        testnet: current_rpc.testnet,
+        rpc: current_rpc,
       });
     };
     createPopup(callback);

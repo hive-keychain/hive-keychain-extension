@@ -35,7 +35,7 @@ export const anonymousRequests = (
         domain,
         accounts: account_candidates,
         tab,
-        testnet: current_rpc.testnet,
+        rpc: current_rpc,
       });
     };
     createPopup(callback);
