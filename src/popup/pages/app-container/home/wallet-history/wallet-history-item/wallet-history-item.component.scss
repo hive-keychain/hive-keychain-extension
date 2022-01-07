@@ -28,6 +28,7 @@
       transition: max-height 0.5s ease-out;
       overflow: hidden;
       font-size: 14px;
+      margin-top: 8px;
 
       &.opened {
         max-height: 500px;

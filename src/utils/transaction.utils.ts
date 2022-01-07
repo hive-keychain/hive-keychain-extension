@@ -1,6 +1,7 @@
 import { utils as dHiveUtils } from '@hiveio/dhive';
 import { Transaction, Transfer } from '@interfaces/transaction.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 const getAccountTransactions = async (
   accountName: string,
@@ -46,10 +47,13 @@ const getAccountTransactions = async (
       if (memo[0] === '#') {
         if (memoKey) {
           try {
-            transfer.memo = HiveUtils.decodeMemo(memo, memoKey);
-          } catch (e) {}
+            const decodedMemo = HiveUtils.decodeMemo(memo, memoKey);
+            transfer.memo = decodedMemo.substring(1);
+          } catch (e) {
+            Logger.error('Error while decoding', '');
+          }
         } else {
-          transfer.memo = chrome.i18n.getMessage('wallet.add_memo');
+          transfer.memo = chrome.i18n.getMessage('popup_accounts_add_memo');
         }
         trs.push(transfer);
       } else {
