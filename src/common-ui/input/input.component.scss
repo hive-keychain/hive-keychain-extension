@@ -13,21 +13,19 @@ $autoCompleteItemHeight: 30px;
     height: 48px;
     box-sizing: border-box;
     // background: $black 0% 0% no-repeat padding-box;
-    // background: transparent;
-    background: $red-transparent;
+    background: transparent;
     // border-radius: 8px 8px 0px 0px;
-    border-radius: 8px;
     opacity: 1;
     padding-left: 66px;
     // font-size: 20px;
     font-size: 18px;
     color: white;
     border-style: unset;
-    // border-bottom: solid 1px white;
-    border: solid 1px white;
+    border-bottom: solid 1px $grey;
+    // border: solid 1px white;
 
     &::placeholder {
-      color: #7e8c9a;
+      color: $grey;
       // text-transform: uppercase;
       font-family: Futura;
       font-size: 18px;
@@ -36,7 +34,8 @@ $autoCompleteItemHeight: 30px;
 
     &:focus {
       outline: none !important;
-      box-shadow: 0 0 10px #719ece;
+      // box-shadow: 0 0 10px #719ece;
+      border-color: white;
     }
   }
 
@@ -79,6 +78,12 @@ $autoCompleteItemHeight: 30px;
     height: 30px;
   }
 
+  .focused {
+    .input-img {
+      color: $grey;
+    }
+  }
+
   .display-password {
     left: unset;
     right: 20px;
@@ -106,5 +111,17 @@ $autoCompleteItemHeight: 30px;
     font-style: italic;
     margin-top: 2px;
     font-size: 15px;
+  }
+
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type='number'] {
+    -moz-appearance: textfield;
   }
 }

@@ -47,7 +47,7 @@ const InputComponent = (props: InputProps) => {
     <div
       className={`input-container ${props.logo ? '' : 'no-logo'} ${
         props.type === InputType.PASSWORD ? 'password-type' : ''
-      }`}>
+      } ${isFocused ? 'focused' : ''}`}>
       <input
         type={
           props.type === InputType.PASSWORD && isPasswordDisplay
@@ -78,7 +78,7 @@ const InputComponent = (props: InputProps) => {
           {Icons.VISIBLE}
         </span>
       )}
-      {props.type === InputType.PASSWORD && isPasswordDisplay && (
+      {props.type === InputType.PASSWORD && isPasswordDisplay && isFocused && (
         <span
           className="material-icons-outlined input-img display-password"
           onClick={() => setPasswordDisplayed(false)}>
@@ -87,7 +87,7 @@ const InputComponent = (props: InputProps) => {
       )}
       {props.type !== InputType.PASSWORD && props.value.length > 0 && (
         <span
-          className="material-icons-outlined input-img erase"
+          className={'material-icons-outlined input-img erase '}
           onClick={() => props.onChange('')}>
           {Icons.CLEAR}
         </span>
