@@ -70,7 +70,7 @@ const TopBar = ({
       <span
         className="material-icons button lock-button"
         onClick={() => lockPopup()}>
-        {Icons.LOCK}
+        {Icons.LOGOUT}
       </span>
       <span
         className="material-icons button settings-button"
