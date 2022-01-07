@@ -26,6 +26,7 @@ const WalletInfoSection = ({
   >([]);
 
   const [delegationAmount, setDelegationAmount] = useState('...');
+  const [hasDelegation, setHasDelegations] = useState(false);
 
   useEffect(() => {
     const delegatedVestingShares = parseFloat(
@@ -46,6 +47,8 @@ const WalletInfoSection = ({
       delegationVestingShares,
       globalProperties.globals,
     );
+
+    setHasDelegations(delegation !== 0);
 
     setDelegationAmount(
       `${delegation > 0 ? '+' : '-'} ${FormatUtils.withCommas(
@@ -160,13 +163,15 @@ const WalletInfoSection = ({
               ).toString(),
             )}
           </div>
-          <div className="savings">{delegationAmount}</div>
+          {hasDelegation && <div className="savings">{delegationAmount}</div>}
         </div>
         <div className="currency">
           <div className="balance">{currencyLabels.hp}</div>
-          <div className="savings">
-            ({chrome.i18n.getMessage('popup_html_delegations')})
-          </div>
+          {hasDelegation && (
+            <div className="savings">
+              ({chrome.i18n.getMessage('popup_html_delegations')})
+            </div>
+          )}
         </div>
         <img
           className="dropdown-arrow"
