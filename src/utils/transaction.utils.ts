@@ -1,5 +1,10 @@
 import { utils as dHiveUtils } from '@hiveio/dhive';
 import { Transaction, Transfer } from '@interfaces/transaction.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
+import { store } from '@popup/store';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -14,6 +19,8 @@ const getAccountTransactions = async (
       number,
       number,
     ];
+    store.dispatch(addToLoadingList('html_popup_downloading_transactions'));
+    store.dispatch(addToLoadingList('html_popup_processing_transactions'));
     const transactions = await HiveUtils.getClient().database.getAccountHistory(
       accountName,
       start || -1,
@@ -21,6 +28,9 @@ const getAccountTransactions = async (
       operationsBitmask,
     );
 
+    store.dispatch(
+      removeFromLoadingList('html_popup_downloading_transactions'),
+    );
     const transfers = transactions
       .filter((e) => e[1].op[0] === 'transfer')
       .map((e) => {
@@ -60,6 +70,7 @@ const getAccountTransactions = async (
         trs.push(transfer);
       }
     }
+    store.dispatch(removeFromLoadingList('html_popup_processing_transactions'));
     return trs;
   } catch (e) {
     return getAccountTransactions(

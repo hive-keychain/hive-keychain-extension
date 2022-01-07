@@ -9,7 +9,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wallet-history.component.scss';
 
@@ -145,7 +144,7 @@ const WalletHistory = ({
         isBackButtonEnabled={true}
       />
 
-      {!transactions.loading && (
+      {
         <div className="page-content">
           <div
             className={
@@ -218,12 +217,7 @@ const WalletHistory = ({
               transaction={transaction}></WalletHistoryItemComponent>
           ))}
         </div>
-      )}
-      {transactions.loading && (
-        <div className="logo-container">
-          <RotatingLogoComponent></RotatingLogoComponent>
-        </div>
-      )}
+      }
     </div>
   );
 };

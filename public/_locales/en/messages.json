@@ -1921,5 +1921,13 @@
   "html_popup_vote": {
     "message": "Vote",
     "description": "vote"
+  },
+  "html_popup_processing_transactions": {
+    "message": "Processing transactions",
+    "description": "loading message for transactions"
+  },
+  "html_popup_downloading_transactions": {
+    "message": "Downloading transactions",
+    "description": "Downloading message for transactions"
   }
 }

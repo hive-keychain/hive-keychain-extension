@@ -12,7 +12,18 @@ export const LoadingReducer = (
 ): LoadingOperation[] => {
   switch (type) {
     case ActionType.ADD_TO_LOADING_LIST:
-      return [...state, { name: payload!, done: false }];
+      if (state.find((loadingItem) => loadingItem.name === payload)) {
+        const newState = [...state];
+        for (let loadingOperation of newState) {
+          if (loadingOperation.name === payload) {
+            loadingOperation.done = false;
+          }
+        }
+        return newState;
+      } else {
+        return [...state, { name: payload!, done: false }];
+      }
+
     case ActionType.REMOVE_FROM_LOADING_LIST:
       const newState = [...state];
       for (let loadingOperation of newState) {
