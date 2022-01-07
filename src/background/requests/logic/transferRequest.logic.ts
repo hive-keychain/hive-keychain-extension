@@ -60,9 +60,9 @@ export const transferRequest = (
         command: DialogCommand.SEND_DIALOG_CONFIRM,
         data: request,
         domain,
-        accounts: active_accounts,
+        accounts: encode || enforce ? undefined : active_accounts,
         tab,
-        testnet: current_rpc.testnet,
+        rpc: current_rpc,
       });
     };
     createPopup(callback);

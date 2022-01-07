@@ -2,6 +2,7 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import AddAccount from 'src/dialog/pages/requests/add-account';
@@ -9,6 +10,7 @@ import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
 import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
+import Transfer from 'src/dialog/pages/requests/transfer';
 import UpdateProposalVote from 'src/dialog/pages/requests/update-proposal-vote';
 import Vote from 'src/dialog/pages/requests/vote';
 import './unlock.scss';
@@ -20,7 +22,7 @@ type Props = {
 type RequestMessage = {
   command: DialogCommand.SEND_DIALOG_CONFIRM;
   data: KeychainRequest;
-  testnet: boolean;
+  rpc: Rpc;
   tab: number;
   domain: string;
   accounts?: string[];
@@ -42,6 +44,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <SignBuffer {...data} data={data.data} />;
     case KeychainRequestTypes.updateProposalVote:
       return <UpdateProposalVote {...data} data={data.data} />;
+    case KeychainRequestTypes.transfer:
+      return <Transfer {...data} data={data.data} />;
     default:
       return null;
   }
