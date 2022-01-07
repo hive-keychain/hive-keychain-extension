@@ -99,7 +99,7 @@ const Delegations = ({
       globalProperties,
     );
 
-    setAvailable(totalHp - Number(totalOutgoing) - 5);
+    setAvailable(Math.max(totalHp - Number(totalOutgoing) - 5, 0));
   }, [delegations]);
 
   const setToMax = () => {
