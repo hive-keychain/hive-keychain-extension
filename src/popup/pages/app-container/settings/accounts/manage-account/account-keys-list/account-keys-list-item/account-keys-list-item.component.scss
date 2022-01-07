@@ -1,3 +1,5 @@
+@import '../../../../../../../variable.scss';
+
 .account-keys-list-item {
   display: flex;
   flex-direction: column;
@@ -13,10 +15,9 @@
     }
 
     .remove-button {
-      text-transform: uppercase;
-      color: #c93535;
+      color: $red-dark;
       cursor: pointer;
-      font-size: 18px;
+      font-size: 26px;
     }
   }
 

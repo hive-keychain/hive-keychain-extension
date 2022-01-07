@@ -48,11 +48,11 @@ const AccountKeysListItem = ({
       <div className="top-panel">
         <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
         {publicKey && privateKey && (
-          <div
-            className="remove-button"
+          <span
+            className="material-icons-outlined remove-button"
             onClick={() => handleClickOnRemoveKey()}>
-            {chrome.i18n.getMessage('popup_html_remove')}
-          </div>
+            delete
+          </span>
         )}
       </div>
       {publicKey && privateKey ? (
