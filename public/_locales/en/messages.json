@@ -228,7 +228,7 @@
     "description": "on settings page"
   },
   "popup_html_add_account": {
-    "message": "Add Account",
+    "message": "Add account",
     "description": "on settings page"
   },
   "popup_html_accounts": {
@@ -236,11 +236,11 @@
     "description": "on settings page"
   },
   "popup_html_manage_accounts": {
-    "message": "Manage Accounts",
+    "message": "Manage accounts",
     "description": "on settings page"
   },
   "popup_html_change_password": {
-    "message": "Change Password",
+    "message": "Change password",
     "description": "on settings page"
   },
   "popup_html_pref": {
@@ -248,7 +248,7 @@
     "description": "on settings page"
   },
   "popup_html_autolock": {
-    "message": "Auto Lock",
+    "message": "Auto lock",
     "description": "on settings page"
   },
   "popup_html_keychainify": {
@@ -264,15 +264,15 @@
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
-    "message": "Automated Tasks",
+    "message": "Automated tasks",
     "description": "on settings page"
   },
   "popup_html_authorized_operations": {
-    "message": "Authorized Operations",
+    "message": "Authorized operations",
     "description": "on settings page"
   },
   "popup_html_operation_popup": {
-    "message": "Operation Popup",
+    "message": "Operation popup",
     "description": "on settings page"
   },
   "popup_html_about": {
@@ -280,7 +280,7 @@
     "description": "on settings page"
   },
   "popup_html_clear": {
-    "message": "Clear All Data",
+    "message": "Clear all data",
     "description": "on settings page"
   },
   "popup_html_al_default_title": {
@@ -292,7 +292,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
-    "message": "Device Lock",
+    "message": "Device lock",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
@@ -300,7 +300,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
-    "message": "Idle Lock",
+    "message": "Idle lock",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
