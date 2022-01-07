@@ -1929,5 +1929,9 @@
   "html_popup_downloading_transactions": {
     "message": "Downloading transactions",
     "description": "Downloading message for transactions"
+  },
+  "html_popup_voting_no_hp": {
+    "message": "You have no HP.<br/>Please power up to get voting mana",
+    "description": "Message when no HP in voting mana section"
   }
 }

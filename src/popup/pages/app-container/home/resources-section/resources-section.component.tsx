@@ -18,9 +18,12 @@ const ResourcesSection = ({
 
   useEffect(() => {
     if (
-      activeAccount?.account?.voting_manabar?.current_mana &&
+      activeAccount?.account?.voting_manabar?.current_mana !== undefined &&
       activeAccount.rc?.percentage
     ) {
+      const hasMana =
+        activeAccount?.account?.voting_manabar?.current_mana !== 0;
+
       const mana = HiveUtils.getVP(activeAccount.account);
       const manaValue = HiveUtils.getVotingDollarsPerAccount(
         100,
@@ -32,11 +35,21 @@ const ResourcesSection = ({
       const voting = parseFloat(manaValue);
       const resources = activeAccount.rc.percentage / 100;
 
-      setVotingMana(mana?.toFixed(2) + ' %');
-      setVotingValue(voting.toFixed(2) + ' $');
+      if (hasMana) {
+        setVotingMana(mana?.toFixed(2) + ' %');
+        setVotingValue(voting.toFixed(2) + ' $');
+      } else {
+        setVotingMana('--');
+        setVotingValue(null);
+      }
+
       setRc(resources.toFixed(2) + ' %');
 
-      setManaReadyIn(HiveUtils.getTimeBeforeFull(mana!));
+      setManaReadyIn(
+        hasMana
+          ? HiveUtils.getTimeBeforeFull(mana!)
+          : chrome.i18n.getMessage('html_popup_voting_no_hp'),
+      );
       setRcReadyIn(HiveUtils.getTimeBeforeFull(resources));
     }
   }, [activeAccount]);
