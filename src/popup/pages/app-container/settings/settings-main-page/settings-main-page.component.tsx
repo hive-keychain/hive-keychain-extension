@@ -6,24 +6,20 @@ import { MenuComponent } from 'src/common-ui/menu/menu.component';
 import SettingsMenuItems from './settings-main-page-menu-items';
 import './settings-main-page.component.scss';
 
-const SettingsMainPage = ({ shouldDisplayWitnessVoting }: PropsFromRedux) => {
+const SettingsMainPage = ({}: PropsFromRedux) => {
   return (
     <div className="settings-main-page">
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}
         menuItems={SettingsMenuItems}></MenuComponent>
-      {shouldDisplayWitnessVoting && <WitnessVotingSectionComponent />}
+      {<WitnessVotingSectionComponent />}
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {
-    shouldDisplayWitnessVoting:
-      state.activeAccount.account.proxy.length === 0 &&
-      !state.activeAccount.account.witness_votes.includes('stoodkev'),
-  };
+  return {};
 };
 
 const connector = connect(mapStateToProps, {});

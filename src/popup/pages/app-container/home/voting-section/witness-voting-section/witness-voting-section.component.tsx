@@ -27,6 +27,7 @@ const WitnessVotingSection = ({
   refreshActiveAccount,
   addToLoadingList,
   removeFromLoadingList,
+  shouldDisplayWitnessVoting,
 }: PropsFromRedux) => {
   const handleVoteForWitnessClicked = async () => {
     if (activeAccount.account.witnesses_voted_for === 30) {
@@ -58,16 +59,23 @@ const WitnessVotingSection = ({
       <div className="text">
         {chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev')}
       </div>
-      <ButtonComponent
-        onClick={handleVoteForWitnessClicked}
-        label={'html_popup_vote_for_witness'}
-      />
+      {shouldDisplayWitnessVoting && (
+        <ButtonComponent
+          onClick={handleVoteForWitnessClicked}
+          label={'html_popup_vote_for_witness'}
+        />
+      )}
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return {
+    activeAccount: state.activeAccount,
+    shouldDisplayWitnessVoting:
+      state.activeAccount.account.proxy.length === 0 &&
+      !state.activeAccount.account.witness_votes.includes('stoodkev'),
+  };
 };
 
 const connector = connect(mapStateToProps, {
