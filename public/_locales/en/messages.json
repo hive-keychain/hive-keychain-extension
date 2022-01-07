@@ -376,7 +376,7 @@
     "description": "on preferences"
   },
   "popup_html_no_pref": {
-    "message": "No preferences",
+    "message": "You don't have any authorized operation yet",
     "description": "on preferences"
   },
   "popup_html_add_rpc": {

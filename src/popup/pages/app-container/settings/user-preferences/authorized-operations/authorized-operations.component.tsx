@@ -27,6 +27,7 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
     let res = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_CONFIRM,
     );
+    console.log(res);
     setNoConfirm(res);
   };
 
@@ -37,7 +38,6 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
       website,
       operation,
     );
-    console.log(newList);
     setNoConfirm(newList);
   };
 
@@ -83,11 +83,12 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
           ))}
         </div>
       )}
-      {websites && Object.keys(websites).length === 0 && (
-        <div className="no_pref">
-          {chrome.i18n.getMessage('popup_html_no_pref')}
-        </div>
-      )}
+      {(websites && Object.keys(websites).length === 0) ||
+        (!websites && (
+          <div className="no_pref">
+            {chrome.i18n.getMessage('popup_html_no_pref')}
+          </div>
+        ))}
     </div>
   );
 };
