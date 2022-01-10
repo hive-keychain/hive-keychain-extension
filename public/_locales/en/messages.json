@@ -927,6 +927,10 @@
     "message": "To",
     "description": "When website request a transfer"
   },
+  "dialog_tx": {
+    "message": "Transaction (click to show)",
+    "description": "When website request signing a tx"
+  },
   "dialog_amount": {
     "message": "Amount",
     "description": "When website request a transfer"

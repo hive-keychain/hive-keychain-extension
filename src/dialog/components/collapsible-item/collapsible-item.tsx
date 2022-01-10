@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import './collapsible-item.scss';
 
 type Props = {
   title: string;
   content: string;
-  preContent: string;
+  preContent?: string;
   pre?: boolean; // set pre to true if we are showing a pretty printed json
 };
 

@@ -18,6 +18,7 @@ import {
 } from '@background/requests/operations/ops/power';
 import { broadcastProxy } from '@background/requests/operations/ops/proxy';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
+import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastUpdateProposalVote } from '@background/requests/operations/ops/updapte-proposal-vote';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
@@ -111,9 +112,9 @@ export const performOperation = async (
       case KeychainRequestTypes.signBuffer:
         message = await signBuffer(data);
         break;
-      //     case "signTx":
-      //       message = await signTx(data);
-      //       break;
+      case KeychainRequestTypes.signTx:
+        message = await signTx(data);
+        break;
 
       //     case "convert":
       //       message = await convert(data);
