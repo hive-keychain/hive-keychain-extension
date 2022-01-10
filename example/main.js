@@ -241,7 +241,9 @@ $('#send_signed_call').click(function () {
 
 $('#send_witness_vote').click(function () {
   hive_keychain.requestWitnessVote(
-    $('#witness_username').val(),
+    $('#witness_username').val().length
+      ? $('#witness_username').val()
+      : undefined,
     $('#witness').val(),
     $('#vote_wit').is(':checked'),
     function (response) {
@@ -253,7 +255,7 @@ $('#send_witness_vote').click(function () {
 
 $('#send_proxy').click(function () {
   hive_keychain.requestProxy(
-    $('#proxy_username').val(),
+    $('#proxy_username').val().length ? $('#proxy_username').val() : undefined,
     $('#proxy').val() ? $('#proxy').val() : '',
     function (response) {
       console.log('main js response - proxy');

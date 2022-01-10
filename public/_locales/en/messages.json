@@ -391,6 +391,10 @@
     "message": "RPC Node",
     "description": "on preferences"
   },
+  "popup_none": {
+    "message": "None",
+    "description": "On send HIVE/HBD confirmation page, when memo is empty"
+  },
   "popup_html_add_key": {
     "message": "Add Key",
     "description": "on manage accounts, add a previously non stored key"

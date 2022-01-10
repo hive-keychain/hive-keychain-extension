@@ -16,10 +16,12 @@ import {
   broadcastPowerDown,
   broadcastPowerUp,
 } from '@background/requests/operations/ops/power';
+import { broadcastProxy } from '@background/requests/operations/ops/proxy';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastUpdateProposalVote } from '@background/requests/operations/ops/updapte-proposal-vote';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
+import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -76,12 +78,12 @@ export const performOperation = async (
       case KeychainRequestTypes.delegation:
         message = await broadcastDelegation(data);
         break;
-      //     case "witnessVote":
-      //       message = await broadcastWitnessVote(data);
-      //       break;
-      //     case "proxy":
-      //       message = await broadcastProxy(data);
-      //       break;
+      case KeychainRequestTypes.witnessVote:
+        message = await broadcastWitnessVote(data);
+        break;
+      case KeychainRequestTypes.proxy:
+        message = await broadcastProxy(data);
+        break;
       case KeychainRequestTypes.powerUp:
         message = await broadcastPowerUp(data);
         break;
