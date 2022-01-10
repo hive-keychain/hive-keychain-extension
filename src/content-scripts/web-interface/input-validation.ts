@@ -223,15 +223,15 @@ const sendToken = Joi.object({
 const powerUp = Joi.object({
   username,
   recipient: username,
-  steem: amount,
+  hive: amount,
   rpc,
-}).rename('hive', 'steem');
+});
 
 const powerDown = Joi.object({
   username,
-  steem_power: amount,
+  hive_power: amount,
   rpc,
-}).rename('hp', 'steem_power');
+});
 
 const createClaimedAccount = Joi.object({
   username,

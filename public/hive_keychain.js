@@ -472,7 +472,7 @@ var hive_keychain = {
       type: 'powerUp',
       username,
       recipient,
-      steem: hive,
+      hive,
       rpc,
     };
     this.dispatchCustomEvent('swRequest_hive', request, callback);
@@ -488,7 +488,7 @@ var hive_keychain = {
     var request = {
       type: 'powerDown',
       username,
-      steem_power: hive_power,
+      hive_power,
       rpc,
     };
     this.dispatchCustomEvent('swRequest_hive', request, callback);

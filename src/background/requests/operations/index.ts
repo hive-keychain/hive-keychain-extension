@@ -12,6 +12,10 @@ import { broadcastCustomJson } from '@background/requests/operations/ops/custom-
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
+import {
+  broadcastPowerDown,
+  broadcastPowerUp,
+} from '@background/requests/operations/ops/power';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastUpdateProposalVote } from '@background/requests/operations/ops/updapte-proposal-vote';
@@ -78,12 +82,12 @@ export const performOperation = async (
       //     case "proxy":
       //       message = await broadcastProxy(data);
       //       break;
-      //     case "powerUp":
-      //       message = await broadcastPowerUp(data);
-      //       break;
-      //     case "powerDown":
-      //       message = await broadcastPowerDown(data);
-      //       break;
+      case KeychainRequestTypes.powerUp:
+        message = await broadcastPowerUp(data);
+        break;
+      case KeychainRequestTypes.powerDown:
+        message = await broadcastPowerDown(data);
+        break;
       //     case "sendToken":
       //       message = await broadcastSendToken(data);
       //       break;

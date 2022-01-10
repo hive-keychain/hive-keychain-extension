@@ -14,6 +14,8 @@ import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import Delegation from 'src/dialog/pages/requests/delegation';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
+import PowerDown from 'src/dialog/pages/requests/power/power-down';
+import PowerUp from 'src/dialog/pages/requests/power/power-up';
 import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
 import Transfer from 'src/dialog/pages/requests/transfer';
 import UpdateProposalVote from 'src/dialog/pages/requests/update-proposal-vote';
@@ -61,6 +63,10 @@ const RequestConfirmation = ({ data }: Props) => {
       return <RemoveKeyAuthority {...data} data={data.data} />;
     case KeychainRequestTypes.delegation:
       return <Delegation {...data} data={data.data} />;
+    case KeychainRequestTypes.powerUp:
+      return <PowerUp {...data} data={data.data} />;
+    case KeychainRequestTypes.powerDown:
+      return <PowerDown {...data} data={data.data} />;
     default:
       return null;
   }
