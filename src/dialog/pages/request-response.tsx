@@ -21,7 +21,7 @@ const RequestResponse = ({ data }: Props) => {
             : `${chrome.i18n.getMessage('dialog_header_error')} !`
         }
       />
-      <p>{data.msg.message}</p>
+      <p style={{ wordBreak: 'break-word' }}>{data.msg.message}</p>
 
       <ButtonComponent
         label={'dialog_ok'}
