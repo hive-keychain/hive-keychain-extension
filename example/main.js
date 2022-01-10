@@ -72,7 +72,9 @@ $('#send_vote').click(function () {
 $('#send_custom').click(function () {
   console.log('click');
   hive_keychain.requestCustomJson(
-    $('#custom_username').val(),
+    $('#custom_username').val().length
+      ? $('#custom_username').val()
+      : undefined,
     $('#custom_id').val(),
     $('#custom_method option:selected').text(),
     $('#custom_json').val(),
