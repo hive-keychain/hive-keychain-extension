@@ -6,6 +6,10 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React from 'react';
 import AddAccount from 'src/dialog/pages/requests/add-account';
+import AddAccountAuthority from 'src/dialog/pages/requests/authority/add-account-authority';
+import AddKeyAuthority from 'src/dialog/pages/requests/authority/add-key-authority';
+import RemoveAccountAuthority from 'src/dialog/pages/requests/authority/remove-account-authority';
+import RemoveKeyAuthority from 'src/dialog/pages/requests/authority/remove-key-authority';
 import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
@@ -46,6 +50,14 @@ const RequestConfirmation = ({ data }: Props) => {
       return <UpdateProposalVote {...data} data={data.data} />;
     case KeychainRequestTypes.transfer:
       return <Transfer {...data} data={data.data} />;
+    case KeychainRequestTypes.addAccountAuthority:
+      return <AddAccountAuthority {...data} data={data.data} />;
+    case KeychainRequestTypes.removeAccountAuthority:
+      return <RemoveAccountAuthority {...data} data={data.data} />;
+    case KeychainRequestTypes.addKeyAuthority:
+      return <AddKeyAuthority {...data} data={data.data} />;
+    case KeychainRequestTypes.removeKeyAuthority:
+      return <RemoveKeyAuthority {...data} data={data.data} />;
     default:
       return null;
   }

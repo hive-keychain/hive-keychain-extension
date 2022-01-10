@@ -174,7 +174,14 @@ export const broadcastAddKeyAuthority = async (
       role === KeychainKeyTypes.active ? updatedAuthority : undefined;
     const posting =
       role === KeychainKeyTypes.posting ? updatedAuthority : undefined;
-
+    console.log({
+      account: userAccount.name,
+      owner: undefined,
+      active,
+      posting,
+      memo_key: userAccount.memo_key,
+      json_metadata: userAccount.json_metadata,
+    });
     /** Add authority on user account */
     result = await client.broadcast.updateAccount(
       {
