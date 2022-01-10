@@ -69,7 +69,7 @@ export const broadcastPowerDown = async (
     vestingShares = vestingShares.toFixed(6);
     vestingShares = vestingShares.toString() + ' VESTS';
 
-    client.broadcast.sendOperations(
+    result = client.broadcast.sendOperations(
       [
         [
           'withdraw_vesting',

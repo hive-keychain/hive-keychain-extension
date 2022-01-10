@@ -8,6 +8,7 @@ import {
   broadcastRemoveAccountAuthority,
   broadcastRemoveKeyAuthority,
 } from '@background/requests/operations/ops/authority';
+import { convert } from '@background/requests/operations/ops/convert';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
@@ -115,10 +116,9 @@ export const performOperation = async (
       case KeychainRequestTypes.signTx:
         message = await signTx(data);
         break;
-
-      //     case "convert":
-      //       message = await convert(data);
-      //       break;
+      case KeychainRequestTypes.convert:
+        message = await convert(data);
+        break;
       //     case "recurrentTransfer":
       //       message = await recurrentTransfer(data);
       //       break;

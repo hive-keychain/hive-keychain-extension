@@ -10,6 +10,7 @@ import AddAccountAuthority from 'src/dialog/pages/requests/authority/add-account
 import AddKeyAuthority from 'src/dialog/pages/requests/authority/add-key-authority';
 import RemoveAccountAuthority from 'src/dialog/pages/requests/authority/remove-account-authority';
 import RemoveKeyAuthority from 'src/dialog/pages/requests/authority/remove-key-authority';
+import Convert from 'src/dialog/pages/requests/Convert';
 import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import Delegation from 'src/dialog/pages/requests/delegation';
@@ -76,6 +77,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <Proxy {...data} data={data.data} />;
     case KeychainRequestTypes.signTx:
       return <SignTx {...data} data={data.data} />;
+    case KeychainRequestTypes.convert:
+      return <Convert {...data} data={data.data} />;
     default:
       return null;
   }

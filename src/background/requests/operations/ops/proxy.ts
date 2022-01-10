@@ -22,7 +22,7 @@ export const broadcastProxy = async (data: RequestProxy & RequestId) => {
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
-    client.broadcast.sendOperations(
+    result = client.broadcast.sendOperations(
       [
         [
           'account_witness_proxy',
