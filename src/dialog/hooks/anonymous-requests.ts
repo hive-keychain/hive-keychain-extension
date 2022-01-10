@@ -7,7 +7,8 @@ export const useAnonymousRequest = (
 ) => {
   const [username, setUsername] = useState('');
   useEffect(() => {
-    if (data.username) setUsername(data.username);
+    if (data.username && (!accounts || accounts?.includes(data.username)))
+      setUsername(data.username);
     else {
       data.username = accounts![0];
       setUsername(accounts![0]);
