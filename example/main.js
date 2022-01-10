@@ -120,7 +120,9 @@ $('#sendTokens').click(function () {
 // Send delegation
 $('#send_delegation').click(function () {
   hive_keychain.requestDelegation(
-    $('#delegation_username').val(),
+    $('#delegation_username').val().length
+      ? $('#delegation_username').val()
+      : undefined,
     $('#delegation_delegatee').val(),
     $('#delegation_sp').val(),
     $('#delegation_unit option:selected').text(),

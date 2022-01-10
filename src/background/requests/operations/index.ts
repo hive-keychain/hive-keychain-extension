@@ -10,6 +10,7 @@ import {
 } from '@background/requests/operations/ops/authority';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
+import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
@@ -68,9 +69,9 @@ export const performOperation = async (
       //     case "signedCall":
       //       message = await broadcastSignedCall(data);
       //       break;
-      //     case "delegation":
-      //       message = await broadcastDelegation(data);
-      //       break;
+      case KeychainRequestTypes.delegation:
+        message = await broadcastDelegation(data);
+        break;
       //     case "witnessVote":
       //       message = await broadcastWitnessVote(data);
       //       break;
