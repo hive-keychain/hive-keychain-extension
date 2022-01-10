@@ -2,6 +2,12 @@ import { getRequestHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
+import {
+  broadcastAddAccountAuthority,
+  broadcastAddKeyAuthority,
+  broadcastRemoveAccountAuthority,
+  broadcastRemoveKeyAuthority,
+} from '@background/requests/operations/ops/authority';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
@@ -41,18 +47,18 @@ export const performOperation = async (
       //     case "post":
       //       message = await broadcastPost(data);
       //       break;
-      //     case "addAccountAuthority":
-      //       message = await broadcastAddAccountAuthority(data);
-      //       break;
-      //     case "removeAccountAuthority":
-      //       message = await broadcastRemoveAccountAuthority(data);
-      //       break;
-      //     case "addKeyAuthority":
-      //       message = await broadcastAddKeyAuthority(data);
-      //       break;
-      //     case "removeKeyAuthority":
-      //       message = await broadcastRemoveKeyAuthority(data);
-      //       break;
+      case KeychainRequestTypes.addAccountAuthority:
+        message = await broadcastAddAccountAuthority(data);
+        break;
+      case KeychainRequestTypes.removeAccountAuthority:
+        message = await broadcastRemoveAccountAuthority(data);
+        break;
+      case KeychainRequestTypes.addKeyAuthority:
+        message = await broadcastAddKeyAuthority(data);
+        break;
+      case KeychainRequestTypes.removeKeyAuthority:
+        message = await broadcastRemoveKeyAuthority(data);
+        break;
       //     case "broadcast":
       //       message = await broadcastData(data);
       //       break;
