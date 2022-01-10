@@ -27,11 +27,21 @@ const Transfer = (props: Props) => {
   } else {
     memoField = chrome.i18n.getMessage('popup_empty');
   }
+
+  const renderUsername = () => {
+    return !accounts ? (
+      <RequestItem title={'dialog_account'} content={`@${data.username}`} />
+    ) : (
+      <></>
+    );
+  };
+
   return (
     <Operation
       title={chrome.i18n.getMessage('dialog_title_transfer')}
       {...anonymousProps}
       {...props}>
+      {renderUsername()}
       <RequestItem title="dialog_to" content={`@${data.to}`} />
       <RequestItem
         title="dialog_amount"
