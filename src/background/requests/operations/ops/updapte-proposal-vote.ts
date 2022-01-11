@@ -3,21 +3,20 @@ import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
-import { PrivateKey, UpdateProposalVotesOperation } from '@hiveio/dhive';
+import { PrivateKey } from '@hiveio/dhive';
 import {
   RequestId,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
 
-export const broadcastUpdateProposalVote = (
+export const broadcastUpdateProposalVote = async (
   data: RequestUpdateProposalVote & RequestId,
 ) => {
   const client = getRequestHandler().getHiveClient();
   const key = getRequestHandler().key;
   let result, err;
   try {
-    let a: UpdateProposalVotesOperation;
-    result = client.broadcast.sendOperations(
+    result = await client.broadcast.sendOperations(
       [
         [
           'update_proposal_votes',

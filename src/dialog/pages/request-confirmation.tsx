@@ -18,6 +18,7 @@ import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
 import PowerDown from 'src/dialog/pages/requests/power/power-down';
 import PowerUp from 'src/dialog/pages/requests/power/power-up';
 import Proxy from 'src/dialog/pages/requests/proxy';
+import RecurrentTransfer from 'src/dialog/pages/requests/recurrent-transfer';
 import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
 import SignTx from 'src/dialog/pages/requests/sign-tx';
 import Transfer from 'src/dialog/pages/requests/transfer';
@@ -79,6 +80,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <SignTx {...data} data={data.data} />;
     case KeychainRequestTypes.convert:
       return <Convert {...data} data={data.data} />;
+    case KeychainRequestTypes.recurrentTransfer:
+      return <RecurrentTransfer {...data} data={data.data} />;
     default:
       return null;
   }

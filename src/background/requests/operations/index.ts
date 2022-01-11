@@ -18,6 +18,7 @@ import {
   broadcastPowerUp,
 } from '@background/requests/operations/ops/power';
 import { broadcastProxy } from '@background/requests/operations/ops/proxy';
+import { recurrentTransfer } from '@background/requests/operations/ops/recurrent-transfer';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
@@ -119,9 +120,9 @@ export const performOperation = async (
       case KeychainRequestTypes.convert:
         message = await convert(data);
         break;
-      //     case "recurrentTransfer":
-      //       message = await recurrentTransfer(data);
-      //       break;
+      case KeychainRequestTypes.recurrentTransfer:
+        message = await recurrentTransfer(data);
+        break;
     }
     chrome.tabs.sendMessage(tab, message);
   } catch (e) {

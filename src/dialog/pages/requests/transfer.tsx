@@ -18,7 +18,7 @@ const Transfer = (props: Props) => {
   const { data, accounts } = props;
   const { memo } = data;
   const anonymousProps = useAnonymousRequest(data, accounts);
-  //TODO: Handle dropdown when not enforced nor encoded
+
   let memoField = memo;
   if (memo.length) {
     if (memo.startsWith('#')) {

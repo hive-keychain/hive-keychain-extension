@@ -3,16 +3,22 @@ import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
-import { AccountWitnessVoteOperation, PrivateKey } from '@hiveio/dhive';
+import { PrivateKey, RecurrentTransferOperation } from '@hiveio/dhive';
 import {
   KeychainKeyTypesLC,
   RequestId,
-  RequestWitnessVote,
+  RequestRecurrentTransfer,
 } from '@interfaces/keychain.interface';
+import CurrencyUtils from 'src/utils/currency.utils';
 
-export const broadcastWitnessVote = async (
-  data: RequestWitnessVote & RequestId,
+export const recurrentTransfer = async (
+  data: RequestRecurrentTransfer & RequestId,
 ) => {
+  const { username, to, amount, recurrence, executions, memo } = data;
+  let currency = CurrencyUtils.getCurrencyLabel(
+    data.currency,
+    getRequestHandler().rpc?.testnet || false,
+  );
   const client = getRequestHandler().getHiveClient();
   let result, err;
 
@@ -24,21 +30,25 @@ export const broadcastWitnessVote = async (
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
-
     result = await client.broadcast.sendOperations(
       [
         [
-          'account_witness_vote',
+          'recurrent_transfer',
           {
-            account: data.username,
-            witness: data.witness,
-            approve: data.vote,
+            from: username,
+            to,
+            amount: `${amount} ${currency}`,
+            memo: memo || '',
+            recurrence,
+            executions,
+            extensions: [],
           },
-        ] as AccountWitnessVoteOperation,
+        ] as RecurrentTransferOperation,
       ],
       PrivateKey.from(key!),
     );
   } catch (e) {
+    console.log('errr', e);
     err = e;
   } finally {
     const err_message = beautifyErrorMessage(err);
@@ -46,9 +56,9 @@ export const broadcastWitnessVote = async (
       err,
       result,
       data,
-      data.vote
-        ? chrome.i18n.getMessage('bgd_ops_witness_voted', [data.witness])
-        : chrome.i18n.getMessage('bgd_ops_witness_unvoted', [data.witness]),
+      parseFloat(amount) === 0
+        ? chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer')
+        : chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
       err_message,
     );
     return message;

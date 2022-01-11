@@ -1166,6 +1166,30 @@
     "message": "...(click to expand)",
     "description": "Toggle"
   },
+  "dialog_recurrence": {
+    "message": "Recurrence",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions": {
+    "message": "Executions",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions_times": {
+    "message": "$1 times",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_hours": {
+    "message": "Every $1 hour(s)",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days": {
+    "message": "Every $1 day(s)",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days_hours": {
+    "message": "Every $1 day(s) and $2 hours(s)",
+    "description": "When requesting recurrent transfers"
+  },
   "bgd_init_no_wallet": {
     "message": "No wallet!",
     "description": "when user didnt create a wallet yet"
@@ -1322,6 +1346,12 @@
   "bgd_ops_sign_tx": {
     "message": "The transaction has been signed successfully."
   },
+  "bgd_ops_convert": {
+    "message": "Successfully started converting $1 HBD to HIVE on account @$2."
+  },
+  "bgd_ops_convert_collaterized": {
+    "message": "Successfully started converting $1 HIVE to HBD on account @$2."
+  },
   "bgd_ops_create_account": {
     "message": "Succesfully created account @$1."
   },
@@ -1344,6 +1374,9 @@
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
+  "dialog_title_recurrent_transfer": {
+    "message": "Recurrent Transfer"
+  },
   "dialog_auth_key": {
     "message": "Key",
     "description": "New key to be added"
@@ -1355,6 +1388,14 @@
   "bgd_ops_remove_key_auth": {
     "message": "$1 has been removed as a $2 key for account @$3.",
     "description": "succesfully removed a keypair"
+  },
+  "bgd_ops_recurrent_transfer": {
+    "message": "Succesfully started a recurrent transfer.",
+    "description": "when starting a recurrent transfer"
+  },
+  "bgd_ops_stop_recurrent_transfer": {
+    "message": "Succesfully stopped a recurrent transfer.",
+    "description": "when starting a recurrent transfer"
   },
   "popup_html_add_by_keys": {
     "message": "Use keys/pwd",

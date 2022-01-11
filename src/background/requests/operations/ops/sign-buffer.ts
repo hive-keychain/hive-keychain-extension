@@ -7,7 +7,7 @@ import {
 } from '@interfaces/keychain.interface';
 import HiveUtils from 'src/utils/hive.utils';
 
-export const signBuffer = (data: RequestSignBuffer & RequestId) => {
+export const signBuffer = async (data: RequestSignBuffer & RequestId) => {
   let signed = null;
   let error = null;
   let publicKey = getRequestHandler().publicKey;
@@ -20,7 +20,7 @@ export const signBuffer = (data: RequestSignBuffer & RequestId) => {
         data.method.toLowerCase() as KeychainKeyTypesLC,
       ) as [string, string];
     }
-    signed = HiveUtils.signMessage(data.message, key!);
+    signed = await HiveUtils.signMessage(data.message, key!);
   } catch (err) {
     error = err;
   } finally {

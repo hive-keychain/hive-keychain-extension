@@ -39,7 +39,7 @@ export const broadcastDelegation = async (
     } else {
       delegated_vest = data.amount + ' VESTS';
     }
-    result = client.broadcast.delegateVestingShares(
+    result = await client.broadcast.delegateVestingShares(
       {
         delegator: data.username!,
         delegatee: data.delegatee,
