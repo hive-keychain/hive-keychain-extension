@@ -242,7 +242,7 @@ export type RequestCreateProposal = CommonRequestParams & {
 export type RequestRemoveProposal = CommonRequestParams & {
   type: KeychainRequestTypes.removeProposal;
   username: string;
-  proposal_ids: string;
+  proposal_ids: string | number[];
   extensions: string;
 };
 

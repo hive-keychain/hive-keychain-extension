@@ -17,12 +17,14 @@ import Delegation from 'src/dialog/pages/requests/delegation';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
 import PowerDown from 'src/dialog/pages/requests/power/power-down';
 import PowerUp from 'src/dialog/pages/requests/power/power-up';
+import CreateProposal from 'src/dialog/pages/requests/proposals/create-proposal';
+import RemoveProposal from 'src/dialog/pages/requests/proposals/remove-proposal';
+import UpdateProposalVote from 'src/dialog/pages/requests/proposals/update-proposal-vote';
 import Proxy from 'src/dialog/pages/requests/proxy';
 import RecurrentTransfer from 'src/dialog/pages/requests/recurrent-transfer';
 import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
 import SignTx from 'src/dialog/pages/requests/sign-tx';
 import Transfer from 'src/dialog/pages/requests/transfer';
-import UpdateProposalVote from 'src/dialog/pages/requests/update-proposal-vote';
 import Vote from 'src/dialog/pages/requests/vote';
 import WitnessVote from 'src/dialog/pages/requests/witness-vote';
 import './unlock.scss';
@@ -82,6 +84,10 @@ const RequestConfirmation = ({ data }: Props) => {
       return <Convert {...data} data={data.data} />;
     case KeychainRequestTypes.recurrentTransfer:
       return <RecurrentTransfer {...data} data={data.data} />;
+    case KeychainRequestTypes.createProposal:
+      return <CreateProposal {...data} data={data.data} />;
+    case KeychainRequestTypes.removeProposal:
+      return <RemoveProposal {...data} data={data.data} />;
     default:
       return null;
   }

@@ -17,12 +17,16 @@ import {
   broadcastPowerDown,
   broadcastPowerUp,
 } from '@background/requests/operations/ops/power';
+import {
+  broadcastCreateProposal,
+  broadcastRemoveProposal,
+  broadcastUpdateProposalVote,
+} from '@background/requests/operations/ops/proposals';
 import { broadcastProxy } from '@background/requests/operations/ops/proxy';
 import { recurrentTransfer } from '@background/requests/operations/ops/recurrent-transfer';
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
-import { broadcastUpdateProposalVote } from '@background/requests/operations/ops/updapte-proposal-vote';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import {
@@ -96,15 +100,15 @@ export const performOperation = async (
       //     case "sendToken":
       //       message = await broadcastSendToken(data);
       //       break;
-      //     case "createProposal":
-      //       message = await broadcastCreateProposal(data);
-      //       break;
+      case KeychainRequestTypes.createProposal:
+        message = await broadcastCreateProposal(data);
+        break;
       case KeychainRequestTypes.updateProposalVote:
         message = await broadcastUpdateProposalVote(data);
         break;
-      //     case "removeProposal":
-      //       message = await broadcastRemoveProposal(data);
-      //       break;
+      case KeychainRequestTypes.removeProposal:
+        message = await broadcastRemoveProposal(data);
+        break;
       case KeychainRequestTypes.decode:
         message = await decodeMessage(data);
         break;
