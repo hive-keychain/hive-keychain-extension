@@ -6,7 +6,6 @@ import {
 import hive from '@hiveio/hive-js';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
 export const signTx = async (data: RequestSignTx & RequestId) => {
-  const client = getRequestHandler().getHiveClient();
   let key = getRequestHandler().key;
   let result, err;
 

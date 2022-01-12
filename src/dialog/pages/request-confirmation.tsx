@@ -22,6 +22,7 @@ import RemoveProposal from 'src/dialog/pages/requests/proposals/remove-proposal'
 import UpdateProposalVote from 'src/dialog/pages/requests/proposals/update-proposal-vote';
 import Proxy from 'src/dialog/pages/requests/proxy';
 import RecurrentTransfer from 'src/dialog/pages/requests/recurrent-transfer';
+import SendToken from 'src/dialog/pages/requests/send-token';
 import SignBuffer from 'src/dialog/pages/requests/sign-buffer';
 import SignTx from 'src/dialog/pages/requests/sign-tx';
 import Transfer from 'src/dialog/pages/requests/transfer';
@@ -88,6 +89,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <CreateProposal {...data} data={data.data} />;
     case KeychainRequestTypes.removeProposal:
       return <RemoveProposal {...data} data={data.data} />;
+    case KeychainRequestTypes.sendToken:
+      return <SendToken {...data} data={data.data} />;
     default:
       return null;
   }
