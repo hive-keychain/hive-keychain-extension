@@ -5,6 +5,7 @@ import Operation from 'src/dialog/components/operation/operation';
 import RequestBalance from 'src/dialog/components/request-balance/request-balance';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
+import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
 
 type Props = {
   data: RequestTransfer & RequestId;
@@ -15,9 +16,10 @@ type Props = {
 };
 
 const Transfer = (props: Props) => {
-  const { data, accounts } = props;
+  const { data, accounts, rpc } = props;
   const { memo } = data;
   const anonymousProps = useAnonymousRequest(data, accounts);
+  const header = useTransferCheck(data, rpc);
 
   let memoField = memo;
   if (memo.length) {
@@ -39,6 +41,8 @@ const Transfer = (props: Props) => {
   return (
     <Operation
       title={chrome.i18n.getMessage('dialog_title_transfer')}
+      header={header}
+      redHeader
       {...anonymousProps}
       {...props}>
       {renderUsername()}

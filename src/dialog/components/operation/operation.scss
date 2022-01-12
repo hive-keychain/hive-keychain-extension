@@ -5,7 +5,9 @@
   flex-direction: column;
   justify-content: space-between;
   height: 100%;
-
+  .operation-red {
+    color: $red;
+  }
   .operation_body {
     display: flex;
     flex-direction: column;
@@ -28,9 +30,7 @@
     font-style: italic;
     overflow-wrap: break-word;
   }
-  .operation-red {
-    color: $red;
-  }
+
   .operation_header {
     font-size: 18px;
     margin-bottom: 0.5em;
