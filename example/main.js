@@ -217,7 +217,7 @@ $('#send_removekey').click(function () {
 $('#send_broadcast').click(function () {
   hive_keychain.requestBroadcast(
     $('#broadcast_username').val(),
-    $('#broadcast_operations').val(),
+    JSON.parse($('#broadcast_operations').val()),
     $('#broadcast_method option:selected').text(),
     function (response) {
       console.log('main js response - broadcast');
