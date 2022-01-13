@@ -968,7 +968,7 @@
     "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
-    "message": "JSON Metadata",
+    "message": "JSON Metadata (Click to show)",
     "description": "When website request a post"
   },
   "dialog_pu": {

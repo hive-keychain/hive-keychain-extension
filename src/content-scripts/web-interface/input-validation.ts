@@ -67,14 +67,14 @@ const post = Joi.object({
   body: Joi.string().required(),
   title: Joi.string().allow(''),
   parent_username: Joi.alternatives().conditional('title', {
-    is: Joi.valid(null),
+    is: Joi.valid(''),
     then: Joi.string().required(),
     otherwise: null,
   }),
   parent_perm: Joi.string().required(),
   json_metadata: Joi.string().required(),
   permlink: Joi.string().required(),
-  comment_options: Joi.string().required(),
+  comment_options: Joi.string().allow(''),
   // comment_options: Joi.object({
   //   author: username,
   //   permlink: Joi.string().required(),

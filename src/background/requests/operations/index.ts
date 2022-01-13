@@ -14,6 +14,7 @@ import { broadcastCustomJson } from '@background/requests/operations/ops/custom-
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
+import { broadcastPost } from '@background/requests/operations/ops/post';
 import {
   broadcastPowerDown,
   broadcastPowerUp,
@@ -60,9 +61,9 @@ export const performOperation = async (
       case KeychainRequestTypes.transfer:
         message = await broadcastTransfer(data);
         break;
-      //     case "post":
-      //       message = await broadcastPost(data);
-      //       break;
+      case KeychainRequestTypes.post:
+        message = await broadcastPost(data);
+        break;
       case KeychainRequestTypes.addAccountAuthority:
         message = await broadcastAddAccountAuthority(data);
         break;
@@ -81,9 +82,7 @@ export const performOperation = async (
       case KeychainRequestTypes.createClaimedAccount:
         message = await broadcastCreateClaimedAccount(data);
         break;
-      //     case "signedCall":
-      //       message = await broadcastSignedCall(data);
-      //       break;
+
       case KeychainRequestTypes.delegation:
         message = await broadcastDelegation(data);
         break;

@@ -16,6 +16,7 @@ import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
 import Delegation from 'src/dialog/pages/requests/delegation';
 import EncodeMemo from 'src/dialog/pages/requests/encode-memo';
+import Post from 'src/dialog/pages/requests/post';
 import PowerDown from 'src/dialog/pages/requests/power/power-down';
 import PowerUp from 'src/dialog/pages/requests/power/power-up';
 import CreateProposal from 'src/dialog/pages/requests/proposals/create-proposal';
@@ -94,6 +95,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <SendToken {...data} data={data.data} />;
     case KeychainRequestTypes.createClaimedAccount:
       return <CreateClaimedAccount {...data} data={data.data} />;
+    case KeychainRequestTypes.post:
+      return <Post {...data} data={data.data} />;
     default:
       return null;
   }

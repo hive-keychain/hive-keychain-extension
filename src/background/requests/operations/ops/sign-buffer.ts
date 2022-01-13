@@ -22,6 +22,7 @@ export const signBuffer = async (data: RequestSignBuffer & RequestId) => {
     }
     signed = await HiveUtils.signMessage(data.message, key!);
   } catch (err) {
+    console.log(err, 'a');
     error = err;
   } finally {
     return createMessage(

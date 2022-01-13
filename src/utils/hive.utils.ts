@@ -426,6 +426,8 @@ const signMessage = (message: string, privateKey: string) => {
     });
     if (Buffer.isBuffer(o)) {
       buf = o;
+    } else {
+      buf = message;
     }
   } catch (e) {
     buf = message;
