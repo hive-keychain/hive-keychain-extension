@@ -6,4 +6,5 @@ export enum DialogCommand {
   BROADCASTING_WITHOUT_CONFIRMATION = 'broadcastingNoConfirm',
   WRONG_MK = 'WRONG_MK',
   ANSWER_REQUEST = 'answerRequest',
+  READY = 'broadcastReady',
 }

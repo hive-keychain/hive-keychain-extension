@@ -10,7 +10,11 @@ import './dialog.scss';
 const App = () => {
   useEffect(() => {
     chrome.runtime.onMessage.addListener(function (data, sender, sendResp) {
-      setData(data);
+      if (data.command === DialogCommand.READY) {
+        sendResp(true);
+      } else {
+        setData(data);
+      }
     });
   }, []);
 
@@ -34,6 +38,7 @@ const App = () => {
         return <RequestConfirmation data={data} />;
       case DialogCommand.ANSWER_REQUEST:
         return <RequestResponse data={data} />;
+
       default:
         return null;
     }

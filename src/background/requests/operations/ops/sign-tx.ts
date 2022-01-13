@@ -10,10 +10,8 @@ export const signTx = async (data: RequestSignTx & RequestId) => {
   let result, err;
 
   try {
-    console.log('good til here', data.tx, key);
     //result = client.broadcast.sign(data.tx, PrivateKey.from(key!));
     result = await hive.auth.signTransaction(data.tx, [key]);
-    console.log('oopsy');
   } catch (e) {
     err = e;
   } finally {

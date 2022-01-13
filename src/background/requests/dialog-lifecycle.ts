@@ -27,19 +27,7 @@ export const createPopup = (
       (win) => {
         if (!win) return;
         getRequestHandler().setWindowId(win.id);
-        // Window create fails to take into account window size so it s updated afterwhile.
-        chrome.windows.update(
-          win.id!,
-          {
-            height: 566,
-            width: width,
-            top: w.top,
-            left: w.width! - width + w.left!,
-          },
-          () => {
-            setTimeout(callback, 500);
-          },
-        );
+        waitUntilDialogIsReady(100, callback);
       },
     );
   });
@@ -64,6 +52,36 @@ chrome.windows.onRemoved.addListener((id: number) => {
     getRequestHandler().reset();
   }
 });
+
+const waitUntilDialogIsReady = async (
+  ms: number,
+  callback: () => void,
+  nb = 0,
+) => {
+  nb++;
+  if (await askIfReady(ms)) {
+    console.log(`ready after ${nb * ms}ms`);
+    callback();
+  } else {
+    waitUntilDialogIsReady(ms, callback, nb);
+  }
+};
+
+const askIfReady = (ms: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(false);
+    }, ms);
+    chrome.runtime.sendMessage(
+      {
+        command: DialogCommand.READY,
+      },
+      (resp) => {
+        if (resp) resolve(resp);
+      },
+    );
+  });
+};
 
 // check if win exists before removing it
 export const removeWindow = (windowId: number) => {
