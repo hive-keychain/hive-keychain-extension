@@ -1580,6 +1580,10 @@
     "message": "Private Keys",
     "description": "When adding an account by request"
   },
+  "dialog_new_account": {
+    "message": "New Account",
+    "description": "When adding an account by request"
+  },
   "dialog_header_register": {
     "message": "Welcome to Keychain",
     "description": "When registering from request"

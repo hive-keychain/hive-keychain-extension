@@ -9,6 +9,7 @@ import {
   broadcastRemoveKeyAuthority,
 } from '@background/requests/operations/ops/authority';
 import { convert } from '@background/requests/operations/ops/convert';
+import { broadcastCreateClaimedAccount } from '@background/requests/operations/ops/create-claimed-account';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
@@ -77,9 +78,9 @@ export const performOperation = async (
       //     case "broadcast":
       //       message = await broadcastData(data);
       //       break;
-      //     case "createClaimedAccount":
-      //       message = await broadcastCreateClaimedAccount(data);
-      //       break;
+      case KeychainRequestTypes.createClaimedAccount:
+        message = await broadcastCreateClaimedAccount(data);
+        break;
       //     case "signedCall":
       //       message = await broadcastSignedCall(data);
       //       break;
