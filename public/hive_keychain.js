@@ -229,17 +229,17 @@ var hive_keychain = {
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestSignedCall: function (account, method, params, key, callback, rpc) {
-    console.log('getting request');
-    var request = {
-      type: 'signedCall',
-      username: account,
-      method,
-      params,
-      typeWif: key,
-      rpc,
-    };
-    console.log(request);
-    this.dispatchCustomEvent('swRequest_hive', request, callback);
+    console.warn('requestSignedCall has been deprecated.');
+    // var request = {
+    //   type: 'signedCall',
+    //   username: account,
+    //   method,
+    //   params,
+    //   typeWif: key,
+    //   rpc,
+    // };
+    // console.log(request);
+    // this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
 
   // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
