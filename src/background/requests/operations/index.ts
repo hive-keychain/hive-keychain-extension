@@ -8,6 +8,7 @@ import {
   broadcastRemoveAccountAuthority,
   broadcastRemoveKeyAuthority,
 } from '@background/requests/operations/ops/authority';
+import { broadcastOperations } from '@background/requests/operations/ops/broadcast';
 import { convert } from '@background/requests/operations/ops/convert';
 import { broadcastCreateClaimedAccount } from '@background/requests/operations/ops/create-claimed-account';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
@@ -76,9 +77,9 @@ export const performOperation = async (
       case KeychainRequestTypes.removeKeyAuthority:
         message = await broadcastRemoveKeyAuthority(data);
         break;
-      //     case "broadcast":
-      //       message = await broadcastData(data);
-      //       break;
+      case KeychainRequestTypes.broadcast:
+        message = await broadcastOperations(data);
+        break;
       case KeychainRequestTypes.createClaimedAccount:
         message = await broadcastCreateClaimedAccount(data);
         break;

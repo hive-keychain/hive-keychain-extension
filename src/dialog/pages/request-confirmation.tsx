@@ -10,6 +10,7 @@ import AddAccountAuthority from 'src/dialog/pages/requests/authority/add-account
 import AddKeyAuthority from 'src/dialog/pages/requests/authority/add-key-authority';
 import RemoveAccountAuthority from 'src/dialog/pages/requests/authority/remove-account-authority';
 import RemoveKeyAuthority from 'src/dialog/pages/requests/authority/remove-key-authority';
+import Broadcast from 'src/dialog/pages/requests/broadcast';
 import Convert from 'src/dialog/pages/requests/Convert';
 import CreateClaimedAccount from 'src/dialog/pages/requests/create-claimed-account';
 import CustomJson from 'src/dialog/pages/requests/custom-json';
@@ -97,6 +98,8 @@ const RequestConfirmation = ({ data }: Props) => {
       return <CreateClaimedAccount {...data} data={data.data} />;
     case KeychainRequestTypes.post:
       return <Post {...data} data={data.data} />;
+    case KeychainRequestTypes.broadcast:
+      return <Broadcast {...data} data={data.data} />;
     default:
       return null;
   }

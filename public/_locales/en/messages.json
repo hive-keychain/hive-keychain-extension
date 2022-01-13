@@ -983,6 +983,10 @@
     "message": "Options <span class='small'>(click to show)</span>",
     "description": "When website request a post"
   },
+  "dialog_operations": {
+    "message": "Operations (click to show)",
+    "description": "When website request a generic broadcast"
+  },
   "dialog_max_payout": {
     "message": "Max Accepted Payout : ",
     "description": "When website request a post"
