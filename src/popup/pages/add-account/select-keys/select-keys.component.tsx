@@ -59,19 +59,19 @@ const SelectKeys = ({
 
       <CheckboxComponent
         title="popup_html_posting"
-        info="popup_html_posting_info"
+        hint="popup_html_posting_info"
         checked={importPosting}
         onChange={setImportPosting}
       />
       <CheckboxComponent
         title="popup_html_active"
-        info="popup_html_active_info"
+        hint="popup_html_active_info"
         checked={importActive}
         onChange={setImportActive}
       />
       <CheckboxComponent
         title="popup_html_memo"
-        info="popup_html_memo_info"
+        hint="popup_html_memo_info"
         checked={importMemo}
         onChange={setImportMemo}
       />

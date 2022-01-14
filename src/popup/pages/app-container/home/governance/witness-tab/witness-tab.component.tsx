@@ -16,9 +16,9 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import ReactTooltip from 'react-tooltip';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
 import HiveUtils from 'src/utils/hive.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
@@ -260,18 +260,18 @@ const WitnessTab = ({
             onChange={setFilterValue}
           />
           <div className="switches-panel">
-            <SwitchComponent
+            <CheckboxComponent
               title="html_popup_witness_display_voted_only"
               checked={displayVotedOnly}
               onChange={() => {
                 setDisplayVotedOnly(!displayVotedOnly);
-              }}></SwitchComponent>
-            <SwitchComponent
+              }}></CheckboxComponent>
+            <CheckboxComponent
               title="html_popup_witness_hide_inactive"
               checked={hideNonActive}
               onChange={() => {
                 setHideNonActive(!hideNonActive);
-              }}></SwitchComponent>
+              }}></CheckboxComponent>
           </div>
         </div>
         <div

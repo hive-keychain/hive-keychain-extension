@@ -11,7 +11,9 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
@@ -103,7 +105,7 @@ const AccountKeysList = ({
       {accounts.length > 1 && (
         <ButtonComponent
           label="popup_html_delete_account"
-          important={true}
+          type={ButtonType.IMPORTANT}
           onClick={() => deleteAccount()}
         />
       )}

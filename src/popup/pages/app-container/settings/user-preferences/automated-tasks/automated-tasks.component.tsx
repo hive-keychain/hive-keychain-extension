@@ -9,8 +9,8 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import './automated-tasks.component.scss';
 
@@ -129,17 +129,17 @@ const AutomatedTasks = ({
         />
       </div>
 
-      <SwitchComponent
+      <CheckboxComponent
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
         onChange={(value) => saveClaims(value, claimAccounts)}
-        hint="popup_html_enable_autoclaim_rewards_info"></SwitchComponent>
+        hint="popup_html_enable_autoclaim_rewards_info"></CheckboxComponent>
 
-      <SwitchComponent
+      <CheckboxComponent
         title="popup_html_enable_autoclaim_accounts"
         checked={claimAccounts}
         onChange={(value) => saveClaims(claimRewards, value)}
-        hint="popup_html_enable_autoclaim_accounts_info"></SwitchComponent>
+        hint="popup_html_enable_autoclaim_accounts_info"></CheckboxComponent>
     </div>
   );
 };
