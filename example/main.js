@@ -72,7 +72,9 @@ $('#send_vote').click(function () {
 $('#send_custom').click(function () {
   console.log('click');
   hive_keychain.requestCustomJson(
-    $('#custom_username').val(),
+    $('#custom_username').val().length
+      ? $('#custom_username').val()
+      : undefined,
     $('#custom_id').val(),
     $('#custom_method option:selected').text(),
     $('#custom_json').val(),
@@ -120,7 +122,9 @@ $('#sendTokens').click(function () {
 // Send delegation
 $('#send_delegation').click(function () {
   hive_keychain.requestDelegation(
-    $('#delegation_username').val(),
+    $('#delegation_username').val().length
+      ? $('#delegation_username').val()
+      : undefined,
     $('#delegation_delegatee').val(),
     $('#delegation_sp').val(),
     $('#delegation_unit option:selected').text(),
@@ -213,7 +217,7 @@ $('#send_removekey').click(function () {
 $('#send_broadcast').click(function () {
   hive_keychain.requestBroadcast(
     $('#broadcast_username').val(),
-    $('#broadcast_operations').val(),
+    JSON.parse($('#broadcast_operations').val()),
     $('#broadcast_method option:selected').text(),
     function (response) {
       console.log('main js response - broadcast');
@@ -237,7 +241,9 @@ $('#send_signed_call').click(function () {
 
 $('#send_witness_vote').click(function () {
   hive_keychain.requestWitnessVote(
-    $('#witness_username').val(),
+    $('#witness_username').val().length
+      ? $('#witness_username').val()
+      : undefined,
     $('#witness').val(),
     $('#vote_wit').is(':checked'),
     function (response) {
@@ -249,7 +255,7 @@ $('#send_witness_vote').click(function () {
 
 $('#send_proxy').click(function () {
   hive_keychain.requestProxy(
-    $('#proxy_username').val(),
+    $('#proxy_username').val().length ? $('#proxy_username').val() : undefined,
     $('#proxy').val() ? $('#proxy').val() : '',
     function (response) {
       console.log('main js response - proxy');

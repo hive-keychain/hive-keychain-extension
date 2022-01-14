@@ -23,6 +23,7 @@ type Props = {
   accounts?: string[];
   username?: string;
   setUsername?: (username: string) => void;
+  redHeader?: boolean;
 };
 
 const Operation = ({
@@ -38,6 +39,7 @@ const Operation = ({
   canWhitelist = false,
   accounts,
   username,
+  redHeader,
   setUsername,
 }: Props) => {
   const [keep, setKeep] = useState(false);
@@ -60,7 +62,12 @@ const Operation = ({
     <div className="operation">
       <div>
         <DialogHeader title={title} />
-        {header && <div className="operation_header">{header}</div>}
+        {header && (
+          <div
+            className={`operation_header ${redHeader ? 'operation-red' : ''}`}>
+            {header}
+          </div>
+        )}
         {accounts && (
           <RequestUsername
             accounts={accounts}

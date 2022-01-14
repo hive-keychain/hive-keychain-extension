@@ -1,0 +1,29 @@
+import { getRequestHandler } from '@background/requests';
+import {
+  beautifyErrorMessage,
+  createMessage,
+} from '@background/requests/operations/operations.utils';
+import hive from '@hiveio/hive-js';
+import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
+export const signTx = async (data: RequestSignTx & RequestId) => {
+  let key = getRequestHandler().key;
+  let result, err;
+
+  try {
+    //result = client.broadcast.sign(data.tx, PrivateKey.from(key!));
+    result = await hive.auth.signTransaction(data.tx, [key]);
+  } catch (e) {
+    err = e;
+  } finally {
+    const err_message = beautifyErrorMessage(err);
+
+    const message = createMessage(
+      err,
+      result,
+      data,
+      chrome.i18n.getMessage('bgd_ops_sign_tx'),
+      err_message,
+    );
+    return message;
+  }
+};

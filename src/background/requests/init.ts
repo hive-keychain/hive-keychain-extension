@@ -33,6 +33,7 @@ export default async (
     LocalStorageKeyEnum.NO_CONFIRM,
     LocalStorageKeyEnum.CURRENT_RPC,
   ]);
+
   let rpc = items.current_rpc;
   if (request.rpc) {
     const override_rpc = await RpcUtils.findRpc(request.rpc);

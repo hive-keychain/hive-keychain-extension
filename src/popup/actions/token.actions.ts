@@ -7,6 +7,7 @@ import {
   TokenMarket,
   TokenTransaction,
 } from 'src/interfaces/tokens.interface';
+import HiveEngineUtils from 'src/utils/hive-engine.utils';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
   const action: ActionPayload<Token[]> = {
@@ -31,9 +32,9 @@ export const loadUserTokens =
       dispatch({
         type: ActionType.CLEAR_USER_TOKENS,
       });
-      let tokensBalance: TokenBalance[] = await hsc.find('tokens', 'balances', {
+      let tokensBalance: TokenBalance[] = await HiveEngineUtils.getUserBalance(
         account,
-      });
+      );
       tokensBalance = tokensBalance
         .filter((t) => parseFloat(t.balance) !== 0)
         .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));

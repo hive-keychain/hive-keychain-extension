@@ -30,7 +30,6 @@ const RequestUsername = ({ accounts, username, setUsername }: Props) => {
           username === selectProps.item ? 'selected' : ''
         }`}
         onClick={() => {
-          console.log(selectProps);
           setUsername(selectProps.item);
           selectProps.methods.dropDown('close');
         }}>

@@ -8,7 +8,7 @@ export const decodeMessage = async (data: RequestDecode & RequestId) => {
   let error = null;
   const key = getRequestHandler().key;
   try {
-    decoded = HiveUtils.decodeMemo(data.message, key!);
+    decoded = await HiveUtils.decodeMemo(data.message, key!);
   } catch (err) {
     error = err;
   } finally {

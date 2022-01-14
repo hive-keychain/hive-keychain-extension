@@ -22,7 +22,11 @@ export const encodeMessage = async (data: RequestEncode & RequestId) => {
       publicKey = receiver.posting.key_auths[0][0];
     }
 
-    encoded = HiveUtils.encodeMemo(data.message, key!, publicKey as string);
+    encoded = await HiveUtils.encodeMemo(
+      data.message,
+      key!,
+      publicKey as string,
+    );
   } catch (err) {
     error = err;
   } finally {

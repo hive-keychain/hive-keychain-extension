@@ -200,13 +200,13 @@ export type RequestPowerUp = CommonRequestParams & {
   type: KeychainRequestTypes.powerUp;
   username: string;
   recipient: string;
-  steem: string;
+  hive: string;
 };
 
 export type RequestPowerDown = CommonRequestParams & {
   type: KeychainRequestTypes.powerDown;
   username: string;
-  steem_power: string;
+  hive_power: string;
 };
 
 export type RequestCreateClaimedAccount = CommonRequestParams & {
@@ -242,7 +242,7 @@ export type RequestCreateProposal = CommonRequestParams & {
 export type RequestRemoveProposal = CommonRequestParams & {
   type: KeychainRequestTypes.removeProposal;
   username: string;
-  proposal_ids: string;
+  proposal_ids: string | number[];
   extensions: string;
 };
 

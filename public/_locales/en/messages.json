@@ -391,6 +391,10 @@
     "message": "RPC Node",
     "description": "on preferences"
   },
+  "popup_none": {
+    "message": "None",
+    "description": "On send HIVE/HBD confirmation page, when memo is empty"
+  },
   "popup_html_add_key": {
     "message": "Add Key",
     "description": "on manage accounts, add a previously non stored key"
@@ -923,6 +927,10 @@
     "message": "To",
     "description": "When website request a transfer"
   },
+  "dialog_tx": {
+    "message": "Transaction (click to show)",
+    "description": "When website request signing a tx"
+  },
   "dialog_amount": {
     "message": "Amount",
     "description": "When website request a transfer"
@@ -960,7 +968,7 @@
     "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
-    "message": "JSON Metadata",
+    "message": "JSON Metadata (Click to show)",
     "description": "When website request a post"
   },
   "dialog_pu": {
@@ -974,6 +982,10 @@
   "dialog_options": {
     "message": "Options <span class='small'>(click to show)</span>",
     "description": "When website request a post"
+  },
+  "dialog_operations": {
+    "message": "Operations (click to show)",
+    "description": "When website request a generic broadcast"
   },
   "dialog_max_payout": {
     "message": "Max Accepted Payout : ",
@@ -1158,6 +1170,30 @@
     "message": "...(click to expand)",
     "description": "Toggle"
   },
+  "dialog_recurrence": {
+    "message": "Recurrence",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions": {
+    "message": "Executions",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions_times": {
+    "message": "$1 times",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_hours": {
+    "message": "Every $1 hour(s)",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days": {
+    "message": "Every $1 day(s)",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days_hours": {
+    "message": "Every $1 day(s) and $2 hours(s)",
+    "description": "When requesting recurrent transfers"
+  },
   "bgd_init_no_wallet": {
     "message": "No wallet!",
     "description": "when user didnt create a wallet yet"
@@ -1314,6 +1350,12 @@
   "bgd_ops_sign_tx": {
     "message": "The transaction has been signed successfully."
   },
+  "bgd_ops_convert": {
+    "message": "Successfully started converting $1 HBD to HIVE on account @$2."
+  },
+  "bgd_ops_convert_collaterized": {
+    "message": "Successfully started converting $1 HIVE to HBD on account @$2."
+  },
   "bgd_ops_create_account": {
     "message": "Succesfully created account @$1."
   },
@@ -1336,6 +1378,9 @@
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
+  "dialog_title_recurrent_transfer": {
+    "message": "Recurrent Transfer"
+  },
   "dialog_auth_key": {
     "message": "Key",
     "description": "New key to be added"
@@ -1347,6 +1392,14 @@
   "bgd_ops_remove_key_auth": {
     "message": "$1 has been removed as a $2 key for account @$3.",
     "description": "succesfully removed a keypair"
+  },
+  "bgd_ops_recurrent_transfer": {
+    "message": "Succesfully started a recurrent transfer.",
+    "description": "when starting a recurrent transfer"
+  },
+  "bgd_ops_stop_recurrent_transfer": {
+    "message": "Succesfully stopped a recurrent transfer.",
+    "description": "when starting a recurrent transfer"
   },
   "popup_html_add_by_keys": {
     "message": "Use keys/pwd",
@@ -1443,9 +1496,10 @@
     "description": "When clicking on the arrow menu"
   },
   "popup_html_convert_hbd_intro": {
-    "message": "Your HBD will take 3.5 days to get converted to approximately $1 USD worth of HIVE tokens, based on its 3.5 days median price.",
+    "message": "Your HBD will take 3.5 days to get converted to approximately 1 USD worth of HIVE tokens, based on its 3.5 days median price.",
     "description": "When clicking on the Hbd arrow menu"
   },
+
   "popup_html_convert_hive_intro": {
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
@@ -1528,6 +1582,10 @@
   },
   "dialog_keys": {
     "message": "Private Keys",
+    "description": "When adding an account by request"
+  },
+  "dialog_new_account": {
+    "message": "New Account",
     "description": "When adding an account by request"
   },
   "dialog_header_register": {

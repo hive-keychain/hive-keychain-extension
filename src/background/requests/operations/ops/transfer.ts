@@ -19,7 +19,11 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
       username!,
       KeychainKeyTypesLC.memo,
     )[0];
-    const key = getRequestHandler().key;
+    const [key] = getRequestHandler().getUserKey(
+      data.username!,
+      KeychainKeyTypesLC.active,
+    );
+    console.log(key);
     let memo = data.memo || '';
     if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
       const receiver = (await client.database.getAccounts([to]))[0];
@@ -28,7 +32,7 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
         throw new Error('Could not encode memo.');
       }
       const memoReceiver = receiver.memo_key;
-      memo = HiveUtils.encodeMemo(memoKey, memoReceiver, memo);
+      memo = HiveUtils.encodeMemo(memo, memoKey, memoReceiver);
     }
 
     result = await client.broadcast.transfer(

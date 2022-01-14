@@ -67,14 +67,14 @@ const post = Joi.object({
   body: Joi.string().required(),
   title: Joi.string().allow(''),
   parent_username: Joi.alternatives().conditional('title', {
-    is: Joi.valid(null),
+    is: Joi.valid(''),
     then: Joi.string().required(),
     otherwise: null,
   }),
   parent_perm: Joi.string().required(),
   json_metadata: Joi.string().required(),
   permlink: Joi.string().required(),
-  comment_options: Joi.string().required(),
+  comment_options: Joi.string().allow(''),
   // comment_options: Joi.object({
   //   author: username,
   //   permlink: Joi.string().required(),
@@ -223,15 +223,15 @@ const sendToken = Joi.object({
 const powerUp = Joi.object({
   username,
   recipient: username,
-  steem: amount,
+  hive: amount,
   rpc,
-}).rename('hive', 'steem');
+});
 
 const powerDown = Joi.object({
   username,
-  steem_power: amount,
+  hive_power: amount,
   rpc,
-}).rename('hp', 'steem_power');
+});
 
 const createClaimedAccount = Joi.object({
   username,
