@@ -20,9 +20,7 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -346,7 +344,6 @@ const TransferFunds = ({
       <ButtonComponent
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}
-        type={ButtonType.RAISED}
       />
     </div>
   );
