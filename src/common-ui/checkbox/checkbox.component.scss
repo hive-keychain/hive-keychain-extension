@@ -1,3 +1,13 @@
 .checkbox-container {
   font-size: 18px;
+  max-width: 300px;
+  .pretty,
+  .pretty > .state,
+  .pretty > .state > label {
+    max-width: inherit;
+  }
+
+  .pretty > .state > label {
+    white-space: pre-wrap;
+  }
 }

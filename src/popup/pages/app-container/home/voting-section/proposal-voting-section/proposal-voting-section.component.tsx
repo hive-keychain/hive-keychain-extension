@@ -12,6 +12,7 @@ const ProposalVotingSection = ({
 }: PropsFromRedux) => {
   const [hasVoted, sethasVoted] = useState(true);
   const [forceClosed, setForcedClosed] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (activeAccount.name) {
@@ -34,29 +35,36 @@ const ProposalVotingSection = ({
     });
   };
 
+  const handleClose = (event: any) => {
+    console.log(event);
+    event.nativeEvent.stopImmediatePropagation();
+    setForcedClosed(true);
+  };
+
   return (
     <div
       className={`proposal-voting-section ${
         isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
-      }`}>
-      <span
-        className="material-icons close"
-        onClick={() => setForcedClosed(true)}>
+      } ${isOpen ? 'opened' : 'closed'}`}
+      onClick={() => setIsOpen(true)}>
+      <span className="material-icons close" onClick={handleClose}>
         {Icons.CLOSE}
       </span>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_proposal_request')}
       </div>
-      <div className="button-panel">
-        <ButtonComponent
-          onClick={handleReadClicked}
-          label={'html_popup_read'}
-        />
-        <ButtonComponent
-          onClick={handleVoteForProposalClicked}
-          label={'html_popup_vote'}
-        />
-      </div>
+      {isOpen && (
+        <div className="button-panel">
+          <ButtonComponent
+            onClick={handleReadClicked}
+            label={'html_popup_read'}
+          />
+          <ButtonComponent
+            onClick={handleVoteForProposalClicked}
+            label={'html_popup_vote'}
+          />
+        </div>
+      )}
     </div>
   );
 };

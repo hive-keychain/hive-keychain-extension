@@ -203,7 +203,7 @@ const TokensTransfer = ({
   };
 
   return (
-    <div className="transfer-funds-page">
+    <div className="transfer-tokens-page">
       <PageTitleComponent
         title="popup_html_transfer_funds"
         isBackButtonEnabled={true}
@@ -246,6 +246,7 @@ const TokensTransfer = ({
         value={memo}
         onChange={setMemo}
       />
+      <div className="divider"></div>
       <ButtonComponent
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}

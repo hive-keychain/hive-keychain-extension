@@ -24,6 +24,16 @@
       linear-gradient(to bottom, #000000, #59626c, #000000) 0% 0% no-repeat
         padding-box !important;
   }
+
+  .page-container {
+    display: grid;
+    row-gap: 16px;
+    grid-template-rows: 28px 1fr;
+    height: 100%;
+  }
+  .divider {
+    flex: 1;
+  }
 }
 
 .react-dropdown-select-dropdown-handle {

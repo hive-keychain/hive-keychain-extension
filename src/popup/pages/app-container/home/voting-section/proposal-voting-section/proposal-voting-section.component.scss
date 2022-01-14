@@ -13,12 +13,17 @@
   justify-content: center;
   row-gap: 8px;
   border-top: 1px solid white;
+  cursor: pointer;
 
   .close {
     position: absolute;
     top: 2px;
     right: 4px;
     cursor: pointer;
+  }
+
+  &.closed {
+    height: 54px;
   }
 
   .submit-button {

@@ -24,7 +24,7 @@ const CheckboxComponent = (props: CheckboxProps) => {
       {props.hint && (
         <div className="hint">
           {props.skipHintTranslation
-            ? props.title
+            ? props.hint
             : chrome.i18n.getMessage(props.hint)}
         </div>
       )}
