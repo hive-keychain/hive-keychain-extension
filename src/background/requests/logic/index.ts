@@ -9,8 +9,6 @@ export * from './requestWithoutConfirmation.logic';
 export * from './transferRequest.logic';
 export * from './unlockWallet.logic';
 
-//TODO : Check all possible cases
-
 // addAccountRequest
 // addAccountToEmptyWallet          OK
 // initializeWallet                 OK

@@ -10,7 +10,6 @@ const isPasswordValid = (password: string) => {
   );
 };
 
-// TODO fix
 const login = async (password: string): Promise<boolean> => {
   let accounts = await AccountUtils.getAccountsFromLocalStorage(password);
   return accounts ? true : false;

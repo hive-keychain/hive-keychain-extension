@@ -97,7 +97,6 @@ export const convert = async (data: RequestConvert & RequestId) => {
   }
 };
 
-// TODO: put in utils, use from both front and bgd
 const getNextRequestID = async (username: string, client: Client) => {
   let conversions = await client.database.call('get_conversion_requests', [
     username,

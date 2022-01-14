@@ -1,5 +1,5 @@
 export type Key = string | null;
-//TODO : remove null
+
 export interface Keys {
   active?: Key;
   activePubkey?: Key;

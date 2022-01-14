@@ -61,7 +61,6 @@ const vote = Joi.object({
   rpc,
 });
 
-//TODO : post
 const post = Joi.object({
   username,
   body: Joi.string().required(),

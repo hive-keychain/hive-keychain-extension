@@ -50,7 +50,6 @@ const chromeMessageHandler = async (
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
     case BackgroundCommand.SEND_REQUEST:
-      //TODO : add check for avoiding double transaction
       console.log(backgroundMessage);
       const requestHandler = getRequestHandler();
       if (requestHandler) {
