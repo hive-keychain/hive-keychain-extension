@@ -3,8 +3,8 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './keychainify.component.scss';
 
@@ -45,11 +45,11 @@ const Keychainify = ({}: PropsFromRedux) => {
         {chrome.i18n.getMessage('popup_html_keychainify_text')}
       </div>
 
-      <SwitchComponent
+      <CheckboxComponent
         title="popup_html_enable_keychainify_title"
         checked={enabled}
         onChange={setEnabled}
-        hint="popup_html_enable_keychainify_info"></SwitchComponent>
+        hint="popup_html_enable_keychainify_info"></CheckboxComponent>
     </div>
   );
 };

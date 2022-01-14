@@ -20,11 +20,13 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -296,10 +298,8 @@ const TransferFunds = ({
             skipTranslation={true}
             value={amount}
             onChange={setAmount}
+            onSetToMaxClicked={setAmountToMaxValue}
           />
-          <div className="max" onClick={setAmountToMaxValue}>
-            {chrome.i18n.getMessage('popup_html_send_max')}
-          </div>
         </div>
         <Select
           values={[]}
@@ -317,10 +317,10 @@ const TransferFunds = ({
         value={memo}
         onChange={setMemo}
       />
-      <SwitchComponent
+      <CheckboxComponent
         title="popup_html_recurrent_transfer"
         checked={isRecurrent}
-        onChange={setIsRecurrent}></SwitchComponent>
+        onChange={setIsRecurrent}></CheckboxComponent>
       {isRecurrent && (
         <div className="recurrent-panel">
           <InputComponent
@@ -346,6 +346,7 @@ const TransferFunds = ({
       <ButtonComponent
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}
+        type={ButtonType.RAISED}
       />
     </div>
   );

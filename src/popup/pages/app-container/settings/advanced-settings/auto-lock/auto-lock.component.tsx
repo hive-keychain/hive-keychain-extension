@@ -6,10 +6,10 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './auto-lock.component.scss';
@@ -49,27 +49,27 @@ const AutoLock = ({ setSuccessMessage, goBack }: PropsFromRedux) => {
         isBackButtonEnabled={true}
       />
 
-      <SwitchComponent
+      <CheckboxComponent
         title="popup_html_al_default_title"
         hint="popup_html_al_default_info"
         checked={selectedType === AutoLockType.DEFAULT}
         onChange={() =>
           setSelectedType(AutoLockType.DEFAULT)
-        }></SwitchComponent>
-      <SwitchComponent
+        }></CheckboxComponent>
+      <CheckboxComponent
         title="popup_html_al_locked_title"
         hint="popup_html_al_locked_info"
         checked={selectedType === AutoLockType.DEVICE_LOCK}
         onChange={() =>
           setSelectedType(AutoLockType.DEVICE_LOCK)
-        }></SwitchComponent>
-      <SwitchComponent
+        }></CheckboxComponent>
+      <CheckboxComponent
         title="popup_html_al_idle_title"
         hint="popup_html_al_idle_info"
         checked={selectedType === AutoLockType.IDLE_LOCK}
         onChange={() =>
           setSelectedType(AutoLockType.IDLE_LOCK)
-        }></SwitchComponent>
+        }></CheckboxComponent>
 
       {selectedType === AutoLockType.IDLE_LOCK && (
         <InputComponent

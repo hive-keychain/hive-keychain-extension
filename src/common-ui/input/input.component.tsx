@@ -16,6 +16,7 @@ interface InputProps {
   skipHintTranslation?: boolean;
   autocompleteValues?: any[];
   onEnterPress?(): any;
+  onSetToMaxClicked?(): any;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -116,6 +117,11 @@ const InputComponent = (props: InputProps) => {
           className="material-icons-outlined input-img"
           onClick={() => props.onChange('')}>
           {props.logo}
+        </span>
+      )}
+      {props.onSetToMaxClicked && (
+        <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>
+          MAX
         </span>
       )}
     </div>

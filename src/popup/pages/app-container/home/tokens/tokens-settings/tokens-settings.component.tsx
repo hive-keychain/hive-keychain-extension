@@ -5,10 +5,10 @@ import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens-settings.component.scss';
@@ -88,11 +88,11 @@ const TokensSettings = ({
       <div className="tokens-list">
         {filteredTokens.map((token) => (
           <div className="token" key={token.symbol}>
-            <SwitchComponent
+            <CheckboxComponent
               checked={!hiddenTokens.includes(token.symbol)}
               onChange={() => {
                 toggleHiddenToken(token.symbol);
-              }}></SwitchComponent>
+              }}></CheckboxComponent>
             <div className="description">
               <div className="name">{token.name}</div>
               <div className="detail">

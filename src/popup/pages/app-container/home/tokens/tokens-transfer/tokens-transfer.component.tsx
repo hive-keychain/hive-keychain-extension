@@ -234,10 +234,8 @@ const TokensTransfer = ({
             skipTranslation={true}
             value={amount}
             onChange={setAmount}
+            onSetToMaxClicked={setAmountToMaxValue}
           />
-          <div className="max" onClick={setAmountToMaxValue}>
-            {chrome.i18n.getMessage('popup_html_send_max')}
-          </div>
         </div>
         <div className="symbol">{symbol}</div>
       </div>

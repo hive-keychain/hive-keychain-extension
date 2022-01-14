@@ -39,11 +39,11 @@
   column-gap: 16px;
   padding: 12px 26px;
   box-sizing: border-box;
-  background: rgba(33, 37, 41, 0.68);
+  background: $black-transparent;
 
   &:hover,
   &.selected {
-    background: $red;
+    background: $red-dark;
   }
 
   img {

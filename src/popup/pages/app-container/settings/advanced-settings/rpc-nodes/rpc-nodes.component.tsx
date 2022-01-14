@@ -8,10 +8,10 @@ import Select, {
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
-import SwitchComponent from 'src/common-ui/switch/switch.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import RpcUtils from 'src/utils/rpc.utils';
 import './rpc-nodes.component.scss';
@@ -195,11 +195,11 @@ const RpcNodes = ({
             placeholder={'popup_html_rpc_node'}
             onEnterPress={handleSaveNewRpcClicked}
           />
-          <SwitchComponent
+          <CheckboxComponent
             title="TESTNET"
             checked={addRpcNodeTestnet}
             onChange={setAddRpcNodeTestnet}
-            skipTranslation={true}></SwitchComponent>
+            skipTranslation={true}></CheckboxComponent>
           {addRpcNodeTestnet && (
             <InputComponent
               type={InputType.TEXT}
@@ -211,10 +211,10 @@ const RpcNodes = ({
             />
           )}
 
-          <SwitchComponent
+          <CheckboxComponent
             title="popup_html_set_new_rpc_as_active"
             checked={setNewRpcAsActive}
-            onChange={setSetNewRpcAsActive}></SwitchComponent>
+            onChange={setSetNewRpcAsActive}></CheckboxComponent>
 
           <ButtonComponent
             label={'popup_html_save'}

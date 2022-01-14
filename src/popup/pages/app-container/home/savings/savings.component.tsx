@@ -286,10 +286,8 @@ const SavingsPage = ({
             skipTranslation={true}
             value={value}
             onChange={setValue}
+            onSetToMaxClicked={setToMax}
           />
-          <a className="max" onClick={() => setToMax()}>
-            {chrome.i18n.getMessage('popup_html_send_max')}
-          </a>
         </div>
         <Select
           values={[]}

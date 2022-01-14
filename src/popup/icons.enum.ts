@@ -2,6 +2,7 @@ export enum Icons {
   ACCOUNT = 'person',
   ACCOUNTS = 'people',
   ADD_ACCOUNT = 'person_add',
+  ADD_CIRCLE = 'add_circle_outline',
   ARROW_DROPDOWN = 'arrow_drop_down',
   ARROW_UP = 'arrow_circle_up',
   ARROW_UPWARDS = 'arrow_upward',
