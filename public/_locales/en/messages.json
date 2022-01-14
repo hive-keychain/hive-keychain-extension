@@ -344,7 +344,7 @@
     "description": "on manage accounts, remove key"
   },
   "popup_html_delete_account": {
-    "message": "DELETE THIS ACCOUNT",
+    "message": "Delete this account",
     "description": "on manage accounts"
   },
   "popup_html_delete_account_confirmation_message": {
@@ -1991,5 +1991,9 @@
   "html_popup_voting_no_hp": {
     "message": "Please power up to get voting mana",
     "description": "Message when no HP in voting mana section"
+  },
+  "html_popup_delete_key_confirm": {
+    "message": "You are about to delete the $1 key for account @$2.<br/>Make sure you have a copy of this key before proceeding.",
+    "description": "Confirmation message when deleting key"
   }
 }

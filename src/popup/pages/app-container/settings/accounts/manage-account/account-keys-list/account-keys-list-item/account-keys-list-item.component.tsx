@@ -1,6 +1,9 @@
 import { removeKey, setAccounts } from '@popup/actions/account.actions';
 import { setInfoMessage } from '@popup/actions/message.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -26,6 +29,7 @@ const AccountKeysListItem = ({
   setInfoMessage,
   navigateToWithParams,
   removeKey,
+  goBack,
 }: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
 
@@ -41,7 +45,18 @@ const AccountKeysListItem = ({
   };
 
   const handleClickOnRemoveKey = () => {
-    removeKey(keyType);
+    const keyTypeLabel = chrome.i18n.getMessage(keyType.toLowerCase());
+
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage('html_popup_delete_key_confirm', [
+        keyTypeLabel,
+        activeAccount.name!,
+      ]),
+      afterConfirmAction: async () => {
+        removeKey(keyType);
+        goBack();
+      },
+    });
   };
 
   return (
@@ -99,6 +114,7 @@ const connector = connect(mapStateToProps, {
   setAccounts,
   navigateToWithParams,
   removeKey,
+  goBack,
 });
 type PropsType = ConnectedProps<typeof connector> & KeyListItemProps;
 
