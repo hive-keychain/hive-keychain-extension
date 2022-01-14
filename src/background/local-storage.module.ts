@@ -9,18 +9,21 @@ const checkAndUpdateLocalStorage = async () => {
     const autolock = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.AUTOLOCK,
     );
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.AUTOLOCK,
-      JSON.parse(autolock),
-    );
-
+    if (autolock) {
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.AUTOLOCK,
+        JSON.parse(autolock),
+      );
+    }
     const rpcList = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.RPC_LIST,
     );
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.RPC_LIST,
-      JSON.parse(rpcList),
-    );
+    if (rpcList) {
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.RPC_LIST,
+        JSON.parse(rpcList),
+      );
+    }
 
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,

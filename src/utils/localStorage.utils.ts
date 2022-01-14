@@ -1,11 +1,11 @@
-import {LocalStorageKeyEnum} from 'src/reference-data/local-storage-key.enum';
+import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 
 type LocaleStorageObject = Partial<Record<LocalStorageKeyEnum, any>>;
 
 const getValueFromLocalStorage = async (
   key: LocalStorageKeyEnum,
 ): Promise<any> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     chrome.storage.local.get([key], function (result) {
       resolve(result[key]);
     });
@@ -15,7 +15,7 @@ const getValueFromLocalStorage = async (
 const getMultipleValueFromLocalStorage = async (
   keys: LocalStorageKeyEnum[],
 ): Promise<any> => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     chrome.storage.local.get(keys, function (result) {
       resolve(result);
     });
