@@ -37,11 +37,12 @@
   }
 
   &.raised {
-    background: $grey;
+    background: $white;
     border: none;
+    color: black;
 
     &:hover {
-      background: $grey-dark;
+      background: transparent;
     }
   }
 }
