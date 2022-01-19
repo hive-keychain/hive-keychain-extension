@@ -10,12 +10,14 @@ interface PageTitleProps {
   title: string;
   titleParams?: string[];
   isBackButtonEnabled: boolean;
+  isCloseButtonDisabled?: boolean;
 }
 
 const PageTitle = ({
   title,
   titleParams,
   isBackButtonEnabled,
+  isCloseButtonDisabled,
   goBack,
   navigateTo,
   canGoBack,
@@ -39,11 +41,13 @@ const PageTitle = ({
         </span>
       )}
       <div className="title">{chrome.i18n.getMessage(title, titleParams)}</div>
-      <span
-        className="material-icons-outlined icon-button"
-        onClick={handleCloseButtonClick}>
-        {Icons.CLOSE}
-      </span>
+      {!isCloseButtonDisabled && (
+        <span
+          className="material-icons-outlined icon-button"
+          onClick={handleCloseButtonClick}>
+          {Icons.CLOSE}
+        </span>
+      )}
     </div>
   );
 };
