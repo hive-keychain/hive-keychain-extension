@@ -17,6 +17,7 @@ const ResetPasswordPage = ({}: PropsFromRedux) => {
         <PageTitleComponent
           title="popup_html_reset"
           isBackButtonEnabled={true}
+          isCloseButtonDisabled={true}
         />
 
         <p
