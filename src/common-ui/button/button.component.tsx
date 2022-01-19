@@ -26,7 +26,7 @@ const ButtonComponent = (props: ButtonProps) => {
         {chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
       </div>
       {props.logo && (
-        <span className="material-icons-outlined input-img">{props.logo}</span>
+        <span className="material-icons-outlined logo">{props.logo}</span>
       )}
     </button>
   );

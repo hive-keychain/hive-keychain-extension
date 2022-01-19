@@ -1,13 +1,16 @@
 .checkbox-container {
   font-size: 18px;
-  max-width: 300px;
-  .pretty,
-  .pretty > .state,
-  .pretty > .state > label {
-    max-width: inherit;
+  .checkbox-and-label {
+    display: flex;
+    align-items: flex-start;
+    .pretty {
+      margin-right: 16px;
+    }
   }
 
-  .pretty > .state > label {
-    white-space: pre-wrap;
+  .hint {
+    font-style: italic;
+    margin-top: 2px;
+    font-size: 15px;
   }
 }

@@ -14,13 +14,16 @@ interface CheckboxProps {
 const CheckboxComponent = (props: CheckboxProps) => {
   return (
     <div className="checkbox-container">
-      <Checkbox
-        checked={props.checked}
-        onChange={() => props.onChange(!props.checked)}>
-        {props.skipTranslation
-          ? props.title
-          : chrome.i18n.getMessage(props.title ?? '')}
-      </Checkbox>
+      <div className="checkbox-and-label">
+        <Checkbox
+          checked={props.checked}
+          onChange={() => props.onChange(!props.checked)}></Checkbox>
+        <div className="label">
+          {props.skipTranslation
+            ? props.title
+            : chrome.i18n.getMessage(props.title ?? '')}
+        </div>
+      </div>
       {props.hint && (
         <div className="hint">
           {props.skipHintTranslation
