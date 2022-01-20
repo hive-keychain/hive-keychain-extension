@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+const path = require('path');
 
 const config = {
   entry: {
@@ -28,6 +29,9 @@ const config = {
           },
           {
             loader: 'css-loader',
+            options: {
+              url: false,
+            },
           },
           {
             loader: 'sass-loader',
