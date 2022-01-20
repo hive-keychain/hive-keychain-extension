@@ -29,9 +29,6 @@ const config = {
           },
           {
             loader: 'css-loader',
-            options: {
-              url: false,
-            },
           },
           {
             loader: 'sass-loader',

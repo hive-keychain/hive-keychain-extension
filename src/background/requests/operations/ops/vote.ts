@@ -31,7 +31,7 @@ export const broadcastVote = async (data: RequestVote & RequestId) => {
     chrome.i18n.getMessage('bgd_ops_vote', [
       data.author,
       data.permlink,
-      +data.weight / 100,
+      +data.weight / 100 + '',
     ]),
     err_message,
   );

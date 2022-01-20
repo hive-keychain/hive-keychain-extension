@@ -58,12 +58,12 @@ export const broadcastDelegation = async (
       parseFloat(data.amount) === 0
         ? chrome.i18n.getMessage('bgd_ops_undelegate', [
             data.delegatee,
-            data.username,
+            data.username!,
           ])
         : chrome.i18n.getMessage('bgd_ops_delegate', [
             `${data.amount} ${data.unit}`,
             data.delegatee,
-            data.username,
+            data.username!,
           ]),
       err_message,
     );

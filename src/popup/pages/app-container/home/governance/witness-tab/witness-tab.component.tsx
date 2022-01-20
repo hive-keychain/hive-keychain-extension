@@ -225,7 +225,7 @@ const WitnessTab = ({
       {!usingProxy && (
         <div className="remaining-votes">
           {chrome.i18n.getMessage('popup_html_witness_remaining', [
-            remainingVotes,
+            remainingVotes + '',
           ])}
         </div>
       )}

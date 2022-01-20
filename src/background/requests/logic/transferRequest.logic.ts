@@ -40,7 +40,7 @@ export const transferRequest = (
         tab!,
         'user_cancel',
         chrome.i18n.getMessage('bgd_auth_canceled'),
-        chrome.i18n.getMessage('bgd_auth_transfer_no_memo', [username]),
+        chrome.i18n.getMessage('bgd_auth_transfer_no_memo', [username!]),
         request as KeychainRequest,
       );
     });
@@ -50,7 +50,7 @@ export const transferRequest = (
         tab!,
         'user_cancel',
         chrome.i18n.getMessage('bgd_auth_canceled'),
-        chrome.i18n.getMessage('bgd_auth_transfer_no_active', [username]),
+        chrome.i18n.getMessage('bgd_auth_transfer_no_active', [username!]),
         request as KeychainRequest,
       );
     });

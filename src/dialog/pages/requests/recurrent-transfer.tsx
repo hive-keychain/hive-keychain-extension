@@ -44,17 +44,17 @@ const RecurrentTransfer = (props: Props) => {
     let recurrenceString;
     if (!days) {
       recurrenceString = chrome.i18n.getMessage('dialog_recurrence_hours', [
-        hours,
+        hours + '',
       ]);
     } else {
       if (!hours) {
         recurrenceString = chrome.i18n.getMessage('dialog_recurrence_days', [
-          days,
+          days + '',
         ]);
       } else {
         recurrenceString = chrome.i18n.getMessage(
           'dialog_recurrence_days_hours',
-          [days, hours],
+          [days + '', hours + ''],
         );
       }
     }
@@ -84,7 +84,7 @@ const RecurrentTransfer = (props: Props) => {
       <RequestItem
         title="dialog_executions"
         content={chrome.i18n.getMessage('dialog_executions_times', [
-          data.executions,
+          data.executions + '',
         ])}
       />
     </Operation>

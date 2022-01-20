@@ -43,7 +43,7 @@ const SignBuffer = (props: Props) => {
             ])
       }
       checkboxLabelOverride={chrome.i18n.getMessage('dialog_no_prompt_verify', [
-        data.username,
+        data.username!,
         domain,
       ])}
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}

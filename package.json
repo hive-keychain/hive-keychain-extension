@@ -29,7 +29,7 @@
   "dependencies": {
     "@hiveio/dhive": "^1.0.1",
     "@hiveio/hive-js": "^2.0.4",
-    "@types/chrome": "0.0.151",
+    "@types/chrome": "^0.0.176",
     "@types/crypto-js": "^4.0.2",
     "axios": "^0.21.1",
     "crypto-js": "^4.1.1",
@@ -68,7 +68,7 @@
     "@types/remote-redux-devtools": "^0.5.5",
     "babel-loader": "^8.0.2",
     "copy-webpack-plugin": "^9.0.1",
-    "css-loader": "^6.5.1",
+    "css-loader": "^3.6.0",
     "node-sass": "^6.0.1",
     "react-hot-loader": "^4.13.0",
     "remote-redux-devtools": "^0.5.16",

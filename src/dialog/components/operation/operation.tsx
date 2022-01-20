@@ -86,7 +86,7 @@ const Operation = ({
                 checkboxLabelOverride ||
                 chrome.i18n.getMessage('dialog_no_prompt', [
                   data.type,
-                  data.username,
+                  data.username!,
                   domain,
                 ])
               }

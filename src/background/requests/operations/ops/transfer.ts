@@ -64,7 +64,7 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
           case 'adjust_balance':
             err_message = chrome.i18n.getMessage(
               'bgd_ops_transfer_adjust_balance',
-              [data.currency, data.username],
+              [data.currency, data.username!],
             );
             break;
           case 'get_account':
@@ -87,7 +87,7 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
       chrome.i18n.getMessage('bgd_ops_transfer_success', [
         data.amount,
         data.currency,
-        data.username,
+        data.username!,
         data.to,
       ]),
       err_message,

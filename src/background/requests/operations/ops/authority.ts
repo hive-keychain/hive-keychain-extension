@@ -206,7 +206,7 @@ export const broadcastAddKeyAuthority = async (
         data.authorizedKey,
         chrome.i18n.getMessage(data.role.toLowerCase()),
         data.username,
-        data.weight,
+        data.weight + '',
       ]),
       err_message,
     );
