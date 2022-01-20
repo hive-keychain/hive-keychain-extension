@@ -1,7 +1,7 @@
 @import '/src/popup/variable.scss';
 
 .transfer-tokens-page {
-  @include pageLayout;
+  @include pageLayoutRowGap;
 
   .disclaimer {
     font-size: 18px;
@@ -38,12 +38,12 @@
     align-items: baseline;
     .select-currency {
       width: 100%;
-      height: 46px;
+      height: $input-height;
       box-sizing: border-box;
       background: transparent;
       opacity: 1;
       padding-left: 66px;
-      font-size: 18px;
+      font-size: $input-font-size;
       color: white;
       border-style: unset;
       border-bottom: solid 1px $grey;
@@ -70,13 +70,14 @@
       }
     }
     .symbol {
-      font-size: 20px;
-      padding: 11px;
-      border-radius: 8px 8px 0px 0px;
-      background: $black;
+      font-size: $input-font-size;
+      padding: 7px;
+      background: transparent;
       border: unset;
-      border-bottom: white solid 1px !important;
+      border-bottom: $grey solid 1px !important;
       cursor: not-allowed;
+      min-width: 50px;
+      flex: 1;
     }
   }
 }

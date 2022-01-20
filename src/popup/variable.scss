@@ -1,3 +1,4 @@
+//colors
 $red: #e31337;
 $red-dark: rgba(163, 17, 42, 1);
 $grey-transparent: rgba(255, 255, 255, 0.2);
@@ -9,6 +10,12 @@ $grey-dark: #6c757e;
 $message-container-success: $black;
 $message-container-info: black;
 $message-container-error: $red;
+
+//sizes
+$input-font-size: 16px;
+$input-height: 36px;
+$input-logo-size: 20px;
+$input-hint-font-size: 15px;
 
 @mixin pageLayout {
   display: flex;
