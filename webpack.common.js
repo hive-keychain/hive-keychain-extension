@@ -5,7 +5,6 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 const config = {
-  mode: 'development',
   entry: {
     popup: './src/popup/index.tsx',
     dialog: './src/dialog/index.tsx',
@@ -65,9 +64,6 @@ const config = {
       'react-dom': '@hot-loader/react-dom',
     },
     plugins: [new TsconfigPathsPlugin({ configFile: './tsconfig.json' })],
-  },
-  devServer: {
-    contentBase: './dist',
   },
   plugins: [
     new CopyPlugin({
