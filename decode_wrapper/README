@@ -1,6 +1,0 @@
-# Generating decode.min.js
-# Needs node/npm.
-# Needs browserify.
-
-npm install
-browserify decode_wrapper.js > decode.min.js
