@@ -68,7 +68,7 @@
     "@types/remote-redux-devtools": "^0.5.5",
     "babel-loader": "^8.0.2",
     "copy-webpack-plugin": "^10.2.0",
-    "css-loader": "^3.6.0",
+    "css-loader": "^6.5.1",
     "node-sass": "^7.0.1",
     "react-hot-loader": "^4.13.0",
     "remote-redux-devtools": "^0.5.16",
