@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "0.0.0",
+  "version": "2.0.0",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "npm outdated & webpack --config webpack.dev.js -w",
-    "build": "webpack --config webpack.prod.js",
+    "build": "rm -rf ./dist-prod & webpack --config webpack.prod.js",
     "doc": "documentation build js/hive_keychain.js -f md -c documentation.yml -o README.md"
   },
   "repository": {

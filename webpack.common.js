@@ -1,5 +1,4 @@
 const webpack = require('webpack');
-const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
@@ -14,7 +13,6 @@ const config = {
     web_interface: './src/content-scripts/web-interface/index.ts',
     keychainify: './src/content-scripts/keychainify/index.ts',
   },
-  output: { path: path.join(__dirname, 'dist'), filename: '[name]Bundle.js' },
   module: {
     rules: [
       {
