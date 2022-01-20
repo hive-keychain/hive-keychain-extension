@@ -31,7 +31,7 @@
     "@hiveio/hive-js": "^2.0.4",
     "@types/chrome": "^0.0.176",
     "@types/crypto-js": "^4.0.2",
-    "axios": "^0.21.1",
+    "axios": "^0.25.0",
     "crypto-js": "^4.1.1",
     "documentation": "^13.0.0",
     "flatlist-react": "^1.5.0",
