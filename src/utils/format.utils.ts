@@ -72,6 +72,10 @@ const hasMoreThanXDecimal = (number: number, decimal: number) => {
   return splitedNumber.length > 1 ? splitedNumber[1].length > decimal : false;
 };
 
+const toNumber = (value: string | Asset) => {
+  parseFloat(value.toString().split('')[0].trim());
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -79,6 +83,7 @@ const FormatUtils = {
   formatCurrencyValue,
   nFormatter,
   hasMoreThanXDecimal,
+  toNumber,
 };
 
 export default FormatUtils;
