@@ -15,4 +15,16 @@
     margin-top: 2px;
     font-size: $input-font-size;
   }
+
+  &.align-top {
+    .label {
+      margin-top: -2px;
+    }
+  }
+
+  &.align-center {
+    .checkbox-and-label {
+      align-items: center;
+    }
+  }
 }
