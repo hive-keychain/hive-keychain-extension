@@ -54,7 +54,7 @@ const AccountKeysList = ({
           accounts,
         );
         setAccounts(newAccounts);
-        loadActiveAccount(newAccounts[0], true);
+        loadActiveAccount(newAccounts[0]);
         removeFromLoadingList('html_popup_delete_account_operation');
       },
     });

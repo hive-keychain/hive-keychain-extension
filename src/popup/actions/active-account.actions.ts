@@ -5,13 +5,12 @@ import HiveUtils from 'src/utils/hive.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 
 export const refreshActiveAccount =
-  (initTransactions?: boolean): AppThunk =>
-  async (dispatch, getState) => {
+  (): AppThunk => async (dispatch, getState) => {
     const account = getState().accounts.find(
       (localAccount: LocalAccount) =>
         localAccount.name === getState().activeAccount.name,
     );
-    dispatch(loadActiveAccount(account, initTransactions));
+    dispatch(loadActiveAccount(account));
   };
 
 export const refreshKeys = (localAccount: LocalAccount) => {
@@ -24,15 +23,10 @@ export const refreshKeys = (localAccount: LocalAccount) => {
 };
 
 export const loadActiveAccount =
-  (account: LocalAccount, initTransactions?: boolean): AppThunk =>
+  (account: LocalAccount): AppThunk =>
   async (dispatch, getState) => {
     dispatch(refreshKeys(account));
     dispatch(getAccountRC(account.name));
-    // TODO : Remove initTransactions ?
-    initTransactions = false;
-    if (initTransactions) {
-      dispatch(initAccountTransactions(account.name));
-    }
     const extendedAccount = (
       await HiveUtils.getClient().database.getAccounts([account.name])
     )[0];

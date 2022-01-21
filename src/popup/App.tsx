@@ -50,7 +50,7 @@ const App = ({
 
   useEffect(() => {
     if (activeAccountUsername) {
-      refreshActiveAccount(true);
+      refreshActiveAccount();
     }
   }, [activeRpc]);
 
