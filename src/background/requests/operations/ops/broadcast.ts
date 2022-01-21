@@ -50,7 +50,6 @@ export const broadcastOperations = async (
         }
       }
     }
-    console.log(operations, key);
     result = await client.broadcast.sendOperations(
       operations,
       PrivateKey.from(key!),
