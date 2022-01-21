@@ -11,7 +11,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';

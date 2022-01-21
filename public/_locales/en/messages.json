@@ -1995,5 +1995,9 @@
   "html_popup_delete_key_confirm": {
     "message": "You are about to delete the $1 key for account @$2.<br/>Make sure you have a copy of this key before proceeding.",
     "description": "Confirmation message when deleting key"
+  },
+  "html_popup_using_authorized_account": {
+    "message": "Signing using $1's account",
+    "description": "In account's keys while using authorized account"
   }
 }

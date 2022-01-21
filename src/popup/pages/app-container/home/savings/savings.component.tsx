@@ -11,8 +11,8 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -29,6 +29,7 @@ import { PageTitleComponent } from 'src/common-ui/page-title/page-title.componen
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import './savings.component.scss';
 
@@ -85,15 +86,14 @@ const SavingsPage = ({
   ];
 
   useEffect(() => {
-    const hbdSavings = activeAccount.account.savings_hbd_balance
-      .toString()
-      .split(' ')[0];
-    const hiveSavings = activeAccount.account.savings_balance
-      .toString()
-      .split(' ')[0];
-
-    const hbd = activeAccount.account.hbd_balance.toString().split(' ')[0];
-    const hive = activeAccount.account.balance.toString().split(' ')[0];
+    const hbdSavings = FormatUtils.toNumber(
+      activeAccount.account.savings_hbd_balance,
+    );
+    const hiveSavings = FormatUtils.toNumber(
+      activeAccount.account.savings_balance,
+    );
+    const hbd = FormatUtils.toNumber(activeAccount.account.hbd_balance);
+    const hive = FormatUtils.toNumber(activeAccount.account.balance);
 
     setAvailable(selectedCurrency === 'hive' ? hive : hbd);
     setCurrent(selectedCurrency === 'hive' ? hiveSavings : hbdSavings);

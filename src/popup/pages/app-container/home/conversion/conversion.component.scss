@@ -53,13 +53,7 @@
     align-items: baseline;
 
     .currency {
-      font-size: 20px;
-      padding: 11px;
-      border-radius: 8px 8px 0px 0px;
-      background: $black;
-      border: unset;
-      border-bottom: white solid 1px !important;
-      cursor: not-allowed;
+      @include fake-input;
     }
   }
 }

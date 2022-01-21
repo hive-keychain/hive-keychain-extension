@@ -1,4 +1,5 @@
 import { removeKey, setAccounts } from '@popup/actions/account.actions';
+import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setInfoMessage } from '@popup/actions/message.actions';
 import {
   goBack,
@@ -9,8 +10,9 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { KeyType } from 'src/interfaces/keys.interface';
-import { Key } from 'src/interfaces/local-account.interface';
+import { Key, LocalAccount } from 'src/interfaces/local-account.interface';
 import { Screen } from 'src/reference-data/screen.enum';
+import KeysUtils from 'src/utils/keys.utils';
 import './account-keys-list-item.component.scss';
 
 export interface KeyListItemProps {
@@ -26,16 +28,25 @@ const AccountKeysListItem = ({
   keyName,
   keyType,
   activeAccount,
+  accounts,
   setInfoMessage,
   navigateToWithParams,
   removeKey,
   goBack,
+  loadActiveAccount,
 }: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
+  const [isAuthorizedAccount, setIsAuthorizedAccount] = useState(false);
 
   useEffect(() => {
     setIsPrivateHidden(true);
   }, [activeAccount]);
+
+  useEffect(() => {
+    if (publicKey) {
+      setIsAuthorizedAccount(KeysUtils.isAuthorizedAccount(publicKey));
+    }
+  }, [publicKey]);
 
   const copyToClipboard = (key: Key | undefined) => {
     if (key) {
@@ -59,6 +70,16 @@ const AccountKeysListItem = ({
     });
   };
 
+  const goToAccount = (publicKey: Key) => {
+    const nextAccount = accounts.find(
+      (localAccount: LocalAccount) =>
+        localAccount.name === publicKey!.toString().split('@')[1],
+    );
+    if (nextAccount) {
+      loadActiveAccount(nextAccount);
+    }
+  };
+
   return (
     <div className="account-keys-list-item">
       <div className="top-panel">
@@ -73,24 +94,37 @@ const AccountKeysListItem = ({
       </div>
       {publicKey && privateKey ? (
         <div className="keys-panel">
-          <div
-            className={`private-key key-field ${
-              isPrivateHidden ? 'hidden' : 'show'
-            }`}
-            onClick={() =>
-              isPrivateHidden
-                ? setIsPrivateHidden(false)
-                : copyToClipboard(privateKey)
-            }>
-            {isPrivateHidden
-              ? chrome.i18n.getMessage('popup_accounts_reveal_private')
-              : privateKey}
-          </div>
-          <div
-            className="public-key key-field"
-            onClick={() => copyToClipboard(publicKey)}>
-            {publicKey}
-          </div>
+          {!isAuthorizedAccount && (
+            <>
+              <div
+                className={`private-key key-field ${
+                  isPrivateHidden ? 'hidden' : 'show'
+                }`}
+                onClick={() =>
+                  isPrivateHidden
+                    ? setIsPrivateHidden(false)
+                    : copyToClipboard(privateKey)
+                }>
+                {isPrivateHidden
+                  ? chrome.i18n.getMessage('popup_accounts_reveal_private')
+                  : privateKey}
+              </div>
+              <div
+                className="public-key key-field"
+                onClick={() => copyToClipboard(publicKey)}>
+                {publicKey}
+              </div>
+            </>
+          )}
+          {isAuthorizedAccount && (
+            <div
+              className="using-authorized-account"
+              onClick={() => goToAccount(publicKey)}>
+              {chrome.i18n.getMessage('html_popup_using_authorized_account', [
+                publicKey,
+              ])}
+            </div>
+          )}
         </div>
       ) : (
         <span
@@ -106,7 +140,10 @@ const AccountKeysListItem = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts, activeAccount: state.activeAccount };
+  return {
+    accounts: state.accounts as LocalAccount[],
+    activeAccount: state.activeAccount,
+  };
 };
 
 const connector = connect(mapStateToProps, {
@@ -115,6 +152,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   removeKey,
   goBack,
+  loadActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector> & KeyListItemProps;
 

@@ -15,7 +15,7 @@
     }
 
     .remove-button {
-      color: $red-dark;
+      color: white;
       cursor: pointer;
       font-size: 26px;
     }
@@ -33,6 +33,11 @@
       &.hidden {
         font-size: 14px;
       }
+    }
+
+    .using-authorized-account {
+      cursor: pointer;
+      font-size: 14px;
     }
   }
 

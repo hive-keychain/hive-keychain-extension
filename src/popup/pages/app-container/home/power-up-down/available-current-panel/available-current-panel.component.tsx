@@ -1,7 +1,8 @@
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import './power-up-down-top-panel.component.scss';
+import FormatUtils from 'src/utils/format.utils';
+import './available-current-panel.component.scss';
 
 interface PanelProps {
   current?: number | string;
@@ -28,7 +29,7 @@ const AvailableCurrentPanel = ({
             {chrome.i18n.getMessage(currentLabel!)}
           </div>
           <div className="current-value">
-            {current} {currentCurrency}
+            {FormatUtils.formatCurrencyValue(current)} {currentCurrency}
           </div>
         </div>
       )}
@@ -37,7 +38,7 @@ const AvailableCurrentPanel = ({
           {chrome.i18n.getMessage(availableLabel)}
         </div>
         <div className="available-value">
-          {available} {availableCurrency}
+          {FormatUtils.formatCurrencyValue(available)} {availableCurrency}
         </div>
       </div>
     </div>
