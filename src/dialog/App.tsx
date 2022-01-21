@@ -23,13 +23,9 @@ const App = () => {
   const renderDialogContent = () => {
     switch (data.command) {
       case DialogCommand.UNLOCK:
+        return <Unlock data={data} />;
       case DialogCommand.WRONG_MK:
-        return (
-          <Unlock
-            data={data}
-            wrongMk={data.command === DialogCommand.WRONG_MK}
-          />
-        );
+        return <Unlock data={data} wrongMk index={Math.random()} />;
       case DialogCommand.SEND_DIALOG_ERROR:
         return <DialogError data={data} />;
       case DialogCommand.REGISTER:

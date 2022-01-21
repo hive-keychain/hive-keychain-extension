@@ -11,7 +11,6 @@ type ResultMessage = {
 };
 
 const RequestResponse = ({ data }: Props) => {
-  console.log(data);
   return (
     <>
       <DialogHeader

@@ -21,7 +21,7 @@ const Broadcast = (props: Props) => {
 
   return (
     <Operation
-      title={chrome.i18n.getMessage('dialog_title_sign_tx')}
+      title={chrome.i18n.getMessage('dialog_title_broadcast')}
       {...props}
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />

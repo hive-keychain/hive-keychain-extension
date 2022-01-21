@@ -64,17 +64,16 @@ const chromeMessageHandler = async (
       const { mk, domain, data, tab } = backgroundMessage.value;
       if (await MkUtils.login(mk)) {
         MkModule.saveMk(mk);
-        init(data, tab, domain);
+        init(data.msg.data, tab, domain);
       } else {
         chrome.runtime.sendMessage({
+          ...data,
           command: DialogCommand.WRONG_MK,
         });
       }
-
       break;
     }
     case BackgroundCommand.REGISTER_FROM_DIALOG: {
-      Logger.log('Registrating from dialog');
       const { mk, domain, data, tab } = backgroundMessage.value;
       MkModule.saveMk(mk);
 
