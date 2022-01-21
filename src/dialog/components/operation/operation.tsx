@@ -1,10 +1,12 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import React, { useState } from 'react';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
-import FooterButton from 'src/dialog/components/footer-button/footer-button';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
 import './operation.scss';
 
@@ -82,6 +84,7 @@ const Operation = ({
               onChange={setKeep}
               checked={keep}
               skipTranslation
+              alignment={true}
               title={
                 checkboxLabelOverride ||
                 chrome.i18n.getMessage('dialog_no_prompt', [
@@ -94,16 +97,16 @@ const Operation = ({
           )}
         </div>
         <div className={`operation_buttons ${loading ? 'hide' : ''}`}>
-          <FooterButton
+          <ButtonComponent
+            label="dialog_confirm"
+            onClick={onConfirm || genericOnConfirm}
+          />
+          <ButtonComponent
             label="dialog_cancel"
-            grey
+            type={ButtonType.RAISED}
             onClick={() => {
               window.close();
             }}
-          />
-          <FooterButton
-            label="dialog_confirm"
-            onClick={onConfirm || genericOnConfirm}
           />
         </div>
       </div>
