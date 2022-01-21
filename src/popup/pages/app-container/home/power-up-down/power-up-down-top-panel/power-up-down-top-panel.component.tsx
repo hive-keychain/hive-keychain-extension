@@ -4,10 +4,10 @@ import { connect, ConnectedProps } from 'react-redux';
 import './power-up-down-top-panel.component.scss';
 
 interface PanelProps {
-  current: number | string;
+  current?: number | string;
   available: number | string;
-  currentLabel: string;
-  currentCurrency: string;
+  currentLabel?: string;
+  currentCurrency?: string;
   availableLabel: string;
   availableCurrency: string;
 }
@@ -22,14 +22,16 @@ const AvailableCurrentPanel = ({
 }: PropsType) => {
   return (
     <div className="power-up-down-top-panel">
-      <div className="current panel-row">
-        <div className="current-title">
-          {chrome.i18n.getMessage(currentLabel)}
+      {current && (
+        <div className="current panel-row">
+          <div className="current-title">
+            {chrome.i18n.getMessage(currentLabel!)}
+          </div>
+          <div className="current-value">
+            {current} {currentCurrency}
+          </div>
         </div>
-        <div className="current-value">
-          {current} {currentCurrency}
-        </div>
-      </div>
+      )}
       <div className="available panel-row">
         <div className="available-title">
           {chrome.i18n.getMessage(availableLabel)}

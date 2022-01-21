@@ -13,6 +13,7 @@ import {
 } from '@popup/actions/navigation.actions';
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { Icons } from '@popup/icons.enum';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select, {
@@ -78,8 +79,8 @@ const TransferFunds = ({
     useState<string[]>([]);
 
   let balances = {
-    hive: FormatUtils.formatCurrencyValue(activeAccount.account.balance),
-    hbd: FormatUtils.formatCurrencyValue(activeAccount.account.hbd_balance),
+    hive: FormatUtils.toNumber(activeAccount.account.balance),
+    hbd: FormatUtils.toNumber(activeAccount.account.hbd_balance),
     hp: 0,
   };
 
@@ -272,15 +273,12 @@ const TransferFunds = ({
         isBackButtonEnabled={true}
       />
       <div className="transfer-funds-page">
-        <div className="balance-panel">
-          <div className="balance-label">
-            {chrome.i18n.getMessage(
-              'popup_html_balance',
-              currencyLabels[selectedCurrency],
-            )}
-          </div>
-          <div className="balance-value">{balance}</div>
-        </div>
+        <AvailableCurrentPanelComponent
+          available={FormatUtils.formatCurrencyValue(balance.toString())}
+          availableCurrency={currencyLabels[selectedCurrency]}
+          availableLabel={'popup_html_balance'}
+        />
+
         <InputComponent
           type={InputType.TEXT}
           logo={Icons.AT}
@@ -316,6 +314,7 @@ const TransferFunds = ({
           value={memo}
           onChange={setMemo}
         />
+
         <CheckboxComponent
           title="popup_html_recurrent_transfer"
           checked={isRecurrent}

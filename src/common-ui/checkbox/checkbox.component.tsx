@@ -2,7 +2,7 @@ import { Checkbox } from 'pretty-checkbox-react';
 import React from 'react';
 import './checkbox.component.scss';
 
-enum LabelAlignment {
+export enum LabelAlignment {
   CENTER = 'align-center',
   TOP = 'align-top',
 }
@@ -14,7 +14,7 @@ interface CheckboxProps {
   skipTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  alignment?: boolean;
+  alignment?: LabelAlignment;
 }
 
 const CheckboxComponent = (props: CheckboxProps) => {
