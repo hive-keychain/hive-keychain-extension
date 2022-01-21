@@ -1,5 +1,6 @@
 import * as Hive from '@hiveio/dhive';
 import { Account } from '@hiveio/dhive';
+import { Key } from '@interfaces/local-account.interface';
 import { Keys } from 'src/interfaces/keys.interface';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
@@ -82,7 +83,12 @@ const hasMemo = (keys: Keys): boolean => {
   return keys.memo !== undefined;
 };
 
+const isAuthorizedAccount = (key: Key): boolean => {
+  return key!.toString().startsWith('@');
+};
+
 const KeysUtils = {
+  isAuthorizedAccount,
   getPublicKeyFromPrivateKeyString,
   getPubkeyWeight,
   derivateFromMasterPassword,
