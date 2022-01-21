@@ -11,6 +11,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -50,12 +51,8 @@ const Conversion = ({
       : currencyLabels.hbd;
 
   useEffect(() => {
-    const hiveBalance = FormatUtils.formatCurrencyValue(
-      activeAccount.account.balance,
-    );
-    const hbdBalance = FormatUtils.formatCurrencyValue(
-      activeAccount.account.hbd_balance,
-    );
+    const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
+    const hbdBalance = FormatUtils.toNumber(activeAccount.account.hbd_balance);
 
     setAvailable(
       conversionType === ConversionType.CONVERT_HIVE_TO_HBD
@@ -78,13 +75,7 @@ const Conversion = ({
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
-    const operationString = chrome.i18n
-      .getMessage(
-        conversionType === ConversionType.CONVERT_HIVE_TO_HBD
-          ? 'popup_html_convert_hive'
-          : 'popup_html_convert_hbd',
-      )
-      .toLowerCase();
+
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
@@ -139,6 +130,11 @@ const Conversion = ({
   return (
     <div className="conversion-page">
       <PageTitleComponent title={title} isBackButtonEnabled={true} />
+      <AvailableCurrentPanelComponent
+        available={available}
+        availableCurrency={currency}
+        availableLabel={'popup_html_available'}
+      />
       <div className="text">{chrome.i18n.getMessage(text)}</div>
 
       <div className="amount-panel">

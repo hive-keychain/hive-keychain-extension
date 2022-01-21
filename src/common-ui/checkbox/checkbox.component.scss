@@ -8,6 +8,11 @@
     .pretty {
       margin-right: 16px;
     }
+
+    .label {
+      cursor: pointer;
+      user-select: none;
+    }
   }
 
   .hint {

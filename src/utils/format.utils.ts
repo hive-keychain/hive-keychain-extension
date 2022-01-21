@@ -73,7 +73,7 @@ const hasMoreThanXDecimal = (number: number, decimal: number) => {
 };
 
 const toNumber = (value: string | Asset) => {
-  parseFloat(value.toString().split('')[0].trim());
+  return parseFloat(value.toString().split(' ')[0].trim());
 };
 
 const FormatUtils = {

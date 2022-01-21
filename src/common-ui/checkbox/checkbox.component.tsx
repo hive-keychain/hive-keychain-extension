@@ -2,7 +2,7 @@ import { Checkbox } from 'pretty-checkbox-react';
 import React from 'react';
 import './checkbox.component.scss';
 
-enum LabelAlignment {
+export enum LabelAlignment {
   CENTER = 'align-center',
   TOP = 'align-top',
 }
@@ -14,7 +14,7 @@ interface CheckboxProps {
   skipTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  alignment?: boolean;
+  alignment?: LabelAlignment;
 }
 
 const CheckboxComponent = (props: CheckboxProps) => {
@@ -27,7 +27,7 @@ const CheckboxComponent = (props: CheckboxProps) => {
         <Checkbox
           checked={props.checked}
           onChange={() => props.onChange(!props.checked)}></Checkbox>
-        <div className="label">
+        <div className="label" onClick={() => props.onChange(!props.checked)}>
           {props.skipTranslation
             ? props.title
             : chrome.i18n.getMessage(props.title ?? '')}
