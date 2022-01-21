@@ -18,13 +18,13 @@ export const broadcastOperations = async (
   const client = getRequestHandler().getHiveClient();
   const key = getRequestHandler().key;
 
-  let operations: Operation[] =
-    typeof data.operations === 'string'
-      ? JSON.parse(data.operations)
-      : data.operations;
-
   // check if operations contains any transfer wich requires memo encryption
   try {
+    let operations: Operation[] =
+      typeof data.operations === 'string'
+        ? JSON.parse(data.operations)
+        : data.operations;
+
     for (const op of operations) {
       if (op[0] === 'transfer') {
         const memo = op[1].memo;
@@ -40,9 +40,17 @@ export const broadcastOperations = async (
           const memoReceiver = receiver[0].memo_key;
           op[1].memo = HiveUtils.encodeMemo(memo, memoKey, memoReceiver);
         }
+      } else if (
+        op[0] === 'update_proposal_votes' ||
+        op[0] === 'create_proposal' ||
+        op[0] === 'remove_proposal'
+      ) {
+        if (!op[1].extensions) {
+          op[1].extensions = [];
+        }
       }
     }
-
+    console.log(operations, key);
     result = await client.broadcast.sendOperations(
       operations,
       PrivateKey.from(key!),
