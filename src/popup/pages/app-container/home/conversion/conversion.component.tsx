@@ -131,7 +131,7 @@ const Conversion = ({
     <div className="conversion-page">
       <PageTitleComponent title={title} isBackButtonEnabled={true} />
       <AvailableCurrentPanelComponent
-        available={available}
+        available={FormatUtils.formatCurrencyValue(available)}
         availableCurrency={currency}
         availableLabel={'popup_html_available'}
       />
