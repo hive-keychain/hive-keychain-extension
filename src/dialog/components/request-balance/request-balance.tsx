@@ -43,7 +43,7 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
       content={
         balance.length
           ? parseFloat(newBalance) < 0
-            ? `Insufficient funds`
+            ? chrome.i18n.getMessage('dialog_insufficient_balance')
             : `${balance} => ${newBalance}`
           : '...'
       }

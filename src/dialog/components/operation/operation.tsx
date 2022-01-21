@@ -107,6 +107,7 @@ const Operation = ({
             }}
           />
           <ButtonComponent
+            type={ButtonType.RAISED}
             label="dialog_confirm"
             onClick={onConfirm || genericOnConfirm}
           />

@@ -66,7 +66,11 @@ export default ({ data, wrongMk, index }: Props) => {
       />
       <p>{wrongMk && chrome.i18n.getMessage('dialog_header_wrong_pwd')}</p>
 
-      <ButtonComponent label={'dialog_unlock'} onClick={login} />
+      <ButtonComponent
+        label={'dialog_unlock'}
+        onClick={login}
+        type={ButtonType.RAISED}
+      />
       <ButtonComponent
         label={'dialog_cancel'}
         type={ButtonType.STROKED}

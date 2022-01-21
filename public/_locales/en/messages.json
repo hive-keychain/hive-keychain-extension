@@ -1263,6 +1263,9 @@
   "bgd_ops_transfer_adjust_balance": {
     "message": "Insufficient $1 balance on account @$2."
   },
+  "dialog_insufficient_balance": {
+    "message": "Insufficient funds"
+  },
   "bgd_ops_transfer_get_account": {
     "message": "Cannot find account @$1."
   },

@@ -23,8 +23,13 @@ const RequestTokenBalance = ({ username, amount, currency }: Props) => {
   return (
     <RequestItem
       title="dialog_balance"
-      content={balance.length ? `${balance} => ${newBalance}` : '...'}
-      red={parseFloat(newBalance) < 0}
+      content={
+        balance.length
+          ? parseFloat(newBalance) < 0
+            ? chrome.i18n.getMessage('dialog_insufficient_balance')
+            : `${balance} => ${newBalance}`
+          : '...'
+      }
     />
   );
 };
