@@ -4,7 +4,9 @@ import React, { useState } from 'react';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import CheckboxComponent, {
+  LabelAlignment,
+} from 'src/common-ui/checkbox/checkbox.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
 import RequestUsername from 'src/dialog/components/request-username/request-username';
@@ -84,7 +86,7 @@ const Operation = ({
               onChange={setKeep}
               checked={keep}
               skipTranslation
-              alignment={true}
+              alignment={LabelAlignment.CENTER}
               title={
                 checkboxLabelOverride ||
                 chrome.i18n.getMessage('dialog_no_prompt', [
@@ -103,7 +105,7 @@ const Operation = ({
           />
           <ButtonComponent
             label="dialog_cancel"
-            type={ButtonType.RAISED}
+            type={ButtonType.STROKED}
             onClick={() => {
               window.close();
             }}
