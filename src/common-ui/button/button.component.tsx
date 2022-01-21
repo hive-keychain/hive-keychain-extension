@@ -18,9 +18,7 @@ interface ButtonProps {
 const ButtonComponent = (props: ButtonProps) => {
   return (
     <button
-      className={`submit-button ${
-        props.type ? props.type : ButtonType.STROKED
-      }`}
+      className={`submit-button ${props.type ? props.type : ButtonType.RAISED}`}
       onClick={props.onClick}>
       <div className="button-label">
         {chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
