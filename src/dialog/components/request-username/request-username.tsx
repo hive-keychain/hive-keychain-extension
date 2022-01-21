@@ -12,7 +12,12 @@ type Props = {
 };
 
 const RequestUsername = ({ accounts, username, setUsername }: Props) => {
-  const customLabelRender = (selectProps: SelectRenderer<string>) => {
+  const accountsList = accounts.map((e) => ({ label: e, value: e }));
+
+  //TODO : Fix dropdown
+  const customLabelRender = (
+    selectProps: SelectRenderer<typeof accountsList[0]>,
+  ) => {
     return (
       <div
         className="selected-account-panel"
@@ -23,34 +28,30 @@ const RequestUsername = ({ accounts, username, setUsername }: Props) => {
       </div>
     );
   };
-  const customItemRender = (selectProps: SelectItemRenderer<string>) => {
+
+  const customItemRender = (
+    selectProps: SelectItemRenderer<typeof accountsList[0]>,
+  ) => {
     return (
-      <div
-        className={`select-account-item ${
-          username === selectProps.item ? 'selected' : ''
-        }`}
-        onClick={() => {
-          setUsername(selectProps.item);
-          selectProps.methods.dropDown('close');
-        }}>
-        <div className="account-name">{selectProps.item}</div>
+      <div>
+        <div className="account-name">{selectProps.item.label}</div>
       </div>
     );
   };
-
+  if (!accountsList.length) return null;
+  console.log(accountsList);
   return (
-    <>
-      <div className="select-account-section">
-        <Select
-          values={[username]}
-          options={accounts!}
-          onChange={() => undefined}
-          contentRenderer={customLabelRender}
-          itemRenderer={customItemRender}
-          className="select-account-select"
-        />
-      </div>
-    </>
+    <div className="select-account-section">
+      <Select
+        values={[{ label: username, value: username }]}
+        options={accountsList!}
+        onChange={(e) => {
+          setUsername(e[0].value);
+        }}
+        contentRenderer={customLabelRender}
+        className="select-account-select"
+      />
+    </div>
   );
 };
 
