@@ -9,6 +9,7 @@
     padding: 0 32px 0 32px;
     cursor: pointer;
     box-sizing: border-box;
+    user-select: none;
 
     &:hover {
       background-color: rgba(56, 63, 70, 0.68);
