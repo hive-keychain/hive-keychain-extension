@@ -27,7 +27,7 @@ const CheckboxComponent = (props: CheckboxProps) => {
         <Checkbox
           checked={props.checked}
           onChange={() => props.onChange(!props.checked)}></Checkbox>
-        <div className="label">
+        <div className="label" onClick={() => props.onChange(!props.checked)}>
           {props.skipTranslation
             ? props.title
             : chrome.i18n.getMessage(props.title ?? '')}
