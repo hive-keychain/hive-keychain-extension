@@ -86,13 +86,15 @@ const InputComponent = (props: InputProps) => {
           {Icons.HIDDEN}
         </span>
       )}
-      {props.type !== InputType.PASSWORD && props.value.length > 0 && (
-        <span
-          className={'material-icons-outlined input-img erase '}
-          onClick={() => props.onChange('')}>
-          {Icons.CLEAR}
-        </span>
-      )}
+      {props.type !== InputType.PASSWORD &&
+        !props.onSetToMaxClicked &&
+        props.value.length > 0 && (
+          <span
+            className={'material-icons-outlined input-img erase '}
+            onClick={() => props.onChange('')}>
+            {Icons.CLEAR}
+          </span>
+        )}
       {isFocused && filteredValues && filteredValues.length > 0 && (
         <div className="autocomplete-panel">
           {filteredValues.map((val, index) => (
