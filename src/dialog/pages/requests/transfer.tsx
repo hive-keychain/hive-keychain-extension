@@ -6,6 +6,7 @@ import RequestBalance from 'src/dialog/components/request-balance/request-balanc
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
 import { useTransferCheck } from 'src/dialog/hooks/transfer-check';
+import CurrencyUtils from 'src/utils/currency.utils';
 
 type Props = {
   data: RequestTransfer & RequestId;
@@ -49,7 +50,10 @@ const Transfer = (props: Props) => {
       <RequestItem title="dialog_to" content={`@${data.to}`} />
       <RequestItem
         title="dialog_amount"
-        content={`${data.amount} ${data.currency}`}
+        content={`${data.amount} ${CurrencyUtils.getCurrencyLabel(
+          data.currency,
+          rpc.testnet,
+        )}`}
       />
       <RequestBalance
         username={anonymousProps.username}

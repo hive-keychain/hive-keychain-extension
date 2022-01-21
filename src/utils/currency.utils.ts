@@ -2,6 +2,9 @@ export interface CurrencyLabels {
   hive: string;
   hbd: string;
   hp: string;
+  tests: string;
+  tbd: string;
+  tp: string;
 }
 
 export enum BaseCurrencies {
@@ -14,6 +17,9 @@ const getCurrencyLabels = (isTestnet: boolean): CurrencyLabels => {
     hive: isTestnet ? 'TESTS' : 'HIVE',
     hbd: isTestnet ? 'TBD' : 'HBD',
     hp: isTestnet ? 'TP' : 'HP',
+    tests: 'TESTS',
+    tbd: 'TBD',
+    tp: 'TP',
   };
 };
 

@@ -40,8 +40,13 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
   return (
     <RequestItem
       title="dialog_balance"
-      content={balance.length ? `${balance} => ${newBalance}` : '...'}
-      red={parseFloat(newBalance) < 0}
+      content={
+        balance.length
+          ? parseFloat(newBalance) < 0
+            ? `Insufficient funds`
+            : `${balance} => ${newBalance}`
+          : '...'
+      }
     />
   );
 };
