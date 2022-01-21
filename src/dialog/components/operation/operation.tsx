@@ -100,15 +100,15 @@ const Operation = ({
         </div>
         <div className={`operation_buttons ${loading ? 'hide' : ''}`}>
           <ButtonComponent
-            label="dialog_confirm"
-            onClick={onConfirm || genericOnConfirm}
-          />
-          <ButtonComponent
             label="dialog_cancel"
             type={ButtonType.STROKED}
             onClick={() => {
               window.close();
             }}
+          />
+          <ButtonComponent
+            label="dialog_confirm"
+            onClick={onConfirm || genericOnConfirm}
           />
         </div>
       </div>
