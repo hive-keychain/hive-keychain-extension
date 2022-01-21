@@ -39,7 +39,7 @@ const RequestUsername = ({ accounts, username, setUsername }: Props) => {
     );
   };
   if (!accountsList.length) return null;
-  console.log(accountsList);
+
   return (
     <div className="select-account-section">
       <Select
