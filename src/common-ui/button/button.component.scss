@@ -17,6 +17,15 @@
     bottom: 10px;
   }
 
+  &.default {
+    background: transparent;
+    border: 1px solid white;
+    &:hover {
+      background: white;
+      color: black;
+    }
+  }
+
   &.stroked {
     background: transparent;
     border: 1px solid white;
@@ -27,12 +36,13 @@
   }
 
   &.important {
-    background: $grey;
-    color: white;
+    background: white;
+    color: black;
     border: none;
 
     &:hover {
       background: $red-dark;
+      color: white;
     }
   }
 

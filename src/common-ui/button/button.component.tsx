@@ -5,6 +5,7 @@ export enum ButtonType {
   STROKED = 'stroked',
   RAISED = 'raised',
   IMPORTANT = 'important',
+  DEFAULT = 'default',
 }
 
 interface ButtonProps {
@@ -18,7 +19,9 @@ interface ButtonProps {
 const ButtonComponent = (props: ButtonProps) => {
   return (
     <button
-      className={`submit-button ${props.type ? props.type : ButtonType.RAISED}`}
+      className={`submit-button ${
+        props.type ? props.type : ButtonType.DEFAULT
+      }`}
       onClick={props.onClick}>
       <div className="button-label">
         {chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
