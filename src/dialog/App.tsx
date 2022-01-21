@@ -11,6 +11,7 @@ const App = () => {
   useEffect(() => {
     chrome.runtime.onMessage.addListener(function (data, sender, sendResp) {
       if (data.command === DialogCommand.READY) {
+        console.log('ready', new Date());
         sendResp(true);
       } else {
         setData(data);
@@ -21,6 +22,7 @@ const App = () => {
   const [data, setData] = useState<any>({});
 
   const renderDialogContent = () => {
+    console.log(data.command, new Date());
     switch (data.command) {
       case DialogCommand.UNLOCK:
         return <Unlock data={data} />;

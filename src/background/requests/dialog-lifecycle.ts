@@ -23,9 +23,11 @@ export const createPopup = (
         width: width,
         left: w.width! - width + w.left!,
         top: w.top,
+        focused: true,
       },
       (win) => {
         if (!win) return;
+        console.log(new Date());
         getRequestHandler().setWindowId(win.id);
         waitUntilDialogIsReady(100, callback);
       },
