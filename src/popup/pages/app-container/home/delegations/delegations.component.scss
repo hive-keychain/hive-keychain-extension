@@ -77,14 +77,7 @@
     align-items: baseline;
 
     .currency {
-      font-size: $input-font-size;
-      padding: 7px;
-      background: transparent;
-      border: unset;
-      border-bottom: $grey solid 1px !important;
-      cursor: not-allowed;
-      min-width: 50px;
-      flex: 1;
+      @include fake-input;
     }
   }
 }

@@ -14,6 +14,7 @@ import {
 } from '@popup/actions/navigation.actions';
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { Icons } from '@popup/icons.enum';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -208,12 +209,10 @@ const TokensTransfer = ({
         title="popup_html_transfer_funds"
         isBackButtonEnabled={true}
       />
-      <div className="balance-panel">
-        <div className="balance-label">
-          {chrome.i18n.getMessage('popup_html_balance', symbol)}
-        </div>
-        <div className="balance-value">{balance}</div>
-      </div>
+      <AvailableCurrentPanelComponent
+        available={balance}
+        availableCurrency={symbol}
+        availableLabel={'popup_html_balance'}></AvailableCurrentPanelComponent>
 
       <div className="disclaimer">
         {chrome.i18n.getMessage('popup_html_tokens_send_text')}

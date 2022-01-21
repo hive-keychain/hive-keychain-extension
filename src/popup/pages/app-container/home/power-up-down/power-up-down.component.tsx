@@ -12,8 +12,8 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
+import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down-top-panel/power-up-down-top-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -81,9 +81,7 @@ const PowerUpDown = ({
     powerType === PowerType.POWER_UP ? currencyLabels.hive : currencyLabels.hp;
 
   useEffect(() => {
-    const hiveBalance = FormatUtils.formatCurrencyValue(
-      activeAccount.account.balance,
-    );
+    const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
 
     let totalOutgoingVestingShares = 0;
     for (const delegation of delegations.outgoing) {
@@ -92,20 +90,18 @@ const PowerUpDown = ({
       );
     }
 
-    const hpBalance = FormatUtils.withCommas(
-      (
-        FormatUtils.toHP(
-          (
-            parseFloat(
-              activeAccount.account.vesting_shares
-                .toString()
-                .replace('VESTS', ''),
-            ) - totalOutgoingVestingShares
-          ).toString(),
-          globalProperties.globals,
-        ) - (powerType === PowerType.POWER_UP ? 0 : 5)
-      ).toString(),
-    );
+    const hpBalance = (
+      FormatUtils.toHP(
+        (
+          parseFloat(
+            activeAccount.account.vesting_shares
+              .toString()
+              .replace('VESTS', ''),
+          ) - totalOutgoingVestingShares
+        ).toString(),
+        globalProperties.globals,
+      ) - (powerType === PowerType.POWER_UP ? 0 : 5)
+    ).toFixed(3);
 
     setAvailable(powerType === PowerType.POWER_UP ? hiveBalance : hpBalance);
     setCurrent(powerType === PowerType.POWER_UP ? hpBalance : hiveBalance);
@@ -191,7 +187,6 @@ const PowerUpDown = ({
     });
   };
 
-  // TODO : Fix setToMax => Real Value in state + Format in html
   const setToMax = () => {
     setValue(available);
   };
