@@ -4,6 +4,7 @@ import React from 'react';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import { useAnonymousRequest } from 'src/dialog/hooks/anonymous-requests';
+import CurrencyUtils from 'src/utils/currency.utils';
 
 type Props = {
   data: RequestDelegation & RequestId;
@@ -14,7 +15,7 @@ type Props = {
 };
 
 const Delegation = (props: Props) => {
-  const { data, accounts } = props;
+  const { data, accounts, rpc } = props;
   const anonymousProps = useAnonymousRequest(data, accounts);
   const renderUsername = () => {
     return !accounts ? (
@@ -32,7 +33,10 @@ const Delegation = (props: Props) => {
       <RequestItem title="dialog_delegatee" content={`@${data.delegatee}`} />
       <RequestItem
         title="dialog_amount"
-        content={`${data.amount} ${data.unit}`}
+        content={`${data.amount} ${CurrencyUtils.getCurrencyLabel(
+          data.unit,
+          rpc.testnet,
+        )}`}
       />
     </Operation>
   );

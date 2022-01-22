@@ -3,6 +3,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import CurrencyUtils from 'src/utils/currency.utils';
 
 type Props = {
   data: RequestPowerUp & RequestId;
@@ -12,7 +13,7 @@ type Props = {
 };
 
 const PowerUp = (props: Props) => {
-  const { data } = props;
+  const { data, rpc } = props;
 
   return (
     <Operation
@@ -20,7 +21,13 @@ const PowerUp = (props: Props) => {
       {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem title="dialog_to" content={`@${data.recipient}`} />
-      <RequestItem title="dialog_amount" content={`${data.hive} HIVE`} />
+      <RequestItem
+        title="dialog_amount"
+        content={`${data.hive} ${CurrencyUtils.getCurrencyLabel(
+          'HIVE',
+          rpc.testnet,
+        )}`}
+      />
     </Operation>
   );
 };

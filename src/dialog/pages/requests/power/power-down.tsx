@@ -3,6 +3,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
 import Operation from 'src/dialog/components/operation/operation';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import CurrencyUtils from 'src/utils/currency.utils';
 
 type Props = {
   data: RequestPowerDown & RequestId;
@@ -12,14 +13,20 @@ type Props = {
 };
 
 const PowerDown = (props: Props) => {
-  const { data } = props;
+  const { data, rpc } = props;
 
   return (
     <Operation
       title={chrome.i18n.getMessage('dialog_title_powerdown')}
       {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
-      <RequestItem title="dialog_amount" content={`${data.hive_power} HP`} />
+      <RequestItem
+        title="dialog_amount"
+        content={`${data.hive_power} ${CurrencyUtils.getCurrencyLabel(
+          'HP',
+          rpc.testnet,
+        )}`}
+      />
     </Operation>
   );
 };
