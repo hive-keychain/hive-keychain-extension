@@ -14,7 +14,6 @@ type Props = {
 const RequestUsername = ({ accounts, username, setUsername }: Props) => {
   const accountsList = accounts.map((e) => ({ label: e, value: e }));
 
-  //TODO : Fix dropdown
   const customLabelRender = (
     selectProps: SelectRenderer<typeof accountsList[0]>,
   ) => {

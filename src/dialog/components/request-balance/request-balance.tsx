@@ -24,9 +24,7 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
         },
       );
 
-      console.log(rpc);
       client.database.getAccounts([username]).then((accounts) => {
-        console.log(accounts);
         const account = accounts[0];
         const currencyParsed = CurrencyUtils.getCurrencyLabel(
           currency,
