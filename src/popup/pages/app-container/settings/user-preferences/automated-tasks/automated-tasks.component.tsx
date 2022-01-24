@@ -28,7 +28,6 @@ const AutomatedTasks = ({
   );
 
   useEffect(() => {
-    console.log('init');
     init();
     setOptions(
       accounts.map((account: LocalAccount) => {

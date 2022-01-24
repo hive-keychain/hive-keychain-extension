@@ -7,6 +7,7 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
   let result,
@@ -23,7 +24,6 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
       data.username!,
       KeychainKeyTypesLC.active,
     );
-    console.log(key);
     let memo = data.memo || '';
     if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
       const receiver = (await client.database.getAccounts([to]))[0];
@@ -45,7 +45,7 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
       PrivateKey.from(key!),
     );
   } catch (e) {
-    console.log(e);
+    Logger.error(e);
     if (typeof e === 'string') {
       const message = createMessage(
         true,

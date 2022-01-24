@@ -55,16 +55,6 @@ export const convert = async (data: RequestConvert & RequestId) => {
     }
   } else {
     try {
-      console.log('convert', {
-        owner: username,
-        requestid,
-      });
-      console.log({
-        amount: `${amount} ${CurrencyUtils.getCurrencyLabel(
-          'HBD',
-          rpc!.testnet,
-        )}`,
-      });
       result = await client.broadcast.sendOperations(
         [
           [

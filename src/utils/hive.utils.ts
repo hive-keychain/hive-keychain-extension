@@ -361,7 +361,7 @@ const transfer = async (
     }
     return true;
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     return false;
   }
 };
@@ -391,7 +391,7 @@ const convertOperation = async (
     );
     return true;
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     return false;
   }
 };
@@ -512,7 +512,7 @@ const delegateVestingShares = async (
 
     return true;
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     return false;
   }
 };
@@ -576,7 +576,7 @@ const voteForProposal = async (
     },
     { active: PrivateKey.fromString(activeAccount.keys.active as string) },
     (err: any, res: any) => {
-      console.log(err, res);
+      Logger.log(err, res);
     },
   );
 };

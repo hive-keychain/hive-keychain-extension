@@ -8,6 +8,7 @@ import {
   TokenTransaction,
 } from 'src/interfaces/tokens.interface';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
   const action: ActionPayload<Token[]> = {
@@ -44,7 +45,7 @@ export const loadUserTokens =
       };
       dispatch(action);
     } catch (e) {
-      console.log(e);
+      Logger.error(e);
     }
   };
 

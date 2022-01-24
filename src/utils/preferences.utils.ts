@@ -26,7 +26,6 @@ export const isWhitelisted = (
       return arr[data.username][domain][data.type];
     }
   } catch (e) {
-    console.log(e);
     return false;
   }
 };
@@ -57,7 +56,6 @@ export const removeFromWhitelist = (
   domain: string,
   operation: string,
 ) => {
-  console.log(noConfirm);
   delete noConfirm[username][domain][operation];
   if (!Object.keys(noConfirm[username][domain]).length) {
     delete noConfirm[username][domain];

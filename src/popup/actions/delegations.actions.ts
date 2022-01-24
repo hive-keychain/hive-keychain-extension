@@ -2,6 +2,7 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
 import { DelegationsPayload } from 'src/interfaces/delegations.interface';
 import { getDelegatees, getDelegators } from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const loadDelegators =
   (username: string): AppThunk =>
@@ -13,7 +14,7 @@ export const loadDelegators =
       };
       dispatch(action);
     } catch (e) {
-      console.log(e);
+      Logger.error(e);
     }
   };
 
@@ -27,6 +28,6 @@ export const loadDelegatees =
       };
       dispatch(action);
     } catch (e) {
-      console.log(e);
+      Logger.error(e);
     }
   };

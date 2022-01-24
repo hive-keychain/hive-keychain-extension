@@ -4,7 +4,6 @@ import { Rpc } from 'src/interfaces/rpc.interface';
 import HiveUtils from 'src/utils/hive.utils';
 
 export const setActiveRpc = (rpc: Rpc) => {
-  console.log(rpc);
   HiveUtils.setRpc(rpc);
   chrome.runtime.sendMessage({
     command: BackgroundCommand.SAVE_RPC,

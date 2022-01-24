@@ -29,7 +29,6 @@ const RecurrentTransfer = (props: Props) => {
   } else {
     memoField = chrome.i18n.getMessage('popup_empty');
   }
-  console.log(data.currency, rpc.testnet);
   const renderUsername = () => {
     return !accounts ? (
       <RequestItem title={'dialog_account'} content={`@${data.username}`} />

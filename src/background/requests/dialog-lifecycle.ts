@@ -14,7 +14,6 @@ export const createPopup = (
   }
   //Create new window on the top right of the screen
   chrome.windows.getCurrent((w) => {
-    console.log(popupHtml);
     chrome.windows.create(
       {
         url: chrome.runtime.getURL(popupHtml),
@@ -27,7 +26,6 @@ export const createPopup = (
       },
       (win) => {
         if (!win) return;
-        console.log(new Date());
         getRequestHandler().setWindowId(win.id);
         waitUntilDialogIsReady(100, callback);
       },
@@ -62,7 +60,6 @@ const waitUntilDialogIsReady = async (
 ) => {
   nb++;
   if (await askIfReady(ms)) {
-    console.log(`ready after ${nb * ms}ms`);
     callback();
   } else {
     waitUntilDialogIsReady(ms, callback, nb);

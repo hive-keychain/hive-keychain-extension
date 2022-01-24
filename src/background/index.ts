@@ -19,7 +19,7 @@ import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
 const initBackgroundTasks = async () => {
-  console.log('init background tasks');
+  Logger.log('Initializing background tasks');
   await ClaimModule.loadClaims();
   await RPCModule.setActiveRpc(
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -50,7 +50,6 @@ const chromeMessageHandler = async (
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
     case BackgroundCommand.SEND_REQUEST:
-      console.log(backgroundMessage);
       const requestHandler = getRequestHandler();
       if (requestHandler) {
         requestHandler.closeWindow();

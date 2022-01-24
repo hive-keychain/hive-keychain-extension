@@ -27,7 +27,6 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
     let res = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_CONFIRM,
     );
-    console.log(res);
     setNoConfirm(res);
   };
 

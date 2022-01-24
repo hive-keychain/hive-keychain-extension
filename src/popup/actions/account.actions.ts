@@ -43,8 +43,6 @@ export const addKey =
   async (dispatch, getState) => {
     const { activeAccount, accounts } = getState();
 
-    console.log(activeAccount, accounts);
-
     const newAccounts = await AccountUtils.addKey(
       activeAccount,
       accounts,

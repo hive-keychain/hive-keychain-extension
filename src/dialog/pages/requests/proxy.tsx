@@ -23,10 +23,7 @@ const Proxy = (props: Props) => {
       <></>
     );
   };
-  console.log(
-    'a',
-    data.proxy.length ? `@${data.proxy}` : chrome.i18n.getMessage('popup_none'),
-  );
+
   return (
     <Operation
       title={chrome.i18n.getMessage('dialog_title_proxy')}

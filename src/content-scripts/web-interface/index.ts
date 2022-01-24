@@ -49,7 +49,6 @@ document.addEventListener('swRequest_hive', (request: object) => {
   const validation = validateRequest(req);
   const { error, value } = validation;
   if (!error) {
-    console.log('valid', value);
     sendRequestToBackground(value);
     if (prevReq) {
       cancelPreviousRequest(prevReq);

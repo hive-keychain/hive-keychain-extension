@@ -10,6 +10,7 @@ import {
   RequestRecurrentTransfer,
 } from '@interfaces/keychain.interface';
 import CurrencyUtils from 'src/utils/currency.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const recurrentTransfer = async (
   data: RequestRecurrentTransfer & RequestId,
@@ -48,7 +49,7 @@ export const recurrentTransfer = async (
       PrivateKey.from(key!),
     );
   } catch (e) {
-    console.log('errr', e);
+    Logger.error(e);
     err = e;
   } finally {
     const err_message = beautifyErrorMessage(err);

@@ -37,6 +37,7 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
 export const performOperation = async (
@@ -132,7 +133,7 @@ export const performOperation = async (
     }
     chrome.tabs.sendMessage(tab, message);
   } catch (e) {
-    console.log('error', e);
+    Logger.error(e);
     sendErrors(
       tab,
       e + '',
@@ -142,7 +143,6 @@ export const performOperation = async (
     );
   } finally {
     if (no_confirm) {
-      console.log(data);
       addToWhitelist(data.username!, domain, data.type);
       if (!!getRequestHandler().windowId) {
         removeWindow(getRequestHandler().windowId!);

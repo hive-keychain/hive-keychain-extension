@@ -6,6 +6,7 @@ import {
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const signBuffer = async (data: RequestSignBuffer & RequestId) => {
   let signed = null;
@@ -22,7 +23,7 @@ export const signBuffer = async (data: RequestSignBuffer & RequestId) => {
     }
     signed = await HiveUtils.signMessage(data.message, key!);
   } catch (err) {
-    console.log(err, 'a');
+    Logger.error(err);
     error = err;
   } finally {
     return createMessage(

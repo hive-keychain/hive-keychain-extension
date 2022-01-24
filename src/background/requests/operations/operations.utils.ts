@@ -25,7 +25,6 @@ export const createMessage = (
 };
 
 export const beautifyErrorMessage = (err: any) => {
-  console.log(err);
   if (!err) return null;
   let error = '';
   if (err.message.indexOf('xception:') !== -1) {

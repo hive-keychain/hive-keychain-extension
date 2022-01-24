@@ -331,9 +331,6 @@ const mergeImportedAccountsToExistingAccounts = (
       newAccounts.push(existingAccount);
     }
   }
-
-  console.log(newAccounts);
-
   return newAccounts;
 };
 

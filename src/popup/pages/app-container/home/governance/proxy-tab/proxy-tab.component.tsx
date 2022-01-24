@@ -35,7 +35,6 @@ const ProxyTab = ({
     } else {
       setErrorMessage('html_popup_clear_proxy_error');
     }
-    console.log(response);
     refreshActiveAccount();
   };
   const removeProxy = async () => {
@@ -44,7 +43,6 @@ const ProxyTab = ({
     }
     const response = await WitnessUtils.removeProxy(activeAccount);
     refreshActiveAccount();
-    console.log(response);
     if (response.id) {
       setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
     } else {

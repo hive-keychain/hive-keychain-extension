@@ -26,7 +26,6 @@ const ProposalVotingSection = ({
 
   const handleVoteForProposalClicked = async () => {
     const res = await ProposalUtils.voteForProposal(activeAccount);
-    console.log(res);
   };
 
   const handleReadClicked = () => {
@@ -36,7 +35,6 @@ const ProposalVotingSection = ({
   };
 
   const handleClose = (event: any) => {
-    console.log(event);
     event.nativeEvent.stopImmediatePropagation();
     setForcedClosed(true);
   };

@@ -1,4 +1,5 @@
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import Logger from 'src/utils/logger.utils';
 
 /**
  *
@@ -20,7 +21,7 @@ export default {
           resolve(featureStatus);
         });
       } catch (err) {
-        console.log(err);
+        Logger.error("Can't get Keychainfy params");
         reject(err);
       }
     });

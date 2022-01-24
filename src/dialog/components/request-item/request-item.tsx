@@ -8,7 +8,6 @@ type Props = {
 };
 
 const RequestItem = ({ title, content, pre, red }: Props) => {
-  console.log(red);
   return (
     <>
       <h3>{chrome.i18n.getMessage(title)}</h3>

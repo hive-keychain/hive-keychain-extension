@@ -27,8 +27,6 @@ const exportSettings = async () => {
 
 const importSettings = async () => {
   chrome.windows.getCurrent(async (currentWindow) => {
-    console.log(chrome.runtime.getURL('import-preferences.html'));
-
     const win: chrome.windows.CreateData = {
       url: chrome.runtime.getURL('import-preferences.html'),
       type: 'popup',

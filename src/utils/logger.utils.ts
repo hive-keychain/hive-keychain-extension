@@ -10,7 +10,7 @@ const warn = (message: string) => {
   console.warn(`${message}`);
 };
 
-const error = (message: string, stacktrace: string) => {
+const error = (message: any, stacktrace?: string) => {
   console.log(`%c ${message} `, 'color: red');
   // Activate if debug
   // console.error(stacktrace);

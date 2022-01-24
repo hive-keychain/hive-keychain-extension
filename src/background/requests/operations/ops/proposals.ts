@@ -46,7 +46,6 @@ export const broadcastCreateProposal = async (
   } catch (e) {
     err = e;
   } finally {
-    console.log(result, err);
     const err_message = beautifyErrorMessage(err);
     const message = createMessage(
       err,

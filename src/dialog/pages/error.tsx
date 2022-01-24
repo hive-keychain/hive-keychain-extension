@@ -12,7 +12,6 @@ type ErrorMessage = {
 };
 
 const DialogError = ({ data }: Props) => {
-  console.log(data);
   return (
     <>
       <DialogHeader title={chrome.i18n.getMessage('dialog_header_error')} />

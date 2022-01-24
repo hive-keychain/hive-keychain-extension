@@ -50,13 +50,12 @@ const startClaimRewards = (claimRewards: LocalStorageClaimItem) => {
     const users = Object.keys(claimRewards).filter(
       (user) => claimRewards[user] === true,
     );
-    console.log(claimRewardsInterval);
     iterateClaimRewards(users);
     claimRewardsInterval = setInterval(async () => {
       iterateClaimRewards(users);
     }, INTERVAL);
   } else {
-    console.error('startClaimRewards: obj not defined');
+    Logger.error('startClaimRewards: obj not defined', '');
   }
 };
 
@@ -74,7 +73,7 @@ const iterateClaimAccounts = async (users: string[]) => {
     const rc = await getRC(userAccount.name);
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
     if (activeAccount && parseFloat(rc.estimated_pct) > 95) {
-      console.log(`claim accounts for ${activeAccount.name}`);
+      Logger.log(`Claiming free account for @${activeAccount.name}`);
       await HiveUtils.claimAccounts(rc, activeAccount);
     }
   }
@@ -102,7 +101,7 @@ const iterateClaimRewards = async (users: string[]) => {
         activeAccount.account.reward_hive_balance as string,
       )
     ) {
-      console.log(`claim rewards for ${activeAccount.name}`);
+      Logger.log(`Claiming rewards for @${activeAccount.name}`);
       await HiveUtils.claimRewards(
         activeAccount,
         userAccount.reward_hive_balance,
@@ -120,12 +119,11 @@ const startClaimAccounts = (claimAccounts: LocalStorageClaimItem) => {
       (user) => claimAccounts[user] === true,
     );
     iterateClaimAccounts(users);
-    console.log(claimAccountsInterval);
     claimAccountsInterval = setInterval(() => {
       iterateClaimAccounts(users);
     }, INTERVAL);
   } else {
-    console.error('startClaimAccounts: obj not defined');
+    Logger.error('startClaimAccounts: obj not defined', '');
   }
 };
 
@@ -137,7 +135,6 @@ const createActiveAccount = async (
     (localAccount) => localAccount.name === userAccount.name,
   );
   if (!localAccount) {
-    console.log('error no local account');
     return;
   }
   const activeAccount: ActiveAccount = {
@@ -162,7 +159,6 @@ const getRC = async (username: string) => {
   let url = RPCModule.getActiveRpc().uri;
   if (url === 'DEFAULT') url = 'https://api.hive.blog/';
   const response = (await axios.post(url, JSON.stringify(data))).data;
-  console.log(response);
   const STEEM_RC_MANA_REGENERATION_SECONDS = 432000;
   const estimated_max = parseFloat(response.result.rc_accounts['0'].max_rc);
   const current_mana = parseFloat(

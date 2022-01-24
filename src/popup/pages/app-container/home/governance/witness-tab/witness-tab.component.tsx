@@ -20,6 +20,7 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
@@ -125,7 +126,7 @@ const WitnessTab = ({
         }
       } catch (err) {
         setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
-        console.log(err);
+        Logger.error(err);
       } finally {
         removeFromLoadingList('html_popup_unvote_witness_operation');
         removeFromLoadingList('html_popup_confirm_transaction_operation');
@@ -154,7 +155,7 @@ const WitnessTab = ({
         }
       } catch (err) {
         setErrorMessage('popup_error_wit', [`${witness.name}`]);
-        console.log(err);
+        Logger.error(err);
       } finally {
         removeFromLoadingList('html_popup_vote_witness_operation');
         removeFromLoadingList('html_popup_confirm_transaction_operation');

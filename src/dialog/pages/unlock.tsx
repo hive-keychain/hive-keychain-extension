@@ -33,12 +33,12 @@ type UnlockMessage = {
 export default ({ data, wrongMk, index }: Props) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  console.log(index);
+
   useEffect(() => {
     setLoading(false);
   }, [index]);
+
   const login = () => {
-    console.log(data);
     setLoading(true);
     chrome.runtime.sendMessage({
       command: BackgroundCommand.UNLOCK_FROM_DIALOG,

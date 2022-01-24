@@ -7,6 +7,7 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const sendBackImportedFileContent = async (fileContent: any) => {
   const settings: Settings = fileContent;
@@ -132,7 +133,7 @@ const sendBackImportedFileContent = async (fileContent: any) => {
       value: 'html_popup_import_settings_successful',
     });
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     chrome.runtime.sendMessage({
       command: BackgroundCommand.IMPORT_SETTINGS_CALLBACK,
       value: 'html_popup_import_settings_error',
