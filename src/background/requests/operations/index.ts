@@ -48,8 +48,8 @@ export const performOperation = async (
 ) => {
   let message = null;
   try {
-    console.info('-- PERFORMING TRANSACTION --');
-    console.info(data);
+    Logger.info('-- PERFORMING TRANSACTION --');
+    Logger.log(data);
     switch (data.type) {
       case KeychainRequestTypes.addAccount:
         message = await addAccount(data);
