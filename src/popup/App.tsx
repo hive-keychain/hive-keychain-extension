@@ -53,7 +53,6 @@ const App = ({
       refreshActiveAccount();
     }
   }, [activeRpc]);
-
   useEffect(() => {
     chrome.runtime.sendMessage({ command: BackgroundCommand.GET_MK });
     chrome.runtime.onMessage.addListener(onSentBackMkListener);

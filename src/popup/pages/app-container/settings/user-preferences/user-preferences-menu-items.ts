@@ -4,7 +4,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 
 const UserPreferencesMenuItems: MenuItem[] = [
   {
-    label: 'popup_html_authorized_operations',
+    label: 'popup_html_operations',
     icon: Icons.AUTHORIZED_OPERATIONS,
     nextScreen: Screen.SETTINGS_AUTHORIZED_OPERATIONS,
   },

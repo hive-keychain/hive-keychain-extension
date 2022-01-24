@@ -43,7 +43,7 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
   return (
     <div className="authorized-operations-page">
       <PageTitleComponent
-        title="popup_html_authorized_operations"
+        title="popup_html_operations"
         isBackButtonEnabled={true}
       />
 
@@ -66,7 +66,14 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
                 return (
                   websites[website][operation] && (
                     <div className="operation" key={operation}>
-                      <div className="operation-name">{operation}</div>
+                      <div className="operation-name">
+                        {chrome.i18n.getMessage(
+                          `popup_${operation
+                            .split(/(?=[A-Z])/)
+                            .join('_')
+                            .toLowerCase()}`,
+                        )}
+                      </div>
                       <img
                         className="operation-action"
                         src="/assets/images/delete.png"

@@ -267,8 +267,8 @@
     "message": "Automated tasks",
     "description": "on settings page"
   },
-  "popup_html_authorized_operations": {
-    "message": "Authorized operations",
+  "popup_html_operations": {
+    "message": "Operations",
     "description": "on settings page"
   },
   "popup_html_operation_popup": {
@@ -372,11 +372,11 @@
     "description": "on preferences"
   },
   "popup_html_pref_info": {
-    "message": "View and update the websites and transaction types for which you have opted not to recieve a confirmation prompt.",
+    "message": "For a better experience, you can whitelist non-active authority operations when dApps request them. You won't receive a confirmation prompt for these operations.",
     "description": "on preferences"
   },
   "popup_html_no_pref": {
-    "message": "You don't have any authorized operation yet",
+    "message": "No whitelisted operation",
     "description": "on preferences"
   },
   "popup_html_add_rpc": {
@@ -756,7 +756,11 @@
     "description": "When changing pwd from settings"
   },
   "popup_website": {
-    "message": "Website",
+    "message": "dApp",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_encode": {
+    "message": "Encode message",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_broadcast": {

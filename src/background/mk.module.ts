@@ -7,7 +7,7 @@ const MkModule = {
   resetMk,
 };
 
-let mk: string | null = null;
+let mk: string | null = process.env.DEV_MK || null;
 
 function getMk(): string | null {
   return mk;

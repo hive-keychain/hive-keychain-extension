@@ -11,6 +11,7 @@ import {
   sendResponse,
 } from 'src/content-scripts/web-interface/response.logic';
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
+import Logger from 'src/utils/logger.utils';
 
 let req: KeychainRequest | null = null;
 
@@ -23,7 +24,7 @@ const setupInjection = () => {
     var container = document.head || document.documentElement;
     container.insertBefore(scriptTag, container.children[0]);
   } catch (e) {
-    console.error('Hive Keychain injection failed.', e);
+    Logger.error('Hive Keychain injection failed.', e);
   }
 };
 
