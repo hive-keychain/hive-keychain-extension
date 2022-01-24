@@ -40,7 +40,11 @@ const CustomJson = (props: Props) => {
       <CollaspsibleItem
         title="dialog_data_toggle"
         preContent={data.id}
-        content={JSON.stringify(data.json, undefined, 3)}
+        content={JSON.stringify(
+          typeof data.json === 'string' ? JSON.parse(data.json) : data.json,
+          undefined,
+          3,
+        )}
         pre
       />
     </Operation>

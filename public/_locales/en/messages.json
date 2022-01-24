@@ -1131,11 +1131,11 @@
     "description": "Website request title"
   },
   "dialog_title_create_proposal": {
-    "message": "Create Worker Proposal",
+    "message": "Create Proposal",
     "description": "Website request title"
   },
   "dialog_title_remove_proposal": {
-    "message": "Remove Worker Proposal",
+    "message": "Remove Proposal",
     "description": "Website request title"
   },
   "dialog_title_vote_proposal": {

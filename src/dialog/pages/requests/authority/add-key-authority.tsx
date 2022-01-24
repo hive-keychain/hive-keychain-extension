@@ -21,7 +21,7 @@ const AddKeyAuthority = (props: Props) => {
       title={chrome.i18n.getMessage('dialog_title_add_key_auth')}
       {...props}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
-      <RequestItem title="dialog_auth_account" content={data.authorizedKey} />
+      <RequestItem title="dialog_key" content={data.authorizedKey} />
       <RequestItem title="dialog_role" content={data.role} />
       <RequestItem title="dialog_weight" content={data.weight + ''} />
     </Operation>

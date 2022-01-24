@@ -29,7 +29,7 @@ const DecodeMemo = (props: Props) => {
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       <RequestItem title="dialog_account" content={`@${data.username}`} />
       <RequestItem title="dialog_key" content={data.method} />
-      <RequestItem title="dialog_message" content={data.message} />
+      {/* <RequestItem title="dialog_message" content={data.message} /> */}
     </Operation>
   );
 };

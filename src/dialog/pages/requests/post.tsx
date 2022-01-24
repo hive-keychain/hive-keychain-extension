@@ -26,7 +26,11 @@ const Post = (props: Props) => {
         <></>
       )}
       <RequestItem title="dialog_permlink" content={data.permlink} />
-      <RequestItem title="dialog_pu" content={`@${data.parent_username}`} />
+      <>
+        {data.parent_username && (
+          <RequestItem title="dialog_pu" content={`@${data.parent_username}`} />
+        )}
+      </>
       <RequestItem title="dialog_pp" content={data.parent_perm} />
       <CollaspsibleItem title="dialog_body" content={data.body} />
       <CollaspsibleItem title="dialog_meta" content={data.json_metadata} pre />

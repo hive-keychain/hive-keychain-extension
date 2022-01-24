@@ -17,10 +17,16 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
   const cur = currency.toLowerCase();
   useEffect(() => {
     if (username) {
-      const client = new Client(rpc.uri, {
-        chainId: rpc.testnet ? rpc.chainId : undefined,
-      });
+      const client = new Client(
+        rpc.uri === 'DEFAULT' ? 'https://api.hive.blog' : rpc.uri,
+        {
+          chainId: rpc.testnet ? rpc.chainId : undefined,
+        },
+      );
+
+      console.log(rpc);
       client.database.getAccounts([username]).then((accounts) => {
+        console.log(accounts);
         const account = accounts[0];
         const currencyParsed = CurrencyUtils.getCurrencyLabel(
           currency,

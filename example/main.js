@@ -37,7 +37,7 @@ $('#send_encode').click(() => {
 $('#send_post').click(function () {
   hive_keychain.requestPost(
     $('#post_username').val(),
-    $('#post_title').val().length ? $('#post_title').val() : null,
+    $('#post_title').val(),
     $('#post_body').val(),
     $('#post_pp').val(),
     $('#post_pu').val().length ? $('#post_pu').val() : null,
