@@ -1,3 +1,4 @@
+import { KeychainKeyTypes } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 
@@ -32,6 +33,7 @@ export default {
       url.includes('hivesigner.com/sign/transfer') ||
       url.includes('hivesigner.com/sign/account-witness-vote') ||
       url.includes('hivesigner.com/sign/delegate-vesting-shares') ||
+      url.includes('hivesigner.com/sign/custom-json') ||
       url.includes('hivesigner.com/sign/account-witness-proxy')
     );
   },
@@ -55,6 +57,7 @@ export default {
     switch (true) {
       /**
        * Transfer fund
+       * i.e. : https://hivesigner.com/sign/transfer?to=lecaillon&amount=1%20HIVE
        */
       case url.includes('hivesigner.com/sign/transfer'):
         defaults = {
@@ -81,6 +84,7 @@ export default {
 
       /**
        * Delegate Hive Power
+       * i.e. : https://hivesigner.com/sign/delegate-vesting-shares?delegatee=keychain&vesting_shares=100%20HP
        */
       case url.includes('hivesigner.com/sign/delegate-vesting-shares') ||
         url.includes('hivesigner.com/sign/delegate_vesting_shares'):
@@ -102,7 +106,10 @@ export default {
           unit,
         );
         break;
-
+      /**
+       * Vote for witness
+       * i.e. : https://hivesigner.com/sign/account-witness-vote?witness=stoodkev&approve=1
+       */
       case url.includes('hivesigner.com/sign/account-witness-vote') ||
         url.includes('hivesigner.com/sign/account_witness_vote'):
         defaults = {
@@ -120,6 +127,10 @@ export default {
           parseInt(payload.approve),
         );
         break;
+      /**
+       * Chose a proxy
+       * i.e. : https://hivesigner.com/sign/account-witness-proxy?proxy=stoodkev
+       */
       case url.includes('https://hivesigner.com/sign/account-witness-proxy') ||
         url.includes('https://hivesigner.com/sign/account_witness_proxy'):
         defaults = {
@@ -131,6 +142,10 @@ export default {
 
         this.requestProxy(tab, payload.account, payload.proxy);
         break;
+      /**
+       * Broadcast a custom-json
+       * i.e. : https://hivesigner.com/sign/custom-json?required_posting_auths=%5Bstoodkev%5D&id=custom&json=%7B%22hive%22%3A%22keychain%22%7D
+       */
       case url.includes('https://hivesigner.com/sign/custom-json') ||
         url.includes('https://hivesigner.com/sign/custom_json'):
         defaults = {
@@ -146,7 +161,6 @@ export default {
           tab,
           payload.required_posting_auths,
           payload.required_auths,
-          payload.authority,
           payload.id,
           payload.json,
           payload.display_msg,
@@ -197,7 +211,7 @@ export default {
       type: 'transfer',
       username: account,
       to: to,
-      amount: amount,
+      amount: (+amount).toFixed(3),
       memo: memo,
       enforce: enforce,
       currency: currency,
@@ -207,7 +221,7 @@ export default {
     if (to && amount && currency) {
       this.dispatchRequest(tab, request);
     } else {
-      console.error('[keychainify] Missing parameters for transfers');
+      Logger.error('[keychainify] Missing parameters for transfers');
     }
   },
 
@@ -234,7 +248,7 @@ export default {
     if (witness && vote !== undefined) {
       this.dispatchRequest(tab, request);
     } else {
-      console.error('[keychainify] Missing parameters for witness vote');
+      Logger.error('[keychainify] Missing parameters for witness vote');
     }
   },
 
@@ -287,7 +301,7 @@ export default {
     if (delegatee && amount && unit) {
       this.dispatchRequest(tab, request);
     } else {
-      console.error('[keychainify] Missing parameters for delegation');
+      Logger.error('[keychainify] Missing parameters for delegation');
     }
   },
   /**
@@ -303,17 +317,21 @@ export default {
     tab: any,
     required_posting_auths: any,
     required_auths: any,
-    authority: string,
     id: string,
     json: string,
     display_msg: string,
     redirect_uri: string,
   ) {
-    let username = null;
-    if (!['[]', '["__signer"]'].includes(required_posting_auths))
+    let username,
+      authority = null;
+    if (!['[]', '["__signer"]'].includes(required_posting_auths)) {
       username = required_posting_auths;
-    if (!['[]', '["__signer"]'].includes(required_auths))
+      authority = KeychainKeyTypes.posting;
+    }
+    if (!['[]', '["__signer"]'].includes(required_auths)) {
       username = required_auths;
+      authority = KeychainKeyTypes.posting;
+    }
     var request = {
       type: 'custom',
       username,
