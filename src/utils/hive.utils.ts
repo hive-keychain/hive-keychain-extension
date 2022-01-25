@@ -10,6 +10,7 @@ import {
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
   TransferToVestingOperation,
+  UpdateProposalVotesOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';
 import * as hive from '@hiveio/hive-js';
@@ -560,24 +561,19 @@ const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
-  return await hive.broadcast.send(
-    {
-      operations: [
-        [
-          'update_proposal_votes',
-          {
-            voter: activeAccount.name,
-            proposal_ids: [`${proposalId}`],
-            approve: 'true',
-          },
-        ],
-      ],
-      extensions: [],
-    },
-    { active: PrivateKey.fromString(activeAccount.keys.active as string) },
-    (err: any, res: any) => {
-      Logger.log(err, res);
-    },
+  return await getClient().broadcast.sendOperations(
+    [
+      [
+        'update_proposal_votes',
+        {
+          voter: activeAccount.name!,
+          proposal_ids: [proposalId],
+          approve: true,
+          extensions: [],
+        },
+      ] as UpdateProposalVotesOperation,
+    ],
+    PrivateKey.fromString(store.getState().activeAccount.keys.active as string),
   );
 };
 

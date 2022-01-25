@@ -1623,6 +1623,14 @@
     "message": "Help support Keychain development through our DHF proposal",
     "description": "When user doesnt vote for proposal"
   },
+  "popup_html_kc_proposal_vote_successful": {
+    "message": "Vote successful! Thank you for supporting Keychain development through our DHF proposal",
+    "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_proposal_vote_fail": {
+    "message": "There was an error while voting for proposal. Try again later",
+    "description": "Error while voting for proposal"
+  },
   "popup_html_advanced_settings": {
     "message": "Advanced",
     "description": "Advanced settings sub menu"
