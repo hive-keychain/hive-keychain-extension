@@ -5,6 +5,6 @@ export interface ActionButton {
   label: string;
   nextScreen: Screen;
   nextScreenParams?: any;
-  icon: string | Icons;
+  icon: Icons | string;
   importedIcon?: boolean;
 }

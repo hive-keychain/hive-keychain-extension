@@ -2,6 +2,7 @@ import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { ActionButton } from 'src/interfaces/action-button.interface';
 import './action-button.component.scss';
 
@@ -19,7 +20,10 @@ const ActionButton = ({
       onClick={() => navigateToWithParams(nextScreen, nextScreenParams)}>
       <div className="icon-container">
         {!importedIcon && (
-          <span className="material-icons-outlined icon">{icon}</span>
+          <Icon
+            name={icon}
+            type={IconType.OUTLINED}
+            additionalClassName="icon"></Icon>
         )}
         {importedIcon && (
           <img className="icon imported-icon" src={`/assets/images/${icon}`} />

@@ -1,12 +1,13 @@
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
 interface InputProps {
   onChange: (value: any) => void;
   value: any;
-  logo?: string;
+  logo?: Icons | string;
   placeholder: string;
   type: InputType;
   step?: number;
@@ -73,27 +74,27 @@ const InputComponent = (props: InputProps) => {
         onBlur={() => handleOnBlur()}
       />
       {props.type === InputType.PASSWORD && !isPasswordDisplay && (
-        <span
-          className="material-icons-outlined input-img display-password"
-          onClick={() => setPasswordDisplayed(true)}>
-          {Icons.VISIBLE}
-        </span>
+        <Icon
+          onClick={() => setPasswordDisplayed(true)}
+          name={Icons.VISIBLE}
+          type={IconType.OUTLINED}
+          additionalClassName="input-img display-password"></Icon>
       )}
       {props.type === InputType.PASSWORD && isPasswordDisplay && isFocused && (
-        <span
-          className="material-icons-outlined input-img display-password"
-          onClick={() => setPasswordDisplayed(false)}>
-          {Icons.HIDDEN}
-        </span>
+        <Icon
+          onClick={() => setPasswordDisplayed(false)}
+          name={Icons.HIDDEN}
+          type={IconType.OUTLINED}
+          additionalClassName="input-img display-password"></Icon>
       )}
       {props.type !== InputType.PASSWORD &&
         !props.onSetToMaxClicked &&
         props.value.length > 0 && (
-          <span
-            className={'material-icons-outlined input-img erase '}
-            onClick={() => props.onChange('')}>
-            {Icons.CLEAR}
-          </span>
+          <Icon
+            onClick={() => props.onChange('')}
+            name={Icons.CLEAR}
+            type={IconType.OUTLINED}
+            additionalClassName="input-img erase"></Icon>
         )}
       {isFocused && filteredValues && filteredValues.length > 0 && (
         <div className="autocomplete-panel">
@@ -115,11 +116,10 @@ const InputComponent = (props: InputProps) => {
         </div>
       )}
       {props.logo && (
-        <span
-          className="material-icons-outlined input-img"
-          onClick={() => props.onChange('')}>
-          {props.logo}
-        </span>
+        <Icon
+          name={props.logo}
+          type={IconType.OUTLINED}
+          additionalClassName="input-img"></Icon>
       )}
       {props.onSetToMaxClicked && (
         <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>

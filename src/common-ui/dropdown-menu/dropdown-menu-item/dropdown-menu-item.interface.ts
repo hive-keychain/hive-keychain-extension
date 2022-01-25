@@ -4,7 +4,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 export interface DropdownMenuItemInterface {
   label: string;
   labelParams?: string[];
-  icon: string | Icons;
+  icon: Icons | string;
   importedIcon?: boolean;
   nextScreen: Screen;
   nextScreenParams?: any;

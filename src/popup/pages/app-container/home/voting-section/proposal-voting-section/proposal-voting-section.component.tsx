@@ -7,6 +7,7 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import Logger from 'src/utils/logger.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-voting-section.component.scss';
@@ -59,9 +60,11 @@ const ProposalVotingSection = ({
         isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
       } ${isOpen ? 'opened' : 'closed'}`}
       onClick={() => setIsOpen(true)}>
-      <span className="material-icons close" onClick={handleClose}>
-        {Icons.CLOSE}
-      </span>
+      <Icon
+        type={IconType.STROKED}
+        additionalClassName="close"
+        onClick={handleClose}
+        name={Icons.CLOSE}></Icon>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_proposal_request')}
       </div>

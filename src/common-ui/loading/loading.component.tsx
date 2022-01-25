@@ -1,6 +1,7 @@
 import { Icons } from '@popup/icons.enum';
 import { LoadingOperation } from '@popup/reducers/loading.reducer';
 import React from 'react';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import './loading.component.scss';
 
@@ -22,7 +23,10 @@ const Loading = ({ hide, operations }: Props) => {
             <span key={operation.name}>
               {chrome.i18n.getMessage(operation.name)}
               {operation.done ? (
-                <span className="material-icons done">{Icons.DONE}</span>
+                <Icon
+                  name={Icons.DONE}
+                  type={IconType.STROKED}
+                  additionalClassName="done"></Icon>
               ) : (
                 '...'
               )}

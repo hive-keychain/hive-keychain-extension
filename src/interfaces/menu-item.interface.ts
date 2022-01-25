@@ -3,7 +3,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 
 export interface MenuItem {
   label: string;
-  icon?: string | Icons;
+  icon?: Icons | string;
   nextScreen?: Screen;
   action?(params?: any): any;
 }

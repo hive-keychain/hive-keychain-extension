@@ -3,10 +3,11 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './resource-item.component.scss';
 
 interface ResourceItemProps {
-  icon: Icons;
+  icon: Icons | string;
   label: string;
   value: string;
   tooltipText: string;
@@ -26,7 +27,10 @@ const ResourceItem = ({
       data-for="tooltip"
       data-tip={tooltipText}
       data-iscapture="true">
-      <span className="material-icons icon">{icon}</span>
+      <Icon
+        name={icon}
+        type={IconType.STROKED}
+        additionalClassName="icon"></Icon>
       <div className="right-panel">
         <div className="top">
           <div className="label">{chrome.i18n.getMessage(label)}</div>
