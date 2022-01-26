@@ -41,7 +41,6 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.SAVE_MK:
       MkModule.saveMk(backgroundMessage.value);
-      ClaimModule.loadClaims();
       break;
     case BackgroundCommand.IMPORT_ACCOUNTS:
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);

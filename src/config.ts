@@ -1,6 +1,6 @@
 const Config = {
   hiveEngine: {
-    mainNet: 'ssc-mainnet-hive',
+    MAINNET: 'ssc-mainnet-hive',
   },
   claims: {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10 * 60 * 1000),
