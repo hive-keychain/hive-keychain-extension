@@ -1,4 +1,6 @@
+import { Icons } from '@popup/icons.enum';
 import React from 'react';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './button.component.scss';
 
 export enum ButtonType {
@@ -12,7 +14,7 @@ interface ButtonProps {
   onClick: () => void;
   label: string;
   labelParams?: string[];
-  logo?: string;
+  logo?: Icons | string;
   type?: ButtonType;
 }
 
@@ -27,7 +29,10 @@ const ButtonComponent = (props: ButtonProps) => {
         {chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
       </div>
       {props.logo && (
-        <span className="material-icons-outlined logo">{props.logo}</span>
+        <Icon
+          name={props.logo}
+          type={IconType.OUTLINED}
+          additionalClassName="logo"></Icon>
       )}
     </button>
   );

@@ -3,6 +3,7 @@ import { RootState } from '@popup/store';
 import React, { SyntheticEvent } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './dropdown-menu-item.component.scss';
 
 const DropdownMenuItem = ({
@@ -24,7 +25,12 @@ const DropdownMenuItem = ({
       className="dropdown-menu-item"
       onClick={(event) => handleClickOnMenuItem(event)}>
       {importedIcon && <img className="icon" src={`/assets/images/${icon}`} />}
-      {!importedIcon && <span className="material-icons icon">{icon}</span>}
+      {!importedIcon && (
+        <Icon
+          name={icon}
+          type={IconType.STROKED}
+          additionalClassName="icon"></Icon>
+      )}
       <div className="label">{chrome.i18n.getMessage(label, labelParams)}</div>
     </div>
   );

@@ -1,14 +1,22 @@
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Logger from 'src/utils/logger.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-voting-section.component.scss';
 
 const ProposalVotingSection = ({
   activeAccount,
   isMessageContainerDisplayed,
+  setSuccessMessage,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const [hasVoted, sethasVoted] = useState(true);
   const [forceClosed, setForcedClosed] = useState(false);
@@ -26,6 +34,13 @@ const ProposalVotingSection = ({
 
   const handleVoteForProposalClicked = async () => {
     const res = await ProposalUtils.voteForProposal(activeAccount);
+    Logger.log(res);
+    if (res.id) {
+      setSuccessMessage('popup_html_kc_proposal_vote_successful');
+    } else {
+      setErrorMessage('popup_html_proposal_vote_fail');
+    }
+    setForcedClosed(true);
   };
 
   const handleReadClicked = () => {
@@ -45,9 +60,11 @@ const ProposalVotingSection = ({
         isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
       } ${isOpen ? 'opened' : 'closed'}`}
       onClick={() => setIsOpen(true)}>
-      <span className="material-icons close" onClick={handleClose}>
-        {Icons.CLOSE}
-      </span>
+      <Icon
+        type={IconType.STROKED}
+        additionalClassName="close"
+        onClick={handleClose}
+        name={Icons.CLOSE}></Icon>
       <div className="text">
         {chrome.i18n.getMessage('popup_html_proposal_request')}
       </div>
@@ -74,7 +91,10 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  setSuccessMessage,
+  setErrorMessage,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const ProposalVotingSectionComponent = connector(ProposalVotingSection);

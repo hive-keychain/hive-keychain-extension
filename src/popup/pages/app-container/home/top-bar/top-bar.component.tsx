@@ -5,6 +5,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -36,7 +37,7 @@ const TopBar = ({
         ),
       );
     }
-  }, []);
+  }, [activeAccount]);
 
   const lockPopup = (): void => {
     resetNav();
@@ -50,6 +51,7 @@ const TopBar = ({
       activeAccount.account.reward_hbd_balance,
       activeAccount.account.reward_vesting_balance,
     );
+    console.log(claimSuccessful);
     if (claimSuccessful) {
       setHasRewardToClaim(false);
       refreshActiveAccount();
@@ -61,22 +63,22 @@ const TopBar = ({
       <img src="/assets/images/keychain_icon_small.png" />
       <div className="spacer"></div>
       {hasRewardToClaim && (
-        <span
-          className="material-icons button claim-button"
-          onClick={() => claim()}>
-          {Icons.CLAIM}
-        </span>
+        <Icon
+          name={Icons.CLAIM}
+          onClick={() => claim()}
+          additionalClassName="button claim-button"
+          type={IconType.STROKED}></Icon>
       )}
-      <span
-        className="material-icons button lock-button"
-        onClick={() => lockPopup()}>
-        {Icons.LOGOUT}
-      </span>
-      <span
-        className="material-icons button settings-button"
-        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}>
-        {Icons.MENU}
-      </span>
+      <Icon
+        name={Icons.LOGOUT}
+        onClick={() => lockPopup()}
+        additionalClassName="button lock-button"
+        type={IconType.STROKED}></Icon>
+      <Icon
+        name={Icons.MENU}
+        onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
+        additionalClassName="button settings-button"
+        type={IconType.STROKED}></Icon>
     </div>
   );
 };

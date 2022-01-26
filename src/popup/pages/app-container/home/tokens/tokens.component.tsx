@@ -15,6 +15,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -72,11 +73,11 @@ const Tokens = ({
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_view_tokens_balance'),
         }}></div>
-      <span
-        className="material-icons-outlined settings"
-        onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}>
-        {Icons.SETTINGS}
-      </span>
+      <Icon
+        onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
+        name={Icons.SETTINGS}
+        type={IconType.OUTLINED}
+        additionalClassName="settings"></Icon>
       {filteredTokenList.length > 0 && (
         <div className="my-tokens">
           {userTokens.list.map((token) => (
@@ -103,21 +104,21 @@ const Tokens = ({
                 multiline={true}
               />
               <div className="symbol">{token.symbol}</div>
-              <span
-                className="material-icons-outlined history"
+              <Icon
+                name={Icons.HISTORY}
                 onClick={() =>
                   navigateToWithParams(Screen.TOKENS_HISTORY, { token })
-                }>
-                {Icons.HISTORY}
-              </span>
+                }
+                additionalClassName="history"
+                type={IconType.OUTLINED}></Icon>
 
-              <span
-                className="material-icons-outlined send"
+              <Icon
+                name={Icons.SEND}
                 onClick={() =>
                   navigateToWithParams(Screen.TOKENS_TRANSFER, { token })
-                }>
-                {Icons.SEND}
-              </span>
+                }
+                additionalClassName="send"
+                type={IconType.OUTLINED}></Icon>
             </div>
           ))}
         </div>

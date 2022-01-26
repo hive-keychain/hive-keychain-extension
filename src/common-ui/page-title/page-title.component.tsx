@@ -3,6 +3,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import './page-title.component.scss';
 
@@ -34,19 +35,19 @@ const PageTitle = ({
   return (
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
-        <span
-          className="material-icons-outlined icon-button"
-          onClick={handleBackButtonClick}>
-          {Icons.BACK}
-        </span>
+        <Icon
+          onClick={handleBackButtonClick}
+          name={Icons.BACK}
+          type={IconType.OUTLINED}
+          additionalClassName="icon-button"></Icon>
       )}
       <div className="title">{chrome.i18n.getMessage(title, titleParams)}</div>
       {!isCloseButtonDisabled && (
-        <span
-          className="material-icons-outlined icon-button"
-          onClick={handleCloseButtonClick}>
-          {Icons.CLOSE}
-        </span>
+        <Icon
+          onClick={handleCloseButtonClick}
+          name={Icons.CLOSE}
+          type={IconType.OUTLINED}
+          additionalClassName="icon-button"></Icon>
       )}
     </div>
   );

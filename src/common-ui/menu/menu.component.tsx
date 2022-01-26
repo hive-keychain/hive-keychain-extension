@@ -2,6 +2,7 @@ import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import './menu.component.scss';
@@ -38,9 +39,10 @@ const Menu = ({
             key={index}
             className="menu-item"
             onClick={() => handleMenuItemClick(menuItem)}>
-            <span className="material-icons-outlined icon">
-              {menuItem.icon}
-            </span>
+            <Icon
+              name={menuItem.icon}
+              type={IconType.OUTLINED}
+              additionalClassName="icon"></Icon>
 
             <div className="menu-label">
               {chrome.i18n.getMessage(menuItem.label)}

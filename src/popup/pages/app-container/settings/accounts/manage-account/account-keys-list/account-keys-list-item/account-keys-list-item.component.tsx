@@ -9,6 +9,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { Key, LocalAccount } from 'src/interfaces/local-account.interface';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -85,11 +86,11 @@ const AccountKeysListItem = ({
       <div className="top-panel">
         <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
         {publicKey && privateKey && (
-          <span
-            className="material-icons-outlined remove-button"
-            onClick={() => handleClickOnRemoveKey()}>
-            delete
-          </span>
+          <Icon
+            onClick={() => handleClickOnRemoveKey()}
+            name={Icons.DELETE}
+            type={IconType.OUTLINED}
+            additionalClassName="remove-button"></Icon>
         )}
       </div>
       {publicKey && privateKey ? (
@@ -127,13 +128,11 @@ const AccountKeysListItem = ({
           )}
         </div>
       ) : (
-        <span
-          className="material-icons-outlined add-key-icon"
-          onClick={() =>
-            navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)
-          }>
-          {Icons.ADD_CIRCLE}
-        </span>
+        <Icon
+          onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
+          name={Icons.ADD_CIRCLE}
+          type={IconType.OUTLINED}
+          additionalClassName="add-key-icon"></Icon>
       )}
     </div>
   );

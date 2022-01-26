@@ -17,6 +17,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import ReactTooltip from 'react-tooltip';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import HiveUtils from 'src/utils/hive.utils';
@@ -185,11 +186,11 @@ const WitnessTab = ({
           }>
           <div className="witness-name">@{witness.name}</div>
           {witness.url && ValidUrl.isWebUri(witness.url) && (
-            <span
+            <Icon
               onClick={() => chrome.tabs.create({ url: witness.url })}
-              className="material-icons-outlined link-to-witness-page">
-              {Icons.OPEN_IN_NEW}
-            </span>
+              name={Icons.OPEN_IN_NEW}
+              type={IconType.OUTLINED}
+              additionalClassName="link-to-witness-page"></Icon>
           )}
         </div>
         <div className="action">
@@ -246,9 +247,10 @@ const WitnessTab = ({
         <a>
           {' '}
           {chrome.i18n.getMessage('html_popup_link_to_witness_website')}
-          <span className="material-icons-outlined outside-link">
-            {Icons.OPEN_IN_NEW}
-          </span>
+          <Icon
+            name={Icons.OPEN_IN_NEW}
+            type={IconType.OUTLINED}
+            additionalClassName="outside-link"></Icon>
         </a>
       </div>
 
