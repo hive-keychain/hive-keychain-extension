@@ -10,7 +10,6 @@ import {
   RequestId,
 } from '@interfaces/keychain.interface';
 import HiveUtils from 'src/utils/hive.utils';
-import Logger from 'src/utils/logger.utils';
 
 export const broadcastOperations = async (
   data: RequestBroadcast & RequestId,
@@ -57,14 +56,11 @@ export const broadcastOperations = async (
         }
       }
     }
-    Logger.log(operations, key);
     result = await client.broadcast.sendOperations(
       operations,
       PrivateKey.from(key!),
     );
   } catch (e) {
-    Logger.error('Generic broadcast', e);
-    Logger.error(e);
     err = e;
   } finally {
     const err_message = beautifyErrorMessage(err);

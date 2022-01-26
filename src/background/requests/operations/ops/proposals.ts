@@ -14,7 +14,6 @@ import {
   RequestRemoveProposal,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
-import Logger from 'src/utils/logger.utils';
 
 export const broadcastCreateProposal = async (
   data: RequestCreateProposal & RequestId,
@@ -66,27 +65,6 @@ export const broadcastUpdateProposalVote = async (
   const key = getRequestHandler().key;
   let result, err;
   try {
-    Logger.log(
-      [
-        [
-          'update_proposal_votes',
-          {
-            voter: data.username,
-            proposal_ids:
-              typeof data.proposal_ids === 'string'
-                ? JSON.parse(data.proposal_ids)
-                : data.proposal_ids,
-            approve: data.approve,
-            extensions:
-              typeof data.extensions === 'string'
-                ? JSON.parse(data.extensions)
-                : data.extensions,
-          },
-        ],
-      ],
-      key,
-    );
-
     result = await client.broadcast.sendOperations(
       [
         [
