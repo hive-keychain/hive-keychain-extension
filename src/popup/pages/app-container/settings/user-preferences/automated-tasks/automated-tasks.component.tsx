@@ -27,7 +27,9 @@ const AutomatedTasks = ({
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
     accounts[0].name,
   );
-
+  console.log(
+    (activeAccount.rc.max_mana / Config.claims.freeAccount.MIN_RC) * 100,
+  );
   useEffect(() => {
     init();
     setOptions(
@@ -133,17 +135,20 @@ const AutomatedTasks = ({
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
         onChange={(value) => saveClaims(value, claimAccounts)}
-        hint="popup_html_enable_autoclaim_rewards_info"></CheckboxComponent>
-
-      <CheckboxComponent
-        title="popup_html_enable_autoclaim_accounts"
-        checked={claimAccounts}
-        onChange={(value) => saveClaims(claimRewards, value)}
-        skipHintTranslation
-        hint={chrome.i18n.getMessage(
-          'popup_html_enable_autoclaim_accounts_info',
-          [Config.claims.freeAccount.MIN_RC + ''],
-        )}></CheckboxComponent>
+        hint="popup_html_enable_autoclaim_rewards_info"
+      />
+      {activeAccount.rc.max_mana > Config.claims.freeAccount.MIN_RC && (
+        <CheckboxComponent
+          title="popup_html_enable_autoclaim_accounts"
+          checked={claimAccounts}
+          onChange={(value) => saveClaims(claimRewards, value)}
+          skipHintTranslation
+          hint={chrome.i18n.getMessage(
+            'popup_html_enable_autoclaim_accounts_info',
+            [Config.claims.freeAccount.MIN_RC_PCT + ''],
+          )}
+        />
+      )}
     </div>
   );
 };

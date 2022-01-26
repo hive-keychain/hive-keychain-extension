@@ -5,8 +5,8 @@ const Config = {
   claims: {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10 * 60 * 1000),
     freeAccount: {
-      MIN_RC: +(process.env.DEV_CLAIM_ACCOUNT_RC || 95),
-      MIN_HP: +(process.env.DEV_CLAIM_ACCOUNT_HP || 5000),
+      MIN_RC_PCT: +(process.env.DEV_CLAIM_ACCOUNT_RC_PCT || 95),
+      MIN_RC: +(process.env.DEV_CLAIM_ACCOUNT_MIN_RC || 1.1 * 10 * 10 ** 12), // 10% more than 10^13 (current creation cost)
     },
   },
 };

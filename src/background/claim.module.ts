@@ -73,7 +73,7 @@ const iterateClaimAccounts = async (users: string[]) => {
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
     if (
       activeAccount &&
-      parseFloat(rc.estimated_pct) > Config.claims.freeAccount.MIN_RC
+      parseFloat(rc.estimated_pct) > Config.claims.freeAccount.MIN_RC_PCT
     ) {
       Logger.log(`Claiming free account for @${activeAccount.name}`);
       await HiveUtils.claimAccounts(rc, activeAccount);
