@@ -29,7 +29,7 @@
   "dependencies": {
     "@hiveio/dhive": "^1.0.1",
     "@hiveio/hive-js": "^2.0.4",
-    "@types/chrome": "^0.0.176",
+    "@types/chrome": "^0.0.177",
     "@types/crypto-js": "^4.0.2",
     "axios": "^0.25.0",
     "crypto-js": "^4.1.1",
