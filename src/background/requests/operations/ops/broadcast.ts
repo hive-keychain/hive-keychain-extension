@@ -10,6 +10,7 @@ import {
   RequestId,
 } from '@interfaces/keychain.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const broadcastOperations = async (
   data: RequestBroadcast & RequestId,
@@ -48,13 +49,22 @@ export const broadcastOperations = async (
         if (!op[1].extensions) {
           op[1].extensions = [];
         }
+        if (
+          op[0] === 'update_proposal_votes' &&
+          typeof op[1].approve === 'string'
+        ) {
+          op[1].approve = op[1].approve === 'true';
+        }
       }
     }
+    Logger.log(operations, key);
     result = await client.broadcast.sendOperations(
       operations,
       PrivateKey.from(key!),
     );
   } catch (e) {
+    Logger.error('Generic broadcast', e);
+    Logger.error(e);
     err = e;
   } finally {
     const err_message = beautifyErrorMessage(err);
