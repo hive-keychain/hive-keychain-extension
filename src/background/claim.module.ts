@@ -9,6 +9,7 @@ import {
 } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import axios from 'axios';
+import Config from 'src/config';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -20,8 +21,6 @@ let claimAccounts: LocalStorageClaimItem = {};
 
 let claimRewardsInterval: NodeJS.Timeout;
 let claimAccountsInterval: NodeJS.Timeout;
-
-const INTERVAL = 1200 * 1000;
 
 const updateClaims = (claims: LocalStorageClaim) => {
   claimRewards = claims.claimRewards;
@@ -39,7 +38,7 @@ const loadClaims = async () => {
 };
 
 const initAutoClaim = () => {
-  Logger.log('Init auto claim');
+  Logger.log('Init auto claim', Config.claims.FREQUENCY);
   startClaimRewards(claimRewards);
   startClaimAccounts(claimAccounts);
 };
@@ -53,7 +52,7 @@ const startClaimRewards = (claimRewards: LocalStorageClaimItem) => {
     iterateClaimRewards(users);
     claimRewardsInterval = setInterval(async () => {
       iterateClaimRewards(users);
-    }, INTERVAL);
+    }, Config.claims.FREQUENCY);
   } else {
     Logger.info('startClaimRewards: obj not defined');
   }
@@ -72,7 +71,10 @@ const iterateClaimAccounts = async (users: string[]) => {
   for (const userAccount of userExtendedAccounts) {
     const rc = await getRC(userAccount.name);
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
-    if (activeAccount && parseFloat(rc.estimated_pct) > 95) {
+    if (
+      activeAccount &&
+      parseFloat(rc.estimated_pct) > Config.claims.freeAccount.MIN_RC
+    ) {
       Logger.log(`Claiming free account for @${activeAccount.name}`);
       await HiveUtils.claimAccounts(rc, activeAccount);
     }
@@ -121,7 +123,7 @@ const startClaimAccounts = (claimAccounts: LocalStorageClaimItem) => {
     iterateClaimAccounts(users);
     claimAccountsInterval = setInterval(() => {
       iterateClaimAccounts(users);
-    }, INTERVAL);
+    }, Config.claims.FREQUENCY);
   } else {
     Logger.error('startClaimAccounts: obj not defined', '');
   }

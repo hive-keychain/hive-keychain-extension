@@ -546,7 +546,7 @@ const claimAccounts = async (rc: any, activeAccount: ActiveAccount) => {
 const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   return await getClient().broadcast.json(
     {
-      id: Config.mainNet,
+      id: Config.hiveEngine.mainNet,
       required_auths: [activeAccount.name!],
       required_posting_auths: activeAccount.keys.active
         ? []

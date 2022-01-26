@@ -1616,7 +1616,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts_info": {
-    "message": "Automatically claim an account when RC percentage is over 95%.",
+    "message": "Automatically claim an account when RC percentage is over $1%.",
     "description": "When on automated tasks page"
   },
   "popup_html_proposal_request": {

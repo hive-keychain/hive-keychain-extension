@@ -11,6 +11,7 @@ import Select, {
 import { connect, ConnectedProps } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
+import Config from 'src/config';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import './automated-tasks.component.scss';
 
@@ -138,7 +139,11 @@ const AutomatedTasks = ({
         title="popup_html_enable_autoclaim_accounts"
         checked={claimAccounts}
         onChange={(value) => saveClaims(claimRewards, value)}
-        hint="popup_html_enable_autoclaim_accounts_info"></CheckboxComponent>
+        skipHintTranslation
+        hint={chrome.i18n.getMessage(
+          'popup_html_enable_autoclaim_accounts_info',
+          [Config.claims.freeAccount.MIN_RC + ''],
+        )}></CheckboxComponent>
     </div>
   );
 };
