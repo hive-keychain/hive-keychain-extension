@@ -55,7 +55,7 @@ const startClaimRewards = (claimRewards: LocalStorageClaimItem) => {
       iterateClaimRewards(users);
     }, INTERVAL);
   } else {
-    Logger.error('startClaimRewards: obj not defined', '');
+    Logger.info('startClaimRewards: obj not defined');
   }
 };
 
