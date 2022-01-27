@@ -41,15 +41,10 @@ const WitnessVotingSection = ({
       addToLoadingList('html_popup_confirm_transaction_operation');
       removeFromLoadingList('html_popup_vote_witness_operation');
       if (result.id) {
-        const transactionConfirmation =
-          await BlockchainTransactionUtils.tryConfirmTransaction(result.id);
+        await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
-        if (transactionConfirmation.error) {
-          setErrorMessage('html_popup_witness_vote_transaction_not_had_error');
-        } else {
-          refreshActiveAccount();
-          setSuccessMessage('html_popup_vote_stoodkev_witness_success');
-        }
+        refreshActiveAccount();
+        setSuccessMessage('html_popup_vote_stoodkev_witness_success');
       }
     }
   };
