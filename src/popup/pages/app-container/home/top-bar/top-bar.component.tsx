@@ -60,7 +60,10 @@ const TopBar = ({
 
   return (
     <div className="top-bar">
-      <img src="/assets/images/keychain_icon_small.png" />
+      <img
+        src="/assets/images/keychain_icon_small.png"
+        onClick={() => refreshActiveAccount()}
+      />
       <div className="spacer"></div>
       {hasRewardToClaim && (
         <Icon
