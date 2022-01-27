@@ -51,7 +51,6 @@ const TopBar = ({
       activeAccount.account.reward_hbd_balance,
       activeAccount.account.reward_vesting_balance,
     );
-    console.log(claimSuccessful);
     if (claimSuccessful) {
       setHasRewardToClaim(false);
       refreshActiveAccount();
