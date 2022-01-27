@@ -278,75 +278,75 @@ const TransferFunds = ({
           availableCurrency={currencyLabels[selectedCurrency]}
           availableLabel={'popup_html_balance'}
         />
-
-        <InputComponent
-          type={InputType.TEXT}
-          logo={Icons.AT}
-          placeholder="popup_html_username"
-          value={receiverUsername}
-          onChange={setReceiverUsername}
-          autocompleteValues={autocompleteTransferUsernames}
-        />
-        <div className="value-panel">
-          <div className="value-input-panel">
-            <InputComponent
-              type={InputType.NUMBER}
-              placeholder="0.000"
-              skipTranslation={true}
-              value={amount}
-              min={0}
-              onChange={setAmount}
-              onSetToMaxClicked={setAmountToMaxValue}
+        <div className="form-container">
+          <InputComponent
+            type={InputType.TEXT}
+            logo={Icons.AT}
+            placeholder="popup_html_username"
+            value={receiverUsername}
+            onChange={setReceiverUsername}
+            autocompleteValues={autocompleteTransferUsernames}
+          />
+          <div className="value-panel">
+            <div className="value-input-panel">
+              <InputComponent
+                type={InputType.NUMBER}
+                placeholder="0.000"
+                skipTranslation={true}
+                value={amount}
+                min={0}
+                onChange={setAmount}
+                onSetToMaxClicked={setAmountToMaxValue}
+              />
+            </div>
+            <Select
+              values={[]}
+              options={options}
+              onChange={() => undefined}
+              contentRenderer={customLabelRender}
+              itemRenderer={customItemRender}
+              className="select-currency"
             />
           </div>
-          <Select
-            values={[]}
-            options={options}
-            onChange={() => undefined}
-            contentRenderer={customLabelRender}
-            itemRenderer={customItemRender}
-            className="select-currency"
+
+          <InputComponent
+            type={InputType.TEXT}
+            placeholder="popup_html_memo_optional"
+            value={memo}
+            onChange={setMemo}
+          />
+
+          <CheckboxComponent
+            title="popup_html_recurrent_transfer"
+            checked={isRecurrent}
+            onChange={setIsRecurrent}></CheckboxComponent>
+          {isRecurrent && (
+            <div className="recurrent-panel">
+              <InputComponent
+                type={InputType.NUMBER}
+                placeholder="popup_html_recurrent_transfer_frequency"
+                min={24}
+                step={1}
+                value={frequency}
+                onChange={setFrequency}
+                hint={'popup_html_recurrent_transfer_frequency_hint'}
+              />
+              <InputComponent
+                type={InputType.NUMBER}
+                placeholder="popup_html_recurrent_transfer_iterations"
+                min={2}
+                step={1}
+                value={iteration}
+                onChange={setIterations}
+                hint={'popup_html_recurrent_transfer_iterations_hint'}
+              />
+            </div>
+          )}
+          <ButtonComponent
+            label={'popup_html_send_transfer'}
+            onClick={handleClickOnSend}
           />
         </div>
-
-        <InputComponent
-          type={InputType.TEXT}
-          placeholder="popup_html_memo_optional"
-          value={memo}
-          onChange={setMemo}
-        />
-
-        <CheckboxComponent
-          title="popup_html_recurrent_transfer"
-          checked={isRecurrent}
-          onChange={setIsRecurrent}></CheckboxComponent>
-        {isRecurrent && (
-          <div className="recurrent-panel">
-            <InputComponent
-              type={InputType.NUMBER}
-              placeholder="popup_html_recurrent_transfer_frequency"
-              min={24}
-              step={1}
-              value={frequency}
-              onChange={setFrequency}
-              hint={'popup_html_recurrent_transfer_frequency_hint'}
-            />
-            <InputComponent
-              type={InputType.NUMBER}
-              placeholder="popup_html_recurrent_transfer_iterations"
-              min={2}
-              step={1}
-              value={iteration}
-              onChange={setIterations}
-              hint={'popup_html_recurrent_transfer_iterations_hint'}
-            />
-          </div>
-        )}
-        {!isRecurrent && <div className="divider"></div>}
-        <ButtonComponent
-          label={'popup_html_send_transfer'}
-          onClick={handleClickOnSend}
-        />
       </div>
     </div>
   );
