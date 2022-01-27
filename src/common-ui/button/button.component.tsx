@@ -13,6 +13,7 @@ export enum ButtonType {
 interface ButtonProps {
   onClick: () => void;
   label: string;
+  skipLabelTranslation?: boolean;
   labelParams?: string[];
   logo?: Icons | string;
   type?: ButtonType;
@@ -26,7 +27,9 @@ const ButtonComponent = (props: ButtonProps) => {
       }`}
       onClick={props.onClick}>
       <div className="button-label">
-        {chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
+        {props.skipLabelTranslation
+          ? props.label
+          : chrome.i18n.getMessage(props.label, props.labelParams)}{' '}
       </div>
       {props.logo && (
         <Icon
