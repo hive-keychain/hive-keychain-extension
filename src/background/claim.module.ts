@@ -23,9 +23,14 @@ let claimRewardsInterval: NodeJS.Timeout;
 let claimAccountsInterval: NodeJS.Timeout;
 
 const updateClaims = (claims: LocalStorageClaim) => {
-  claimRewards = claims.claimRewards;
-  claimAccounts = claims.claimAccounts;
-  initAutoClaim();
+  if (MkModule.getMk()) {
+    Logger.log('Start claiming');
+    claimRewards = claims.claimRewards;
+    claimAccounts = claims.claimAccounts;
+    initAutoClaim();
+  } else {
+    Logger.log('Waiting for mk to start claiming');
+  }
 };
 
 const loadClaims = async () => {
@@ -38,7 +43,7 @@ const loadClaims = async () => {
 };
 
 const initAutoClaim = () => {
-  Logger.log('Init auto claim', Config.claims.FREQUENCY);
+  Logger.log(`Will autoclaim every ${Config.claims.FREQUENCY / 60000}mn`);
   startClaimRewards(claimRewards);
   startClaimAccounts(claimAccounts);
 };
@@ -149,6 +154,11 @@ const createActiveAccount = async (
   return activeAccount;
 };
 
+export type AccountResourceCredits = {
+  estimated_max: number;
+  estimated_pct: string;
+};
+
 const getRC = async (username: string) => {
   let data = {
     jsonrpc: '2.0',
@@ -176,7 +186,7 @@ const getRC = async (username: string) => {
   if (estimated_mana > estimated_max) estimated_mana = estimated_max;
 
   const estimated_pct = (estimated_mana / estimated_max) * 100;
-  const res = {
+  const res: AccountResourceCredits = {
     estimated_max: estimated_max,
     estimated_pct: estimated_pct.toFixed(2),
   };
@@ -185,7 +195,6 @@ const getRC = async (username: string) => {
 
 const ClaimModule = {
   updateClaims,
-  initAutoClaim,
   loadClaims,
 };
 

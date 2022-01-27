@@ -1,4 +1,5 @@
 import KeychainApi from '@api/keychain';
+import { AccountResourceCredits } from '@background/claim.module';
 import {
   Asset,
   ClaimRewardBalanceOperation,
@@ -518,13 +519,16 @@ const delegateVestingShares = async (
   }
 };
 
-const claimAccounts = async (rc: any, activeAccount: ActiveAccount) => {
+const claimAccounts = async (
+  rc: AccountResourceCredits,
+  activeAccount: ActiveAccount,
+) => {
   try {
-    const CLAIM_ACCOUNT_RC = 6 * 10 ** 12;
+    const freeAccountConfig = Config.claims.freeAccount;
 
     if (
-      parseFloat(rc.estimated_pct) > 95 &&
-      rc.estimated_max / CLAIM_ACCOUNT_RC > 1.42
+      parseFloat(rc.estimated_pct) > freeAccountConfig.MIN_RC_PCT &&
+      rc.estimated_max > freeAccountConfig.MIN_RC
     ) {
       await getClient().broadcast.sendOperations(
         [
@@ -540,7 +544,9 @@ const claimAccounts = async (rc: any, activeAccount: ActiveAccount) => {
         PrivateKey.fromString(activeAccount.keys.active as string),
       );
     }
-  } catch (err) {}
+  } catch (err) {
+    Logger.error(err);
+  }
 };
 
 const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
