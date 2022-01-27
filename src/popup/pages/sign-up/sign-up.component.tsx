@@ -19,7 +19,7 @@ const SignUp = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
   const submitMk = (): any => {
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
-        setMk(newPassword);
+        setMk(newPassword, true);
         navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
       } else {
         setErrorMessage('popup_password_regex');
