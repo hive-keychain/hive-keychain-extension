@@ -106,25 +106,13 @@ const WitnessTab = ({
     if (activeAccount.account.witness_votes.includes(witness.name)) {
       try {
         addToLoadingList('html_popup_unvote_witness_operation');
-        const transactionResult = await WitnessUtils.unvoteWitness(
-          witness,
-          activeAccount,
-        );
+        await WitnessUtils.unvoteWitness(witness, activeAccount);
         addToLoadingList('html_popup_confirm_transaction_operation');
         removeFromLoadingList('html_popup_unvote_witness_operation');
-        const transactionConfirmResult =
-          await BlockchainTransactionUtils.tryConfirmTransaction(
-            transactionResult.id,
-          );
+        await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
-        if (transactionConfirmResult.error) {
-          setErrorMessage(
-            'html_popup_witness_unvote_transaction_not_had_error',
-          );
-        } else {
-          refreshActiveAccount();
-          setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
-        }
+        refreshActiveAccount();
+        setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
       } catch (err) {
         setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
         Logger.error(err);
@@ -135,25 +123,15 @@ const WitnessTab = ({
     } else {
       try {
         addToLoadingList('html_popup_vote_witness_operation');
-        const transactionResult = await WitnessUtils.voteWitness(
-          witness,
-          activeAccount,
-        );
+        await WitnessUtils.voteWitness(witness, activeAccount);
 
         addToLoadingList('html_popup_confirm_transaction_operation');
         removeFromLoadingList('html_popup_vote_witness_operation');
-        const transactionConfirmResult =
-          await BlockchainTransactionUtils.tryConfirmTransaction(
-            transactionResult.id,
-          );
+        await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
 
-        if (transactionConfirmResult.error) {
-          setErrorMessage('html_popup_witness_vote_transaction_not_had_error');
-        } else {
-          refreshActiveAccount();
-          setSuccessMessage('popup_success_wit', [`${witness.name}`]);
-        }
+        refreshActiveAccount();
+        setSuccessMessage('popup_success_wit', [`${witness.name}`]);
       } catch (err) {
         setErrorMessage('popup_error_wit', [`${witness.name}`]);
         Logger.error(err);

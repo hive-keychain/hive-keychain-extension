@@ -1,4 +1,11 @@
 @import '/src/popup/variable.scss';
+
+@font-face {
+  font-family: Futura;
+  src: url('/assets/fonts/Futura-Boo.otf');
+  font-weight: 400;
+}
+
 html {
   height: 100%;
 }
@@ -24,7 +31,7 @@ body {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  row-gap: 32px;
+  row-gap: 24px;
   font-size: 16px;
 }
 
@@ -104,4 +111,11 @@ img {
 .title {
   text-transform: uppercase;
   font-size: 20px;
+}
+
+.upload-panel {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  min-height: 105px;
 }

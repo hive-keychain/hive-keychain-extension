@@ -1,5 +1,8 @@
 import { BackgroundMessage } from '@background/background-message.interface';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import FileUtils from 'src/utils/file.utils';
 import './import-file.scss';
@@ -21,6 +24,8 @@ const ImportFile = ({
 }: PropsType) => {
   const [selectedFile, setSelectedFile] = useState<File>();
   const [feedback, setFeedBack] = useState('');
+
+  const inputEl = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = (event: any) => {
     setSelectedFile(event.target.files[0]);
@@ -58,6 +63,10 @@ const ImportFile = ({
     }
   };
 
+  const handleOpenFileInput = () => {
+    inputEl.current?.click();
+  };
+
   return (
     <div className="import-file">
       <div className="title-panel">
@@ -69,18 +78,26 @@ const ImportFile = ({
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage(text),
         }}></div>
+      <div className="upload-panel">
+        <ButtonComponent
+          label="Choose a file"
+          onClick={handleOpenFileInput}
+          skipLabelTranslation={true}></ButtonComponent>
 
-      <input
-        type="file"
-        accept={accept}
-        id="file"
-        onChange={handleFileUpload}
-      />
-      <label htmlFor="file">Choose a file</label>
-      <span id="file_span">{selectedFile?.name}</span>
-      <button id="proceed" onClick={importKeysFromFile}>
-        {chrome.i18n.getMessage('popup_html_import')}
-      </button>
+        <input
+          ref={inputEl}
+          type="file"
+          accept={accept}
+          id="file"
+          onChange={handleFileUpload}
+        />
+        <span id="file_span">{selectedFile?.name}</span>
+      </div>
+
+      <ButtonComponent
+        onClick={importKeysFromFile}
+        label="popup_html_import"
+        type={ButtonType.RAISED}></ButtonComponent>
 
       <div className="feedback">{chrome.i18n.getMessage(feedback)}</div>
     </div>

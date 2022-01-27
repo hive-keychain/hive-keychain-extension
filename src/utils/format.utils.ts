@@ -18,7 +18,7 @@ const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   parseFloat(props.total_vesting_shares + '');
 
 const formatCurrencyValue = (value: string | Asset | number) => {
-  if (!value) {
+  if (value === undefined || value === null) {
     return '...';
   }
   return withCommas(

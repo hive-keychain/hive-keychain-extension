@@ -23,8 +23,8 @@ const DropdownMenu = ({ dropdownMenuItems, position }: DropdownMenuProps) => {
         className="dropdown-menu"
         style={{
           position: 'absolute',
-          top: position.y + 3,
-          left: position.x - DROPDOWN_MENU_WIDTH,
+          top: position.y + 13,
+          left: position.x + 10 - DROPDOWN_MENU_WIDTH,
           width: DROPDOWN_MENU_WIDTH,
         }}>
         {dropdownMenuItems.map((dropdownMenuItem, index) => (

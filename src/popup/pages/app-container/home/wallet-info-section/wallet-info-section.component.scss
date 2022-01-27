@@ -2,12 +2,12 @@
   background-color: rgba(102, 102, 102, 0.75);
   .wallet-info-row {
     display: grid;
-    grid-template-columns: 3fr 2fr 24px;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
     height: 50px;
     column-gap: 16px;
     justify-content: flex-end;
-    margin-right: 32px;
+    position: relative;
 
     .dropdown-arrow {
       padding-bottom: 3px;
@@ -15,6 +15,8 @@
       width: 20px;
       height: auto;
       cursor: pointer;
+      position: absolute;
+      right: 24px;
     }
 
     .value,

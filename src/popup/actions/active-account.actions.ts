@@ -4,13 +4,22 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import HiveUtils from 'src/utils/hive.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 
+const TIME_REFERENCE = 1643236071000;
+
 export const refreshActiveAccount =
   (): AppThunk => async (dispatch, getState) => {
-    const account = getState().accounts.find(
-      (localAccount: LocalAccount) =>
-        localAccount.name === getState().activeAccount.name,
+    const delay = Math.min(
+      ((Date.now() - TIME_REFERENCE) % 3) * 1000 + 100,
+      3000,
     );
-    dispatch(loadActiveAccount(account));
+
+    setTimeout(() => {
+      const account = getState().accounts.find(
+        (localAccount: LocalAccount) =>
+          localAccount.name === getState().activeAccount.name,
+      );
+      dispatch(loadActiveAccount(account));
+    }, delay);
   };
 
 export const refreshKeys = (localAccount: LocalAccount) => {
