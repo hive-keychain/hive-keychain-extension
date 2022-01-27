@@ -1,3 +1,4 @@
+@import './variable.scss';
 @font-face {
   font-family: Futura;
   src: url('/assets/fonts/Futura-Boo.otf');
@@ -50,4 +51,27 @@
 
 .css-wmw4vi-ReactDropdownSelect {
   padding: 2px 0px !important;
+}
+
+.Toastify__progress-bar {
+  bottom: unset;
+  top: 0;
+}
+
+.Toastify__toast-icon {
+  display: none !important;
+}
+
+.Toastify__progress-bar {
+  background: white !important;
+}
+
+.Toastify__toast--error {
+  background: $message-container-error !important;
+}
+.Toastify__toast--info {
+  background: $message-container-info !important;
+}
+.Toastify__toast--success {
+  background: $message-container-success !important;
 }
