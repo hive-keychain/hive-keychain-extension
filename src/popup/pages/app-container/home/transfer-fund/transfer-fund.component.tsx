@@ -294,6 +294,7 @@ const TransferFunds = ({
               placeholder="0.000"
               skipTranslation={true}
               value={amount}
+              min={0}
               onChange={setAmount}
               onSetToMaxClicked={setAmountToMaxValue}
             />
