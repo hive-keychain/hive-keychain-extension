@@ -1,7 +1,6 @@
 @import '/src/popup/variable.scss';
 
 .power-up-down-top-panel {
-  height: 70px;
   background-color: $grey-transparent;
   margin: 0px -24px;
   padding: 16px 32px;
@@ -9,9 +8,10 @@
   flex-direction: column;
   justify-content: center;
   row-gap: 16px;
+  min-height: 50px;
   .panel-row {
     display: flex;
-    font-size: 22px;
+    font-size: 20px;
     justify-content: space-between;
   }
 }
