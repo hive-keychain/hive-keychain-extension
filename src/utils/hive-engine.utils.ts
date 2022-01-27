@@ -11,7 +11,7 @@ type SendTokenProps = {
 
 const HiveEngineUtils = {
   sendToken(client: Client, data: SendTokenProps, key: PrivateKey) {
-    const id = Config.mainNet;
+    const id = Config.hiveEngine.MAINNET;
     const json = JSON.stringify({
       contractName: 'tokens',
       contractAction: 'transfer',

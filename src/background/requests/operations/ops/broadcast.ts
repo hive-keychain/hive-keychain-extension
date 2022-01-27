@@ -48,6 +48,12 @@ export const broadcastOperations = async (
         if (!op[1].extensions) {
           op[1].extensions = [];
         }
+        if (
+          op[0] === 'update_proposal_votes' &&
+          typeof op[1].approve === 'string'
+        ) {
+          op[1].approve = op[1].approve === 'true';
+        }
       }
     }
     result = await client.broadcast.sendOperations(

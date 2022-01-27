@@ -1616,7 +1616,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts_info": {
-    "message": "Automatically claim an account when RC percentage is over 95%.",
+    "message": "Claim a free account ticket when your RC percentage are over $1%. Depending on your Hive Power, this might use up a big chunk of your RC.",
     "description": "When on automated tasks page"
   },
   "popup_html_proposal_request": {
