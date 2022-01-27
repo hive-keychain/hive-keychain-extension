@@ -24,12 +24,9 @@ let claimAccountsInterval: NodeJS.Timeout;
 
 const updateClaims = (claims: LocalStorageClaim) => {
   if (MkModule.getMk()) {
-    Logger.log('Start claiming');
     claimRewards = claims.claimRewards;
     claimAccounts = claims.claimAccounts;
     initAutoClaim();
-  } else {
-    Logger.log('Waiting for mk to start claiming');
   }
 };
 
