@@ -27,9 +27,7 @@ const AutomatedTasks = ({
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
     accounts[0].name,
   );
-  console.log(
-    (activeAccount.rc.max_mana / Config.claims.freeAccount.MIN_RC) * 100,
-  );
+
   useEffect(() => {
     init();
     setOptions(
