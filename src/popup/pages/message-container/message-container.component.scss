@@ -43,8 +43,13 @@
     background-color: rgba(255, 255, 255, 0.548);
     border-bottom-right-radius: 2px;
     border-top-right-radius: 2px;
-    width: 0%;
+    width: 0px;
     height: 6px;
-    transition: width 5s;
+    transition: width 20s;
+    -webkit-transition: width 20s;
+    -moz-transition: width 20s;
+    &.full {
+      width: 350px;
+    }
   }
 }
