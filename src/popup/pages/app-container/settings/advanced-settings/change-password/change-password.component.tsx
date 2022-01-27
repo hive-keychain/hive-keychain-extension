@@ -33,7 +33,7 @@ const ChangePassword = ({
     if (newPassword === newPasswordConfirm) {
       if (MkUtils.isPasswordValid(newPassword)) {
         AccountUtils.saveAccounts(accounts, newPassword);
-        setMk(newPassword);
+        setMk(newPassword, true);
         navigateTo(Screen.HOME_PAGE, true);
       } else {
         setErrorMessage('popup_password_regex');

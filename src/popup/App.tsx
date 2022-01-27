@@ -80,7 +80,7 @@ const App = ({
   };
   const onReceivedAutolockCmd = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.LOCK_APP) {
-      setMk('');
+      setMk('', false);
       chrome.runtime.onMessage.removeListener(onReceivedAutolockCmd);
     }
   };
@@ -102,7 +102,7 @@ const App = ({
   const onSentBackMkListener = async (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_MK) {
       if (message.value?.length && message.value.length !== mk) {
-        setMk(message.value);
+        setMk(message.value, false);
         retrieveAccounts(message.value);
       } else {
         setHasStoredAccounts(await AccountUtils.hasStoredAccounts());

@@ -17,7 +17,7 @@ const SignIn = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
 
   const login = async () => {
     if (await MkUtils.login(password)) {
-      setMk(password);
+      setMk(password, true);
     } else {
       setErrorMessage('wrong_password');
     }
