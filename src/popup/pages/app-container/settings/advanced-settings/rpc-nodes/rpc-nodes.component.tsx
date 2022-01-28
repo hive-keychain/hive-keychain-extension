@@ -105,7 +105,9 @@ const RpcNodes = ({
     setIsAddRpcPanelDisplayed(false);
     RpcUtils.addCustomRpc(newCustomRpc);
     setCustomRpcs([...customRpcs, newCustomRpc]);
-    setActiveRpc(newCustomRpc);
+    if (setNewRpcAsActive) {
+      setActiveRpc(newCustomRpc);
+    }
   };
 
   const customLabelRender = (selectProps: SelectRenderer<RpcListItem>) => {
