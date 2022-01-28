@@ -81,12 +81,14 @@ const ProxyTab = ({
         <ButtonComponent
           label={'html_popup_set_as_proxy'}
           onClick={() => setAsProxy()}
+          fixToBottom
         />
       )}
       {activeAccount.account.proxy.length > 0 && (
         <ButtonComponent
           label={'html_popup_clear_proxy'}
           onClick={() => removeProxy()}
+          fixToBottom
         />
       )}
     </div>

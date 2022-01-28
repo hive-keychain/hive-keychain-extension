@@ -50,6 +50,7 @@ $caption-font-size: 16px;
   cursor: not-allowed;
   min-width: 50px;
   flex: 1;
+  text-align: center;
 }
 
 @mixin caption {

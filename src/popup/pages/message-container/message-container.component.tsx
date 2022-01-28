@@ -57,7 +57,7 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       onClick={() => close()}
       closeOnClick={true}
       draggable={false}
-      bodyStyle={{ fontSize: '14px', fontFamily: 'Futura', fontWeight: '400' }}
+      bodyStyle={{ fontSize: '16px', fontFamily: 'Futura', fontWeight: '400' }}
     />
   );
 };

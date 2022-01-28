@@ -146,7 +146,6 @@ const getVotePowerReserveRate = (properties: GlobalProperties) => {
 };
 
 const getTimeBeforeFull = (votingPower: number) => {
-  let fullInString;
   let remainingPowerToGet = 100.0 - votingPower;
 
   // 1% every 72minutes
@@ -162,29 +161,41 @@ const getTimeBeforeFull = (votingPower: number) => {
       (minutesNeeded - fullInDays * 1440 - fullInHours * 60).toString(),
     );
 
-    fullInString =
-      (fullInDays === 0
-        ? ' '
-        : fullInDays +
+    const fullIn = [];
+
+    if (fullInDays) {
+      fullIn.push(
+        fullInDays +
           (fullInDays > 1
-            ? ` ${chrome.i18n.getMessage('days')} `
-            : ` ${chrome.i18n.getMessage('day')} `)) +
-      (fullInHours === 0
-        ? ' '
-        : fullInHours +
+            ? ` ${chrome.i18n.getMessage('days')}`
+            : ` ${chrome.i18n.getMessage('day')}`),
+      );
+    }
+    if (fullInHours) {
+      fullIn.push(
+        fullInHours +
           (fullInHours > 1
-            ? ` ${chrome.i18n.getMessage('hours')} `
-            : ` ${chrome.i18n.getMessage('hour')} `)) +
-      (fullInMinutes === 0
-        ? ' '
-        : fullInMinutes +
+            ? ` ${chrome.i18n.getMessage('hours')}`
+            : ` ${chrome.i18n.getMessage('hour')}`),
+      );
+    }
+    if (fullInMinutes) {
+      fullIn.push(
+        fullInMinutes +
           (fullInMinutes > 1
-            ? ` ${chrome.i18n.getMessage('minutes')} `
-            : ` ${chrome.i18n.getMessage('minute')} `));
+            ? ` ${chrome.i18n.getMessage('minutes')}`
+            : ` ${chrome.i18n.getMessage('minute')}`),
+      );
+    }
+
+    let fullInString = fullIn.join(' and ');
+
+    if (fullIn.length === 3) {
+      fullInString = fullInString.replace(' and', ',');
+    }
+
+    return chrome.i18n.getMessage('full_in', [fullInString]);
   }
-  return chrome.i18n.getMessage('full_in', [
-    fullInString.replace(/\s+/g, ' ').trim(),
-  ]);
 };
 
 export const getConversionRequests = async (name: string) => {
