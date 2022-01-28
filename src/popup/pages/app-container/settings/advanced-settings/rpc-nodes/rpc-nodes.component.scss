@@ -64,7 +64,7 @@
   flex-direction: column;
   row-gap: 12px;
   .add-rpc-caption {
-    font-size: 18px;
+    @include caption;
     margin-top: 12px;
   }
 }

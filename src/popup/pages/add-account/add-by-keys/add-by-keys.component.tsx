@@ -39,7 +39,11 @@ const AddByKeys = ({
 
   return (
     <div className="add-by-keys-page">
-      <PageTitleComponent title="popup_html_setup" isBackButtonEnabled={true} />
+      <PageTitleComponent
+        title="popup_html_setup"
+        isBackButtonEnabled={true}
+        isCloseButtonDisabled={localAccounts.length === 0}
+      />
       <div
         className="caption"
         dangerouslySetInnerHTML={{
