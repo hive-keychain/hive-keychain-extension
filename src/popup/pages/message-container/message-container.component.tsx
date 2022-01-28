@@ -59,19 +59,6 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       draggable={false}
       bodyStyle={{ fontSize: '14px', fontFamily: 'Futura', fontWeight: '400' }}
     />
-    // <div className="message-container" onClick={() => close()}>
-    //   {errorMessage.key.length > 0 && (
-    //     <div className={`container ${errorMessage.type}`}>
-    //       {/* <div className="barHolder">
-    //         <div className={`bar ${isFull ? 'full' : ''}`}></div>
-    //       </div> */}
-
-    //       <div className="message">
-    //         {chrome.i18n.getMessage(errorMessage.key, errorMessage.params)}
-    //       </div>
-    //     </div>
-    //   )}
-    // </div>
   );
 };
 
