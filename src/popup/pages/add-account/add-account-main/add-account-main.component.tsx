@@ -65,27 +65,33 @@ const AddAccountMain = ({
 
   return (
     <div className="add-account-page">
-      <PageTitleComponent title="popup_html_setup" isBackButtonEnabled={true} />
+      <PageTitleComponent
+        title="popup_html_setup"
+        isBackButtonEnabled={true}
+        isCloseButtonDisabled
+      />
       <div
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_chose_add_method'),
         }}></div>
 
-      <ButtonComponent
-        label={'popup_html_add_by_keys'}
-        onClick={handleAddByKeys}
-      />
-      {accounts.length > 0 && (
+      <div className="button-container">
         <ButtonComponent
-          label={'popup_html_add_by_auth'}
-          onClick={handleAddByAuth}
+          label={'popup_html_add_by_keys'}
+          onClick={handleAddByKeys}
         />
-      )}
-      <ButtonComponent
-        label={'popup_html_import_keys'}
-        onClick={handleImportKeys}
-      />
+        {accounts.length > 0 && (
+          <ButtonComponent
+            label={'popup_html_add_by_auth'}
+            onClick={handleAddByAuth}
+          />
+        )}
+        <ButtonComponent
+          label={'popup_html_import_keys'}
+          onClick={handleImportKeys}
+        />
+      </div>
     </div>
   );
 };
