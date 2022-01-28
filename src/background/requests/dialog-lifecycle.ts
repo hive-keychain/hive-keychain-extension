@@ -1,6 +1,5 @@
 import { getRequestHandler } from '@background/requests';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import Logger from 'src/utils/logger.utils';
 
 export const createPopup = (
   callback: () => void,
@@ -9,7 +8,6 @@ export const createPopup = (
   let width = 350;
   getRequestHandler().setConfirmed(false);
   //Ensuring only one window is opened by the extension at a time.
-  Logger.log('winid', getRequestHandler().windowId);
   if (getRequestHandler().windowId) {
     removeWindow(getRequestHandler().windowId!);
     getRequestHandler().setWindowId(undefined);
@@ -28,7 +26,6 @@ export const createPopup = (
       },
       (win) => {
         if (!win) return;
-        Logger.log('setting winid to', win.id);
         getRequestHandler().setWindowId(win.id);
         waitUntilDialogIsReady(100, callback);
       },
