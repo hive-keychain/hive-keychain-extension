@@ -81,7 +81,11 @@ const AutoLock = ({ setSuccessMessage, goBack }: PropsFromRedux) => {
         />
       )}
 
-      <ButtonComponent label={'popup_html_save'} onClick={() => save()} />
+      <ButtonComponent
+        label={'popup_html_save'}
+        onClick={() => save()}
+        fixToBottom
+      />
     </div>
   );
 };

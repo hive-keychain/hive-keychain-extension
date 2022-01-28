@@ -3,7 +3,6 @@
 .confirmation-page {
   @include pageLayoutRowGap;
   .confirmation-top {
-    min-height: 475px;
     display: flex;
     flex-direction: column;
     row-gap: 16px;
@@ -27,5 +26,14 @@
         font-size: 16px;
       }
     }
+  }
+
+  .bottom-panel {
+    position: fixed;
+    left: 24px;
+    bottom: 32px;
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
   }
 }

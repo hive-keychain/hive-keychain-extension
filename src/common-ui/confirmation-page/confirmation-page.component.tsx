@@ -1,7 +1,10 @@
+import { goBack } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import ButtonComponent, {
+  ButtonType,
+} from 'src/common-ui/button/button.component';
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import './confirmation-page.component.scss';
@@ -11,13 +14,14 @@ const ConfirmationPage = ({
   message,
   afterConfirmAction,
   warningMessage,
+  goBack,
 }: PropsType) => {
   return (
     <div className="confirmation-page">
       <div className="confirmation-top">
         <PageTitleComponent
           title={'popup_html_confirm'}
-          isBackButtonEnabled={true}></PageTitleComponent>
+          isBackButtonEnabled={false}></PageTitleComponent>
 
         <div
           className="introduction"
@@ -38,9 +42,15 @@ const ConfirmationPage = ({
           ))}
       </div>
 
-      <ButtonComponent
-        label={'popup_html_confirm'}
-        onClick={afterConfirmAction}></ButtonComponent>
+      <div className="bottom-panel">
+        <ButtonComponent
+          label={'dialog_cancel'}
+          onClick={goBack}></ButtonComponent>
+        <ButtonComponent
+          label={'popup_html_confirm'}
+          onClick={afterConfirmAction}
+          type={ButtonType.RAISED}></ButtonComponent>
+      </div>
     </div>
   );
 };
@@ -54,7 +64,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { goBack });
 type PropsType = ConnectedProps<typeof connector>;
 
 export const ConfirmationPageComponent = connector(ConfirmationPage);

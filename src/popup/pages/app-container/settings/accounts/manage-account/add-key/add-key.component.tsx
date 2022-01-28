@@ -39,7 +39,11 @@ const AddKey = ({ navParams, goBack, addKey }: PropsType) => {
         onChange={setPrivateKey}
         onEnterPress={importKey}
       />
-      <ButtonComponent label="popup_html_import_key" onClick={importKey} />
+      <ButtonComponent
+        label="popup_html_import_key"
+        onClick={importKey}
+        fixToBottom
+      />
     </div>
   );
 };

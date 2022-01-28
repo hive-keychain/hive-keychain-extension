@@ -21,7 +21,11 @@ const ClearAllData = ({}: PropsFromRedux) => {
           __html: chrome.i18n.getMessage('popup_html_clear_all_data_desc'),
         }}></p>
 
-      <ButtonComponent label="popup_html_confirm" onClick={() => reset()} />
+      <ButtonComponent
+        label="popup_html_confirm"
+        onClick={() => reset()}
+        fixToBottom
+      />
     </div>
   );
 };

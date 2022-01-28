@@ -219,6 +219,7 @@ const RpcNodes = ({
           <ButtonComponent
             label={'popup_html_save'}
             onClick={() => handleSaveNewRpcClicked()}
+            fixToBottom
           />
         </div>
       )}

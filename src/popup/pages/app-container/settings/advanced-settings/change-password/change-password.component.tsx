@@ -79,7 +79,11 @@ const ChangePassword = ({
         onEnterPress={submitMk}
       />
 
-      <ButtonComponent label={'popup_html_submit'} onClick={submitMk} />
+      <ButtonComponent
+        label={'popup_html_submit'}
+        onClick={submitMk}
+        fixToBottom
+      />
     </div>
   );
 };

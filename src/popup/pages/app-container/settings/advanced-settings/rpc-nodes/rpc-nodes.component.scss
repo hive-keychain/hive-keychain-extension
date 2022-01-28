@@ -62,7 +62,7 @@
 .add-rpc-panel {
   display: flex;
   flex-direction: column;
-  row-gap: 12px;
+  row-gap: 20px;
   .add-rpc-caption {
     @include caption;
     margin-top: 12px;

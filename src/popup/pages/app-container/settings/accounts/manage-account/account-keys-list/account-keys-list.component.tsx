@@ -69,24 +69,26 @@ const AccountKeysList = ({
 
   return (
     <div className="account-keys-list">
-      <AccountKeysListItemComponent
-        privateKey={activeAccount.keys.posting}
-        publicKey={activeAccount.keys.postingPubkey}
-        keyName={'popup_html_posting'}
-        keyType={KeyType.POSTING}
-      />
-      <AccountKeysListItemComponent
-        privateKey={activeAccount.keys.active}
-        publicKey={activeAccount.keys.activePubkey}
-        keyName={'popup_html_active'}
-        keyType={KeyType.ACTIVE}
-      />
-      <AccountKeysListItemComponent
-        privateKey={activeAccount.keys.memo}
-        publicKey={activeAccount.keys.memoPubkey}
-        keyName={'popup_html_memo'}
-        keyType={KeyType.MEMO}
-      />
+      <div className="keys-panel">
+        <AccountKeysListItemComponent
+          privateKey={activeAccount.keys.posting}
+          publicKey={activeAccount.keys.postingPubkey}
+          keyName={'popup_html_posting'}
+          keyType={KeyType.POSTING}
+        />
+        <AccountKeysListItemComponent
+          privateKey={activeAccount.keys.active}
+          publicKey={activeAccount.keys.activePubkey}
+          keyName={'popup_html_active'}
+          keyType={KeyType.ACTIVE}
+        />
+        <AccountKeysListItemComponent
+          privateKey={activeAccount.keys.memo}
+          publicKey={activeAccount.keys.memoPubkey}
+          keyName={'popup_html_memo'}
+          keyType={KeyType.MEMO}
+        />
+      </div>
 
       <ButtonComponent
         label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}

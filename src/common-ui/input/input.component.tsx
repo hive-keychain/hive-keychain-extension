@@ -80,7 +80,7 @@ const InputComponent = (props: InputProps) => {
           type={IconType.OUTLINED}
           additionalClassName="input-img display-password"></Icon>
       )}
-      {props.type === InputType.PASSWORD && isPasswordDisplay && isFocused && (
+      {props.type === InputType.PASSWORD && isPasswordDisplay && (
         <Icon
           onClick={() => setPasswordDisplayed(false)}
           name={Icons.HIDDEN}

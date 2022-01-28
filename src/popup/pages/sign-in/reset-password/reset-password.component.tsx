@@ -27,7 +27,11 @@ const ResetPasswordPage = ({}: PropsFromRedux) => {
           }}></p>
       </div>
 
-      <ButtonComponent label="popup_html_confirm" onClick={() => reset()} />
+      <ButtonComponent
+        label="popup_html_confirm"
+        onClick={() => reset()}
+        fixToBottom
+      />
     </div>
   );
 };
