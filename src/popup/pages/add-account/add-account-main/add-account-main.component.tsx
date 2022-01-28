@@ -68,7 +68,7 @@ const AddAccountMain = ({
       <PageTitleComponent
         title="popup_html_setup"
         isBackButtonEnabled={true}
-        isCloseButtonDisabled
+        isCloseButtonDisabled={!accounts || !accounts.length}
       />
       <div
         className="caption"
