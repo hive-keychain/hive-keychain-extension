@@ -12,5 +12,9 @@
   .form-container {
     @include pageLayoutRowGap;
     row-gap: 32px;
+    margin-top: 16px;
+    .submit-button {
+      margin-top: 32px;
+    }
   }
 }

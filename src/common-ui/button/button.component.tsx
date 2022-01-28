@@ -17,6 +17,7 @@ interface ButtonProps {
   labelParams?: string[];
   logo?: Icons | string;
   type?: ButtonType;
+  fixToBottom?: boolean;
 }
 
 const ButtonComponent = (props: ButtonProps) => {
@@ -24,7 +25,7 @@ const ButtonComponent = (props: ButtonProps) => {
     <button
       className={`submit-button ${
         props.type ? props.type : ButtonType.DEFAULT
-      }`}
+      } ${props.fixToBottom ? 'fix-to-bottom' : ''}`}
       onClick={props.onClick}>
       <div className="button-label">
         {props.skipLabelTranslation

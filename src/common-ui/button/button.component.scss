@@ -55,4 +55,11 @@
       background: #eee;
     }
   }
+
+  &.fix-to-bottom {
+    position: fixed;
+    bottom: 32px;
+    left: 24px;
+    width: calc(100% - 48px);
+  }
 }

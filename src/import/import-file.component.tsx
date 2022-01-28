@@ -94,10 +94,13 @@ const ImportFile = ({
         <span id="file_span">{selectedFile?.name}</span>
       </div>
 
-      <ButtonComponent
-        onClick={importKeysFromFile}
-        label="popup_html_import"
-        type={ButtonType.RAISED}></ButtonComponent>
+      {selectedFile && (
+        <ButtonComponent
+          onClick={importKeysFromFile}
+          label="popup_html_import"
+          type={ButtonType.RAISED}
+          fixToBottom></ButtonComponent>
+      )}
 
       <div className="feedback">{chrome.i18n.getMessage(feedback)}</div>
     </div>
