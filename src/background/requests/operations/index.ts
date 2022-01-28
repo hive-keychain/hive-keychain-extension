@@ -148,6 +148,6 @@ export const performOperation = async (
         removeWindow(getRequestHandler().windowId!);
       }
     } else chrome.runtime.sendMessage(message);
-    getRequestHandler().reset();
+    getRequestHandler().reset(false);
   }
 };

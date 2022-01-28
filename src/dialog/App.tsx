@@ -5,11 +5,13 @@ import Register from 'src/dialog/pages/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
 import Unlock from 'src/dialog/pages/unlock';
+import Logger from 'src/utils/logger.utils';
 import './dialog.scss';
 
 const App = () => {
   useEffect(() => {
     chrome.runtime.onMessage.addListener(function (data, sender, sendResp) {
+      Logger.log(data);
       if (data.command === DialogCommand.READY) {
         sendResp(true);
       } else {

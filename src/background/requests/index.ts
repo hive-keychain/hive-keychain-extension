@@ -62,14 +62,16 @@ class RequestsHandler {
     }
   }
 
-  reset() {
+  reset(resetWinId: boolean) {
     this.key = undefined;
     this.publicKey = undefined;
     this.accounts = [];
     this.request = undefined;
     this.request_id = undefined;
     this.tab = undefined;
-    this.windowId = undefined;
+    if (resetWinId) {
+      this.windowId = undefined;
+    }
   }
 
   setConfirmed(confirmed: boolean) {
