@@ -24,6 +24,7 @@ const RequestResponse = ({ data }: Props) => {
 
       <ButtonComponent
         label={'dialog_ok'}
+        fixToBottom
         onClick={() => {
           window.close();
         }}

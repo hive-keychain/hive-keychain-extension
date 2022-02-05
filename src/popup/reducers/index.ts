@@ -1,7 +1,7 @@
 import { ActiveAccountReducer } from '@popup/reducers/active-account.reducer';
 import { ActiveRpcReducer } from '@popup/reducers/active-rpc.reducer';
-import BittrexReducer from '@popup/reducers/bittrex.reducer';
 import ConversionsReducer from '@popup/reducers/conversion.reducer';
+import CurrencyPricesReducer from '@popup/reducers/currency-prices.reducer';
 import DelegationsReducer from '@popup/reducers/delegation.reducer';
 import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
 import { LoadingReducer } from '@popup/reducers/loading.reducer';
@@ -24,7 +24,7 @@ export default combineReducers({
   errorMessage: MessageReducer,
   navigation: NavigationReducer,
   activeRpc: ActiveRpcReducer,
-  bittrex: BittrexReducer,
+  currencyPrices: CurrencyPricesReducer,
   globalProperties: GlobalPropertiesReducer,
   delegations: DelegationsReducer,
   conversions: ConversionsReducer,

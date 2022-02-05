@@ -2,7 +2,7 @@ import {
   loadActiveAccount,
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
-import { loadBittrexPrices } from '@popup/actions/bittrex.actions';
+import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from '@popup/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
@@ -87,7 +87,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
-  loadBittrexPrices,
+  loadBittrexPrices: loadCurrencyPrices,
   loadGlobalProperties,
   refreshActiveAccount,
 });
