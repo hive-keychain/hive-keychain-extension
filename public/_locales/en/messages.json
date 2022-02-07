@@ -2014,5 +2014,13 @@
   "html_popup_using_authorized_account": {
     "message": "Signing using $1's account",
     "description": "In account's keys while using authorized account"
+  },
+  "popup_html_cancel_delegation_successful": {
+    "message": "Cancel delegation successful",
+    "description": "Success message cancel delegation"
+  },
+  "popup_html_cancel_delegation_fail": {
+    "message": "Cancel delegation has failed",
+    "description": "Failed message cancel delegation"
   }
 }
