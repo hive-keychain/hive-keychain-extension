@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "wix.vscode-import-cost",
+    "ritwickdey.liveserver",
+    "shd101wyy.markdown-preview-enhanced",
+    "fabiospampinato.vscode-optimize-images",
+    "cssho.vscode-svgviewer",
+    "gruntfuggly.todo-tree",
+    "formulahendry.auto-rename-tag",
+    "mikestead.dotenv",
+    "dsznajder.es7-react-js-snippets"
+  ]
+}
