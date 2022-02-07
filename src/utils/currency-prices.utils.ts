@@ -1,8 +1,8 @@
 import KeychainApi from '@api/keychain';
 import axios from 'axios';
 
-const getBittrexPrices = async () => {
-  return (await KeychainApi.get('/hive/v2/bittrex')).data;
+const getPrices = async () => {
+  return (await KeychainApi.get('/hive/v2/price')).data;
 };
 
 const getBittrexCurrency = async (currency: string) => {
@@ -15,9 +15,9 @@ const getBittrexCurrency = async (currency: string) => {
   return null;
 };
 
-const BittRexUtils = {
+const CurrencyPricesUtils = {
   getBittrexCurrency,
-  getBittrexPrices,
+  getPrices,
 };
 
-export default BittRexUtils;
+export default CurrencyPricesUtils;

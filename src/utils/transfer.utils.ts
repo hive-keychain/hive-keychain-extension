@@ -1,6 +1,6 @@
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
-import BittRexUtils from 'src/utils/bittrex.utils';
+import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getExchangeValidationWarning = async (
@@ -30,7 +30,7 @@ const getExchangeValidationWarning = async (
   }
   if (!hasMemo) return chrome.i18n.getMessage('popup_warning_exchange_memo');
   if (exchange.account === 'bittrex') {
-    const info = await BittRexUtils.getBittrexCurrency(currency);
+    const info = await CurrencyPricesUtils.getBittrexCurrency(currency);
     if (info && !info.IsActive) {
       return chrome.i18n.getMessage('popup_warning_exchange_wallet');
     }

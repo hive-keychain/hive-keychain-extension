@@ -1,5 +1,6 @@
 import * as Hive from '@hiveio/dhive';
 import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { resetAccount } from '@popup/actions/account.actions';
 import { resetActiveAccount } from '@popup/actions/active-account.actions';
 import {
@@ -11,7 +12,6 @@ import { navigateTo } from '@popup/actions/navigation.actions';
 import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
-import { Bittrex } from 'src/interfaces/bittrex.interface';
 import { Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -404,19 +404,19 @@ const getAccountValue = (
     savings_balance,
     savings_hbd_balance,
   }: ExtendedAccount,
-  { hive, hbd }: Bittrex,
+  { hive, hive_dollar }: CurrencyPrices,
   props: DynamicGlobalProperties,
 ) => {
-  if (!hbd.Usd || !hive.Usd) return 0;
+  if (!hive_dollar.usd || !hive.usd) return 0;
   return FormatUtils.withCommas(
     (
       (parseFloat(hbd_balance as string) +
         parseFloat(savings_hbd_balance as string)) *
-        parseFloat(hbd.Usd) +
+        hive_dollar.usd +
       (FormatUtils.toHP(vesting_shares as string, props) +
         parseFloat(balance as string) +
         parseFloat(savings_balance as string)) *
-        parseFloat(hive.Usd)
+        hive.usd
     ).toString(),
   );
 };

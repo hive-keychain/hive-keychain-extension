@@ -49,7 +49,7 @@ chrome.windows.onRemoved.addListener((id: number) => {
       },
     });
 
-    getRequestHandler().reset();
+    getRequestHandler().reset(true);
   }
 });
 

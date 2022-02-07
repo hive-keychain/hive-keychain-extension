@@ -21,6 +21,11 @@ import MkModule from './mk.module';
 const initBackgroundTasks = async () => {
   Logger.log('Initializing background tasks');
   await ClaimModule.loadClaims();
+  await AutolockModule.startAutolock(
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.AUTOLOCK,
+    ),
+  );
   await RPCModule.setActiveRpc(
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.CURRENT_RPC,

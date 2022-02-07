@@ -1,16 +1,10 @@
-export interface Btc {
-  Bid?: number;
-  Daily?: string;
-  PrevDay?: number;
+export interface Currency {
+  usd_24h_change?: number;
+  usd?: number;
 }
 
-export interface Currency extends Btc {
-  DailyUsd?: string;
-  Usd?: string;
-}
-
-export interface Bittrex {
-  btc: Btc;
+export interface CurrencyPrices {
+  bitcoin: Currency;
   hive: Currency;
-  hbd: Currency;
+  hive_dollar: Currency;
 }

@@ -8,7 +8,7 @@ import './estimated-account-value-section.component.scss';
 
 const EstimatedAccountValueSection = ({
   activeAccount,
-  bittrex,
+  currencyPrices,
   globalProperties,
   navigateTo,
 }: PropsFromRedux) => {
@@ -17,11 +17,11 @@ const EstimatedAccountValueSection = ({
     setAccountValue(
       AccountUtils.getAccountValue(
         activeAccount.account,
-        bittrex,
+        currencyPrices,
         globalProperties.globals!,
       ),
     );
-  }, [activeAccount, bittrex, globalProperties]);
+  }, [activeAccount, currencyPrices, globalProperties]);
 
   return (
     <>
@@ -55,7 +55,7 @@ const EstimatedAccountValueSection = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
-    bittrex: state.bittrex,
+    currencyPrices: state.currencyPrices,
     globalProperties: state.globalProperties,
   };
 };
