@@ -554,6 +554,7 @@ const claimAccounts = async (
         ],
         PrivateKey.fromString(activeAccount.keys.active as string),
       );
+      Logger.log(`Claiming free account for @${activeAccount.name}`);
     }
   } catch (err) {
     Logger.error(err);
