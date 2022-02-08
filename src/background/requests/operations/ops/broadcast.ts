@@ -43,7 +43,9 @@ export const broadcastOperations = async (
       } else if (
         op[0] === 'update_proposal_votes' ||
         op[0] === 'create_proposal' ||
-        op[0] === 'remove_proposal'
+        op[0] === 'remove_proposal' ||
+        op[0] === 'account_update2' ||
+        op[0] === 'account_update'
       ) {
         if (!op[1].extensions) {
           op[1].extensions = [];
