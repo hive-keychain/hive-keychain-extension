@@ -9,7 +9,7 @@ export const setErrorMessage = (
 ): ActionPayload<ErrorMessage> => {
   return {
     type: ActionType.SET_MESSAGE,
-    payload: { key: key, type: MessageType.ERROR, params: params },
+    payload: { key, type: MessageType.ERROR, params },
   };
 };
 
@@ -19,7 +19,7 @@ export const setSuccessMessage = (
 ): ActionPayload<ErrorMessage> => {
   return {
     type: ActionType.SET_MESSAGE,
-    payload: { key: key, type: MessageType.SUCCESS, params: params },
+    payload: { key, type: MessageType.SUCCESS, params },
   };
 };
 export const setInfoMessage = (
@@ -28,7 +28,7 @@ export const setInfoMessage = (
 ): ActionPayload<ErrorMessage> => {
   return {
     type: ActionType.SET_MESSAGE,
-    payload: { key: key, type: MessageType.INFO, params: params },
+    payload: { key, type: MessageType.INFO, params },
   };
 };
 

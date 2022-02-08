@@ -9,6 +9,7 @@ const Config = {
       MIN_RC: +(process.env.DEV_CLAIM_ACCOUNT_MIN_RC || 1.2 * 10 * 10 ** 12), // 20% more than 10^13 (current creation cost)
     },
   },
+  PROPOSAL: 174,
 };
 
 export default Config;

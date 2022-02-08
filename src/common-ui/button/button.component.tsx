@@ -10,7 +10,7 @@ export enum ButtonType {
   DEFAULT = 'default',
 }
 
-interface ButtonProps {
+export interface ButtonProps {
   onClick: () => void;
   label: string;
   skipLabelTranslation?: boolean;

@@ -667,6 +667,10 @@
     "message": "Please add your active key to send delegations!",
     "description": "When trying to send delegation but user doenst have a stored active key"
   },
+  "popup_missing_key": {
+    "message": "Please add your $1 key to perform this operation!",
+    "description": "When trying to perform an operation without a stored private $1 key"
+  },
   "popup_delegate_success": {
     "message": "Your delegation was succesful!",
     "description": "Main menu > Delegate"
@@ -1643,6 +1647,7 @@
     "message": "You need to at least fill RPC Node",
     "description": "Error message on rpc node settings page"
   },
+
   "popup_html_rpc_uri_already_existing": {
     "message": "Rpc Node already existing",
     "description": "Error message on rpc node settings page"

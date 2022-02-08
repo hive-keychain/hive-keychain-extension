@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -7,7 +8,9 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import OperationButton from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import Config from 'src/config';
 import Logger from 'src/utils/logger.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-voting-section.component.scss';
@@ -45,7 +48,7 @@ const ProposalVotingSection = ({
 
   const handleReadClicked = () => {
     chrome.tabs.create({
-      url: 'https://peakd.com/me/proposals/174',
+      url: `https://peakd.com/me/proposals/${Config.PROPOSAL}`,
     });
   };
 
@@ -74,7 +77,8 @@ const ProposalVotingSection = ({
             onClick={handleReadClicked}
             label={'html_popup_read'}
           />
-          <ButtonComponent
+          <OperationButton
+            requiredKey={KeychainKeyTypesLC.active}
             onClick={handleVoteForProposalClicked}
             label={'html_popup_vote'}
           />

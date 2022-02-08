@@ -1,8 +1,9 @@
 import * as hive from '@hiveio/hive-js';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import Config from 'src/config';
 import HiveUtils from 'src/utils/hive.utils';
 
-const PROPOSAL_ID = 174;
+const PROPOSAL_ID = Config.PROPOSAL;
 
 const hasVotedForProposal = async (
   activeAccount: ActiveAccount,
