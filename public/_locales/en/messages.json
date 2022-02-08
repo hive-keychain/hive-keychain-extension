@@ -1620,7 +1620,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_proposal_request": {
-    "message": "Help support Keychain development through our DHF proposal",
+    "message": "Support Keychain development proposal",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_kc_proposal_vote_successful": {

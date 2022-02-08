@@ -59,7 +59,7 @@ const ProposalVotingSection = ({
       className={`proposal-voting-section ${
         isMessageContainerDisplayed || hasVoted || forceClosed ? 'hide' : ''
       } ${isOpen ? 'opened' : 'closed'}`}
-      onClick={() => setIsOpen(true)}>
+      onClick={() => setIsOpen(!isOpen)}>
       <Icon
         type={IconType.STROKED}
         additionalClassName="close"
