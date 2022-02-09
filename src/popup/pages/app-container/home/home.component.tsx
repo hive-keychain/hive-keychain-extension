@@ -11,9 +11,10 @@ import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/s
 import { TopBarComponent } from '@popup/pages/app-container/home/top-bar/top-bar.component';
 import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-section.component';
 import { RootState } from '@popup/store';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import './home.component.scss';
@@ -28,6 +29,7 @@ const Home = ({
   refreshActiveAccount,
   isAppReady,
 }: PropsFromRedux) => {
+  const [canHideLoader, setCanHideLoader] = useState(false);
   useEffect(() => {
     loadBittrexPrices();
     loadGlobalProperties();
@@ -35,6 +37,15 @@ const Home = ({
       refreshActiveAccount();
     }
   }, []);
+
+  useEffect(() => {
+    if (!isAppReady) {
+      setCanHideLoader(false);
+      setTimeout(() => {
+        setCanHideLoader(true);
+      }, Config.MIN_LOADING_TIME);
+    }
+  }, [isAppReady]);
 
   useEffect(() => {
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
@@ -53,7 +64,7 @@ const Home = ({
 
   return (
     <div className="home-page">
-      {isAppReady && activeRpc && activeRpc.uri !== 'NULL' && (
+      {isAppReady && canHideLoader && activeRpc && activeRpc.uri !== 'NULL' && (
         <div>
           <TopBarComponent />
           <SelectAccountSectionComponent />
@@ -64,7 +75,7 @@ const Home = ({
         </div>
       )}
 
-      {!isAppReady && (
+      {(!isAppReady || !canHideLoader) && (
         <div className="loading">
           <RotatingLogoComponent></RotatingLogoComponent>
           <div className="caption">HIVE KEYCHAIN</div>

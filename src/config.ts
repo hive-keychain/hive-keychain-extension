@@ -10,6 +10,7 @@ const Config = {
     },
   },
   PROPOSAL: 174,
+  MIN_LOADING_TIME: 1000,
 };
 
 export default Config;
