@@ -2040,6 +2040,14 @@
     "message": "Cancel delegation has failed",
     "description": "Failed message cancel delegation"
   },
+  "popup_html_delegation_successful": {
+    "message": "Delegation successful",
+    "description": "Success message cancel delegation"
+  },
+  "popup_html_delegation_fail": {
+    "message": "Delegation has failed",
+    "description": "Failed message cancel delegation"
+  },
   "popup_html_delegation": {
     "message": "Delegation",
     "description": "Delegation"

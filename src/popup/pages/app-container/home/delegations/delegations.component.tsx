@@ -159,11 +159,9 @@ const Delegations = ({
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
           await TransferUtils.saveTransferRecipient(username, activeAccount);
-          setSuccessMessage('popup_html_power_up_down_success', [
-            operationString,
-          ]);
+          setSuccessMessage('popup_html_delegation_successful');
         } else {
-          setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+          setErrorMessage('popup_html_delegation_fail');
         }
       },
     });

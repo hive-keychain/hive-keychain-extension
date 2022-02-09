@@ -69,13 +69,9 @@ const IncomingOutgoing = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
-          setSuccessMessage('popup_html_power_up_down_success', [
-            'popup_html_cancel_delegation',
-          ]);
+          setSuccessMessage('popup_html_cancel_delegation_successful');
         } else {
-          setErrorMessage('popup_html_power_up_down_fail', [
-            'popup_html_cancel_delegation',
-          ]);
+          setErrorMessage('popup_html_cancel_delegation_fail');
         }
       },
     });
