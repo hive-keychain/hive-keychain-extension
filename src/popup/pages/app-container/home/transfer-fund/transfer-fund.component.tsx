@@ -179,6 +179,7 @@ const TransferFunds = ({
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
+      title: 'popup_html_transfer_funds',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_transfer_fund_operation');

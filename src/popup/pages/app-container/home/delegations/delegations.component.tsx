@@ -144,6 +144,7 @@ const Delegations = ({
         { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: valueS },
       ],
+      title: 'popup_html_delegation',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');
@@ -177,6 +178,7 @@ const Delegations = ({
         { label: 'popup_html_transfer_from', value: `@${activeAccount.name!}` },
         { label: 'popup_html_transfer_to', value: `@${username}` },
       ],
+      title: 'popup_html_cancel_delegation',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');

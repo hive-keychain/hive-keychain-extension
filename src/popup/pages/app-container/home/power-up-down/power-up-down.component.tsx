@@ -148,6 +148,10 @@ const PowerUpDown = ({
         'popup_html_confirm_power_up_down_message',
         [operationString.toLowerCase()],
       ),
+      title:
+        powerType === PowerType.POWER_UP
+          ? 'html_popup_power_up'
+          : 'html_popup_power_down',
       fields: fields,
       formParams: getFormParams(),
       afterConfirmAction: async () => {

@@ -88,6 +88,7 @@ const Conversion = ({
         { label: 'popup_html_value', value: valueS },
         { label: 'popup_html_username', value: `@${activeAccount.name!}` },
       ],
+      title: title,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_conversion_operation');

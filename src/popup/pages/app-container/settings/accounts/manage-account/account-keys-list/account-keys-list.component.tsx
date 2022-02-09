@@ -47,6 +47,7 @@ const AccountKeysList = ({
         'popup_html_delete_account_confirmation_message',
         [activeAccount.name!],
       ),
+      title: 'popup_html_delete_account',
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delete_account_operation');
         const newAccounts = AccountUtils.deleteAccount(

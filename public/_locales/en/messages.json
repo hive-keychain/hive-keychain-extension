@@ -1677,7 +1677,7 @@
     "description": "while confirming power up and down"
   },
   "popup_html_cancel_delegation": {
-    "message": "Cancel delegation.",
+    "message": "Cancel delegation",
     "description": "while confirming power up and down"
   },
   "popup_html_power_up_down_fail": {
@@ -1992,6 +1992,14 @@
     "message": "Power down operation",
     "description": "Power down operation"
   },
+  "html_popup_power_up": {
+    "message": "Power up",
+    "description": "Power up"
+  },
+  "html_popup_power_down": {
+    "message": "Power down",
+    "description": "Power down"
+  },
   "html_popup_read": {
     "message": "Read",
     "description": "read"
@@ -2016,6 +2024,10 @@
     "message": "You are about to delete the $1 key for account @$2.<br/>Make sure you have a copy of this key before proceeding.",
     "description": "Confirmation message when deleting key"
   },
+  "html_popup_delete_key": {
+    "message": "Delete key",
+    "description": "confirmation title while deleting key"
+  },
   "html_popup_using_authorized_account": {
     "message": "Signing using $1's account",
     "description": "In account's keys while using authorized account"
@@ -2027,5 +2039,13 @@
   "popup_html_cancel_delegation_fail": {
     "message": "Cancel delegation has failed",
     "description": "Failed message cancel delegation"
+  },
+  "popup_html_delegation": {
+    "message": "Delegation",
+    "description": "Delegation"
+  },
+  "popup_html_transfer_tokens": {
+    "message": "Transfer tokens",
+    "description": "Transfer tokens"
   }
 }

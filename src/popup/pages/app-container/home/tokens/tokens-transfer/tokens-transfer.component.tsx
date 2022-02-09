@@ -138,6 +138,7 @@ const TokensTransfer = ({
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
+      title: 'popup_html_transfer_tokens',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let memoParam = memo;
@@ -206,7 +207,7 @@ const TokensTransfer = ({
   return (
     <div className="transfer-tokens-page">
       <PageTitleComponent
-        title="popup_html_transfer_funds"
+        title="popup_html_transfer_tokens"
         isBackButtonEnabled={true}
       />
       <AvailableCurrentPanelComponent
@@ -245,10 +246,10 @@ const TokensTransfer = ({
         value={memo}
         onChange={setMemo}
       />
-      <div className="divider"></div>
       <ButtonComponent
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}
+        fixToBottom
       />
     </div>
   );

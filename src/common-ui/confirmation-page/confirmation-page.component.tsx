@@ -14,13 +14,16 @@ const ConfirmationPage = ({
   message,
   afterConfirmAction,
   warningMessage,
+  title,
+  skipTitleTranslation,
   goBack,
 }: PropsType) => {
   return (
     <div className="confirmation-page">
       <div className="confirmation-top">
         <PageTitleComponent
-          title={'popup_html_confirm'}
+          title={title ?? 'popup_html_confirm'}
+          skipTitleTranslation={skipTitleTranslation}
           isBackButtonEnabled={false}></PageTitleComponent>
 
         <div
@@ -61,6 +64,8 @@ const mapStateToProps = (state: RootState) => {
     fields: state.navigation.stack[0].params.fields as ConfirmationPageFields[],
     warningMessage: state.navigation.stack[0].params.warningMessage as string,
     afterConfirmAction: state.navigation.stack[0].params.afterConfirmAction,
+    title: state.navigation.stack[0].params.title,
+    skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
   };
 };
 

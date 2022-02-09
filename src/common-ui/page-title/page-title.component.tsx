@@ -10,6 +10,7 @@ import './page-title.component.scss';
 interface PageTitleProps {
   title: string;
   titleParams?: string[];
+  skipTitleTranslation?: boolean;
   isBackButtonEnabled: boolean;
   isCloseButtonDisabled?: boolean;
 }
@@ -17,6 +18,7 @@ interface PageTitleProps {
 const PageTitle = ({
   title,
   titleParams,
+  skipTitleTranslation,
   isBackButtonEnabled,
   isCloseButtonDisabled,
   goBack,
@@ -41,7 +43,11 @@ const PageTitle = ({
           type={IconType.OUTLINED}
           additionalClassName="icon-button"></Icon>
       )}
-      <div className="title">{chrome.i18n.getMessage(title, titleParams)}</div>
+      <div className="title">
+        {skipTitleTranslation
+          ? title
+          : chrome.i18n.getMessage(title, titleParams)}
+      </div>
       {!isCloseButtonDisabled && (
         <Icon
           onClick={handleCloseButtonClick}

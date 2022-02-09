@@ -136,6 +136,8 @@ const SavingsPage = ({
           : 'popup_html_confirm_savings_deposit',
         [currency],
       ),
+      title: operationString,
+      skipTitleTranslation: true,
       fields: [
         { label: 'popup_html_value', value: valueS },
         { label: 'popup_html_username', value: `@${username}` },

@@ -56,6 +56,7 @@ const IncomingOutgoing = ({
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_delegation_message',
       ),
+      title: 'popup_html_cancel_delegation',
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');
@@ -110,6 +111,7 @@ const IncomingOutgoing = ({
         value,
         `@${username}`,
       ]),
+      title: 'popup_html_delegation',
       fields: [
         { label: 'popup_html_transfer_to', value: `@${username}` },
         { label: 'popup_html_value', value: valueS },

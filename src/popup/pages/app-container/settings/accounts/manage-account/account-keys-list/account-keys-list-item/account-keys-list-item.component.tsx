@@ -64,6 +64,7 @@ const AccountKeysListItem = ({
         keyTypeLabel,
         activeAccount.name!,
       ]),
+      title: 'html_popup_delete_key',
       afterConfirmAction: async () => {
         removeKey(keyType);
         goBack();
