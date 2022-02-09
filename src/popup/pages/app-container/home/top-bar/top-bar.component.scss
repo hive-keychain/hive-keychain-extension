@@ -5,6 +5,7 @@
   box-sizing: border-box;
   display: flex;
   align-items: center;
+  user-select: none;
 
   img {
     height: 32px;

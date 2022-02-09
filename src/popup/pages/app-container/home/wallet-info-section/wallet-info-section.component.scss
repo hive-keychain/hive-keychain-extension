@@ -1,5 +1,6 @@
 .wallet-info-section {
   background-color: rgba(102, 102, 102, 0.75);
+  user-select: none;
   .wallet-info-row {
     display: grid;
     grid-template-columns: 1fr 1fr;

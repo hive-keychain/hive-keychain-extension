@@ -9,6 +9,7 @@
   justify-content: center;
   row-gap: 16px;
   min-height: 50px;
+  user-select: none;
   .panel-row {
     display: flex;
     font-size: 20px;

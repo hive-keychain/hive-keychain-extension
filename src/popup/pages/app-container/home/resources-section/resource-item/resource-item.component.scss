@@ -4,6 +4,7 @@
   align-items: center;
   column-gap: 8px;
   cursor: help;
+  user-select: none;
   .icon {
     color: $red;
     font-size: 26px;
