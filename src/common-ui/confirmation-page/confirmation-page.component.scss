@@ -17,13 +17,23 @@
       color: $red;
     }
 
-    .field {
-      .label {
-        font-size: 18px;
-        font-weight: bold;
-      }
-      .value {
-        font-size: 16px;
+    .fields {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+      background: $grey-transparent;
+      margin: 0px -24px;
+      padding: 4px 24px;
+      max-height: 324px;
+      overflow: auto;
+      .field {
+        .label {
+          font-size: 18px;
+          font-weight: bold;
+        }
+        .value {
+          font-size: 16px;
+        }
       }
     }
   }

@@ -35,14 +35,17 @@ const ConfirmationPage = ({
         {warningMessage && (
           <div className="warning-message">{warningMessage}</div>
         )}
-
-        {fields &&
-          fields.map((field) => (
-            <div className="field" key={field.label}>
-              <div className="label">{chrome.i18n.getMessage(field.label)}</div>
-              <div className="value">{field.value}</div>
-            </div>
-          ))}
+        <div className="fields">
+          {fields &&
+            fields.map((field) => (
+              <div className="field" key={field.label}>
+                <div className="label">
+                  {chrome.i18n.getMessage(field.label)}
+                </div>
+                <div className="value">{field.value}</div>
+              </div>
+            ))}
+        </div>
       </div>
 
       <div className="bottom-panel">
