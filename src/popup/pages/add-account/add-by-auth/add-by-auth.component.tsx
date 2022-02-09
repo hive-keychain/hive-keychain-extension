@@ -25,8 +25,8 @@ const AddByAuth = ({
 
   const submitForm = async (): Promise<void> => {
     const keys = await AccountUtils.addAuthorizedAccount(
-      username,
-      authorizedAccount,
+      username.trim(),
+      authorizedAccount.trim(),
       localAccounts,
       setErrorMessage,
     );

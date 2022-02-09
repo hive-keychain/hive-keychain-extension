@@ -15,7 +15,7 @@ const AddKey = ({ navParams, goBack, addKey }: PropsType) => {
   const [privateKey, setPrivateKey] = useState('');
 
   const importKey = async () => {
-    addKey(privateKey, navParams);
+    addKey(privateKey.trim(), navParams);
     goBack();
   };
 

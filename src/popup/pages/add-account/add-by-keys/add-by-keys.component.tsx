@@ -23,8 +23,8 @@ const AddByKeys = ({
 
   const submitForm = async (): Promise<void> => {
     const keys = await AccountUtils.verifyAccount(
-      username,
-      privateKey,
+      username.trim(),
+      privateKey.trim(),
       localAccounts,
     );
     if (!keys) {
