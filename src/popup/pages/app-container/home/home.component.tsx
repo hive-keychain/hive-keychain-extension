@@ -14,7 +14,6 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import './home.component.scss';
@@ -28,8 +27,9 @@ const Home = ({
   loadGlobalProperties,
   refreshActiveAccount,
   isAppReady,
+  globalProperties,
 }: PropsFromRedux) => {
-  const [canHideLoader, setCanHideLoader] = useState(false);
+  const [displayLoader, setDisplayLoader] = useState(true);
   useEffect(() => {
     loadBittrexPrices();
     loadGlobalProperties();
@@ -39,13 +39,26 @@ const Home = ({
   }, []);
 
   useEffect(() => {
-    if (!isAppReady) {
-      setCanHideLoader(false);
+    if (
+      Object.keys(globalProperties).length > 0 &&
+      !ActiveAccountUtils.isEmpty(activeAccount)
+    ) {
       setTimeout(() => {
-        setCanHideLoader(true);
-      }, Config.MIN_LOADING_TIME);
+        setDisplayLoader(false);
+      }, 1000);
+    } else {
+      setDisplayLoader(true);
     }
-  }, [isAppReady]);
+  }, [globalProperties, activeAccount]);
+
+  // useEffect(() => {
+  //   if (!isAppReady) {
+  //     setDisplayLoader(false);
+  //     setTimeout(() => {
+  //       setDisplayLoader(true);
+  //     }, Config.MIN_LOADING_TIME);
+  //   }
+  // }, [isAppReady]);
 
   useEffect(() => {
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
@@ -64,7 +77,7 @@ const Home = ({
 
   return (
     <div className="home-page">
-      {isAppReady && canHideLoader && activeRpc && activeRpc.uri !== 'NULL' && (
+      {!displayLoader && activeRpc && activeRpc.uri !== 'NULL' && (
         <div>
           <TopBarComponent />
           <SelectAccountSectionComponent />
@@ -75,7 +88,7 @@ const Home = ({
         </div>
       )}
 
-      {(!isAppReady || !canHideLoader) && (
+      {displayLoader && (
         <div className="loading">
           <RotatingLogoComponent></RotatingLogoComponent>
           <div className="caption">HIVE KEYCHAIN</div>
@@ -90,6 +103,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     accounts: state.accounts,
     activeRpc: state.activeRpc,
+    globalProperties: state.globalProperties,
     isAppReady:
       Object.keys(state.globalProperties).length > 0 &&
       !ActiveAccountUtils.isEmpty(state.activeAccount),
