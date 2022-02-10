@@ -125,6 +125,16 @@ const TransferFunds = ({
   };
 
   const handleClickOnSend = async () => {
+    if (!amount || !receiverUsername || receiverUsername.length === 0) {
+      setErrorMessage('popup_html_fill_form_error');
+      return;
+    }
+
+    if (amount <= 0) {
+      setErrorMessage('popup_html_need_positive_amount');
+      return;
+    }
+
     if (parseFloat(amount.toString()) > parseFloat(balance.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;

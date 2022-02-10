@@ -2055,5 +2055,13 @@
   "popup_html_transfer_tokens": {
     "message": "Transfer tokens",
     "description": "Transfer tokens"
+  },
+  "popup_html_fill_form_error": {
+    "message": "Please fill form",
+    "description": "Error of missing fields in form"
+  },
+  "popup_html_need_positive_amount": {
+    "message": "Amount needs to be greater than 0",
+    "description": "Amount error in form"
   }
 }
