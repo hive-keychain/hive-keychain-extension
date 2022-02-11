@@ -1,4 +1,5 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { initAccountTransactions } from '@popup/actions/transaction.actions';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
@@ -8,7 +9,6 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wallet-history.component.scss';
 
@@ -26,6 +26,7 @@ const WalletHistory = ({
   transactions,
   activeAccountName,
   initAccountTransactions,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
 
@@ -52,6 +53,10 @@ const WalletHistory = ({
   };
 
   useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_wallet_history',
+      isBackButtonEnabled: true,
+    });
     initAccountTransactions(activeAccountName!);
     initFilters();
   }, []);
@@ -139,11 +144,6 @@ const WalletHistory = ({
 
   return (
     <div className="wallet-history-page">
-      <PageTitleComponent
-        title="popup_html_wallet_history"
-        isBackButtonEnabled={true}
-      />
-
       {
         <div className="page-content">
           <div
@@ -229,7 +229,10 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { initAccountTransactions });
+const connector = connect(mapStateToProps, {
+  initAccountTransactions,
+  setTitleContainerProperties,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const WalletHistoryComponent = connector(WalletHistory);

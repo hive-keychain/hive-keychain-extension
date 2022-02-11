@@ -12,6 +12,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
@@ -25,7 +26,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -50,6 +50,7 @@ const TransferFunds = ({
   fetchPhishingAccounts,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [receiverUsername, setReceiverUsername] = useState(
     formParams.receiverUsername ? formParams.receiverUsername : '',
@@ -87,6 +88,10 @@ const TransferFunds = ({
   useEffect(() => {
     fetchPhishingAccounts();
     loadAutocompleteTransferUsernames();
+    setTitleContainerProperties({
+      title: 'popup_html_transfer_funds',
+      isBackButtonEnabled: true,
+    });
   }, []);
 
   useEffect(() => {
@@ -278,11 +283,7 @@ const TransferFunds = ({
   };
 
   return (
-    <div className="page-container">
-      <PageTitleComponent
-        title="popup_html_transfer_funds"
-        isBackButtonEnabled={true}
-      />
+    <>
       <div className="transfer-funds-page">
         <AvailableCurrentPanelComponent
           available={balance}
@@ -359,7 +360,7 @@ const TransferFunds = ({
           />
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -383,6 +384,7 @@ const connector = connect(mapStateToProps, {
   fetchPhishingAccounts,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -1,12 +1,12 @@
 import { goBack } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import './confirmation-page.component.scss';
 
 const ConfirmationPage = ({
@@ -17,15 +17,19 @@ const ConfirmationPage = ({
   title,
   skipTitleTranslation,
   goBack,
+  setTitleContainerProperties,
 }: PropsType) => {
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: title ?? 'popup_html_confirm',
+      skipTitleTranslation,
+      isBackButtonEnabled: false,
+    });
+  });
+
   return (
     <div className="confirmation-page">
       <div className="confirmation-top">
-        <PageTitleComponent
-          title={title ?? 'popup_html_confirm'}
-          skipTitleTranslation={skipTitleTranslation}
-          isBackButtonEnabled={false}></PageTitleComponent>
-
         <div
           className="introduction"
           dangerouslySetInnerHTML={{
@@ -72,7 +76,10 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { goBack });
+const connector = connect(mapStateToProps, {
+  goBack,
+  setTitleContainerProperties,
+});
 type PropsType = ConnectedProps<typeof connector>;
 
 export const ConfirmationPageComponent = connector(ConfirmationPage);

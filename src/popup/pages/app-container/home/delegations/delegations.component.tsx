@@ -14,6 +14,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from '@popup/store';
@@ -23,7 +24,6 @@ import ReactTooltip from 'react-tooltip';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -48,6 +48,7 @@ const Delegations = ({
   loadDelegatees,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState<string>(
     formParams.username ? formParams.username : '',
@@ -77,6 +78,10 @@ const Delegations = ({
     loadDelegatees(activeAccount.name!);
     setAvailable(0);
     loadAutocompleteTransferUsernames();
+    setTitleContainerProperties({
+      title: 'popup_html_delegations',
+      isBackButtonEnabled: true,
+    });
   }, []);
 
   useEffect(() => {
@@ -208,10 +213,6 @@ const Delegations = ({
 
   return (
     <div className="delegations-page">
-      <PageTitleComponent
-        title={'popup_html_delegations'}
-        isBackButtonEnabled={true}
-      />
       <div className="text">
         {chrome.i18n.getMessage('popup_html_delegations_text')}
       </div>
@@ -306,6 +307,7 @@ const connector = connect(mapStateToProps, {
   loadDelegatees,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

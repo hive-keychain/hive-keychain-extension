@@ -1,14 +1,14 @@
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -20,10 +20,18 @@ const ChangePassword = ({
   navigateTo,
   accounts,
   mk,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_change_password',
+      isBackButtonEnabled: true,
+    });
+  }, []);
 
   const submitMk = (): any => {
     if (mk !== oldPassword) {
@@ -45,11 +53,6 @@ const ChangePassword = ({
 
   return (
     <div className="change-password-page">
-      <PageTitleComponent
-        title="popup_html_change_password"
-        isBackButtonEnabled={true}
-      />
-
       <div className="caption">
         {chrome.i18n.getMessage('popup_html_change_password_text')}
       </div>
@@ -96,6 +99,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setMk,
   navigateTo,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

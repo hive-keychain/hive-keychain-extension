@@ -7,7 +7,6 @@ import { BuyCoinsComponent } from '@popup/pages/app-container/home/buy-coins/buy
 import { ConversionComponent } from '@popup/pages/app-container/home/conversion/conversion.component';
 import { DelegationsComponent } from '@popup/pages/app-container/home/delegations/delegations.component';
 import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
-import { AccountValueExplanationComponent } from '@popup/pages/app-container/home/estimated-account-value-section/account-value-explanation/account-value-explanation.component';
 import { GovernanceComponent } from '@popup/pages/app-container/home/governance/governance.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
@@ -38,15 +37,19 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { ConfirmationPageComponent } from 'src/common-ui/confirmation-page/confirmation-page.component';
+import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
 
-const AppRouter = ({ currentPage }: PropsFromRedux) => {
+const AppRouter = ({
+  currentPage,
+  titleProperties,
+  hasTitle,
+}: PropsFromRedux) => {
+  console.log(titleProperties, hasTitle);
   const renderAccountPage = (page: Screen) => {
     switch (page) {
       case Screen.HOME_PAGE:
         return <HomeComponent />;
-      case Screen.ACCOUNT_VALUE_EXPLANATION:
-        return <AccountValueExplanationComponent />;
       case Screen.GOVERNANCE_PAGE:
         return <GovernanceComponent />;
       case Screen.TRANSFER_FUND_PAGE:
@@ -126,8 +129,28 @@ const AppRouter = ({ currentPage }: PropsFromRedux) => {
   };
 
   return (
-    <div className="app-router" style={{ height: '100%' }}>
-      {renderAccountPage(currentPage!)}
+    <div
+      className="app-router"
+      style={{
+        height: '100%',
+        display: 'grid',
+        gridTemplateRows: hasTitle ? '50px 1fr' : '1fr',
+      }}>
+      {hasTitle && (
+        <PageTitleComponent
+          title={titleProperties.title}
+          titleParams={titleProperties.titleParams}
+          skipTitleTranslation={titleProperties.skipTitleTranslation}
+          isBackButtonEnabled={titleProperties.isBackButtonEnabled}
+          isCloseButtonDisabled={
+            titleProperties.isCloseButtonDisabled
+          }></PageTitleComponent>
+      )}
+      <div
+        className="page-content"
+        style={{ overflow: 'auto', margin: '-24px', padding: '24px' }}>
+        {renderAccountPage(currentPage!)}
+      </div>
     </div>
   );
 };
@@ -137,6 +160,8 @@ const mapStateToProps = (state: RootState) => {
     currentPage: state.navigation.stack[0]
       ? state.navigation.stack[0].currentPage
       : Screen.UNDEFINED,
+    hasTitle: state.titleContainer?.title.length > 0,
+    titleProperties: state.titleContainer,
   };
 };
 

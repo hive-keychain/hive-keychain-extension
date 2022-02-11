@@ -1,5 +1,6 @@
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
@@ -11,7 +12,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import RpcUtils from 'src/utils/rpc.utils';
 import './rpc-nodes.component.scss';
@@ -26,6 +26,7 @@ const RpcNodes = ({
   activeRpc,
   setActiveRpc,
   setErrorMessage,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const allRpc = RpcUtils.getFullList();
   let displayedRpcs = allRpc;
@@ -62,6 +63,10 @@ const RpcNodes = ({
   }, [customRpcs]);
 
   useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_rpc_node',
+      isBackButtonEnabled: true,
+    });
     initCustomRpcList();
   }, []);
 
@@ -154,11 +159,6 @@ const RpcNodes = ({
 
   return (
     <div className="rpc-nodes-page">
-      <PageTitleComponent
-        title="popup_html_rpc_node"
-        isBackButtonEnabled={true}
-      />
-
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
@@ -233,7 +233,11 @@ const mapStateToProps = (state: RootState) => {
   return { activeRpc: state.activeRpc };
 };
 
-const connector = connect(mapStateToProps, { setActiveRpc, setErrorMessage });
+const connector = connect(mapStateToProps, {
+  setActiveRpc,
+  setErrorMessage,
+  setTitleContainerProperties,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const RpcNodesComponent = connector(RpcNodes);

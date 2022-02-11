@@ -1,6 +1,7 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -10,7 +11,6 @@ import Select, {
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import Config from 'src/config';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import './automated-tasks.component.scss';
@@ -19,6 +19,7 @@ const AutomatedTasks = ({
   accounts,
   activeAccount,
   loadActiveAccount,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const defaultOptions: LocalAccountListItem[] = [];
   const [options, setOptions] = useState(defaultOptions);
@@ -27,6 +28,13 @@ const AutomatedTasks = ({
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
     accounts[0].name,
   );
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_automated_tasks',
+      isBackButtonEnabled: true,
+    });
+  }, []);
 
   useEffect(() => {
     init();
@@ -109,11 +117,6 @@ const AutomatedTasks = ({
 
   return (
     <div className="automated-tasks-page">
-      <PageTitleComponent
-        title="popup_html_automated_tasks"
-        isBackButtonEnabled={true}
-      />
-
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_automated_intro')}
       </div>
@@ -155,7 +158,10 @@ const mapStateToProps = (state: RootState) => {
   return { accounts: state.accounts, activeAccount: state.activeAccount };
 };
 
-const connector = connect(mapStateToProps, { loadActiveAccount });
+const connector = connect(mapStateToProps, {
+  loadActiveAccount,
+  setTitleContainerProperties,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AutomatedTasksComponent = connector(AutomatedTasks);

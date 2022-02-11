@@ -1,9 +1,9 @@
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import './menu.component.scss';
 
@@ -18,7 +18,15 @@ const Menu = ({
   isBackButtonEnable,
   menuItems,
   navigateTo,
+  setTitleContainerProperties,
 }: PropsType) => {
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: title,
+      isBackButtonEnabled: isBackButtonEnable,
+    });
+  });
+
   const handleMenuItemClick = (menuItem: MenuItem) => {
     if (menuItem.nextScreen) {
       navigateTo(menuItem.nextScreen);
@@ -29,10 +37,6 @@ const Menu = ({
 
   return (
     <div className="menu-page">
-      <PageTitleComponent
-        title={title}
-        isBackButtonEnabled={isBackButtonEnable}
-      />
       <div className="menu">
         {menuItems.map((menuItem, index) => (
           <div
@@ -58,7 +62,10 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, { navigateTo });
+const connector = connect(mapStateToProps, {
+  navigateTo,
+  setTitleContainerProperties,
+});
 type PropsType = ConnectedProps<typeof connector> & MenuProps;
 
 export const MenuComponent = connector(Menu);

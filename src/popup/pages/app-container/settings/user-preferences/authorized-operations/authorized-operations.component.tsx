@@ -1,19 +1,26 @@
 import { NoConfirm, NoConfirmWebsite } from '@interfaces/no-confirm.interface';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
 import './authorized-operations.component.scss';
 
-const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
+const AuthorizedOperations = ({
+  activeAccount,
+  setTitleContainerProperties,
+}: PropsFromRedux) => {
   const [noConfirm, setNoConfirm] = useState({} as NoConfirm);
   const [websites, setWebsites] = useState({} as NoConfirmWebsite);
 
   useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_operations',
+      isBackButtonEnabled: true,
+    });
     init();
   }, []);
 
@@ -42,11 +49,6 @@ const AuthorizedOperations = ({ activeAccount }: PropsFromRedux) => {
 
   return (
     <div className="authorized-operations-page">
-      <PageTitleComponent
-        title="popup_html_operations"
-        isBackButtonEnabled={true}
-      />
-
       <div
         className="introduction"
         dangerouslySetInnerHTML={{
@@ -103,7 +105,7 @@ const mapStateToProps = (state: RootState) => {
   return { activeAccount: state.activeAccount };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { setTitleContainerProperties });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AuthorizedOperationsComponent = connector(AuthorizedOperations);

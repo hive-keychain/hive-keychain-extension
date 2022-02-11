@@ -11,6 +11,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
@@ -21,7 +22,6 @@ import ReactTooltip from 'react-tooltip';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -46,6 +46,7 @@ const PowerUpDown = ({
   loadDelegatees,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [receiver, setReceiver] = useState(
     formParams.receiver ? formParams.receiver : activeAccount.name!,
@@ -68,6 +69,7 @@ const PowerUpDown = ({
   };
 
   useEffect(() => {
+    setTitleContainerProperties({ title: title, isBackButtonEnabled: true });
     loadDelegatees(activeAccount.name!);
     loadAutocompleteTransferUsernames();
   }, []);
@@ -233,7 +235,6 @@ const PowerUpDown = ({
 
   return (
     <div className="power-up-page">
-      <PageTitleComponent title={title} isBackButtonEnabled={true} />
       <AvailableCurrentPanelComponent
         available={available}
         availableCurrency={
@@ -331,6 +332,7 @@ const connector = connect(mapStateToProps, {
   loadDelegatees,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

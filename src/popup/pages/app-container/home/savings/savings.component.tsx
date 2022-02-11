@@ -10,6 +10,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
@@ -25,7 +26,6 @@ import ReactTooltip from 'react-tooltip';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
@@ -45,6 +45,7 @@ const SavingsPage = ({
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState(
     formParams.username ? formParams.username : activeAccount.name!,
@@ -69,6 +70,7 @@ const SavingsPage = ({
       ? formParams.selectedCurrency
       : paramsSelectedCurrency,
   );
+  const currency = currencyLabels[selectedCurrency];
 
   const currencyOptions = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
@@ -84,6 +86,14 @@ const SavingsPage = ({
       value: SavingOperationType.DEPOSIT as string,
     },
   ];
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_savings',
+      isBackButtonEnabled: true,
+      titleParams: [currency],
+    });
+  }, [currency]);
 
   useEffect(() => {
     const hbdSavings = FormatUtils.toNumber(
@@ -112,8 +122,6 @@ const SavingsPage = ({
     }
     setText(text);
   }, [selectedCurrency, selectedSavingOperationType]);
-
-  const currency = currencyLabels[selectedCurrency];
 
   const handleButtonClick = () => {
     if (parseFloat(value.toString()) > parseFloat(available.toString())) {
@@ -248,11 +256,6 @@ const SavingsPage = ({
 
   return (
     <div className="savings-page">
-      <PageTitleComponent
-        title={'popup_html_savings'}
-        titleParams={[currency]}
-        isBackButtonEnabled={true}
-      />
       <AvailableCurrentPanelComponent
         available={available}
         availableCurrency={currency}
@@ -343,6 +346,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

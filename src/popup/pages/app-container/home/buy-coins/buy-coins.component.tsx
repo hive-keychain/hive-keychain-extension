@@ -1,16 +1,23 @@
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { BuyCoinType } from '@popup/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { BuyCoinsListItem } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import './buy-coins.component.scss';
 
-const BuyCoins = ({ buyCoinType }: PropsFromRedux) => {
+const BuyCoins = ({
+  buyCoinType,
+  setTitleContainerProperties,
+}: PropsFromRedux) => {
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: buyCoinType,
+      isBackButtonEnabled: true,
+    });
+  });
   return (
     <div className="buy-coins-page">
-      <PageTitleComponent title={buyCoinType} isBackButtonEnabled={true} />
-
       {BuyCoinsListItem(buyCoinType).map((category) => (
         <div className="category" key={category.categoryLabel}>
           <h2 className="category-title">
@@ -35,7 +42,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, { setTitleContainerProperties });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const BuyCoinsComponent = connector(BuyCoins);

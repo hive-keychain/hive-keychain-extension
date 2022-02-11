@@ -13,6 +13,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
@@ -21,7 +22,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -44,6 +44,7 @@ const TokensTransfer = ({
   fetchPhishingAccounts,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [receiverUsername, setReceiverUsername] = useState(
     formParams.receiverUsername ? formParams.receiverUsername : '',
@@ -60,6 +61,10 @@ const TokensTransfer = ({
     useState<string[]>([]);
 
   useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_transfer_tokens',
+      isBackButtonEnabled: true,
+    });
     fetchPhishingAccounts();
     loadAutocompleteTransferUsernames();
   }, []);
@@ -206,10 +211,6 @@ const TokensTransfer = ({
 
   return (
     <div className="transfer-tokens-page">
-      <PageTitleComponent
-        title="popup_html_transfer_tokens"
-        isBackButtonEnabled={true}
-      />
       <AvailableCurrentPanelComponent
         available={balance}
         availableCurrency={symbol}
@@ -275,6 +276,7 @@ const connector = connect(mapStateToProps, {
   fetchPhishingAccounts,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

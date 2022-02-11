@@ -10,6 +10,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
@@ -19,7 +20,6 @@ import ReactTooltip from 'react-tooltip';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Conversion } from 'src/interfaces/conversion.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
@@ -39,6 +39,7 @@ const Conversion = ({
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [value, setValue] = useState<string | number>(
     formParams.value ? formParams.value : 0,
@@ -49,6 +50,10 @@ const Conversion = ({
     conversionType === ConversionType.CONVERT_HIVE_TO_HBD
       ? currencyLabels.hive
       : currencyLabels.hbd;
+
+  useEffect(() => {
+    setTitleContainerProperties({ title: title, isBackButtonEnabled: true });
+  }, []);
 
   useEffect(() => {
     const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
@@ -130,7 +135,6 @@ const Conversion = ({
 
   return (
     <div className="conversion-page">
-      <PageTitleComponent title={title} isBackButtonEnabled={true} />
       <AvailableCurrentPanelComponent
         available={available}
         availableCurrency={currency}
@@ -185,6 +189,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

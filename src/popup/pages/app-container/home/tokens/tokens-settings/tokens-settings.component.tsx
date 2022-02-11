@@ -1,5 +1,6 @@
 import { Token } from '@interfaces/tokens.interface';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { loadTokens, loadTokensMarket } from '@popup/actions/token.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -8,7 +9,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens-settings.component.scss';
@@ -18,11 +18,16 @@ const TokensSettings = ({
   tokens,
   navigateToWithParams,
   loadTokens,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [filterValue, setFilterValue] = useState('');
   const [filteredTokens, setFilteredTokens] = useState<Token[]>([]);
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
   useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_tokens_available',
+      isBackButtonEnabled: true,
+    });
     loadHiddenTokens();
     loadTokens();
   }, []);
@@ -67,11 +72,6 @@ const TokensSettings = ({
 
   return (
     <div className="tokens-settings">
-      <PageTitleComponent
-        title="popup_html_tokens_available"
-        isBackButtonEnabled={true}
-      />
-
       <div
         className="disclaimer"
         dangerouslySetInnerHTML={{
@@ -130,6 +130,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   loadTokensMarket,
   loadTokens,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -1,6 +1,7 @@
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
 import { setSuccessMessage } from '@popup/actions/message.actions';
 import { goBack } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -9,16 +10,23 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './auto-lock.component.scss';
 
-const AutoLock = ({ setSuccessMessage, goBack }: PropsFromRedux) => {
+const AutoLock = ({
+  setSuccessMessage,
+  goBack,
+  setTitleContainerProperties,
+}: PropsFromRedux) => {
   const [selectedType, setSelectedType] = useState(AutoLockType.DEFAULT);
   const [interval, setInterval] = useState(10);
 
   useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_autolock',
+      isBackButtonEnabled: true,
+    });
     init();
   }, []);
 
@@ -44,11 +52,6 @@ const AutoLock = ({ setSuccessMessage, goBack }: PropsFromRedux) => {
 
   return (
     <div className="auto-lock-page">
-      <PageTitleComponent
-        title="popup_html_autolock"
-        isBackButtonEnabled={true}
-      />
-
       <CheckboxComponent
         title="popup_html_al_default_title"
         hint="popup_html_al_default_info"
@@ -94,7 +97,11 @@ const mapStateToProps = (state: RootState) => {
   return {};
 };
 
-const connector = connect(mapStateToProps, { setSuccessMessage, goBack });
+const connector = connect(mapStateToProps, {
+  setSuccessMessage,
+  goBack,
+  setTitleContainerProperties,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AutoLockComponent = connector(AutoLock);

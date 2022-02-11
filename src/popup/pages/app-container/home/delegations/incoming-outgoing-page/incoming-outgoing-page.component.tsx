@@ -6,12 +6,12 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { IncomingOutgoingItemComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-item.component/incoming-outgoing-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './incoming-outgoing-page.component.scss';
@@ -21,6 +21,7 @@ const IncomingOutgoingPage = ({
   delegations,
   globalProperties,
   currencyLabels,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const header =
     delegationType === DelegationType.INCOMING
@@ -31,6 +32,11 @@ const IncomingOutgoingPage = ({
   const [delegationList, setDelegationList] = useState<any[]>([]);
 
   useEffect(() => {
+    setTitleContainerProperties({
+      title: delegationType,
+      isBackButtonEnabled: true,
+    });
+
     let totalVests = 0;
 
     if (delegationType === DelegationType.INCOMING) {
@@ -54,8 +60,6 @@ const IncomingOutgoingPage = ({
 
   return (
     <div className="incoming-outgoing-page">
-      <PageTitleComponent title={delegationType} isBackButtonEnabled={true} />
-
       <div className="total">
         <div className="label">{chrome.i18n.getMessage(header)}</div>
         <div className="value">
@@ -96,6 +100,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setErrorMessage,
   setSuccessMessage,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

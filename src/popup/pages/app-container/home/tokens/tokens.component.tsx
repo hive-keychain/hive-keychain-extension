@@ -7,6 +7,7 @@ import {
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { loadUserTokens } from '@popup/actions/token.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
@@ -16,7 +17,6 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens.component.scss';
@@ -29,6 +29,7 @@ const Tokens = ({
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>(
     [],
@@ -46,6 +47,10 @@ const Tokens = ({
   useEffect(() => {
     loadHiddenTokens();
     loadUserTokens(activeAccount.name!);
+    setTitleContainerProperties({
+      title: 'popup_html_tokens',
+      isBackButtonEnabled: true,
+    });
   }, []);
 
   useEffect(() => {
@@ -63,11 +68,6 @@ const Tokens = ({
 
   return (
     <div className="tokens-page">
-      <PageTitleComponent
-        title="popup_html_tokens"
-        isBackButtonEnabled={true}
-      />
-
       <div
         className="disclaimer"
         dangerouslySetInnerHTML={{
@@ -142,6 +142,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -1,4 +1,5 @@
 import { TokenBalance, TokenTransaction } from '@interfaces/tokens.interface';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { loadTokenHistory } from '@popup/actions/token.actions';
 import { TokenHistoryItemComponent } from '@popup/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
 import { RootState } from '@popup/store';
@@ -7,7 +8,6 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import './tokens-history.component.scss';
 
 const TokensHistory = ({
@@ -15,6 +15,7 @@ const TokensHistory = ({
   currentToken,
   tokenHistory,
   loadTokenHistory,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [displayedTransactions, setDisplayedTransactions] = useState<
     TokenTransaction[]
@@ -24,6 +25,11 @@ const TokensHistory = ({
 
   useEffect(() => {
     loadTokenHistory(activeAccountName!, currentToken.symbol);
+    setTitleContainerProperties({
+      title: 'popup_html_tokens_history',
+      titleParams: [currentToken.symbol],
+      isBackButtonEnabled: true,
+    });
   }, []);
 
   useEffect(() => {
@@ -47,12 +53,6 @@ const TokensHistory = ({
 
   return (
     <div className="tokens-history">
-      <PageTitleComponent
-        title="popup_html_tokens_history"
-        titleParams={[currentToken.symbol]}
-        isBackButtonEnabled={true}
-      />
-
       <InputComponent
         type={InputType.TEXT}
         placeholder="popup_html_search"
@@ -81,6 +81,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadTokenHistory,
+  setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

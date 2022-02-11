@@ -8,14 +8,12 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
-import { navigateTo } from '@popup/actions/navigation.actions';
 import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
-import { Screen } from 'src/reference-data/screen.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from './hive.utils';
@@ -393,7 +391,6 @@ const clearAllData = () => {
   store.dispatch(resetAccount());
   store.dispatch(forgetMk());
   store.dispatch(resetActiveAccount());
-  store.dispatch(navigateTo(Screen.SIGN_UP_PAGE, true));
 };
 
 const getAccountValue = (

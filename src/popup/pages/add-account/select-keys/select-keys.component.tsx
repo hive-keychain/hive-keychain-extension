@@ -1,11 +1,11 @@
 import { addAccount } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Keys } from 'src/interfaces/keys.interface';
 import KeysUtils from 'src/utils/keys.utils';
 import './select-keys.component.scss';
@@ -16,12 +16,20 @@ const SelectKeys = ({
   mk,
   addAccount,
   setErrorMessage,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [importActive, setImportActive] = useState(keys.active ? true : false);
   const [importPosting, setImportPosting] = useState(
     keys.posting ? true : false,
   );
   const [importMemo, setImportMemo] = useState(keys.memo ? true : false);
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_import_keys',
+      isBackButtonEnabled: true,
+    });
+  });
 
   const importKeys = (): void => {
     let keysToImport: Keys = {};
@@ -47,10 +55,6 @@ const SelectKeys = ({
 
   return (
     <div className="select-keys-page">
-      <PageTitleComponent
-        title="popup_html_import_keys"
-        isBackButtonEnabled={true}
-      />
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -88,7 +92,11 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { setErrorMessage, addAccount });
+const connector = connect(mapStateToProps, {
+  setErrorMessage,
+  addAccount,
+  setTitleContainerProperties,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SelectKeysComponent = connector(SelectKeys);

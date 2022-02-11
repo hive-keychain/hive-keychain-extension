@@ -1,4 +1,8 @@
-import { goBack, navigateTo } from '@popup/actions/navigation.actions';
+import {
+  goBack,
+  navigateTo,
+  resetNav,
+} from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -7,11 +11,11 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import './page-title.component.scss';
 
-interface PageTitleProps {
+export interface PageTitleProps {
   title: string;
   titleParams?: string[];
   skipTitleTranslation?: boolean;
-  isBackButtonEnabled: boolean;
+  isBackButtonEnabled?: boolean;
   isCloseButtonDisabled?: boolean;
 }
 
@@ -24,6 +28,7 @@ const PageTitle = ({
   goBack,
   navigateTo,
   canGoBack,
+  resetNav,
 }: PropsType) => {
   const handleBackButtonClick = (): void => {
     if (isBackButtonEnabled) {
@@ -31,6 +36,7 @@ const PageTitle = ({
     }
   };
   const handleCloseButtonClick = (): void => {
+    resetNav();
     navigateTo(Screen.HOME_PAGE, true);
   };
 
@@ -65,7 +71,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { goBack, navigateTo });
+const connector = connect(mapStateToProps, { goBack, navigateTo, resetNav });
 type PropsType = ConnectedProps<typeof connector> & PageTitleProps;
 
 export const PageTitleComponent = connector(PageTitle);

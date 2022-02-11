@@ -1,18 +1,30 @@
 import { addKey } from '@popup/actions/account.actions';
 import { goBack } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import './add-key.component.scss';
 
-const AddKey = ({ navParams, goBack, addKey }: PropsType) => {
+const AddKey = ({
+  navParams,
+  goBack,
+  addKey,
+  setTitleContainerProperties,
+}: PropsType) => {
   const [privateKey, setPrivateKey] = useState('');
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_add_key',
+      isBackButtonEnabled: true,
+    });
+  });
 
   const importKey = async () => {
     addKey(privateKey.trim(), navParams);
@@ -21,10 +33,6 @@ const AddKey = ({ navParams, goBack, addKey }: PropsType) => {
 
   return (
     <div className="add-key-page">
-      <PageTitleComponent
-        title="popup_html_add_key"
-        isBackButtonEnabled={true}
-      />
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
@@ -57,6 +65,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   goBack,
   addKey,
+  setTitleContainerProperties,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

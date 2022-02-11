@@ -1,13 +1,13 @@
 import { addAccount } from '@popup/actions/account.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import KeysUtils from 'src/utils/keys.utils';
@@ -17,9 +17,18 @@ const AddByKeys = ({
   navigateToWithParams,
   localAccounts,
   addAccount,
+  setTitleContainerProperties,
 }: PropsType) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
+
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_setup',
+      isBackButtonEnabled: true,
+      isCloseButtonDisabled: localAccounts.length === 0,
+    });
+  });
 
   const submitForm = async (): Promise<void> => {
     const keys = await AccountUtils.verifyAccount(
@@ -39,11 +48,6 @@ const AddByKeys = ({
 
   return (
     <div className="add-by-keys-page">
-      <PageTitleComponent
-        title="popup_html_setup"
-        isBackButtonEnabled={true}
-        isCloseButtonDisabled={localAccounts.length === 0}
-      />
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -81,6 +85,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addAccount,
+  setTitleContainerProperties,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

@@ -1,11 +1,11 @@
 import { setAccounts } from '@popup/actions/account.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -16,6 +16,7 @@ const AddAccountMain = ({
   navigateTo,
   accounts,
   setAccounts,
+  setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [importWindow, setImportWindow] = useState<number>();
 
@@ -63,13 +64,16 @@ const AddAccountMain = ({
     }
   };
 
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_setup',
+      isBackButtonEnabled: true,
+      isCloseButtonDisabled: !accounts || !accounts.length,
+    });
+  });
+
   return (
     <div className="add-account-page">
-      <PageTitleComponent
-        title="popup_html_setup"
-        isBackButtonEnabled={true}
-        isCloseButtonDisabled={!accounts || !accounts.length}
-      />
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -100,7 +104,11 @@ const mapStateToProps = (state: RootState) => {
   return { accounts: state.accounts, mk: state.mk };
 };
 
-const connector = connect(mapStateToProps, { navigateTo, setAccounts });
+const connector = connect(mapStateToProps, {
+  navigateTo,
+  setAccounts,
+  setTitleContainerProperties,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const AddAccountMainComponent = connector(AddAccountMain);
