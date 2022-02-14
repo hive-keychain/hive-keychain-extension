@@ -63,15 +63,11 @@ const WalletInfoSection = ({
   ) => {
     event.stopPropagation();
     setDisplayDropdown(!displayDropdown);
-    console.log(event);
     setDropdownPosition({
-      x: event.target.x,
-      y: event.target.y,
+      x: event.target.offsetLeft + 10,
+      y: event.target.offsetParent.offsetTop + 32,
     });
-    // setDropdownPosition({
-    //   x: event.target.offsetLeft + event.target.offsetWidth,
-    //   y: event.target.offsetTop + event.target.offsetHeight,
-    // });
+
     setDropdownItems(menuItems);
   };
 
