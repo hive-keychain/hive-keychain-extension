@@ -23,7 +23,7 @@ const AvailableCurrentPanel = ({
 }: PropsType) => {
   return (
     <div className="power-up-down-top-panel">
-      {current && (
+      {current !== null && current !== undefined && (
         <div className="current panel-row">
           <div className="current-title">
             {chrome.i18n.getMessage(currentLabel!)}

@@ -1,6 +1,7 @@
 @import '/src/popup/variable.scss';
 .savings-page {
   @include pageLayout;
+  padding: 0px 24px;
 
   .max {
     align-self: flex-end;

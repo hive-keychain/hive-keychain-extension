@@ -1,6 +1,7 @@
 @import '/src/popup/variable.scss';
 .power-up-page {
   @include pageLayout;
+  padding: 0px 24px;
   .submit-button {
     margin-bottom: 30px;
   }
