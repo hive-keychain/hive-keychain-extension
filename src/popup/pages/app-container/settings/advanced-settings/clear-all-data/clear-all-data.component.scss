@@ -6,4 +6,13 @@
   .introduction {
     font-size: 16px;
   }
+
+  .bottom-panel {
+    position: fixed;
+    left: 24px;
+    bottom: 32px;
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
+  }
 }

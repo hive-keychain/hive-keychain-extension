@@ -8,11 +8,6 @@ const UserPreferencesMenuItems: MenuItem[] = [
     icon: Icons.AUTHORIZED_OPERATIONS,
     nextScreen: Screen.SETTINGS_AUTHORIZED_OPERATIONS,
   },
-  // {
-  //   label: 'popup_html_operation_popup',
-  //   icon: 'accounts',
-  //   nextScreen: Screen.SETTINGS_OPERATION_POPUP,
-  // },
   {
     label: 'popup_html_automated_tasks',
     icon: Icons.AUTOMATED_TASKS,
