@@ -1,3 +1,4 @@
+import RPCModule from '@background/rpc.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
@@ -35,9 +36,9 @@ const chromeMessageHandler = async (
     // case BackgroundCommand.IMPORT_ACCOUNTS:
     //   AccountModule.sendBackImportedAccounts(backgroundMessage.value);
     //   break;
-    // case BackgroundCommand.SAVE_RPC:
-    //   RPCModule.setActiveRpc(backgroundMessage.value);
-    //   break;
+    case BackgroundCommand.SAVE_RPC:
+      RPCModule.setActiveRpc(backgroundMessage.value);
+      break;
     // case BackgroundCommand.SEND_REQUEST:
     //   const requestHandler = getRequestHandler();
     //   if (requestHandler) {

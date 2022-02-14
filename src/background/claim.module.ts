@@ -164,7 +164,7 @@ const getRC = async (username: string) => {
       accounts: [username],
     },
   };
-  let url = RPCModule.getActiveRpc().uri;
+  let url = (await RPCModule.getActiveRpc()).uri;
   if (url === 'DEFAULT') url = 'https://api.hive.blog/';
   const response = (await axios.post(url, JSON.stringify(data))).data;
   const STEEM_RC_MANA_REGENERATION_SECONDS = 432000;
