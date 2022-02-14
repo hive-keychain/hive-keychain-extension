@@ -8,7 +8,6 @@ import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
-import AccountUtils from 'src/utils/account.utils';
 import './add-account-main.component.scss';
 
 const AddAccountMain = ({
@@ -48,16 +47,7 @@ const AddAccountMain = ({
   const onSentBackAccountsListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
       if (message.value?.length) {
-        const importedAccounts = AccountUtils.getAccountsFromFileData(
-          message.value,
-          mk,
-        );
-        setAccounts(
-          AccountUtils.mergeImportedAccountsToExistingAccounts(
-            importedAccounts,
-            accounts,
-          ),
-        );
+        setAccounts(message.value);
         // chrome.windows.remove(importWindow!);
       }
       chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);

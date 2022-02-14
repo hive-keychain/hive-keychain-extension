@@ -2,6 +2,7 @@ import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
 import LocalStorageModule from '@background/local-storage.module';
 import RPCModule from '@background/rpc.module';
+import SettingsModule from '@background/settings.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -35,7 +36,6 @@ const chromeMessageHandler = async (
       //ClaimModule.loadClaims();
       break;
     case BackgroundCommand.IMPORT_ACCOUNTS:
-      //TODO : Handle in background side
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);
       break;
     case BackgroundCommand.SAVE_RPC:
@@ -85,11 +85,11 @@ const chromeMessageHandler = async (
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.set(backgroundMessage.value);
       break;
-    // case BackgroundCommand.SEND_BACK_SETTINGS:
-    //   SettingsModule.sendBackImportedFileContent(
-    //     JSON.parse(backgroundMessage.value),
-    //   );
-    //   break;
+    case BackgroundCommand.SEND_BACK_SETTINGS:
+      SettingsModule.sendBackImportedFileContent(
+        JSON.parse(backgroundMessage.value),
+      );
+      break;
   }
 };
 
