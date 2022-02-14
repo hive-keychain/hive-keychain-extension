@@ -4,9 +4,15 @@ import { SignInComponent } from '@popup/pages/sign-in/sign-in/sign-in.component'
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { PageTitleComponent } from 'src/common-ui/page-title/page-title.component';
 import { Screen } from 'src/reference-data/screen.enum';
 
-const SignInRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
+const SignInRouter = ({
+  currentPage,
+  navigateTo,
+  titleProperties,
+  hasTitle,
+}: PropsFromRedux) => {
   useEffect(() => {
     navigateTo(Screen.SIGN_IN_PAGE);
   }, []);
@@ -21,7 +27,33 @@ const SignInRouter = ({ currentPage, navigateTo }: PropsFromRedux) => {
   };
 
   return (
-    <div className="sign-in-router-page">{renderSignInPage(currentPage!)}</div>
+    <div
+      className="sign-in-router-page"
+      style={{
+        height: '100%',
+        display: 'grid',
+        gridTemplateRows: hasTitle ? '70px 1fr' : '1fr',
+      }}>
+      {hasTitle && (
+        <PageTitleComponent
+          title={titleProperties.title}
+          titleParams={titleProperties.titleParams}
+          skipTitleTranslation={titleProperties.skipTitleTranslation}
+          isBackButtonEnabled={titleProperties.isBackButtonEnabled}
+          isCloseButtonDisabled={
+            titleProperties.isCloseButtonDisabled
+          }></PageTitleComponent>
+      )}
+      <div
+        className="page-content"
+        style={{
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
+        {renderSignInPage(currentPage!)}
+      </div>
+    </div>
   );
 };
 
@@ -30,6 +62,8 @@ const mapStateToProps = (state: RootState) => {
     currentPage: state.navigation.stack[0]
       ? state.navigation.stack[0].currentPage
       : Screen.UNDEFINED,
+    hasTitle: state.titleContainer?.title.length > 0,
+    titleProperties: state.titleContainer,
   };
 };
 

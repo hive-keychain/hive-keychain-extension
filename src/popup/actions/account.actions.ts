@@ -1,4 +1,7 @@
-import { refreshKeys } from '@popup/actions/active-account.actions';
+import {
+  loadActiveAccount,
+  refreshKeys,
+} from '@popup/actions/active-account.actions';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
@@ -72,12 +75,54 @@ export const removeKey =
       (account: LocalAccount) => account.name === activeAccount.name,
     );
 
+    let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount);
+    const finalAccounts = [];
+    for (let i = 0; i < newAccounts.length; i++) {
+      let tmp = newAccounts[i];
+      if (
+        type === KeyType.ACTIVE &&
+        tmp.keys.activePubkey === `@${activeAccount.name}`
+      ) {
+        delete tmp.keys.activePubkey;
+        delete tmp.keys.active;
+      }
+      if (
+        type === KeyType.POSTING &&
+        tmp.keys.postingPubkey === `@${activeAccount.name}`
+      ) {
+        delete tmp.keys.posting;
+        delete tmp.keys.postingPubkey;
+      }
+      if (
+        type === KeyType.MEMO &&
+        tmp.keys.memoPubkey === `@${activeAccount.name}`
+      ) {
+        delete tmp.keys.memo;
+        delete tmp.keys.memoPubkey;
+      }
+
+      newAccounts[i] = tmp;
+
+      if (Object.keys(newAccounts[i].keys).length > 0) {
+        finalAccounts.push(newAccounts[i]);
+      }
+    }
+
     const action: ActionPayload<LocalAccount[]> = {
       type: ActionType.SET_ACCOUNTS,
-      payload: AccountUtils.deleteKey(type, accounts, activeAccount),
+      payload: finalAccounts,
     };
-    if (accounts) {
-      dispatch(action);
-      dispatch(refreshKeys(activeLocalAccount));
+    dispatch(action);
+    if (finalAccounts) {
+      console.log(finalAccounts.map((account: LocalAccount) => account.name));
+      if (
+        finalAccounts
+          .map((account: LocalAccount) => account.name)
+          .includes(activeLocalAccount.name)
+      ) {
+        dispatch(refreshKeys(activeLocalAccount));
+      } else {
+        dispatch(loadActiveAccount(accounts[0]));
+      }
     }
   };

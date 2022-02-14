@@ -18,6 +18,7 @@ const ResetPasswordPage = ({
       isBackButtonEnabled: true,
     });
   }, []);
+
   const reset = () => {
     AccountUtils.clearAllData();
     navigateTo(Screen.SIGN_UP_PAGE, true);

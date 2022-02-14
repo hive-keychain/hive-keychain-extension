@@ -1,9 +1,10 @@
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -12,8 +13,17 @@ import { Screen } from 'src/reference-data/screen.enum';
 import MkUtils from 'src/utils/mk.utils';
 import './sign-in.component.scss';
 
-const SignIn = ({ setErrorMessage, setMk, navigateTo }: PropsFromRedux) => {
+const SignIn = ({
+  setErrorMessage,
+  setMk,
+  navigateTo,
+  resetTitleContainerProperties,
+}: PropsFromRedux) => {
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    resetTitleContainerProperties();
+  }, []);
 
   const login = async () => {
     if (await MkUtils.login(password)) {
@@ -64,6 +74,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setMk,
   navigateTo,
+  resetTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

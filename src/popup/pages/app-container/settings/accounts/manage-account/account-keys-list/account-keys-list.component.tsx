@@ -63,30 +63,42 @@ const AccountKeysList = ({
       warningParams: warningParams,
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delete_account_operation');
-        const newAccounts = AccountUtils.deleteAccount(
+        let newAccounts = AccountUtils.deleteAccount(
           activeAccount.name!,
           accounts,
         );
 
+        let finalAccounts = [];
         if (hasAuthorizedAccountLinkedToActiveAccount) {
-          for (const account of newAccounts) {
-            if (account.keys.activePubkey === activeAccount.name) {
-              account.keys.active = null;
-              account.keys.activePubkey = null;
+          for (let i = 0; i < newAccounts.length; i++) {
+            let tmp = newAccounts[i];
+            if (tmp.keys.activePubkey === `@${activeAccount.name}`) {
+              delete tmp.keys.activePubkey;
+              delete tmp.keys.active;
             }
-            if (account.keys.postingPubkey === activeAccount.name) {
-              account.keys.posting = null;
-              account.keys.postingPubkey = null;
+            if (tmp.keys.postingPubkey === `@${activeAccount.name}`) {
+              delete tmp.keys.posting;
+              delete tmp.keys.postingPubkey;
             }
-            if (account.keys.memoPubkey === activeAccount.name) {
-              account.keys.memo = null;
-              account.keys.memoPubkey = null;
+            if (tmp.keys.memoPubkey === `@${activeAccount.name}`) {
+              delete tmp.keys.memo;
+              delete tmp.keys.memoPubkey;
+            }
+
+            newAccounts[i] = tmp;
+
+            if (Object.keys(newAccounts[i].keys).length > 0) {
+              finalAccounts.push(newAccounts[i]);
             }
           }
+        } else {
+          finalAccounts = newAccounts;
         }
 
-        setAccounts(newAccounts);
-        loadActiveAccount(newAccounts[0]);
+        setAccounts(finalAccounts);
+        if (finalAccounts.length) {
+          loadActiveAccount(finalAccounts[0]);
+        }
         removeFromLoadingList('html_popup_delete_account_operation');
       },
     });
