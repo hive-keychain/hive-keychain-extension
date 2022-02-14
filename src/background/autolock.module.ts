@@ -1,15 +1,34 @@
 import MkModule from '@background/mk.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { Autolock, AutoLockType } from '../interfaces/autolock.interface';
 
-const startAutolock = async (autoLock: Autolock) => {
+const set = async (autoLock: Autolock) => {
   //Receive autoLock from the popup (upon registration or unlocking)
+  if (
+    autoLock &&
+    (autoLock.type === AutoLockType.DEVICE_LOCK ||
+      autoLock.type === AutoLockType.IDLE_LOCK)
+  ) {
+    Logger.info(
+      `hive-keychain: setting up ${autoLock.type} listener ${
+        autoLock.type === AutoLockType.IDLE_LOCK ? `(${autoLock.mn}mn)` : ''
+      }`,
+    );
+    if (autoLock.type === AutoLockType.IDLE_LOCK) {
+      chrome.idle.setDetectionInterval(autoLock.mn * 60);
+    }
+  }
+};
+
+const start = async () => {
   Logger.info('Starting autolock');
-  // if (listener) {
-  //   chrome.idle.onStateChanged.removeListener(listener);
-  // }
-  const listener = (state: any) => {
+  chrome.idle.onStateChanged.addListener(async (state: any) => {
+    const autoLock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.AUTOLOCK,
+    );
     if (
       (autoLock.type === AutoLockType.DEVICE_LOCK &&
         state === AutoLockType.DEVICE_LOCK) ||
@@ -27,26 +46,12 @@ const startAutolock = async (autoLock: Autolock) => {
         command: BackgroundCommand.LOCK_APP,
       });
     }
-  };
-
-  if (
-    autoLock &&
-    autoLock.type !== AutoLockType.DEFAULT &&
-    (autoLock.type === AutoLockType.DEVICE_LOCK ||
-      autoLock.type === AutoLockType.IDLE_LOCK)
-  ) {
-    Logger.info(
-      `hive-keychain: setting up ${autoLock.type} listener ${
-        autoLock.type === AutoLockType.IDLE_LOCK ? `(${autoLock.mn}mn)` : ''
-      }`,
-    );
-    chrome.idle.setDetectionInterval(autoLock.mn * 60);
-    chrome.idle.onStateChanged.addListener(listener);
-  }
+  });
 };
 
 const AutolockModule = {
-  startAutolock,
+  set,
+  start,
 };
 
 export default AutolockModule;

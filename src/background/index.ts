@@ -9,10 +9,12 @@ import Logger from 'src/utils/logger.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
+console.log('plop');
 (async () => {
   Logger.log('Initializing background tasks');
   //await ClaimModule.loadClaims();
-  await AutolockModule.startAutolock(
+  AutolockModule.start();
+  await AutolockModule.set(
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.AUTOLOCK,
     ),
@@ -83,7 +85,7 @@ const chromeMessageHandler = async (
     //   ClaimModule.updateClaims(backgroundMessage.value);
     //   break;
     case BackgroundCommand.UPDATE_AUTOLOCK:
-      AutolockModule.startAutolock(backgroundMessage.value);
+      AutolockModule.set(backgroundMessage.value);
       break;
     // case BackgroundCommand.SEND_BACK_SETTINGS:
     //   SettingsModule.sendBackImportedFileContent(
@@ -94,4 +96,3 @@ const chromeMessageHandler = async (
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
-//initBackgroundTasks();
