@@ -1,3 +1,5 @@
+import AccountModule from '@background/account';
+import AutolockModule from '@background/autolock.module';
 import RPCModule from '@background/rpc.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { BackgroundMessage } from './background-message.interface';
@@ -9,11 +11,6 @@ import MkModule from './mk.module';
 //   await AutolockModule.startAutolock(
 //     await LocalStorageUtils.getValueFromLocalStorage(
 //       LocalStorageKeyEnum.AUTOLOCK,
-//     ),
-//   );
-//   await RPCModule.setActiveRpc(
-//     await LocalStorageUtils.getValueFromLocalStorage(
-//       LocalStorageKeyEnum.CURRENT_RPC,
 //     ),
 //   );
 
@@ -33,9 +30,10 @@ const chromeMessageHandler = async (
       MkModule.saveMk(backgroundMessage.value);
       //ClaimModule.loadClaims();
       break;
-    // case BackgroundCommand.IMPORT_ACCOUNTS:
-    //   AccountModule.sendBackImportedAccounts(backgroundMessage.value);
-    //   break;
+    case BackgroundCommand.IMPORT_ACCOUNTS:
+      //TODO : Handle in background side
+      AccountModule.sendBackImportedAccounts(backgroundMessage.value);
+      break;
     case BackgroundCommand.SAVE_RPC:
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
@@ -76,15 +74,13 @@ const chromeMessageHandler = async (
     //   const { keep, data, tab, domain } = backgroundMessage.value;
     //   performOperation(data, tab, domain, keep);
     //   break;
-    // case BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY:
-    //   KeychainifyModule.saveKeychainify(backgroundMessage.value);
-    //   break;
+
     // case BackgroundCommand.UPDATE_CLAIMS:
     //   ClaimModule.updateClaims(backgroundMessage.value);
     //   break;
-    // case BackgroundCommand.UPDATE_AUTOLOCK:
-    //   AutolockModule.startAutolock(backgroundMessage.value);
-    //   break;
+    case BackgroundCommand.UPDATE_AUTOLOCK:
+      AutolockModule.startAutolock(backgroundMessage.value);
+      break;
     // case BackgroundCommand.SEND_BACK_SETTINGS:
     //   SettingsModule.sendBackImportedFileContent(
     //     JSON.parse(backgroundMessage.value),
