@@ -4,6 +4,7 @@ import {
 } from '@popup/actions/active-account.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
+import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from '@popup/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
 import { ResourcesSectionComponent } from '@popup/pages/app-container/home/resources-section/resources-section.component';
@@ -28,9 +29,11 @@ const Home = ({
   refreshActiveAccount,
   isAppReady,
   globalProperties,
+  resetTitleContainerProperties,
 }: PropsFromRedux) => {
   const [displayLoader, setDisplayLoader] = useState(true);
   useEffect(() => {
+    resetTitleContainerProperties();
     loadBittrexPrices();
     loadGlobalProperties();
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -50,15 +53,6 @@ const Home = ({
       setDisplayLoader(true);
     }
   }, [globalProperties, activeAccount]);
-
-  // useEffect(() => {
-  //   if (!isAppReady) {
-  //     setDisplayLoader(false);
-  //     setTimeout(() => {
-  //       setDisplayLoader(true);
-  //     }, Config.MIN_LOADING_TIME);
-  //   }
-  // }, [isAppReady]);
 
   useEffect(() => {
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
@@ -115,6 +109,7 @@ const connector = connect(mapStateToProps, {
   loadBittrexPrices: loadCurrencyPrices,
   loadGlobalProperties,
   refreshActiveAccount,
+  resetTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -21,6 +21,9 @@
       color: white;
       cursor: pointer;
       font-size: 26px;
+      &:hover {
+        color: $red-dark;
+      }
     }
   }
 

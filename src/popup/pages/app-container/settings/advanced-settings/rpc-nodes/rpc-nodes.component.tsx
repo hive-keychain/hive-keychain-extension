@@ -81,10 +81,11 @@ const RpcNodes = ({
   const deleteCustomRPC = (item: Rpc, event: BaseSyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    if (activeRpc?.uri === item.uri) {
-      setActiveRpc(customRpcs[0]);
-    }
+    console.log(activeRpc?.uri, item.uri, activeRpc?.uri === item.uri);
     const newRpcs = setCustomRpcs(RpcUtils.deleteCustomRpc(customRpcs, item));
+    if (activeRpc?.uri === item.uri) {
+      setActiveRpc(allRpc[0]);
+    }
 
     return newRpcs;
   };
@@ -143,16 +144,16 @@ const RpcNodes = ({
           {selectProps.item.label}{' '}
           {selectProps.item.rpc.testnet && <div>TESTNET</div>}
         </div>
-        {!RpcUtils.isDefault(selectProps.item.rpc) &&
-          activeRpc?.uri !== selectProps.item.rpc.uri && (
-            <img
-              src="/assets/images/clear.png"
-              className="erase-button"
-              onClick={($event) =>
-                deleteCustomRPC(selectProps.item.rpc, $event)
-              }
-            />
-          )}
+        {!RpcUtils.isDefault(selectProps.item.rpc) && (
+          <img
+            src="/assets/images/clear.png"
+            className="erase-button"
+            onClick={($event) => {
+              deleteCustomRPC(selectProps.item.rpc, $event);
+              selectProps.methods.dropDown('close');
+            }}
+          />
+        )}
       </div>
     );
   };

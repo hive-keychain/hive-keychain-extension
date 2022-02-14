@@ -23,9 +23,7 @@ store.subscribe(() => {
   const { accounts, mk, activeRpc, activeAccount } = store.getState();
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
-    if (accounts.length > 0) {
-      AccountUtils.saveAccounts(accounts, mk);
-    }
+    AccountUtils.saveAccounts(accounts, mk);
   }
   if (previousRpc && previousRpc.uri !== activeRpc?.uri && activeRpc) {
     RpcUtils.saveCurrentRpc(activeRpc);
