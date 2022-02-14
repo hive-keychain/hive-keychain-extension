@@ -180,7 +180,7 @@
     "description": "placeholder for entering username"
   },
   "popup_html_import_keys": {
-    "message": "Import Keys",
+    "message": "Import keys",
     "description": "Import all keys"
   },
   "popup_html_import_permissions": {
@@ -440,7 +440,7 @@
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_memo_key_missing": {
-    "message": "Your memo key is missing",
+    "message": "Please add your memo key to encrypt and decrypt messages.",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_add_active": {
