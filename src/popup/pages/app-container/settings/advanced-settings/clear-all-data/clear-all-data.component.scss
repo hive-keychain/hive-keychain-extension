@@ -2,6 +2,7 @@
 
 .clear-all-data-page {
   @include pageLayoutRowGap;
+  padding: 0px 24px;
   .introduction {
     font-size: 16px;
   }

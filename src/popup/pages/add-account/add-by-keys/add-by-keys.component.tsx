@@ -70,7 +70,11 @@ const AddByKeys = ({
           type={InputType.PASSWORD}
           onEnterPress={submitForm}
         />
-        <ButtonComponent label={'popup_html_submit'} onClick={submitForm} />
+        <ButtonComponent
+          label={'popup_html_submit'}
+          onClick={submitForm}
+          fixToBottom
+        />
       </div>
     </div>
   );

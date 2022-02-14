@@ -3,9 +3,9 @@
 .about-page {
   display: grid;
   height: 100%;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr 28px;
+  padding: 0px 24px;
   .content {
-    margin-top: 32px;
     font-size: 16px;
     text-align: justify;
     a {

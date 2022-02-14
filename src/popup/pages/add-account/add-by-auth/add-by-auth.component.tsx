@@ -68,7 +68,11 @@ const AddByAuth = ({
         type={InputType.TEXT}
         onEnterPress={submitForm}
       />
-      <ButtonComponent label={'popup_html_submit'} onClick={submitForm} />
+      <ButtonComponent
+        label={'popup_html_submit'}
+        onClick={submitForm}
+        fixToBottom
+      />
     </div>
   );
 };
