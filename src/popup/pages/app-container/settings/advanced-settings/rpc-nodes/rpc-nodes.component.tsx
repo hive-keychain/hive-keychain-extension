@@ -81,7 +81,6 @@ const RpcNodes = ({
   const deleteCustomRPC = (item: Rpc, event: BaseSyntheticEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    console.log(activeRpc?.uri, item.uri, activeRpc?.uri === item.uri);
     const newRpcs = setCustomRpcs(RpcUtils.deleteCustomRpc(customRpcs, item));
     if (activeRpc?.uri === item.uri) {
       setActiveRpc(allRpc[0]);
