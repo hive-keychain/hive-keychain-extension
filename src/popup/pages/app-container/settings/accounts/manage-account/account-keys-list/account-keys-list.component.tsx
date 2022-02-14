@@ -29,31 +29,62 @@ const AccountKeysList = ({
   removeFromLoadingList,
 }: PropsType) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
-  const [account, setAccount] = useState();
+  const [account, setAccount] = useState<LocalAccount>();
 
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setAccount(
-      accounts.find(
-        (account: LocalAccount) => account.name === activeAccount.name,
-      ),
+    const account = accounts.find(
+      (account: LocalAccount) => account.name === activeAccount.name,
     );
+    setAccount(account!);
   }, [activeAccount]);
 
   const deleteAccount = () => {
+    let warningMessage, warningParams;
+    const hasAuthorizedAccountLinkedToActiveAccount = accounts.some((account) =>
+      [
+        account.keys.activePubkey,
+        account.keys.memoPubkey,
+        account.keys.postingPubkey,
+      ].includes(`@${activeAccount.name}`),
+    );
+    if (hasAuthorizedAccountLinkedToActiveAccount) {
+      warningMessage = 'popup_html_deleting_account_linked_to_authorized';
+      warningParams = [activeAccount.name];
+    }
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_delete_account_confirmation_message',
         [activeAccount.name!],
       ),
       title: 'popup_html_delete_account',
+      warningMessage: warningMessage,
+      warningParams: warningParams,
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delete_account_operation');
         const newAccounts = AccountUtils.deleteAccount(
           activeAccount.name!,
           accounts,
         );
+
+        if (hasAuthorizedAccountLinkedToActiveAccount) {
+          for (const account of newAccounts) {
+            if (account.keys.activePubkey === activeAccount.name) {
+              account.keys.active = null;
+              account.keys.activePubkey = null;
+            }
+            if (account.keys.postingPubkey === activeAccount.name) {
+              account.keys.posting = null;
+              account.keys.postingPubkey = null;
+            }
+            if (account.keys.memoPubkey === activeAccount.name) {
+              account.keys.memo = null;
+              account.keys.memoPubkey = null;
+            }
+          }
+        }
+
         setAccounts(newAccounts);
         loadActiveAccount(newAccounts[0]);
         removeFromLoadingList('html_popup_delete_account_operation');
@@ -117,7 +148,10 @@ const AccountKeysList = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount, accounts: state.accounts };
+  return {
+    activeAccount: state.activeAccount,
+    accounts: state.accounts as LocalAccount[],
+  };
 };
 
 const connector = connect(mapStateToProps, {

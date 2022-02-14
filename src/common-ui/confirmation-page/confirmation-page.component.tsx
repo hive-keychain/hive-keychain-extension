@@ -14,6 +14,8 @@ const ConfirmationPage = ({
   message,
   afterConfirmAction,
   warningMessage,
+  warningParams,
+  skipWarningTranslation,
   title,
   skipTitleTranslation,
   goBack,
@@ -37,7 +39,11 @@ const ConfirmationPage = ({
           }}></div>
 
         {warningMessage && (
-          <div className="warning-message">{warningMessage}</div>
+          <div className="warning-message">
+            {skipWarningTranslation
+              ? warningMessage
+              : chrome.i18n.getMessage(warningMessage, warningParams)}
+          </div>
         )}
         <div className="fields">
           {fields &&
@@ -70,6 +76,9 @@ const mapStateToProps = (state: RootState) => {
     message: state.navigation.stack[0].params.message as string,
     fields: state.navigation.stack[0].params.fields as ConfirmationPageFields[],
     warningMessage: state.navigation.stack[0].params.warningMessage as string,
+    warningParams: state.navigation.stack[0].params.warningParams,
+    skipWarningTranslation:
+      state.navigation.stack[0].params.skipWarningTranslation,
     afterConfirmAction: state.navigation.stack[0].params.afterConfirmAction,
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,

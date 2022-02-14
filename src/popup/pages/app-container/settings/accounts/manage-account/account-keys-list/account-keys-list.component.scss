@@ -2,6 +2,7 @@
 
 .account-keys-list {
   @include pageLayoutRowGap;
+  padding: 0px 24px;
   padding-bottom: 24px;
 
   .account-keys-list-item:nth-child(even) {

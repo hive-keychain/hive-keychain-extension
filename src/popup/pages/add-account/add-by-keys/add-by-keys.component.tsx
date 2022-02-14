@@ -1,4 +1,6 @@
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { addAccount } from '@popup/actions/account.actions';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
@@ -18,6 +20,7 @@ const AddByKeys = ({
   localAccounts,
   addAccount,
   setTitleContainerProperties,
+  setErrorMessage,
 }: PropsType) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
@@ -31,6 +34,15 @@ const AddByKeys = ({
   });
 
   const submitForm = async (): Promise<void> => {
+    if (
+      localAccounts
+        .map((localAccount: LocalAccount) => localAccount.name)
+        .includes(username)
+    ) {
+      setErrorMessage('popup_html_account_already_existing');
+      return;
+    }
+
     const keys = await AccountUtils.verifyAccount(
       username.trim(),
       privateKey.trim(),
@@ -90,6 +102,7 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   addAccount,
   setTitleContainerProperties,
+  setErrorMessage,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

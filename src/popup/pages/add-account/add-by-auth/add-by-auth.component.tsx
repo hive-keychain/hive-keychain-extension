@@ -1,3 +1,4 @@
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { addAccount } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
@@ -32,6 +33,15 @@ const AddByAuth = ({
   });
 
   const submitForm = async (): Promise<void> => {
+    if (
+      localAccounts
+        .map((localAccount: LocalAccount) => localAccount.name)
+        .includes(username)
+    ) {
+      setErrorMessage('popup_html_account_already_existing');
+      return;
+    }
+
     const keys = await AccountUtils.addAuthorizedAccount(
       username.trim(),
       authorizedAccount.trim(),

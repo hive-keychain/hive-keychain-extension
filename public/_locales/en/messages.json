@@ -344,11 +344,11 @@
     "description": "on manage accounts, remove key"
   },
   "popup_html_delete_account": {
-    "message": "Delete this account",
+    "message": "Remove from Keychain",
     "description": "on manage accounts"
   },
   "popup_html_delete_account_confirmation_message": {
-    "message": "You are about to delete $1's account. This cannot be undone. Please confirm that it is what you want to do.",
+    "message": "You are about to remove @$1 from Keychain. This cannot be undone. Please confirm to proceed.",
     "description": "on manage accounts"
   },
   "popup_html_show_qr": {
@@ -2063,5 +2063,13 @@
   "popup_html_need_positive_amount": {
     "message": "Amount needs to be greater than 0",
     "description": "Amount error in form"
+  },
+  "popup_html_deleting_account_linked_to_authorized": {
+    "message": "Some of your accounts are using @$1 as an authorized account and won't be able to perform operations anymore.",
+    "description": "when deleting account from keychain"
+  },
+  "popup_html_account_already_existing": {
+    "message": "Account already existing",
+    "description": "while trying to add a new account"
   }
 }

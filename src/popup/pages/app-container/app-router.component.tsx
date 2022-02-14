@@ -45,7 +45,6 @@ const AppRouter = ({
   titleProperties,
   hasTitle,
 }: PropsFromRedux) => {
-  console.log(titleProperties, hasTitle);
   const renderAccountPage = (page: Screen) => {
     switch (page) {
       case Screen.HOME_PAGE:
