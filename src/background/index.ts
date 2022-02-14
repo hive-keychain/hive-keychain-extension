@@ -1,21 +1,25 @@
 import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
+import LocalStorageModule from '@background/local-storage.module';
 import RPCModule from '@background/rpc.module';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
-// const initBackgroundTasks = async () => {
-//   Logger.log('Initializing background tasks');
-//   await ClaimModule.loadClaims();
-//   await AutolockModule.startAutolock(
-//     await LocalStorageUtils.getValueFromLocalStorage(
-//       LocalStorageKeyEnum.AUTOLOCK,
-//     ),
-//   );
+(async () => {
+  Logger.log('Initializing background tasks');
+  //await ClaimModule.loadClaims();
+  await AutolockModule.startAutolock(
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.AUTOLOCK,
+    ),
+  );
 
-//   await LocalStorageModule.checkAndUpdateLocalStorage();
-// };
+  await LocalStorageModule.checkAndUpdateLocalStorage();
+})();
 
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
