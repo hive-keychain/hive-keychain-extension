@@ -2,6 +2,8 @@
 
 .transfer-tokens-page {
   @include pageLayoutRowGap;
+  row-gap: 32px;
+  padding: 0px 24px;
 
   .disclaimer {
     font-size: 18px;

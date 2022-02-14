@@ -144,80 +144,75 @@ const WalletHistory = ({
 
   return (
     <div className="wallet-history-page">
-      {
-        <div className="page-content">
-          <div
-            className={
-              'filter-panel ' +
-              (isFilterOpened ? 'filter-opened' : 'filter-closed')
-            }>
-            <div className="title-panel" onClick={() => toggleFilter()}>
-              <div className="title">Filter</div>
-              <img className={'icon'} src="/assets/images/downarrow.png" />
+      <div
+        className={
+          'filter-panel ' + (isFilterOpened ? 'filter-opened' : 'filter-closed')
+        }>
+        <div className="title-panel" onClick={() => toggleFilter()}>
+          <div className="title">Filter</div>
+          <img className={'icon'} src="/assets/images/downarrow.png" />
+        </div>
+        <div className="filters">
+          <div className="search-panel">
+            <InputComponent
+              type={InputType.TEXT}
+              placeholder="popup_html_search"
+              value={filterValue}
+              onChange={setFilterValue}
+            />
+            <div className={'filter-button'} onClick={() => clearFilters()}>
+              {chrome.i18n.getMessage(`popup_html_clear_filters`)}
             </div>
-            <div className="filters">
-              <div className="search-panel">
-                <InputComponent
-                  type={InputType.TEXT}
-                  placeholder="popup_html_search"
-                  value={filterValue}
-                  onChange={setFilterValue}
-                />
-                <div className={'filter-button'} onClick={() => clearFilters()}>
-                  {chrome.i18n.getMessage(`popup_html_clear_filters`)}
-                </div>
+          </div>
+          <div className="filter-selectors">
+            <div className="types">
+              {selectedTransactionType &&
+                Object.keys(selectedTransactionType).map(
+                  (filterOperationType) => (
+                    <div
+                      key={filterOperationType}
+                      className={
+                        'filter-button ' +
+                        (selectedTransactionType[filterOperationType]
+                          ? 'selected'
+                          : 'not-selected')
+                      }
+                      onClick={() => toggleFilterType(filterOperationType)}>
+                      {chrome.i18n.getMessage(
+                        `popup_html_filter_type_${filterOperationType}`,
+                      )}
+                    </div>
+                  ),
+                )}
+            </div>
+            <div className="vertical-divider"></div>
+            <div className="in-out-panel">
+              <div
+                className={
+                  'filter-button ' + (inSelected ? 'selected' : 'not-selected')
+                }
+                onClick={() => setInSelected(!inSelected)}>
+                {chrome.i18n.getMessage(`popup_html_filter_in`)}
               </div>
-              <div className="filter-selectors">
-                <div className="types">
-                  {selectedTransactionType &&
-                    Object.keys(selectedTransactionType).map(
-                      (filterOperationType) => (
-                        <div
-                          key={filterOperationType}
-                          className={
-                            'filter-button ' +
-                            (selectedTransactionType[filterOperationType]
-                              ? 'selected'
-                              : 'not-selected')
-                          }
-                          onClick={() => toggleFilterType(filterOperationType)}>
-                          {chrome.i18n.getMessage(
-                            `popup_html_filter_type_${filterOperationType}`,
-                          )}
-                        </div>
-                      ),
-                    )}
-                </div>
-                <div className="vertical-divider"></div>
-                <div className="in-out-panel">
-                  <div
-                    className={
-                      'filter-button ' +
-                      (inSelected ? 'selected' : 'not-selected')
-                    }
-                    onClick={() => setInSelected(!inSelected)}>
-                    {chrome.i18n.getMessage(`popup_html_filter_in`)}
-                  </div>
-                  <div
-                    className={
-                      'filter-button ' +
-                      (outSelected ? 'selected' : 'not-selected')
-                    }
-                    onClick={() => setOutSelected(!outSelected)}>
-                    {chrome.i18n.getMessage(`popup_html_filter_out`)}
-                  </div>
-                </div>
+              <div
+                className={
+                  'filter-button ' + (outSelected ? 'selected' : 'not-selected')
+                }
+                onClick={() => setOutSelected(!outSelected)}>
+                {chrome.i18n.getMessage(`popup_html_filter_out`)}
               </div>
             </div>
           </div>
-
-          {displayedTransactions.map((transaction: Transaction) => (
-            <WalletHistoryItemComponent
-              key={transaction.key}
-              transaction={transaction}></WalletHistoryItemComponent>
-          ))}
         </div>
-      }
+      </div>
+
+      <div className="wallet-item-list">
+        {displayedTransactions.map((transaction: Transaction) => (
+          <WalletHistoryItemComponent
+            key={transaction.key}
+            transaction={transaction}></WalletHistoryItemComponent>
+        ))}
+      </div>
     </div>
   );
 };

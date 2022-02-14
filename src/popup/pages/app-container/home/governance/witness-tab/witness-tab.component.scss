@@ -5,8 +5,10 @@
   .remaining-votes,
   .using-proxy {
     font-size: 16px;
+    padding: 0px 24px;
   }
   .link-to-arcange {
+    padding: 0px 24px;
     cursor: pointer;
     a,
     span {
@@ -22,7 +24,6 @@
   }
 
   .ranking-container {
-    margin: 0px -24px;
     display: flex;
     flex-direction: column;
     row-gap: 16px;

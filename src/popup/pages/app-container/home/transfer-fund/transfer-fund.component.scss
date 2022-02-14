@@ -2,12 +2,15 @@
 
 .transfer-funds-page {
   @include pageLayoutRowGap;
+  flex: 1;
+  padding: 0px 24px;
 
   .form-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
+    margin-bottom: 16px;
     .recurrent-panel {
       display: flex;
       flex-direction: column;

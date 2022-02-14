@@ -134,7 +134,7 @@ const AppRouter = ({
       style={{
         height: '100%',
         display: 'grid',
-        gridTemplateRows: hasTitle ? '50px 1fr' : '1fr',
+        gridTemplateRows: hasTitle ? '70px 1fr' : '1fr',
       }}>
       {hasTitle && (
         <PageTitleComponent
@@ -148,7 +148,11 @@ const AppRouter = ({
       )}
       <div
         className="page-content"
-        style={{ overflow: 'auto', margin: '-24px', padding: '24px' }}>
+        style={{
+          overflow: 'auto',
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
         {renderAccountPage(currentPage!)}
       </div>
     </div>

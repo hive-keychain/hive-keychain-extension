@@ -3,23 +3,30 @@
 .tokens-settings {
   @include pageLayoutRowGap;
   .disclaimer {
+    padding: 0px 24px;
     font-size: 18px;
     a {
       @include link;
     }
   }
 
+  overflow: hidden;
+
+  .input-container {
+    padding: 0px 24px;
+    box-sizing: border-box;
+  }
+
   .tokens-list {
-    display: flex;
-    flex-direction: column;
     row-gap: 16px;
-    max-height: 330px;
+    display: grid;
     overflow: auto;
-    padding: 16px 0px;
+    margin-top: 4px;
 
     .token {
       display: flex;
       column-gap: 16px;
+      padding: 0px 24px;
 
       .switch-container {
         margin-top: 8px;

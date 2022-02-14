@@ -2,11 +2,21 @@
 
 .tokens-history {
   @include pageLayoutRowGap;
-  .token-history-item {
-    background: $black-transparent;
+  overflow: hidden;
+
+  .input-container {
+    padding: 0px 24px;
+    box-sizing: border-box;
   }
 
-  .token-history-item:nth-child(even) {
-    background: $red-transparent;
+  .item-list {
+    overflow: auto;
+    .token-history-item {
+      background: $black-transparent;
+    }
+
+    .token-history-item:nth-child(even) {
+      background: $red-transparent;
+    }
   }
 }

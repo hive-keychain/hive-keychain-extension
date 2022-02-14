@@ -8,8 +8,7 @@
     row-gap: 16px;
     .introduction {
       font-size: 18px;
-      margin-bottom: 8px;
-      margin-top: 20px;
+      padding: 0px 24px;
     }
 
     .warning-message {
@@ -22,10 +21,9 @@
       flex-direction: column;
       row-gap: 16px;
       background: $grey-transparent;
-      margin: 0px -24px;
-      padding: 4px 24px;
       max-height: 324px;
       overflow: auto;
+      padding: 16px ​24px;
       .field {
         .label {
           font-size: 18px;

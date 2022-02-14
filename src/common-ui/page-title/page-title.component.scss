@@ -1,9 +1,9 @@
 .title-section {
   display: flex;
-  // align-items: center;
   column-gap: 16px;
   user-select: none;
-  // margin-bottom: 32px;
+  padding: 0px 24px;
+  align-items: center;
   .title {
     flex: 1;
     text-transform: uppercase;
