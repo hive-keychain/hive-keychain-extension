@@ -9,18 +9,16 @@ import Logger from 'src/utils/logger.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
-console.log('plop');
 (async () => {
   Logger.log('Initializing background tasks');
+  await LocalStorageModule.checkAndUpdateLocalStorage();
   //await ClaimModule.loadClaims();
   AutolockModule.start();
-  await AutolockModule.set(
+  AutolockModule.set(
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.AUTOLOCK,
     ),
   );
-
-  await LocalStorageModule.checkAndUpdateLocalStorage();
 })();
 
 const chromeMessageHandler = async (
