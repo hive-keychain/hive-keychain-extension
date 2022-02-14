@@ -3,15 +3,13 @@ import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';
 import { Autolock, AutoLockType } from '../interfaces/autolock.interface';
 
-let listener: any;
-
 const startAutolock = async (autoLock: Autolock) => {
   //Receive autoLock from the popup (upon registration or unlocking)
   Logger.info('Starting autolock');
-  if (listener) {
-    chrome.idle.onStateChanged.removeListener(listener);
-  }
-  listener = (state: any) => {
+  // if (listener) {
+  //   chrome.idle.onStateChanged.removeListener(listener);
+  // }
+  const listener = (state: any) => {
     if (
       (autoLock.type === AutoLockType.DEVICE_LOCK &&
         state === AutoLockType.DEVICE_LOCK) ||
@@ -24,7 +22,7 @@ const startAutolock = async (autoLock: Autolock) => {
             : 'computer is idle'
         }`,
       );
-      MkModule.resetMk();
+      MkModule.lock();
       chrome.runtime.sendMessage({
         command: BackgroundCommand.LOCK_APP,
       });

@@ -1,20 +1,16 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const MkModule = {
   sendBackMk,
   saveMk,
   getMk,
-  resetMk,
+  lock: resetMk,
 };
 
-async function getMk(): Promise<string | null> {
-  if (process.env.DEV_MK) {
-    return process.env.DEV_MK;
-  } else
-    return (await chrome.storage.local.get(LocalStorageKeyEnum.__MK))[
-      LocalStorageKeyEnum.__MK
-    ];
+function getMk() {
+  return LocalStorageUtils.getValueFromLocalStorage(LocalStorageKeyEnum.__MK);
 }
 
 async function sendBackMk() {
