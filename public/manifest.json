@@ -12,7 +12,8 @@
     "128": "/assets/images/iconhive.png"
   },
   "background": {
-    "service_worker": "backgroundBundle.js"
+    "service_worker": "backgroundBundle.js",
+    "type": "module"
   },
   "web_accessible_resources": [
     {

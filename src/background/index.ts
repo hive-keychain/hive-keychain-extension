@@ -1,39 +1,23 @@
-import AccountModule from '@background/account';
-import AutolockModule from '@background/autolock.module';
-import ClaimModule from '@background/claim.module';
-import KeychainifyModule from '@background/keychainify.module';
-import LocalStorageModule from '@background/local-storage.module';
-import { getRequestHandler, initRequestHandler } from '@background/requests';
-import init from '@background/requests/init';
-import { performOperation } from '@background/requests/operations';
-import RPCModule from '@background/rpc.module';
-import SettingsModule from '@background/settings.module';
-import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
-import MkUtils from 'src/utils/mk.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
-const initBackgroundTasks = async () => {
-  Logger.log('Initializing background tasks');
-  await ClaimModule.loadClaims();
-  await AutolockModule.startAutolock(
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.AUTOLOCK,
-    ),
-  );
-  await RPCModule.setActiveRpc(
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.CURRENT_RPC,
-    ),
-  );
+// const initBackgroundTasks = async () => {
+//   Logger.log('Initializing background tasks');
+//   await ClaimModule.loadClaims();
+//   await AutolockModule.startAutolock(
+//     await LocalStorageUtils.getValueFromLocalStorage(
+//       LocalStorageKeyEnum.AUTOLOCK,
+//     ),
+//   );
+//   await RPCModule.setActiveRpc(
+//     await LocalStorageUtils.getValueFromLocalStorage(
+//       LocalStorageKeyEnum.CURRENT_RPC,
+//     ),
+//   );
 
-  await LocalStorageModule.checkAndUpdateLocalStorage();
-};
+//   await LocalStorageModule.checkAndUpdateLocalStorage();
+// };
 
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
@@ -46,67 +30,67 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.SAVE_MK:
       MkModule.saveMk(backgroundMessage.value);
-      ClaimModule.loadClaims();
+      //ClaimModule.loadClaims();
       break;
-    case BackgroundCommand.IMPORT_ACCOUNTS:
-      AccountModule.sendBackImportedAccounts(backgroundMessage.value);
-      break;
-    case BackgroundCommand.SAVE_RPC:
-      RPCModule.setActiveRpc(backgroundMessage.value);
-      break;
-    case BackgroundCommand.SEND_REQUEST:
-      const requestHandler = getRequestHandler();
-      if (requestHandler) {
-        requestHandler.closeWindow();
-      }
-      initRequestHandler().sendRequest(
-        sender,
-        backgroundMessage as KeychainRequestWrapper,
-      );
-      break;
-    case BackgroundCommand.UNLOCK_FROM_DIALOG: {
-      const { mk, domain, data, tab } = backgroundMessage.value;
-      if (await MkUtils.login(mk)) {
-        MkModule.saveMk(mk);
-        ClaimModule.loadClaims();
-        init(data.msg.data, tab, domain);
-      } else {
-        chrome.runtime.sendMessage({
-          ...data,
-          command: DialogCommand.WRONG_MK,
-        });
-      }
-      break;
-    }
-    case BackgroundCommand.REGISTER_FROM_DIALOG: {
-      const { mk, domain, data, tab } = backgroundMessage.value;
-      MkModule.saveMk(mk);
+    // case BackgroundCommand.IMPORT_ACCOUNTS:
+    //   AccountModule.sendBackImportedAccounts(backgroundMessage.value);
+    //   break;
+    // case BackgroundCommand.SAVE_RPC:
+    //   RPCModule.setActiveRpc(backgroundMessage.value);
+    //   break;
+    // case BackgroundCommand.SEND_REQUEST:
+    //   const requestHandler = getRequestHandler();
+    //   if (requestHandler) {
+    //     requestHandler.closeWindow();
+    //   }
+    //   initRequestHandler().sendRequest(
+    //     sender,
+    //     backgroundMessage as KeychainRequestWrapper,
+    //   );
+    //   break;
+    // case BackgroundCommand.UNLOCK_FROM_DIALOG: {
+    //   const { mk, domain, data, tab } = backgroundMessage.value;
+    //   if (await MkUtils.login(mk)) {
+    //     MkModule.saveMk(mk);
+    //     ClaimModule.loadClaims();
+    //     init(data.msg.data, tab, domain);
+    //   } else {
+    //     chrome.runtime.sendMessage({
+    //       ...data,
+    //       command: DialogCommand.WRONG_MK,
+    //     });
+    //   }
+    //   break;
+    // }
+    // case BackgroundCommand.REGISTER_FROM_DIALOG: {
+    //   const { mk, domain, data, tab } = backgroundMessage.value;
+    //   MkModule.saveMk(mk);
 
-      Logger.log(mk, domain, data, tab);
-      init(data, tab, domain);
+    //   Logger.log(mk, domain, data, tab);
+    //   init(data, tab, domain);
 
-      break;
-    }
-    case BackgroundCommand.ACCEPT_TRANSACTION:
-      const { keep, data, tab, domain } = backgroundMessage.value;
-      performOperation(data, tab, domain, keep);
-      break;
-    case BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY:
-      KeychainifyModule.saveKeychainify(backgroundMessage.value);
-      break;
-    case BackgroundCommand.UPDATE_CLAIMS:
-      ClaimModule.updateClaims(backgroundMessage.value);
-      break;
-    case BackgroundCommand.UPDATE_AUTOLOCK:
-      AutolockModule.startAutolock(backgroundMessage.value);
-      break;
-    case BackgroundCommand.SEND_BACK_SETTINGS:
-      SettingsModule.sendBackImportedFileContent(
-        JSON.parse(backgroundMessage.value),
-      );
-      break;
+    //   break;
+    // }
+    // case BackgroundCommand.ACCEPT_TRANSACTION:
+    //   const { keep, data, tab, domain } = backgroundMessage.value;
+    //   performOperation(data, tab, domain, keep);
+    //   break;
+    // case BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY:
+    //   KeychainifyModule.saveKeychainify(backgroundMessage.value);
+    //   break;
+    // case BackgroundCommand.UPDATE_CLAIMS:
+    //   ClaimModule.updateClaims(backgroundMessage.value);
+    //   break;
+    // case BackgroundCommand.UPDATE_AUTOLOCK:
+    //   AutolockModule.startAutolock(backgroundMessage.value);
+    //   break;
+    // case BackgroundCommand.SEND_BACK_SETTINGS:
+    //   SettingsModule.sendBackImportedFileContent(
+    //     JSON.parse(backgroundMessage.value),
+    //   );
+    //   break;
   }
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
-initBackgroundTasks();
+//initBackgroundTasks();

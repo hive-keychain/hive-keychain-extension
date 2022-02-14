@@ -52,9 +52,9 @@ export default async (
     // if locked
     Logic.unlockWallet(tab!, request, domain);
   } else {
+    const mk = await MkModule.getMk();
     const accounts = items.accounts
-      ? (EncryptUtils.decryptToJson(items.accounts, MkModule.getMk()!)
-          .list as LocalAccount[])
+      ? (EncryptUtils.decryptToJson(items.accounts, mk!).list as LocalAccount[])
       : [];
     getRequestHandler().initializeParameters(
       accounts,

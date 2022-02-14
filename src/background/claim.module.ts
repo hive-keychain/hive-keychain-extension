@@ -22,8 +22,8 @@ let claimAccounts: LocalStorageClaimItem = {};
 let claimRewardsInterval: NodeJS.Timeout;
 let claimAccountsInterval: NodeJS.Timeout;
 
-const updateClaims = (claims: LocalStorageClaim) => {
-  if (MkModule.getMk()) {
+const updateClaims = async (claims: LocalStorageClaim) => {
+  if (await MkModule.getMk()) {
     claimRewards = claims.claimRewards;
     claimAccounts = claims.claimAccounts;
     initAutoClaim();
@@ -61,7 +61,7 @@ const startClaimRewards = (claimRewards: LocalStorageClaimItem) => {
 };
 
 const iterateClaimAccounts = async (users: string[]) => {
-  const mk = MkModule.getMk();
+  const mk = await MkModule.getMk();
   if (!mk) {
     return;
   }
@@ -83,7 +83,7 @@ const iterateClaimAccounts = async (users: string[]) => {
 };
 
 const iterateClaimRewards = async (users: string[]) => {
-  const mk = MkModule.getMk();
+  const mk = await MkModule.getMk();
   if (!mk) {
     return;
   }

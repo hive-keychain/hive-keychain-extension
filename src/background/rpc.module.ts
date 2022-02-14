@@ -14,4 +14,5 @@ const RPCModule = {
   setActiveRpc,
   getActiveRpc,
 };
+
 export default RPCModule;
