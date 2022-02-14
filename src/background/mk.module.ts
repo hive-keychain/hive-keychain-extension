@@ -16,7 +16,7 @@ function getMk(): string | null {
 function sendBackMk(): void {
   chrome.runtime.sendMessage({
     command: BackgroundCommand.SEND_BACK_MK,
-    value: mk,
+    value: getMk(),
   });
 }
 
