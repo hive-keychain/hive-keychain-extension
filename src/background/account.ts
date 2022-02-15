@@ -1,14 +1,14 @@
 import MkModule from '@background/mk.module';
+import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
-import AccountUtils from 'src/utils/account.utils';
 import EncryptUtils from 'src/utils/encrypt.utils';
+import ImportAccountsUtils from 'src/utils/import-accounts.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const sendBackImportedAccounts = async (fileContent: string) => {
   if (fileContent?.length) {
     const mk = await MkModule.getMk();
-    const importedAccounts = AccountUtils.getAccountsFromFileData(
+    const importedAccounts = ImportAccountsUtils.getAccountsFromFileData(
       fileContent,
       mk,
     );
@@ -18,10 +18,11 @@ const sendBackImportedAccounts = async (fileContent: string) => {
       ),
       mk,
     );
-    const newAccounts = AccountUtils.mergeImportedAccountsToExistingAccounts(
-      importedAccounts,
-      accounts,
-    );
+    const newAccounts =
+      ImportAccountsUtils.mergeImportedAccountsToExistingAccounts(
+        importedAccounts,
+        accounts,
+      );
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.ACCOUNTS,
       newAccounts,
