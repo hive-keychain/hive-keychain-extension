@@ -7,8 +7,9 @@ ReactDOM.render(
   <ImportFile
     title={'import_html_title'}
     text={'import_html_text'}
-    command={BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS}
+    command={BackgroundCommand.IMPORT_ACCOUNTS}
     accept={'.kc'}
+    callBackCommand={BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS}
   />,
   document.getElementById('root'),
 );

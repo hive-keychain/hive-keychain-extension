@@ -36,6 +36,7 @@ const chromeMessageHandler = async (
       //ClaimModule.loadClaims();
       break;
     case BackgroundCommand.IMPORT_ACCOUNTS:
+      Logger.log('send back account');
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);
       break;
     case BackgroundCommand.SAVE_RPC:

@@ -8,21 +8,25 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const sendBackImportedAccounts = async (fileContent: string) => {
   if (fileContent?.length) {
     const mk = await MkModule.getMk();
+    console.log(mk);
     const importedAccounts = ImportAccountsUtils.getAccountsFromFileData(
       fileContent,
       mk,
     );
-    const accounts = EncryptUtils.decryptToJson(
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.ACCOUNTS,
-      ),
-      mk,
-    );
+    console.log(importedAccounts);
+    const accounts =
+      EncryptUtils.decryptToJson(
+        await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.ACCOUNTS,
+        ),
+        mk,
+      ) || [];
     const newAccounts =
       ImportAccountsUtils.mergeImportedAccountsToExistingAccounts(
         importedAccounts,
         accounts,
       );
+    console.log(newAccounts);
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.ACCOUNTS,
       newAccounts,
