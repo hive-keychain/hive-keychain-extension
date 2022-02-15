@@ -107,7 +107,9 @@ const AccountKeysList = ({
   const toggleQRCode = () => {
     setQRCodeDisplayed(!qrCodeDisplayed);
     setTimeout(() => {
-      if (qrCodeRef && qrCodeRef.current) qrCodeRef.current.scrollIntoView();
+      if (qrCodeRef && qrCodeRef.current) {
+        qrCodeRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
     }, 100);
   };
 
