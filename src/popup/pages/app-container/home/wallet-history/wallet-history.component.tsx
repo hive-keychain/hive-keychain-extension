@@ -4,6 +4,7 @@ import { initAccountTransactions } from '@popup/actions/transaction.actions';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import FlatList from 'flatlist-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -142,6 +143,14 @@ const WalletHistory = ({
     setSelectedTransactionType(FILTER_TRANSACTION_TYPES);
   };
 
+  const renderListItem = (transaction: Transaction) => {
+    return (
+      <WalletHistoryItemComponent
+        key={transaction.key}
+        transaction={transaction}></WalletHistoryItemComponent>
+    );
+  };
+
   return (
     <div className="wallet-history-page">
       <div
@@ -207,11 +216,11 @@ const WalletHistory = ({
       </div>
 
       <div className="wallet-item-list">
-        {displayedTransactions.map((transaction: Transaction) => (
-          <WalletHistoryItemComponent
-            key={transaction.key}
-            transaction={transaction}></WalletHistoryItemComponent>
-        ))}
+        <FlatList
+          list={displayedTransactions}
+          renderItem={renderListItem}
+          renderOnScroll
+        />
       </div>
     </div>
   );
