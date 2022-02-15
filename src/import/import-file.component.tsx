@@ -53,7 +53,6 @@ const ImportFile = ({
     sendResp: (response?: any) => void,
   ) => {
     if (backgroundMessage.command === callBackCommand) {
-      console.log(backgroundMessage.value);
       if (callBackCommand === BackgroundCommand.IMPORT_SETTINGS_CALLBACK) {
         setFeedBack(backgroundMessage.value);
       }

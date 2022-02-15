@@ -8,12 +8,10 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const sendBackImportedAccounts = async (fileContent: string) => {
   if (fileContent?.length) {
     const mk = await MkModule.getMk();
-    console.log(mk);
     const importedAccounts = ImportAccountsUtils.getAccountsFromFileData(
       fileContent,
       mk,
     );
-    console.log(importedAccounts);
     const accounts =
       EncryptUtils.decryptToJson(
         await LocalStorageUtils.getValueFromLocalStorage(
@@ -26,12 +24,10 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         importedAccounts,
         accounts,
       );
-    console.log(newAccounts);
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.ACCOUNTS,
       newAccounts,
     );
-    // chrome.windows.remove(importWindow!);
     chrome.runtime.sendMessage({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
       value: newAccounts,
