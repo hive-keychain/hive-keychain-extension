@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
   addToLoadingList,
@@ -22,7 +23,7 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -354,9 +355,10 @@ const TransferFunds = ({
               />
             </div>
           )}
-          <ButtonComponent
-            label={'popup_html_send_transfer'}
+          <OperationButtonComponent
+            requiredKey={KeychainKeyTypesLC.active}
             onClick={handleClickOnSend}
+            label={'popup_html_send_transfer'}
           />
         </div>
       </div>

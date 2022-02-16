@@ -37,4 +37,4 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, { setErrorMessage });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(OperationButton);
+export const OperationButtonComponent = connector(OperationButton);
