@@ -1,6 +1,7 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
+import ArrayUtils from 'src/utils/array.utils';
 
 const TransactionReducer = (
   state: Transactions = { loading: false, list: [] },
@@ -12,14 +13,19 @@ const TransactionReducer = (
     case ActionType.INIT_TRANSACTIONS:
       return { loading: false, list: payload! };
     case ActionType.ADD_TRANSACTIONS:
-      if (
-        !state.list[0] ||
-        state.list[0].key.split('!')[0] === payload![0].key.split('!')[0]
-      ) {
-        return { ...state, list: [...state.list, ...payload!] };
-      } else {
-        return state;
-      }
+      console.log(state.list, payload);
+      // if (
+      //   !state.list[0] ||
+      //   state.list[0].key.split('!')[0] === payload![0].key.split('!')[0]
+      // ) {
+      //   return { ...state, list: [...state.list, ...payload!] };
+      // } else {
+      //   return state;
+      // }
+      return {
+        ...state,
+        list: ArrayUtils.mergeWithoutDuplicate(state.list, payload!, 'key'),
+      };
     default:
       return state;
   }

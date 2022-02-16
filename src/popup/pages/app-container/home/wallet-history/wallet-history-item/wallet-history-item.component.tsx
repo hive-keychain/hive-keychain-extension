@@ -17,6 +17,7 @@ const WalletHistoryItem = ({
 
   return (
     <div
+      id={`index-${transaction.index}`}
       className={`wallet-history-item ${transaction.memo ? 'has-memo' : ''}`}
       onClick={() => setIsMemoOpened(!isMemoOpened)}>
       <div className="transaction" key={transaction.key}>

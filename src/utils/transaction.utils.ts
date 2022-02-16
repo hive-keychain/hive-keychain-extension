@@ -40,6 +40,7 @@ const getAccountTransactions = async (
           type: 'transfer',
           timestamp: e[1].timestamp,
           key: `${accountName}!${e[0]}`,
+          index: e[0],
         };
         return tr;
       })
