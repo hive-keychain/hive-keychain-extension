@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
@@ -19,7 +20,7 @@ import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -247,7 +248,8 @@ const TokensTransfer = ({
         value={memo}
         onChange={setMemo}
       />
-      <ButtonComponent
+      <OperationButtonComponent
+        requiredKey={KeychainKeyTypesLC.active}
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}
         fixToBottom

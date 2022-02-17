@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -17,7 +18,7 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Conversion } from 'src/interfaces/conversion.interface';
@@ -156,7 +157,11 @@ const Conversion = ({
         <div className="currency">{currency}</div>
       </div>
 
-      <ButtonComponent label={title} onClick={() => handleButtonClick()} />
+      <OperationButtonComponent
+        label={title}
+        onClick={() => handleButtonClick()}
+        requiredKey={KeychainKeyTypesLC.active}
+      />
 
       <ReactTooltip
         id="tooltip"

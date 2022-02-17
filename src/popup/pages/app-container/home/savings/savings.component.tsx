@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -23,7 +24,7 @@ import Select, {
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
@@ -304,7 +305,8 @@ const SavingsPage = ({
         />
       </div>
 
-      <ButtonComponent
+      <OperationButtonComponent
+        requiredKey={KeychainKeyTypesLC.active}
         label={
           selectedSavingOperationType === SavingOperationType.WITHDRAW
             ? 'popup_html_withdraw_param'

@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
   setErrorMessage,
@@ -8,7 +9,7 @@ import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import WitnessUtils from 'src/utils/witness.utils';
@@ -78,14 +79,16 @@ const ProxyTab = ({
         />
       )}
       {activeAccount.account.proxy.length === 0 && (
-        <ButtonComponent
+        <OperationButtonComponent
+          requiredKey={KeychainKeyTypesLC.active}
           label={'html_popup_set_as_proxy'}
           onClick={() => setAsProxy()}
           fixToBottom
         />
       )}
       {activeAccount.account.proxy.length > 0 && (
-        <ButtonComponent
+        <OperationButtonComponent
+          requiredKey={KeychainKeyTypesLC.active}
           label={'html_popup_clear_proxy'}
           onClick={() => removeProxy()}
           fixToBottom
