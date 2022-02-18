@@ -34,7 +34,7 @@ export const addAccount = async (data: RequestAddAccount & RequestId) => {
       }
       if (!savedKeys.postingPubkey) throw new Error();
     }
-    const mk = MkModule.getMk();
+    const mk = await MkModule.getMk();
     if (Object.keys(savedKeys).length && mk) {
       // addAccount
       const accounts = await AccountUtils.getAccountsFromLocalStorage(mk);

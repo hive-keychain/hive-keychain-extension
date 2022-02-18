@@ -1,5 +1,6 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const checkAndUpdateLocalStorage = async () => {
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
@@ -29,6 +30,8 @@ const checkAndUpdateLocalStorage = async () => {
       LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
       2,
     );
+  } else {
+    Logger.log('Already has updated local storage');
   }
 };
 

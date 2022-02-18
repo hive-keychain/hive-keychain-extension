@@ -1,6 +1,5 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -24,10 +23,6 @@ const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
       LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
       enabled,
     );
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.SAVE_ENABLE_KEYCHAINIFY,
-      value: enabled,
-    });
   }, [enabled]);
 
   const init = async () => {

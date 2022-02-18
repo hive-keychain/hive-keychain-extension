@@ -10,7 +10,8 @@
     "dev": "npm outdated & webpack --config webpack.dev.js -w",
     "build": "rm -rf ./dist-prod & webpack --config webpack.prod.js",
     "analyze": "npx webpack --profile --json > stats.json --config webpack.prod.js",
-    "doc": "documentation build js/hive_keychain.js -f md -c documentation.yml -o README.md"
+    "doc": "documentation build js/hive_keychain.js -f md -c documentation.yml -o README.md",
+    "postinstall": "sed -i '' 's/require(\"cross-fetch\")/require(\"node-fetch\")/g' node_modules/@hiveio/dhive/lib/utils.js; echo 'Update dhive so that keychain background can use it directly'"
   },
   "repository": {
     "type": "git",
@@ -35,9 +36,11 @@
     "axios": "^0.25.0",
     "crypto-js": "^4.1.1",
     "flatlist-react": "^1.5.0",
+    "hive-tx": "^4.0.1",
     "joi": "^17.4.1",
     "md5": "^2.3.0",
     "moment": "^2.29.1",
+    "node-fetch": "^3.2.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "pretty-checkbox": "^3.0.3",
     "pretty-checkbox-react": "^3.2.0",
@@ -68,6 +71,7 @@
     "@types/react-tabs": "^2.3.3",
     "@types/remote-redux-devtools": "^0.5.5",
     "babel-loader": "^8.0.2",
+    "babel-plugin-module-resolver": "^4.1.0",
     "copy-webpack-plugin": "^10.2.0",
     "css-loader": "^6.5.1",
     "dotenv": "^14.2.0",

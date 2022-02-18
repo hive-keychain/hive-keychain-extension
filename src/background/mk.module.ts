@@ -1,31 +1,31 @@
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const MkModule = {
   sendBackMk,
   saveMk,
   getMk,
-  resetMk,
+  lock: resetMk,
 };
 
-let mk: string | null = process.env.DEV_MK || null;
-
-function getMk(): string | null {
-  return mk;
+function getMk() {
+  return LocalStorageUtils.getValueFromLocalStorage(LocalStorageKeyEnum.__MK);
 }
 
-function sendBackMk(): void {
+async function sendBackMk() {
   chrome.runtime.sendMessage({
     command: BackgroundCommand.SEND_BACK_MK,
-    value: mk,
+    value: await getMk(),
   });
 }
 
-function saveMk(newMk: string): void {
-  mk = newMk;
+function saveMk(newMk: string) {
+  chrome.storage.local.set({ [LocalStorageKeyEnum.__MK]: newMk });
 }
 
-function resetMk(): void {
-  mk = '';
+function resetMk() {
+  chrome.storage.local.remove(LocalStorageKeyEnum.__MK);
 }
 
 export default MkModule;

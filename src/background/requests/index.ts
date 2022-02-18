@@ -27,8 +27,9 @@ class RequestsHandler {
   constructor() {
     this.confirmed = false;
     this.hiveClient = new Client('https://api.hive.blog/');
-    const rpc = RPCModule.getActiveRpc();
-    this.setupRpc(rpc);
+    RPCModule.getActiveRpc().then((rpc) => {
+      this.setupRpc(rpc);
+    });
   }
 
   setupRpc(rpc: Rpc) {

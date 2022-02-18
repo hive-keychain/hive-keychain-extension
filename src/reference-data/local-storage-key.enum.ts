@@ -12,4 +12,5 @@ export enum LocalStorageKeyEnum {
   WALLET_HISTORY_FILTERS = 'walletHistoryFilters',
   HIDDEN_TOKENS = 'hidden_tokens',
   LOCAL_STORAGE_VERSION = 'LOCAL_STORAGE_VERSION',
+  __MK = '__MK',
 }

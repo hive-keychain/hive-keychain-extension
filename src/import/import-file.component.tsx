@@ -53,7 +53,9 @@ const ImportFile = ({
     sendResp: (response?: any) => void,
   ) => {
     if (backgroundMessage.command === callBackCommand) {
-      setFeedBack(backgroundMessage.value);
+      if (callBackCommand === BackgroundCommand.IMPORT_SETTINGS_CALLBACK) {
+        setFeedBack(backgroundMessage.value);
+      }
       setTimeout(() => {
         window.close();
       }, 3000);
@@ -102,7 +104,9 @@ const ImportFile = ({
           fixToBottom></ButtonComponent>
       )}
 
-      <div className="feedback">{chrome.i18n.getMessage(feedback)}</div>
+      {feedback.length ? (
+        <div className="feedback">{chrome.i18n.getMessage(feedback)}</div>
+      ) : null}
     </div>
   );
 };
