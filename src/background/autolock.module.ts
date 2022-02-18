@@ -29,6 +29,7 @@ const start = async () => {
     const autoLock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.AUTOLOCK,
     );
+    if (!autoLock) return;
     if (
       (autoLock.type === AutoLockType.DEVICE_LOCK &&
         state === AutoLockType.DEVICE_LOCK) ||

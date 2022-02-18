@@ -18,7 +18,6 @@ const getActiveRpc = async (): Promise<Rpc> => {
 const getClient = (): Promise<Client> => {
   return new Promise(async (fulfill) => {
     const rpc = await getActiveRpc();
-    console.log('rpc', rpc);
     if (rpc.uri === 'DEFAULT') {
       const res = await fetch('https://api.hive-keychain.com/hive/rpc');
       const json = await res.json();

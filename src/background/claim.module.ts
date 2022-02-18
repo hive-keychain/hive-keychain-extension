@@ -1,11 +1,14 @@
 import RPCModule from '@background/rpc.module';
+import BgdAccountsUtils from '@background/utils/accounts.utils';
+import BgdHiveUtils from '@background/utils/hive.utils';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { ExtendedAccount, PrivateKey } from '@hiveio/dhive/lib/index-browser';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
-import ImportAccountsUtils from 'src/utils/import-accounts.utils';
+import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -16,7 +19,6 @@ const start = async () => {
 };
 
 const alarmHandler = async () => {
-  Logger.log('Alarm handler');
   const localStorage = await LocalStorageUtils.getMultipleValueFromLocalStorage(
     [
       LocalStorageKeyEnum.__MK,
@@ -25,7 +27,6 @@ const alarmHandler = async () => {
     ],
   );
 
-  Logger.log(localStorage);
   const mk = localStorage[LocalStorageKeyEnum.__MK];
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
@@ -34,72 +35,50 @@ const alarmHandler = async () => {
     initClaimAccounts(claimAccounts, mk);
   }
   if (claimRewards) {
+    initClaimRewards(claimRewards, mk);
   }
 };
 
 chrome.alarms.onAlarm.addListener(alarmHandler);
 
-// const updateClaims = async (claims: LocalStorageClaim) => {
-//   if (await MkModule.getMk()) {
-//     // claimRewards = claims.claimRewards;
-//     // claimAccounts = claims.claimAccounts;
-//     initAutoClaim();
-//   }
-// };
+const initClaimRewards = (claimRewards: LocalStorageClaimItem, mk: string) => {
+  if (claimRewards) {
+    const users = Object.keys(claimRewards).filter(
+      (user) => claimRewards[user] === true,
+    );
+    iterateClaimRewards(users, mk);
+  } else {
+    Logger.info('startClaimRewards: obj not defined');
+  }
+};
 
-// const initAutoClaim = () => {
-//   Logger.log(`Will autoclaim every ${Config.claims.FREQUENCY / 60000}mn`);
-//   //startClaimRewards(claimRewards);
-//   startClaimAccounts();
-// };
-
-// const startClaimRewards = (claimRewards: LocalStorageClaimItem) => {
-//   if (claimRewards) {
-//     clearInterval(claimRewardsInterval);
-//     const users = Object.keys(claimRewards).filter(
-//       (user) => claimRewards[user] === true,
-//     );
-//     iterateClaimRewards(users);
-//     claimRewardsInterval = setInterval(async () => {
-//       iterateClaimRewards(users);
-//     }, Config.claims.FREQUENCY);
-//   } else {
-//     Logger.info('startClaimRewards: obj not defined');
-//   }
-// };
-
-// const iterateClaimRewards = async (users: string[]) => {
-//   const mk = await MkModule.getMk();
-//   if (!mk) {
-//     return;
-//   }
-//   const userExtendedAccounts = await HiveUtils.getClient().database.getAccounts(
-//     users,
-//   );
-//   const localAccounts: LocalAccount[] =
-//     await AccountUtils.getAccountsFromLocalStorage(mk);
-//   for (const userAccount of userExtendedAccounts) {
-//     const activeAccount = await createActiveAccount(userAccount, localAccounts);
-//     if (
-//       activeAccount &&
-//       ActiveAccountUtils.hasReward(
-//         activeAccount.account.reward_hbd_balance as string,
-//         activeAccount.account.reward_vesting_balance
-//           .toString()
-//           .replace('VESTS', ''),
-//         activeAccount.account.reward_hive_balance as string,
-//       )
-//     ) {
-//       Logger.log(`Claiming rewards for @${activeAccount.name}`);
-//       await HiveUtils.claimRewards(
-//         activeAccount,
-//         userAccount.reward_hive_balance,
-//         userAccount.reward_hbd_balance,
-//         userAccount.reward_vesting_balance,
-//       );
-//     }
-//   }
-// };
+const iterateClaimRewards = async (users: string[], mk: string) => {
+  const client = await RPCModule.getClient();
+  const userExtendedAccounts = await client.database.getAccounts(users);
+  const localAccounts: LocalAccount[] =
+    await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+  for (const userAccount of userExtendedAccounts) {
+    const activeAccount = await createActiveAccount(userAccount, localAccounts);
+    if (
+      activeAccount &&
+      ActiveAccountUtils.hasReward(
+        activeAccount.account.reward_hbd_balance as string,
+        activeAccount.account.reward_vesting_balance
+          .toString()
+          .replace('VESTS', ''),
+        activeAccount.account.reward_hive_balance as string,
+      )
+    ) {
+      Logger.log(`Claiming rewards for @${activeAccount.name}`);
+      await BgdHiveUtils.claimRewards(
+        activeAccount,
+        userAccount.reward_hive_balance,
+        userAccount.reward_hbd_balance,
+        userAccount.reward_vesting_balance,
+      );
+    }
+  }
+};
 
 const initClaimAccounts = (
   claimAccounts: { [x: string]: boolean },
@@ -119,12 +98,10 @@ const iterateClaimAccounts = async (users: string[], mk: string) => {
   const userExtendedAccounts = await (
     await RPCModule.getClient()
   ).database.getAccounts(users);
-  console.log(userExtendedAccounts);
   const localAccounts: LocalAccount[] =
-    await ImportAccountsUtils.getAccountsFromLocalStorage(mk);
+    await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
-    console.log(activeAccount);
     if (
       activeAccount &&
       activeAccount.rc.percentage > Config.claims.freeAccount.MIN_RC_PCT

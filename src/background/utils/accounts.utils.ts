@@ -69,15 +69,14 @@ const getAccountsFromLocalStorage = async (
   const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
-  console.log(encryptedAccounts, mk);
   const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
   return accounts?.list;
 };
 
-const ImportAccountsUtils = {
+const BgdAccountsUtils = {
   getAccountsFromFileData,
   mergeImportedAccountsToExistingAccounts,
   getAccountsFromLocalStorage,
 };
 
-export default ImportAccountsUtils;
+export default BgdAccountsUtils;
