@@ -74,7 +74,6 @@ const WalletHistory = ({
   useEffect(() => {
     setDisplayedTransactions(transactions.list);
     setLastTransactionIndex(ArrayUtils.getMinValue(transactions.list, 'index'));
-    console.log(idToScrollTo);
     setTimeout(() => {
       if (idToScrollTo) {
         console.log(document.getElementById(idToScrollTo));
@@ -169,9 +168,7 @@ const WalletHistory = ({
   };
 
   const tryToLoadMore = () => {
-    console.log(`index-${lastTransactionIndex}`);
     setIdToScrollTo(`index-${lastTransactionIndex}`);
-    setDisplayedTransactions([]);
     fetchAccountTransactions(activeAccountName!, lastTransactionIndex);
   };
 
