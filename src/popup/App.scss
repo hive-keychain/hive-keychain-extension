@@ -74,3 +74,8 @@
 .Toastify__toast--success {
   background: $message-container-success !important;
 }
+
+.material-icons,
+.material-icons-outlined {
+  padding-bottom: 2px;
+}
