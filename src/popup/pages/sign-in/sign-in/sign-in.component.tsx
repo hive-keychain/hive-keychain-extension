@@ -1,3 +1,4 @@
+import { retrieveAccounts } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
@@ -18,6 +19,7 @@ const SignIn = ({
   setMk,
   navigateTo,
   resetTitleContainerProperties,
+  retrieveAccounts,
 }: PropsFromRedux) => {
   const [password, setPassword] = useState('');
 
@@ -28,6 +30,7 @@ const SignIn = ({
   const login = async () => {
     if (await MkUtils.login(password)) {
       setMk(password, true);
+      retrieveAccounts(password);
     } else {
       setErrorMessage('wrong_password');
     }
@@ -75,6 +78,7 @@ const connector = connect(mapStateToProps, {
   setMk,
   navigateTo,
   resetTitleContainerProperties,
+  retrieveAccounts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

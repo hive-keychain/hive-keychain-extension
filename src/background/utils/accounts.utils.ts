@@ -19,6 +19,7 @@ const mergeImportedAccountsToExistingAccounts = (
   importedAccounts: LocalAccount[],
   existingAccounts: LocalAccount[],
 ) => {
+  console.log(existingAccounts);
   const newAccounts = [];
   for (const importedAccount of importedAccounts) {
     if (

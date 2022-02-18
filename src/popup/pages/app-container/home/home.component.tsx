@@ -61,6 +61,7 @@ const Home = ({
   }, []);
 
   const initActiveAccount = async () => {
+    console.log(accounts);
     const lastActiveAccountName =
       await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
     const lastActiveAccount = accounts.find(

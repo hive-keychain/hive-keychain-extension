@@ -1,5 +1,5 @@
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
-import { retrieveAccounts } from '@popup/actions/account.actions';
+import { retrieveAccounts, setAccounts } from '@popup/actions/account.actions';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setMk } from '@popup/actions/mk.actions';
@@ -16,6 +16,7 @@ import { BackgroundCommand } from 'src/reference-data/background-message-key.enu
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import './App.scss';
@@ -28,7 +29,6 @@ import { SignUpComponent } from './pages/sign-up/sign-up.component';
 const App = ({
   setMk,
   mk,
-  retrieveAccounts,
   accounts,
   navigateTo,
   activeAccountUsername,
@@ -38,14 +38,17 @@ const App = ({
   loadingOperation,
   setActiveRpc,
   isCurrentPageHomePage,
+  setAccounts,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isActiveRpcLoaded, setActiveRpcLoaded] = useState(false);
+  const [isAppReady, setAppReady] = useState(false);
 
   useEffect(() => {
     initActiveRpc();
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
+    initApplication();
   }, []);
 
   useEffect(() => {
@@ -53,14 +56,12 @@ const App = ({
       refreshActiveAccount();
     }
   }, [activeRpc]);
-  useEffect(() => {
-    chrome.runtime.sendMessage({ command: BackgroundCommand.GET_MK });
-    chrome.runtime.onMessage.addListener(onSentBackMkListener);
-  }, [mk]);
 
   useEffect(() => {
-    selectComponent(mk, accounts);
-  }, [mk, accounts]);
+    if (isAppReady) {
+      selectComponent(mk, accounts);
+    }
+  }, [isAppReady, mk, accounts]);
 
   const initActiveRpc = async () => {
     setActiveRpc(await RpcUtils.getCurrentRpc());
@@ -85,44 +86,61 @@ const App = ({
     }
   };
 
+  const initApplication = async () => {
+    const storedAccounts = await AccountUtils.hasStoredAccounts();
+    setHasStoredAccounts(storedAccounts);
+
+    const mkFromStorage = await MkUtils.getMkFromLocalStorage();
+    if (mkFromStorage) {
+      setMk(mkFromStorage, false);
+    }
+
+    let accountsFromStorage: LocalAccount[] = [];
+    if (storedAccounts && mkFromStorage) {
+      accountsFromStorage = await AccountUtils.getAccountsFromLocalStorage(
+        mkFromStorage,
+      );
+      setAccounts(accountsFromStorage);
+    }
+
+    setAppReady(true);
+    selectComponent(mkFromStorage, accountsFromStorage);
+  };
+
   const selectComponent = async (
     mk: string,
     accounts: LocalAccount[],
   ): Promise<void> => {
-    setHasStoredAccounts(await AccountUtils.hasStoredAccounts());
-    if (mk.length > 0 && accounts && accounts.length > 0) {
+    if (mk && mk.length > 0 && accounts && accounts.length > 0) {
       navigateTo(Screen.HOME_PAGE, true);
-    } else if (mk.length > 0) {
+    } else if (mk && mk.length > 0) {
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
-    } else if (mk.length === 0 && accounts.length === 0) {
+    } else if (
+      mk &&
+      mk.length === 0 &&
+      accounts.length === 0 &&
+      !hasStoredAccounts
+    ) {
       navigateTo(Screen.SIGN_UP_PAGE, true);
-    }
-  };
-
-  const onSentBackMkListener = async (message: BackgroundMessage) => {
-    if (message.command === BackgroundCommand.SEND_BACK_MK) {
-      if (message.value?.length && message.value.length !== mk) {
-        setMk(message.value, false);
-        retrieveAccounts(message.value);
-      } else {
-        setHasStoredAccounts(await AccountUtils.hasStoredAccounts());
-      }
-      chrome.runtime.onMessage.removeListener(onSentBackMkListener);
+    } else {
+      navigateTo(Screen.SIGN_IN_PAGE);
     }
   };
 
   const renderMainLayoutNav = () => {
-    if (!mk) {
-      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-        return <SignUpComponent />;
+    if (isAppReady) {
+      if (!mk || mk.length === 0) {
+        if (accounts && accounts.length === 0 && !hasStoredAccounts) {
+          return <SignUpComponent />;
+        } else {
+          return <SignInRouterComponent />;
+        }
       } else {
-        return <SignInRouterComponent />;
-      }
-    } else {
-      if (accounts && accounts.length === 0) {
-        return <AddAccountRouterComponent />;
-      } else {
-        return <AppRouterComponent />;
+        if (accounts && accounts.length === 0) {
+          return <AddAccountRouterComponent />;
+        } else {
+          return <AppRouterComponent />;
+        }
       }
     }
   };
@@ -158,6 +176,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   setActiveRpc,
   refreshActiveAccount,
+  setAccounts,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

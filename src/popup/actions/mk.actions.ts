@@ -8,6 +8,7 @@ export const setMk = (mk: string, sendMk: boolean) => {
       value: mk,
     });
   }
+  console.log(mk);
   return {
     type: ActionType.SET_MK,
     payload: mk,
