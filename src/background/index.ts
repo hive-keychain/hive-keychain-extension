@@ -14,7 +14,6 @@ import MkModule from './mk.module';
 (async () => {
   Logger.log('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
-  Logger.log('plop');
   ClaimModule.start();
   AutolockModule.start();
   AutolockModule.set(
