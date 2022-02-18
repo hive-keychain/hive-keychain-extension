@@ -1,5 +1,7 @@
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import EncryptUtils from 'src/utils/encrypt.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getAccountsFromFileData = (
   fileContent: string,
@@ -61,9 +63,21 @@ const mergeImportedAccountsToExistingAccounts = (
   return newAccounts;
 };
 
+const getAccountsFromLocalStorage = async (
+  mk: string,
+): Promise<LocalAccount[]> => {
+  const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.ACCOUNTS,
+  );
+  console.log(encryptedAccounts, mk);
+  const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
+  return accounts?.list;
+};
+
 const ImportAccountsUtils = {
   getAccountsFromFileData,
   mergeImportedAccountsToExistingAccounts,
+  getAccountsFromLocalStorage,
 };
 
 export default ImportAccountsUtils;

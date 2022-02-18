@@ -416,4 +416,8 @@ const AccountUtils = {
   AccountErrorMessages,
 };
 
+export const BackgroundAccountUtils = {
+  getAccountsFromLocalStorage,
+};
+
 export default AccountUtils;

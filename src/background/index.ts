@@ -1,5 +1,6 @@
 import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
+import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
@@ -13,7 +14,8 @@ import MkModule from './mk.module';
 (async () => {
   Logger.log('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
-  //await ClaimModule.loadClaims();
+  Logger.log('plop');
+  ClaimModule.start();
   AutolockModule.start();
   AutolockModule.set(
     await LocalStorageUtils.getValueFromLocalStorage(
@@ -33,10 +35,8 @@ const chromeMessageHandler = async (
       break;
     case BackgroundCommand.SAVE_MK:
       MkModule.saveMk(backgroundMessage.value);
-      //ClaimModule.loadClaims();
       break;
     case BackgroundCommand.IMPORT_ACCOUNTS:
-      Logger.log('send back account');
       AccountModule.sendBackImportedAccounts(backgroundMessage.value);
       break;
     case BackgroundCommand.SAVE_RPC:
@@ -78,10 +78,6 @@ const chromeMessageHandler = async (
     // case BackgroundCommand.ACCEPT_TRANSACTION:
     //   const { keep, data, tab, domain } = backgroundMessage.value;
     //   performOperation(data, tab, domain, keep);
-    //   break;
-
-    // case BackgroundCommand.UPDATE_CLAIMS:
-    //   ClaimModule.updateClaims(backgroundMessage.value);
     //   break;
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.set(backgroundMessage.value);

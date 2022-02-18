@@ -1,5 +1,4 @@
 import KeychainApi from '@api/keychain';
-import { AccountResourceCredits } from '@background/claim.module';
 import {
   Asset,
   ClaimRewardBalanceOperation,
@@ -530,37 +529,6 @@ const delegateVestingShares = async (
   }
 };
 
-const claimAccounts = async (
-  rc: AccountResourceCredits,
-  activeAccount: ActiveAccount,
-) => {
-  try {
-    const freeAccountConfig = Config.claims.freeAccount;
-
-    if (
-      parseFloat(rc.estimated_pct) > freeAccountConfig.MIN_RC_PCT &&
-      rc.estimated_max > freeAccountConfig.MIN_RC
-    ) {
-      await getClient().broadcast.sendOperations(
-        [
-          [
-            'claim_account',
-            {
-              creator: activeAccount.name,
-              extensions: [],
-              fee: '0.000 HIVE',
-            },
-          ],
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      );
-      Logger.log(`Claiming free account for @${activeAccount.name}`);
-    }
-  } catch (err) {
-    Logger.error(err);
-  }
-};
-
 const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   return await getClient().broadcast.json(
     {
@@ -613,7 +581,6 @@ const HiveUtils = {
   withdraw,
   deposit,
   delegateVestingShares,
-  claimAccounts,
   sendCustomJson,
   signMessage,
   voteForProposal,
