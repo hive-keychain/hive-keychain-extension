@@ -35,11 +35,16 @@ const clearLocalStorage = async () => {
   chrome.storage.local.clear();
 };
 
+const removeFromLocalStorage = (key: LocalStorageKeyEnum) => {
+  chrome.storage.local.remove(key);
+};
+
 const LocalStorageUtils = {
   getValueFromLocalStorage,
   saveValueInLocalStorage,
   getMultipleValueFromLocalStorage,
   clearLocalStorage,
+  removeFromLocalStorage,
 };
 
 export default LocalStorageUtils;

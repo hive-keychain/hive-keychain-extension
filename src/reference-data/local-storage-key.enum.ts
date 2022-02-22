@@ -13,4 +13,5 @@ export enum LocalStorageKeyEnum {
   HIDDEN_TOKENS = 'hidden_tokens',
   LOCAL_STORAGE_VERSION = 'LOCAL_STORAGE_VERSION',
   __MK = '__MK',
+  SWITCH_RPC_AUTO = 'SWITCH_RPC_AUTO',
 }

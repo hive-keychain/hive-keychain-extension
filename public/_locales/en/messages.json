@@ -2071,5 +2071,21 @@
   "popup_html_account_already_existing": {
     "message": "Account already existing",
     "description": "while trying to add a new account"
+  },
+  "popup_html_switch_rpc": {
+    "message": "Switch RPC",
+    "description": "At start up, when active rpc not responding"
+  },
+  "popup_html_rpc_not_responding_error": {
+    "message": "$1 node is not responding. Do you want to switch to $2 ?",
+    "description": "At start up, when active rpc not responding"
+  },
+  "popup_html_rpc_automatic_mode": {
+    "message": "Switch automatically",
+    "description": "Node Rpc auto selection"
+  },
+  "popup_html_rpc_automatic_mode_hint": {
+    "message": "Will always select the best rpc node for you",
+    "description": "Node Rpc auto selection hint"
   }
 }

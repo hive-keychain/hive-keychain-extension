@@ -1,14 +1,9 @@
-import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { ActionType } from './action-type.enum';
 
 export const setMk = (mk: string, sendMk: boolean) => {
-  if (sendMk) {
-    chrome.runtime.sendMessage({
-      command: BackgroundCommand.SAVE_MK,
-      value: mk,
-    });
-  }
-  console.log(mk);
+  LocalStorageUtils.saveValueInLocalStorage(LocalStorageKeyEnum.__MK, mk);
   return {
     type: ActionType.SET_MK,
     payload: mk,
@@ -16,5 +11,9 @@ export const setMk = (mk: string, sendMk: boolean) => {
 };
 
 export const forgetMk = () => {
-  return setMk('', true);
+  LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
+  return {
+    type: ActionType.SET_MK,
+    payload: '',
+  };
 };

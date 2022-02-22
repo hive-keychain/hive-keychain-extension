@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { DefaultRpcs } from 'src/reference-data/default-rpc.list';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -61,6 +62,27 @@ const findRpc = async (uri: string) => {
   );
 };
 
+const checkRpcStatus = async (uri: string) => {
+  axios.interceptors.response.use(
+    (response) => {
+      return response;
+    },
+    (error) => {
+      throw new Error('RPC NOK');
+    },
+  );
+  try {
+    const result = await axios.get(
+      `${uri === 'DEFAULT' ? 'api.hive.blog' : uri}/health`,
+    );
+    console.log(result);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
 const RpcUtils = {
   getFullList,
   addCustomRpc,
@@ -71,6 +93,7 @@ const RpcUtils = {
   saveCustomRpc,
   deleteCustomRpc,
   findRpc,
+  checkRpcStatus,
 };
 
 export default RpcUtils;

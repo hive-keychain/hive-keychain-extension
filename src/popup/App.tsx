@@ -1,7 +1,12 @@
 import { Autolock, AutoLockType } from '@interfaces/autolock.interface';
+import { Rpc } from '@interfaces/rpc.interface';
 import { retrieveAccounts, setAccounts } from '@popup/actions/account.actions';
-import { refreshActiveAccount } from '@popup/actions/active-account.actions';
+import {
+  loadActiveAccount,
+  refreshActiveAccount,
+} from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
+import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
@@ -10,11 +15,13 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
+import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -34,28 +41,43 @@ const App = ({
   activeAccountUsername,
   activeRpc,
   refreshActiveAccount,
+  loadActiveAccount,
   loading,
   loadingOperation,
   setActiveRpc,
   isCurrentPageHomePage,
   setAccounts,
+  loadGlobalProperties,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
-  const [isActiveRpcLoaded, setActiveRpcLoaded] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
-
+  const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
+  const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
+  const [initialRpc, setInitialRpc] = useState<Rpc>();
   useEffect(() => {
-    initActiveRpc();
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
   }, []);
 
   useEffect(() => {
+    onActiveRpcRefreshed();
+  }, [activeRpc]);
+
+  const onActiveRpcRefreshed = async () => {
     if (activeAccountUsername) {
       refreshActiveAccount();
+    } else {
+      const lastActiveAccountName =
+        await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
+      loadActiveAccount(
+        accounts.find(
+          (account: LocalAccount) => account.name === lastActiveAccountName,
+        )!,
+      );
+      loadGlobalProperties();
     }
-  }, [activeRpc]);
+  };
 
   useEffect(() => {
     if (isAppReady) {
@@ -63,9 +85,29 @@ const App = ({
     }
   }, [isAppReady, mk, accounts]);
 
-  const initActiveRpc = async () => {
-    setActiveRpc(await RpcUtils.getCurrentRpc());
-    setActiveRpcLoaded(true);
+  const initActiveRpc = async (rpc: Rpc) => {
+    const switchAuto = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+    );
+    const rpcStatusOk = await RpcUtils.checkRpcStatus(rpc.uri);
+    setDisplayChangeRpcPopup(!rpcStatusOk);
+
+    if (rpcStatusOk) {
+      setActiveRpc(rpc);
+    } else {
+      for (const rpc of RpcUtils.getFullList().filter(
+        (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
+      )) {
+        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
+          if (switchAuto) {
+            setActiveRpc(rpc);
+          } else {
+            setSwitchToRpc(rpc);
+          }
+          return;
+        }
+      }
+    }
   };
 
   const initAutoLock = async () => {
@@ -87,6 +129,10 @@ const App = ({
   };
 
   const initApplication = async () => {
+    const rpc = await RpcUtils.getCurrentRpc();
+    setInitialRpc(rpc);
+    initActiveRpc(rpc);
+
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
 
@@ -145,13 +191,30 @@ const App = ({
     }
   };
 
+  const tryNewRpc = () => {
+    setActiveRpc(switchToRpc!);
+  };
+
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {renderMainLayoutNav()}
+      {activeRpc && renderMainLayoutNav()}
       <MessageContainerComponent />
       <ProposalVotingSectionComponent />
-      {(loading || !isActiveRpcLoaded) && (
+      {(loading || !activeRpc) && (
         <LoadingComponent operations={loadingOperation} />
+      )}
+      {displayChangeRpcPopup && activeRpc && switchToRpc && (
+        <div className="change-rpc-popup">
+          <div className="message">
+            {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
+              initialRpc?.uri!,
+              switchToRpc?.uri!,
+            ])}
+          </div>
+          <ButtonComponent
+            label="popup_html_switch_rpc"
+            onClick={tryNewRpc}></ButtonComponent>
+        </div>
       )}
     </div>
   );
@@ -177,6 +240,8 @@ const connector = connect(mapStateToProps, {
   setActiveRpc,
   refreshActiveAccount,
   setAccounts,
+  loadActiveAccount,
+  loadGlobalProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

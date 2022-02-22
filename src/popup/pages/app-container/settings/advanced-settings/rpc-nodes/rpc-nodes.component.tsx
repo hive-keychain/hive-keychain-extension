@@ -2,6 +2,7 @@ import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -13,6 +14,7 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import './rpc-nodes.component.scss';
 
@@ -38,6 +40,7 @@ const RpcNodes = ({
   const [addRpcNodeTestnet, setAddRpcNodeTestnet] = useState(false);
 
   const [setNewRpcAsActive, setSetNewRpcAsActive] = useState(false);
+  const [switchAuto, setSwitchAuto] = useState(true);
 
   const [options, setOptions] = useState(
     allRpc.map((rpc) => {
@@ -68,7 +71,23 @@ const RpcNodes = ({
       isBackButtonEnabled: true,
     });
     initCustomRpcList();
+    initSwitchAuto();
   }, []);
+
+  useEffect(() => {
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+      switchAuto,
+    );
+  }, [switchAuto]);
+
+  const initSwitchAuto = async () => {
+    setSwitchAuto(
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+      ),
+    );
+  };
 
   const initCustomRpcList = async () => {
     setCustomRpcs(await RpcUtils.getCustomRpcs());
@@ -111,6 +130,7 @@ const RpcNodes = ({
     RpcUtils.addCustomRpc(newCustomRpc);
     setCustomRpcs([...customRpcs, newCustomRpc]);
     if (setNewRpcAsActive) {
+      setSwitchAuto(false);
       setActiveRpc(newCustomRpc);
     }
   };
@@ -165,7 +185,13 @@ const RpcNodes = ({
           __html: chrome.i18n.getMessage('popup_html_rpc_node_text'),
         }}></p>
 
-      {activeRpc && options && (
+      <CheckboxComponent
+        title="popup_html_rpc_automatic_mode"
+        hint="popup_html_rpc_automatic_mode_hint"
+        checked={switchAuto}
+        onChange={setSwitchAuto}></CheckboxComponent>
+
+      {activeRpc && !switchAuto && options && (
         <div className="select-account-section">
           <Select
             values={[]}
@@ -178,14 +204,14 @@ const RpcNodes = ({
         </div>
       )}
 
-      {!isAddRpcPanelDisplayed && (
+      {!switchAuto && !isAddRpcPanelDisplayed && (
         <ButtonComponent
           label={'popup_html_add_rpc'}
           onClick={() => setIsAddRpcPanelDisplayed(true)}
         />
       )}
 
-      {isAddRpcPanelDisplayed && (
+      {!switchAuto && isAddRpcPanelDisplayed && (
         <div className="add-rpc-panel">
           <div className="add-rpc-caption">
             {chrome.i18n.getMessage('popup_html_add_rpc_text')}
