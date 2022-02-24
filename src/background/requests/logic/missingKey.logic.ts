@@ -12,6 +12,7 @@ export const missingKey = (
 ) => {
   createPopup(() => {
     sendErrors(
+      requestHandler,
       tab!,
       'user_cancel',
       chrome.i18n.getMessage('bgd_auth_canceled'),

@@ -10,6 +10,7 @@ export const initializeWallet = (
 ) => {
   createPopup(() => {
     sendErrors(
+      requestHandler,
       tab,
       'no_wallet',
       chrome.i18n.getMessage('bgd_init_no_wallet'),

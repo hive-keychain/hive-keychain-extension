@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -12,11 +12,14 @@ import {
 import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
 import CurrencyUtils from 'src/utils/currency.utils';
 
-export const convert = async (data: RequestConvert & RequestId) => {
+export const convert = async (
+  requestHandler: RequestsHandler,
+  data: RequestConvert & RequestId,
+) => {
   const { username, amount, collaterized } = data;
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
-  const rpc = getRequestHandler().rpc;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
+  const rpc = requestHandler.data.rpc;
   const requestid = await getNextRequestID(username, client);
   let result, err;
   if (collaterized) {

@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import {
   KeychainKeyTypes,
@@ -7,12 +7,15 @@ import {
 } from '@interfaces/keychain.interface';
 import HiveUtils from 'src/utils/hive.utils';
 
-export const encodeMessage = async (data: RequestEncode & RequestId) => {
+export const encodeMessage = async (
+  requestHandler: RequestsHandler,
+  data: RequestEncode & RequestId,
+) => {
   let encoded = null;
   let error = null;
   try {
-    const client = getRequestHandler().getHiveClient();
-    const key = getRequestHandler().key;
+    const client = requestHandler.getHiveClient();
+    const key = requestHandler.data.key;
     const receiver = (await client.database.getAccounts([data.receiver]))[0];
     let publicKey;
 

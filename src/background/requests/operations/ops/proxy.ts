@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -10,14 +10,17 @@ import {
   RequestProxy,
 } from '@interfaces/keychain.interface';
 
-export const broadcastProxy = async (data: RequestProxy & RequestId) => {
-  const client = getRequestHandler().getHiveClient();
+export const broadcastProxy = async (
+  requestHandler: RequestsHandler,
+  data: RequestProxy & RequestId,
+) => {
+  const client = requestHandler.getHiveClient();
   let result, err;
 
   try {
-    let key = getRequestHandler().key;
+    let key = requestHandler.data.key;
     if (!key) {
-      [key] = getRequestHandler().getUserKey(
+      [key] = requestHandler.getUserKey(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];

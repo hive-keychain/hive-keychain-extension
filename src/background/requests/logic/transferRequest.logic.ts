@@ -29,6 +29,7 @@ export const transferRequest = (
   if (enforced && username && account && !account.keys.active) {
     createPopup(() => {
       sendErrors(
+        requestHandler,
         tab!,
         'user_cancel',
         chrome.i18n.getMessage('bgd_auth_canceled'),
@@ -39,6 +40,7 @@ export const transferRequest = (
   } else if (account && encode && !account.keys.memo) {
     createPopup(() => {
       sendErrors(
+        requestHandler,
         tab!,
         'user_cancel',
         chrome.i18n.getMessage('bgd_auth_canceled'),
@@ -49,6 +51,7 @@ export const transferRequest = (
   } else if (active_accounts.length == 0) {
     createPopup(() => {
       sendErrors(
+        requestHandler,
         tab!,
         'user_cancel',
         chrome.i18n.getMessage('bgd_auth_canceled'),

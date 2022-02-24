@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { PrivateKey } from '@hiveio/dhive';
 import {
@@ -9,18 +9,21 @@ import {
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
-export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
+export const broadcastTransfer = async (
+  requestHandler: RequestsHandler,
+  data: RequestTransfer & RequestId,
+) => {
   let result,
     err,
     err_message = null;
   try {
     const { username, to } = data;
-    const client = getRequestHandler().getHiveClient();
-    const memoKey: string = getRequestHandler().getUserKey(
+    const client = requestHandler.getHiveClient();
+    const memoKey: string = requestHandler.getUserKey(
       username!,
       KeychainKeyTypesLC.memo,
     )[0];
-    const [key] = getRequestHandler().getUserKey(
+    const [key] = requestHandler.getUserKey(
       data.username!,
       KeychainKeyTypesLC.active,
     );

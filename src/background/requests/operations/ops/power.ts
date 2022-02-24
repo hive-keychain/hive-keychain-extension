@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -14,9 +14,12 @@ import {
   RequestPowerUp,
 } from '@interfaces/keychain.interface';
 
-export const broadcastPowerUp = async (data: RequestPowerUp & RequestId) => {
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+export const broadcastPowerUp = async (
+  requestHandler: RequestsHandler,
+  data: RequestPowerUp & RequestId,
+) => {
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
 
   let result, err;
 
@@ -50,10 +53,11 @@ export const broadcastPowerUp = async (data: RequestPowerUp & RequestId) => {
 };
 
 export const broadcastPowerDown = async (
+  requestHandler: RequestsHandler,
   data: RequestPowerDown & RequestId,
 ) => {
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
 
   let result, err;
   try {

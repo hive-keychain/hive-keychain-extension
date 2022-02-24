@@ -11,6 +11,7 @@ export const missingUser = (
 ) => {
   const callback = () => {
     sendErrors(
+      requestHandler,
       tab!,
       'user_cancel',
       chrome.i18n.getMessage('bgd_auth_canceled'),

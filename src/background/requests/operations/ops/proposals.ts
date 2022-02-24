@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -16,11 +16,12 @@ import {
 } from '@interfaces/keychain.interface';
 
 export const broadcastCreateProposal = async (
+  requestHandler: RequestsHandler,
   data: RequestCreateProposal & RequestId,
 ) => {
   let err, result;
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
   try {
     result = await client.broadcast.sendOperations(
       [
@@ -59,10 +60,11 @@ export const broadcastCreateProposal = async (
 };
 
 export const broadcastUpdateProposalVote = async (
+  requestHandler: RequestsHandler,
   data: RequestUpdateProposalVote & RequestId,
 ) => {
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
   let result, err;
   try {
     result = await client.broadcast.sendOperations(
@@ -118,11 +120,12 @@ export const broadcastUpdateProposalVote = async (
 };
 
 export const broadcastRemoveProposal = async (
+  requestHandler: RequestsHandler,
   data: RequestRemoveProposal & RequestId,
 ) => {
   let err, result;
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
   try {
     result = await client.broadcast.sendOperations(
       [

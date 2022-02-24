@@ -1,15 +1,16 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { PrivateKey } from '@hiveio/dhive';
 import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 
 export const broadcastSendToken = async (
+  requestHandler: RequestsHandler,
   data: RequestSendToken & RequestId,
 ) => {
   let err, result;
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
   try {
     result = await HiveEngineUtils.sendToken(
       client,

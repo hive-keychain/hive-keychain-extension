@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -14,11 +14,12 @@ import {
 } from '@interfaces/keychain.interface';
 
 export const broadcastCreateClaimedAccount = async (
+  requestHandler: RequestsHandler,
   data: RequestCreateClaimedAccount & RequestId,
 ) => {
   let err, result;
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
   try {
     result = await client.broadcast.sendOperations(
       [

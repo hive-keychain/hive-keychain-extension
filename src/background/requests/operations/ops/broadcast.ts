@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -12,11 +12,12 @@ import {
 import HiveUtils from 'src/utils/hive.utils';
 
 export const broadcastOperations = async (
+  requestHandler: RequestsHandler,
   data: RequestBroadcast & RequestId,
 ) => {
   let result, err;
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
 
   // check if operations contains any transfer wich requires memo encryption
   try {
@@ -30,7 +31,7 @@ export const broadcastOperations = async (
         const memo = op[1].memo;
         if (memo && memo.length > 0 && memo[0] == '#') {
           const receiver = await client.database.getAccounts([op[1].to]);
-          const memoKey: string = getRequestHandler().getUserKey(
+          const memoKey: string = requestHandler.getUserKey(
             data.username!,
             KeychainKeyTypesLC.memo,
           )[0];

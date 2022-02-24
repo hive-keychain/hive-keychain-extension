@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -14,14 +14,15 @@ import {
 } from '@interfaces/keychain.interface';
 
 export const broadcastAddAccountAuthority = async (
+  requestHandler: RequestsHandler,
   data: RequestAddAccountAuthority & RequestId,
 ) => {
   let err, result;
   const { username, role, authorizedUsername } = data;
   let { weight } = data;
   try {
-    const client = getRequestHandler().getHiveClient();
-    const key = getRequestHandler().key;
+    const client = requestHandler.getHiveClient();
+    const key = requestHandler.data.key;
     const userAccount = (await client.database.getAccounts([username]))[0];
 
     const updatedAuthority =
@@ -81,13 +82,14 @@ export const broadcastAddAccountAuthority = async (
 };
 
 export const broadcastRemoveAccountAuthority = async (
+  requestHandler: RequestsHandler,
   data: RequestRemoveAccountAuthority & RequestId,
 ) => {
   let err, result;
   const { username, role, authorizedUsername } = data;
   try {
-    const client = getRequestHandler().getHiveClient();
-    const key = getRequestHandler().key;
+    const client = requestHandler.getHiveClient();
+    const key = requestHandler.data.key;
     const userAccount = (await client.database.getAccounts([username]))[0];
 
     const updatedAuthority =
@@ -141,6 +143,7 @@ export const broadcastRemoveAccountAuthority = async (
 };
 
 export const broadcastAddKeyAuthority = async (
+  requestHandler: RequestsHandler,
   data: RequestAddKeyAuthority & RequestId,
 ) => {
   let result, err;
@@ -148,8 +151,8 @@ export const broadcastAddKeyAuthority = async (
   const { username, role, authorizedKey } = data;
   let { weight } = data;
   try {
-    const client = getRequestHandler().getHiveClient();
-    const key = getRequestHandler().key;
+    const client = requestHandler.getHiveClient();
+    const key = requestHandler.data.key;
     const userAccount = (await client.database.getAccounts([username]))[0];
     const updatedAuthority =
       userAccount[role.toLowerCase() as 'posting' | 'active'];
@@ -207,13 +210,14 @@ export const broadcastAddKeyAuthority = async (
 };
 
 export const broadcastRemoveKeyAuthority = async (
+  requestHandler: RequestsHandler,
   data: RequestRemoveKeyAuthority & RequestId,
 ) => {
   let err, result;
   const { username, authorizedKey, role } = data;
   try {
-    const client = getRequestHandler().getHiveClient();
-    const key = getRequestHandler().key;
+    const client = requestHandler.getHiveClient();
+    const key = requestHandler.data.key;
 
     const userAccount = (await client.database.getAccounts([username]))[0];
 

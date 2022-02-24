@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -11,15 +11,16 @@ import {
 } from '@interfaces/keychain.interface';
 
 export const broadcastWitnessVote = async (
+  requestHandler: RequestsHandler,
   data: RequestWitnessVote & RequestId,
 ) => {
-  const client = getRequestHandler().getHiveClient();
+  const client = requestHandler.getHiveClient();
   let result, err;
 
   try {
-    let key = getRequestHandler().key;
+    let key = requestHandler.data.key;
     if (!key) {
-      [key] = getRequestHandler().getUserKey(
+      [key] = requestHandler.getUserKey(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];

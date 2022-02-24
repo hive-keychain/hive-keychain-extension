@@ -1,12 +1,15 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
 import hive from '@hiveio/hive-js';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
-export const signTx = async (data: RequestSignTx & RequestId) => {
-  let key = getRequestHandler().key;
+export const signTx = async (
+  requestHandler: RequestsHandler,
+  data: RequestSignTx & RequestId,
+) => {
+  let key = requestHandler.data.key;
   let result, err;
 
   try {

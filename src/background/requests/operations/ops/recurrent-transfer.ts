@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -13,20 +13,21 @@ import CurrencyUtils from 'src/utils/currency.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const recurrentTransfer = async (
+  requestHandler: RequestsHandler,
   data: RequestRecurrentTransfer & RequestId,
 ) => {
   const { username, to, amount, recurrence, executions, memo } = data;
   let currency = CurrencyUtils.getCurrencyLabel(
     data.currency,
-    getRequestHandler().rpc?.testnet || false,
+    requestHandler.data.rpc?.testnet || false,
   );
-  const client = getRequestHandler().getHiveClient();
+  const client = requestHandler.getHiveClient();
   let result, err;
 
   try {
-    let key = getRequestHandler().key;
+    let key = requestHandler.data.key;
     if (!key) {
-      [key] = getRequestHandler().getUserKey(
+      [key] = requestHandler.getUserKey(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
