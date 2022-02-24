@@ -44,17 +44,17 @@ export default async (
     }
   }
   const { username, type } = request;
+  const mk = await MkModule.getMk();
   if (!items.accounts && type !== KeychainRequestTypes.addAccount) {
     // Wallet not initialized
     Logic.initializeWallet(requestHandler, tab!, request);
-  } else if (!items.accounts && !MkModule.getMk()) {
+  } else if (!items.accounts && !mk) {
     // Wallet not initialized for adding first account
     Logic.addAccountToEmptyWallet(requestHandler, tab!, request, domain);
-  } else if (!MkModule.getMk()) {
+  } else if (!mk) {
     // if locked
     Logic.unlockWallet(requestHandler, tab!, request, domain);
   } else {
-    const mk = await MkModule.getMk();
     const accounts = items.accounts
       ? (EncryptUtils.decryptToJson(items.accounts, mk!).list as LocalAccount[])
       : [];

@@ -3,10 +3,12 @@ import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
 import { RequestsHandler } from '@background/requests';
+import init from '@background/requests/init';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
 import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -24,7 +26,7 @@ import MkModule from './mk.module';
     ),
   );
 })();
-
+chrome.i18n.getMessage = (a: any) => a;
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
@@ -53,33 +55,41 @@ const chromeMessageHandler = async (
         backgroundMessage as KeychainRequestWrapper,
       );
       break;
-    // case BackgroundCommand.UNLOCK_FROM_DIALOG: {
-    //   const { mk, domain, data, tab } = backgroundMessage.value;
-    //   if (await MkUtils.login(mk)) {
-    //     MkModule.saveMk(mk);
-    //     ClaimModule.loadClaims();
-    //     init(data.msg.data, tab, domain);
-    //   } else {
-    //     chrome.runtime.sendMessage({
-    //       ...data,
-    //       command: DialogCommand.WRONG_MK,
-    //     });
-    //   }
-    //   break;
-    // }
-    // case BackgroundCommand.REGISTER_FROM_DIALOG: {
-    //   const { mk, domain, data, tab } = backgroundMessage.value;
-    //   MkModule.saveMk(mk);
-
-    //   Logger.log(mk, domain, data, tab);
-    //   init(data, tab, domain);
-
-    //   break;
-    // }
-    // case BackgroundCommand.ACCEPT_TRANSACTION:
-    //   const { keep, data, tab, domain } = backgroundMessage.value;
-    //   performOperation(data, tab, domain, keep);
-    //   break;
+    case BackgroundCommand.UNLOCK_FROM_DIALOG: {
+      const { mk, domain, data, tab } = backgroundMessage.value;
+      const login = await MkModule.login(mk);
+      if (login) {
+        MkModule.saveMk(mk);
+        init(
+          data.msg.data,
+          tab,
+          domain,
+          await RequestsHandler.getFromLocalStorage(),
+        );
+      } else {
+        chrome.runtime.sendMessage({
+          ...data,
+          command: DialogCommand.WRONG_MK,
+        });
+      }
+      break;
+    }
+    case BackgroundCommand.REGISTER_FROM_DIALOG: {
+      const { mk, domain, data, tab } = backgroundMessage.value;
+      MkModule.saveMk(mk);
+      init(data, tab, domain, await RequestsHandler.getFromLocalStorage());
+      break;
+    }
+    case BackgroundCommand.ACCEPT_TRANSACTION:
+      // const { keep, data, tab, domain } = backgroundMessage.value;
+      // performOperation(
+      //   await RequestsHandler.getFromLocalStorage(),
+      //   data,
+      //   tab,
+      //   domain,
+      //   keep,
+      // );
+      break;
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.set(backgroundMessage.value);
       break;
