@@ -2,8 +2,10 @@ import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
+import { RequestsHandler } from '@background/requests';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
+import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -41,16 +43,16 @@ const chromeMessageHandler = async (
     case BackgroundCommand.SAVE_RPC:
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
-    // case BackgroundCommand.SEND_REQUEST:
-    //   const requestHandler = getRequestHandler();
-    //   if (requestHandler) {
-    //     requestHandler.closeWindow();
-    //   }
-    //   initRequestHandler().sendRequest(
-    //     sender,
-    //     backgroundMessage as KeychainRequestWrapper,
-    //   );
-    //   break;
+    case BackgroundCommand.SEND_REQUEST:
+      const requestHandler = await RequestsHandler.getFromLocalStorage();
+      if (requestHandler) {
+        requestHandler.closeWindow();
+      }
+      new RequestsHandler().sendRequest(
+        sender,
+        backgroundMessage as KeychainRequestWrapper,
+      );
+      break;
     // case BackgroundCommand.UNLOCK_FROM_DIALOG: {
     //   const { mk, domain, data, tab } = backgroundMessage.value;
     //   if (await MkUtils.login(mk)) {

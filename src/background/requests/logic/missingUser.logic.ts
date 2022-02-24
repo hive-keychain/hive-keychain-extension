@@ -1,8 +1,10 @@
+import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export const missingUser = (
+  requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
   username: string,
@@ -16,5 +18,5 @@ export const missingUser = (
       request,
     );
   };
-  createPopup(callback);
+  createPopup(callback, requestHandler);
 };

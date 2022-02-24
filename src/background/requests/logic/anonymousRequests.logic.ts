@@ -1,3 +1,4 @@
+import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
@@ -7,6 +8,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
 export const anonymousRequests = (
+  requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
   domain: string,
@@ -26,7 +28,7 @@ export const anonymousRequests = (
         chrome.i18n.getMessage('bgd_auth_no_active'),
         request,
       );
-    });
+    }, requestHandler);
   } else {
     const callback = () => {
       chrome.runtime.sendMessage({
@@ -38,6 +40,6 @@ export const anonymousRequests = (
         rpc: current_rpc,
       });
     };
-    createPopup(callback);
+    createPopup(callback, requestHandler);
   }
 };

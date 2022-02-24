@@ -11,6 +11,9 @@ const Config = {
   },
   PROPOSAL: 174,
   MIN_LOADING_TIME: 1000,
+  rpc: {
+    DEFAULT: { uri: 'https://api.hive.blog', testnet: false },
+  },
 };
 
 export default Config;

@@ -1,8 +1,10 @@
+import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const addAccountToEmptyWallet = (
+  requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
   domain: string,
@@ -21,5 +23,5 @@ export const addAccountToEmptyWallet = (
       tab,
       domain,
     });
-  });
+  }, requestHandler);
 };

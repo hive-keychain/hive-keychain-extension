@@ -15,9 +15,9 @@ const getActiveRpc = async (): Promise<Rpc> => {
   );
 };
 
-const getClient = (): Promise<Client> => {
+const getClient = (overridingRpc?: Rpc): Promise<Client> => {
   return new Promise(async (fulfill) => {
-    const rpc = await getActiveRpc();
+    const rpc = overridingRpc || (await getActiveRpc());
     if (rpc.uri === 'DEFAULT') {
       const res = await fetch('https://api.hive-keychain.com/hive/rpc');
       const json = await res.json();

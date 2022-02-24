@@ -1,3 +1,4 @@
+import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { KeychainRequest } from '@interfaces/keychain.interface';
@@ -5,6 +6,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const addAccountRequest = (
+  requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
   domain: string,
@@ -21,7 +23,7 @@ export const addAccountRequest = (
         ]),
         request,
       );
-    });
+    }, requestHandler);
   } else {
     const callback = () => {
       chrome.runtime.sendMessage({
@@ -31,6 +33,6 @@ export const addAccountRequest = (
         tab,
       });
     };
-    createPopup(callback);
+    createPopup(callback, requestHandler);
   }
 };

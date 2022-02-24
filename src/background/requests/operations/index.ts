@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
@@ -41,6 +41,7 @@ import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
 export const performOperation = async (
+  requestHandler: RequestsHandler,
   data: KeychainRequest,
   tab: number,
   domain: string,
@@ -144,10 +145,10 @@ export const performOperation = async (
   } finally {
     if (no_confirm) {
       addToWhitelist(data.username!, domain, data.type);
-      if (!!getRequestHandler().windowId) {
-        removeWindow(getRequestHandler().windowId!);
+      if (!!requestHandler.data.windowId) {
+        removeWindow(requestHandler.data.windowId!);
       }
     } else chrome.runtime.sendMessage(message);
-    getRequestHandler().reset(false);
+    requestHandler.reset(false);
   }
 };

@@ -1,4 +1,3 @@
-import { performOperation } from '@background/requests/operations';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
@@ -9,5 +8,6 @@ export const requestWithoutConfirmation = (
   chrome.runtime.sendMessage({
     command: DialogCommand.BROADCASTING_WITHOUT_CONFIRMATION,
   });
-  performOperation(request, tab!, request.domain, false);
+  //TODO:Reimplement
+  //performOperation(request, tab!, request.domain, false);
 };

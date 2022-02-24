@@ -1,16 +1,17 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createPopup = (
   callback: () => void,
+  requestHandler: RequestsHandler,
   popupHtml = 'dialog.html',
 ) => {
   let width = 350;
-  getRequestHandler().setConfirmed(false);
+  requestHandler.setConfirmed(false);
   //Ensuring only one window is opened by the extension at a time.
-  if (getRequestHandler().windowId) {
-    removeWindow(getRequestHandler().windowId!);
-    getRequestHandler().setWindowId(undefined);
+  if (requestHandler.data.windowId) {
+    removeWindow(requestHandler.data.windowId!);
+    requestHandler.setWindowId(undefined);
   }
   //Create new window on the top right of the screen
   chrome.windows.getCurrent((w) => {
@@ -26,15 +27,17 @@ export const createPopup = (
       },
       (win) => {
         if (!win) return;
-        getRequestHandler().setWindowId(win.id);
+        requestHandler.setWindowId(win.id);
+        requestHandler.saveInLocalStorage();
         waitUntilDialogIsReady(100, callback);
       },
     );
   });
 };
 
-chrome.windows.onRemoved.addListener((id: number) => {
-  const { windowId, request, request_id, tab, confirmed } = getRequestHandler();
+chrome.windows.onRemoved.addListener(async (id: number) => {
+  const requestHandler = await RequestsHandler.getFromLocalStorage();
+  const { windowId, request, request_id, tab, confirmed } = requestHandler.data;
 
   if (id == windowId && !confirmed) {
     chrome.tabs.sendMessage(tab!, {
@@ -45,11 +48,11 @@ chrome.windows.onRemoved.addListener((id: number) => {
         result: null,
         data: request,
         message: chrome.i18n.getMessage('bgd_lifecycle_request_canceled'),
-        request_id: request_id,
+        request_id,
       },
     });
 
-    getRequestHandler().reset(true);
+    requestHandler.reset(true);
   }
 });
 

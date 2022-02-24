@@ -13,4 +13,5 @@ export enum LocalStorageKeyEnum {
   HIDDEN_TOKENS = 'hidden_tokens',
   LOCAL_STORAGE_VERSION = 'LOCAL_STORAGE_VERSION',
   __MK = '__MK',
+  __REQUEST_HANDLER = '__REQUEST_HANDLER',
 }
