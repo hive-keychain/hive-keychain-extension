@@ -1,12 +1,28 @@
 import { RequestsHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
+import {
+  broadcastAddAccountAuthority,
+  broadcastAddKeyAuthority,
+  broadcastRemoveAccountAuthority,
+  broadcastRemoveKeyAuthority,
+} from '@background/requests/operations/ops/authority';
+import { broadcastOperations } from '@background/requests/operations/ops/broadcast';
+import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
+import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
 import { broadcastPost } from '@background/requests/operations/ops/post';
+import {
+  broadcastPowerDown,
+  broadcastPowerUp,
+} from '@background/requests/operations/ops/power';
+import { broadcastProxy } from '@background/requests/operations/ops/proxy';
 import { recurrentTransfer } from '@background/requests/operations/ops/recurrent-transfer';
+import { broadcastSendToken } from '@background/requests/operations/ops/send-token';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
+import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -29,9 +45,9 @@ export const performOperation = async (
       // case KeychainRequestTypes.addAccount:
       //   message = await addAccount(requestHandler, data);
       //   break;
-      // case KeychainRequestTypes.custom:
-      //   message = await broadcastCustomJson(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.custom:
+        message = await broadcastCustomJson(requestHandler, data);
+        break;
       case KeychainRequestTypes.vote:
         message = await broadcastVote(requestHandler, data);
         break;
@@ -41,43 +57,43 @@ export const performOperation = async (
       case KeychainRequestTypes.post:
         message = await broadcastPost(requestHandler, data);
         break;
-      // case KeychainRequestTypes.addAccountAuthority:
-      //   message = await broadcastAddAccountAuthority(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.removeAccountAuthority:
-      //   message = await broadcastRemoveAccountAuthority(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.addKeyAuthority:
-      //   message = await broadcastAddKeyAuthority(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.removeKeyAuthority:
-      //   message = await broadcastRemoveKeyAuthority(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.broadcast:
-      //   message = await broadcastOperations(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.addAccountAuthority:
+        message = await broadcastAddAccountAuthority(requestHandler, data);
+        break;
+      case KeychainRequestTypes.removeAccountAuthority:
+        message = await broadcastRemoveAccountAuthority(requestHandler, data);
+        break;
+      case KeychainRequestTypes.addKeyAuthority:
+        message = await broadcastAddKeyAuthority(requestHandler, data);
+        break;
+      case KeychainRequestTypes.removeKeyAuthority:
+        message = await broadcastRemoveKeyAuthority(requestHandler, data);
+        break;
+      case KeychainRequestTypes.broadcast:
+        message = await broadcastOperations(requestHandler, data);
+        break;
       // case KeychainRequestTypes.createClaimedAccount:
       //   message = await broadcastCreateClaimedAccount(requestHandler, data);
       //   break;
 
-      // case KeychainRequestTypes.delegation:
-      //   message = await broadcastDelegation(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.witnessVote:
-      //   message = await broadcastWitnessVote(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.proxy:
-      //   message = await broadcastProxy(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.powerUp:
-      //   message = await broadcastPowerUp(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.powerDown:
-      //   message = await broadcastPowerDown(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.sendToken:
-      //   message = await broadcastSendToken(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.delegation:
+        message = await broadcastDelegation(requestHandler, data);
+        break;
+      case KeychainRequestTypes.witnessVote:
+        message = await broadcastWitnessVote(requestHandler, data);
+        break;
+      case KeychainRequestTypes.proxy:
+        message = await broadcastProxy(requestHandler, data);
+        break;
+      case KeychainRequestTypes.powerUp:
+        message = await broadcastPowerUp(requestHandler, data);
+        break;
+      case KeychainRequestTypes.powerDown:
+        message = await broadcastPowerDown(requestHandler, data);
+        break;
+      case KeychainRequestTypes.sendToken:
+        message = await broadcastSendToken(requestHandler, data);
+        break;
       // case KeychainRequestTypes.createProposal:
       //   message = await broadcastCreateProposal(requestHandler, data);
       //   break;

@@ -4,12 +4,12 @@ import {
   createMessage,
 } from '@background/requests/operations/operations.utils';
 import { Operation, PrivateKey } from '@hiveio/dhive';
+import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestBroadcast,
   RequestId,
 } from '@interfaces/keychain.interface';
-import HiveUtils from 'src/utils/hive.utils';
 
 export const broadcastOperations = async (
   requestHandler: RequestsHandler,
@@ -39,7 +39,7 @@ export const broadcastOperations = async (
             throw new Error('Failed to load receiver memo key');
           }
           const memoReceiver = receiver[0].memo_key;
-          op[1].memo = HiveUtils.encodeMemo(memo, memoKey, memoReceiver);
+          op[1].memo = encode(memoKey, memoReceiver, memo);
         }
       } else if (
         op[0] === 'update_proposal_votes' ||
