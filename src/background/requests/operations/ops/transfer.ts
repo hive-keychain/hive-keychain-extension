@@ -1,12 +1,12 @@
 import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { PrivateKey } from '@hiveio/dhive';
+import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
-import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastTransfer = async (
@@ -35,7 +35,7 @@ export const broadcastTransfer = async (
         throw new Error('Could not encode memo.');
       }
       const memoReceiver = receiver.memo_key;
-      memo = HiveUtils.encodeMemo(memo, memoKey, memoReceiver);
+      memo = encode(memoKey, memoReceiver, memo);
     }
 
     result = await client.broadcast.transfer(

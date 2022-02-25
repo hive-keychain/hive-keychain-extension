@@ -1,7 +1,18 @@
 import { RequestsHandler } from '@background/requests';
+import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
-import { KeychainRequest } from '@interfaces/keychain.interface';
+import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
+import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
+import { broadcastPost } from '@background/requests/operations/ops/post';
+import { recurrentTransfer } from '@background/requests/operations/ops/recurrent-transfer';
+import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
+import { broadcastVote } from '@background/requests/operations/ops/vote';
+import {
+  KeychainRequest,
+  KeychainRequestTypes,
+} from '@interfaces/keychain.interface';
 import Logger from 'src/utils/logger.utils';
+import { addToWhitelist } from 'src/utils/preferences.utils';
 
 export const performOperation = async (
   requestHandler: RequestsHandler,
@@ -14,23 +25,22 @@ export const performOperation = async (
   try {
     Logger.info('-- PERFORMING TRANSACTION --');
     Logger.log(data);
-    switch (
-      data.type
+    switch (data.type) {
       // case KeychainRequestTypes.addAccount:
       //   message = await addAccount(requestHandler, data);
       //   break;
       // case KeychainRequestTypes.custom:
       //   message = await broadcastCustomJson(requestHandler, data);
       //   break;
-      // case KeychainRequestTypes.vote:
-      //   message = await broadcastVote(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.transfer:
-      //   message = await broadcastTransfer(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.post:
-      //   message = await broadcastPost(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.vote:
+        message = await broadcastVote(requestHandler, data);
+        break;
+      case KeychainRequestTypes.transfer:
+        message = await broadcastTransfer(requestHandler, data);
+        break;
+      case KeychainRequestTypes.post:
+        message = await broadcastPost(requestHandler, data);
+        break;
       // case KeychainRequestTypes.addAccountAuthority:
       //   message = await broadcastAddAccountAuthority(requestHandler, data);
       //   break;
@@ -77,12 +87,12 @@ export const performOperation = async (
       // case KeychainRequestTypes.removeProposal:
       //   message = await broadcastRemoveProposal(requestHandler, data);
       //   break;
-      // case KeychainRequestTypes.decode:
-      //   message = await decodeMessage(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.encode:
-      //   message = await encodeMessage(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.decode:
+        message = await decodeMessage(requestHandler, data);
+        break;
+      case KeychainRequestTypes.encode:
+        message = await encodeMessage(requestHandler, data);
+        break;
       // case KeychainRequestTypes.signBuffer:
       //   message = await signBuffer(requestHandler, data);
       //   break;
@@ -92,10 +102,9 @@ export const performOperation = async (
       // case KeychainRequestTypes.convert:
       //   message = await convert(requestHandler, data);
       //   break;
-      // case KeychainRequestTypes.recurrentTransfer:
-      //   message = await recurrentTransfer(requestHandler, data);
-      //   break;
-    ) {
+      case KeychainRequestTypes.recurrentTransfer:
+        message = await recurrentTransfer(requestHandler, data);
+        break;
     }
     chrome.tabs.sendMessage(tab, message);
   } catch (e) {
@@ -109,12 +118,12 @@ export const performOperation = async (
       data,
     );
   } finally {
-    // if (no_confirm) {
-    //   addToWhitelist(data.username!, domain, data.type);
-    //   if (!!requestHandler.data.windowId) {
-    //     removeWindow(requestHandler.data.windowId!);
-    //   }
-    // } else chrome.runtime.sendMessage(message);
-    // requestHandler.reset(false);
+    if (no_confirm) {
+      addToWhitelist(data.username!, domain, data.type);
+      if (!!requestHandler.data.windowId) {
+        removeWindow(requestHandler.data.windowId!);
+      }
+    } else chrome.runtime.sendMessage(message);
+    requestHandler.reset(false);
   }
 };

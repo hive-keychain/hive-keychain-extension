@@ -4,6 +4,7 @@ import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
 import { RequestsHandler } from '@background/requests';
 import init from '@background/requests/init';
+import { performOperation } from '@background/requests/operations';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
 import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
@@ -81,14 +82,14 @@ const chromeMessageHandler = async (
       break;
     }
     case BackgroundCommand.ACCEPT_TRANSACTION:
-      // const { keep, data, tab, domain } = backgroundMessage.value;
-      // performOperation(
-      //   await RequestsHandler.getFromLocalStorage(),
-      //   data,
-      //   tab,
-      //   domain,
-      //   keep,
-      // );
+      const { keep, data, tab, domain } = backgroundMessage.value;
+      performOperation(
+        await RequestsHandler.getFromLocalStorage(),
+        data,
+        tab,
+        domain,
+        keep,
+      );
       break;
     case BackgroundCommand.UPDATE_AUTOLOCK:
       AutolockModule.set(backgroundMessage.value);

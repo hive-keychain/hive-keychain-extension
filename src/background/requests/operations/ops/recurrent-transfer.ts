@@ -4,6 +4,7 @@ import {
   createMessage,
 } from '@background/requests/operations/operations.utils';
 import { PrivateKey, RecurrentTransferOperation } from '@hiveio/dhive';
+import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestId,
@@ -16,7 +17,8 @@ export const recurrentTransfer = async (
   requestHandler: RequestsHandler,
   data: RequestRecurrentTransfer & RequestId,
 ) => {
-  const { username, to, amount, recurrence, executions, memo } = data;
+  const { username, to, amount, recurrence, executions } = data;
+  let { memo } = data;
   let currency = CurrencyUtils.getCurrencyLabel(
     data.currency,
     requestHandler.data.rpc?.testnet || false,
@@ -31,6 +33,18 @@ export const recurrentTransfer = async (
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
+    }
+    if (memo && memo.length > 0 && memo[0] == '#') {
+      const receiver = (await client.database.getAccounts([to]))[0];
+      const memoKey: string = requestHandler.getUserKey(
+        username!,
+        KeychainKeyTypesLC.memo,
+      )[0];
+      if (!receiver && !memoKey) {
+        throw new Error('Could not encode memo.');
+      }
+      const memoReceiver = receiver.memo_key;
+      memo = encode(memoKey, memoReceiver, memo);
     }
     result = await client.broadcast.sendOperations(
       [
