@@ -487,6 +487,10 @@
     "message": "Claim",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
   },
+  "popup_html_claiming_rewards": {
+    "message": "Claiming rewards",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
   "popup_html_witness_title": {
     "message": "Witness Voting",
     "description": "On witness page"
