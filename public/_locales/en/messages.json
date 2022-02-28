@@ -2103,5 +2103,9 @@
   "popup_html_close": {
     "message": "Close",
     "description": "general"
+  },
+  "popup_html_contact_support": {
+    "message": "Contact support",
+    "description": "Contact support"
   }
 }
