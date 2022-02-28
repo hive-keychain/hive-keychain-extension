@@ -863,6 +863,10 @@
     "message": "Succesfully chose @$1 for proxy.",
     "description": "on tokens page when chosing a proxy"
   },
+  "popup_error_proxy": {
+    "message": "Error while setting @$1 as proxy.",
+    "description": "on tokens page when chosing a proxy"
+  },
   "bgd_ops_unproxy": {
     "message": "Succesfully removed the proxy.",
     "description": "when removing proxy"
@@ -2087,5 +2091,17 @@
   "popup_html_rpc_automatic_mode_hint": {
     "message": "Will always select the best rpc node for you",
     "description": "Node Rpc auto selection hint"
+  },
+  "popup_html_proxy_suggestion": {
+    "message": "Overwhelmed by governance matters ? Set @keychain as proxy!",
+    "description": "If no witness voted"
+  },
+  "popup_html_set_proxy": {
+    "message": "Set proxy",
+    "description": "in proxy suggestion popup"
+  },
+  "popup_html_close": {
+    "message": "Close",
+    "description": "general"
   }
 }

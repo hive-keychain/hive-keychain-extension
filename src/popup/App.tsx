@@ -9,6 +9,7 @@ import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -48,6 +49,7 @@ const App = ({
   isCurrentPageHomePage,
   setAccounts,
   loadGlobalProperties,
+  displayProxySuggestion,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
@@ -203,6 +205,9 @@ const App = ({
       {(loading || !activeRpc) && (
         <LoadingComponent operations={loadingOperation} />
       )}
+      {displayProxySuggestion && (
+        <ProxySuggestionComponent></ProxySuggestionComponent>
+      )}
       {displayChangeRpcPopup && activeRpc && switchToRpc && (
         <div className="change-rpc-popup">
           <div className="message">
@@ -230,6 +235,10 @@ const mapStateToProps = (state: RootState) => {
     activeAccountUsername: state.activeAccount.name,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
+    displayProxySuggestion:
+      state.activeAccount &&
+      state.activeAccount.account.proxy === '' &&
+      state.activeAccount.account.witnesses_voted_for === 0,
   };
 };
 
