@@ -1,7 +1,6 @@
 import { Rpc } from 'src/interfaces/rpc.interface';
 
 export const DefaultRpcs: Rpc[] = [
-  { uri: 'https://api.blog2.blog', testnet: false },
   { uri: 'https://api.hive.blog/', testnet: false },
   { uri: 'https://api.deathwing.me', testnet: false },
   { uri: 'https://api.openhive.network/', testnet: false },
