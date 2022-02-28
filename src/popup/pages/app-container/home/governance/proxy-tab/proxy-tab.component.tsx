@@ -27,24 +27,19 @@ const ProxyTab = ({
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    const response = await WitnessUtils.setAsProxy(
-      proxyUsername,
-      activeAccount,
-    );
-    if (response.id) {
+    if (await WitnessUtils.setAsProxy(proxyUsername, activeAccount)) {
       setSuccessMessage('popup_success_proxy', [`@${proxyUsername}`]);
+      refreshActiveAccount();
     } else {
       setErrorMessage('html_popup_clear_proxy_error');
     }
-    refreshActiveAccount();
   };
   const removeProxy = async () => {
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    const response = await WitnessUtils.removeProxy(activeAccount);
-    refreshActiveAccount();
-    if (response.id) {
+    if (await WitnessUtils.removeProxy(activeAccount)) {
+      refreshActiveAccount();
       setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
     } else {
       setErrorMessage('html_popup_clear_proxy_error');
