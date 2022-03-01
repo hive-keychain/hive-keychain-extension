@@ -8,6 +8,8 @@ import {
   broadcastRemoveKeyAuthority,
 } from '@background/requests/operations/ops/authority';
 import { broadcastOperations } from '@background/requests/operations/ops/broadcast';
+import { convert } from '@background/requests/operations/ops/convert';
+import { broadcastCreateClaimedAccount } from '@background/requests/operations/ops/create-claimed-account';
 import { broadcastCustomJson } from '@background/requests/operations/ops/custom-json';
 import { decodeMessage } from '@background/requests/operations/ops/decode-memo';
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
@@ -17,9 +19,16 @@ import {
   broadcastPowerDown,
   broadcastPowerUp,
 } from '@background/requests/operations/ops/power';
+import {
+  broadcastCreateProposal,
+  broadcastRemoveProposal,
+  broadcastUpdateProposalVote,
+} from '@background/requests/operations/ops/proposals';
 import { broadcastProxy } from '@background/requests/operations/ops/proxy';
 import { recurrentTransfer } from '@background/requests/operations/ops/recurrent-transfer';
 import { broadcastSendToken } from '@background/requests/operations/ops/send-token';
+import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
+import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
@@ -72,10 +81,9 @@ export const performOperation = async (
       case KeychainRequestTypes.broadcast:
         message = await broadcastOperations(requestHandler, data);
         break;
-      // case KeychainRequestTypes.createClaimedAccount:
-      //   message = await broadcastCreateClaimedAccount(requestHandler, data);
-      //   break;
-
+      case KeychainRequestTypes.createClaimedAccount:
+        message = await broadcastCreateClaimedAccount(requestHandler, data);
+        break;
       case KeychainRequestTypes.delegation:
         message = await broadcastDelegation(requestHandler, data);
         break;
@@ -94,30 +102,30 @@ export const performOperation = async (
       case KeychainRequestTypes.sendToken:
         message = await broadcastSendToken(requestHandler, data);
         break;
-      // case KeychainRequestTypes.createProposal:
-      //   message = await broadcastCreateProposal(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.updateProposalVote:
-      //   message = await broadcastUpdateProposalVote(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.removeProposal:
-      //   message = await broadcastRemoveProposal(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.createProposal:
+        message = await broadcastCreateProposal(requestHandler, data);
+        break;
+      case KeychainRequestTypes.updateProposalVote:
+        message = await broadcastUpdateProposalVote(requestHandler, data);
+        break;
+      case KeychainRequestTypes.removeProposal:
+        message = await broadcastRemoveProposal(requestHandler, data);
+        break;
       case KeychainRequestTypes.decode:
         message = await decodeMessage(requestHandler, data);
         break;
       case KeychainRequestTypes.encode:
         message = await encodeMessage(requestHandler, data);
         break;
-      // case KeychainRequestTypes.signBuffer:
-      //   message = await signBuffer(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.signTx:
-      //   message = await signTx(requestHandler, data);
-      //   break;
-      // case KeychainRequestTypes.convert:
-      //   message = await convert(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.signBuffer:
+        message = await signBuffer(requestHandler, data);
+        break;
+      case KeychainRequestTypes.signTx:
+        message = await signTx(requestHandler, data);
+        break;
+      case KeychainRequestTypes.convert:
+        message = await convert(requestHandler, data);
+        break;
       case KeychainRequestTypes.recurrentTransfer:
         message = await recurrentTransfer(requestHandler, data);
         break;

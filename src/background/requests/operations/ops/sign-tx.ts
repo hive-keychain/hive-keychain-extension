@@ -3,7 +3,7 @@ import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
-import hive from '@hiveio/hive-js';
+import { signTransaction } from '@hiveio/hive-js/lib/auth';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
 export const signTx = async (
   requestHandler: RequestsHandler,
@@ -14,7 +14,7 @@ export const signTx = async (
 
   try {
     //result = client.broadcast.sign(data.tx, PrivateKey.from(key!));
-    result = await hive.auth.signTransaction(data.tx, [key]);
+    result = await signTransaction(data.tx, [key]);
   } catch (e) {
     err = e;
   } finally {
