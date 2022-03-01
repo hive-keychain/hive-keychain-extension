@@ -1,4 +1,8 @@
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -19,6 +23,8 @@ const TopBar = ({
   refreshActiveAccount,
   activeAccount,
   globalProperties,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
 
@@ -45,6 +51,7 @@ const TopBar = ({
   };
 
   const claim = async (): Promise<void> => {
+    addToLoadingList('popup_html_claiming_rewards');
     const claimSuccessful = await HiveUtils.claimRewards(
       activeAccount,
       activeAccount.account.reward_hive_balance,
@@ -52,6 +59,7 @@ const TopBar = ({
       activeAccount.account.reward_vesting_balance,
     );
     if (claimSuccessful) {
+      removeFromLoadingList('popup_html_claiming_rewards');
       setHasRewardToClaim(false);
       refreshActiveAccount();
     }
@@ -97,6 +105,8 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   resetNav,
   refreshActiveAccount,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

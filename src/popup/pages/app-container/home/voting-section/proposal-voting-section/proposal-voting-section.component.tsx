@@ -11,7 +11,6 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import Config from 'src/config';
-import Logger from 'src/utils/logger.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-voting-section.component.scss';
 
@@ -36,9 +35,7 @@ const ProposalVotingSection = ({
   };
 
   const handleVoteForProposalClicked = async () => {
-    const res = await ProposalUtils.voteForProposal(activeAccount);
-    Logger.log(res);
-    if (res.id) {
+    if (await ProposalUtils.voteForProposal(activeAccount)) {
       setSuccessMessage('popup_html_kc_proposal_vote_successful');
     } else {
       setErrorMessage('popup_html_proposal_vote_fail');

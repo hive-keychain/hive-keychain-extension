@@ -487,6 +487,10 @@
     "message": "Claim",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
   },
+  "popup_html_claiming_rewards": {
+    "message": "Claiming rewards",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
   "popup_html_witness_title": {
     "message": "Witness Voting",
     "description": "On witness page"
@@ -861,6 +865,10 @@
   },
   "popup_success_proxy": {
     "message": "Succesfully chose @$1 for proxy.",
+    "description": "on tokens page when chosing a proxy"
+  },
+  "popup_error_proxy": {
+    "message": "Error while setting @$1 as proxy.",
     "description": "on tokens page when chosing a proxy"
   },
   "bgd_ops_unproxy": {
@@ -2071,5 +2079,37 @@
   "popup_html_account_already_existing": {
     "message": "Account already existing",
     "description": "while trying to add a new account"
+  },
+  "popup_html_switch_rpc": {
+    "message": "Switch RPC",
+    "description": "At start up, when active rpc not responding"
+  },
+  "popup_html_rpc_not_responding_error": {
+    "message": "$1 node is not responding. Do you want to switch to $2 ?",
+    "description": "At start up, when active rpc not responding"
+  },
+  "popup_html_rpc_automatic_mode": {
+    "message": "Switch automatically",
+    "description": "Node Rpc auto selection"
+  },
+  "popup_html_rpc_automatic_mode_hint": {
+    "message": "Will always select the best rpc node for you",
+    "description": "Node Rpc auto selection hint"
+  },
+  "popup_html_proxy_suggestion": {
+    "message": "Overwhelmed by governance matters ? Set @keychain as proxy!",
+    "description": "If no witness voted"
+  },
+  "popup_html_set_proxy": {
+    "message": "Set proxy",
+    "description": "in proxy suggestion popup"
+  },
+  "popup_html_close": {
+    "message": "Close",
+    "description": "general"
+  },
+  "popup_html_contact_support": {
+    "message": "Contact support",
+    "description": "Contact support"
   }
 }

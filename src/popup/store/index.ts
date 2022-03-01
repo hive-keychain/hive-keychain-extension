@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 // import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import MkUtils from 'src/utils/mk.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
 // const composeEnhancers = composeWithDevTools({
@@ -18,9 +19,10 @@ const store = createStore(
 let previousAccounts = store.getState().accounts;
 let previousRpc = store.getState().activeRpc;
 let previousActiveAccountName = store.getState().activeAccount?.name;
+let previousMk = store.getState().mk;
 
 store.subscribe(() => {
-  const { accounts, mk, activeRpc, activeAccount } = store.getState();
+  const { accounts, mk, activeRpc, activeAccount, loading } = store.getState();
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
     AccountUtils.saveAccounts(accounts, mk);
@@ -32,6 +34,9 @@ store.subscribe(() => {
     ActiveAccountUtils.saveActiveAccountNameInLocalStorage(
       activeAccount.name as string,
     );
+  }
+  if (previousMk !== mk) {
+    MkUtils.saveMkInLocalStorage(mk);
   }
 });
 

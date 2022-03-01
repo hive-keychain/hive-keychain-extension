@@ -19,6 +19,13 @@ const SettingsMenuItems: MenuItem[] = [
     nextScreen: Screen.SETTINGS_ADVANCED,
   },
   {
+    label: 'popup_html_contact_support',
+    icon: Icons.SUPPORT,
+    action: () => {
+      chrome.tabs.create({ url: 'https://discord.gg/3wdusXbu' });
+    },
+  },
+  {
     label: 'popup_html_about',
     icon: Icons.INFO,
     nextScreen: Screen.SETTINGS_ABOUT,

@@ -35,13 +35,13 @@ const WitnessVotingSection = ({
       setErrorMessage('html_popup_vote_stoodkev_witness_error_30_votes');
     } else {
       addToLoadingList('html_popup_vote_witness_operation');
-      const result = await WitnessUtils.voteWitness(
+      const transactionConfirmed = await WitnessUtils.voteWitness(
         STOODKEV_WITNESS,
         activeAccount,
       );
       addToLoadingList('html_popup_confirm_transaction_operation');
       removeFromLoadingList('html_popup_vote_witness_operation');
-      if (result.id) {
+      if (transactionConfirmed) {
         await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();

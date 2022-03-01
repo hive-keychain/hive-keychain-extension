@@ -1,6 +1,8 @@
+import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import RpcUtils from 'src/utils/rpc.utils';
 
 const checkAndUpdateLocalStorage = async () => {
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
@@ -23,6 +25,25 @@ const checkAndUpdateLocalStorage = async () => {
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.RPC_LIST,
         JSON.parse(rpcList),
+      );
+    }
+
+    const activeRpc = (await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.CURRENT_RPC,
+    )) as Rpc;
+    if (!activeRpc || activeRpc.uri === 'DEFAULT') {
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+        true,
+      );
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.CURRENT_RPC,
+        RpcUtils.getFullList()[0],
+      );
+    } else {
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+        false,
       );
     }
 

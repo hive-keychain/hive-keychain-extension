@@ -76,7 +76,6 @@ const WalletHistory = ({
     setLastTransactionIndex(ArrayUtils.getMinValue(transactions.list, 'index'));
     setTimeout(() => {
       if (idToScrollTo) {
-        console.log(document.getElementById(idToScrollTo));
         document.getElementById(idToScrollTo)?.scrollIntoView();
       }
     }, 1000);

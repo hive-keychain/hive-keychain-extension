@@ -13,7 +13,6 @@ const TransactionReducer = (
     case ActionType.INIT_TRANSACTIONS:
       return { loading: false, list: payload! };
     case ActionType.ADD_TRANSACTIONS:
-      console.log(state.list, payload);
       // if (
       //   !state.list[0] ||
       //   state.list[0].key.split('!')[0] === payload![0].key.split('!')[0]

@@ -7,12 +7,14 @@ import {
   ExtendedAccount,
   PrivateKey,
   RecurrentTransferOperation,
+  TransactionConfirmation,
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
   TransferToVestingOperation,
   UpdateProposalVotesOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';
+import { sleep } from '@hiveio/dhive/lib/utils';
 import * as hive from '@hiveio/hive-js';
 import {
   setErrorMessage,
@@ -244,19 +246,21 @@ const claimRewards = async (
   rewardVests: string | Asset,
 ): Promise<boolean> => {
   try {
-    await getClient().broadcast.sendOperations(
-      [
+    await sendOperationWithConfirmation(
+      getClient().broadcast.sendOperations(
         [
-          'claim_reward_balance',
-          {
-            account: activeAccount.name,
-            reward_hive: rewardHive,
-            reward_hbd: rewardHBD,
-            reward_vests: rewardVests,
-          },
-        ] as ClaimRewardBalanceOperation,
-      ],
-      PrivateKey.fromString(activeAccount.keys.posting as string),
+          [
+            'claim_reward_balance',
+            {
+              account: activeAccount.name,
+              reward_hive: rewardHive,
+              reward_hbd: rewardHBD,
+              reward_vests: rewardVests,
+            },
+          ] as ClaimRewardBalanceOperation,
+        ],
+        PrivateKey.fromString(activeAccount.keys.posting as string),
+      ),
     );
     const rewardHp =
       FormatUtils.withCommas(
@@ -285,19 +289,21 @@ const claimRewards = async (
 
 const powerUp = async (from: string, to: string, amount: string) => {
   try {
-    await getClient().broadcast.sendOperations(
-      [
+    await sendOperationWithConfirmation(
+      getClient().broadcast.sendOperations(
         [
-          'transfer_to_vesting',
-          {
-            from: from,
-            to: to,
-            amount: amount,
-          },
-        ] as TransferToVestingOperation,
-      ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
+          [
+            'transfer_to_vesting',
+            {
+              from: from,
+              to: to,
+              amount: amount,
+            },
+          ] as TransferToVestingOperation,
+        ],
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
       ),
     );
     return true;
@@ -308,18 +314,20 @@ const powerUp = async (from: string, to: string, amount: string) => {
 
 const powerDown = async (username: string, amount: string) => {
   try {
-    await getClient().broadcast.sendOperations(
-      [
+    await sendOperationWithConfirmation(
+      getClient().broadcast.sendOperations(
         [
-          'withdraw_vesting',
-          {
-            account: username,
-            vesting_shares: amount,
-          },
-        ] as WithdrawVestingOperation,
-      ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
+          [
+            'withdraw_vesting',
+            {
+              account: username,
+              vesting_shares: amount,
+            },
+          ] as WithdrawVestingOperation,
+        ],
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
       ),
     );
     return true;
@@ -339,35 +347,39 @@ const transfer = async (
 ) => {
   try {
     if (!recurrent) {
-      await getClient().broadcast.transfer(
-        {
-          from: sender,
-          to: receiver,
-          amount: amount,
-          memo: memo,
-        },
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
+      await sendOperationWithConfirmation(
+        getClient().broadcast.transfer(
+          {
+            from: sender,
+            to: receiver,
+            amount: amount,
+            memo: memo,
+          },
+          PrivateKey.fromString(
+            store.getState().activeAccount.keys.active as string,
+          ),
         ),
       );
     } else {
-      await getClient().broadcast.sendOperations(
-        [
+      await sendOperationWithConfirmation(
+        getClient().broadcast.sendOperations(
           [
-            'recurrent_transfer',
-            {
-              from: sender,
-              to: receiver,
-              amount: amount,
-              memo: memo,
-              recurrence: frequency,
-              executions: iterations,
-              extensions: [],
-            },
-          ] as RecurrentTransferOperation,
-        ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
+            [
+              'recurrent_transfer',
+              {
+                from: sender,
+                to: receiver,
+                amount: amount,
+                memo: memo,
+                recurrence: frequency,
+                executions: iterations,
+                extensions: [],
+              },
+            ] as RecurrentTransferOperation,
+          ],
+          PrivateKey.fromString(
+            store.getState().activeAccount.keys.active as string,
+          ),
         ),
       );
     }
@@ -386,19 +398,21 @@ const convertOperation = async (
 ) => {
   const requestid = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
   try {
-    await getClient().broadcast.sendOperations(
-      [
+    await sendOperationWithConfirmation(
+      getClient().broadcast.sendOperations(
         [
-          conversionType,
-          {
-            owner: activeAccount.name,
-            requestid: requestid,
-            amount: amount,
-          },
-        ] as CollateralizedConvertOperation,
-      ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
+          [
+            conversionType,
+            {
+              owner: activeAccount.name,
+              requestid: requestid,
+              amount: amount,
+            },
+          ] as CollateralizedConvertOperation,
+        ],
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
       ),
     );
     return true;
@@ -453,21 +467,23 @@ const deposit = async (activeAccount: ActiveAccount, amount: string) => {
   );
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
   try {
-    await getClient().broadcast.sendOperations(
-      [
+    await sendOperationWithConfirmation(
+      getClient().broadcast.sendOperations(
         [
-          'transfer_to_savings',
-          {
-            amount: amount,
-            from: activeAccount.name,
-            memo: '',
-            request_id: requestId,
-            to: activeAccount.name,
-          },
-        ] as TransferToSavingsOperation,
-      ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
+          [
+            'transfer_to_savings',
+            {
+              amount: amount,
+              from: activeAccount.name,
+              memo: '',
+              request_id: requestId,
+              to: activeAccount.name,
+            },
+          ] as TransferToSavingsOperation,
+        ],
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
       ),
     );
     return true;
@@ -482,21 +498,23 @@ const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
 
   try {
-    await getClient().broadcast.sendOperations(
-      [
+    await sendOperationWithConfirmation(
+      getClient().broadcast.sendOperations(
         [
-          'transfer_from_savings',
-          {
-            amount: amount,
-            from: activeAccount.name,
-            memo: '',
-            request_id: requestId,
-            to: activeAccount.name,
-          },
-        ] as TransferFromSavingsOperation,
-      ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
+          [
+            'transfer_from_savings',
+            {
+              amount: amount,
+              from: activeAccount.name,
+              memo: '',
+              request_id: requestId,
+              to: activeAccount.name,
+            },
+          ] as TransferFromSavingsOperation,
+        ],
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
       ),
     );
     return true;
@@ -511,14 +529,16 @@ const delegateVestingShares = async (
   vestingShares: string,
 ) => {
   try {
-    await getClient().broadcast.delegateVestingShares(
-      {
-        delegatee: delegatee,
-        delegator: activeAccount.name!,
-        vesting_shares: vestingShares,
-      },
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
+    await sendOperationWithConfirmation(
+      getClient().broadcast.delegateVestingShares(
+        {
+          delegatee: delegatee,
+          delegator: activeAccount.name!,
+          vesting_shares: vestingShares,
+        },
+        PrivateKey.fromString(
+          store.getState().activeAccount.keys.active as string,
+        ),
       ),
     );
 
@@ -530,16 +550,18 @@ const delegateVestingShares = async (
 };
 
 const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
-  return await getClient().broadcast.json(
-    {
-      id: Config.hiveEngine.MAINNET,
-      required_auths: [activeAccount.name!],
-      required_posting_auths: activeAccount.keys.active
-        ? []
-        : [activeAccount.name!],
-      json: JSON.stringify(json),
-    },
-    PrivateKey.fromString(activeAccount.keys.active as string),
+  return await sendOperationWithConfirmation(
+    getClient().broadcast.json(
+      {
+        id: Config.hiveEngine.MAINNET,
+        required_auths: [activeAccount.name!],
+        required_posting_auths: activeAccount.keys.active
+          ? []
+          : [activeAccount.name!],
+        json: JSON.stringify(json),
+      },
+      PrivateKey.fromString(activeAccount.keys.active as string),
+    ),
   );
 };
 
@@ -547,20 +569,52 @@ const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
-  return await getClient().broadcast.sendOperations(
-    [
+  return await sendOperationWithConfirmation(
+    getClient().broadcast.sendOperations(
       [
-        'update_proposal_votes',
-        {
-          voter: activeAccount.name!,
-          proposal_ids: [proposalId],
-          approve: true,
-          extensions: [],
-        },
-      ] as UpdateProposalVotesOperation,
-    ],
-    PrivateKey.fromString(store.getState().activeAccount.keys.active as string),
+        [
+          'update_proposal_votes',
+          {
+            voter: activeAccount.name!,
+            proposal_ids: [proposalId],
+            approve: true,
+            extensions: [],
+          },
+        ] as UpdateProposalVotesOperation,
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    ),
   );
+};
+
+const sendOperationWithConfirmation = async (
+  transactionConfirmationPromise: Promise<TransactionConfirmation>,
+) => {
+  const transactionConfirmation = await transactionConfirmationPromise;
+  let transaction = null;
+  do {
+    transaction = await getClient().transaction.findTransaction(
+      transactionConfirmation.id,
+    );
+    await sleep(500);
+  } while (transaction.status == 'within_mempool');
+  if (transaction.status == 'within_reversible_block') {
+    Logger.log('Transaction confirmed');
+    return true;
+  } else {
+    Logger.log(`Transaction failed with status: ${transaction.status}`);
+    return false;
+  }
+};
+
+const getDelayedTransactionInfo = (trxID: string) => {
+  return new Promise(function (fulfill, reject) {
+    setTimeout(async function () {
+      fulfill(await getClient().transaction.findTransaction(trxID));
+    }, 500);
+  });
 };
 
 const HiveUtils = {
@@ -584,6 +638,8 @@ const HiveUtils = {
   sendCustomJson,
   signMessage,
   voteForProposal,
+  getDelayedTransactionInfo,
+  sendOperationWithConfirmation,
 };
 
 export default HiveUtils;

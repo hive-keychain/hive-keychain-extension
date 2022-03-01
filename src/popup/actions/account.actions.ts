@@ -11,9 +11,7 @@ import { ActionPayload, AppThunk } from './interfaces';
 export const retrieveAccounts =
   (mk: string): AppThunk =>
   async (dispatch, getState) => {
-    console.log('getting accounts');
     let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
-    console.log(accounts);
     const action: ActionPayload<LocalAccount[]> = {
       type: ActionType.SET_ACCOUNTS,
       payload: accounts,
@@ -116,7 +114,6 @@ export const removeKey =
     };
     dispatch(action);
     if (finalAccounts) {
-      console.log(finalAccounts.map((account: LocalAccount) => account.name));
       if (
         finalAccounts
           .map((account: LocalAccount) => account.name)

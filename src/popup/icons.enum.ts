@@ -46,6 +46,7 @@ export enum Icons {
   SETTINGS = 'settings',
   SEND = 'send',
   SUBMIT = 'input',
+  SUPPORT = 'contact_support',
   TOKENS = 'generating_tokens',
   VISIBLE = 'visibility',
   WARNING = 'warning',

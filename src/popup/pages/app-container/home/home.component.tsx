@@ -27,7 +27,6 @@ const Home = ({
   loadBittrexPrices,
   loadGlobalProperties,
   refreshActiveAccount,
-  isAppReady,
   globalProperties,
   resetTitleContainerProperties,
 }: PropsFromRedux) => {
