@@ -111,10 +111,10 @@ const chromeMessageHandler = async (
 };
 
 export const performOperationFromIndex = async (
+  requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
 ) => {
-  const requestHandler = await RequestsHandler.getFromLocalStorage();
   performOperation(requestHandler, request, tab!, request.domain, false);
 };
 
