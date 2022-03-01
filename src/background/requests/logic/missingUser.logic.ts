@@ -9,13 +9,13 @@ export const missingUser = (
   request: KeychainRequest,
   username: string,
 ) => {
-  const callback = () => {
+  const callback = async () => {
     sendErrors(
       requestHandler,
       tab!,
       'user_cancel',
-      chrome.i18n.getMessage('bgd_auth_canceled'),
-      chrome.i18n.getMessage('bgd_auth_no_account', [username]),
+      await chrome.i18n.getMessage('bgd_auth_canceled'),
+      await chrome.i18n.getMessage('bgd_auth_no_account', [username]),
       request,
     );
   };

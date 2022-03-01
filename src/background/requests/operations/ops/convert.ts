@@ -43,12 +43,12 @@ export const convert = async (
     } catch (e) {
       err = e;
     } finally {
-      const err_message = beautifyErrorMessage(err);
+      const err_message = await beautifyErrorMessage(err);
       const message = createMessage(
         err,
         result,
         data,
-        chrome.i18n.getMessage('bgd_ops_convert_collaterized', [
+        await chrome.i18n.getMessage('bgd_ops_convert_collaterized', [
           amount,
           username,
         ]),
@@ -77,12 +77,12 @@ export const convert = async (
     } catch (e) {
       err = e;
     } finally {
-      const err_message = beautifyErrorMessage(err);
+      const err_message = await beautifyErrorMessage(err);
       const message = createMessage(
         err,
         result,
         data,
-        chrome.i18n.getMessage('bgd_ops_convert', [amount, username]),
+        await chrome.i18n.getMessage('bgd_ops_convert', [amount, username]),
         err_message,
       );
       return message;

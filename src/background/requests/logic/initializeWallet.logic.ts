@@ -8,13 +8,13 @@ export const initializeWallet = (
   tab: number,
   request: KeychainRequest,
 ) => {
-  createPopup(() => {
+  createPopup(async () => {
     sendErrors(
       requestHandler,
       tab,
       'no_wallet',
-      chrome.i18n.getMessage('bgd_init_no_wallet'),
-      chrome.i18n.getMessage('bgd_init_no_wallet_explained'),
+      await chrome.i18n.getMessage('bgd_init_no_wallet'),
+      await chrome.i18n.getMessage('bgd_init_no_wallet_explained'),
       request,
     );
   }, requestHandler);

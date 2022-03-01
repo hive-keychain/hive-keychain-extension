@@ -32,8 +32,8 @@ export const encodeMessage = async (
       error,
       encoded,
       data,
-      chrome.i18n.getMessage('bgd_ops_encode'),
-      chrome.i18n.getMessage('bgd_ops_encode_err'),
+      await chrome.i18n.getMessage('bgd_ops_encode'),
+      await chrome.i18n.getMessage('bgd_ops_encode_err'),
     );
   }
 };

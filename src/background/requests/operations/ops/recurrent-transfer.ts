@@ -67,14 +67,14 @@ export const recurrentTransfer = async (
     Logger.error(e);
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
       parseFloat(amount) === 0
-        ? chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer')
-        : chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
+        ? await chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer')
+        : await chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
       err_message,
     );
     return message;

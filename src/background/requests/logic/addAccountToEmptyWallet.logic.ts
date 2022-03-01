@@ -9,7 +9,7 @@ export const addAccountToEmptyWallet = (
   request: KeychainRequest,
   domain: string,
 ) => {
-  createPopup(() => {
+  createPopup(async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.REGISTER,
       msg: {
@@ -17,8 +17,8 @@ export const addAccountToEmptyWallet = (
         error: 'register',
         result: null,
         data: request,
-        message: chrome.i18n.getMessage('popup_html_register'),
-        display_msg: chrome.i18n.getMessage('popup_html_register'),
+        message: await chrome.i18n.getMessage('popup_html_register'),
+        display_msg: await chrome.i18n.getMessage('popup_html_register'),
       },
       tab,
       domain,

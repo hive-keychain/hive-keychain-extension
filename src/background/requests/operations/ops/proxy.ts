@@ -40,14 +40,14 @@ export const broadcastProxy = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
       data.proxy.length
-        ? chrome.i18n.getMessage('popup_success_proxy', [data.proxy])
-        : chrome.i18n.getMessage('bgd_ops_unproxy'),
+        ? await chrome.i18n.getMessage('popup_success_proxy', [data.proxy])
+        : await chrome.i18n.getMessage('bgd_ops_unproxy'),
       err_message,
     );
     return message;

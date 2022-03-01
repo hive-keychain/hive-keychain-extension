@@ -43,12 +43,14 @@ export const broadcastCreateClaimedAccount = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_create_account', [data.new_account]),
+      await chrome.i18n.getMessage('bgd_ops_create_account', [
+        data.new_account,
+      ]),
       err_message,
     );
     return message;

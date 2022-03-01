@@ -10,13 +10,13 @@ export const missingKey = (
   username: string,
   typeWif: string,
 ) => {
-  createPopup(() => {
+  createPopup(async () => {
     sendErrors(
       requestHandler,
       tab!,
       'user_cancel',
-      chrome.i18n.getMessage('bgd_auth_canceled'),
-      chrome.i18n.getMessage('bgd_auth_no_key', [username, typeWif]),
+      await chrome.i18n.getMessage('bgd_auth_canceled'),
+      await chrome.i18n.getMessage('bgd_auth_no_key', [username, typeWif]),
       request,
     );
   }, requestHandler);

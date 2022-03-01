@@ -138,8 +138,8 @@ export const performOperation = async (
       requestHandler,
       tab,
       e + '',
-      chrome.i18n.getMessage('unknown_error'),
-      chrome.i18n.getMessage('unknown_error'),
+      await chrome.i18n.getMessage('unknown_error'),
+      await chrome.i18n.getMessage('unknown_error'),
       data,
     );
   } finally {

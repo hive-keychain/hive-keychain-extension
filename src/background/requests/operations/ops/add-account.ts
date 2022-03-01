@@ -47,17 +47,19 @@ export const addAccount = async (
       );
     } else {
       // Error no corresponding keys
-      err = chrome.i18n.getMessage('bgd_ops_add_account_error');
+      err = await chrome.i18n.getMessage('bgd_ops_add_account_error');
     }
   } else {
     // Error no such account
-    err = chrome.i18n.getMessage('bgd_ops_add_account_error_invalid');
+    err = await chrome.i18n.getMessage('bgd_ops_add_account_error_invalid');
   }
   return createMessage(
     !!err,
     !err,
     data,
-    err ? null : chrome.i18n.getMessage('bgd_ops_add_account', [username]),
+    err
+      ? null
+      : await chrome.i18n.getMessage('bgd_ops_add_account', [username]),
     err,
   );
 };

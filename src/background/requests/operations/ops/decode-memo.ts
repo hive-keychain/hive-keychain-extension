@@ -18,8 +18,8 @@ export const decodeMessage = async (
       error,
       decoded,
       data,
-      chrome.i18n.getMessage('bgd_ops_decode'),
-      chrome.i18n.getMessage('bgd_ops_decode_err'),
+      await chrome.i18n.getMessage('bgd_ops_decode'),
+      await chrome.i18n.getMessage('bgd_ops_decode_err'),
     );
   }
 };

@@ -66,12 +66,12 @@ export const broadcastAddAccountAuthority = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_add_auth', [
+      await chrome.i18n.getMessage('bgd_ops_add_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
         data.username,
@@ -127,12 +127,12 @@ export const broadcastRemoveAccountAuthority = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_remove_auth', [
+      await chrome.i18n.getMessage('bgd_ops_remove_auth', [
         data.role.toLowerCase(),
         data.authorizedUsername,
         data.username,
@@ -193,14 +193,14 @@ export const broadcastAddKeyAuthority = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_add_key_auth', [
+      await chrome.i18n.getMessage('bgd_ops_add_key_auth', [
         data.authorizedKey,
-        chrome.i18n.getMessage(data.role.toLowerCase()),
+        await chrome.i18n.getMessage(data.role.toLowerCase()),
         data.username,
         data.weight + '',
       ]),
@@ -256,14 +256,14 @@ export const broadcastRemoveKeyAuthority = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_remove_key_auth', [
+      await chrome.i18n.getMessage('bgd_ops_remove_key_auth', [
         data.authorizedKey,
-        chrome.i18n.getMessage(data.role.toLowerCase()),
+        await chrome.i18n.getMessage(data.role.toLowerCase()),
         data.username,
       ]),
       err_message,

@@ -33,8 +33,8 @@ export const signBuffer = async (
       error,
       signed,
       data,
-      chrome.i18n.getMessage('bgd_ops_sign_success'),
-      chrome.i18n.getMessage('bgd_ops_sign_error'),
+      await chrome.i18n.getMessage('bgd_ops_sign_success'),
+      await chrome.i18n.getMessage('bgd_ops_sign_error'),
       publicKey,
     );
   }

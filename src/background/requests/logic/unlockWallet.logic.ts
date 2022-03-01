@@ -9,7 +9,7 @@ export const unlockWallet = (
   request: KeychainRequest,
   domain: string,
 ) => {
-  createPopup(() => {
+  createPopup(async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.UNLOCK,
       msg: {
@@ -17,8 +17,8 @@ export const unlockWallet = (
         error: 'locked',
         result: null,
         data: request,
-        message: chrome.i18n.getMessage('bgd_auth_locked'),
-        display_msg: chrome.i18n.getMessage('bgd_auth_locked_desc'),
+        message: await chrome.i18n.getMessage('bgd_auth_locked'),
+        display_msg: await chrome.i18n.getMessage('bgd_auth_locked_desc'),
       },
       tab,
       domain,

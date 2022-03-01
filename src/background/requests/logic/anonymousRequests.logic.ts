@@ -20,13 +20,13 @@ export const anonymousRequests = (
     .filter((e) => !!e.keys[filterKey])
     .map((e) => e.name);
   if (!account_candidates.length) {
-    createPopup(() => {
+    createPopup(async () => {
       sendErrors(
         requestHandler,
         tab!,
         'user_cancel',
-        chrome.i18n.getMessage('bgd_auth_canceled'),
-        chrome.i18n.getMessage('bgd_auth_no_active'),
+        await chrome.i18n.getMessage('bgd_auth_canceled'),
+        await chrome.i18n.getMessage('bgd_auth_no_active'),
         request,
       );
     }, requestHandler);

@@ -61,23 +61,27 @@ export const broadcastTransfer = async (
     } else {
       err = e;
       if (!(err as any)?.data?.stack[0]?.context?.method)
-        err_message = chrome.i18n.getMessage('bgd_ops_error_broadcasting');
+        err_message = await chrome.i18n.getMessage(
+          'bgd_ops_error_broadcasting',
+        );
       else {
         switch ((err as any).data.stack[0].context.method) {
           case 'adjust_balance':
-            err_message = chrome.i18n.getMessage(
+            err_message = await chrome.i18n.getMessage(
               'bgd_ops_transfer_adjust_balance',
               [data.currency, data.username!],
             );
             break;
           case 'get_account':
-            err_message = chrome.i18n.getMessage(
+            err_message = await chrome.i18n.getMessage(
               'bgd_ops_transfer_get_account',
               [data.to],
             );
             break;
           default:
-            err_message = chrome.i18n.getMessage('bgd_ops_error_broadcasting');
+            err_message = await chrome.i18n.getMessage(
+              'bgd_ops_error_broadcasting',
+            );
             break;
         }
       }
@@ -87,7 +91,7 @@ export const broadcastTransfer = async (
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_transfer_success', [
+      await chrome.i18n.getMessage('bgd_ops_transfer_success', [
         data.amount,
         data.currency,
         data.username!,

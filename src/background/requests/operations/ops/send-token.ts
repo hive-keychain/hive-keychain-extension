@@ -35,8 +35,8 @@ export const broadcastSendToken = async (
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_tokens'),
-      chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
+      await chrome.i18n.getMessage('bgd_ops_tokens'),
+      await chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
     );
     return message;
   }

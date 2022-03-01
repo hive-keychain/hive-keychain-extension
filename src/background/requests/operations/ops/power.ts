@@ -40,12 +40,12 @@ export const broadcastPowerUp = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
+      await chrome.i18n.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
       err_message,
     );
     return message;
@@ -85,14 +85,14 @@ export const broadcastPowerDown = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
       parseFloat(data.hive_power) == 0
-        ? chrome.i18n.getMessage('bgd_ops_pd_stop', [data.username])
-        : chrome.i18n.getMessage('bgd_ops_pd', [
+        ? await chrome.i18n.getMessage('bgd_ops_pd_stop', [data.username])
+        : await chrome.i18n.getMessage('bgd_ops_pd', [
             data.hive_power,
             data.username,
           ]),

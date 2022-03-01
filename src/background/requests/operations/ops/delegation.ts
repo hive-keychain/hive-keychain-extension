@@ -51,17 +51,17 @@ export const broadcastDelegation = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
       data,
       parseFloat(data.amount) === 0
-        ? chrome.i18n.getMessage('bgd_ops_undelegate', [
+        ? await chrome.i18n.getMessage('bgd_ops_undelegate', [
             data.delegatee,
             data.username!,
           ])
-        : chrome.i18n.getMessage('bgd_ops_delegate', [
+        : await chrome.i18n.getMessage('bgd_ops_delegate', [
             `${data.amount} ${data.unit}`,
             data.delegatee,
             data.username!,

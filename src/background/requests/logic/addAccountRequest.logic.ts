@@ -13,13 +13,13 @@ export const addAccountRequest = (
   account?: LocalAccount,
 ) => {
   if (account) {
-    createPopup(() => {
+    createPopup(async () => {
       sendErrors(
         requestHandler,
         tab!,
         'user_cancel',
-        chrome.i18n.getMessage('bgd_auth_canceled'),
-        chrome.i18n.getMessage('popup_accounts_already_registered', [
+        await chrome.i18n.getMessage('bgd_auth_canceled'),
+        await chrome.i18n.getMessage('popup_accounts_already_registered', [
           account.name,
         ]),
         request,

@@ -58,12 +58,12 @@ export const broadcastPost = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_post'),
+      await chrome.i18n.getMessage('bgd_ops_post'),
       err_message,
     );
     return message;

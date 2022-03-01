@@ -18,13 +18,13 @@ export const signTx = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
 
     const message = createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_sign_tx'),
+      await chrome.i18n.getMessage('bgd_ops_sign_tx'),
       err_message,
     );
     return message;
