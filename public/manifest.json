@@ -18,7 +18,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["/images/logo.png", "hive_keychain.js"],
+      "resources": ["/images/logo.png", "hive_keychain.js", "_locales/*"],
       "matches": ["https://*/*", "http://0.0.0.0:1337/*", "http://*/*"],
       "extension_ids": []
     }

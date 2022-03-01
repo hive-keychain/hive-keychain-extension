@@ -7,6 +7,7 @@ import init from '@background/requests/init';
 import { performOperation } from '@background/requests/operations';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
+import getMessage from '@background/utils/i18n.utils';
 import {
   KeychainRequest,
   KeychainRequestWrapper,
@@ -31,7 +32,9 @@ import MkModule from './mk.module';
   );
 })();
 
-chrome.i18n.getMessage = (a: any) => a;
+//@ts-ignore
+chrome.i18n.getMessage = getMessage;
+
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
