@@ -1,9 +1,12 @@
 import { Transaction } from '@interfaces/transaction.interface';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import FormatUtils from 'src/utils/format.utils';
 import './wallet-history-item.component.scss';
 
 interface WalletHistoryItemProps {
@@ -16,12 +19,33 @@ const WalletHistoryItem = ({
 }: PropsFromRedux) => {
   const [isMemoOpened, setIsMemoOpened] = useState(false);
 
+  const getIcon = () => {
+    switch (transaction.type) {
+      case 'transfer':
+        return Icons.SEND;
+      default:
+        return Icons.LINK;
+    }
+  };
+
+  const openTransactionOnHiveblocks = () => {
+    chrome.windows.create({
+      url: `https://hiveblocks.com/tx/${transaction.txId}`,
+    });
+  };
+
   return (
     <div
       id={`index-${transaction.index}`}
-      className={`wallet-history-item ${transaction.memo ? 'has-memo' : ''}`}
-      onClick={() => setIsMemoOpened(!isMemoOpened)}>
-      <div className="transaction" key={transaction.key}>
+      className={`wallet-history-item ${transaction.memo ? 'has-memo' : ''}`}>
+      <Icon
+        name={getIcon()}
+        type={IconType.OUTLINED}
+        onClick={openTransactionOnHiveblocks}></Icon>
+      <div
+        className="transaction"
+        key={transaction.key}
+        onClick={() => setIsMemoOpened(!isMemoOpened)}>
         <div className="information-panel">
           <div className="top-row">
             <div
@@ -35,7 +59,7 @@ const WalletHistoryItem = ({
             </div>
             <div className="amount">
               {activeAccountName === transaction.from ? '-' : '+'}{' '}
-              {transaction.amount.split(' ')[0]}
+              {FormatUtils.withCommas(transaction.amount.split(' ')[0])}
             </div>
           </div>
           <div className="bottom-row">

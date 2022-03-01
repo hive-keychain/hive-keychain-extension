@@ -9,15 +9,17 @@ export enum IconType {
 
 interface IconProps {
   onClick?: (params: any) => void;
-  name?: Icons | string;
-  type?: IconType;
+  name: Icons | string;
+  type: IconType;
   additionalClassName?: string;
 }
 
 const Icon = (props: IconProps) => {
   return (
     <span
-      className={`material-icons${props.type} ${props.additionalClassName}`}
+      className={`icon-component material-icons${props.type} ${
+        props.additionalClassName ?? ''
+      } ${props.onClick ? 'clickable' : ''}`}
       onClick={props.onClick}>
       {props.name}
     </span>

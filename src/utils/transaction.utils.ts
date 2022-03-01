@@ -37,10 +37,11 @@ const getAccountTransactions = async (
         const receivedTransaction = e[1].op[1] as Transfer;
         const tr: Transaction = {
           ...receivedTransaction,
-          type: 'transfer',
+          type: e[1].op[0],
           timestamp: e[1].timestamp,
           key: `${accountName}!${e[0]}`,
           index: e[0],
+          txId: e[1].trx_id,
         };
         return tr;
       })

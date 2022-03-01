@@ -1,3 +1,5 @@
+import { OperationName, VirtualOperationName } from '@hiveio/dhive';
+
 export interface Transfer {
   key: string;
   amount: string;
@@ -5,9 +7,10 @@ export interface Transfer {
   memo: string;
   timestamp: string;
   to: string;
-  type: string;
+  type: OperationName | VirtualOperationName;
   last?: boolean;
   index?: number;
+  txId?: string;
 }
 
 export interface Transactions {

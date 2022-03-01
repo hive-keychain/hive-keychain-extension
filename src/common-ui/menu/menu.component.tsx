@@ -44,7 +44,7 @@ const Menu = ({
             className="menu-item"
             onClick={() => handleMenuItemClick(menuItem)}>
             <Icon
-              name={menuItem.icon}
+              name={menuItem.icon!}
               type={IconType.OUTLINED}
               additionalClassName="icon"></Icon>
 
