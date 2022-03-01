@@ -1,10 +1,15 @@
 import { utils as dHiveUtils } from '@hiveio/dhive';
-import { Transaction, Transfer } from '@interfaces/transaction.interface';
+import {
+  ClaimReward,
+  Transaction,
+  Transfer,
+} from '@interfaces/transaction.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
 import { store } from '@popup/store';
+import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -15,28 +20,61 @@ const getAccountTransactions = async (
 ): Promise<Transaction[]> => {
   try {
     const op = dHiveUtils.operationOrders;
-    const operationsBitmask = dHiveUtils.makeBitMaskFilter([op.transfer]) as [
-      number,
-      number,
-    ];
+    const operationsBitmask = dHiveUtils.makeBitMaskFilter([
+      op.transfer,
+      op.claim_reward_balance,
+    ]) as [number, number];
     store.dispatch(addToLoadingList('html_popup_downloading_transactions'));
     store.dispatch(addToLoadingList('html_popup_processing_transactions'));
-    const transactions = await HiveUtils.getClient().database.getAccountHistory(
-      accountName,
-      start || -1,
-      start ? Math.min(10, start) : 1000,
-      operationsBitmask,
-    );
+
+    const transactionsFromBlockchain =
+      await HiveUtils.getClient().database.getAccountHistory(
+        accountName,
+        start || -1,
+        start ? Math.min(10, start) : 1000,
+        operationsBitmask,
+      );
+
+    console.log(transactionsFromBlockchain);
 
     store.dispatch(
       removeFromLoadingList('html_popup_downloading_transactions'),
     );
-    const transfers = transactions
-      .filter((e) => e[1].op[0] === 'transfer')
+    const transactions = transactionsFromBlockchain
+      // .filter((e) => e[1].op[0] === 'transfer')
       .map((e) => {
-        const receivedTransaction = e[1].op[1] as Transfer;
+        let specificTransaction = null;
+        switch (e[1].op[0]) {
+          case 'transfer': {
+            specificTransaction = e[1].op[1] as Transfer;
+            const { memo } = specificTransaction;
+            if (memo[0] === '#') {
+              if (memoKey) {
+                try {
+                  const decodedMemo = HiveUtils.decodeMemo(memo, memoKey);
+                  specificTransaction.memo = decodedMemo.substring(1);
+                } catch (e) {
+                  Logger.error('Error while decoding', '');
+                }
+              } else {
+                specificTransaction.memo = chrome.i18n.getMessage(
+                  'popup_accounts_add_memo',
+                );
+              }
+            }
+          }
+          case 'claim_reward_balance': {
+            specificTransaction = e[1].op[1] as ClaimReward;
+            specificTransaction.hbd = e[1].op[1].reward_hbd;
+            specificTransaction.hive = e[1].op[1].reward_hive;
+            specificTransaction.hp = `${FormatUtils.toHP(
+              e[1].op[1].reward_vests,
+              store.getState().globalProperties.globals,
+            ).toFixed(3)} HP`;
+          }
+        }
         const tr: Transaction = {
-          ...receivedTransaction,
+          ...specificTransaction,
           type: e[1].op[0],
           timestamp: e[1].timestamp,
           key: `${accountName}!${e[0]}`,
@@ -50,30 +88,11 @@ const getAccountTransactions = async (
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
 
-    if (start && Math.min(1000, start) !== 1000 && transfers.length) {
-      transfers[transfers.length - 1].last = true;
-    }
-    const trs = [];
-    for (const transfer of transfers) {
-      const { memo } = transfer;
-      if (memo[0] === '#') {
-        if (memoKey) {
-          try {
-            const decodedMemo = HiveUtils.decodeMemo(memo, memoKey);
-            transfer.memo = decodedMemo.substring(1);
-          } catch (e) {
-            Logger.error('Error while decoding', '');
-          }
-        } else {
-          transfer.memo = chrome.i18n.getMessage('popup_accounts_add_memo');
-        }
-        trs.push(transfer);
-      } else {
-        trs.push(transfer);
-      }
+    if (start && Math.min(1000, start) !== 1000 && transactions.length) {
+      transactions[transactions.length - 1].last = true;
     }
     store.dispatch(removeFromLoadingList('html_popup_processing_transactions'));
-    return trs;
+    return transactions;
   } catch (e) {
     return getAccountTransactions(
       accountName,

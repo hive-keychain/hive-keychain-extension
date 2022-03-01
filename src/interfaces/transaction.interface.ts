@@ -1,21 +1,26 @@
 import { OperationName, VirtualOperationName } from '@hiveio/dhive';
 
-export interface Transfer {
-  key: string;
-  amount: string;
-  from: string;
-  memo: string;
-  timestamp: string;
-  to: string;
-  type: OperationName | VirtualOperationName;
-  last?: boolean;
-  index?: number;
-  txId?: string;
-}
-
 export interface Transactions {
   loading: boolean;
   list: Transaction[];
 }
+export interface Transaction {
+  txId: string;
+  index: number;
+  key: string;
+  type: OperationName | VirtualOperationName;
+  timestamp: string;
+  last?: boolean;
+}
+export interface Transfer extends Transaction {
+  amount: string;
+  from: string;
+  memo: string;
+  to: string;
+}
 
-export type Transaction = Transfer;
+export interface ClaimReward extends Transaction {
+  hp: string;
+  hbd: string;
+  hive: string;
+}

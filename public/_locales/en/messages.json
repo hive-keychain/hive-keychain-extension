@@ -2111,5 +2111,17 @@
   "popup_html_contact_support": {
     "message": "Contact support",
     "description": "Contact support"
+  },
+  "popup_html_wallet_info_transfer_in": {
+    "message": "Received $1 from @$2",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_transfer_out": {
+    "message": "Sent $1 to @$2",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_claim_rewards": {
+    "message": "$1 claimed",
+    "description": "Wallet information claim rewards"
   }
 }

@@ -8,7 +8,6 @@ import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wall
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import FlatList from 'flatlist-react';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -113,40 +112,42 @@ const WalletHistory = ({
     ).filter((transactionName) => selectedTransactionType[transactionName]);
     let filteredTransactions = transactions.list.filter(
       (transaction: Transaction) => {
-        const isInOrOutSelected = inSelected || outSelected;
-        if (
-          selectedTransactionsTypes.includes(transaction.type) ||
-          selectedTransactionsTypes.length === 0
-        ) {
-          if (
-            HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
-            isInOrOutSelected
-          ) {
-            return (
-              (inSelected && transaction.to === activeAccountName) ||
-              (outSelected && transaction.from === activeAccountName)
-            );
-          } else {
-            return true;
-          }
-        }
+        return true;
+        // const isInOrOutSelected = inSelected || outSelected;
+        // if (
+        //   selectedTransactionsTypes.includes(transaction.type) ||
+        //   selectedTransactionsTypes.length === 0
+        // ) {
+        //   if (
+        //     HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
+        //     isInOrOutSelected
+        //   ) {
+        //     return (
+        //       (inSelected && transaction.to === activeAccountName) ||
+        //       (outSelected && transaction.from === activeAccountName)
+        //     );
+        //   } else {
+        //     return true;
+        //   }
+        // }
       },
     );
     filteredTransactions = filteredTransactions.filter((transaction) => {
-      return (
-        transaction.memo?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        transaction.amount?.toLowerCase().includes(filterValue.toLowerCase()) ||
-        (transaction.to !== activeAccountName &&
-          transaction.to?.toLowerCase().includes(filterValue.toLowerCase())) ||
-        (transaction.from !== activeAccountName &&
-          transaction.from
-            ?.toLowerCase()
-            .includes(filterValue.toLowerCase())) ||
-        (transaction.timestamp &&
-          moment(transaction.timestamp)
-            .format('L')
-            .includes(filterValue.toLowerCase()))
-      );
+      return true;
+      // return (
+      //   transaction.memo?.toLowerCase().includes(filterValue.toLowerCase()) ||
+      //   transaction.amount?.toLowerCase().includes(filterValue.toLowerCase()) ||
+      //   (transaction.to !== activeAccountName &&
+      //     transaction.to?.toLowerCase().includes(filterValue.toLowerCase())) ||
+      //   (transaction.from !== activeAccountName &&
+      //     transaction.from
+      //       ?.toLowerCase()
+      //       .includes(filterValue.toLowerCase())) ||
+      //   (transaction.timestamp &&
+      //     moment(transaction.timestamp)
+      //       .format('L')
+      //       .includes(filterValue.toLowerCase()))
+      // );
     });
     setDisplayedTransactions(filteredTransactions);
   };
