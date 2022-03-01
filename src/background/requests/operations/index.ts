@@ -1,6 +1,7 @@
 import { RequestsHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
+import { addAccount } from '@background/requests/operations/ops/add-account';
 import {
   broadcastAddAccountAuthority,
   broadcastAddKeyAuthority,
@@ -51,9 +52,9 @@ export const performOperation = async (
     Logger.info('-- PERFORMING TRANSACTION --');
     Logger.log(data);
     switch (data.type) {
-      // case KeychainRequestTypes.addAccount:
-      //   message = await addAccount(requestHandler, data);
-      //   break;
+      case KeychainRequestTypes.addAccount:
+        message = await addAccount(requestHandler, data);
+        break;
       case KeychainRequestTypes.custom:
         message = await broadcastCustomJson(requestHandler, data);
         break;
