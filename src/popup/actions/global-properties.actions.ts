@@ -2,9 +2,9 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const loadGlobalProperties = (): AppThunk => async (dispatch) => {
-  console.log('loadglobalproperties');
   try {
     const [globals, price, rewardFund] = await Promise.all([
       HiveUtils.getClient().database.getDynamicGlobalProperties(),
@@ -18,6 +18,6 @@ export const loadGlobalProperties = (): AppThunk => async (dispatch) => {
     };
     dispatch(action);
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
   }
 };

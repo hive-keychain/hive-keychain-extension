@@ -3,6 +3,7 @@ import { Rpc } from 'src/interfaces/rpc.interface';
 import { DefaultRpcs } from 'src/reference-data/default-rpc.list';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const getFullList = (): Rpc[] => {
   return DefaultRpcs;
@@ -72,13 +73,10 @@ const checkRpcStatus = async (uri: string) => {
     },
   );
   try {
-    const result = await axios.get(
-      `${uri === 'DEFAULT' ? 'api.hive.blog' : uri}/health`,
-    );
-    console.log(result);
+    await axios.get(`${uri === 'DEFAULT' ? 'api.hive.blog' : uri}/health`);
     return true;
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     return false;
   }
 };
