@@ -12,6 +12,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
 import {
   anonymous_requests,
@@ -45,6 +46,7 @@ export default async (
   }
   const { username, type } = request;
   const mk = await MkModule.getMk();
+  Logger.log('Initializing request logic');
   if (!items.accounts && type !== KeychainRequestTypes.addAccount) {
     // Wallet not initialized
     Logic.initializeWallet(requestHandler, tab!, request);

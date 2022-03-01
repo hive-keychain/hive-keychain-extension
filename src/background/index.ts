@@ -7,7 +7,10 @@ import init from '@background/requests/init';
 import { performOperation } from '@background/requests/operations';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
-import { KeychainRequestWrapper } from '@interfaces/keychain.interface';
+import {
+  KeychainRequest,
+  KeychainRequestWrapper,
+} from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -27,12 +30,14 @@ import MkModule from './mk.module';
     ),
   );
 })();
+
 chrome.i18n.getMessage = (a: any) => a;
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
+  Logger.log('Background message', backgroundMessage);
   switch (backgroundMessage.command) {
     case BackgroundCommand.GET_MK:
       MkModule.sendBackMk();
@@ -100,6 +105,14 @@ const chromeMessageHandler = async (
       );
       break;
   }
+};
+
+export const performOperationFromIndex = async (
+  tab: number,
+  request: KeychainRequest,
+) => {
+  const requestHandler = await RequestsHandler.getFromLocalStorage();
+  performOperation(requestHandler, request, tab!, request.domain, false);
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
