@@ -3,6 +3,7 @@ import { RootState } from '@popup/store';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import ReactTooltip from 'react-tooltip';
 import './wallet-history-item.component.scss';
 
 interface WalletHistoryItemProps {
@@ -23,7 +24,13 @@ const WalletHistoryItem = ({
       <div className="transaction" key={transaction.key}>
         <div className="information-panel">
           <div className="top-row">
-            <div className="date">
+            <div
+              className="date"
+              data-for={`datetime-tooltip`}
+              data-tip={moment(transaction.timestamp).format(
+                'YYYY/MM/DD , hh:mm:ss a',
+              )}
+              data-iscapture="true">
               {moment(transaction.timestamp).format('L')}
             </div>
             <div className="amount">
@@ -51,6 +58,13 @@ const WalletHistoryItem = ({
           {transaction.memo}
         </div>
       </div>
+      <ReactTooltip
+        id="datetime-tooltip"
+        place="top"
+        type="light"
+        effect="solid"
+        multiline={true}
+      />
     </div>
   );
 };
