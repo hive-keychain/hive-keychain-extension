@@ -2,4 +2,9 @@
 
 .settings-manage-account {
   @include pageLayout;
+  justify-content: flex-start;
+
+  .select-account-select {
+    padding: 2px 12px 2px 0px !important;
+  }
 }

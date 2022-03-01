@@ -1,3 +1,4 @@
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
@@ -11,7 +12,7 @@ import {
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ButtonComponent from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './witness-voting-section.component.scss';
@@ -55,9 +56,10 @@ const WitnessVotingSection = ({
         {chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev')}
       </div>
       {shouldDisplayWitnessVoting && (
-        <ButtonComponent
+        <OperationButtonComponent
           onClick={handleVoteForWitnessClicked}
           label={'html_popup_vote_for_witness'}
+          requiredKey={KeychainKeyTypesLC.active}
         />
       )}
     </div>

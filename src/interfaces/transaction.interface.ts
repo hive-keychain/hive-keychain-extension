@@ -7,6 +7,7 @@ export interface Transfer {
   to: string;
   type: string;
   last?: boolean;
+  index?: number;
 }
 
 export interface Transactions {

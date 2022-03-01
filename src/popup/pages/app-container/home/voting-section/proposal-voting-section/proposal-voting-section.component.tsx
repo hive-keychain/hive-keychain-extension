@@ -8,7 +8,7 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import OperationButton from 'src/common-ui/button/operation-button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import Config from 'src/config';
 import Logger from 'src/utils/logger.utils';
@@ -77,7 +77,7 @@ const ProposalVotingSection = ({
             onClick={handleReadClicked}
             label={'html_popup_read'}
           />
-          <OperationButton
+          <OperationButtonComponent
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleVoteForProposalClicked}
             label={'html_popup_vote'}

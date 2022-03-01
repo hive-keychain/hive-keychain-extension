@@ -13,8 +13,30 @@ const mergeWithoutDuplicate = (a: any[], b: any[], key?: string) => {
   return list;
 };
 
+const getMaxValue = (list: any[], property?: string) => {
+  let max = 0;
+  for (const elem of list) {
+    if ((property && elem[property] > max) || elem > max) {
+      max = property ? elem[property] : elem;
+    }
+  }
+  return max;
+};
+
+const getMinValue = (list: any[], property?: string) => {
+  let min = Number.MAX_SAFE_INTEGER;
+  for (const elem of list) {
+    if ((property && elem[property] < min) || elem < min) {
+      min = property ? elem[property] : elem;
+    }
+  }
+  return min;
+};
+
 const ArrayUtils = {
   mergeWithoutDuplicate,
+  getMaxValue,
+  getMinValue,
 };
 
 export default ArrayUtils;

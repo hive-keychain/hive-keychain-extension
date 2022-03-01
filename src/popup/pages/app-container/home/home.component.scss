@@ -2,10 +2,13 @@
   height: 100%;
 
   .select-account-select {
-    padding: 2px 16px !important;
+    padding: 2px 10px 2px 16px !important;
     .selected-account-panel {
       padding: 12px 10px !important;
     }
+  }
+  .react-dropdown-select-dropdown-handle {
+    margin-left: -10px !important;
   }
 }
 

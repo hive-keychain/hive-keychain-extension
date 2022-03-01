@@ -16,18 +16,15 @@ const OperationButton = ({
   setErrorMessage,
   ...buttonProps
 }: Props) => {
-  return (
-    <ButtonComponent
-      {...buttonProps}
-      onClick={() => {
-        if (requiredKey && !activeAccount.keys[requiredKey]) {
-          setErrorMessage('popup_missing_key', [requiredKey]);
-        } else {
-          onClick();
-        }
-      }}
-    />
-  );
+  const handleClick = () => {
+    if (requiredKey && !activeAccount.keys[requiredKey]) {
+      setErrorMessage('popup_missing_key', [requiredKey]);
+    } else {
+      onClick();
+    }
+  };
+
+  return <ButtonComponent {...buttonProps} onClick={handleClick} />;
 };
 
 const mapStateToProps = (state: RootState) => {
@@ -37,4 +34,4 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, { setErrorMessage });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export default connector(OperationButton);
+export const OperationButtonComponent = connector(OperationButton);

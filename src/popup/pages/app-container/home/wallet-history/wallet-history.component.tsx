@@ -1,14 +1,19 @@
 import { Transaction, Transactions } from '@interfaces/transaction.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { initAccountTransactions } from '@popup/actions/transaction.actions';
+import {
+  fetchAccountTransactions,
+  initAccountTransactions,
+} from '@popup/actions/transaction.actions';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import FlatList from 'flatlist-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wallet-history.component.scss';
 
@@ -26,6 +31,7 @@ const WalletHistory = ({
   transactions,
   activeAccountName,
   initAccountTransactions,
+  fetchAccountTransactions,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
@@ -39,6 +45,10 @@ const WalletHistory = ({
   const [displayedTransactions, setDisplayedTransactions] = useState<
     Transaction[]
   >(transactions.list);
+
+  const [lastTransactionIndex, setLastTransactionIndex] = useState<number>(-1);
+
+  const [idToScrollTo, setIdToScrollTo] = useState<string>();
 
   const toggleFilter = () => {
     setIsFilterPanelOpened(!isFilterOpened);
@@ -63,6 +73,13 @@ const WalletHistory = ({
 
   useEffect(() => {
     setDisplayedTransactions(transactions.list);
+    setLastTransactionIndex(ArrayUtils.getMinValue(transactions.list, 'index'));
+    setTimeout(() => {
+      if (idToScrollTo) {
+        console.log(document.getElementById(idToScrollTo));
+        document.getElementById(idToScrollTo)?.scrollIntoView();
+      }
+    }, 1000);
   }, [transactions]);
 
   useEffect(() => {
@@ -142,6 +159,28 @@ const WalletHistory = ({
     setSelectedTransactionType(FILTER_TRANSACTION_TYPES);
   };
 
+  const renderListItem = (transaction: Transaction) => {
+    return (
+      <WalletHistoryItemComponent
+        key={transaction.key}
+        transaction={transaction}></WalletHistoryItemComponent>
+    );
+  };
+
+  const tryToLoadMore = () => {
+    setIdToScrollTo(`index-${lastTransactionIndex}`);
+    fetchAccountTransactions(activeAccountName!, lastTransactionIndex);
+  };
+
+  const handleScroll = (event: any) => {
+    if (
+      event.target.scrollHeight - event.target.scrollTop ===
+      event.target.clientHeight
+    ) {
+      tryToLoadMore();
+    }
+  };
+
   return (
     <div className="wallet-history-page">
       <div
@@ -206,12 +245,12 @@ const WalletHistory = ({
         </div>
       </div>
 
-      <div className="wallet-item-list">
-        {displayedTransactions.map((transaction: Transaction) => (
-          <WalletHistoryItemComponent
-            key={transaction.key}
-            transaction={transaction}></WalletHistoryItemComponent>
-        ))}
+      <div className="wallet-item-list" onScroll={handleScroll}>
+        <FlatList
+          list={displayedTransactions}
+          renderItem={renderListItem}
+          renderOnScroll
+        />
       </div>
     </div>
   );
@@ -226,6 +265,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   initAccountTransactions,
+  fetchAccountTransactions,
   setTitleContainerProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;

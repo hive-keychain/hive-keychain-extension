@@ -9,7 +9,7 @@ export const initAccountTransactions =
     const memoKey = getState().accounts.find(
       (a: LocalAccount) => a.name === accountName,
     )!.keys.memo;
-    const transfers = await TransactionUtils.getAccountTransactions(
+    const transactions = await TransactionUtils.getAccountTransactions(
       accountName,
       null,
       memoKey,
@@ -17,7 +17,7 @@ export const initAccountTransactions =
 
     dispatch({
       type: ActionType.INIT_TRANSACTIONS,
-      payload: transfers,
+      payload: transactions,
     });
   };
 
@@ -27,13 +27,13 @@ export const fetchAccountTransactions =
     const memoKey = getState().accounts.find(
       (a: LocalAccount) => a.name === accountName,
     )!.keys.memo;
-    const transfers = await TransactionUtils.getAccountTransactions(
+    const transactions = await TransactionUtils.getAccountTransactions(
       accountName,
       start,
       memoKey,
     );
     dispatch({
       type: ActionType.ADD_TRANSACTIONS,
-      payload: transfers,
+      payload: transactions,
     });
   };
