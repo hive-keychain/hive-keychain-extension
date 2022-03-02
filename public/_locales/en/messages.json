@@ -2111,5 +2111,9 @@
   "popup_html_contact_support": {
     "message": "Contact support",
     "description": "Contact support"
+  },
+  "popup_html_witness_rank_hivesql_not_responding": {
+    "message": "Sorry, there was an error while retrieving witness ranking (HiveSQL not responding). Please try again later",
+    "description": "Error while retrieving witness ranking, hivesql not down"
   }
 }
