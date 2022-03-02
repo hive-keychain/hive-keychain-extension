@@ -1752,30 +1752,6 @@
     "message": "Please add your memo key to decrypt this message.",
     "description": "Wallet error message"
   },
-  "popup_html_filter_in": {
-    "message": "In",
-    "description": "Wallet filters"
-  },
-  "popup_html_filter_out": {
-    "message": "Out",
-    "description": "Wallet filters"
-  },
-  "popup_html_search": {
-    "message": "Search",
-    "description": "Wallet filters"
-  },
-  "popup_html_filter_type_transfer": {
-    "message": "Transfer",
-    "description": "Wallet filters"
-  },
-  "popup_html_filter_type_vote": {
-    "message": "Vote",
-    "description": "Wallet filters"
-  },
-  "popup_html_clear_filters": {
-    "message": "Clear",
-    "description": "Wallet filters"
-  },
   "popup_html_receiver": {
     "message": "Receiver",
     "description": "General word"
@@ -2123,5 +2099,53 @@
   "popup_html_wallet_info_claim_rewards": {
     "message": "$1 claimed",
     "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_delegation_out": {
+    "message": "Delegated $1 to @$2",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_delegation_in": {
+    "message": "@$1 delegated $2",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_cancel_delegation_out": {
+    "message": "Canceled delegation to @$1",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_cancel_delegation_in": {
+    "message": "@$1 canceled delegation",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_filter_in": {
+    "message": "In",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_out": {
+    "message": "Out",
+    "description": "Wallet filters"
+  },
+  "popup_html_search": {
+    "message": "Search",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer": {
+    "message": "Transfer",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_claim_reward_balance": {
+    "message": "Claim rewards",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_delegate_vesting_shares": {
+    "message": "Delegations",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_vote": {
+    "message": "Vote",
+    "description": "Wallet filters"
+  },
+  "popup_html_clear_filters": {
+    "message": "Clear",
+    "description": "Wallet filters"
   }
 }

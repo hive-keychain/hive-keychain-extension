@@ -18,6 +18,11 @@ export interface Transfer extends Transaction {
   memo: string;
   to: string;
 }
+export interface Delegation extends Transaction {
+  amount: string;
+  delegator: string;
+  delegatee: string;
+}
 
 export interface ClaimReward extends Transaction {
   hp: string;

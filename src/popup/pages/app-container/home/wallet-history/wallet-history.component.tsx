@@ -1,4 +1,10 @@
-import { Transaction, Transactions } from '@interfaces/transaction.interface';
+import {
+  ClaimReward,
+  Delegation,
+  Transaction,
+  Transactions,
+  Transfer,
+} from '@interfaces/transaction.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import {
   fetchAccountTransactions,
@@ -8,22 +14,25 @@ import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wall
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import FlatList from 'flatlist-react';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { WalletHistoryUtils } from 'src/utils/wallet-history.utils';
 import './wallet-history.component.scss';
 
-interface FilterTransactionTypes {
+type FilterTransactionTypes = {
   [key: string]: boolean;
-}
+};
 
 const FILTER_TRANSACTION_TYPES: FilterTransactionTypes = {
   transfer: false,
+  claim_reward_balance: false,
+  delegate_vesting_shares: false,
 };
-
 const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 
 const WalletHistory = ({
@@ -71,7 +80,11 @@ const WalletHistory = ({
   }, []);
 
   useEffect(() => {
+    console.log(transactions);
     setDisplayedTransactions(transactions.list);
+    setTimeout(() => {
+      filterTransactions();
+    }, 0);
     setLastTransactionIndex(ArrayUtils.getMinValue(transactions.list, 'index'));
     setTimeout(() => {
       if (idToScrollTo) {
@@ -112,42 +125,53 @@ const WalletHistory = ({
     ).filter((transactionName) => selectedTransactionType[transactionName]);
     let filteredTransactions = transactions.list.filter(
       (transaction: Transaction) => {
-        return true;
-        // const isInOrOutSelected = inSelected || outSelected;
-        // if (
-        //   selectedTransactionsTypes.includes(transaction.type) ||
-        //   selectedTransactionsTypes.length === 0
-        // ) {
-        //   if (
-        //     HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
-        //     isInOrOutSelected
-        //   ) {
-        //     return (
-        //       (inSelected && transaction.to === activeAccountName) ||
-        //       (outSelected && transaction.from === activeAccountName)
-        //     );
-        //   } else {
-        //     return true;
-        //   }
-        // }
+        const isInOrOutSelected = inSelected || outSelected;
+        if (
+          selectedTransactionsTypes.includes(transaction.type) ||
+          selectedTransactionsTypes.length === 0
+        ) {
+          if (
+            HAS_IN_OUT_TRANSACTIONS.includes(transaction.type) &&
+            isInOrOutSelected
+          ) {
+            return (
+              (inSelected &&
+                ((transaction.type === 'transfer' &&
+                  (transaction as Transfer).to === activeAccountName) ||
+                  (transaction.type === 'delegate_vesting_shares' &&
+                    (transaction as Delegation).delegatee ===
+                      activeAccountName))) ||
+              (outSelected &&
+                ((transaction.type === 'transfer' &&
+                  (transaction as Transfer).from === activeAccountName) ||
+                  (transaction.type === 'delegate_vesting_shares' &&
+                    (transaction as Delegation).delegator ===
+                      activeAccountName)))
+            );
+          } else {
+            return true;
+          }
+        }
       },
     );
     filteredTransactions = filteredTransactions.filter((transaction) => {
-      return true;
-      // return (
-      //   transaction.memo?.toLowerCase().includes(filterValue.toLowerCase()) ||
-      //   transaction.amount?.toLowerCase().includes(filterValue.toLowerCase()) ||
-      //   (transaction.to !== activeAccountName &&
-      //     transaction.to?.toLowerCase().includes(filterValue.toLowerCase())) ||
-      //   (transaction.from !== activeAccountName &&
-      //     transaction.from
-      //       ?.toLowerCase()
-      //       .includes(filterValue.toLowerCase())) ||
-      //   (transaction.timestamp &&
-      //     moment(transaction.timestamp)
-      //       .format('L')
-      //       .includes(filterValue.toLowerCase()))
-      // );
+      return (
+        (transaction.type === 'transfer' &&
+          WalletHistoryUtils.filterTransfer(
+            transaction as Transfer,
+            filterValue,
+            activeAccountName!,
+          )) ||
+        (transaction.type === 'claim_reward_balance' &&
+          WalletHistoryUtils.filterClaimReward(
+            transaction as ClaimReward,
+            filterValue,
+          )) ||
+        (transaction.timestamp &&
+          moment(transaction.timestamp)
+            .format('L')
+            .includes(filterValue.toLowerCase()))
+      );
     });
     setDisplayedTransactions(filteredTransactions);
   };

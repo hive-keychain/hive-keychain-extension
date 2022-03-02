@@ -1,9 +1,11 @@
 import {
   ClaimReward,
+  Delegation,
   Transaction,
   Transfer,
 } from '@interfaces/transaction.interface';
 import { ClaimRewardsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/claim-rewards-transaction/claim-rewards-transaction.component';
+import { DelegationTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/delegation-transaction/delegation-transaction.component';
 import { TransferTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/transfer-transaction/transfer-transaction.component';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -28,6 +30,12 @@ const WalletTransactionInfo = ({
         return (
           <ClaimRewardsTransactionComponent
             transaction={transaction as ClaimReward}
+          />
+        );
+      case 'delegate_vesting_shares':
+        return (
+          <DelegationTransactionComponent
+            transaction={transaction as Delegation}
           />
         );
     }

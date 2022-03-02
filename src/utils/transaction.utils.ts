@@ -1,6 +1,7 @@
 import { utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimReward,
+  Delegation,
   Transaction,
   Transfer,
 } from '@interfaces/transaction.interface';
@@ -22,7 +23,9 @@ const getAccountTransactions = async (
     const op = dHiveUtils.operationOrders;
     const operationsBitmask = dHiveUtils.makeBitMaskFilter([
       op.transfer,
+      op.recurrent_transfer,
       op.claim_reward_balance,
+      op.delegate_vesting_shares,
     ]) as [number, number];
     store.dispatch(addToLoadingList('html_popup_downloading_transactions'));
     store.dispatch(addToLoadingList('html_popup_processing_transactions'));
@@ -41,7 +44,6 @@ const getAccountTransactions = async (
       removeFromLoadingList('html_popup_downloading_transactions'),
     );
     const transactions = transactionsFromBlockchain
-      // .filter((e) => e[1].op[0] === 'transfer')
       .map((e) => {
         let specificTransaction = null;
         switch (e[1].op[0]) {
@@ -62,6 +64,7 @@ const getAccountTransactions = async (
                 );
               }
             }
+            break;
           }
           case 'claim_reward_balance': {
             specificTransaction = e[1].op[1] as ClaimReward;
@@ -71,7 +74,17 @@ const getAccountTransactions = async (
               e[1].op[1].reward_vests,
               store.getState().globalProperties.globals,
             ).toFixed(3)} HP`;
+            break;
           }
+          case 'delegate_vesting_shares':
+            {
+              specificTransaction = e[1].op[1] as Delegation;
+              specificTransaction.amount = `${FormatUtils.toHP(
+                e[1].op[1].vesting_shares,
+                store.getState().globalProperties.globals,
+              ).toFixed(3)} HP`;
+            }
+            break;
         }
         const tr: Transaction = {
           ...specificTransaction,

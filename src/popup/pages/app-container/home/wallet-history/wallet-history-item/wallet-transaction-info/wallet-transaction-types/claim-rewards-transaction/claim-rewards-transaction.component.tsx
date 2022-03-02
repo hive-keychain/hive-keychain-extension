@@ -15,7 +15,6 @@ const ClaimRewardsTransaction = ({
 }: PropsFromRedux & ClaimRewardsTransactionProps) => {
   const getDetail = () => {
     const rewards = [transaction.hbd, transaction.hive, transaction.hp];
-    console.log(rewards);
     return chrome.i18n.getMessage('popup_html_wallet_info_claim_rewards', [
       rewards
         .filter(
