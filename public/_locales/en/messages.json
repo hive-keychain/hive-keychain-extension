@@ -2112,8 +2112,12 @@
     "message": "Contact support",
     "description": "Contact support"
   },
-  "popup_html_witness_rank_hivesql_not_responding": {
-    "message": "Sorry, there was an error while retrieving witness ranking (HiveSQL not responding). Please try again later",
+  "popup_html_error_retrieving_witness_ranking": {
+    "message": "An error occured while retrieving the witness ranking. Please try again later.",
+    "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_error_retrieving_incoming_delegations": {
+    "message": "An error occured while retrieving the incoming delegations. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
   }
 }

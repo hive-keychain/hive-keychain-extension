@@ -100,7 +100,7 @@ const WitnessTab = ({
       setRanking(ranking);
       setFilteredRanking(ranking);
     } else {
-      setErrorMessage('popup_html_witness_rank_hivesql_not_responding');
+      setErrorMessage('popup_html_error_retrieving_witness_ranking');
       setHasError(true);
     }
     removeFromLoadingList('html_popup_load_witness_ranking_operation');
@@ -282,7 +282,7 @@ const WitnessTab = ({
                     <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
                     <span>
                       {chrome.i18n.getMessage(
-                        'popup_html_witness_rank_hivesql_not_responding',
+                        'popup_html_error_retrieving_witness_ranking',
                       )}
                     </span>
                   </div>

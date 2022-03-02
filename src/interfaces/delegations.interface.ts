@@ -12,7 +12,7 @@ export interface IncomingDelegation {
 }
 
 export interface DelegationsPayload {
-  incoming?: IncomingDelegation[];
+  incoming?: IncomingDelegation[] | null;
   outgoing?: VestingDelegation[];
 }
 

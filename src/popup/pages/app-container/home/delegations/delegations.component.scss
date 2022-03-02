@@ -1,6 +1,7 @@
 @import '/src/popup/variable.scss';
 .delegations-page {
-  @include pageLayout;
+  @include pageLayoutRowGap;
+  row-gap: 32px;
   padding: 0px 24px;
   .max {
     align-self: flex-end;
@@ -69,6 +70,16 @@
     .divider {
       height: 1px;
       background: white;
+    }
+
+    .total-incoming {
+      .value {
+        display: flex;
+        align-items: center;
+      }
+      .icon-component {
+        margin-right: 8px;
+      }
     }
   }
 
