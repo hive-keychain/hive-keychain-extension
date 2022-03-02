@@ -1,22 +1,23 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
 import { Operation, PrivateKey } from '@hiveio/dhive';
+import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestBroadcast,
   RequestId,
 } from '@interfaces/keychain.interface';
-import HiveUtils from 'src/utils/hive.utils';
 
 export const broadcastOperations = async (
+  requestHandler: RequestsHandler,
   data: RequestBroadcast & RequestId,
 ) => {
   let result, err;
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
 
   // check if operations contains any transfer wich requires memo encryption
   try {
@@ -30,7 +31,7 @@ export const broadcastOperations = async (
         const memo = op[1].memo;
         if (memo && memo.length > 0 && memo[0] == '#') {
           const receiver = await client.database.getAccounts([op[1].to]);
-          const memoKey: string = getRequestHandler().getUserKey(
+          const memoKey: string = requestHandler.getUserKey(
             data.username!,
             KeychainKeyTypesLC.memo,
           )[0];
@@ -38,7 +39,7 @@ export const broadcastOperations = async (
             throw new Error('Failed to load receiver memo key');
           }
           const memoReceiver = receiver[0].memo_key;
-          op[1].memo = HiveUtils.encodeMemo(memo, memoKey, memoReceiver);
+          op[1].memo = encode(memoKey, memoReceiver, memo);
         }
       } else if (
         op[0] === 'update_proposal_votes' ||
@@ -65,12 +66,12 @@ export const broadcastOperations = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_broadcast'),
+      await chrome.i18n.getMessage('bgd_ops_broadcast'),
       err_message,
     );
     return message;

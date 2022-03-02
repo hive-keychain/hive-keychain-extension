@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -14,9 +14,12 @@ import {
   RequestPowerUp,
 } from '@interfaces/keychain.interface';
 
-export const broadcastPowerUp = async (data: RequestPowerUp & RequestId) => {
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+export const broadcastPowerUp = async (
+  requestHandler: RequestsHandler,
+  data: RequestPowerUp & RequestId,
+) => {
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
 
   let result, err;
 
@@ -37,12 +40,12 @@ export const broadcastPowerUp = async (data: RequestPowerUp & RequestId) => {
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
+      await chrome.i18n.getMessage('bgd_ops_pu', [data.hive, data.recipient]),
       err_message,
     );
     return message;
@@ -50,10 +53,11 @@ export const broadcastPowerUp = async (data: RequestPowerUp & RequestId) => {
 };
 
 export const broadcastPowerDown = async (
+  requestHandler: RequestsHandler,
   data: RequestPowerDown & RequestId,
 ) => {
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
 
   let result, err;
   try {
@@ -81,14 +85,14 @@ export const broadcastPowerDown = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
       parseFloat(data.hive_power) == 0
-        ? chrome.i18n.getMessage('bgd_ops_pd_stop', [data.username])
-        : chrome.i18n.getMessage('bgd_ops_pd', [
+        ? await chrome.i18n.getMessage('bgd_ops_pd_stop', [data.username])
+        : await chrome.i18n.getMessage('bgd_ops_pd', [
             data.hive_power,
             data.username,
           ]),

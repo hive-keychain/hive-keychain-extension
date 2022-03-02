@@ -23,6 +23,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
@@ -65,6 +66,8 @@ const Delegations = ({
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
     useState([]);
 
+  const [incomingError, setIncomingError] = useState<string | null>(null);
+
   const loadAutocompleteTransferUsernames = async () => {
     const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
@@ -86,19 +89,29 @@ const Delegations = ({
   }, []);
 
   useEffect(() => {
-    const totalIncomingVests = delegations.incoming.reduce((prev, cur) => {
-      return prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''));
-    }, 0);
-    const totalOutgoingVests = delegations.outgoing.reduce((prev, cur) => {
-      return prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''));
-    }, 0);
+    if (delegations.incoming) {
+      const totalIncomingVests = delegations.incoming.reduce((prev, cur) => {
+        return (
+          prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+        );
+      }, 0);
+      setTotalIncoming(
+        FormatUtils.toHP(totalIncomingVests.toString(), globalProperties),
+      );
+    } else {
+      setIncomingError('popup_html_error_retrieving_incoming_delegations');
+    }
+    if (delegations.outgoing) {
+      const totalOutgoingVests = delegations.outgoing.reduce((prev, cur) => {
+        return (
+          prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+        );
+      }, 0);
 
-    setTotalIncoming(
-      FormatUtils.toHP(totalIncomingVests.toString(), globalProperties),
-    );
-    setTotalOutgoing(
-      FormatUtils.toHP(totalOutgoingVests.toString(), globalProperties),
-    );
+      setTotalOutgoing(
+        FormatUtils.toHP(totalOutgoingVests.toString(), globalProperties),
+      );
+    }
 
     const totalHp = FormatUtils.toHP(
       activeAccount.account.vesting_shares as string,
@@ -113,9 +126,10 @@ const Delegations = ({
   };
 
   const goToIncomings = () => {
-    navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
-      delegationType: DelegationType.INCOMING,
-    });
+    if (!incomingError)
+      navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
+        delegationType: DelegationType.INCOMING,
+      });
   };
   const goToOutgoing = () => {
     navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
@@ -223,9 +237,26 @@ const Delegations = ({
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
-          <div className="value">
-            + {FormatUtils.withCommas(totalIncoming.toString())}{' '}
-            {currencyLabels.hp}
+          <div
+            className="value"
+            onClick={() => {
+              if (incomingError) setErrorMessage(incomingError);
+            }}>
+            {incomingError && (
+              <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+            )}
+            <ReactTooltip
+              id="incoming-error-tooltip"
+              place="top"
+              type="light"
+              effect="solid"
+              multiline={true}
+              getContent={() => incomingError}
+            />
+            <span>
+              + {FormatUtils.withCommas(totalIncoming.toString())}{' '}
+              {currencyLabels.hp}
+            </span>
           </div>
         </div>
         <div className="total-outgoing" onClick={goToOutgoing}>
@@ -275,14 +306,7 @@ const Delegations = ({
         label={'popup_html_delegate_to_user'}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
-      />
-
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
+        fixToBottom
       />
     </div>
   );

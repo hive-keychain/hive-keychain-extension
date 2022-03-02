@@ -111,7 +111,6 @@ const getAccountsFromLocalStorage = async (
   const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
-
   const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
   return accounts?.list;
 };

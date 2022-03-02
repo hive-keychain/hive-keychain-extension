@@ -1,13 +1,15 @@
+import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const unlockWallet = (
+  requestHandler: RequestsHandler,
   tab: number,
   request: KeychainRequest,
   domain: string,
 ) => {
-  createPopup(() => {
+  createPopup(async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.UNLOCK,
       msg: {
@@ -15,11 +17,11 @@ export const unlockWallet = (
         error: 'locked',
         result: null,
         data: request,
-        message: chrome.i18n.getMessage('bgd_auth_locked'),
-        display_msg: chrome.i18n.getMessage('bgd_auth_locked_desc'),
+        message: await chrome.i18n.getMessage('bgd_auth_locked'),
+        display_msg: await chrome.i18n.getMessage('bgd_auth_locked_desc'),
       },
       tab,
       domain,
     });
-  });
+  }, requestHandler);
 };

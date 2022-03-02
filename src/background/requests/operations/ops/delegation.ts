@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -11,12 +11,13 @@ import {
 } from '@interfaces/keychain.interface';
 
 export const broadcastDelegation = async (
+  requestHandler: RequestsHandler,
   data: RequestDelegation & RequestId,
 ) => {
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
   if (!key) {
-    [key] = getRequestHandler().getUserKey(
+    [key] = requestHandler.getUserKey(
       data.username!,
       KeychainKeyTypesLC.active,
     ) as [string, string];
@@ -50,17 +51,17 @@ export const broadcastDelegation = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
       data,
       parseFloat(data.amount) === 0
-        ? chrome.i18n.getMessage('bgd_ops_undelegate', [
+        ? await chrome.i18n.getMessage('bgd_ops_undelegate', [
             data.delegatee,
             data.username!,
           ])
-        : chrome.i18n.getMessage('bgd_ops_delegate', [
+        : await chrome.i18n.getMessage('bgd_ops_delegate', [
             `${data.amount} ${data.unit}`,
             data.delegatee,
             data.username!,

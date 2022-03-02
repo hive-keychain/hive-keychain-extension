@@ -24,7 +24,7 @@ export const createMessage = (
   };
 };
 
-export const beautifyErrorMessage = (err: any) => {
+export const beautifyErrorMessage = async (err: any) => {
   if (!err) return null;
   let error = '';
   if (err.message.indexOf('xception:') !== -1) {
@@ -35,6 +35,6 @@ export const beautifyErrorMessage = (err: any) => {
     error = err.message;
   }
   if (error.replace(' ', '') === '')
-    return chrome.i18n.getMessage('unknown_error');
-  return `${chrome.i18n.getMessage('bgd_ops_error')} : ${error}`;
+    return await chrome.i18n.getMessage('unknown_error');
+  return `${await chrome.i18n.getMessage('bgd_ops_error')} : ${error}`;
 };

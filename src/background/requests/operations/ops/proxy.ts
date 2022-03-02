@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -10,14 +10,17 @@ import {
   RequestProxy,
 } from '@interfaces/keychain.interface';
 
-export const broadcastProxy = async (data: RequestProxy & RequestId) => {
-  const client = getRequestHandler().getHiveClient();
+export const broadcastProxy = async (
+  requestHandler: RequestsHandler,
+  data: RequestProxy & RequestId,
+) => {
+  const client = requestHandler.getHiveClient();
   let result, err;
 
   try {
-    let key = getRequestHandler().key;
+    let key = requestHandler.data.key;
     if (!key) {
-      [key] = getRequestHandler().getUserKey(
+      [key] = requestHandler.getUserKey(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
@@ -37,14 +40,14 @@ export const broadcastProxy = async (data: RequestProxy & RequestId) => {
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
       data.proxy.length
-        ? chrome.i18n.getMessage('popup_success_proxy', [data.proxy])
-        : chrome.i18n.getMessage('bgd_ops_unproxy'),
+        ? await chrome.i18n.getMessage('popup_success_proxy', [data.proxy])
+        : await chrome.i18n.getMessage('bgd_ops_unproxy'),
       err_message,
     );
     return message;

@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -11,15 +11,16 @@ import {
 } from '@interfaces/keychain.interface';
 
 export const broadcastWitnessVote = async (
+  requestHandler: RequestsHandler,
   data: RequestWitnessVote & RequestId,
 ) => {
-  const client = getRequestHandler().getHiveClient();
+  const client = requestHandler.getHiveClient();
   let result, err;
 
   try {
-    let key = getRequestHandler().key;
+    let key = requestHandler.data.key;
     if (!key) {
-      [key] = getRequestHandler().getUserKey(
+      [key] = requestHandler.getUserKey(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
@@ -41,14 +42,16 @@ export const broadcastWitnessVote = async (
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
       data.vote
-        ? chrome.i18n.getMessage('bgd_ops_witness_voted', [data.witness])
-        : chrome.i18n.getMessage('bgd_ops_witness_unvoted', [data.witness]),
+        ? await chrome.i18n.getMessage('bgd_ops_witness_voted', [data.witness])
+        : await chrome.i18n.getMessage('bgd_ops_witness_unvoted', [
+            data.witness,
+          ]),
       err_message,
     );
     return message;

@@ -1,3 +1,4 @@
+import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import {
@@ -9,6 +10,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const transferRequest = (
+  requestHandler: RequestsHandler,
   tab: number,
   request: RequestTransfer,
   domain: string,
@@ -25,35 +27,40 @@ export const transferRequest = (
   //if (encode) account = accountsList.get(username);
   // If a username is specified, check that its active key has been added to the wallet
   if (enforced && username && account && !account.keys.active) {
-    createPopup(() => {
+    createPopup(async () => {
       sendErrors(
+        requestHandler,
         tab!,
         'user_cancel',
-        chrome.i18n.getMessage('bgd_auth_canceled'),
-        chrome.i18n.getMessage('bgd_auth_transfer_no_active', [username]),
+        await chrome.i18n.getMessage('bgd_auth_canceled'),
+        await chrome.i18n.getMessage('bgd_auth_transfer_no_active', [username]),
         request as KeychainRequest,
       );
-    });
+    }, requestHandler);
   } else if (account && encode && !account.keys.memo) {
-    createPopup(() => {
+    createPopup(async () => {
       sendErrors(
+        requestHandler,
         tab!,
         'user_cancel',
-        chrome.i18n.getMessage('bgd_auth_canceled'),
-        chrome.i18n.getMessage('bgd_auth_transfer_no_memo', [username!]),
+        await chrome.i18n.getMessage('bgd_auth_canceled'),
+        await chrome.i18n.getMessage('bgd_auth_transfer_no_memo', [username!]),
         request as KeychainRequest,
       );
-    });
+    }, requestHandler);
   } else if (active_accounts.length == 0) {
-    createPopup(() => {
+    createPopup(async () => {
       sendErrors(
+        requestHandler,
         tab!,
         'user_cancel',
-        chrome.i18n.getMessage('bgd_auth_canceled'),
-        chrome.i18n.getMessage('bgd_auth_transfer_no_active', [username!]),
+        await chrome.i18n.getMessage('bgd_auth_canceled'),
+        await chrome.i18n.getMessage('bgd_auth_transfer_no_active', [
+          username!,
+        ]),
         request as KeychainRequest,
       );
-    });
+    }, requestHandler);
   } else {
     const callback = () => {
       chrome.runtime.sendMessage({
@@ -65,6 +72,6 @@ export const transferRequest = (
         rpc: current_rpc,
       });
     };
-    createPopup(callback);
+    createPopup(callback, requestHandler);
   }
 };

@@ -41,8 +41,25 @@
     }
 
     .ranking {
-      height: 275px;
+      height: 264px;
       overflow: auto;
+
+      .error-witness {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        row-gap: 16px;
+        padding: 32px 24px;
+        box-sizing: border-box;
+        font-size: 16px;
+
+        .icon-component {
+          height: 50px;
+          width: 50px;
+          font-size: 50px;
+        }
+      }
 
       .ranking-item {
         display: grid;

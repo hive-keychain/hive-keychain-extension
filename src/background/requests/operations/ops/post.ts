@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -10,10 +10,13 @@ import {
 } from '@hiveio/dhive';
 import { RequestId, RequestPost } from '@interfaces/keychain.interface';
 
-export const broadcastPost = async (data: RequestPost & RequestId) => {
+export const broadcastPost = async (
+  requestHandler: RequestsHandler,
+  data: RequestPost & RequestId,
+) => {
   let err, result;
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
   try {
     if (data.comment_options === '') {
       result = await client.broadcast.comment(
@@ -55,12 +58,12 @@ export const broadcastPost = async (data: RequestPost & RequestId) => {
   } catch (e) {
     err = e;
   } finally {
-    const err_message = beautifyErrorMessage(err);
+    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_post'),
+      await chrome.i18n.getMessage('bgd_ops_post'),
       err_message,
     );
     return message;

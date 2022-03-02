@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -12,11 +12,14 @@ import {
 import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
 import CurrencyUtils from 'src/utils/currency.utils';
 
-export const convert = async (data: RequestConvert & RequestId) => {
+export const convert = async (
+  requestHandler: RequestsHandler,
+  data: RequestConvert & RequestId,
+) => {
   const { username, amount, collaterized } = data;
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
-  const rpc = getRequestHandler().rpc;
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
+  const rpc = requestHandler.data.rpc;
   const requestid = await getNextRequestID(username, client);
   let result, err;
   if (collaterized) {
@@ -40,12 +43,12 @@ export const convert = async (data: RequestConvert & RequestId) => {
     } catch (e) {
       err = e;
     } finally {
-      const err_message = beautifyErrorMessage(err);
+      const err_message = await beautifyErrorMessage(err);
       const message = createMessage(
         err,
         result,
         data,
-        chrome.i18n.getMessage('bgd_ops_convert_collaterized', [
+        await chrome.i18n.getMessage('bgd_ops_convert_collaterized', [
           amount,
           username,
         ]),
@@ -74,12 +77,12 @@ export const convert = async (data: RequestConvert & RequestId) => {
     } catch (e) {
       err = e;
     } finally {
-      const err_message = beautifyErrorMessage(err);
+      const err_message = await beautifyErrorMessage(err);
       const message = createMessage(
         err,
         result,
         data,
-        chrome.i18n.getMessage('bgd_ops_convert', [amount, username]),
+        await chrome.i18n.getMessage('bgd_ops_convert', [amount, username]),
         err_message,
       );
       return message;

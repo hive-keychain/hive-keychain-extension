@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -6,9 +6,12 @@ import {
 import { PrivateKey } from '@hiveio/dhive';
 import { RequestId, RequestVote } from '@interfaces/keychain.interface';
 
-export const broadcastVote = async (data: RequestVote & RequestId) => {
-  const client = getRequestHandler().getHiveClient();
-  const key = getRequestHandler().key;
+export const broadcastVote = async (
+  requestHandler: RequestsHandler,
+  data: RequestVote & RequestId,
+) => {
+  const client = requestHandler.getHiveClient();
+  const key = requestHandler.data.key;
   let err, result;
   try {
     result = await client.broadcast.vote(
@@ -23,12 +26,12 @@ export const broadcastVote = async (data: RequestVote & RequestId) => {
   } catch (e) {
     err = e;
   }
-  const err_message = beautifyErrorMessage(err);
+  const err_message = await beautifyErrorMessage(err);
   const message = createMessage(
     err,
     result,
     data,
-    chrome.i18n.getMessage('bgd_ops_vote', [
+    await chrome.i18n.getMessage('bgd_ops_vote', [
       data.author,
       data.permlink,
       +data.weight / 100 + '',

@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
@@ -41,6 +41,7 @@ import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
 export const performOperation = async (
+  requestHandler: RequestsHandler,
   data: KeychainRequest,
   tab: number,
   domain: string,
@@ -52,102 +53,102 @@ export const performOperation = async (
     Logger.log(data);
     switch (data.type) {
       case KeychainRequestTypes.addAccount:
-        message = await addAccount(data);
+        message = await addAccount(requestHandler, data);
         break;
       case KeychainRequestTypes.custom:
-        message = await broadcastCustomJson(data);
+        message = await broadcastCustomJson(requestHandler, data);
         break;
       case KeychainRequestTypes.vote:
-        message = await broadcastVote(data);
+        message = await broadcastVote(requestHandler, data);
         break;
       case KeychainRequestTypes.transfer:
-        message = await broadcastTransfer(data);
+        message = await broadcastTransfer(requestHandler, data);
         break;
       case KeychainRequestTypes.post:
-        message = await broadcastPost(data);
+        message = await broadcastPost(requestHandler, data);
         break;
       case KeychainRequestTypes.addAccountAuthority:
-        message = await broadcastAddAccountAuthority(data);
+        message = await broadcastAddAccountAuthority(requestHandler, data);
         break;
       case KeychainRequestTypes.removeAccountAuthority:
-        message = await broadcastRemoveAccountAuthority(data);
+        message = await broadcastRemoveAccountAuthority(requestHandler, data);
         break;
       case KeychainRequestTypes.addKeyAuthority:
-        message = await broadcastAddKeyAuthority(data);
+        message = await broadcastAddKeyAuthority(requestHandler, data);
         break;
       case KeychainRequestTypes.removeKeyAuthority:
-        message = await broadcastRemoveKeyAuthority(data);
+        message = await broadcastRemoveKeyAuthority(requestHandler, data);
         break;
       case KeychainRequestTypes.broadcast:
-        message = await broadcastOperations(data);
+        message = await broadcastOperations(requestHandler, data);
         break;
       case KeychainRequestTypes.createClaimedAccount:
-        message = await broadcastCreateClaimedAccount(data);
+        message = await broadcastCreateClaimedAccount(requestHandler, data);
         break;
-
       case KeychainRequestTypes.delegation:
-        message = await broadcastDelegation(data);
+        message = await broadcastDelegation(requestHandler, data);
         break;
       case KeychainRequestTypes.witnessVote:
-        message = await broadcastWitnessVote(data);
+        message = await broadcastWitnessVote(requestHandler, data);
         break;
       case KeychainRequestTypes.proxy:
-        message = await broadcastProxy(data);
+        message = await broadcastProxy(requestHandler, data);
         break;
       case KeychainRequestTypes.powerUp:
-        message = await broadcastPowerUp(data);
+        message = await broadcastPowerUp(requestHandler, data);
         break;
       case KeychainRequestTypes.powerDown:
-        message = await broadcastPowerDown(data);
+        message = await broadcastPowerDown(requestHandler, data);
         break;
       case KeychainRequestTypes.sendToken:
-        message = await broadcastSendToken(data);
+        message = await broadcastSendToken(requestHandler, data);
         break;
       case KeychainRequestTypes.createProposal:
-        message = await broadcastCreateProposal(data);
+        message = await broadcastCreateProposal(requestHandler, data);
         break;
       case KeychainRequestTypes.updateProposalVote:
-        message = await broadcastUpdateProposalVote(data);
+        message = await broadcastUpdateProposalVote(requestHandler, data);
         break;
       case KeychainRequestTypes.removeProposal:
-        message = await broadcastRemoveProposal(data);
+        message = await broadcastRemoveProposal(requestHandler, data);
         break;
       case KeychainRequestTypes.decode:
-        message = await decodeMessage(data);
+        message = await decodeMessage(requestHandler, data);
         break;
       case KeychainRequestTypes.encode:
-        message = await encodeMessage(data);
+        message = await encodeMessage(requestHandler, data);
         break;
       case KeychainRequestTypes.signBuffer:
-        message = await signBuffer(data);
+        message = await signBuffer(requestHandler, data);
         break;
       case KeychainRequestTypes.signTx:
-        message = await signTx(data);
+        message = await signTx(requestHandler, data);
         break;
       case KeychainRequestTypes.convert:
-        message = await convert(data);
+        message = await convert(requestHandler, data);
         break;
       case KeychainRequestTypes.recurrentTransfer:
-        message = await recurrentTransfer(data);
+        message = await recurrentTransfer(requestHandler, data);
         break;
     }
     chrome.tabs.sendMessage(tab, message);
   } catch (e) {
     Logger.error(e);
     sendErrors(
+      requestHandler,
       tab,
       e + '',
-      chrome.i18n.getMessage('unknown_error'),
-      chrome.i18n.getMessage('unknown_error'),
+      await chrome.i18n.getMessage('unknown_error'),
+      await chrome.i18n.getMessage('unknown_error'),
       data,
     );
   } finally {
     if (no_confirm) {
       addToWhitelist(data.username!, domain, data.type);
-      if (!!getRequestHandler().windowId) {
-        removeWindow(getRequestHandler().windowId!);
+      if (!!requestHandler.data.windowId) {
+        removeWindow(requestHandler.data.windowId!);
       }
     } else chrome.runtime.sendMessage(message);
-    getRequestHandler().reset(false);
+    requestHandler.reset(false);
   }
 };

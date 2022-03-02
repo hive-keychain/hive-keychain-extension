@@ -1,26 +1,29 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { PrivateKey } from '@hiveio/dhive';
+import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
-import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
-export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
+export const broadcastTransfer = async (
+  requestHandler: RequestsHandler,
+  data: RequestTransfer & RequestId,
+) => {
   let result,
     err,
     err_message = null;
   try {
     const { username, to } = data;
-    const client = getRequestHandler().getHiveClient();
-    const memoKey: string = getRequestHandler().getUserKey(
+    const client = requestHandler.getHiveClient();
+    const memoKey: string = requestHandler.getUserKey(
       username!,
       KeychainKeyTypesLC.memo,
     )[0];
-    const [key] = getRequestHandler().getUserKey(
+    const [key] = requestHandler.getUserKey(
       data.username!,
       KeychainKeyTypesLC.active,
     );
@@ -32,7 +35,7 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
         throw new Error('Could not encode memo.');
       }
       const memoReceiver = receiver.memo_key;
-      memo = HiveUtils.encodeMemo(memo, memoKey, memoReceiver);
+      memo = encode(memoKey, memoReceiver, memo);
     }
 
     result = await client.broadcast.transfer(
@@ -58,23 +61,27 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
     } else {
       err = e;
       if (!(err as any)?.data?.stack[0]?.context?.method)
-        err_message = chrome.i18n.getMessage('bgd_ops_error_broadcasting');
+        err_message = await chrome.i18n.getMessage(
+          'bgd_ops_error_broadcasting',
+        );
       else {
         switch ((err as any).data.stack[0].context.method) {
           case 'adjust_balance':
-            err_message = chrome.i18n.getMessage(
+            err_message = await chrome.i18n.getMessage(
               'bgd_ops_transfer_adjust_balance',
               [data.currency, data.username!],
             );
             break;
           case 'get_account':
-            err_message = chrome.i18n.getMessage(
+            err_message = await chrome.i18n.getMessage(
               'bgd_ops_transfer_get_account',
               [data.to],
             );
             break;
           default:
-            err_message = chrome.i18n.getMessage('bgd_ops_error_broadcasting');
+            err_message = await chrome.i18n.getMessage(
+              'bgd_ops_error_broadcasting',
+            );
             break;
         }
       }
@@ -84,7 +91,7 @@ export const broadcastTransfer = async (data: RequestTransfer & RequestId) => {
       err,
       result,
       data,
-      chrome.i18n.getMessage('bgd_ops_transfer_success', [
+      await chrome.i18n.getMessage('bgd_ops_transfer_success', [
         data.amount,
         data.currency,
         data.username!,

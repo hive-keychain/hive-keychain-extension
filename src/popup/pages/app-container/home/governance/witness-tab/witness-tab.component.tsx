@@ -46,6 +46,7 @@ const WitnessTab = ({
   const [votedWitnesses, setVotedWitnesses] = useState<string[]>([]);
 
   const [usingProxy, setUsingProxy] = useState<boolean>(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     setRemainingVotes(
@@ -93,9 +94,15 @@ const WitnessTab = ({
 
   const initWitnessRanking = async () => {
     addToLoadingList('html_popup_load_witness_ranking_operation');
-    const ranking = (await KeychainApi.get('/hive/v2/witnesses-ranks')).data;
-    setRanking(ranking);
-    setFilteredRanking(ranking);
+    const requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
+    if (requestResult.data !== '') {
+      const ranking = requestResult.data;
+      setRanking(ranking);
+      setFilteredRanking(ranking);
+    } else {
+      setErrorMessage('popup_html_error_retrieving_witness_ranking');
+      setHasError(true);
+    }
     removeFromLoadingList('html_popup_load_witness_ranking_operation');
   };
 
@@ -268,6 +275,20 @@ const WitnessTab = ({
             list={filteredRanking}
             renderItem={renderWitnessItem}
             renderOnScroll
+            renderWhenEmpty={() => {
+              return (
+                hasError && (
+                  <div className="error-witness">
+                    <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_error_retrieving_witness_ranking',
+                      )}
+                    </span>
+                  </div>
+                )
+              );
+            }}
           />
         </div>
         <ReactTooltip

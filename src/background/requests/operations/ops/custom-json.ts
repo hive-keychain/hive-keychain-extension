@@ -1,4 +1,4 @@
-import { getRequestHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
@@ -11,12 +11,13 @@ import {
 } from '@interfaces/keychain.interface';
 
 export const broadcastCustomJson = async (
+  requestHandler: RequestsHandler,
   data: RequestCustomJSON & RequestId,
 ) => {
-  const client = getRequestHandler().getHiveClient();
-  let key = getRequestHandler().key;
+  const client = requestHandler.getHiveClient();
+  let key = requestHandler.data.key;
   if (!key) {
-    [key] = getRequestHandler().getUserKey(
+    [key] = requestHandler.getUserKey(
       data.username!,
       data.method.toLowerCase() as KeychainKeyTypesLC,
     ) as [string, string];
@@ -43,13 +44,13 @@ export const broadcastCustomJson = async (
     err = e;
   }
 
-  const err_message = beautifyErrorMessage(err);
+  const err_message = await beautifyErrorMessage(err);
 
   const message = createMessage(
     err,
     result,
     data,
-    chrome.i18n.getMessage('bgd_ops_broadcast'),
+    await chrome.i18n.getMessage('bgd_ops_broadcast'),
     err_message,
   );
 
