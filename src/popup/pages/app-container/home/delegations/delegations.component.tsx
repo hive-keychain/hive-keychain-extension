@@ -78,10 +78,6 @@ const Delegations = ({
   };
 
   useEffect(() => {
-    console.log(incomingError);
-  }, [incomingError]);
-
-  useEffect(() => {
     loadDelegators(activeAccount.name!);
     loadDelegatees(activeAccount.name!);
     setAvailable(0);
@@ -103,11 +99,7 @@ const Delegations = ({
         FormatUtils.toHP(totalIncomingVests.toString(), globalProperties),
       );
     } else {
-      setIncomingError(
-        chrome.i18n.getMessage(
-          'popup_html_error_retrieving_incoming_delegations',
-        ),
-      );
+      setIncomingError('popup_html_error_retrieving_incoming_delegations');
     }
     if (delegations.outgoing) {
       const totalOutgoingVests = delegations.outgoing.reduce((prev, cur) => {
@@ -247,8 +239,9 @@ const Delegations = ({
           </div>
           <div
             className="value"
-            data-for="incoming-error-tooltip"
-            data-iscapture="true">
+            onClick={() => {
+              if (incomingError) setErrorMessage(incomingError);
+            }}>
             {incomingError && (
               <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
             )}
