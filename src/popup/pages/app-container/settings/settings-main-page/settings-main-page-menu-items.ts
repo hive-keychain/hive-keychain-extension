@@ -22,7 +22,7 @@ const SettingsMenuItems: MenuItem[] = [
     label: 'popup_html_contact_support',
     icon: Icons.SUPPORT,
     action: () => {
-      chrome.tabs.create({ url: 'https://discord.gg/3wdusXbu' });
+      chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
     },
   },
   {
