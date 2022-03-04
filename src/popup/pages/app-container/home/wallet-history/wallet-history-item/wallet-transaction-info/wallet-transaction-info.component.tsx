@@ -1,11 +1,15 @@
 import {
   ClaimReward,
   Delegation,
+  FillRecurrentTransfer,
+  RecurrentTransfer,
   Transaction,
   Transfer,
 } from '@interfaces/transaction.interface';
 import { ClaimRewardsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/claim-rewards-transaction/claim-rewards-transaction.component';
 import { DelegationTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/delegation-transaction/delegation-transaction.component';
+import { FillRecurrentTransferTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-recurrent-transfer-transaction/fill-recurrent-transfer-transaction.component';
+import { RecurrentTransferTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/recurrent-transfer-transaction/recurrent-transfer-transaction.component';
 import { TransferTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/transfer-transaction/transfer-transaction.component';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -25,6 +29,18 @@ const WalletTransactionInfo = ({
       case 'transfer':
         return (
           <TransferTransactionComponent transaction={transaction as Transfer} />
+        );
+      case 'recurrent_transfer':
+        return (
+          <RecurrentTransferTransactionComponent
+            transaction={transaction as RecurrentTransfer}
+          />
+        );
+      case 'fill_recurrent_transfer':
+        return (
+          <FillRecurrentTransferTransactionComponent
+            transaction={transaction as FillRecurrentTransfer}
+          />
         );
       case 'claim_reward_balance':
         return (

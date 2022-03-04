@@ -56,7 +56,7 @@ export const initAccountTransactions =
     )!.keys.memo;
     const transfers = await TransactionUtils.getAccountTransactions(
       accountName,
-      null,
+      -1,
       memoKey,
     );
 

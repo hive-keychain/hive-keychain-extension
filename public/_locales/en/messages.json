@@ -2092,6 +2092,22 @@
     "message": "Received $1 from @$2",
     "description": "wallet information transfer in"
   },
+  "popup_html_wallet_info_recurrent_transfer_out": {
+    "message": "Started transfer of $1 to @$2 every $3 hours $4 times",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_recurrent_transfer_in": {
+    "message": "@$1 started transfer of $2 every $3 hours $4 times",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_fill_recurrent_transfer_out": {
+    "message": "Sent $1 to @$2 ($3 remaining)",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_fill_recurrent_transfer_in": {
+    "message": "Received $1 from @$2 ($3 remaining)",
+    "description": "wallet information transfer in"
+  },
   "popup_html_wallet_info_transfer_out": {
     "message": "Sent $1 to @$2",
     "description": "wallet information transfer out"
@@ -2155,5 +2171,9 @@
   "popup_html_error_retrieving_incoming_delegations": {
     "message": "An error occured while retrieving the incoming delegations. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_load_more": {
+    "message": "Click to load more",
+    "description": "on wallet history"
   }
 }

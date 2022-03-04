@@ -11,7 +11,7 @@ export const initAccountTransactions =
     )!.keys.memo;
     const transactions = await TransactionUtils.getAccountTransactions(
       accountName,
-      null,
+      -1,
       memoKey,
     );
 

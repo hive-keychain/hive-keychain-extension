@@ -2,7 +2,7 @@ import { Transaction } from '@interfaces/transaction.interface';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { BaseSyntheticEvent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -30,6 +30,8 @@ const GenericTransaction = ({
   const getIcon = () => {
     switch (transaction.type) {
       case 'transfer':
+      case 'recurrent_transfer':
+      case 'fill_recurrent_transfer':
         return Icons.SEND;
       case 'claim_reward_balance':
         return Icons.CLAIM;
@@ -38,9 +40,10 @@ const GenericTransaction = ({
     }
   };
 
-  const openTransactionOnHiveblocks = () => {
+  const openTransactionOnHiveblocks = (event: BaseSyntheticEvent) => {
+    console.log(event.stopPropagation());
     chrome.windows.create({
-      url: `https://hiveblocks.com/tx/${transaction.txId}`,
+      url: transaction.url,
     });
   };
 

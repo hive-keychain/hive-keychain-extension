@@ -10,6 +10,7 @@ import {
   fetchAccountTransactions,
   initAccountTransactions,
 } from '@popup/actions/transaction.actions';
+import { Icons } from '@popup/icons.enum';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -17,10 +18,15 @@ import FlatList from 'flatlist-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TransactionUtils, {
+  HAS_IN_OUT_TRANSACTIONS,
+  TRANSFER_TYPE_TRANSACTIONS,
+} from 'src/utils/transaction.utils';
 import { WalletHistoryUtils } from 'src/utils/wallet-history.utils';
 import './wallet-history.component.scss';
 
@@ -33,7 +39,6 @@ const FILTER_TRANSACTION_TYPES: FilterTransactionTypes = {
   claim_reward_balance: false,
   delegate_vesting_shares: false,
 };
-const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 
 const WalletHistory = ({
   transactions,
@@ -43,6 +48,7 @@ const WalletHistory = ({
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
+  let lastOperationFetched = -1;
 
   const [filterValue, setFilterValue] = useState('');
   const [inSelected, setInSelected] = useState(false);
@@ -71,16 +77,23 @@ const WalletHistory = ({
   };
 
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
     setTitleContainerProperties({
       title: 'popup_html_wallet_history',
       isBackButtonEnabled: true,
     });
-    initAccountTransactions(activeAccountName!);
+    lastOperationFetched = await TransactionUtils.getLastTransaction(
+      activeAccountName!,
+    );
+    console.log(lastOperationFetched);
+    fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
-  }, []);
+  };
 
   useEffect(() => {
-    console.log(transactions);
     setDisplayedTransactions(transactions.list);
     setTimeout(() => {
       filterTransactions();
@@ -136,13 +149,13 @@ const WalletHistory = ({
           ) {
             return (
               (inSelected &&
-                ((transaction.type === 'transfer' &&
+                ((TRANSFER_TYPE_TRANSACTIONS.includes(transaction.type) &&
                   (transaction as Transfer).to === activeAccountName) ||
                   (transaction.type === 'delegate_vesting_shares' &&
                     (transaction as Delegation).delegatee ===
                       activeAccountName))) ||
               (outSelected &&
-                ((transaction.type === 'transfer' &&
+                ((TRANSFER_TYPE_TRANSACTIONS.includes(transaction.type) &&
                   (transaction as Transfer).from === activeAccountName) ||
                   (transaction.type === 'delegate_vesting_shares' &&
                     (transaction as Delegation).delegator ===
@@ -156,7 +169,7 @@ const WalletHistory = ({
     );
     filteredTransactions = filteredTransactions.filter((transaction) => {
       return (
-        (transaction.type === 'transfer' &&
+        (TRANSFER_TYPE_TRANSACTIONS.includes(transaction.type) &&
           WalletHistoryUtils.filterTransfer(
             transaction as Transfer,
             filterValue,
@@ -273,8 +286,17 @@ const WalletHistory = ({
         <FlatList
           list={displayedTransactions}
           renderItem={renderListItem}
-          renderOnScroll
+          // renderOnScroll
         />
+        {!transactions.loading &&
+          transactions.list[transactions.list.length - 1].last === false && (
+            <div className="load-more-panel" onClick={tryToLoadMore}>
+              <span className="label">
+                {chrome.i18n.getMessage('popup_html_load_more')}
+              </span>
+              <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
+            </div>
+          )}
       </div>
     </div>
   );

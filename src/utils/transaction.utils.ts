@@ -2,6 +2,8 @@ import { utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimReward,
   Delegation,
+  FillRecurrentTransfer,
+  RecurrentTransfer,
   Transaction,
   Transfer,
 } from '@interfaces/transaction.interface';
@@ -14,9 +16,23 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
+const NB_TRANSACTION_FETCHED = 10;
+export const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
+export const TRANSFER_TYPE_TRANSACTIONS = [
+  'transfer',
+  'fill_reccurent_transfer',
+  'recurrent_transfer',
+];
+
+const getSymbol = (nai: string) => {
+  if (nai === '@@000000013') return 'HBD';
+  if (nai === '@@000000021') return 'HIVE';
+  if (nai === '@@000000037') return 'HP';
+};
+
 const getAccountTransactions = async (
   accountName: string,
-  start: number | null,
+  start: number,
   memoKey?: string,
 ): Promise<Transaction[]> => {
   try {
@@ -24,21 +40,31 @@ const getAccountTransactions = async (
     const operationsBitmask = dHiveUtils.makeBitMaskFilter([
       op.transfer,
       op.recurrent_transfer,
+      op.fill_recurrent_transfer,
       op.claim_reward_balance,
       op.delegate_vesting_shares,
     ]) as [number, number];
     store.dispatch(addToLoadingList('html_popup_downloading_transactions'));
     store.dispatch(addToLoadingList('html_popup_processing_transactions'));
 
+    let limit = Math.min(start, NB_TRANSACTION_FETCHED);
+    console.log(
+      accountName,
+      start,
+      NB_TRANSACTION_FETCHED,
+      limit,
+      operationsBitmask,
+    );
+
     const transactionsFromBlockchain =
       await HiveUtils.getClient().database.getAccountHistory(
         accountName,
-        start || -1,
-        start ? Math.min(10, start) : 1000,
+        start,
+        limit,
         operationsBitmask,
       );
 
-    console.log(transactionsFromBlockchain);
+    // console.log(transactionsFromBlockchain);
 
     store.dispatch(
       removeFromLoadingList('html_popup_downloading_transactions'),
@@ -49,21 +75,32 @@ const getAccountTransactions = async (
         switch (e[1].op[0]) {
           case 'transfer': {
             specificTransaction = e[1].op[1] as Transfer;
-            const { memo } = specificTransaction;
-            if (memo[0] === '#') {
-              if (memoKey) {
-                try {
-                  const decodedMemo = HiveUtils.decodeMemo(memo, memoKey);
-                  specificTransaction.memo = decodedMemo.substring(1);
-                } catch (e) {
-                  Logger.error('Error while decoding', '');
-                }
-              } else {
-                specificTransaction.memo = chrome.i18n.getMessage(
-                  'popup_accounts_add_memo',
-                );
-              }
-            }
+            specificTransaction = decodeMemoIfNeeded(
+              specificTransaction,
+              memoKey!,
+            );
+            break;
+          }
+          case 'recurrent_transfer': {
+            specificTransaction = e[1].op[1] as RecurrentTransfer;
+            specificTransaction = decodeMemoIfNeeded(
+              specificTransaction,
+              memoKey!,
+            );
+            break;
+          }
+          case 'fill_recurrent_transfer': {
+            let amount = `${
+              parseFloat(e[1].op[1].amount.amount) / 1000
+            } ${getSymbol(e[1].op[1].amount.nai)}`;
+            specificTransaction = e[1].op[1] as FillRecurrentTransfer;
+            specificTransaction.amount = amount;
+            specificTransaction.remainingExecutions =
+              e[1].op[1].remaining_executions;
+            specificTransaction = decodeMemoIfNeeded(
+              specificTransaction,
+              memoKey!,
+            );
             break;
           }
           case 'claim_reward_balance': {
@@ -93,6 +130,11 @@ const getAccountTransactions = async (
           key: `${accountName}!${e[0]}`,
           index: e[0],
           txId: e[1].trx_id,
+          blockNumber: e[1].block,
+          url:
+            e[1].trx_id === '0000000000000000000000000000000000000000'
+              ? `https://hiveblocks.com/b/${e[1].block}#${e[1].trx_id}`
+              : `https://hiveblocks.com/tx/${e[1].trx_id}`,
         };
         return tr;
       })
@@ -100,13 +142,18 @@ const getAccountTransactions = async (
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
-
-    if (start && Math.min(1000, start) !== 1000 && transactions.length) {
+    if (start - NB_TRANSACTION_FETCHED < 0) {
       transactions[transactions.length - 1].last = true;
     }
+
+    if (start && Math.min(1000, start) !== 1000 && transactions.length) {
+      transactions[transactions.length - 1].lastFetched = true;
+    }
+    console.log(transactions);
     store.dispatch(removeFromLoadingList('html_popup_processing_transactions'));
     return transactions;
   } catch (e) {
+    Logger.error(e);
     return getAccountTransactions(
       accountName,
       (e as any).jse_info.stack[0].data.sequence - 1,
@@ -115,6 +162,43 @@ const getAccountTransactions = async (
   }
 };
 
-const TransactionUtils = { getAccountTransactions };
+const getLastTransaction = async (accountName: string) => {
+  const op = dHiveUtils.operationOrders;
+  const allOp = Object.values(op);
+  const allOperationsBitmask = dHiveUtils.makeBitMaskFilter(allOp) as [
+    number,
+    number,
+  ];
+  const transactionsFromBlockchain =
+    await HiveUtils.getClient().database.getAccountHistory(
+      accountName,
+      -1,
+      1,
+      allOperationsBitmask,
+    );
+  console.log(transactionsFromBlockchain[0]);
+  return transactionsFromBlockchain.length > 0
+    ? transactionsFromBlockchain[0][0]
+    : -1;
+};
+
+const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
+  const { memo } = transfer;
+  if (memo[0] === '#') {
+    if (memoKey) {
+      try {
+        const decodedMemo = HiveUtils.decodeMemo(memo, memoKey);
+        transfer.memo = decodedMemo.substring(1);
+      } catch (e) {
+        Logger.error('Error while decoding', '');
+      }
+    } else {
+      transfer.memo = chrome.i18n.getMessage('popup_accounts_add_memo');
+    }
+  }
+  return transfer;
+};
+
+const TransactionUtils = { getAccountTransactions, getLastTransaction };
 
 export default TransactionUtils;
