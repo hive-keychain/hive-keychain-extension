@@ -1,26 +1,19 @@
-import { ClaimReward } from '@interfaces/transaction.interface';
+import { ClaimAccount } from '@interfaces/transaction.interface';
 import { GenericTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 
-interface ClaimRewardsTransactionProps {
-  transaction: ClaimReward;
+interface ClaimAccountTransactionProps {
+  transaction: ClaimAccount;
 }
 
-const ClaimRewardsTransaction = ({
+const ClaimAccountTransaction = ({
   transaction,
-}: PropsFromRedux & ClaimRewardsTransactionProps) => {
+}: PropsFromRedux & ClaimAccountTransactionProps) => {
   const getDetail = () => {
-    const rewards = [transaction.hbd, transaction.hive, transaction.hp];
-    return chrome.i18n.getMessage('popup_html_wallet_info_claim_rewards', [
-      rewards
-        .filter(
-          (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
-        )
-        .join(' '),
-    ]);
+    return chrome.i18n.getMessage('popup_html_wallet_info_claim_account');
   };
 
   return (
@@ -37,6 +30,6 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const ClaimRewardsTransactionComponent = connector(
-  ClaimRewardsTransaction,
+export const ClaimAccountTransactionComponent = connector(
+  ClaimAccountTransaction,
 );

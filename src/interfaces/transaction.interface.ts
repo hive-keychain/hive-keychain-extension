@@ -42,3 +42,25 @@ export interface ClaimReward extends Transaction {
   hbd: string;
   hive: string;
 }
+
+export interface PowerUp extends Transaction {
+  amount: string;
+}
+
+export interface PowerDown extends Transaction {
+  amount: string;
+}
+
+export interface ReceivedInterests extends Transaction {
+  interest: string;
+}
+
+export interface DepositSavings extends Transaction {
+  amount: string;
+}
+
+export interface WithdrawSavings extends Transaction {
+  amount: any;
+}
+
+export interface ClaimAccount extends Transaction {}

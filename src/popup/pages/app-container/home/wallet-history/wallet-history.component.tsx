@@ -6,10 +6,7 @@ import {
   Transfer,
 } from '@interfaces/transaction.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import {
-  fetchAccountTransactions,
-  initAccountTransactions,
-} from '@popup/actions/transaction.actions';
+import { fetchAccountTransactions } from '@popup/actions/transaction.actions';
 import { Icons } from '@popup/icons.enum';
 import { WalletHistoryItemComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-history-item.component';
 import { RootState } from '@popup/store';
@@ -38,12 +35,17 @@ const FILTER_TRANSACTION_TYPES: FilterTransactionTypes = {
   transfer: false,
   claim_reward_balance: false,
   delegate_vesting_shares: false,
+  transfer_to_vesting: false,
+  withdraw_vesting: false,
+  transfer_to_savings: false,
+  transfer_from_savings: false,
+  claim_account: false,
+  interest: false,
 };
 
 const WalletHistory = ({
   transactions,
   activeAccountName,
-  initAccountTransactions,
   fetchAccountTransactions,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -286,7 +288,18 @@ const WalletHistory = ({
         <FlatList
           list={displayedTransactions}
           renderItem={renderListItem}
-          // renderOnScroll
+          renderWhenEmpty={() => {
+            return (
+              <div className="empty-list">
+                <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
+                <span>
+                  {chrome.i18n.getMessage(
+                    'popup_html_transaction_list_is_empty',
+                  )}
+                </span>
+              </div>
+            );
+          }}
         />
         {!transactions.loading &&
           transactions.list[transactions.list.length - 1].last === false && (
@@ -310,7 +323,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  initAccountTransactions,
   fetchAccountTransactions,
   setTitleContainerProperties,
 });

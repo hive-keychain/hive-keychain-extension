@@ -26,6 +26,7 @@ export enum Icons {
   EXPORT = 'file_download',
   HIDDEN = 'visibility_off',
   HISTORY = 'history',
+  INBOX = 'inbox',
   INFO = 'info',
   IMPORT = 'file_upload',
   IMPORT_EXPORT = 'import_export',

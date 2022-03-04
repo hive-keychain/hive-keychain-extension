@@ -1,11 +1,17 @@
 import { utils as dHiveUtils } from '@hiveio/dhive';
 import {
+  ClaimAccount,
   ClaimReward,
   Delegation,
+  DepositSavings,
   FillRecurrentTransfer,
+  PowerDown,
+  PowerUp,
+  ReceivedInterests,
   RecurrentTransfer,
   Transaction,
   Transfer,
+  WithdrawSavings,
 } from '@interfaces/transaction.interface';
 import {
   addToLoadingList,
@@ -16,7 +22,7 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
-const NB_TRANSACTION_FETCHED = 10;
+const NB_TRANSACTION_FETCHED = 1000;
 export const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 export const TRANSFER_TYPE_TRANSACTIONS = [
   'transfer',
@@ -43,18 +49,17 @@ const getAccountTransactions = async (
       op.fill_recurrent_transfer,
       op.claim_reward_balance,
       op.delegate_vesting_shares,
+      op.transfer_to_vesting,
+      op.withdraw_vesting,
+      op.interest,
+      op.transfer_to_savings,
+      op.transfer_from_savings,
+      op.claim_account,
     ]) as [number, number];
     store.dispatch(addToLoadingList('html_popup_downloading_transactions'));
     store.dispatch(addToLoadingList('html_popup_processing_transactions'));
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
-    console.log(
-      accountName,
-      start,
-      NB_TRANSACTION_FETCHED,
-      limit,
-      operationsBitmask,
-    );
 
     const transactionsFromBlockchain =
       await HiveUtils.getClient().database.getAccountHistory(
@@ -64,7 +69,7 @@ const getAccountTransactions = async (
         operationsBitmask,
       );
 
-    // console.log(transactionsFromBlockchain);
+    console.log(transactionsFromBlockchain);
 
     store.dispatch(
       removeFromLoadingList('html_popup_downloading_transactions'),
@@ -113,15 +118,42 @@ const getAccountTransactions = async (
             ).toFixed(3)} HP`;
             break;
           }
-          case 'delegate_vesting_shares':
-            {
-              specificTransaction = e[1].op[1] as Delegation;
-              specificTransaction.amount = `${FormatUtils.toHP(
-                e[1].op[1].vesting_shares,
-                store.getState().globalProperties.globals,
-              ).toFixed(3)} HP`;
-            }
+          case 'delegate_vesting_shares': {
+            specificTransaction = e[1].op[1] as Delegation;
+            specificTransaction.amount = `${FormatUtils.toHP(
+              e[1].op[1].vesting_shares,
+              store.getState().globalProperties.globals,
+            ).toFixed(3)} HP`;
             break;
+          }
+          case 'transfer_to_vesting': {
+            specificTransaction = e[1].op[1] as PowerUp;
+            break;
+          }
+          case 'withdraw_vesting': {
+            specificTransaction = e[1].op[1] as PowerDown;
+            specificTransaction.amount = `${FormatUtils.toHP(
+              e[1].op[1].vesting_shares,
+              store.getState().globalProperties.globals,
+            ).toFixed(3)} HP`;
+            break;
+          }
+          case 'interest': {
+            specificTransaction = e[1].op[1] as ReceivedInterests;
+            break;
+          }
+          case 'transfer_to_savings': {
+            specificTransaction = e[1].op[1] as DepositSavings;
+            break;
+          }
+          case 'transfer_from_savings': {
+            specificTransaction = e[1].op[1] as WithdrawSavings;
+            break;
+          }
+          case 'claim_account': {
+            specificTransaction = e[1].op[1] as ClaimAccount;
+            break;
+          }
         }
         const tr: Transaction = {
           ...specificTransaction,
@@ -149,7 +181,6 @@ const getAccountTransactions = async (
     if (start && Math.min(1000, start) !== 1000 && transactions.length) {
       transactions[transactions.length - 1].lastFetched = true;
     }
-    console.log(transactions);
     store.dispatch(removeFromLoadingList('html_popup_processing_transactions'));
     return transactions;
   } catch (e) {

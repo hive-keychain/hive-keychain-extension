@@ -2132,6 +2132,30 @@
     "message": "@$1 canceled delegation",
     "description": "Wallet information claim rewards"
   },
+  "popup_html_wallet_info_received_interests": {
+    "message": "Received $1 of interests from savings",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_claim_account": {
+    "message": "Claimed account",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_deposit_savings": {
+    "message": "Deposit of $1 into savings",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_withdraw_savings": {
+    "message": "Withdrawn $1 from savings",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_power_down": {
+    "message": "Powered down $1",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_power_up": {
+    "message": "Powered up $1",
+    "description": "Wallet information claim rewards"
+  },
   "popup_html_filter_in": {
     "message": "In",
     "description": "Wallet filters"
@@ -2156,6 +2180,30 @@
     "message": "Delegations",
     "description": "Wallet filters"
   },
+  "popup_html_filter_type_claim_account": {
+    "message": "Claim account",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_interest": {
+    "message": "Interest",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_from_savings": {
+    "message": "With. savings",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_to_savings": {
+    "message": "Dep. savings",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_to_vesting": {
+    "message": "Power up",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_withdraw_vesting": {
+    "message": "Power down",
+    "description": "Wallet filters"
+  },
   "popup_html_filter_type_vote": {
     "message": "Vote",
     "description": "Wallet filters"
@@ -2175,5 +2223,9 @@
   "popup_html_load_more": {
     "message": "Click to load more",
     "description": "on wallet history"
+  },
+  "popup_html_transaction_list_is_empty": {
+    "message": "No transaction to display",
+    "description": "on wallet history when no transactions to display"
   }
 }

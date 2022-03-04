@@ -17,10 +17,7 @@ const WalletHistoryItem = ({
   const [isMemoOpened, setIsMemoOpened] = useState(false);
 
   return (
-    <div
-      id={`index-${transaction.index}`}
-      // className={`wallet-history-item ${/*transaction.memo ? 'has-memo' : ''*/}`}>
-      className={`wallet-history-item`}>
+    <div id={`index-${transaction.index}`} className={`wallet-history-item`}>
       <WalletTransactionInfoComponent
         transaction={transaction}></WalletTransactionInfoComponent>
       <ReactTooltip

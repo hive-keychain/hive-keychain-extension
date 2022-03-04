@@ -35,13 +35,21 @@ const GenericTransaction = ({
         return Icons.SEND;
       case 'claim_reward_balance':
         return Icons.CLAIM;
+      case 'transfer_to_savings':
+      case 'transfer_from_savings':
+      case 'interest':
+        return Icons.SAVINGS;
+      case 'transfer_to_vesting':
+        return Icons.ARROW_UPWARDS;
+      case 'withdraw_vesting':
+        return Icons.ARROW_DOWNWARDS;
       default:
         return Icons.LINK;
     }
   };
 
   const openTransactionOnHiveblocks = (event: BaseSyntheticEvent) => {
-    console.log(event.stopPropagation());
+    event.stopPropagation();
     chrome.windows.create({
       url: transaction.url,
     });
