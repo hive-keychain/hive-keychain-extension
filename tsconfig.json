@@ -6,6 +6,7 @@
     "isolatedModules": true,
     "jsx": "react",
     "lib": ["ES6", "DOM"],
+    "module": "ES2022",
     "moduleResolution": "node",
     "noEmit": false,
     "strict": true,

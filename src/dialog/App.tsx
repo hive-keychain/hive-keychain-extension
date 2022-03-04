@@ -36,7 +36,6 @@ const App = () => {
         return <RequestConfirmation data={data} />;
       case DialogCommand.ANSWER_REQUEST:
         return <RequestResponse data={data} />;
-
       default:
         return null;
     }

@@ -1,4 +1,3 @@
-import { Client } from '@hiveio/dhive';
 import { Rpc } from '@interfaces/rpc.interface';
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
@@ -17,27 +16,29 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
   const cur = currency.toLowerCase();
   useEffect(() => {
     if (username) {
-      const client = new Client(
-        rpc.uri === 'DEFAULT' ? 'https://api.hive.blog' : rpc.uri,
-        {
-          chainId: rpc.testnet ? rpc.chainId : undefined,
-        },
-      );
-
-      client.database.getAccounts([username]).then((accounts) => {
-        const account = accounts[0];
-        const currencyParsed = CurrencyUtils.getCurrencyLabel(
-          currency,
-          rpc.testnet,
+      import('@hiveio/dhive').then(({ Client }) => {
+        const client = new Client(
+          rpc.uri === 'DEFAULT' ? 'https://api.hive.blog' : rpc.uri,
+          {
+            chainId: rpc.testnet ? rpc.chainId : undefined,
+          },
         );
-        const currentBalance = (
-          (cur === BaseCurrencies.HIVE
-            ? account.balance
-            : account.hbd_balance) as string
-        ).split(' ')[0];
-        const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
-        setBalance(`${currentBalance} ${currencyParsed}`);
-        setNewBalance(`${newBalance} ${currencyParsed}`);
+
+        client.database.getAccounts([username]).then((accounts) => {
+          const account = accounts[0];
+          const currencyParsed = CurrencyUtils.getCurrencyLabel(
+            currency,
+            rpc.testnet,
+          );
+          const currentBalance = (
+            (cur === BaseCurrencies.HIVE
+              ? account.balance
+              : account.hbd_balance) as string
+          ).split(' ')[0];
+          const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
+          setBalance(`${currentBalance} ${currencyParsed}`);
+          setNewBalance(`${newBalance} ${currencyParsed}`);
+        });
       });
     }
   }, [username]);
