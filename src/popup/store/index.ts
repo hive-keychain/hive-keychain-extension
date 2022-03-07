@@ -24,7 +24,6 @@ let previousMk = store.getState().mk;
 store.subscribe(() => {
   const { accounts, mk, activeRpc, activeAccount, transactions } =
     store.getState();
-  console.log(transactions);
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
     AccountUtils.saveAccounts(accounts, mk);

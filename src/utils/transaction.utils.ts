@@ -205,7 +205,6 @@ const getLastTransaction = async (accountName: string) => {
       1,
       allOperationsBitmask,
     );
-  console.log(transactionsFromBlockchain[0]);
   return transactionsFromBlockchain.length > 0
     ? transactionsFromBlockchain[0][0]
     : -1;
