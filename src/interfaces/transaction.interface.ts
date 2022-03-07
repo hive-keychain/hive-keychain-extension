@@ -3,6 +3,7 @@ import { OperationName, VirtualOperationName } from '@hiveio/dhive';
 export interface Transactions {
   loading: boolean;
   list: Transaction[];
+  lastUsedStart: number;
 }
 export interface Transaction {
   blockNumber: number;

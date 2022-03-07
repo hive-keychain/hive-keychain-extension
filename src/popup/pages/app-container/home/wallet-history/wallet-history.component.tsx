@@ -27,6 +27,7 @@ import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransactionUtils, {
   HAS_IN_OUT_TRANSACTIONS,
+  NB_TRANSACTION_FETCHED,
   TRANSFER_TYPE_TRANSACTIONS,
 } from 'src/utils/transaction.utils';
 import { WalletHistoryUtils } from 'src/utils/wallet-history.utils';
@@ -104,6 +105,7 @@ const WalletHistory = ({
     setTimeout(() => {
       filterTransactions();
     }, 0);
+
     setLastTransactionIndex(ArrayUtils.getMinValue(transactions.list, 'index'));
     setTimeout(() => {
       if (idToScrollTo) {
@@ -243,7 +245,13 @@ const WalletHistory = ({
 
   const tryToLoadMore = () => {
     setIdToScrollTo(`index-${lastTransactionIndex}`);
-    fetchAccountTransactions(activeAccountName!, lastTransactionIndex);
+    fetchAccountTransactions(
+      activeAccountName!,
+      Math.min(
+        lastTransactionIndex,
+        transactions.lastUsedStart - NB_TRANSACTION_FETCHED,
+      ),
+    );
   };
 
   const handleScroll = (event: any) => {
@@ -336,15 +344,14 @@ const WalletHistory = ({
             );
           }}
         />
-        {!transactions.loading &&
-          transactions.list[transactions.list.length - 1].last === false && (
-            <div className="load-more-panel" onClick={tryToLoadMore}>
-              <span className="label">
-                {chrome.i18n.getMessage('popup_html_load_more')}
-              </span>
-              <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
-            </div>
-          )}
+        {!transactions.list[transactions.list.length - 1]?.last && (
+          <div className="load-more-panel" onClick={tryToLoadMore}>
+            <span className="label">
+              {chrome.i18n.getMessage('popup_html_load_more')}
+            </span>
+            <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
+          </div>
+        )}
       </div>
     </div>
   );

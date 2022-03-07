@@ -22,7 +22,7 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
-const NB_TRANSACTION_FETCHED = 1000;
+export const NB_TRANSACTION_FETCHED = 1000;
 export const HAS_IN_OUT_TRANSACTIONS = ['transfer', 'delegate_vesting_shares'];
 export const TRANSFER_TYPE_TRANSACTIONS = [
   'transfer',
@@ -40,7 +40,7 @@ const getAccountTransactions = async (
   accountName: string,
   start: number,
   memoKey?: string,
-): Promise<Transaction[]> => {
+): Promise<[Transaction[], number]> => {
   try {
     const op = dHiveUtils.operationOrders;
     const operationsBitmask = dHiveUtils.makeBitMaskFilter([
@@ -68,8 +68,6 @@ const getAccountTransactions = async (
         limit,
         operationsBitmask,
       );
-
-    console.log(transactionsFromBlockchain);
 
     store.dispatch(
       removeFromLoadingList('html_popup_downloading_transactions'),
@@ -182,7 +180,7 @@ const getAccountTransactions = async (
       transactions[transactions.length - 1].lastFetched = true;
     }
     store.dispatch(removeFromLoadingList('html_popup_processing_transactions'));
-    return transactions;
+    return [transactions, start];
   } catch (e) {
     Logger.error(e);
     return getAccountTransactions(

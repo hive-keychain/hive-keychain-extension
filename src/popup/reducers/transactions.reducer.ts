@@ -4,26 +4,19 @@ import { ActionPayload } from '@popup/actions/interfaces';
 import ArrayUtils from 'src/utils/array.utils';
 
 const TransactionReducer = (
-  state: Transactions = { loading: false, list: [] },
-  { type, payload }: ActionPayload<Transaction[]>,
+  state: Transactions = { loading: false, list: [], lastUsedStart: -1 },
+  { type, payload }: ActionPayload<[Transaction[], number]>,
 ) => {
   switch (type) {
     case ActionType.SET_ACTIVE_ACCOUNT: // action related to active account. Here used to reset the transaction list
-      return { loading: true, list: [] };
+      return { loading: true, list: [], lastUsedStart: -1 };
     case ActionType.INIT_TRANSACTIONS:
       return { loading: false, list: payload! };
     case ActionType.ADD_TRANSACTIONS:
-      // if (
-      //   !state.list[0] ||
-      //   state.list[0].key.split('!')[0] === payload![0].key.split('!')[0]
-      // ) {
-      //   return { ...state, list: [...state.list, ...payload!] };
-      // } else {
-      //   return state;
-      // }
       return {
         ...state,
-        list: ArrayUtils.mergeWithoutDuplicate(state.list, payload!, 'key'),
+        list: ArrayUtils.mergeWithoutDuplicate(state.list, payload![0], 'key'),
+        lastUsedStart: payload![1],
       };
     default:
       return state;

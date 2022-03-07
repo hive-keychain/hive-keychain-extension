@@ -2,7 +2,6 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { AppThunk } from '@popup/actions/interfaces';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import HiveUtils from 'src/utils/hive.utils';
-import TransactionUtils from 'src/utils/transaction.utils';
 
 const TIME_REFERENCE = 1643236071000;
 
@@ -45,24 +44,6 @@ export const loadActiveAccount =
         account: extendedAccount,
         name: account.name,
       },
-    });
-  };
-
-export const initAccountTransactions =
-  (accountName: string): AppThunk =>
-  async (dispatch, getState) => {
-    const memoKey = getState().accounts.find(
-      (a: LocalAccount) => a.name === accountName,
-    )!.keys.memo;
-    const transfers = await TransactionUtils.getAccountTransactions(
-      accountName,
-      -1,
-      memoKey,
-    );
-
-    dispatch({
-      type: ActionType.INIT_TRANSACTIONS,
-      payload: transfers,
     });
   };
 
