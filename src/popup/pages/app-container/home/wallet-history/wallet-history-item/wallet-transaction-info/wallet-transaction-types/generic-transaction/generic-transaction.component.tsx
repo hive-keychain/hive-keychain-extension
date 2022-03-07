@@ -43,6 +43,8 @@ const GenericTransaction = ({
         return Icons.ARROW_UPWARDS;
       case 'withdraw_vesting':
         return Icons.ARROW_DOWNWARDS;
+      case 'claim_account':
+        return Icons.ACCOUNT;
       default:
         return Icons.LINK;
     }
