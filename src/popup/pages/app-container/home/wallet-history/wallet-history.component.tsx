@@ -1,9 +1,14 @@
 import {
   ClaimReward,
   Delegation,
+  DepositSavings,
+  PowerDown,
+  PowerUp,
+  ReceivedInterests,
   Transaction,
   Transactions,
   Transfer,
+  WithdrawSavings,
 } from '@interfaces/transaction.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { fetchAccountTransactions } from '@popup/actions/transaction.actions';
@@ -90,7 +95,6 @@ const WalletHistory = ({
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
-    console.log(lastOperationFetched);
     fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
   };
@@ -180,6 +184,37 @@ const WalletHistory = ({
         (transaction.type === 'claim_reward_balance' &&
           WalletHistoryUtils.filterClaimReward(
             transaction as ClaimReward,
+            filterValue,
+          )) ||
+        (transaction.type === 'delegate_vesting_shares' &&
+          WalletHistoryUtils.filterDelegation(
+            transaction as Delegation,
+            filterValue,
+            activeAccountName!,
+          )) ||
+        (transaction.type === 'withdraw_vesting' &&
+          WalletHistoryUtils.filterPowerUpDown(
+            transaction as PowerDown,
+            filterValue,
+          )) ||
+        (transaction.type === 'transfer_to_vesting' &&
+          WalletHistoryUtils.filterPowerUpDown(
+            transaction as PowerUp,
+            filterValue,
+          )) ||
+        (transaction.type === 'transfer_from_savings' &&
+          WalletHistoryUtils.filterSavingsTransaction(
+            transaction as WithdrawSavings,
+            filterValue,
+          )) ||
+        (transaction.type === 'transfer_to_savings' &&
+          WalletHistoryUtils.filterSavingsTransaction(
+            transaction as DepositSavings,
+            filterValue,
+          )) ||
+        (transaction.type === 'interest' &&
+          WalletHistoryUtils.filterInterest(
+            transaction as ReceivedInterests,
             filterValue,
           )) ||
         (transaction.timestamp &&
