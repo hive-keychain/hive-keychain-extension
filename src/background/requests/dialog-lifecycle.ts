@@ -23,7 +23,7 @@ export const createPopup = (
         width: width,
         left: w.width! - width + w.left!,
         top: w.top,
-        focused: true,
+        focused: false,
       },
       (win) => {
         if (!win) return;
