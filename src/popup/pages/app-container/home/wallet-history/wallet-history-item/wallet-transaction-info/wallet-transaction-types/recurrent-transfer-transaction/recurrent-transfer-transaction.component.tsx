@@ -14,7 +14,12 @@ const RecurrentTransferTransaction = ({
   activeAccountName,
 }: PropsFromRedux & RecurrentTransferTransactionProps) => {
   const getDetail = () => {
-    if (activeAccountName === transaction.from) {
+    if (parseFloat(transaction.amount.split(' ')[0]) === 0) {
+      return chrome.i18n.getMessage(
+        'popup_html_wallet_info_canceled_recurrent_transfer',
+        [transaction.from, transaction.to],
+      );
+    } else if (activeAccountName === transaction.from) {
       return chrome.i18n.getMessage(
         'popup_html_wallet_info_recurrent_transfer_out',
         [

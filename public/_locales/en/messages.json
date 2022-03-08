@@ -1712,6 +1712,10 @@
     "message": "Recurrent transfer",
     "description": "In transfer fund page"
   },
+  "popup_html_cancel_recurrent_transfer": {
+    "message": "Cancel recurrent transfer",
+    "description": "In transfer fund page"
+  },
   "popup_html_recurrent_transfer_frequency": {
     "message": "Frequency",
     "description": "In transfer fund page"
@@ -2100,6 +2104,10 @@
     "message": "@$1 started transfer of $2 every $3 hours $4 times",
     "description": "wallet information transfer in"
   },
+  "popup_html_wallet_info_canceled_recurrent_transfer": {
+    "message": "@$1 canceled recurrent transfer to @$2",
+    "description": "wallet information transfer in"
+  },
   "popup_html_wallet_info_fill_recurrent_transfer_out": {
     "message": "Sent $1 to @$2 ($3 remaining)",
     "description": "wallet information transfer out"
@@ -2206,6 +2214,14 @@
   },
   "popup_html_filter_type_vote": {
     "message": "Vote",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_power_up_down": {
+    "message": "Power up/down",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_savings": {
+    "message": "Savings",
     "description": "Wallet filters"
   },
   "popup_html_clear_filters": {

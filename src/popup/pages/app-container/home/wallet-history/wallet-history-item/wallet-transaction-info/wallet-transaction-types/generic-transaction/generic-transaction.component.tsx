@@ -35,14 +35,18 @@ const GenericTransaction = ({
         return Icons.SEND;
       case 'claim_reward_balance':
         return Icons.CLAIM;
-      case 'transfer_to_savings':
-      case 'transfer_from_savings':
-      case 'interest':
+      case 'savings':
         return Icons.SAVINGS;
-      case 'transfer_to_vesting':
-        return Icons.ARROW_UPWARDS;
-      case 'withdraw_vesting':
-        return Icons.ARROW_DOWNWARDS;
+      case 'power_up_down': {
+        switch (transaction.subType) {
+          case 'transfer_to_vesting':
+            return Icons.ARROW_UPWARDS;
+          case 'withdraw_vesting':
+            return Icons.ARROW_DOWNWARDS;
+        }
+      }
+      case 'delegate_vesting_shares':
+        return Icons.DELEGATIONS;
       case 'claim_account':
         return Icons.ACCOUNT;
       default:

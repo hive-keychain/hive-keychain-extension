@@ -361,6 +361,15 @@ const transfer = async (
         ),
       );
     } else {
+      console.log({
+        from: sender,
+        to: receiver,
+        amount: amount,
+        memo: memo,
+        recurrence: frequency,
+        executions: iterations,
+        extensions: [],
+      });
       await sendOperationWithConfirmation(
         getClient().broadcast.sendOperations(
           [
@@ -385,7 +394,7 @@ const transfer = async (
     }
     return true;
   } catch (err) {
-    Logger.error(err);
+    Logger.error(err, err);
     return false;
   }
 };

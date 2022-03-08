@@ -1,5 +1,6 @@
 import { OperationName, VirtualOperationName } from '@hiveio/dhive';
 
+export type CustomTransactionType = 'savings' | 'power_up_down';
 export interface Transactions {
   loading: boolean;
   list: Transaction[];
@@ -10,7 +11,8 @@ export interface Transaction {
   txId: string;
   index: number;
   key: string;
-  type: OperationName | VirtualOperationName;
+  type: OperationName | VirtualOperationName | CustomTransactionType;
+  subType?: OperationName | VirtualOperationName;
   timestamp: string;
   lastFetched?: boolean;
   last?: boolean;

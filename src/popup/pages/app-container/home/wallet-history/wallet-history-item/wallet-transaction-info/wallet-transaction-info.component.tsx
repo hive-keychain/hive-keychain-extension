@@ -72,34 +72,44 @@ const WalletTransactionInfo = ({
             transaction={transaction as ClaimAccount}
           />
         );
-      case 'interest':
-        return (
-          <ReceivedInterestsTransactionComponent
-            transaction={transaction as ReceivedInterests}
-          />
-        );
-      case 'transfer_to_savings':
-        return (
-          <DepositSavingsTransactionComponent
-            transaction={transaction as DepositSavings}
-          />
-        );
-      case 'transfer_from_savings':
-        return (
-          <WithdrawSavingsTransactionComponent
-            transaction={transaction as WithdrawSavings}
-          />
-        );
-      case 'withdraw_vesting':
-        return (
-          <PowerDownTransactionComponent
-            transaction={transaction as PowerDown}
-          />
-        );
-      case 'transfer_to_vesting':
-        return (
-          <PowerUpTransactionComponent transaction={transaction as PowerUp} />
-        );
+      case 'savings': {
+        switch (transaction.subType) {
+          case 'interest':
+            return (
+              <ReceivedInterestsTransactionComponent
+                transaction={transaction as ReceivedInterests}
+              />
+            );
+          case 'transfer_to_savings':
+            return (
+              <DepositSavingsTransactionComponent
+                transaction={transaction as DepositSavings}
+              />
+            );
+          case 'transfer_from_savings':
+            return (
+              <WithdrawSavingsTransactionComponent
+                transaction={transaction as WithdrawSavings}
+              />
+            );
+        }
+      }
+      case 'power_up_down': {
+        switch (transaction.subType) {
+          case 'withdraw_vesting':
+            return (
+              <PowerDownTransactionComponent
+                transaction={transaction as PowerDown}
+              />
+            );
+          case 'transfer_to_vesting':
+            return (
+              <PowerUpTransactionComponent
+                transaction={transaction as PowerUp}
+              />
+            );
+        }
+      }
     }
   };
   return (

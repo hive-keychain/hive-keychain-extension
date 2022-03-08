@@ -13,10 +13,6 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from '@popup/actions/loading.actions';
 import { store } from '@popup/store';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -56,11 +52,9 @@ const getAccountTransactions = async (
       op.transfer_from_savings,
       op.claim_account,
     ]) as [number, number];
-    store.dispatch(addToLoadingList('html_popup_downloading_transactions'));
-    store.dispatch(addToLoadingList('html_popup_processing_transactions'));
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
-
+    console.log(accountName, start, limit);
     const transactionsFromBlockchain =
       await HiveUtils.getClient().database.getAccountHistory(
         accountName,
@@ -69,9 +63,6 @@ const getAccountTransactions = async (
         operationsBitmask,
       );
 
-    store.dispatch(
-      removeFromLoadingList('html_popup_downloading_transactions'),
-    );
     const transactions = transactionsFromBlockchain
       .map((e) => {
         let specificTransaction = null;
@@ -126,10 +117,14 @@ const getAccountTransactions = async (
           }
           case 'transfer_to_vesting': {
             specificTransaction = e[1].op[1] as PowerUp;
+            specificTransaction.type = 'power_up_down';
+            specificTransaction.subType = 'transfer_to_vesting';
             break;
           }
           case 'withdraw_vesting': {
             specificTransaction = e[1].op[1] as PowerDown;
+            specificTransaction.type = 'power_up_down';
+            specificTransaction.subType = 'withdraw_vesting';
             specificTransaction.amount = `${FormatUtils.toHP(
               e[1].op[1].vesting_shares,
               store.getState().globalProperties.globals,
@@ -138,14 +133,20 @@ const getAccountTransactions = async (
           }
           case 'interest': {
             specificTransaction = e[1].op[1] as ReceivedInterests;
+            specificTransaction.type = 'savings';
+            specificTransaction.subType = 'interest';
             break;
           }
           case 'transfer_to_savings': {
             specificTransaction = e[1].op[1] as DepositSavings;
+            specificTransaction.type = 'savings';
+            specificTransaction.subType = 'transfer_to_savings';
             break;
           }
           case 'transfer_from_savings': {
             specificTransaction = e[1].op[1] as WithdrawSavings;
+            specificTransaction.type = 'savings';
+            specificTransaction.subType = 'transfer_from_savings';
             break;
           }
           case 'claim_account': {
@@ -155,7 +156,7 @@ const getAccountTransactions = async (
         }
         const tr: Transaction = {
           ...specificTransaction,
-          type: e[1].op[0],
+          type: specificTransaction!.type ?? e[1].op[0],
           timestamp: e[1].timestamp,
           key: `${accountName}!${e[0]}`,
           index: e[0],
@@ -176,13 +177,17 @@ const getAccountTransactions = async (
       transactions[transactions.length - 1].last = true;
     }
 
-    if (start && Math.min(1000, start) !== 1000 && transactions.length) {
+    if (
+      start &&
+      Math.min(NB_TRANSACTION_FETCHED, start) !== NB_TRANSACTION_FETCHED &&
+      transactions.length
+    ) {
       transactions[transactions.length - 1].lastFetched = true;
     }
-    store.dispatch(removeFromLoadingList('html_popup_processing_transactions'));
+    console.log([transactions, start]);
     return [transactions, start];
   } catch (e) {
-    Logger.error(e);
+    Logger.error(e, e);
     return getAccountTransactions(
       accountName,
       (e as any).jse_info.stack[0].data.sequence - 1,

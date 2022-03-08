@@ -10,6 +10,10 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { fetchAccountTransactions } from '@popup/actions/transaction.actions';
 import { Icons } from '@popup/icons.enum';
@@ -37,16 +41,25 @@ type FilterTransactionTypes = {
   [key: string]: boolean;
 };
 
-const FILTER_TRANSACTION_TYPES: FilterTransactionTypes = {
-  transfer: false,
-  claim_reward_balance: false,
-  delegate_vesting_shares: false,
-  transfer_to_vesting: false,
-  withdraw_vesting: false,
-  transfer_to_savings: false,
-  transfer_from_savings: false,
-  claim_account: false,
-  interest: false,
+const DEFAULT_FILTER: WalletHistoryFilter = {
+  filterValue: '',
+  inSelected: false,
+  outSelected: false,
+  selectedTransactionTypes: {
+    transfer: false,
+    claim_reward_balance: false,
+    delegate_vesting_shares: false,
+    claim_account: false,
+    savings: false,
+    power_up_down: false,
+  },
+};
+
+type WalletHistoryFilter = {
+  filterValue: string;
+  inSelected: boolean;
+  outSelected: boolean;
+  selectedTransactionTypes: FilterTransactionTypes;
 };
 
 const WalletHistory = ({
@@ -54,15 +67,14 @@ const WalletHistory = ({
   activeAccountName,
   fetchAccountTransactions,
   setTitleContainerProperties,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
   let lastOperationFetched = -1;
 
-  const [filterValue, setFilterValue] = useState('');
-  const [inSelected, setInSelected] = useState(false);
-  const [outSelected, setOutSelected] = useState(false);
-  const [selectedTransactionType, setSelectedTransactionType] =
-    useState<FilterTransactionTypes>(FILTER_TRANSACTION_TYPES);
+  const [filter, setFilter] = useState<WalletHistoryFilter>(DEFAULT_FILTER);
+  const [filterReady, setFilterReady] = useState<boolean>(false);
 
   const [displayedTransactions, setDisplayedTransactions] = useState<
     Transaction[]
@@ -77,16 +89,49 @@ const WalletHistory = ({
   };
 
   const toggleFilterType = (transactionName: string) => {
-    const newValue = !selectedTransactionType[transactionName];
-    setSelectedTransactionType({
-      ...selectedTransactionType,
-      [transactionName]: newValue,
+    const newFilter = {
+      ...filter?.selectedTransactionTypes,
+      [transactionName]: !filter?.selectedTransactionTypes![transactionName],
+    };
+
+    setFilter({
+      ...filter,
+      selectedTransactionTypes: newFilter,
     });
+  };
+
+  const toggleFilterIn = () => {
+    const newFilter = {
+      ...filter,
+      inSelected: !filter.inSelected,
+    };
+    setFilter(newFilter);
+  };
+
+  const toggleFilterOut = () => {
+    const newFilter = {
+      ...filter,
+      outSelected: !filter.outSelected,
+    };
+    setFilter(newFilter);
+  };
+
+  const updateFilterValue = (value: string) => {
+    const newFilter = {
+      ...filter,
+      filterValue: value,
+    };
+    setFilter(newFilter);
   };
 
   useEffect(() => {
     init();
   }, []);
+
+  const finalizeDisplayedList = (list: Transaction[]) => {
+    setDisplayedTransactions(list);
+    removeFromLoadingList('html_popup_downloading_transactions');
+  };
 
   const init = async () => {
     setTitleContainerProperties({
@@ -96,57 +141,70 @@ const WalletHistory = ({
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
+    console.log('lastfetch init', lastOperationFetched);
+    addToLoadingList('html_popup_downloading_transactions');
     fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
   };
 
   useEffect(() => {
-    setDisplayedTransactions(transactions.list);
-    setTimeout(() => {
-      filterTransactions();
-    }, 0);
+    if (transactions.lastUsedStart !== -1) {
+      if (transactions.list.length < 6) {
+        console.log('refresh because not enough', lastOperationFetched);
+        addToLoadingList('html_popup_downloading_transactions');
+        fetchAccountTransactions(
+          activeAccountName!,
+          transactions.lastUsedStart - NB_TRANSACTION_FETCHED,
+        );
+      } else {
+        setTimeout(() => {
+          filterTransactions();
+        }, 0);
 
-    setLastTransactionIndex(ArrayUtils.getMinValue(transactions.list, 'index'));
-    setTimeout(() => {
-      if (idToScrollTo) {
-        document.getElementById(idToScrollTo)?.scrollIntoView();
+        setLastTransactionIndex(
+          ArrayUtils.getMinValue(transactions.list, 'index'),
+        );
+        setTimeout(() => {
+          if (idToScrollTo) {
+            document.getElementById(idToScrollTo)?.scrollIntoView();
+          }
+        }, 1000);
       }
-    }, 1000);
+    }
   }, [transactions]);
 
-  useEffect(() => {
-    saveFilterInLocalStorage();
-    filterTransactions();
-  }, [inSelected, outSelected, selectedTransactionType, filterValue]);
-
   const initFilters = async () => {
-    const filters = await LocalStorageUtils.getValueFromLocalStorage(
+    const filter = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
     );
-    if (filters) {
-      setSelectedTransactionType({
-        ...FILTER_TRANSACTION_TYPES,
-        ...filters.types,
-      });
-      setInSelected(filters.in);
-      setOutSelected(filters.out);
+    if (filter) {
+      setFilter(filter);
     }
+    setFilterReady(true);
   };
+  useEffect(() => {
+    if (filterReady) {
+      filterTransactions();
+      saveFilterInLocalStorage();
+    }
+  }, [filter]);
 
   const saveFilterInLocalStorage = () => {
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.WALLET_HISTORY_FILTERS,
-      { types: selectedTransactionType, in: inSelected, out: outSelected },
+      filter,
     );
   };
 
   const filterTransactions = () => {
     const selectedTransactionsTypes = Object.keys(
-      selectedTransactionType,
-    ).filter((transactionName) => selectedTransactionType[transactionName]);
+      filter.selectedTransactionTypes,
+    ).filter(
+      (transactionName) => filter.selectedTransactionTypes[transactionName],
+    );
     let filteredTransactions = transactions.list.filter(
       (transaction: Transaction) => {
-        const isInOrOutSelected = inSelected || outSelected;
+        const isInOrOutSelected = filter.inSelected || filter.outSelected;
         if (
           selectedTransactionsTypes.includes(transaction.type) ||
           selectedTransactionsTypes.length === 0
@@ -156,13 +214,13 @@ const WalletHistory = ({
             isInOrOutSelected
           ) {
             return (
-              (inSelected &&
+              (filter.inSelected &&
                 ((TRANSFER_TYPE_TRANSACTIONS.includes(transaction.type) &&
                   (transaction as Transfer).to === activeAccountName) ||
                   (transaction.type === 'delegate_vesting_shares' &&
                     (transaction as Delegation).delegatee ===
                       activeAccountName))) ||
-              (outSelected &&
+              (filter.outSelected &&
                 ((TRANSFER_TYPE_TRANSACTIONS.includes(transaction.type) &&
                   (transaction as Transfer).from === activeAccountName) ||
                   (transaction.type === 'delegate_vesting_shares' &&
@@ -180,59 +238,64 @@ const WalletHistory = ({
         (TRANSFER_TYPE_TRANSACTIONS.includes(transaction.type) &&
           WalletHistoryUtils.filterTransfer(
             transaction as Transfer,
-            filterValue,
+            filter.filterValue,
             activeAccountName!,
           )) ||
         (transaction.type === 'claim_reward_balance' &&
           WalletHistoryUtils.filterClaimReward(
             transaction as ClaimReward,
-            filterValue,
+            filter.filterValue,
           )) ||
         (transaction.type === 'delegate_vesting_shares' &&
           WalletHistoryUtils.filterDelegation(
             transaction as Delegation,
-            filterValue,
+            filter.filterValue,
             activeAccountName!,
           )) ||
-        (transaction.type === 'withdraw_vesting' &&
+        (transaction.subType === 'withdraw_vesting' &&
           WalletHistoryUtils.filterPowerUpDown(
             transaction as PowerDown,
-            filterValue,
+            filter.filterValue,
           )) ||
-        (transaction.type === 'transfer_to_vesting' &&
+        (transaction.subType === 'transfer_to_vesting' &&
           WalletHistoryUtils.filterPowerUpDown(
             transaction as PowerUp,
-            filterValue,
+            filter.filterValue,
           )) ||
-        (transaction.type === 'transfer_from_savings' &&
+        (transaction.subType === 'transfer_from_savings' &&
           WalletHistoryUtils.filterSavingsTransaction(
             transaction as WithdrawSavings,
-            filterValue,
+            filter.filterValue,
           )) ||
-        (transaction.type === 'transfer_to_savings' &&
+        (transaction.subType === 'transfer_to_savings' &&
           WalletHistoryUtils.filterSavingsTransaction(
             transaction as DepositSavings,
-            filterValue,
+            filter.filterValue,
           )) ||
-        (transaction.type === 'interest' &&
+        (transaction.subType === 'interest' &&
           WalletHistoryUtils.filterInterest(
             transaction as ReceivedInterests,
-            filterValue,
+            filter.filterValue,
           )) ||
         (transaction.timestamp &&
           moment(transaction.timestamp)
             .format('L')
-            .includes(filterValue.toLowerCase()))
+            .includes(filter.filterValue.toLowerCase()))
       );
     });
-    setDisplayedTransactions(filteredTransactions);
+    if (filteredTransactions.length >= 6) {
+      finalizeDisplayedList(filteredTransactions);
+    } else {
+      addToLoadingList('html_popup_downloading_transactions');
+      fetchAccountTransactions(
+        activeAccountName!,
+        transactions.lastUsedStart - NB_TRANSACTION_FETCHED,
+      );
+    }
   };
 
   const clearFilters = () => {
-    setFilterValue('');
-    setInSelected(false);
-    setOutSelected(false);
-    setSelectedTransactionType(FILTER_TRANSACTION_TYPES);
+    setFilter(DEFAULT_FILTER);
   };
 
   const renderListItem = (transaction: Transaction) => {
@@ -245,6 +308,7 @@ const WalletHistory = ({
 
   const tryToLoadMore = () => {
     setIdToScrollTo(`index-${lastTransactionIndex}`);
+    addToLoadingList('html_popup_downloading_transactions');
     fetchAccountTransactions(
       activeAccountName!,
       Math.min(
@@ -259,7 +323,8 @@ const WalletHistory = ({
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight
     ) {
-      tryToLoadMore();
+      console.log('fetch because scroll');
+      // tryToLoadMore();
     }
   };
 
@@ -278,8 +343,8 @@ const WalletHistory = ({
             <InputComponent
               type={InputType.TEXT}
               placeholder="popup_html_search"
-              value={filterValue}
-              onChange={setFilterValue}
+              value={filter.filterValue}
+              onChange={updateFilterValue}
             />
             <div className={'filter-button'} onClick={() => clearFilters()}>
               {chrome.i18n.getMessage(`popup_html_clear_filters`)}
@@ -287,14 +352,14 @@ const WalletHistory = ({
           </div>
           <div className="filter-selectors">
             <div className="types">
-              {selectedTransactionType &&
-                Object.keys(selectedTransactionType).map(
+              {filter.selectedTransactionTypes &&
+                Object.keys(filter.selectedTransactionTypes).map(
                   (filterOperationType) => (
                     <div
                       key={filterOperationType}
                       className={
                         'filter-button ' +
-                        (selectedTransactionType[filterOperationType]
+                        (filter.selectedTransactionTypes[filterOperationType]
                           ? 'selected'
                           : 'not-selected')
                       }
@@ -310,16 +375,18 @@ const WalletHistory = ({
             <div className="in-out-panel">
               <div
                 className={
-                  'filter-button ' + (inSelected ? 'selected' : 'not-selected')
+                  'filter-button ' +
+                  (filter.inSelected ? 'selected' : 'not-selected')
                 }
-                onClick={() => setInSelected(!inSelected)}>
+                onClick={() => toggleFilterIn()}>
                 {chrome.i18n.getMessage(`popup_html_filter_in`)}
               </div>
               <div
                 className={
-                  'filter-button ' + (outSelected ? 'selected' : 'not-selected')
+                  'filter-button ' +
+                  (filter.outSelected ? 'selected' : 'not-selected')
                 }
-                onClick={() => setOutSelected(!outSelected)}>
+                onClick={() => toggleFilterOut()}>
                 {chrome.i18n.getMessage(`popup_html_filter_out`)}
               </div>
             </div>
@@ -331,6 +398,7 @@ const WalletHistory = ({
         <FlatList
           list={displayedTransactions}
           renderItem={renderListItem}
+          renderOnScroll
           renderWhenEmpty={() => {
             return (
               <div className="empty-list">
@@ -367,6 +435,8 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   fetchAccountTransactions,
   setTitleContainerProperties,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
