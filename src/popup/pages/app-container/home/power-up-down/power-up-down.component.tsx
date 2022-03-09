@@ -118,6 +118,10 @@ const PowerUpDown = ({
       : 'popup_html_powerdown_text';
 
   const handleButtonClick = () => {
+    if (value.toString().trim() === '') {
+      setErrorMessage('popup_html_fill_form_error');
+      return;
+    }
     if (
       powerType === PowerType.POWER_DOWN &&
       Number(value).toFixed(3) === '0.000'

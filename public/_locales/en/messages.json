@@ -2073,7 +2073,7 @@
     "description": "Node Rpc auto selection"
   },
   "popup_html_rpc_automatic_mode_hint": {
-    "message": "Will always select the best rpc node for you",
+    "message": "Will always select the best RPC node for you",
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
