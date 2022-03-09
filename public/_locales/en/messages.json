@@ -2180,6 +2180,7 @@
     "message": "@$1 powered up $2 for @$3",
     "description": "Wallet information claim rewards"
   },
+
   "popup_html_filter_in": {
     "message": "In",
     "description": "Wallet filters"
@@ -2258,6 +2259,10 @@
   },
   "popup_html_transaction_list_is_empty": {
     "message": "No transaction to display",
+    "description": "on wallet history when no transactions to display"
+  },
+  "popup_html_transaction_list_is_empty_try_clear_filter": {
+    "message": "Try to clear your filter",
     "description": "on wallet history when no transactions to display"
   }
 }

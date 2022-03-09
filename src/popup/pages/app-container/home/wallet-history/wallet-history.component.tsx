@@ -24,6 +24,7 @@ import FlatList from 'flatlist-react';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -149,7 +150,10 @@ const WalletHistory = ({
 
   useEffect(() => {
     if (transactions.lastUsedStart !== -1) {
-      if (transactions.list.length < 6) {
+      if (
+        transactions.list.length < 6 &&
+        !transactions.list.some((t) => t.last)
+      ) {
         console.log('refresh because not enough', lastOperationFetched);
         addToLoadingList('html_popup_downloading_transactions');
         fetchAccountTransactions(
@@ -283,7 +287,10 @@ const WalletHistory = ({
             .includes(filter.filterValue.toLowerCase()))
       );
     });
-    if (filteredTransactions.length >= 6) {
+    if (
+      filteredTransactions.length >= 6 ||
+      transactions.list.some((t) => t.last)
+    ) {
       finalizeDisplayedList(filteredTransactions);
     } else {
       addToLoadingList('html_popup_downloading_transactions');
@@ -403,14 +410,23 @@ const WalletHistory = ({
             return (
               <div className="empty-list">
                 <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
-                <span>
-                  {chrome.i18n.getMessage(
-                    'popup_html_transaction_list_is_empty',
-                  )}
-                </span>
+                <div className="labels">
+                  <span>
+                    {chrome.i18n.getMessage(
+                      'popup_html_transaction_list_is_empty',
+                    )}
+                  </span>
+                  <span>
+                    {chrome.i18n.getMessage(
+                      'popup_html_transaction_list_is_empty_try_clear_filter',
+                    )}
+                  </span>
+                </div>
               </div>
             );
           }}
+          scrollToTop
+          scrollToTopButton={BackToTopButton}
         />
         {!transactions.list[transactions.list.length - 1]?.last && (
           <div className="load-more-panel" onClick={tryToLoadMore}>

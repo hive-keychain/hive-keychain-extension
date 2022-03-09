@@ -135,6 +135,11 @@
       box-sizing: border-box;
       font-size: 16px;
 
+      .labels {
+        display: flex;
+        flex-direction: column;
+      }
+
       .icon-component {
         height: 50px;
         width: 50px;
