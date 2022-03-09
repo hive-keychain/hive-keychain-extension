@@ -470,7 +470,11 @@ const signMessage = (message: string, privateKey: string) => {
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
 
-const deposit = async (activeAccount: ActiveAccount, amount: string) => {
+const deposit = async (
+  activeAccount: ActiveAccount,
+  amount: string,
+  receiver: string,
+) => {
   const savings = await hive.api.getSavingsWithdrawFromAsync(
     activeAccount.name,
   );
@@ -486,7 +490,7 @@ const deposit = async (activeAccount: ActiveAccount, amount: string) => {
               from: activeAccount.name,
               memo: '',
               request_id: requestId,
-              to: activeAccount.name,
+              to: receiver,
             },
           ] as TransferToSavingsOperation,
         ],

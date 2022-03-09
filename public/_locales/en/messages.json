@@ -2152,6 +2152,10 @@
     "message": "Deposit of $1 into savings",
     "description": "Wallet information claim rewards"
   },
+  "popup_html_wallet_info_deposit_savings_other_account": {
+    "message": "@$1 made a deposit of $2 into @$3's savings",
+    "description": "Wallet information claim rewards"
+  },
   "popup_html_wallet_info_withdraw_savings": {
     "message": "Withdrawn $1 from savings",
     "description": "Wallet information claim rewards"
@@ -2162,6 +2166,10 @@
   },
   "popup_html_wallet_info_power_up": {
     "message": "Powered up $1",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_power_up_other_account": {
+    "message": "@$1 powered up $2 for @$3",
     "description": "Wallet information claim rewards"
   },
   "popup_html_filter_in": {

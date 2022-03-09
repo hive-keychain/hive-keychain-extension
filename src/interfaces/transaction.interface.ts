@@ -48,6 +48,8 @@ export interface ClaimReward extends Transaction {
 
 export interface PowerUp extends Transaction {
   amount: string;
+  to: string;
+  from: string;
 }
 
 export interface PowerDown extends Transaction {
@@ -60,6 +62,8 @@ export interface ReceivedInterests extends Transaction {
 
 export interface DepositSavings extends Transaction {
   amount: string;
+  to: string;
+  from: string;
 }
 
 export interface WithdrawSavings extends Transaction {

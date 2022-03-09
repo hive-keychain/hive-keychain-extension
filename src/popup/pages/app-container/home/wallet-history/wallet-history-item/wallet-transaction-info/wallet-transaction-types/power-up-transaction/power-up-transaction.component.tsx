@@ -14,6 +14,12 @@ const PowerUpTransaction = ({
   activeAccountName,
 }: PropsFromRedux & PowerUpTransactionProps) => {
   const getDetail = () => {
+    if (transaction.to !== activeAccountName) {
+      return chrome.i18n.getMessage(
+        'popup_html_wallet_info_power_up_other_account',
+        [transaction.from, transaction.amount, transaction.to],
+      );
+    }
     return chrome.i18n.getMessage('popup_html_wallet_info_power_up', [
       transaction.amount,
     ]);

@@ -14,9 +14,16 @@ const DepositSavingsTransaction = ({
   activeAccountName,
 }: PropsFromRedux & DepositSavingsTransactionProps) => {
   const getDetail = () => {
-    return chrome.i18n.getMessage('popup_html_wallet_info_deposit_savings', [
-      transaction.amount,
-    ]);
+    if (transaction.to !== activeAccountName) {
+      return chrome.i18n.getMessage(
+        'popup_html_wallet_info_deposit_savings_other_account',
+        [transaction.from, transaction.amount, transaction.to],
+      );
+    } else {
+      return chrome.i18n.getMessage('popup_html_wallet_info_deposit_savings', [
+        transaction.amount,
+      ]);
+    }
   };
 
   return (

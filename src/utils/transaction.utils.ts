@@ -54,7 +54,6 @@ const getAccountTransactions = async (
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
-    console.log(accountName, start, limit);
     const transactionsFromBlockchain =
       await HiveUtils.getClient().database.getAccountHistory(
         accountName,
@@ -62,6 +61,8 @@ const getAccountTransactions = async (
         limit,
         operationsBitmask,
       );
+
+    console.log(transactionsFromBlockchain);
 
     const transactions = transactionsFromBlockchain
       .map((e) => {
@@ -184,7 +185,6 @@ const getAccountTransactions = async (
     ) {
       transactions[transactions.length - 1].lastFetched = true;
     }
-    console.log([transactions, start]);
     return [transactions, start];
   } catch (e) {
     Logger.error(e, e);
