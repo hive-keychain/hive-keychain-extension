@@ -2084,6 +2084,14 @@
     "message": "Set proxy",
     "description": "in proxy suggestion popup"
   },
+  "popup_html_setting_proxy": {
+    "message": "Setting proxy",
+    "description": "in proxy suggestion popup"
+  },
+  "popup_html_clearing_proxy": {
+    "message": "Clearing proxy",
+    "description": "in proxy suggestion popup"
+  },
   "popup_html_close": {
     "message": "Close",
     "description": "general"
