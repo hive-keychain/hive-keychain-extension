@@ -30,7 +30,7 @@ const Home = ({
   globalProperties,
   resetTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [displayLoader, setDisplayLoader] = useState(true);
+  const [displayLoader, setDisplayLoader] = useState(false);
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();
@@ -84,7 +84,7 @@ const Home = ({
       {displayLoader && (
         <div className="loading">
           <RotatingLogoComponent></RotatingLogoComponent>
-          <div className="caption">HIVE KEYCHAIN</div>
+          <div className="caption">HIVE KEYCHAIN Hello</div>
         </div>
       )}
     </div>
