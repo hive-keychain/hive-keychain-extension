@@ -33,18 +33,20 @@ export const refreshKeys = (localAccount: LocalAccount) => {
 export const loadActiveAccount =
   (account: LocalAccount): AppThunk =>
   async (dispatch, getState) => {
-    dispatch(refreshKeys(account));
-    dispatch(getAccountRC(account.name));
-    const extendedAccount = (
-      await HiveUtils.getClient().database.getAccounts([account.name])
-    )[0];
-    dispatch({
-      type: ActionType.SET_ACTIVE_ACCOUNT,
-      payload: {
-        account: extendedAccount,
-        name: account.name,
-      },
-    });
+    if (account) {
+      dispatch(refreshKeys(account));
+      dispatch(getAccountRC(account.name));
+      const extendedAccount = (
+        await HiveUtils.getClient().database.getAccounts([account.name])
+      )[0];
+      dispatch({
+        type: ActionType.SET_ACTIVE_ACCOUNT,
+        payload: {
+          account: extendedAccount,
+          name: account.name,
+        },
+      });
+    }
   };
 
 export const getAccountRC =

@@ -147,7 +147,6 @@ const WalletHistory = ({
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
-    console.log('lastfetch init', lastOperationFetched);
     addToLoadingList('html_popup_downloading_transactions');
     fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
@@ -159,7 +158,6 @@ const WalletHistory = ({
         transactions.list.length < MINIMUM_FETCHED_TRANSACTIONS &&
         !transactions.list.some((t) => t.last)
       ) {
-        console.log('refresh because not enough', lastOperationFetched);
         addToLoadingList('html_popup_downloading_transactions');
         fetchAccountTransactions(
           activeAccountName!,
@@ -173,11 +171,6 @@ const WalletHistory = ({
         setLastTransactionIndex(
           ArrayUtils.getMinValue(transactions.list, 'index'),
         );
-        setTimeout(() => {
-          if (idToScrollTo) {
-            document.getElementById(idToScrollTo)?.scrollIntoView();
-          }
-        }, 1000);
       }
     }
   }, [transactions]);
@@ -337,8 +330,7 @@ const WalletHistory = ({
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight
     ) {
-      console.log('fetch because scroll');
-      // tryToLoadMore();
+      tryToLoadMore();
     }
   };
 
