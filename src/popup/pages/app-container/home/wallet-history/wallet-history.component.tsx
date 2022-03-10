@@ -22,7 +22,7 @@ import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import FlatList from 'flatlist-react';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -55,6 +55,7 @@ const DEFAULT_FILTER: WalletHistoryFilter = {
     power_up_down: false,
   },
 };
+const MINIMUM_FETCHED_TRANSACTIONS = 1;
 
 type WalletHistoryFilter = {
   filterValue: string;
@@ -84,6 +85,10 @@ const WalletHistory = ({
   const [lastTransactionIndex, setLastTransactionIndex] = useState<number>(-1);
 
   const [idToScrollTo, setIdToScrollTo] = useState<string>();
+
+  const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
+
+  const walletItemList = useRef<HTMLDivElement>(null);
 
   const toggleFilter = () => {
     setIsFilterPanelOpened(!isFilterOpened);
@@ -151,7 +156,7 @@ const WalletHistory = ({
   useEffect(() => {
     if (transactions.lastUsedStart !== -1) {
       if (
-        transactions.list.length < 6 &&
+        transactions.list.length < MINIMUM_FETCHED_TRANSACTIONS &&
         !transactions.list.some((t) => t.last)
       ) {
         console.log('refresh because not enough', lastOperationFetched);
@@ -288,7 +293,7 @@ const WalletHistory = ({
       );
     });
     if (
-      filteredTransactions.length >= 6 ||
+      filteredTransactions.length >= MINIMUM_FETCHED_TRANSACTIONS ||
       transactions.list.some((t) => t.last)
     ) {
       finalizeDisplayedList(filteredTransactions);
@@ -326,6 +331,8 @@ const WalletHistory = ({
   };
 
   const handleScroll = (event: any) => {
+    setDisplayedScrollToTop(event.target.scrollTop !== 0);
+
     if (
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight
@@ -401,7 +408,10 @@ const WalletHistory = ({
         </div>
       </div>
 
-      <div className="wallet-item-list" onScroll={handleScroll}>
+      <div
+        ref={walletItemList}
+        className="wallet-item-list"
+        onScroll={handleScroll}>
         <FlatList
           list={displayedTransactions}
           renderItem={renderListItem}
@@ -425,10 +435,8 @@ const WalletHistory = ({
               </div>
             );
           }}
-          scrollToTop
-          scrollToTopButton={BackToTopButton}
         />
-        {!transactions.list[transactions.list.length - 1]?.last && (
+        {transactions.list[transactions.list.length - 1]?.last === false && (
           <div className="load-more-panel" onClick={tryToLoadMore}>
             <span className="label">
               {chrome.i18n.getMessage('popup_html_load_more')}
@@ -436,6 +444,7 @@ const WalletHistory = ({
             <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
           </div>
         )}
+        {displayScrollToTop && <BackToTopButton element={walletItemList} />}
       </div>
     </div>
   );

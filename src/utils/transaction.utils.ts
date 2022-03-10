@@ -168,6 +168,8 @@ const getAccountTransactions = async (
             e[1].trx_id === '0000000000000000000000000000000000000000'
               ? `https://hiveblocks.com/b/${e[1].block}#${e[1].trx_id}`
               : `https://hiveblocks.com/tx/${e[1].trx_id}`,
+          last: false,
+          lastFetched: false,
         };
         return tr;
       })
@@ -186,6 +188,15 @@ const getAccountTransactions = async (
     ) {
       transactions[transactions.length - 1].lastFetched = true;
     }
+    console.log(
+      transactions.map((t) => {
+        return {
+          last: t.last,
+          lastFetched: t.lastFetched,
+          index: t.index,
+        };
+      }),
+    );
     return [transactions, start];
   } catch (e) {
     Logger.error(e, e);
