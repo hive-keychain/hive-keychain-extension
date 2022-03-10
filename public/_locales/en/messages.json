@@ -1677,7 +1677,7 @@
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_power_down_message": {
-    "message": "Please confirm cancel power down.",
+    "message": "Please confirm that you want to cancel your power down.",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_delegation_message": {
