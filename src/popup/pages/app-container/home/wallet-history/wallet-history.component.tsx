@@ -10,10 +10,6 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from '@popup/actions/loading.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { fetchAccountTransactions } from '@popup/actions/transaction.actions';
 import { Icons } from '@popup/icons.enum';
@@ -28,6 +24,7 @@ import { BackToTopButton } from 'src/common-ui/back-to-top-button/back-to-top-bu
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransactionUtils, {
@@ -69,8 +66,6 @@ const WalletHistory = ({
   activeAccountName,
   fetchAccountTransactions,
   setTitleContainerProperties,
-  addToLoadingList,
-  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
   let lastOperationFetched = -1;
@@ -84,11 +79,13 @@ const WalletHistory = ({
 
   const [lastTransactionIndex, setLastTransactionIndex] = useState<number>(-1);
 
-  const [idToScrollTo, setIdToScrollTo] = useState<string>();
-
   const [displayScrollToTop, setDisplayedScrollToTop] = useState(false);
 
   const walletItemList = useRef<HTMLDivElement>(null);
+
+  const [loading, setLoading] = useState(false);
+
+  const [previousTransactionLength, setPreviousTransactionLength] = useState(0);
 
   const toggleFilter = () => {
     setIsFilterPanelOpened(!isFilterOpened);
@@ -136,7 +133,7 @@ const WalletHistory = ({
 
   const finalizeDisplayedList = (list: Transaction[]) => {
     setDisplayedTransactions(list);
-    removeFromLoadingList('html_popup_downloading_transactions');
+    setLoading(false);
   };
 
   const init = async () => {
@@ -147,7 +144,7 @@ const WalletHistory = ({
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
-    addToLoadingList('html_popup_downloading_transactions');
+    setLoading(true);
     fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
   };
@@ -158,7 +155,7 @@ const WalletHistory = ({
         transactions.list.length < MINIMUM_FETCHED_TRANSACTIONS &&
         !transactions.list.some((t) => t.last)
       ) {
-        addToLoadingList('html_popup_downloading_transactions');
+        setLoading(true);
         fetchAccountTransactions(
           activeAccountName!,
           transactions.lastUsedStart - NB_TRANSACTION_FETCHED,
@@ -286,12 +283,13 @@ const WalletHistory = ({
       );
     });
     if (
-      filteredTransactions.length >= MINIMUM_FETCHED_TRANSACTIONS ||
+      (filteredTransactions.length >= MINIMUM_FETCHED_TRANSACTIONS &&
+        filteredTransactions.length >= previousTransactionLength + 1) ||
       transactions.list.some((t) => t.last)
     ) {
       finalizeDisplayedList(filteredTransactions);
     } else {
-      addToLoadingList('html_popup_downloading_transactions');
+      setLoading(true);
       fetchAccountTransactions(
         activeAccountName!,
         transactions.lastUsedStart - NB_TRANSACTION_FETCHED,
@@ -312,8 +310,9 @@ const WalletHistory = ({
   };
 
   const tryToLoadMore = () => {
-    setIdToScrollTo(`index-${lastTransactionIndex}`);
-    addToLoadingList('html_popup_downloading_transactions');
+    if (loading) return;
+    setPreviousTransactionLength(displayedTransactions.length);
+    setLoading(true);
     fetchAccountTransactions(
       activeAccountName!,
       Math.min(
@@ -428,14 +427,16 @@ const WalletHistory = ({
             );
           }}
         />
-        {transactions.list[transactions.list.length - 1]?.last === false && (
-          <div className="load-more-panel" onClick={tryToLoadMore}>
-            <span className="label">
-              {chrome.i18n.getMessage('popup_html_load_more')}
-            </span>
-            <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
-          </div>
-        )}
+        {transactions.list[transactions.list.length - 1]?.last === false &&
+          !loading && (
+            <div className="load-more-panel" onClick={tryToLoadMore}>
+              <span className="label">
+                {chrome.i18n.getMessage('popup_html_load_more')}
+              </span>
+              <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
+            </div>
+          )}
+        {loading && <RotatingLogoComponent></RotatingLogoComponent>}
         {displayScrollToTop && <BackToTopButton element={walletItemList} />}
       </div>
     </div>
@@ -452,8 +453,6 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   fetchAccountTransactions,
   setTitleContainerProperties,
-  addToLoadingList,
-  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

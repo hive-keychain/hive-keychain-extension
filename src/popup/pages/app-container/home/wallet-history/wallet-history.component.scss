@@ -117,6 +117,16 @@
 
   .wallet-item-list {
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+
+    .rotating-logo {
+      align-self: center;
+      justify-self: center;
+      height: 50px;
+      width: 50px;
+    }
+
     .wallet-history-item {
       background: $black-transparent;
     }

@@ -84,7 +84,7 @@ const Home = ({
       {displayLoader && (
         <div className="loading">
           <RotatingLogoComponent></RotatingLogoComponent>
-          <div className="caption">HIVE KEYCHAIN Hello</div>
+          <div className="caption">HIVE KEYCHAIN</div>
         </div>
       )}
     </div>
