@@ -182,6 +182,7 @@ const WalletHistory = ({
     setFilterReady(true);
   };
   useEffect(() => {
+    setPreviousTransactionLength(0);
     if (filterReady) {
       filterTransactions();
       saveFilterInLocalStorage();

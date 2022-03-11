@@ -26,14 +26,17 @@ const Governance = ({ setTitleContainerProperties }: PropsFromRedux) => {
           <Tab>{chrome.i18n.getMessage('popup_html_proposal')}</Tab>
         </TabList>
         <TabPanel>
+          <ProposalTabComponent></ProposalTabComponent>
+        </TabPanel>
+        <TabPanel>
           <WitnessTabComponent></WitnessTabComponent>
         </TabPanel>
         <TabPanel>
           <ProxyTabComponent></ProxyTabComponent>
         </TabPanel>
-        <TabPanel>
+        {/* <TabPanel>
           <ProposalTabComponent></ProposalTabComponent>
-        </TabPanel>
+        </TabPanel> */}
       </Tabs>
     </div>
   );

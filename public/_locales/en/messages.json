@@ -2264,5 +2264,9 @@
   "popup_html_transaction_list_is_empty_try_clear_filter": {
     "message": "Try to clear your filter",
     "description": "on wallet history when no transactions to display"
+  },
+  "popup_html_days_remaining": {
+    "message": "$1 day(s) remaining",
+    "description": "Days remaining proposal"
   }
 }
