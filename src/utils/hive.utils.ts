@@ -582,6 +582,33 @@ const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
+  try {
+    await updateProposalVote(activeAccount, proposalId, true);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
+};
+
+const unvoteProposal = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+) => {
+  try {
+    await updateProposalVote(activeAccount, proposalId, false);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
+};
+
+const updateProposalVote = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+  vote: boolean,
+) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.sendOperations(
       [
@@ -590,7 +617,7 @@ const voteForProposal = async (
           {
             voter: activeAccount.name!,
             proposal_ids: [proposalId],
-            approve: true,
+            approve: vote,
             extensions: [],
           },
         ] as UpdateProposalVotesOperation,
@@ -653,6 +680,7 @@ const HiveUtils = {
   voteForProposal,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
+  unvoteProposal,
 };
 
 export default HiveUtils;

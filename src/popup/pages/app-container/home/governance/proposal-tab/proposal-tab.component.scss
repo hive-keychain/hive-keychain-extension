@@ -3,6 +3,8 @@
   .proposal-list {
     display: flex;
     flex-direction: column;
+    max-height: 462px;
+    overflow: auto;
     .proposal-item {
       display: flex;
       flex-direction: column;
@@ -43,6 +45,7 @@
 
         .remaining-days {
           flex: 1;
+          font-size: 16px;
         }
         .nb-votes {
           display: flex;
@@ -50,6 +53,10 @@
           align-items: center;
           justify-content: center;
           row-gap: 8px;
+
+          .value {
+            font-size: 18px;
+          }
 
           .icon-component {
             font-size: 36px;

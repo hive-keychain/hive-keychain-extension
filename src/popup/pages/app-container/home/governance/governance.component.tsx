@@ -18,25 +18,22 @@ const Governance = ({ setTitleContainerProperties }: PropsFromRedux) => {
   });
 
   return (
-    <div className="witness-voting-page">
-      <Tabs>
+    <div className="governance-page">
+      <Tabs defaultIndex={2}>
         <TabList>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proxy')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proposal')}</Tab>
         </TabList>
         <TabPanel>
-          <ProposalTabComponent></ProposalTabComponent>
-        </TabPanel>
-        <TabPanel>
           <WitnessTabComponent></WitnessTabComponent>
         </TabPanel>
         <TabPanel>
           <ProxyTabComponent></ProxyTabComponent>
         </TabPanel>
-        {/* <TabPanel>
+        <TabPanel>
           <ProposalTabComponent></ProposalTabComponent>
-        </TabPanel> */}
+        </TabPanel>
       </Tabs>
     </div>
   );

@@ -30,10 +30,19 @@ const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
-  return await HiveUtils.voteForProposal(activeAccount, PROPOSAL_ID);
+  return await HiveUtils.voteForProposal(activeAccount, proposalId);
 };
 
-const getProposalList = async (): Promise<Proposal[]> => {
+const unvoteProposal = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+) => {
+  return await HiveUtils.unvoteProposal(activeAccount, proposalId);
+};
+
+const getProposalList = async (
+  activeAccount: ActiveAccount,
+): Promise<Proposal[]> => {
   const result = await hive.api.callAsync('database_api.list_proposals', {
     start: [-1],
     limit: 1000,
@@ -41,6 +50,18 @@ const getProposalList = async (): Promise<Proposal[]> => {
     order_direction: 'descending',
     status: 'votable',
   });
+
+  const listProposalVotes = (
+    await hive.api.callAsync('database_api.list_proposal_votes', {
+      start: [activeAccount.name],
+      limit: 1000,
+      order: 'by_voter_proposal',
+      order_direction: 'descending',
+      status: 'votable',
+    })
+  ).proposal_votes
+    .filter((item: any) => item.voter === activeAccount.name)
+    .map((item: any) => item.proposal);
 
   return result.proposals.map((proposal: any) => {
     return {
@@ -62,7 +83,10 @@ const getProposalList = async (): Promise<Proposal[]> => {
         ),
         4,
       )} HP`,
-      voted: false,
+      voted:
+        listProposalVotes.find(
+          (p: any) => p.proposal_id === proposal.proposal_id,
+        ) !== undefined,
     } as Proposal;
   });
 };
@@ -72,6 +96,7 @@ const ProposalUtils = {
   voteForProposal,
   voteForKeychainProposal,
   getProposalList,
+  unvoteProposal,
 };
 
 export default ProposalUtils;

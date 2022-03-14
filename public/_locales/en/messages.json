@@ -1639,8 +1639,20 @@
     "message": "Vote successful! Thank you for supporting Keychain development through our DHF proposal",
     "description": "When user doesnt vote for proposal"
   },
+  "popup_html_proposal_vote_successful": {
+    "message": "Vote successful!",
+    "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_proposal_unvote_successful": {
+    "message": "Unvote successful!",
+    "description": "When user doesnt vote for proposal"
+  },
   "popup_html_proposal_vote_fail": {
     "message": "There was an error while voting for proposal. Try again later",
+    "description": "Error while voting for proposal"
+  },
+  "popup_html_proposal_unvote_fail": {
+    "message": "There was an error while unvoting the proposal. Try again later",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
@@ -2268,5 +2280,17 @@
   "popup_html_days_remaining": {
     "message": "$1 day(s) remaining",
     "description": "Days remaining proposal"
+  },
+  "popup_html_proposal_by": {
+    "message": "By @$1",
+    "description": "In proposal tab"
+  },
+  "popup_html_voting_for_proposal": {
+    "message": "Voting for proposal",
+    "description": "Loading message voting for proposal"
+  },
+  "popup_html_unvoting_for_proposal": {
+    "message": "Unvoting proposal",
+    "description": "Loading message unvoting for proposal"
   }
 }
