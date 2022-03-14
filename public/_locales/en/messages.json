@@ -2292,5 +2292,17 @@
   "popup_html_unvoting_for_proposal": {
     "message": "Unvoting proposal",
     "description": "Loading message unvoting for proposal"
+  },
+  "popup_html_proposal_funded_option_totally_funded": {
+    "message": "Funded",
+    "description": "Proposal funded option"
+  },
+  "popup_html_proposal_funded_option_partially_funded": {
+    "message": "Partially funded",
+    "description": "Proposal funded option"
+  },
+  "popup_html_proposal_funded_option_not_funded": {
+    "message": "Not funded",
+    "description": "Proposal funded option"
   }
 }

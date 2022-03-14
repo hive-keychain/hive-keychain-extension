@@ -657,6 +657,14 @@ const getDelayedTransactionInfo = (trxID: string) => {
   });
 };
 
+const getProposalDailyBudget = async () => {
+  return parseFloat(
+    (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
+      .toString()
+      .split(' ')[0],
+  );
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -681,6 +689,7 @@ const HiveUtils = {
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
   unvoteProposal,
+  getProposalDailyBudget,
 };
 
 export default HiveUtils;

@@ -19,7 +19,7 @@ const Governance = ({ setTitleContainerProperties }: PropsFromRedux) => {
 
   return (
     <div className="governance-page">
-      <Tabs defaultIndex={2}>
+      <Tabs>
         <TabList>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proxy')}</Tab>

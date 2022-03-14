@@ -17,6 +17,11 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-tab.component.scss';
 
+export enum FundedOption {
+  TOTALLY_FUNDED = 'totally_funded',
+  PARTIALLY_FUNDED = 'partially_funded',
+  NOT_FUNDED = 'not_funded',
+}
 export interface Proposal {
   id: number;
   creator: string;
@@ -30,6 +35,7 @@ export interface Proposal {
   link: string;
   proposalId: number;
   voted: boolean;
+  funded: FundedOption;
 }
 
 const ProposalTab = ({
@@ -96,7 +102,14 @@ const ProposalTab = ({
         {proposals.map((proposal) => (
           <div className="proposal-item" key={proposal.proposalId}>
             <div className="title" onClick={() => goTo(proposal.link)}>
-              #{proposal.id} - {proposal.subject}
+              <div>
+                #{proposal.id} - {proposal.subject}
+              </div>
+              <div className={`funded-chip ${proposal.funded}`}>
+                {chrome.i18n.getMessage(
+                  `popup_html_proposal_funded_option_${proposal.funded}`,
+                )}
+              </div>
             </div>
             <div className="additional-info">
               <div className="left-panel">

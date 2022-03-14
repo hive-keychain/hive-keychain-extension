@@ -1,6 +1,9 @@
 import * as hive from '@hiveio/hive-js';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
+import {
+  FundedOption,
+  Proposal,
+} from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { store } from '@popup/store';
 import moment from 'moment';
 import Config from 'src/config';
@@ -63,7 +66,20 @@ const getProposalList = async (
     .filter((item: any) => item.voter === activeAccount.name)
     .map((item: any) => item.proposal);
 
+  let dailyBudget = await HiveUtils.getProposalDailyBudget();
+  console.log(dailyBudget);
+
   return result.proposals.map((proposal: any) => {
+    let fundedOption = FundedOption.NOT_FUNDED;
+    if (dailyBudget > 0) {
+      if (dailyBudget - parseFloat(proposal.daily_pay.amount) / 1000 >= 0) {
+        fundedOption = FundedOption.TOTALLY_FUNDED;
+      } else {
+        fundedOption = FundedOption.PARTIALLY_FUNDED;
+      }
+    }
+
+    dailyBudget = dailyBudget - parseFloat(proposal.daily_pay.amount) / 1000;
     return {
       id: proposal.id,
       creator: proposal.creator,
@@ -87,6 +103,7 @@ const getProposalList = async (
         listProposalVotes.find(
           (p: any) => p.proposal_id === proposal.proposal_id,
         ) !== undefined,
+      funded: fundedOption,
     } as Proposal;
   });
 };

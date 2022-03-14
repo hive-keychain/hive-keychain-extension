@@ -18,6 +18,31 @@
       .title {
         font-size: 18px;
         cursor: pointer;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        column-gap: 8px;
+        .funded-chip {
+          border: 1px solid white;
+          border-radius: 16px;
+          color: white;
+          padding: 4px 8px 2px 8px;
+          font-size: 14px;
+          min-width: 64px;
+          text-align: center;
+          vertical-align: middle;
+          &.totally_funded {
+            background-color: green;
+          }
+
+          &.partially_funded {
+            background: orange;
+          }
+
+          &.not_funded {
+            background: $red-dark;
+          }
+        }
       }
 
       .additional-info {
