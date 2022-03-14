@@ -67,7 +67,6 @@ const getProposalList = async (
     .map((item: any) => item.proposal);
 
   let dailyBudget = await HiveUtils.getProposalDailyBudget();
-  console.log(dailyBudget);
 
   return result.proposals.map((proposal: any) => {
     let fundedOption = FundedOption.NOT_FUNDED;

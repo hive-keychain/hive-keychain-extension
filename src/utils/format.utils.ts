@@ -27,7 +27,6 @@ const formatCurrencyValue = (value: string | Asset | number) => {
 };
 
 const nFormatter = (num: number, digits: number) => {
-  console.log(num);
   var si = [
     {
       value: 1,
