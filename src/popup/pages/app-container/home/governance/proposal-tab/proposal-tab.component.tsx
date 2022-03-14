@@ -12,6 +12,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-tab.component.scss';
 
@@ -42,16 +43,17 @@ const ProposalTab = ({
   removeFromLoadingList,
 }: PropsFromRedux) => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     initList();
   }, []);
 
   const initList = async () => {
-    addToLoadingList('popup_html_loading_proposals');
+    setLoading(true);
     const proposals = await ProposalUtils.getProposalList(activeAccount);
     setProposals(proposals);
-    removeFromLoadingList('popup_html_loading_proposals');
+    setLoading(false);
   };
 
   const toggleVoteInArray = (id: number) => {
@@ -67,15 +69,18 @@ const ProposalTab = ({
 
   return (
     <div className="proposal-tab">
-      <div className="proposal-list">
-        {proposals.map((proposal) => (
-          <ProposalItemComponent
-            key={proposal.proposalId}
-            proposal={proposal}
-            onVoteUnvoteSuccessful={() => toggleVoteInArray(proposal.id)}
-          />
-        ))}
-      </div>
+      {!isLoading && (
+        <div className="proposal-list">
+          {proposals.map((proposal) => (
+            <ProposalItemComponent
+              key={proposal.proposalId}
+              proposal={proposal}
+              onVoteUnvoteSuccessful={() => toggleVoteInArray(proposal.id)}
+            />
+          ))}
+        </div>
+      )}
+      {isLoading && <RotatingLogoComponent></RotatingLogoComponent>}
     </div>
   );
 };
