@@ -59,6 +59,10 @@ const ProposalTab = ({
     chrome.tabs.create({ url: link });
   };
 
+  const goToCreator = (creator: Proposal['creator']) => {
+    chrome.tabs.create({ url: `https://peakd.com/@${creator}` });
+  };
+
   const toggleVoteInArray = (id: number) => {
     const proposalsCopy = [...proposals];
     for (let proposal of proposalsCopy) {
@@ -113,7 +117,9 @@ const ProposalTab = ({
             </div>
             <div className="additional-info">
               <div className="left-panel">
-                <div className="creator">
+                <div
+                  className="creator"
+                  onClick={() => goToCreator(proposal.creator)}>
                   <img
                     src={`https://images.hive.blog/u/${proposal.creator}/avatar`}
                     onError={(e: any) => {
