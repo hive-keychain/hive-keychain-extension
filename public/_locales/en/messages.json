@@ -2304,5 +2304,9 @@
   "popup_html_proposal_funded_option_not_funded": {
     "message": "Not funded",
     "description": "Proposal funded option"
+  },
+  "popup_html_loading_proposals": {
+    "message": "Loading proposals",
+    "description": "proposal tab"
   }
 }

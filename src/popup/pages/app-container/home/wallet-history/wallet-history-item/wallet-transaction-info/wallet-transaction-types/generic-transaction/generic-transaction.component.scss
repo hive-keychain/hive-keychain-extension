@@ -4,6 +4,10 @@
   flex-direction: column;
   flex: 1;
 
+  &.has-expandable-content {
+    cursor: pointer;
+  }
+
   .information-panel {
     display: flex;
     flex-direction: column;
@@ -29,13 +33,13 @@
   }
   .expandable-panel {
     max-height: 0;
-    transition: max-height 0.5s ease-out;
+    transition: max-height 0.25s ease-out;
     overflow: hidden;
     font-size: 14px;
 
     &.opened {
       max-height: 500px;
-      transition: max-height 0.5s ease-in;
+      transition: max-height 0.25s ease-in;
       margin-top: 8px;
     }
   }

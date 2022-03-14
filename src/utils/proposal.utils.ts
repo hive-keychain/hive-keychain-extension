@@ -94,10 +94,10 @@ const getProposalList = async (
       endDate: moment(proposal.end_date),
       totalVotes: `${FormatUtils.nFormatter(
         FormatUtils.toHP(
-          (parseFloat(proposal.total_votes) / 1000).toString(),
+          (parseFloat(proposal.total_votes) / 1000000).toString(),
           store.getState().globalProperties.globals,
         ),
-        4,
+        2,
       )} HP`,
       voted:
         listProposalVotes.find(

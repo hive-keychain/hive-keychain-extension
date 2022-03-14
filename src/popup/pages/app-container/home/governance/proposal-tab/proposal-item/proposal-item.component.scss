@@ -1,0 +1,111 @@
+@import '../../../../../../variable.scss';
+.proposal-item {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  row-gap: 12px;
+
+  &:nth-child(even) {
+    background-color: $red-transparent;
+  }
+
+  .title {
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    column-gap: 8px;
+  }
+
+  .additional-info {
+    display: flex;
+    align-items: center;
+
+    .icon-component {
+      font-size: 36px;
+      height: 36px;
+      width: 36px;
+
+      &.not-voted {
+        color: $grey;
+      }
+
+      &:hover {
+        color: $red-dark;
+      }
+    }
+
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+      .creator {
+        display: flex;
+        align-items: center;
+        img {
+          height: 24px;
+          width: 24px;
+          border-radius: 50%;
+          margin-right: 8px;
+        }
+        font-size: 18px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .expandable-panel {
+    max-height: 0;
+    transition: max-height 0.5s ease-out;
+    overflow: hidden;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+
+    &.opened {
+      max-height: 500px;
+      transition: max-height 0.5s ease-in;
+    }
+
+    .extra-info {
+      flex: 1;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      row-gap: 4px;
+    }
+    .nb-votes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      row-gap: 8px;
+
+      .value {
+        font-size: 14px;
+      }
+    }
+
+    .funded-chip {
+      border: 1px solid white;
+      border-radius: 16px;
+      padding: 4px 8px 2px 8px;
+      font-size: 14px;
+      min-width: 64px;
+      text-align: center;
+      vertical-align: middle;
+      &.totally_funded,
+      &.partially_funded {
+        background: white;
+        color: black;
+      }
+
+      &.not_funded {
+        background: $grey;
+        color: white;
+      }
+    }
+  }
+}
