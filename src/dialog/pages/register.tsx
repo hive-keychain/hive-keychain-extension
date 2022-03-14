@@ -7,7 +7,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import DialogHeader from 'src/dialog/components/dialog-header/dialog-header.component';
-import MkUtils from 'src/utils/mk.utils';
+import { isPasswordValid } from 'src/utils/password.utils';
 import './register.scss';
 
 type Props = {
@@ -35,7 +35,7 @@ const Register = ({ data }: Props) => {
 
   const signup = () => {
     if (password === password2) {
-      if (MkUtils.isPasswordValid(password)) {
+      if (isPasswordValid(password)) {
         chrome.runtime.sendMessage({
           command: BackgroundCommand.REGISTER_FROM_DIALOG,
           value: {
