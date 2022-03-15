@@ -1,13 +1,15 @@
+@import '../../../../../variable.scss';
 .proposal-tab {
-  display: flex;
-  flex-direction: column;
-  img {
-    margin-top: 40px;
-    height: 140px;
-    margin-bottom: 20px;
-  }
-  div {
-    text-align: center;
-    font-size: 18px;
+  text-align: center;
+  .proposal-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 462px;
+    overflow: auto;
+    .proposal-item {
+      &:nth-child(even) {
+        background-color: $red-transparent;
+      }
+    }
   }
 }

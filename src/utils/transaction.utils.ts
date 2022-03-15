@@ -26,12 +26,6 @@ export const TRANSFER_TYPE_TRANSACTIONS = [
   'recurrent_transfer',
 ];
 
-const getSymbol = (nai: string) => {
-  if (nai === '@@000000013') return 'HBD';
-  if (nai === '@@000000021') return 'HIVE';
-  if (nai === '@@000000037') return 'HP';
-};
-
 const getAccountTransactions = async (
   accountName: string,
   start: number,
@@ -85,7 +79,7 @@ const getAccountTransactions = async (
           case 'fill_recurrent_transfer': {
             let amount = `${
               parseFloat(e[1].op[1].amount.amount) / 1000
-            } ${getSymbol(e[1].op[1].amount.nai)}`;
+            } ${FormatUtils.getSymbol(e[1].op[1].amount.nai)}`;
             specificTransaction = e[1].op[1] as FillRecurrentTransfer;
             specificTransaction.amount = amount;
             specificTransaction.remainingExecutions =

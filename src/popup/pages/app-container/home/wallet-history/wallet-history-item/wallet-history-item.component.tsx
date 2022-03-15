@@ -1,7 +1,7 @@
 import { Transaction } from '@interfaces/transaction.interface';
 import { WalletTransactionInfoComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-info.component';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import './wallet-history-item.component.scss';
@@ -10,12 +10,7 @@ interface WalletHistoryItemProps {
   transaction: Transaction;
 }
 
-const WalletHistoryItem = ({
-  transaction,
-  activeAccountName,
-}: PropsFromRedux) => {
-  const [isMemoOpened, setIsMemoOpened] = useState(false);
-
+const WalletHistoryItem = ({ transaction }: PropsFromRedux) => {
   return (
     <div id={`index-${transaction.index}`} className={`wallet-history-item`}>
       <WalletTransactionInfoComponent

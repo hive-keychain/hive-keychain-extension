@@ -582,6 +582,33 @@ const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
+  try {
+    await updateProposalVote(activeAccount, proposalId, true);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
+};
+
+const unvoteProposal = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+) => {
+  try {
+    await updateProposalVote(activeAccount, proposalId, false);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
+};
+
+const updateProposalVote = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+  vote: boolean,
+) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.sendOperations(
       [
@@ -590,7 +617,7 @@ const voteForProposal = async (
           {
             voter: activeAccount.name!,
             proposal_ids: [proposalId],
-            approve: true,
+            approve: vote,
             extensions: [],
           },
         ] as UpdateProposalVotesOperation,
@@ -630,6 +657,14 @@ const getDelayedTransactionInfo = (trxID: string) => {
   });
 };
 
+const getProposalDailyBudget = async () => {
+  return parseFloat(
+    (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
+      .toString()
+      .split(' ')[0],
+  );
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -653,6 +688,8 @@ const HiveUtils = {
   voteForProposal,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
+  unvoteProposal,
+  getProposalDailyBudget,
 };
 
 export default HiveUtils;

@@ -5,10 +5,4 @@
   display: flex;
   align-items: center;
   column-gap: 16px;
-  min-height: 60px;
-  &.has-memo {
-    .transaction {
-      cursor: pointer;
-    }
-  }
 }

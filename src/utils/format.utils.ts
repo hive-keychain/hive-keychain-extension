@@ -76,6 +76,12 @@ const toNumber = (value: string | Asset) => {
   return parseFloat(value.toString().split(' ')[0].trim());
 };
 
+const getSymbol = (nai: string) => {
+  if (nai === '@@000000013') return 'HBD';
+  if (nai === '@@000000021') return 'HIVE';
+  if (nai === '@@000000037') return 'HP';
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -84,6 +90,7 @@ const FormatUtils = {
   nFormatter,
   hasMoreThanXDecimal,
   toNumber,
+  getSymbol,
 };
 
 export default FormatUtils;

@@ -63,7 +63,9 @@ const GenericTransaction = ({
 
   return (
     <div
-      className="transaction"
+      className={`transaction ${
+        expandableContent ? 'has-expandable-content' : ''
+      }`}
       key={transaction.key}
       onClick={toggleExpandableContent}>
       <div className="information-panel">
@@ -84,14 +86,16 @@ const GenericTransaction = ({
         </div>
         <div className="bottom-row">{detail}</div>
       </div>
-      <div
-        className={
-          isExpandablePanelOpened
-            ? 'expandable-panel opened'
-            : 'expandable-panel closed'
-        }>
-        {expandableContent}
-      </div>
+      {isExpandablePanelOpened && (
+        <div
+          className={
+            isExpandablePanelOpened
+              ? 'expandable-panel opened'
+              : 'expandable-panel closed'
+          }>
+          {expandableContent}
+        </div>
+      )}
     </div>
   );
 };

@@ -35,7 +35,7 @@ const ProposalVotingSection = ({
   };
 
   const handleVoteForProposalClicked = async () => {
-    if (await ProposalUtils.voteForProposal(activeAccount)) {
+    if (await ProposalUtils.voteForKeychainProposal(activeAccount)) {
       setSuccessMessage('popup_html_kc_proposal_vote_successful');
     } else {
       setErrorMessage('popup_html_proposal_vote_fail');

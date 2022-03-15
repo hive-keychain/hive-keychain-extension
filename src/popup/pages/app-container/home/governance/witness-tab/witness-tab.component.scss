@@ -24,6 +24,10 @@
     }
   }
 
+  .rotating-logo {
+    align-self: center;
+  }
+
   .ranking-container {
     display: flex;
     flex-direction: column;
@@ -42,7 +46,7 @@
     }
 
     .ranking {
-      height: 264px;
+      height: 278px;
       overflow: auto;
 
       .error-witness {

@@ -195,6 +195,7 @@ const App = ({
 
   const tryNewRpc = () => {
     setActiveRpc(switchToRpc!);
+    setDisplayChangeRpcPopup(false);
   };
 
   return (
