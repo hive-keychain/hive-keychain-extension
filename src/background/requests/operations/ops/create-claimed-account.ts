@@ -20,7 +20,6 @@ export const broadcastCreateClaimedAccount = async (
   let err, result;
   const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
-  console.log(client, key);
   try {
     result = await client.broadcast.sendOperations(
       [

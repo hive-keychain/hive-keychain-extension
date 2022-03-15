@@ -136,7 +136,7 @@ const TransferFunds = ({
       return;
     }
 
-    if (amount <= 0) {
+    if (amount <= 0 && !isRecurrent) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
     }
@@ -169,7 +169,9 @@ const TransferFunds = ({
       { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
-    if (isRecurrent) {
+    const isCancelRecurrent = parseFloat(amount) === 0 && isRecurrent;
+
+    if (isRecurrent && !isCancelRecurrent) {
       fields.push({
         label: 'popup_html_transfer_recurrence',
         value: chrome.i18n.getMessage('popup_html_transfer_recurrence_value', [
@@ -195,7 +197,9 @@ const TransferFunds = ({
       message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
-      title: 'popup_html_transfer_funds',
+      title: isCancelRecurrent
+        ? 'popup_html_cancel_recurrent_transfer'
+        : 'popup_html_transfer_funds',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_transfer_fund_operation');
@@ -222,8 +226,8 @@ const TransferFunds = ({
           formattedAmount,
           memoParam,
           isRecurrent,
-          parseInt(iteration.toString()),
-          parseInt(frequency.toString()),
+          isCancelRecurrent ? 2 : iteration,
+          isCancelRecurrent ? 24 : frequency,
         );
 
         removeFromLoadingList('html_popup_transfer_fund_operation');
@@ -328,12 +332,15 @@ const TransferFunds = ({
             value={memo}
             onChange={setMemo}
           />
-
           <CheckboxComponent
-            title="popup_html_recurrent_transfer"
+            title={
+              parseFloat(amount) === 0
+                ? 'popup_html_cancel_recurrent_transfer'
+                : 'popup_html_recurrent_transfer'
+            }
             checked={isRecurrent}
             onChange={setIsRecurrent}></CheckboxComponent>
-          {isRecurrent && (
+          {isRecurrent && amount === 0 && (
             <div className="recurrent-panel">
               <InputComponent
                 type={InputType.NUMBER}

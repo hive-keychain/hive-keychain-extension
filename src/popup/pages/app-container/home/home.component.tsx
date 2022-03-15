@@ -30,7 +30,7 @@ const Home = ({
   globalProperties,
   resetTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [displayLoader, setDisplayLoader] = useState(true);
+  const [displayLoader, setDisplayLoader] = useState(false);
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();

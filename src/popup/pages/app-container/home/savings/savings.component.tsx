@@ -157,7 +157,7 @@ const SavingsPage = ({
         switch (selectedSavingOperationType) {
           case SavingOperationType.DEPOSIT:
             addToLoadingList('html_popup_deposit_to_savings_operation');
-            success = await HiveUtils.deposit(activeAccount, valueS);
+            success = await HiveUtils.deposit(activeAccount, valueS, username);
             removeFromLoadingList('html_popup_deposit_to_savings_operation');
             break;
           case SavingOperationType.WITHDRAW:
@@ -277,13 +277,15 @@ const SavingsPage = ({
 
       {text.length > 0 && <div className="text">{text}</div>}
 
-      <InputComponent
-        type={InputType.TEXT}
-        logo={Icons.AT}
-        placeholder="popup_html_username"
-        value={username}
-        onChange={setUsername}
-      />
+      {selectedSavingOperationType === SavingOperationType.DEPOSIT && (
+        <InputComponent
+          type={InputType.TEXT}
+          logo={Icons.AT}
+          placeholder="popup_html_username"
+          value={username}
+          onChange={setUsername}
+        />
+      )}
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
@@ -314,6 +316,7 @@ const SavingsPage = ({
         }
         labelParams={[currency]}
         onClick={() => handleButtonClick()}
+        fixToBottom
       />
 
       <ReactTooltip

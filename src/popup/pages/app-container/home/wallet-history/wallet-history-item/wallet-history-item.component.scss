@@ -5,47 +5,10 @@
   display: flex;
   align-items: center;
   column-gap: 16px;
+  min-height: 60px;
   &.has-memo {
     .transaction {
       cursor: pointer;
-    }
-  }
-
-  .icon-component {
-    font-size: 20px;
-    height: 18px;
-    width: 18px;
-  }
-
-  .transaction {
-    min-height: 48px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-
-    .information-panel {
-      display: flex;
-      flex-direction: column;
-      row-gap: 8px;
-      .top-row,
-      .bottom-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 16px;
-      }
-    }
-    .memo-panel {
-      max-height: 0;
-      transition: max-height 0.5s ease-out;
-      overflow: hidden;
-      font-size: 14px;
-      margin-top: 8px;
-
-      &.opened {
-        max-height: 500px;
-        transition: max-height 0.5s ease-in;
-      }
     }
   }
 }
