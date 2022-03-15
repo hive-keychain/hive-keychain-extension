@@ -18,27 +18,10 @@
   }
 
   .my-tokens {
-    .token {
-      display: grid;
-      grid-template-columns: 2fr 3fr 1fr 1fr;
-      font-size: 18px;
-      align-items: center;
+    .token-item {
       background: $red-transparent;
-      padding: 0px 24px;
-      min-height: 50px;
-
       &:nth-child(even) {
         background: $black-transparent;
-      }
-
-      .history,
-      .send {
-        height: 24px;
-        width: 24px;
-        cursor: pointer;
-      }
-      .send {
-        justify-self: flex-end;
       }
     }
   }

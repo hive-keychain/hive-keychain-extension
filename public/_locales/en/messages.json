@@ -2119,5 +2119,37 @@
   "popup_html_error_retrieving_incoming_delegations": {
     "message": "An error occured while retrieving the incoming delegations. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_token_stake": {
+    "message": "Stake",
+    "description": "token action"
+  },
+  "popup_html_token_unstake": {
+    "message": "Unstake",
+    "description": "token action"
+  },
+  "popup_html_token_delegate": {
+    "message": "Delegate",
+    "description": "token action"
+  },
+  "popup_html_token_staking": {
+    "message": "Staking",
+    "description": "token action"
+  },
+  "popup_html_token_pending_unstake": {
+    "message": "Pending unstake",
+    "description": "token action"
+  },
+  "popup_html_token_delegation_out": {
+    "message": "Delegation out",
+    "description": "token action"
+  },
+  "popup_html_token_delegation_in": {
+    "message": "Delegation in",
+    "description": "token action"
+  },
+  "popup_html_token_pending_undelegation": {
+    "message": "Pending undelegation",
+    "description": "token action"
   }
 }
