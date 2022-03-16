@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import FormatUtils from 'src/utils/format.utils';
 
 interface PowerUpTransactionProps {
   transaction: PowerUp;
@@ -17,11 +18,15 @@ const PowerUpTransaction = ({
     if (transaction.to !== activeAccountName) {
       return chrome.i18n.getMessage(
         'popup_html_wallet_info_power_up_other_account',
-        [transaction.from, transaction.amount, transaction.to],
+        [
+          transaction.from,
+          FormatUtils.withCommas(transaction.amount, 3),
+          transaction.to,
+        ],
       );
     }
     return chrome.i18n.getMessage('popup_html_wallet_info_power_up', [
-      transaction.amount,
+      FormatUtils.withCommas(transaction.amount, 3),
     ]);
   };
 

@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import FormatUtils from 'src/utils/format.utils';
 
 interface PowerDownTransactionProps {
   transaction: PowerDown;
@@ -11,11 +12,10 @@ interface PowerDownTransactionProps {
 
 const PowerDownTransaction = ({
   transaction,
-  activeAccountName,
 }: PropsFromRedux & PowerDownTransactionProps) => {
   const getDetail = () => {
     return chrome.i18n.getMessage('popup_html_wallet_info_power_down', [
-      transaction.amount,
+      FormatUtils.withCommas(transaction.amount, 3),
     ]);
   };
 

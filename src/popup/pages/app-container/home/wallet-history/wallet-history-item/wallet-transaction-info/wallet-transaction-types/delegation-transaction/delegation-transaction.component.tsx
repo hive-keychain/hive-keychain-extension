@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import FormatUtils from 'src/utils/format.utils';
 
 interface DelegationTransactionProps {
   transaction: Delegation;
@@ -22,7 +23,7 @@ const DelegationTransaction = ({
         );
       } else {
         return chrome.i18n.getMessage('popup_html_wallet_info_delegation_out', [
-          transaction.amount,
+          FormatUtils.withCommas(transaction.amount, 3),
           transaction.delegatee,
         ]);
       }

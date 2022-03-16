@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import FormatUtils from 'src/utils/format.utils';
 
 interface RecurrentTransferTransactionProps {
   transaction: RecurrentTransfer;
@@ -23,7 +24,7 @@ const RecurrentTransferTransaction = ({
       return chrome.i18n.getMessage(
         'popup_html_wallet_info_recurrent_transfer_out',
         [
-          transaction.amount,
+          FormatUtils.withCommas(transaction.amount, 3),
           transaction.to,
           transaction.executions.toString(),
           transaction.recurrence.toString(),
@@ -34,7 +35,7 @@ const RecurrentTransferTransaction = ({
         'popup_html_wallet_info_recurrent_transfer_in',
         [
           transaction.from,
-          transaction.amount,
+          FormatUtils.withCommas(transaction.amount, 3),
           transaction.executions.toString(),
           transaction.recurrence.toString(),
         ],

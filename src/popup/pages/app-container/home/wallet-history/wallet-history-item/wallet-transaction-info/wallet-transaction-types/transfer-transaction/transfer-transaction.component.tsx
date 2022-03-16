@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import FormatUtils from 'src/utils/format.utils';
 
 interface TransferTransactionProps {
   transaction: Transfer;
@@ -19,7 +20,7 @@ const TransferTransaction = ({
         ? 'popup_html_wallet_info_transfer_out'
         : 'popup_html_wallet_info_transfer_in',
       [
-        transaction.amount,
+        FormatUtils.withCommas(transaction.amount, 3),
         activeAccountName === transaction.from
           ? transaction.to
           : transaction.from,

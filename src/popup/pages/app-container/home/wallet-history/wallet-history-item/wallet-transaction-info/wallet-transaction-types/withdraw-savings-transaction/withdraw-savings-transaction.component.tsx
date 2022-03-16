@@ -4,6 +4,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import FormatUtils from 'src/utils/format.utils';
 
 interface WithdrawSavingsTransactionProps {
   transaction: WithdrawSavings;
@@ -15,7 +16,7 @@ const WithdrawSavingsTransaction = ({
 }: PropsFromRedux & WithdrawSavingsTransactionProps) => {
   const getDetail = () => {
     return chrome.i18n.getMessage('popup_html_wallet_info_withdraw_savings', [
-      transaction.amount,
+      FormatUtils.withCommas(transaction.amount, 3),
     ]);
   };
 
