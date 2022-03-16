@@ -10,6 +10,7 @@ import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-
 import DropdownMenu, {
   DropdownPosition,
 } from 'src/common-ui/dropdown-menu/dropdown-menu.component';
+import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './wallet-info-section.component.scss';
@@ -30,7 +31,7 @@ const WalletInfoSection = ({
 
   useEffect(() => {
     console.log(activeAccount);
-    if (activeAccount && activeAccount.account) {
+    if (activeAccount && !ActiveAccountUtils.isEmpty(activeAccount)) {
       const delegatedVestingShares = parseFloat(
         activeAccount.account.delegated_vesting_shares
           .toString()
