@@ -29,7 +29,8 @@ const WalletInfoSection = ({
   const [hasDelegation, setHasDelegations] = useState(false);
 
   useEffect(() => {
-    if (activeAccount) {
+    console.log(activeAccount);
+    if (activeAccount && activeAccount.account) {
       const delegatedVestingShares = parseFloat(
         activeAccount.account.delegated_vesting_shares
           .toString()
