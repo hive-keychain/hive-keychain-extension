@@ -31,6 +31,7 @@ const checkAndUpdateLocalStorage = async () => {
     const activeRpc = (await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.CURRENT_RPC,
     )) as Rpc;
+    console.log(activeRpc);
     if (!activeRpc || activeRpc.uri === 'DEFAULT') {
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.SWITCH_RPC_AUTO,

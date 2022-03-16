@@ -51,7 +51,7 @@ function decrypt(transitmessage: string, pass: string) {
 
 const decryptToJsonWithoutMD5Check = (msg: string, pwd: string) => {
   try {
-    const decrypted = decrypt(msg, pwd).toString(CryptoJS.enc.Utf8);
+    const decrypted = decrypt(msg, pwd).toString();
     const decryptedJSON: any = JSON.parse(decrypted);
     if (decryptedJSON.hash != null) return decryptedJSON;
     else {
