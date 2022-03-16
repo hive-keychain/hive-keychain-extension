@@ -119,12 +119,14 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
+    flex: 1;
 
     .rotating-logo {
       align-self: center;
       justify-self: center;
       height: 50px;
       width: 50px;
+      margin-top: 12px;
     }
 
     .wallet-history-item {
