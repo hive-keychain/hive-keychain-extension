@@ -19,6 +19,10 @@
       column-gap: 8px;
       .date {
         font-size: 18px;
+        flex: 1;
+      }
+      .more.opened {
+        transform: rotate(180deg);
       }
       .icon-component {
         font-size: 20px;

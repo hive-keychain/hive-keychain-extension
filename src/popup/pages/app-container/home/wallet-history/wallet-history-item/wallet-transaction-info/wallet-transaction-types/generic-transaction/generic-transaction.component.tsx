@@ -83,10 +83,19 @@ const GenericTransaction = ({
             data-iscapture="true">
             {moment(transaction.timestamp).format('L')}
           </div>
+          {expandableContent && (
+            <Icon
+              name={Icons.EXPAND_MORE}
+              onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
+              additionalClassName={`more ${
+                isExpandablePanelOpened ? 'opened' : 'closed'
+              }`}
+              type={IconType.OUTLINED}></Icon>
+          )}
         </div>
         <div className="bottom-row">{detail}</div>
       </div>
-      {isExpandablePanelOpened && (
+      {expandableContent && isExpandablePanelOpened && (
         <div
           className={
             isExpandablePanelOpened
