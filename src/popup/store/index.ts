@@ -22,7 +22,8 @@ let previousActiveAccountName = store.getState().activeAccount?.name;
 let previousMk = store.getState().mk;
 
 store.subscribe(() => {
-  const { accounts, mk, activeRpc, activeAccount, loading } = store.getState();
+  const { accounts, mk, activeRpc, activeAccount, transactions } =
+    store.getState();
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
     AccountUtils.saveAccounts(accounts, mk);

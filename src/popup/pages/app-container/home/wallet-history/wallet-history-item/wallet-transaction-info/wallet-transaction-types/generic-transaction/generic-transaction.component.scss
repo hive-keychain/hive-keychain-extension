@@ -1,0 +1,50 @@
+.transaction {
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  &.has-expandable-content {
+    cursor: pointer;
+  }
+
+  .information-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    .top-row {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      column-gap: 8px;
+      .date {
+        font-size: 18px;
+        flex: 1;
+      }
+      .more.opened {
+        transform: rotate(180deg);
+      }
+      .icon-component {
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+        padding-bottom: 4px;
+      }
+    }
+    .bottom-row {
+      font-size: 16px;
+    }
+  }
+  .expandable-panel {
+    max-height: 0;
+    transition: max-height 0.25s ease-out;
+    overflow: hidden;
+    font-size: 14px;
+
+    &.opened {
+      max-height: 500px;
+      transition: max-height 0.25s ease-in;
+      margin-top: 8px;
+    }
+  }
+}

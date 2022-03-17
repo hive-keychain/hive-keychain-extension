@@ -20,6 +20,7 @@ import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
@@ -47,6 +48,7 @@ const WitnessTab = ({
 
   const [usingProxy, setUsingProxy] = useState<boolean>(false);
   const [hasError, setHasError] = useState(false);
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     setRemainingVotes(
@@ -93,7 +95,7 @@ const WitnessTab = ({
   };
 
   const initWitnessRanking = async () => {
-    addToLoadingList('html_popup_load_witness_ranking_operation');
+    setLoading(true);
     const requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
     if (requestResult.data !== '') {
       const ranking = requestResult.data;
@@ -103,7 +105,7 @@ const WitnessTab = ({
       setErrorMessage('popup_html_error_retrieving_witness_ranking');
       setHasError(true);
     }
-    removeFromLoadingList('html_popup_load_witness_ranking_operation');
+    setLoading(false);
   };
 
   const handleVotedButtonClick = async (witness: Witness) => {
@@ -239,66 +241,70 @@ const WitnessTab = ({
         </a>
       </div>
 
-      <div className="ranking-container">
-        <div className="ranking-filter">
-          <InputComponent
-            type={InputType.TEXT}
-            placeholder="popup_html_search"
-            value={filterValue}
-            onChange={setFilterValue}
-          />
-          <div className="switches-panel">
-            <CheckboxComponent
-              title="html_popup_witness_display_voted_only"
-              checked={displayVotedOnly}
-              onChange={() => {
-                setDisplayVotedOnly(!displayVotedOnly);
-              }}></CheckboxComponent>
-            <CheckboxComponent
-              title="html_popup_witness_hide_inactive"
-              checked={hideNonActive}
-              onChange={() => {
-                setHideNonActive(!hideNonActive);
-              }}></CheckboxComponent>
+      {!isLoading && (
+        <div className="ranking-container">
+          <div className="ranking-filter">
+            <InputComponent
+              type={InputType.TEXT}
+              placeholder="popup_html_search"
+              value={filterValue}
+              onChange={setFilterValue}
+            />
+            <div className="switches-panel">
+              <CheckboxComponent
+                title="html_popup_witness_display_voted_only"
+                checked={displayVotedOnly}
+                onChange={() => {
+                  setDisplayVotedOnly(!displayVotedOnly);
+                }}></CheckboxComponent>
+              <CheckboxComponent
+                title="html_popup_witness_hide_inactive"
+                checked={hideNonActive}
+                onChange={() => {
+                  setHideNonActive(!hideNonActive);
+                }}></CheckboxComponent>
+            </div>
           </div>
-        </div>
-        <div
-          className="ranking"
-          data-for={`no-private-key-tooltip`}
-          data-tip={
-            activeAccount.keys.active
-              ? ''
-              : chrome.i18n.getMessage('popup_witness_key')
-          }
-          data-iscapture="true">
-          <FlatList
-            list={filteredRanking}
-            renderItem={renderWitnessItem}
-            renderOnScroll
-            renderWhenEmpty={() => {
-              return (
-                hasError && (
-                  <div className="error-witness">
-                    <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
-                    <span>
-                      {chrome.i18n.getMessage(
-                        'popup_html_error_retrieving_witness_ranking',
-                      )}
-                    </span>
-                  </div>
-                )
-              );
-            }}
+          <div
+            className="ranking"
+            data-for={`no-private-key-tooltip`}
+            data-tip={
+              activeAccount.keys.active
+                ? ''
+                : chrome.i18n.getMessage('popup_witness_key')
+            }
+            data-iscapture="true">
+            <FlatList
+              list={filteredRanking}
+              renderItem={renderWitnessItem}
+              renderOnScroll
+              renderWhenEmpty={() => {
+                return (
+                  hasError && (
+                    <div className="error-witness">
+                      <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+                      <span>
+                        {chrome.i18n.getMessage(
+                          'popup_html_error_retrieving_witness_ranking',
+                        )}
+                      </span>
+                    </div>
+                  )
+                );
+              }}
+            />
+          </div>
+          <ReactTooltip
+            id={`no-private-key-tooltip`}
+            place="top"
+            type="light"
+            effect="solid"
+            multiline={true}
           />
         </div>
-        <ReactTooltip
-          id={`no-private-key-tooltip`}
-          place="top"
-          type="light"
-          effect="solid"
-          multiline={true}
-        />
-      </div>
+      )}
+
+      {isLoading && <RotatingLogoComponent></RotatingLogoComponent>}
     </div>
   );
 };

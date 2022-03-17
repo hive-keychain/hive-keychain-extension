@@ -1643,8 +1643,20 @@
     "message": "Vote successful! Thank you for supporting Keychain development through our DHF proposal",
     "description": "When user doesnt vote for proposal"
   },
+  "popup_html_proposal_vote_successful": {
+    "message": "Vote successful!",
+    "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_proposal_unvote_successful": {
+    "message": "Unvote successful!",
+    "description": "When user doesnt vote for proposal"
+  },
   "popup_html_proposal_vote_fail": {
     "message": "There was an error while voting for proposal. Try again later",
+    "description": "Error while voting for proposal"
+  },
+  "popup_html_proposal_unvote_fail": {
+    "message": "There was an error while unvoting the proposal. Try again later",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
@@ -1681,7 +1693,7 @@
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_power_down_message": {
-    "message": "Please confirm cancel power down.",
+    "message": "Please confirm that you want to cancel your power down.",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_delegation_message": {
@@ -1714,6 +1726,10 @@
   },
   "popup_html_recurrent_transfer": {
     "message": "Recurrent transfer",
+    "description": "In transfer fund page"
+  },
+  "popup_html_cancel_recurrent_transfer": {
+    "message": "Cancel recurrent transfer",
     "description": "In transfer fund page"
   },
   "popup_html_recurrent_transfer_frequency": {
@@ -1755,30 +1771,6 @@
   "popup_html_wallet_add_memo": {
     "message": "Please add your memo key to decrypt this message.",
     "description": "Wallet error message"
-  },
-  "popup_html_filter_in": {
-    "message": "In",
-    "description": "Wallet filters"
-  },
-  "popup_html_filter_out": {
-    "message": "Out",
-    "description": "Wallet filters"
-  },
-  "popup_html_search": {
-    "message": "Search",
-    "description": "Wallet filters"
-  },
-  "popup_html_filter_type_transfer": {
-    "message": "Transfer",
-    "description": "Wallet filters"
-  },
-  "popup_html_filter_type_vote": {
-    "message": "Vote",
-    "description": "Wallet filters"
-  },
-  "popup_html_clear_filters": {
-    "message": "Clear",
-    "description": "Wallet filters"
   },
   "popup_html_receiver": {
     "message": "Receiver",
@@ -2097,7 +2089,7 @@
     "description": "Node Rpc auto selection"
   },
   "popup_html_rpc_automatic_mode_hint": {
-    "message": "Will always select the best rpc node for you",
+    "message": "Will always select the best RPC node for you",
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
@@ -2108,6 +2100,14 @@
     "message": "Set proxy",
     "description": "in proxy suggestion popup"
   },
+  "popup_html_setting_proxy": {
+    "message": "Setting proxy",
+    "description": "in proxy suggestion popup"
+  },
+  "popup_html_clearing_proxy": {
+    "message": "Clearing proxy",
+    "description": "in proxy suggestion popup"
+  },
   "popup_html_close": {
     "message": "Close",
     "description": "general"
@@ -2115,6 +2115,151 @@
   "popup_html_contact_support": {
     "message": "Contact support",
     "description": "Contact support"
+  },
+  "popup_html_wallet_info_transfer_in": {
+    "message": "Received $1 from @$2",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_recurrent_transfer_out": {
+    "message": "Started transfer of $1 to @$2 every $3 hours $4 times",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_recurrent_transfer_in": {
+    "message": "@$1 started transfer of $2 every $3 hours $4 times",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_canceled_recurrent_transfer": {
+    "message": "@$1 canceled recurrent transfer to @$2",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_fill_recurrent_transfer_out": {
+    "message": "Sent $1 to @$2 ($3 remaining)",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_fill_recurrent_transfer_in": {
+    "message": "Received $1 from @$2 ($3 remaining)",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_transfer_out": {
+    "message": "Sent $1 to @$2",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_claim_rewards": {
+    "message": "$1 claimed",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_delegation_out": {
+    "message": "Delegated $1 to @$2",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_delegation_in": {
+    "message": "@$1 delegated $2",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_cancel_delegation_out": {
+    "message": "Canceled delegation to @$1",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_cancel_delegation_in": {
+    "message": "@$1 canceled delegation",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_received_interests": {
+    "message": "Received $1 of interests from savings",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_claim_account": {
+    "message": "Claimed account",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_deposit_savings": {
+    "message": "Deposit of $1 into savings",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_deposit_savings_other_account": {
+    "message": "@$1 made a deposit of $2 into @$3's savings",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_withdraw_savings": {
+    "message": "Withdrawn $1 from savings",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_power_down": {
+    "message": "Powered down $1",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_power_up": {
+    "message": "Powered up $1",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_power_up_other_account": {
+    "message": "@$1 powered up $2 for @$3",
+    "description": "Wallet information claim rewards"
+  },
+
+  "popup_html_filter_in": {
+    "message": "In",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_out": {
+    "message": "Out",
+    "description": "Wallet filters"
+  },
+  "popup_html_search": {
+    "message": "Search",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer": {
+    "message": "Transfer",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_claim_reward_balance": {
+    "message": "Claim rewards",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_delegate_vesting_shares": {
+    "message": "Delegations",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_claim_account": {
+    "message": "Claim account",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_interest": {
+    "message": "Interest",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_from_savings": {
+    "message": "With. savings",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_to_savings": {
+    "message": "Dep. savings",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_to_vesting": {
+    "message": "Power up",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_withdraw_vesting": {
+    "message": "Power down",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_vote": {
+    "message": "Vote",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_power_up_down": {
+    "message": "Power up/down",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_savings": {
+    "message": "Savings",
+    "description": "Wallet filters"
+  },
+  "popup_html_clear_filters": {
+    "message": "Clear",
+    "description": "Wallet filters"
   },
   "popup_html_error_retrieving_witness_ranking": {
     "message": "An error occured while retrieving the witness ranking. Please try again later.",
@@ -2203,5 +2348,49 @@
   "popup_html_delegate_tokens_confirm_text": {
     "message": "Please confirm your that you want to delegate your token.",
     "description": "delegate token title"
+  },
+  "popup_html_load_more": {
+    "message": "Click to load more",
+    "description": "on wallet history"
+  },
+  "popup_html_transaction_list_is_empty": {
+    "message": "No transaction to display",
+    "description": "on wallet history when no transactions to display"
+  },
+  "popup_html_transaction_list_is_empty_try_clear_filter": {
+    "message": "Try to clear your filter",
+    "description": "on wallet history when no transactions to display"
+  },
+  "popup_html_days_remaining": {
+    "message": "$1 day(s) remaining",
+    "description": "Days remaining proposal"
+  },
+  "popup_html_proposal_by": {
+    "message": "By @$1",
+    "description": "In proposal tab"
+  },
+  "popup_html_voting_for_proposal": {
+    "message": "Voting for proposal",
+    "description": "Loading message voting for proposal"
+  },
+  "popup_html_unvoting_for_proposal": {
+    "message": "Unvoting proposal",
+    "description": "Loading message unvoting for proposal"
+  },
+  "popup_html_proposal_funded_option_totally_funded": {
+    "message": "Funded",
+    "description": "Proposal funded option"
+  },
+  "popup_html_proposal_funded_option_partially_funded": {
+    "message": "Partially funded",
+    "description": "Proposal funded option"
+  },
+  "popup_html_proposal_funded_option_not_funded": {
+    "message": "Not funded",
+    "description": "Proposal funded option"
+  },
+  "popup_html_loading_proposals": {
+    "message": "Loading proposals",
+    "description": "proposal tab"
   }
 }

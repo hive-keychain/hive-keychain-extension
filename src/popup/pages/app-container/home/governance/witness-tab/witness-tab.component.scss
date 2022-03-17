@@ -6,6 +6,7 @@
   .using-proxy {
     font-size: 16px;
     padding: 0px 24px;
+    box-sizing: border-box;
   }
   .link-to-arcange {
     padding: 0px 24px;
@@ -21,6 +22,10 @@
       vertical-align: bottom;
       margin-left: 4px;
     }
+  }
+
+  .rotating-logo {
+    align-self: center;
   }
 
   .ranking-container {
@@ -41,7 +46,7 @@
     }
 
     .ranking {
-      height: 264px;
+      height: 278px;
       overflow: auto;
 
       .error-witness {

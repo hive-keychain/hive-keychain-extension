@@ -1,6 +1,10 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
+import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
@@ -20,6 +24,8 @@ const ProxyTab = ({
   refreshActiveAccount,
   setErrorMessage,
   setSuccessMessage,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [proxyUsername, setProxyUsername] = useState('');
 
@@ -27,23 +33,27 @@ const ProxyTab = ({
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
+    addToLoadingList('popup_html_setting_proxy');
     if (await WitnessUtils.setAsProxy(proxyUsername, activeAccount)) {
-      setSuccessMessage('popup_success_proxy', [`@${proxyUsername}`]);
+      setSuccessMessage('popup_success_proxy', [proxyUsername]);
       refreshActiveAccount();
     } else {
       setErrorMessage('html_popup_clear_proxy_error');
     }
+    removeFromLoadingList('popup_html_setting_proxy');
   };
   const removeProxy = async () => {
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
+    addToLoadingList('popup_html_clearing_proxy');
     if (await WitnessUtils.removeProxy(activeAccount)) {
       refreshActiveAccount();
       setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
     } else {
       setErrorMessage('html_popup_clear_proxy_error');
     }
+    removeFromLoadingList('popup_html_clearing_proxy');
   };
 
   return (
@@ -101,6 +111,8 @@ const connector = connect(mapStateToProps, {
   refreshActiveAccount,
   setErrorMessage,
   setSuccessMessage,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

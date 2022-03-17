@@ -56,7 +56,7 @@ const Delegations = ({
     formParams.username ? formParams.username : '',
   );
   const [value, setValue] = useState<string | number>(
-    formParams.value ? formParams.value : 0,
+    formParams.value ? formParams.value : '',
   );
   const [available, setAvailable] = useState<string | number>('...');
 

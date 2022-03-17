@@ -2,7 +2,6 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { AppThunk } from '@popup/actions/interfaces';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import HiveUtils from 'src/utils/hive.utils';
-import TransactionUtils from 'src/utils/transaction.utils';
 
 const TIME_REFERENCE = 1643236071000;
 
@@ -34,36 +33,20 @@ export const refreshKeys = (localAccount: LocalAccount) => {
 export const loadActiveAccount =
   (account: LocalAccount): AppThunk =>
   async (dispatch, getState) => {
-    dispatch(refreshKeys(account));
-    dispatch(getAccountRC(account.name));
-    const extendedAccount = (
-      await HiveUtils.getClient().database.getAccounts([account.name])
-    )[0];
-    dispatch({
-      type: ActionType.SET_ACTIVE_ACCOUNT,
-      payload: {
-        account: extendedAccount,
-        name: account.name,
-      },
-    });
-  };
-
-export const initAccountTransactions =
-  (accountName: string): AppThunk =>
-  async (dispatch, getState) => {
-    const memoKey = getState().accounts.find(
-      (a: LocalAccount) => a.name === accountName,
-    )!.keys.memo;
-    const transfers = await TransactionUtils.getAccountTransactions(
-      accountName,
-      null,
-      memoKey,
-    );
-
-    dispatch({
-      type: ActionType.INIT_TRANSACTIONS,
-      payload: transfers,
-    });
+    if (account) {
+      dispatch(refreshKeys(account));
+      dispatch(getAccountRC(account.name));
+      const extendedAccount = (
+        await HiveUtils.getClient().database.getAccounts([account.name])
+      )[0];
+      dispatch({
+        type: ActionType.SET_ACTIVE_ACCOUNT,
+        payload: {
+          account: extendedAccount,
+          name: account.name,
+        },
+      });
+    }
   };
 
 export const getAccountRC =

@@ -361,6 +361,15 @@ const transfer = async (
         ),
       );
     } else {
+      console.log({
+        from: sender,
+        to: receiver,
+        amount: amount,
+        memo: memo,
+        recurrence: frequency,
+        executions: iterations,
+        extensions: [],
+      });
       await sendOperationWithConfirmation(
         getClient().broadcast.sendOperations(
           [
@@ -385,7 +394,7 @@ const transfer = async (
     }
     return true;
   } catch (err) {
-    Logger.error(err);
+    Logger.error(err, err);
     return false;
   }
 };
@@ -461,7 +470,11 @@ const signMessage = (message: string, privateKey: string) => {
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
 
-const deposit = async (activeAccount: ActiveAccount, amount: string) => {
+const deposit = async (
+  activeAccount: ActiveAccount,
+  amount: string,
+  receiver: string,
+) => {
   const savings = await hive.api.getSavingsWithdrawFromAsync(
     activeAccount.name,
   );
@@ -477,7 +490,7 @@ const deposit = async (activeAccount: ActiveAccount, amount: string) => {
               from: activeAccount.name,
               memo: '',
               request_id: requestId,
-              to: activeAccount.name,
+              to: receiver,
             },
           ] as TransferToSavingsOperation,
         ],
@@ -569,6 +582,33 @@ const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
+  try {
+    await updateProposalVote(activeAccount, proposalId, true);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
+};
+
+const unvoteProposal = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+) => {
+  try {
+    await updateProposalVote(activeAccount, proposalId, false);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
+};
+
+const updateProposalVote = async (
+  activeAccount: ActiveAccount,
+  proposalId: number,
+  vote: boolean,
+) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.sendOperations(
       [
@@ -577,7 +617,7 @@ const voteForProposal = async (
           {
             voter: activeAccount.name!,
             proposal_ids: [proposalId],
-            approve: true,
+            approve: vote,
             extensions: [],
           },
         ] as UpdateProposalVotesOperation,
@@ -617,6 +657,14 @@ const getDelayedTransactionInfo = (trxID: string) => {
   });
 };
 
+const getProposalDailyBudget = async () => {
+  return parseFloat(
+    (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
+      .toString()
+      .split(' ')[0],
+  );
+};
+
 const HiveUtils = {
   getClient,
   setRpc,
@@ -640,6 +688,8 @@ const HiveUtils = {
   voteForProposal,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
+  unvoteProposal,
+  getProposalDailyBudget,
 };
 
 export default HiveUtils;

@@ -36,7 +36,6 @@ function decrypt(transitmessage: string, pass: string) {
   var salt = CryptoJS.enc.Hex.parse(transitmessage.substr(0, 32));
   var iv = CryptoJS.enc.Hex.parse(transitmessage.substr(32, 32));
   var encrypted = transitmessage.substring(64);
-
   var key = CryptoJS.PBKDF2(pass, salt, {
     keySize: KEY_SIZE / 32,
     iterations: ITERATIONS,
@@ -52,7 +51,7 @@ function decrypt(transitmessage: string, pass: string) {
 
 const decryptToJsonWithoutMD5Check = (msg: string, pwd: string) => {
   try {
-    const decrypted = decrypt(msg, pwd).toString(CryptoJS.enc.Utf8);
+    const decrypted = decrypt(msg, pwd).toString();
     const decryptedJSON: any = JSON.parse(decrypted);
     if (decryptedJSON.hash != null) return decryptedJSON;
     else {
@@ -68,11 +67,8 @@ const decryptToJson = (msg: string, pwd: string) => {
   try {
     const decrypted = decrypt(msg, pwd).toString(CryptoJS.enc.Utf8);
     const decryptedJSON: any = JSON.parse(decrypted);
-    if (
-      decryptedJSON.hash != null &&
-      decryptedJSON.hash == md5(decryptedJSON.list)
-    )
-      return decryptedJSON;
+
+    if (decryptedJSON.hash && decryptedJSON.list) return decryptedJSON;
     else {
       return null;
     }

@@ -1,10 +1,16 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 
 const withCommas = (nb: string, decimals = 3) => {
+  const currency = nb.split(' ')[1];
+
   const value = parseFloat(nb).toFixed(decimals);
   var parts = value.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  return parts.join('.');
+  let finalNumber = parts.join('.');
+  if (currency) {
+    finalNumber = finalNumber + ' ' + currency;
+  }
+  return finalNumber;
 };
 
 const toHP = (vests: string, props?: DynamicGlobalProperties) =>
@@ -77,6 +83,12 @@ const toNumber = (value: string | Asset) => {
   return parseFloat(value.toString().split(' ')[0].trim());
 };
 
+const getSymbol = (nai: string) => {
+  if (nai === '@@000000013') return 'HBD';
+  if (nai === '@@000000021') return 'HIVE';
+  if (nai === '@@000000037') return 'HP';
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -85,6 +97,7 @@ const FormatUtils = {
   nFormatter,
   hasMoreThanXDecimal,
   toNumber,
+  getSymbol,
 };
 
 export default FormatUtils;

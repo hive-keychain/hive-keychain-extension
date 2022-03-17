@@ -10,6 +10,7 @@ import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-
 import DropdownMenu, {
   DropdownPosition,
 } from 'src/common-ui/dropdown-menu/dropdown-menu.component';
+import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './wallet-info-section.component.scss';
@@ -29,32 +30,35 @@ const WalletInfoSection = ({
   const [hasDelegation, setHasDelegations] = useState(false);
 
   useEffect(() => {
-    const delegatedVestingShares = parseFloat(
-      activeAccount.account.delegated_vesting_shares
-        .toString()
-        .replace(' VESTS', ''),
-    );
-    const receivedVestingShares = parseFloat(
-      activeAccount.account.received_vesting_shares
-        .toString()
-        .replace(' VESTS', ''),
-    );
-    const delegationVestingShares = (
-      receivedVestingShares - delegatedVestingShares
-    ).toFixed(3);
+    console.log(activeAccount);
+    if (activeAccount && !ActiveAccountUtils.isEmpty(activeAccount)) {
+      const delegatedVestingShares = parseFloat(
+        activeAccount.account.delegated_vesting_shares
+          .toString()
+          .replace(' VESTS', ''),
+      );
+      const receivedVestingShares = parseFloat(
+        activeAccount.account.received_vesting_shares
+          .toString()
+          .replace(' VESTS', ''),
+      );
+      const delegationVestingShares = (
+        receivedVestingShares - delegatedVestingShares
+      ).toFixed(3);
 
-    const delegation = FormatUtils.toHP(
-      delegationVestingShares,
-      globalProperties.globals,
-    );
+      const delegation = FormatUtils.toHP(
+        delegationVestingShares,
+        globalProperties.globals,
+      );
 
-    setHasDelegations(delegation !== 0);
+      setHasDelegations(delegation !== 0);
 
-    setDelegationAmount(
-      `${delegation > 0 ? '+' : '-'} ${FormatUtils.withCommas(
-        Math.abs(delegation).toFixed(3),
-      )}`,
-    );
+      setDelegationAmount(
+        `${delegation > 0 ? '+' : '-'} ${FormatUtils.withCommas(
+          Math.abs(delegation).toFixed(3),
+        )}`,
+      );
+    }
   }, [activeAccount]);
 
   const toggleDropdown = (
