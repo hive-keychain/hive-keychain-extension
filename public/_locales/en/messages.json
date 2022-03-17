@@ -543,6 +543,10 @@
     "message": "Sending your tokens may take up to 30 seconds to confirm, please be patient.",
     "description": "On tokens page > Send"
   },
+  "popup_html_tokens_operation_text": {
+    "message": "Operations on tokens may take up to 30 seconds to confirm, please be patient.",
+    "description": "On tokens page > Send"
+  },
   "popup_html_recipient": {
     "message": "Recipient",
     "description": "On tokens page > Send"
@@ -2151,5 +2155,53 @@
   "popup_html_token_pending_undelegation": {
     "message": "Pending undelegation",
     "description": "token action"
+  },
+  "popup_html_stake_tokens": {
+    "message": "Stake token",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens": {
+    "message": "Unstake token",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens": {
+    "message": "Delegate token",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_failed": {
+    "message": "Stake token operation failed",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_failed": {
+    "message": "Unstake token operation failed",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_failed": {
+    "message": "Delegate token operation failed",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_success": {
+    "message": "Stake token was successful",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_success": {
+    "message": "Unstake token was successful",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_success": {
+    "message": "Delegate token operation was successful",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_confirm_text": {
+    "message": "Please confirm your that you want to stake your token.",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_confirm_text": {
+    "message": "Please confirm your that you want to unstake your token.",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_confirm_text": {
+    "message": "Please confirm your that you want to delegate your token.",
+    "description": "delegate token title"
   }
 }

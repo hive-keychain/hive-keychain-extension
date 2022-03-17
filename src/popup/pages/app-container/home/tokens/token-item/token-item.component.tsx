@@ -1,6 +1,7 @@
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
+import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -14,7 +15,11 @@ interface TokenItemProps {
   tokenBalance: TokenBalance;
 }
 
-const TokenItem = ({ tokenBalance, tokens }: PropsFromRedux) => {
+const TokenItem = ({
+  tokenBalance,
+  tokens,
+  navigateToWithParams,
+}: PropsFromRedux) => {
   const [isExpandablePanelOpen, setExpandablePanelOpen] = useState(false);
   const [token, setToken] = useState<Token>();
 
@@ -26,14 +31,26 @@ const TokenItem = ({ tokenBalance, tokens }: PropsFromRedux) => {
 
   const stake = () => {
     console.log('stake' + tokenBalance.symbol);
+    navigateToWithParams(Screen.TOKENS_OPERATION, {
+      tokenBalance,
+      operationType: TokenOperationType.STAKE,
+    });
   };
 
   const unstake = () => {
     console.log('unstake' + tokenBalance.symbol);
+    navigateToWithParams(Screen.TOKENS_OPERATION, {
+      tokenBalance,
+      operationType: TokenOperationType.UNSTAKE,
+    });
   };
 
   const delegate = () => {
     console.log('delegate' + tokenBalance.symbol);
+    navigateToWithParams(Screen.TOKENS_OPERATION, {
+      tokenBalance,
+      operationType: TokenOperationType.DELEGATE,
+    });
   };
 
   return (
@@ -51,9 +68,6 @@ const TokenItem = ({ tokenBalance, tokens }: PropsFromRedux) => {
           }
           data-iscapture="true">
           {FormatUtils.withCommas(tokenBalance.balance, 3)}
-          {FormatUtils.hasMoreThanXDecimal(parseFloat(tokenBalance.balance), 3)
-            ? '...'
-            : null}
         </div>
         <ReactTooltip
           id="full-balance-tooltip"
@@ -77,8 +91,13 @@ const TokenItem = ({ tokenBalance, tokens }: PropsFromRedux) => {
           }
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>
+        <Icon
+          name={Icons.MORE_VERT}
+          onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
+          additionalClassName="more"
+          type={IconType.OUTLINED}></Icon>
       </div>
-      {token && (token.delegationEnabled || token.stakingEnabled) && (
+      {token && (
         <div
           className={
             isExpandablePanelOpen
@@ -86,6 +105,15 @@ const TokenItem = ({ tokenBalance, tokens }: PropsFromRedux) => {
               : 'expandable-panel closed'
           }>
           <div className="token-info">
+            <div>
+              {chrome.i18n.getMessage('dialog_balance')} :{' '}
+              {FormatUtils.hasMoreThanXDecimal(
+                parseFloat(tokenBalance.balance),
+                3,
+              )
+                ? FormatUtils.withCommas(tokenBalance.balance, 8)
+                : FormatUtils.withCommas(tokenBalance.balance, 3)}
+            </div>
             {token.stakingEnabled && (
               <div>
                 {chrome.i18n.getMessage('popup_html_token_staking')} :{' '}
@@ -121,25 +149,29 @@ const TokenItem = ({ tokenBalance, tokens }: PropsFromRedux) => {
                 </div>
               )}
           </div>
-          <div className="button-panel">
-            {token.stakingEnabled && (
-              <div className="action-button stake" onClick={() => stake()}>
-                {chrome.i18n.getMessage('popup_html_token_stake')}
-              </div>
-            )}
-            {token.stakingEnabled && (
-              <div className="action-button unstake" onClick={() => unstake()}>
-                {chrome.i18n.getMessage('popup_html_token_unstake')}
-              </div>
-            )}
-            {token.delegationEnabled && (
-              <div
-                className="action-button delegate"
-                onClick={() => delegate()}>
-                {chrome.i18n.getMessage('popup_html_token_delegate')}
-              </div>
-            )}
-          </div>
+          {token && (token.delegationEnabled || token.stakingEnabled) && (
+            <div className="button-panel">
+              {token.stakingEnabled && (
+                <div className="action-button stake" onClick={() => stake()}>
+                  {chrome.i18n.getMessage('popup_html_token_stake')}
+                </div>
+              )}
+              {token.stakingEnabled && (
+                <div
+                  className="action-button unstake"
+                  onClick={() => unstake()}>
+                  {chrome.i18n.getMessage('popup_html_token_unstake')}
+                </div>
+              )}
+              {token.delegationEnabled && (
+                <div
+                  className="action-button delegate"
+                  onClick={() => delegate()}>
+                  {chrome.i18n.getMessage('popup_html_token_delegate')}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -152,7 +184,9 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  navigateToWithParams,
+});
 type PropsFromRedux = ConnectedProps<typeof connector> & TokenItemProps;
 
 export const TokenItemComponent = connector(TokenItem);

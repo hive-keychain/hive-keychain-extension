@@ -29,7 +29,13 @@ const AvailableCurrentPanel = ({
             {chrome.i18n.getMessage(currentLabel!)}
           </div>
           <div className="current-value">
-            {FormatUtils.formatCurrencyValue(current)} {currentCurrency}
+            {FormatUtils.formatCurrencyValue(
+              current,
+              FormatUtils.hasMoreThanXDecimal(parseFloat(current as string), 3)
+                ? 8
+                : 3,
+            )}{' '}
+            {currentCurrency}
           </div>
         </div>
       )}
@@ -38,7 +44,13 @@ const AvailableCurrentPanel = ({
           {chrome.i18n.getMessage(availableLabel)}
         </div>
         <div className="available-value">
-          {FormatUtils.formatCurrencyValue(available)} {availableCurrency}
+          {FormatUtils.formatCurrencyValue(
+            available,
+            FormatUtils.hasMoreThanXDecimal(parseFloat(available as string), 3)
+              ? 8
+              : 3,
+          )}{' '}
+          {availableCurrency}
         </div>
       </div>
     </div>

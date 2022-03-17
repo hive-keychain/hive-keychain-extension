@@ -1,6 +1,7 @@
 import { hsc } from '@api/hiveEngine';
-import { Client, PrivateKey } from '@hiveio/dhive';
+import { PrivateKey } from '@hiveio/dhive';
 import Config from 'src/config';
+import HiveUtils from 'src/utils/hive.utils';
 type SendTokenProps = {
   username: string;
   currency: string;
@@ -9,9 +10,8 @@ type SendTokenProps = {
   memo: string;
 };
 
-const stackToken = (
-  client: Client,
-  privateKey: PrivateKey,
+const stakeToken = (
+  activePrivateKey: string,
   to: string,
   symbol: string,
   amount: string,
@@ -23,20 +23,19 @@ const stackToken = (
     contractAction: 'stake',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
   });
-  return client.broadcast.json(
+  return HiveUtils.getClient().broadcast.json(
     {
       required_posting_auths: [],
       required_auths: [activeAccountName],
       id,
       json,
     },
-    privateKey,
+    PrivateKey.fromString(activePrivateKey),
   );
 };
 
-const unstackToken = (
-  client: Client,
-  privateKey: PrivateKey,
+const unstakeToken = (
+  activePrivateKey: string,
   symbol: string,
   amount: string,
   activeAccountName: string,
@@ -47,20 +46,19 @@ const unstackToken = (
     contractAction: 'unstake',
     contractPayload: { symbol: symbol, quantity: amount },
   });
-  return client.broadcast.json(
+  return HiveUtils.getClient().broadcast.json(
     {
       required_posting_auths: [],
       required_auths: [activeAccountName],
       id,
       json,
     },
-    privateKey,
+    PrivateKey.fromString(activePrivateKey),
   );
 };
 
 const delegateToken = (
-  client: Client,
-  privateKey: PrivateKey,
+  activePrivateKey: string,
   to: string,
   symbol: string,
   amount: string,
@@ -72,14 +70,14 @@ const delegateToken = (
     contractAction: 'delegate',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
   });
-  return client.broadcast.json(
+  return HiveUtils.getClient().broadcast.json(
     {
       required_posting_auths: [],
       required_auths: [activeAccountName],
       id,
       json,
     },
-    privateKey,
+    PrivateKey.fromString(activePrivateKey),
   );
 };
 
@@ -89,7 +87,7 @@ const getUserBalance = (account: string) => {
   });
 };
 
-const sendToken = (client: Client, data: SendTokenProps, key: PrivateKey) => {
+const sendToken = (data: SendTokenProps, key: PrivateKey) => {
   const id = Config.hiveEngine.MAINNET;
   const json = JSON.stringify({
     contractName: 'tokens',
@@ -101,7 +99,7 @@ const sendToken = (client: Client, data: SendTokenProps, key: PrivateKey) => {
       memo: data.memo,
     },
   });
-  return client.broadcast.json(
+  return HiveUtils.getClient().broadcast.json(
     { required_posting_auths: [], required_auths: [data.username], id, json },
     key,
   );
@@ -110,8 +108,8 @@ const sendToken = (client: Client, data: SendTokenProps, key: PrivateKey) => {
 const HiveEngineUtils = {
   sendToken,
   getUserBalance,
-  stackToken,
-  unstackToken,
+  stakeToken,
+  unstakeToken,
   delegateToken,
 };
 

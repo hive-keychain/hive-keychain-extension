@@ -25,7 +25,6 @@ const Tokens = ({
   userTokens,
   loadUserTokens,
   navigateTo,
-  navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,

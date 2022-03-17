@@ -35,7 +35,7 @@ import './tokens-transfer.component.scss';
 
 const TokensTransfer = ({
   activeAccount,
-  token,
+  tokenBalance,
   phishing,
   formParams,
   setErrorMessage,
@@ -54,8 +54,10 @@ const TokensTransfer = ({
     formParams.amount ? formParams.amount : '',
   );
 
-  const balance = formParams.balance ? formParams.balance : token.balance;
-  const symbol = formParams.symbol ? formParams.symbol : token.symbol;
+  const balance = formParams.balance
+    ? formParams.balance
+    : tokenBalance.balance;
+  const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
   const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
@@ -262,7 +264,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    token: state.navigation.stack[0].params?.token as TokenBalance,
+    tokenBalance: state.navigation.stack[0].params
+      ?.tokenBalance as TokenBalance,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

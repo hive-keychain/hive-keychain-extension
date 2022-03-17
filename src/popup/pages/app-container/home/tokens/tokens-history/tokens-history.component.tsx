@@ -12,7 +12,7 @@ import './tokens-history.component.scss';
 
 const TokensHistory = ({
   activeAccountName,
-  currentToken,
+  currentTokenBalance,
   tokenHistory,
   loadTokenHistory,
   setTitleContainerProperties,
@@ -24,10 +24,10 @@ const TokensHistory = ({
   const [filterValue, setFilterValue] = useState('');
 
   useEffect(() => {
-    loadTokenHistory(activeAccountName!, currentToken.symbol);
+    loadTokenHistory(activeAccountName!, currentTokenBalance.symbol);
     setTitleContainerProperties({
       title: 'popup_html_tokens_history',
-      titleParams: [currentToken.symbol],
+      titleParams: [currentTokenBalance.symbol],
       isBackButtonEnabled: true,
     });
   }, []);
@@ -74,7 +74,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccountName: state.activeAccount?.name,
     userTokens: state.userTokens,
-    currentToken: state.navigation.params?.token as TokenBalance,
+    currentTokenBalance: state.navigation.params?.tokenBalance as TokenBalance,
     tokenHistory: state.tokenHistory as TokenTransaction[],
   };
 };
