@@ -57,3 +57,9 @@ $caption-font-size: 16px;
 @mixin caption {
   font-size: $caption-font-size;
 }
+
+@mixin icon-size($size) {
+  height: $size;
+  width: $size;
+  font-size: $size;
+}

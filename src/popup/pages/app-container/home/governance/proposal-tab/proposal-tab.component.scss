@@ -1,6 +1,5 @@
 @import '../../../../../variable.scss';
 .proposal-tab {
-  text-align: center;
   .proposal-list {
     display: flex;
     flex-direction: column;
@@ -11,5 +10,8 @@
         background-color: $red-transparent;
       }
     }
+  }
+  &.loading {
+    text-align: center;
   }
 }

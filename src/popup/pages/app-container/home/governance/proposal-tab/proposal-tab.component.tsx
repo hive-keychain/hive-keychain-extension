@@ -68,7 +68,7 @@ const ProposalTab = ({
   };
 
   return (
-    <div className="proposal-tab">
+    <div className={`proposal-tab ${isLoading ? 'loading' : ''}`}>
       {!isLoading && (
         <div className="proposal-list">
           {proposals.map((proposal) => (

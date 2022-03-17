@@ -14,6 +14,7 @@ import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import FormatUtils from 'src/utils/format.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import './proposal-item.component.scss';
 
@@ -68,14 +69,18 @@ const ProposalItem = ({
   };
 
   return (
-    <div
-      className={`proposal-item`}
-      key={proposal.proposalId}
-      onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}>
+    <div className={`proposal-item`} key={proposal.proposalId}>
       <div className="title">
         <div onClick={() => goTo(proposal.link)}>
           #{proposal.id} - {proposal.subject}
         </div>
+        <Icon
+          name={Icons.EXPAND_MORE}
+          onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
+          additionalClassName={`more ${
+            isExpandablePanelOpened ? 'opened' : 'closed'
+          }`}
+          type={IconType.OUTLINED}></Icon>
       </div>
       <div className="additional-info">
         <div className="left-panel">
@@ -118,14 +123,29 @@ const ProposalItem = ({
               'L',
             )} - ${proposal.endDate.format('L')}`}
             data-iscapture="true">
-            <div className="value">{proposal.totalVotes}</div>
-            <div>
-              {chrome.i18n.getMessage('popup_html_days_remaining', [
-                proposal.endDate.diff(moment(new Date()), 'days').toString(),
-              ])}
+            <div className="value">
+              <Icon name={Icons.SHOW_CHART} type={IconType.OUTLINED} />
+              <div>{proposal.totalVotes}</div>
             </div>
             <div>
-              {proposal.dailyPay}/{chrome.i18n.getMessage('day')}
+              <Icon name={Icons.TIMELAPSE} type={IconType.OUTLINED} />
+              <div>
+                {chrome.i18n.getMessage('popup_html_days_remaining', [
+                  FormatUtils.withCommas(
+                    proposal.endDate
+                      .diff(moment(new Date()), 'days')
+                      .toString(),
+                    0,
+                  ),
+                ])}
+              </div>
+            </div>
+            <div>
+              <Icon name={Icons.ATTACH_MONEY} type={IconType.OUTLINED} />
+              <div>
+                {FormatUtils.withCommas(proposal.dailyPay)}/
+                {chrome.i18n.getMessage('day')}
+              </div>
             </div>
           </div>
           <div className={`funded-chip ${proposal.funded}`}>
