@@ -152,6 +152,7 @@ const TokensOperation = ({
               amount,
               activeAccount.name!,
             );
+            break;
           case TokenOperationType.STAKE:
             tokenOperationResult = await HiveEngineUtils.stakeToken(
               activeAccount.keys.active as string,
@@ -160,6 +161,7 @@ const TokensOperation = ({
               amount,
               activeAccount.name!,
             );
+            break;
           case TokenOperationType.UNSTAKE:
             tokenOperationResult = await HiveEngineUtils.unstakeToken(
               activeAccount.keys.active as string,
@@ -167,6 +169,7 @@ const TokensOperation = ({
               amount,
               activeAccount.name!,
             );
+            break;
         }
 
         if (tokenOperationResult.id) {
