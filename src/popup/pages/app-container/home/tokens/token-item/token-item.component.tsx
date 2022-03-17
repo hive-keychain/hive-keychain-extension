@@ -30,7 +30,6 @@ const TokenItem = ({
   }, [tokens]);
 
   const stake = () => {
-    console.log('stake' + tokenBalance.symbol);
     navigateToWithParams(Screen.TOKENS_OPERATION, {
       tokenBalance,
       operationType: TokenOperationType.STAKE,
@@ -38,7 +37,6 @@ const TokenItem = ({
   };
 
   const unstake = () => {
-    console.log('unstake' + tokenBalance.symbol);
     navigateToWithParams(Screen.TOKENS_OPERATION, {
       tokenBalance,
       operationType: TokenOperationType.UNSTAKE,
@@ -46,7 +44,6 @@ const TokenItem = ({
   };
 
   const delegate = () => {
-    console.log('delegate' + tokenBalance.symbol);
     navigateToWithParams(Screen.TOKENS_OPERATION, {
       tokenBalance,
       operationType: TokenOperationType.DELEGATE,
@@ -92,9 +89,11 @@ const TokenItem = ({
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>
         <Icon
-          name={Icons.MORE_VERT}
+          name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
-          additionalClassName="more"
+          additionalClassName={`more ${
+            isExpandablePanelOpen ? 'opened' : 'closed'
+          }`}
           type={IconType.OUTLINED}></Icon>
       </div>
       {token && (

@@ -21,6 +21,10 @@
     .more {
       justify-self: flex-end;
     }
+
+    .more.opened {
+      transform: rotate(180deg) 0.5s;
+    }
   }
   .expandable-panel {
     max-height: 0;

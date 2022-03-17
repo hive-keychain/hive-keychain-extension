@@ -23,6 +23,7 @@ export enum Icons {
   DONE = 'done',
   EDIT = 'edit',
   ERROR = 'error',
+  EXPAND_MORE = 'expand_more',
   EXPORT = 'file_download',
   HIDDEN = 'visibility_off',
   HISTORY = 'history',
