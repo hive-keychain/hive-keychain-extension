@@ -19,9 +19,12 @@
 
     .more {
       padding-right: 6px;
+      margin-top: -4px;
     }
 
     .more.opened {
+      padding-right: unset;
+      padding-left: 6px;
       transform: rotate(180deg);
     }
   }
