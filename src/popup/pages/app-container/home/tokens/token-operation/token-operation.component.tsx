@@ -64,12 +64,21 @@ const TokensOperation = ({
   const [amount, setAmount] = useState(
     formParams.amount ? formParams.amount : '',
   );
+  let balance: number | string;
+  switch (operationType) {
+    case TokenOperationType.UNSTAKE:
+      balance = tokenBalance.stake;
+      break;
+    case TokenOperationType.STAKE:
+      balance = tokenBalance.balance;
+      break;
+    case TokenOperationType.DELEGATE:
+      balance =
+        parseFloat(tokenBalance.stake) -
+        parseFloat(tokenBalance.pendingUnstake);
+      break;
+  }
 
-  const balance = formParams.balance
-    ? formParams.balance
-    : operationType === TokenOperationType.UNSTAKE
-    ? tokenBalance.stake
-    : tokenBalance.balance;
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
@@ -101,7 +110,7 @@ const TokensOperation = ({
   const getFormParams = () => {
     return {
       receiverUsername: receiverUsername,
-      amount: amount,
+      amount: amount.toString(),
       symbol: symbol,
       balance: balance,
     };
@@ -149,7 +158,7 @@ const TokensOperation = ({
               activeAccount.keys.active as string,
               receiverUsername,
               symbol,
-              amount,
+              amount.toString(),
               activeAccount.name!,
             );
             break;
@@ -158,7 +167,7 @@ const TokensOperation = ({
               activeAccount.keys.active as string,
               receiverUsername,
               symbol,
-              amount,
+              amount.toString(),
               activeAccount.name!,
             );
             break;
@@ -166,7 +175,7 @@ const TokensOperation = ({
             tokenOperationResult = await HiveEngineUtils.unstakeToken(
               activeAccount.keys.active as string,
               symbol,
-              amount,
+              amount.toString(),
               activeAccount.name!,
             );
             break;
