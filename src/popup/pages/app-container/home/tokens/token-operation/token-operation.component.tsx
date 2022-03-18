@@ -190,13 +190,18 @@ const TokensOperation = ({
             );
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           if (confirmationResult.confirmed) {
+            if (confirmationResult.error) {
+              setErrorMessage('popup_html_hive_engine_error', [
+                confirmationResult.error,
+              ]);
+            } else {
+              await TransferUtils.saveTransferRecipient(
+                receiverUsername,
+                activeAccount,
+              );
+              setSuccessMessage(`popup_html_${operationType}_tokens_success`);
+            }
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveTransferRecipient(
-              receiverUsername,
-              activeAccount,
-            );
-
-            setSuccessMessage(`popup_html_${operationType}_tokens_success`);
           } else {
             setErrorMessage('popup_token_timeout');
           }

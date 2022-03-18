@@ -2392,5 +2392,9 @@
   "popup_html_loading_proposals": {
     "message": "Loading proposals",
     "description": "proposal tab"
+  },
+  "popup_html_hive_engine_error": {
+    "message": "Hive Engine error: $1",
+    "description": "Hive engine error template"
   }
 }
