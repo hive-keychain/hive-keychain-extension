@@ -2089,7 +2089,7 @@
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
-    "message": "Overwhelmed by governance matters ? Set @keychain as proxy!",
+    "message": "Overwhelmed by governance votes? Set @keychain as proxy to automatically follow Keychain team witness and proposal votes. You can change this anytime from the governance menu.",
     "description": "If no witness voted"
   },
   "popup_html_set_proxy": {
@@ -2312,5 +2312,9 @@
   "popup_html_loading_proposals": {
     "message": "Loading proposals",
     "description": "proposal tab"
+  },
+  "html_popup_ok": {
+    "message": "Ok!",
+    "description": "general word"
   }
 }

@@ -76,7 +76,7 @@ const ProxySuggestion = ({
         <OperationButtonComponent
           requiredKey={KeychainKeyTypesLC.active}
           onClick={handleSetProxy}
-          label={'html_popup_vote'}
+          label={'html_popup_ok'}
         />
       </div>
     </div>
