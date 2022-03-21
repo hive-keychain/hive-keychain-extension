@@ -10,6 +10,7 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import {
+  goBack,
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
@@ -53,6 +54,7 @@ const TokensOperation = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  goBack,
 }: PropsFromRedux) => {
   const [receiverUsername, setReceiverUsername] = useState(
     formParams.receiverUsername
@@ -194,6 +196,7 @@ const TokensOperation = ({
               setErrorMessage('popup_html_hive_engine_error', [
                 confirmationResult.error,
               ]);
+              goBack();
             } else {
               await TransferUtils.saveTransferRecipient(
                 receiverUsername,
@@ -281,6 +284,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  goBack,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
