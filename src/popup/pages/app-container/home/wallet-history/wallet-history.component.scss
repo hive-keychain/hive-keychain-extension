@@ -121,12 +121,15 @@
     flex-direction: column;
     flex: 1;
 
-    .rotating-logo {
-      align-self: center;
-      justify-self: center;
-      height: 50px;
-      width: 50px;
-      margin-top: 12px;
+    .rotating-logo-container {
+      min-height: 100px;
+      display: flex;
+      .rotating-logo {
+        align-self: center;
+        justify-self: center;
+        height: 50px;
+        width: 50px;
+      }
     }
 
     .wallet-history-item {

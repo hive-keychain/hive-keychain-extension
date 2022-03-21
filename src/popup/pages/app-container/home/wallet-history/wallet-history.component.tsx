@@ -342,6 +342,7 @@ const WalletHistory = ({
   };
 
   const handleScroll = (event: any) => {
+    if (transactions.list[transactions.list.length - 1]?.last === true) return;
     setDisplayedScrollToTop(event.target.scrollTop !== 0);
 
     if (
@@ -455,7 +456,11 @@ const WalletHistory = ({
               <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
             </div>
           )}
-        {loading && <RotatingLogoComponent></RotatingLogoComponent>}
+        {loading && (
+          <div className="rotating-logo-container">
+            <RotatingLogoComponent></RotatingLogoComponent>
+          </div>
+        )}
         {displayScrollToTop && <BackToTopButton element={walletItemList} />}
       </div>
     </div>
