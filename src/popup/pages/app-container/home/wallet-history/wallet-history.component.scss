@@ -124,6 +124,7 @@
     .rotating-logo-container {
       min-height: 100px;
       display: flex;
+      justify-content: center;
       .rotating-logo {
         align-self: center;
         justify-self: center;
