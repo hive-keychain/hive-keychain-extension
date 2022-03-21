@@ -15,7 +15,7 @@ const Governance = ({ setTitleContainerProperties }: PropsFromRedux) => {
       title: 'popup_html_governance',
       isBackButtonEnabled: true,
     });
-  });
+  }, []);
 
   return (
     <div className="governance-page">

@@ -26,4 +26,9 @@ export const ActionButtonList: ActionButton[] = [
     importedIcon: true,
     nextScreen: Screen.GOVERNANCE_PAGE,
   },
+  {
+    label: 'popup_html_plugins',
+    icon: Icons.EXTENSION,
+    nextScreen: Screen.PLUGINS_PAGE,
+  },
 ];

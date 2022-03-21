@@ -12,6 +12,11 @@ import {
   KeychainRequest,
   KeychainRequestWrapper,
 } from '@interfaces/keychain.interface';
+import {
+  InputSetting,
+  Plugin,
+  PluginSettingType,
+} from '@popup/pages/app-container/home/plugin/plugin.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -30,6 +35,29 @@ import MkModule from './mk.module';
       LocalStorageKeyEnum.AUTOLOCK,
     ),
   );
+
+  //TODO: TMP => delete when finish and delete from local storage (PLUGINS)
+  let pluginTest: Plugin = {
+    definition: {
+      title: 'Plugin test',
+      decription: 'This is the description of my fantastic plugin',
+      generalSettings: [
+        {
+          title: 'Test input setting',
+          key: 'testInputSetting',
+          type: PluginSettingType.INPUT,
+          hint: 'hint for my input',
+          inputType: 'text',
+          placeholder: 'write down value',
+        } as InputSetting,
+      ],
+      userSettings: [],
+    },
+    data: [],
+  };
+  LocalStorageUtils.saveValueInLocalStorage(LocalStorageKeyEnum.PLUGINS, [
+    pluginTest,
+  ]);
 })();
 
 //@ts-ignore

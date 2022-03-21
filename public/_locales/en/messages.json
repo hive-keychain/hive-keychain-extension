@@ -2308,5 +2308,9 @@
   "popup_html_loading_proposals": {
     "message": "Loading proposals",
     "description": "proposal tab"
+  },
+  "popup_html_plugins": {
+    "message": "Plugins",
+    "description": "plugins page"
   }
 }

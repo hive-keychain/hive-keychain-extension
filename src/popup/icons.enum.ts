@@ -27,6 +27,7 @@ export enum Icons {
   ERROR = 'error',
   EXPAND_MORE = 'expand_more',
   EXPORT = 'file_download',
+  EXTENSION = 'extension',
   HIDDEN = 'visibility_off',
   HISTORY = 'history',
   INBOX = 'inbox',
