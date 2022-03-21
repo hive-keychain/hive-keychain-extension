@@ -135,7 +135,7 @@ const WalletHistory = ({
         left: 0,
         behavior: 'smooth',
       });
-    }, 500);
+    }, 200);
   };
 
   useEffect(() => {
@@ -317,7 +317,7 @@ const WalletHistory = ({
         left: 0,
         behavior: 'smooth',
       });
-    }, 500);
+    }, 200);
   };
 
   const renderListItem = (transaction: Transaction) => {
