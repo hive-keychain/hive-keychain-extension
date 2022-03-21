@@ -129,11 +129,13 @@ const WalletHistory = ({
 
   const updateFilter = (filter: any) => {
     setFilter(filter);
-    walletItemList?.current?.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    });
+    setTimeout(() => {
+      walletItemList?.current?.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    }, 500);
   };
 
   useEffect(() => {
@@ -309,11 +311,13 @@ const WalletHistory = ({
 
   const clearFilters = () => {
     setFilter(DEFAULT_FILTER);
-    walletItemList?.current?.scrollTo({
-      top: 0,
-      left: 0,
-      behavior: 'smooth',
-    });
+    setTimeout(() => {
+      walletItemList?.current?.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    }, 500);
   };
 
   const renderListItem = (transaction: Transaction) => {
