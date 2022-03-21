@@ -330,7 +330,7 @@ const WalletHistory = ({
       event.target.scrollHeight - event.target.scrollTop ===
       event.target.clientHeight
     ) {
-      // tryToLoadMore();
+      tryToLoadMore();
     }
   };
 
