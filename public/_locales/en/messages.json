@@ -2181,7 +2181,7 @@
     "description": "Wallet information claim rewards"
   },
   "popup_html_wallet_info_power_down": {
-    "message": "Powered down $1",
+    "message": "Initiated a $1 power down",
     "description": "Wallet information claim rewards"
   },
   "popup_html_wallet_info_cancel_power_down": {
