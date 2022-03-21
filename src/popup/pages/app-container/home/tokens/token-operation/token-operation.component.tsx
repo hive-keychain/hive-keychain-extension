@@ -200,8 +200,8 @@ const TokensOperation = ({
                 activeAccount,
               );
               setSuccessMessage(`popup_html_${operationType}_tokens_success`);
+              navigateTo(Screen.HOME_PAGE, true);
             }
-            navigateTo(Screen.HOME_PAGE, true);
           } else {
             setErrorMessage('popup_token_timeout');
           }
