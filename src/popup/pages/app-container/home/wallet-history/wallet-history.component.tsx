@@ -97,7 +97,7 @@ const WalletHistory = ({
       [transactionName]: !filter?.selectedTransactionTypes![transactionName],
     };
 
-    setFilter({
+    updateFilter({
       ...filter,
       selectedTransactionTypes: newFilter,
     });
@@ -108,7 +108,7 @@ const WalletHistory = ({
       ...filter,
       inSelected: !filter.inSelected,
     };
-    setFilter(newFilter);
+    updateFilter(newFilter);
   };
 
   const toggleFilterOut = () => {
@@ -116,7 +116,7 @@ const WalletHistory = ({
       ...filter,
       outSelected: !filter.outSelected,
     };
-    setFilter(newFilter);
+    updateFilter(newFilter);
   };
 
   const updateFilterValue = (value: string) => {
@@ -124,7 +124,16 @@ const WalletHistory = ({
       ...filter,
       filterValue: value,
     };
-    setFilter(newFilter);
+    updateFilter(newFilter);
+  };
+
+  const updateFilter = (filter: any) => {
+    setFilter(filter);
+    walletItemList?.current?.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
   };
 
   useEffect(() => {
@@ -300,6 +309,11 @@ const WalletHistory = ({
 
   const clearFilters = () => {
     setFilter(DEFAULT_FILTER);
+    walletItemList?.current?.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'smooth',
+    });
   };
 
   const renderListItem = (transaction: Transaction) => {
