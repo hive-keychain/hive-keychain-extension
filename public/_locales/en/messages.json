@@ -1921,7 +1921,7 @@
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_stoodkev_witness_success": {
-    "message": "Successfully voted @stoodkev as a witness. Thank you for the support! ",
+    "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_witness_vote_transaction_not_had_error": {
