@@ -83,7 +83,7 @@ const WalletHistory = ({
 
   const walletItemList = useRef<HTMLDivElement>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [previousTransactionLength, setPreviousTransactionLength] = useState(0);
 
@@ -428,23 +428,27 @@ const WalletHistory = ({
           renderItem={renderListItem}
           renderOnScroll
           renderWhenEmpty={() => {
-            return (
-              <div className="empty-list">
-                <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
-                <div className="labels">
-                  <span>
-                    {chrome.i18n.getMessage(
-                      'popup_html_transaction_list_is_empty',
-                    )}
-                  </span>
-                  <span>
-                    {chrome.i18n.getMessage(
-                      'popup_html_transaction_list_is_empty_try_clear_filter',
-                    )}
-                  </span>
+            if (loading) {
+              return <div></div>;
+            } else {
+              return (
+                <div className="empty-list">
+                  <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
+                  <div className="labels">
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty',
+                      )}
+                    </span>
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty_try_clear_filter',
+                      )}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            );
+              );
+            }
           }}
         />
         {transactions.list[transactions.list.length - 1]?.last === false &&
