@@ -27,6 +27,7 @@ const TopBar = ({
   removeFromLoadingList,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
+  const [rotateLogo, setRotateLogo] = useState(false);
 
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -45,6 +46,12 @@ const TopBar = ({
     }
   }, [activeAccount]);
 
+  const refresh = () => {
+    setRotateLogo(true);
+    refreshActiveAccount();
+    setTimeout(() => setRotateLogo(false), 1000);
+  };
+
   const lockPopup = (): void => {
     resetNav();
     forgetMk();
@@ -61,15 +68,18 @@ const TopBar = ({
     if (claimSuccessful) {
       removeFromLoadingList('popup_html_claiming_rewards');
       setHasRewardToClaim(false);
-      refreshActiveAccount();
+      setTimeout(() => {
+        refreshActiveAccount();
+      }, 2000);
     }
   };
 
   return (
     <div className="top-bar">
       <img
+        className={rotateLogo ? 'rotate' : ''}
         src="/assets/images/keychain_icon_small.png"
-        onClick={() => refreshActiveAccount()}
+        onClick={refresh}
       />
       <div className="spacer"></div>
       {hasRewardToClaim && (

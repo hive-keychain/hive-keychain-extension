@@ -11,6 +11,10 @@
     height: 32px;
     width: auto;
     cursor: pointer;
+
+    &.rotate {
+      animation: rotation 1s linear;
+    }
   }
 
   .claim-button {
@@ -41,4 +45,13 @@
 
 .spacer {
   flex: 1;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
 }
