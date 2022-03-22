@@ -407,6 +407,14 @@
     "message": "Key copied to clipboard!",
     "description": "on preferences when clicking on a key"
   },
+  "popup_html_text_copied": {
+    "message": "'$1' copied to clipboard!",
+    "description": "info message copy to clipboard"
+  },
+  "popup_html_copy_username_tooltip_text": {
+    "message": "Click here to copy username",
+    "description": "after clicking on copy username to clipboard button on home page"
+  },
   "popup_html_change_password_text": {
     "message": "Input your old password for confirmation, then chose a new password.",
     "description": "on change password"

@@ -4,11 +4,12 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
+import { setInfoMessage } from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React, { useEffect, useState } from 'react';
+import React, { SyntheticEvent, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -27,6 +28,7 @@ const TopBar = ({
   addToLoadingList,
   removeFromLoadingList,
   loadGlobalProperties,
+  setInfoMessage,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -77,6 +79,14 @@ const TopBar = ({
     }
   };
 
+  const copyUsernameToClipboard = (event: SyntheticEvent) => {
+    event.nativeEvent.stopPropagation();
+    event.nativeEvent.stopImmediatePropagation();
+    event.nativeEvent.preventDefault();
+    navigator.clipboard.writeText(activeAccount.name!);
+    setInfoMessage('popup_html_text_copied', [activeAccount.name!]);
+  };
+
   return (
     <div className="top-bar">
       <img
@@ -85,6 +95,14 @@ const TopBar = ({
         onClick={refresh}
       />
       <div className="spacer"></div>
+      <Icon
+        additionalClassName="copy-username-button"
+        name={Icons.COPY}
+        type={IconType.OUTLINED}
+        onClick={copyUsernameToClipboard}
+        tooltipMessage="popup_html_copy_username_tooltip_text"
+      />
+
       {hasRewardToClaim && (
         <Icon
           name={Icons.CLAIM}
@@ -121,6 +139,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   loadGlobalProperties,
+  setInfoMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

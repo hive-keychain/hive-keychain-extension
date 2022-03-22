@@ -107,7 +107,9 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { loadActiveAccount });
+const connector = connect(mapStateToProps, {
+  loadActiveAccount,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const SelectAccountSectionComponent = connector(SelectAccountSection);

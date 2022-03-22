@@ -21,7 +21,6 @@ import { DelegationType } from '@popup/pages/app-container/home/delegations/dele
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -243,16 +242,11 @@ const Delegations = ({
               if (incomingError) setErrorMessage(incomingError);
             }}>
             {incomingError && (
-              <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+              <Icon
+                name={Icons.ERROR}
+                type={IconType.OUTLINED}
+                tooltipMessage={incomingError}></Icon>
             )}
-            <ReactTooltip
-              id="incoming-error-tooltip"
-              place="top"
-              type="light"
-              effect="solid"
-              multiline={true}
-              getContent={() => incomingError}
-            />
             <span>
               + {FormatUtils.withCommas(totalIncoming.toString())}{' '}
               {currencyLabels.hp}
