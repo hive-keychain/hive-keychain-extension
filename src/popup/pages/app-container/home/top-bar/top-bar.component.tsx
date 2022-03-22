@@ -1,4 +1,5 @@
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
+import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -25,6 +26,7 @@ const TopBar = ({
   globalProperties,
   addToLoadingList,
   removeFromLoadingList,
+  loadGlobalProperties,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -49,6 +51,7 @@ const TopBar = ({
   const refresh = () => {
     setRotateLogo(true);
     refreshActiveAccount();
+    loadGlobalProperties();
     setTimeout(() => setRotateLogo(false), 1000);
   };
 
@@ -117,6 +120,7 @@ const connector = connect(mapStateToProps, {
   refreshActiveAccount,
   addToLoadingList,
   removeFromLoadingList,
+  loadGlobalProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
