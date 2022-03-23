@@ -31,11 +31,13 @@ const checkAndUpdateLocalStorage = async () => {
     let activeRpc = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.CURRENT_RPC,
     );
+    console.log('activerpc', activeRpc);
     if (typeof activeRpc === 'string' && activeRpc !== 'DEFAULT') {
       activeRpc =
         (JSON.parse(rpcList) as Rpc[]).find((rpc) => rpc.uri === activeRpc) ||
         RpcUtils.getFullList()[0];
     }
+    console.log('activerpc', activeRpc);
 
     if (!activeRpc || activeRpc.uri === 'DEFAULT' || activeRpc === 'DEFAULT') {
       console.log('saving new rpc and switch to true');
