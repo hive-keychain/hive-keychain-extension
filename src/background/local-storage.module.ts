@@ -28,15 +28,16 @@ const checkAndUpdateLocalStorage = async () => {
       );
     }
 
-    const activeRpc = (await LocalStorageUtils.getValueFromLocalStorage(
+    let activeRpc = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.CURRENT_RPC,
-    )) as Rpc;
-    console.log(activeRpc);
-    if (
-      activeRpc === null ||
-      activeRpc === undefined ||
-      activeRpc.uri === 'DEFAULT'
-    ) {
+    );
+    if (typeof activeRpc === 'string' && activeRpc !== 'DEFAULT') {
+      activeRpc =
+        (JSON.parse(rpcList) as Rpc[]).find((rpc) => rpc.uri === activeRpc) ||
+        RpcUtils.getFullList()[0];
+    }
+
+    if (!activeRpc || activeRpc.uri === 'DEFAULT' || activeRpc === 'DEFAULT') {
       console.log('saving new rpc and switch to true');
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.SWITCH_RPC_AUTO,
