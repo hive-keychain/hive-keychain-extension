@@ -29,23 +29,21 @@
       background: $red;
     }
   }
-}
+  .button {
+    cursor: pointer;
+  }
 
-.button {
-  cursor: pointer;
-}
+  .lock-button {
+    margin-right: 32px;
+  }
 
-.copy-username-button,
-.lock-button {
-  margin-right: 32px;
-}
+  .settings-button {
+    font-size: 28px;
+  }
 
-.settings-button {
-  font-size: 28px;
-}
-
-.spacer {
-  flex: 1;
+  .spacer {
+    flex: 1;
+  }
 }
 
 @keyframes rotation {

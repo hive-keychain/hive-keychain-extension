@@ -1,12 +1,15 @@
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
+import { setInfoMessage } from '@popup/actions/message.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import React, { useEffect, useState } from 'react';
+import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import './select-account-section.component.scss';
 
@@ -14,6 +17,7 @@ const SelectAccountSection = ({
   accounts,
   activeAccount,
   loadActiveAccount,
+  setInfoMessage,
 }: PropsFromRedux) => {
   const defaultOptions: LocalAccountListItem[] = [];
 
@@ -55,6 +59,16 @@ const SelectAccountSection = ({
           }}
         />
         <div className="selected-account-name">{selectedLocalAccount}</div>
+        <Icon
+          additionalClassName="copy-username-button"
+          name={Icons.COPY}
+          type={IconType.OUTLINED}
+          onClick={($event) => {
+            copyUsernameToClipboard($event, selectedLocalAccount);
+            selectProps.methods.dropDown('close');
+          }}
+          tooltipMessage="popup_html_copy_username_tooltip_text"
+        />
       </div>
     );
   };
@@ -78,8 +92,27 @@ const SelectAccountSection = ({
           }}
         />
         <div className="account-name">{selectProps.item.label}</div>
+        <Icon
+          additionalClassName="copy-username-button"
+          name={Icons.COPY}
+          type={IconType.OUTLINED}
+          onClick={($event) => {
+            copyUsernameToClipboard($event, selectProps.item.label);
+            selectProps.methods.dropDown('close');
+          }}
+          tooltipMessage="popup_html_copy_username_tooltip_text"
+        />
       </div>
     );
+  };
+  const copyUsernameToClipboard = (
+    event: BaseSyntheticEvent,
+    username: string,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    navigator.clipboard.writeText(activeAccount.name!);
+    setInfoMessage('popup_html_text_copied', [username]);
   };
 
   return (
@@ -109,6 +142,7 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   loadActiveAccount,
+  setInfoMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

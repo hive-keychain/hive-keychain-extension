@@ -58,12 +58,16 @@
       width: 16px;
     }
   }
+
+  .react-dropdown-select-dropdown {
+    max-height: 250px !important;
+  }
 }
 
 .add-rpc-panel {
   display: flex;
   flex-direction: column;
-  row-gap: 20px;
+  row-gap: 14px;
   .add-rpc-caption {
     @include caption;
     margin-top: 12px;
