@@ -2312,5 +2312,17 @@
   "popup_html_plugins": {
     "message": "Plugins",
     "description": "plugins page"
+  },
+  "popup_html_plugin_available": {
+    "message": "Available",
+    "description": "plugins page"
+  },
+  "popup_html_plugin_not_installed": {
+    "message": "Not installed",
+    "description": "plugins page"
+  },
+  "popup_html_plugin_introduction": {
+    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam tempus odio eget posuere hendrerit. Quisque vehicula venenatis libero, in elementum sapien interdum nec. Quisque accumsan ac risus a efficitur. Nulla efficitur turpis at eros vulputate malesuada sit amet sed urna. Vivamus varius sem tellus. Nulla pharetra turpis at purus mollis.",
+    "description": "plugins page introduction"
   }
 }

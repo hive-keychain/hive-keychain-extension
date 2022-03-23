@@ -1,0 +1,26 @@
+@import '../../../../../../variable.scss';
+.plugin-card {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border: 1px solid white;
+  border-radius: 16px;
+  cursor: pointer;
+  min-height: 110px;
+  img {
+    height: 36px;
+    width: 36px;
+  }
+
+  .name {
+    font-size: 14px;
+    text-align: center;
+  }
+
+  &:hover {
+    background: $red-transparent;
+  }
+}

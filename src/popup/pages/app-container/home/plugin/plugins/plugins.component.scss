@@ -1,0 +1,36 @@
+@import '../../../../../variable.scss';
+
+.plugins-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 32px;
+  overflow: hidden;
+  .introduction {
+    font-size: 16px;
+    padding: 0px 24px;
+  }
+  .plugins {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    overflow: scroll;
+    .available-plugins,
+    .not-installed-plugins {
+      display: flex;
+      flex-direction: column;
+      row-gap: 12px;
+      .section-title {
+        font-size: 20px;
+        margin: 0px 24px;
+      }
+      .list {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: 24px;
+        column-gap: 24px;
+        padding: 0px 24px;
+      }
+    }
+  }
+}
