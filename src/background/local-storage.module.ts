@@ -31,13 +31,12 @@ const checkAndUpdateLocalStorage = async () => {
     const activeRpc = (await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.CURRENT_RPC,
     )) as Rpc;
-    console.log(activeRpc);
     if (
       activeRpc === null ||
       activeRpc === undefined ||
       activeRpc.uri === 'DEFAULT'
     ) {
-      console.log('saving new rpc and switch to true');
+      Logger.log('saving new rpc and switch to true');
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.SWITCH_RPC_AUTO,
         true,
@@ -47,7 +46,7 @@ const checkAndUpdateLocalStorage = async () => {
         RpcUtils.getFullList()[0],
       );
     } else {
-      console.log('saving switch to false');
+      Logger.log('saving switch to false');
       LocalStorageUtils.saveValueInLocalStorage(
         LocalStorageKeyEnum.SWITCH_RPC_AUTO,
         false,

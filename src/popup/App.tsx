@@ -82,10 +82,16 @@ const App = ({
   };
 
   useEffect(() => {
+    initHasStoredAccounts();
     if (isAppReady) {
       selectComponent(mk, accounts);
     }
   }, [isAppReady, mk, accounts]);
+
+  const initHasStoredAccounts = async () => {
+    const storedAccounts = await AccountUtils.hasStoredAccounts();
+    setHasStoredAccounts(storedAccounts);
+  };
 
   const initActiveRpc = async (rpc: Rpc) => {
     const switchAuto = await LocalStorageUtils.getValueFromLocalStorage(
