@@ -20,7 +20,7 @@ interface CheckboxProps {
 const CheckboxComponent = (props: CheckboxProps) => {
   return (
     <div
-      className={`checkbox-container ${
+      className={`checkbox-container  ${
         props.alignment ? props.alignment : LabelAlignment.TOP
       }`}>
       <div className="checkbox-and-label">
@@ -30,7 +30,7 @@ const CheckboxComponent = (props: CheckboxProps) => {
         <div className="label" onClick={() => props.onChange(!props.checked)}>
           {props.skipTranslation
             ? props.title
-            : chrome.i18n.getMessage(props.title ?? '')}
+            : chrome.i18n.getMessage(props.title ?? '')}{' '}
         </div>
       </div>
       {props.hint && (

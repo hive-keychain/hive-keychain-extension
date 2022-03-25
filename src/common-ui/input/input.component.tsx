@@ -18,6 +18,8 @@ interface InputProps {
   autocompleteValues?: any[];
   onEnterPress?(): any;
   onSetToMaxClicked?(): any;
+  required?: boolean;
+  hasError?: boolean;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -49,18 +51,19 @@ const InputComponent = (props: InputProps) => {
     <div
       className={`input-container ${props.logo ? '' : 'no-logo'} ${
         props.type === InputType.PASSWORD ? 'password-type' : ''
-      } ${isFocused ? 'focused' : ''}`}>
+      } ${isFocused ? 'focused' : ''} `}>
       <input
+        className={`${props.hasError ? 'has-error' : ''}`}
         type={
           props.type === InputType.PASSWORD && isPasswordDisplay
             ? InputType.TEXT
             : props.type
         }
-        placeholder={
+        placeholder={`${
           props.skipTranslation
             ? props.placeholder
             : chrome.i18n.getMessage(props.placeholder)
-        }
+        } ${props.required ? '*' : ''}`}
         value={props.value}
         step={props.step}
         min={props.min}

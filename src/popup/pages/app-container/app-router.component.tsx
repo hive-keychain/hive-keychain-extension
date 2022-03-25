@@ -9,6 +9,7 @@ import { DelegationsComponent } from '@popup/pages/app-container/home/delegation
 import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { GovernanceComponent } from '@popup/pages/app-container/home/governance/governance.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
+import { PluginDetailsPageComponent } from '@popup/pages/app-container/home/plugin/plugins/plugin-details-page/plugin-details-page.component';
 import { PluginsComponent } from '@popup/pages/app-container/home/plugin/plugins/plugins.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
@@ -72,8 +73,11 @@ const AppRouter = ({
         return <DelegationsComponent />;
       case Screen.INCOMING_OUTGOING_PAGE:
         return <IncomingOutgoingPageComponent />;
+      //PLUGINS
       case Screen.PLUGINS_PAGE:
         return <PluginsComponent />;
+      case Screen.PLUGIN_DETAILS_PAGE:
+        return <PluginDetailsPageComponent />;
       //Tokens
       case Screen.TOKENS_PAGE:
         return <TokensComponent />;

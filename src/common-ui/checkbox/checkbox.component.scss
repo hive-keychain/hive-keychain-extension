@@ -15,6 +15,10 @@
     }
   }
 
+  .has-error {
+    color: $red-dark;
+  }
+
   .hint {
     font-style: italic;
     margin-top: 2px;

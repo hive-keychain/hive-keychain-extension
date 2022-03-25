@@ -29,6 +29,13 @@ $autoCompleteItemHeight: 30px;
       padding-top: 10px;
     }
 
+    &.has-error {
+      border-color: $red-dark;
+      &::placeholder {
+        color: $red-dark;
+      }
+    }
+
     &:focus {
       outline: none !important;
       border-color: white;

@@ -1,18 +1,23 @@
+import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { PluginMessage } from '@popup/pages/app-container/home/plugin/plugin-message.enum';
 import {
   Extension,
   PluginsWhitelist,
 } from '@popup/pages/app-container/home/plugin/plugins.whitelist';
 import { PluginItem } from '@popup/pages/app-container/home/plugin/plugins/plugin-item/plugin-item.component';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import './plugins.component.scss';
 
-const Plugins = ({ setTitleContainerProperties }: PropsFromRedux) => {
+const Plugins = ({
+  setTitleContainerProperties,
+  navigateToWithParams,
+}: PropsFromRedux) => {
   const allPlugins = PluginsWhitelist;
   const [plugins, setPlugins] = useState<Extension[]>([]);
-  const [pluginsInfo, setPluginInfo] = useState<Extension[]>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -27,9 +32,9 @@ const Plugins = ({ setTitleContainerProperties }: PropsFromRedux) => {
     return new Promise(async (fulfill) => {
       chrome.runtime.sendMessage(
         plugin.extensionId,
-        'IS_INSTALLED',
+        PluginMessage.IS_INSTALLED,
         (response) => {
-          fulfill(response === 'ACK_PLUGIN_INSTALL');
+          fulfill(response === PluginMessage.ACK_PLUGIN_INSTALL);
         },
       );
     });
@@ -39,7 +44,6 @@ const Plugins = ({ setTitleContainerProperties }: PropsFromRedux) => {
     for (const plugin of allPlugins) {
       plugin.installed = await checkPluginInstalled(plugin);
     }
-    console.log(allPlugins);
     setPlugins(allPlugins);
   };
 
@@ -53,7 +57,7 @@ const Plugins = ({ setTitleContainerProperties }: PropsFromRedux) => {
   };
 
   const goToDetailPage = (plugin: Extension) => {
-    console.log('navigate to detail', plugin);
+    navigateToWithParams(Screen.PLUGIN_DETAILS_PAGE, { plugin: plugin });
   };
 
   return (
@@ -100,11 +104,12 @@ const Plugins = ({ setTitleContainerProperties }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount, userTokens: state.userTokens };
+  return { activeAccount: state.activeAccount };
 };
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  navigateToWithParams,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

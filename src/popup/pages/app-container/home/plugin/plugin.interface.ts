@@ -1,6 +1,6 @@
 export interface PluginDefinition {
   title: string;
-  decription: string;
+  description: string;
   generalSettings: PluginSetting[];
   userSettings: PluginSetting[];
 }
@@ -10,7 +10,8 @@ export interface PluginSetting {
   title: string;
   hint: string;
   type: PluginSettingType;
-  defaultValue?: string;
+  defaultValue?: string | DropdownSettingData;
+  required?: boolean;
 }
 
 export interface InputSetting extends PluginSetting {
@@ -29,10 +30,11 @@ export interface DropdownSettingData {
 }
 
 export interface DropdownSetting extends PluginSetting {
-  data: string[] | DropdownSettingData[];
+  data: DropdownSettingData[];
 }
 
 export interface Plugin {
+  extensionId: string;
   definition: PluginDefinition;
   data: PluginData[];
 }
