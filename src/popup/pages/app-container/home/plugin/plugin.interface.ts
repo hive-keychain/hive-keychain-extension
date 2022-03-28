@@ -36,12 +36,11 @@ export interface DropdownSetting extends PluginSetting {
 export interface Plugin {
   extensionId: string;
   definition: PluginDefinition;
-  data: PluginData[];
+  data: PluginData;
 }
 
 export interface PluginData {
-  key: string;
-  value: string;
+  [key: string]: string;
 }
 
 export enum PluginSettingType {

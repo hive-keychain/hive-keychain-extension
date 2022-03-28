@@ -1,6 +1,5 @@
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { PluginMessage } from '@popup/pages/app-container/home/plugin/plugin-message.enum';
 import {
   Extension,
   PluginsWhitelist,
@@ -10,6 +9,7 @@ import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { PluginsUtils } from 'src/utils/plugins.utils';
 import './plugins.component.scss';
 
 const Plugins = ({
@@ -28,21 +28,9 @@ const Plugins = ({
     loadPlugins();
   }, []);
 
-  const checkPluginInstalled = (plugin: Extension): Promise<boolean> => {
-    return new Promise(async (fulfill) => {
-      chrome.runtime.sendMessage(
-        plugin.extensionId,
-        PluginMessage.IS_INSTALLED,
-        (response) => {
-          fulfill(response === PluginMessage.ACK_PLUGIN_INSTALL);
-        },
-      );
-    });
-  };
-
   const loadPlugins = async () => {
     for (const plugin of allPlugins) {
-      plugin.installed = await checkPluginInstalled(plugin);
+      plugin.installed = await PluginsUtils.checkPluginInstalled(plugin);
     }
     setPlugins(allPlugins);
   };
@@ -71,7 +59,7 @@ const Plugins = ({
             {chrome.i18n.getMessage('popup_html_plugin_available')}
           </div>
           <div className="list">
-            {allPlugins
+            {plugins
               .filter((plugin) => plugin.installed)
               .map((plugin) => (
                 <PluginItem

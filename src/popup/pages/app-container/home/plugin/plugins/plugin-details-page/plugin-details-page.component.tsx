@@ -42,12 +42,14 @@ const PluginDetailsPage = ({
   useEffect(() => {
     if (!pluginInfo) return;
     let fields: any = {};
+    console.log(pluginInfo);
     if (pluginInfo.definition.userSettings) {
       for (const field of pluginInfo.definition?.userSettings) {
+        const savedData = pluginInfo.data[field.key];
         fields = {
           ...fields,
           [field.key]: {
-            value: getDefaultValue(field),
+            value: savedData ? savedData : getDefaultValue(field),
             hasError: false,
           },
         };
@@ -55,10 +57,11 @@ const PluginDetailsPage = ({
     }
     if (pluginInfo.definition?.generalSettings) {
       for (const field of pluginInfo.definition?.generalSettings) {
+        const savedData = pluginInfo.data[field.key];
         fields = {
           ...fields,
           [field.key]: {
-            value: getDefaultValue(field),
+            value: savedData ? savedData : getDefaultValue(field),
             hasError: false,
           },
         };
