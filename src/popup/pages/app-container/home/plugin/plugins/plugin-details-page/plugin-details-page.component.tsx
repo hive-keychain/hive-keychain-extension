@@ -112,6 +112,9 @@ const PluginDetailsPage = ({
             }
             required={inputSetting.required}
             hasError={form[setting.key].hasError}
+            min={inputSetting.min}
+            max={inputSetting.max}
+            step={inputSetting.step}
           />
         );
       case PluginSettingType.CHECKBOX:
