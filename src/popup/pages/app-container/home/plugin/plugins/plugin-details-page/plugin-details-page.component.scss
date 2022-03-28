@@ -47,7 +47,7 @@
               display: flex;
               align-items: center;
               &:hover,
-              .react-dropdown-select-item-selected {
+              &.react-dropdown-select-item-selected {
                 background: $red-dark;
               }
             }

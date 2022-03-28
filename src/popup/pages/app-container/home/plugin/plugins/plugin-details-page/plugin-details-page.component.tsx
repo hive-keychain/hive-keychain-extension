@@ -1,4 +1,7 @@
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { PluginMessage } from '@popup/pages/app-container/home/plugin/plugin-message.enum';
 import {
@@ -25,6 +28,7 @@ const PluginDetailsPage = ({
   plugin,
   setTitleContainerProperties,
   setErrorMessage,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [pluginInfo, setPluginInfo] = useState<Plugin>();
 
@@ -42,7 +46,6 @@ const PluginDetailsPage = ({
   useEffect(() => {
     if (!pluginInfo) return;
     let fields: any = {};
-    console.log(pluginInfo);
     if (pluginInfo.definition.userSettings) {
       for (const field of pluginInfo.definition?.userSettings) {
         const savedData = pluginInfo.data[field.key];
@@ -157,8 +160,6 @@ const PluginDetailsPage = ({
     }
   };
 
-  useEffect(() => console.log(form), [form]);
-
   const save = async () => {
     let hasError = false;
     let newForm = { ...form };
@@ -205,7 +206,11 @@ const PluginDetailsPage = ({
       plugin.extensionId,
       { command: PluginMessage.SAVE_PLUGIN_DATA, value: finalForm },
       (response) => {
-        console.log(response);
+        if (response === PluginMessage.ACK_PLUGIN_DATA_SAVED) {
+          setSuccessMessage('popup_html_plugin_data_saved_success');
+        } else {
+          setErrorMessage('popup_html_plugin_data_saved_fail');
+        }
       },
     );
   };
@@ -258,6 +263,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 export const PluginDetailsPageComponent = connector(PluginDetailsPage);

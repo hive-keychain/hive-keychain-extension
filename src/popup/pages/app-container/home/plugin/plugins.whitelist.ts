@@ -20,7 +20,7 @@ export const PluginsWhitelist: Extension[] = [
   {
     extensionId: 'bhlhnicpbhignbdhedgjhgdocnmhomnp',
     name: 'ColorZilla',
-    img: '',
+    img: 'colorzilla.jpeg',
     installed: false,
   },
   {

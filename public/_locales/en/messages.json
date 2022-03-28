@@ -2336,5 +2336,13 @@
   "popup_html_plugin_field_required": {
     "message": "$1 is required",
     "description": "plugin form error"
+  },
+  "popup_html_plugin_data_saved_success": {
+    "message": "Plugin data successfully saved",
+    "description": "plugin form success"
+  },
+  "popup_html_plugin_data_saved_fail": {
+    "message": "Error while saving plugin data",
+    "description": "plugin save error"
   }
 }

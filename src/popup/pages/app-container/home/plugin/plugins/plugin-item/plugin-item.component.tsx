@@ -14,10 +14,10 @@ export const PluginItem = ({ plugin, onClickHandler }: PluginItemProps) => {
       key={plugin.extensionId}
       onClick={() => onClickHandler(plugin)}>
       <img
-        src={plugin.img}
+        src={`/assets/images/plugins/${plugin.img}`}
         onError={(e: any) => {
           e.target.onError = null;
-          e.target.src = '/assets/images/accounts.png';
+          e.target.src = '/assets/images/plugins/plugin.png';
         }}
       />
       <div className="name">{plugin.name}</div>
