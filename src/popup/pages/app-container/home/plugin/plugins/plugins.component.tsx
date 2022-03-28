@@ -75,7 +75,7 @@ const Plugins = ({
             {chrome.i18n.getMessage('popup_html_plugin_not_installed')}
           </div>
           <div className="list">
-            {allPlugins
+            {plugins
               .filter((plugin) => !plugin.installed)
               .map((plugin) => (
                 <PluginItem

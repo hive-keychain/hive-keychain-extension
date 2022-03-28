@@ -12,6 +12,7 @@ interface InputProps {
   type: InputType;
   step?: number;
   min?: number;
+  max?: number;
   skipTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
@@ -67,6 +68,7 @@ const InputComponent = (props: InputProps) => {
         value={props.value}
         step={props.step}
         min={props.min}
+        max={props.max}
         onChange={(e) => props.onChange(e.target.value)}
         onKeyPress={(e) => {
           if (e.key === 'Enter' && props.onEnterPress) {
