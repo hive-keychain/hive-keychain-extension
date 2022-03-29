@@ -3,6 +3,7 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { Icons } from '@popup/icons.enum';
 import { PluginMessage } from '@popup/pages/app-container/home/plugin/plugin-message.enum';
 import {
   CheckboxSetting,
@@ -18,8 +19,10 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
+import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { PluginsUtils } from 'src/utils/plugins.utils';
@@ -35,6 +38,8 @@ const PluginDetailsPage = ({
   const [pluginInfo, setPluginInfo] = useState<Plugin>();
 
   const [form, setForm] = useState<any>();
+  const [generalSectionHasError, setGeneralSectionHasError] = useState(false);
+  const [userSectionHasError, setUserSectionHasError] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -181,12 +186,16 @@ const PluginDetailsPage = ({
 
   const save = async () => {
     let hasError = false;
+    setGeneralSectionHasError(false);
+    setUserSectionHasError(false);
     let newForm = { ...form };
     for (const formKey of Object.keys(form)) {
+      let isFieldSectionGeneral = true;
       let s = pluginInfo?.definition.generalSettings.find(
         (s) => s.key === formKey,
       );
       if (!s) {
+        isFieldSectionGeneral = false;
         s = pluginInfo?.definition.userSettings.find((s) => s.key === formKey);
       }
       if (
@@ -202,6 +211,11 @@ const PluginDetailsPage = ({
             hasError: true,
           },
         };
+        if (isFieldSectionGeneral) {
+          setGeneralSectionHasError(true);
+        } else {
+          setUserSectionHasError(true);
+        }
         hasError = true;
         continue;
       }
@@ -261,27 +275,49 @@ const PluginDetailsPage = ({
       {form && (
         <>
           <div className="form">
-            <div className="general-settings">
-              <div className="title">
-                {chrome.i18n.getMessage('popup_html_plugin_general_settings')}
-              </div>
-              <div className="form-container">
-                {pluginInfo?.definition.generalSettings.map((setting, index) =>
-                  getInput(setting, index),
-                )}
-              </div>
-            </div>
-            <div className="user-settings">
-              <div className="title">
-                {chrome.i18n.getMessage('popup_html_plugin_user_settings')}
-              </div>
-              <SelectAccountSectionComponent></SelectAccountSectionComponent>
-              <div className="form-container">
-                {pluginInfo?.definition.userSettings.map((setting, index) =>
-                  getInput(setting, index),
-                )}
-              </div>
-            </div>
+            <Tabs>
+              <TabList>
+                <Tab>
+                  <div className="tab-label">
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_plugin_general_settings',
+                      )}
+                    </span>
+                    {generalSectionHasError && (
+                      <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
+                    )}
+                  </div>
+                </Tab>
+                <Tab>
+                  <span>
+                    {chrome.i18n.getMessage('popup_html_plugin_user_settings')}
+                  </span>
+                  {userSectionHasError && (
+                    <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
+                  )}
+                </Tab>
+              </TabList>
+              <TabPanel>
+                <div className="general-settings">
+                  <div className="form-container">
+                    {pluginInfo?.definition.generalSettings.map(
+                      (setting, index) => getInput(setting, index),
+                    )}
+                  </div>
+                </div>
+              </TabPanel>
+              <TabPanel>
+                <div className="user-settings">
+                  <SelectAccountSectionComponent></SelectAccountSectionComponent>
+                  <div className="form-container">
+                    {pluginInfo?.definition.userSettings.map((setting, index) =>
+                      getInput(setting, index),
+                    )}
+                  </div>
+                </div>
+              </TabPanel>
+            </Tabs>
           </div>
           <ButtonComponent
             label="popup_html_save"
