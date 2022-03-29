@@ -13,6 +13,7 @@ import {
   PluginSettingType,
 } from '@popup/pages/app-container/home/plugin/plugin.interface';
 import { Extension } from '@popup/pages/app-container/home/plugin/plugins.whitelist';
+import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select from 'react-dropdown-select';
@@ -26,6 +27,7 @@ import './plugin-details-page.component.scss';
 
 const PluginDetailsPage = ({
   plugin,
+  activeAccount,
   setTitleContainerProperties,
   setErrorMessage,
   setSuccessMessage,
@@ -46,21 +48,12 @@ const PluginDetailsPage = ({
   useEffect(() => {
     if (!pluginInfo) return;
     let fields: any = {};
-    if (pluginInfo.definition.userSettings) {
-      for (const field of pluginInfo.definition?.userSettings) {
-        const savedData = pluginInfo.data[field.key];
-        fields = {
-          ...fields,
-          [field.key]: {
-            value: savedData ? savedData : getDefaultValue(field),
-            hasError: false,
-          },
-        };
-      }
-    }
+    fields = setUserSettings();
     if (pluginInfo.definition?.generalSettings) {
       for (const field of pluginInfo.definition?.generalSettings) {
-        const savedData = pluginInfo.data[field.key];
+        const savedData = pluginInfo.data.generalSettings
+          ? pluginInfo.data.generalSettings[field.key]
+          : null;
         fields = {
           ...fields,
           [field.key]: {
@@ -72,6 +65,32 @@ const PluginDetailsPage = ({
     }
     setForm(fields);
   }, [pluginInfo]);
+
+  useEffect(() => {
+    if (!pluginInfo) return;
+    const newForm = setUserSettings();
+    setForm(newForm);
+  }, [activeAccount]);
+
+  const setUserSettings = () => {
+    let fields: any = form;
+    if (pluginInfo?.definition.userSettings) {
+      const userPluginInfo = pluginInfo.data.userSettings
+        ? pluginInfo.data.userSettings[activeAccount.name!]
+        : null;
+      for (const field of pluginInfo.definition?.userSettings) {
+        const savedData = userPluginInfo ? userPluginInfo[field.key] : null;
+        fields = {
+          ...fields,
+          [field.key]: {
+            value: savedData ? savedData : getDefaultValue(field),
+            hasError: false,
+          },
+        };
+      }
+    }
+    return fields;
+  };
 
   const getDefaultValue = (field: PluginSetting) => {
     if (field.defaultValue) return field.defaultValue;
@@ -198,10 +217,29 @@ const PluginDetailsPage = ({
   };
 
   const sendFormToPlugin = (form: any) => {
-    const finalForm: any = {};
-    for (const key in form) {
-      finalForm[key] = form[key].value;
+    const finalForm = { userSettings: {}, generalSettings: {} };
+    const generalSettings: any = {};
+    if (pluginInfo?.definition?.generalSettings) {
+      for (const setting of pluginInfo?.definition?.generalSettings) {
+        generalSettings[setting.key] = form[setting.key].value;
+      }
     }
+    finalForm.generalSettings = generalSettings;
+    let userSettings: any = pluginInfo?.data.userSettings;
+    if (pluginInfo?.definition?.userSettings) {
+      for (const setting of pluginInfo?.definition?.userSettings) {
+        if (!userSettings) {
+          userSettings = {};
+        }
+        if (!userSettings[activeAccount.name!]) {
+          userSettings[activeAccount.name!] = {};
+        }
+        userSettings[activeAccount.name!][setting.key] =
+          form[setting.key].value;
+      }
+    }
+    finalForm.userSettings = userSettings;
+
     chrome.runtime.sendMessage(
       plugin.extensionId,
       { command: PluginMessage.SAVE_PLUGIN_DATA, value: finalForm },
@@ -222,24 +260,27 @@ const PluginDetailsPage = ({
       )}
       {form && (
         <>
-          <div className="general-settings">
-            <div className="title">
-              {chrome.i18n.getMessage('popup_html_plugin_general_settings')}
+          <div className="form">
+            <div className="general-settings">
+              <div className="title">
+                {chrome.i18n.getMessage('popup_html_plugin_general_settings')}
+              </div>
+              <div className="form-container">
+                {pluginInfo?.definition.generalSettings.map((setting, index) =>
+                  getInput(setting, index),
+                )}
+              </div>
             </div>
-            <div className="form-container">
-              {pluginInfo?.definition.generalSettings.map((setting, index) =>
-                getInput(setting, index),
-              )}
-            </div>
-          </div>
-          <div className="user-settings">
-            <div className="title">
-              {chrome.i18n.getMessage('popup_html_plugin_user_settings')}
-            </div>
-            <div className="form-container">
-              {pluginInfo?.definition.userSettings.map((setting, index) =>
-                getInput(setting, index),
-              )}
+            <div className="user-settings">
+              <div className="title">
+                {chrome.i18n.getMessage('popup_html_plugin_user_settings')}
+              </div>
+              <SelectAccountSectionComponent></SelectAccountSectionComponent>
+              <div className="form-container">
+                {pluginInfo?.definition.userSettings.map((setting, index) =>
+                  getInput(setting, index),
+                )}
+              </div>
             </div>
           </div>
           <ButtonComponent

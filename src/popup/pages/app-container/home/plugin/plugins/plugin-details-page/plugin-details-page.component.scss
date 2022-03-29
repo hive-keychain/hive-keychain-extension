@@ -7,59 +7,63 @@
     font-size: 16px;
     padding: 0px 24px;
   }
-  .user-settings,
-  .general-settings {
-    padding: 0px 24px;
-    display: flex;
-    flex-direction: column;
-    row-gap: 16px;
-    .title {
-      font-size: 18px;
-    }
-    .form-container {
+  .form {
+    max-height: 400px;
+    overflow: auto;
+    .user-settings,
+    .general-settings {
+      padding: 0px 24px;
       display: flex;
       flex-direction: column;
       row-gap: 16px;
-
       .title {
-        font-size: 16px;
-        margin-bottom: 4px;
+        font-size: 18px;
       }
-      .select-container {
-        .select-dropdown {
-          border: none;
-          border-bottom: 1px solid $grey;
+      .form-container {
+        display: flex;
+        flex-direction: column;
+        row-gap: 16px;
 
-          .react-dropdown-select-content {
-            font-size: 16px;
-            padding-left: 10px;
-          }
-          .react-dropdown-select-dropdown {
-            top: 36px !important;
-            font-size: 16px;
-            background: black;
-            color: white;
-            border: unset;
+        .title {
+          font-size: 16px;
+          margin-bottom: 4px;
+        }
+        .select-container {
+          .select-dropdown {
+            border: none;
+            border-bottom: 1px solid $grey;
 
-            .react-dropdown-select-item {
+            .react-dropdown-select-content {
+              font-size: 16px;
+              padding-left: 10px;
+            }
+            .react-dropdown-select-dropdown {
+              top: 36px !important;
+              font-size: 16px;
+              background: black;
+              color: white;
               border: unset;
-              min-height: 36px;
-              display: flex;
-              align-items: center;
-              &:hover,
-              &.react-dropdown-select-item-selected {
-                background: $red-dark;
+
+              .react-dropdown-select-item {
+                border: unset;
+                min-height: 36px;
+                display: flex;
+                align-items: center;
+                &:hover,
+                &.react-dropdown-select-item-selected {
+                  background: $red-dark;
+                }
               }
             }
           }
-        }
 
-        &.has-error {
-          .title {
-            color: $red-dark;
-          }
-          .select-dropdown {
-            border-bottom-color: $red-dark;
+          &.has-error {
+            .title {
+              color: $red-dark;
+            }
+            .select-dropdown {
+              border-bottom-color: $red-dark;
+            }
           }
         }
       }

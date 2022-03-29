@@ -14,7 +14,8 @@
     display: flex;
     flex-direction: column;
     row-gap: 16px;
-    overflow: scroll;
+    overflow: auto;
+    padding-bottom: 16px;
     .available-plugins,
     .not-installed-plugins {
       display: flex;

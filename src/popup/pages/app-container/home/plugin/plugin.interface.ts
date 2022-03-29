@@ -40,7 +40,15 @@ export interface Plugin {
 }
 
 export interface PluginData {
+  generalSettings: Data;
+  userSettings: UserSettings;
+}
+
+export interface Data {
   [key: string]: string;
+}
+export interface UserSettings {
+  [username: string]: Data;
 }
 
 export enum PluginSettingType {
