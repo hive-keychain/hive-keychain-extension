@@ -49,88 +49,96 @@ const InputComponent = (props: InputProps) => {
   };
 
   return (
-    <div
-      className={`input-container ${props.logo ? '' : 'no-logo'} ${
-        props.type === InputType.PASSWORD ? 'password-type' : ''
-      } ${isFocused ? 'focused' : ''} `}>
-      <input
-        className={`${props.hasError ? 'has-error' : ''}`}
-        type={
-          props.type === InputType.PASSWORD && isPasswordDisplay
-            ? InputType.TEXT
-            : props.type
-        }
-        placeholder={`${
-          props.skipTranslation
-            ? props.placeholder
-            : chrome.i18n.getMessage(props.placeholder)
-        } ${props.required ? '*' : ''}`}
-        value={props.value}
-        step={props.step}
-        min={props.min}
-        max={props.max}
-        onChange={(e) => props.onChange(e.target.value)}
-        onKeyPress={(e) => {
-          if (e.key === 'Enter' && props.onEnterPress) {
-            props.onEnterPress();
+    <div className="custom-input">
+      <div className="label">
+        {props.skipTranslation
+          ? props.placeholder
+          : chrome.i18n.getMessage(props.placeholder)}{' '}
+        {props.required ? '*' : ''}
+      </div>
+      <div
+        className={`input-container ${props.logo ? '' : 'no-logo'} ${
+          props.type === InputType.PASSWORD ? 'password-type' : ''
+        } ${isFocused ? 'focused' : ''} `}>
+        <input
+          className={`${props.hasError ? 'has-error' : ''}`}
+          type={
+            props.type === InputType.PASSWORD && isPasswordDisplay
+              ? InputType.TEXT
+              : props.type
           }
-        }}
-        onFocus={() => handleOnFocus()}
-        onBlur={() => handleOnBlur()}
-      />
-      {props.type === InputType.PASSWORD && !isPasswordDisplay && (
-        <Icon
-          onClick={() => setPasswordDisplayed(true)}
-          name={Icons.VISIBLE}
-          type={IconType.OUTLINED}
-          additionalClassName="input-img display-password"></Icon>
-      )}
-      {props.type === InputType.PASSWORD && isPasswordDisplay && (
-        <Icon
-          onClick={() => setPasswordDisplayed(false)}
-          name={Icons.HIDDEN}
-          type={IconType.OUTLINED}
-          additionalClassName="input-img display-password"></Icon>
-      )}
-      {props.type !== InputType.PASSWORD &&
-        !props.onSetToMaxClicked &&
-        props.value.length > 0 && (
+          placeholder={`${
+            props.skipTranslation
+              ? props.placeholder
+              : chrome.i18n.getMessage(props.placeholder)
+          } ${props.required ? '*' : ''}`}
+          value={props.value}
+          step={props.step}
+          min={props.min}
+          max={props.max}
+          onChange={(e) => props.onChange(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter' && props.onEnterPress) {
+              props.onEnterPress();
+            }
+          }}
+          onFocus={() => handleOnFocus()}
+          onBlur={() => handleOnBlur()}
+        />
+        {props.type === InputType.PASSWORD && !isPasswordDisplay && (
           <Icon
-            onClick={() => props.onChange('')}
-            name={Icons.CLEAR}
+            onClick={() => setPasswordDisplayed(true)}
+            name={Icons.VISIBLE}
             type={IconType.OUTLINED}
-            additionalClassName="input-img erase"></Icon>
+            additionalClassName="input-img display-password"></Icon>
         )}
-      {isFocused && filteredValues && filteredValues.length > 0 && (
-        <div className="autocomplete-panel">
-          {filteredValues.map((val, index) => (
-            <div
-              key={index}
-              className="value"
-              onClick={() => props.onChange(val)}>
-              {val}
-            </div>
-          ))}
-        </div>
-      )}
-      {props.hint && (
-        <div className="hint">
-          {props.skipHintTranslation
-            ? props.hint
-            : chrome.i18n.getMessage(props.hint)}
-        </div>
-      )}
-      {props.logo && (
-        <Icon
-          name={props.logo}
-          type={IconType.OUTLINED}
-          additionalClassName="input-img"></Icon>
-      )}
-      {props.onSetToMaxClicked && (
-        <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>
-          MAX
-        </span>
-      )}
+        {props.type === InputType.PASSWORD && isPasswordDisplay && (
+          <Icon
+            onClick={() => setPasswordDisplayed(false)}
+            name={Icons.HIDDEN}
+            type={IconType.OUTLINED}
+            additionalClassName="input-img display-password"></Icon>
+        )}
+        {props.type !== InputType.PASSWORD &&
+          !props.onSetToMaxClicked &&
+          props.value.length > 0 && (
+            <Icon
+              onClick={() => props.onChange('')}
+              name={Icons.CLEAR}
+              type={IconType.OUTLINED}
+              additionalClassName="input-img erase"></Icon>
+          )}
+        {isFocused && filteredValues && filteredValues.length > 0 && (
+          <div className="autocomplete-panel">
+            {filteredValues.map((val, index) => (
+              <div
+                key={index}
+                className="value"
+                onClick={() => props.onChange(val)}>
+                {val}
+              </div>
+            ))}
+          </div>
+        )}
+        {props.hint && (
+          <div className="hint">
+            {props.skipHintTranslation
+              ? props.hint
+              : chrome.i18n.getMessage(props.hint)}
+          </div>
+        )}
+        {props.logo && (
+          <Icon
+            name={props.logo}
+            type={IconType.OUTLINED}
+            additionalClassName="input-img"></Icon>
+        )}
+        {props.onSetToMaxClicked && (
+          <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>
+            MAX
+          </span>
+        )}
+      </div>
     </div>
   );
 };
