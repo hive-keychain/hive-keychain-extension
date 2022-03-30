@@ -78,6 +78,7 @@ const AutoLock = ({
         <InputComponent
           value={interval}
           onChange={setInterval}
+          label="popup_html_interval"
           placeholder="10"
           type={InputType.NUMBER}
           onEnterPress={() => save()}

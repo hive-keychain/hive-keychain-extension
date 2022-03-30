@@ -8,9 +8,6 @@
     padding: 0px 24px;
   }
   .form {
-    max-height: 400px;
-    overflow: auto;
-
     .tab-label {
       display: flex;
       align-items: center;
@@ -26,7 +23,10 @@
       margin: 0 0 32px !important;
 
       .react-tabs__tab {
-        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 8px;
         font-size: 18px;
         background: $black-transparent;
         color: white;
@@ -40,6 +40,11 @@
           display: none;
         }
       }
+    }
+
+    .react-tabs__tab-panel--selected {
+      height: 330px;
+      overflow: auto;
     }
 
     .user-settings,

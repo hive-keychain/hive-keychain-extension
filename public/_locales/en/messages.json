@@ -2360,5 +2360,9 @@
   "html_popup_ok": {
     "message": "Ok!",
     "description": "general word"
+  },
+  "html_popup_interval": {
+    "message": "Interval",
+    "description": "interval"
   }
 }

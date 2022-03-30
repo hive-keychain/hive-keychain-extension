@@ -72,7 +72,7 @@ const PluginDetailsPage = ({
   }, [pluginInfo]);
 
   useEffect(() => {
-    if (!pluginInfo) return;
+    if (!pluginInfo || !activeAccount) return;
     const newForm = setUserSettings();
     setForm(newForm);
   }, [activeAccount]);
@@ -107,17 +107,22 @@ const PluginDetailsPage = ({
 
   const updateFormValue = (key: string, value: any, field: PluginSetting) => {
     const hasError = field.required && (!value || value === '');
-    setForm({
+    const newForm = {
       ...form,
       [key]: {
         value: value,
         hasError: hasError,
       },
-    });
+    };
+    setForm(newForm);
   };
 
   const initPluginInfo = async () => {
-    setPluginInfo(await PluginsUtils.getPluginInfo(plugin));
+    const p = await PluginsUtils.getPluginInfo(plugin);
+    setPluginInfo({
+      ...p,
+      data: p.data ?? { userSettings: {}, generalSettings: {} },
+    });
   };
 
   const getInput = (setting: PluginSetting, index: number) => {
@@ -129,10 +134,12 @@ const PluginDetailsPage = ({
           <InputComponent
             key={`${inputSetting.type}-${index}`}
             type={inputSetting.inputType as InputType}
+            label={inputSetting.label}
             placeholder={inputSetting.placeholder}
             hint={inputSetting.hint}
+            skipLabelTranslation={true}
             skipHintTranslation={true}
-            skipTranslation={true}
+            skipPlaceholderTranslation={true}
             value={form[setting.key].value}
             onChange={(newValue) =>
               updateFormValue(setting.key, newValue, inputSetting)
@@ -153,7 +160,7 @@ const PluginDetailsPage = ({
             onChange={(newValue) =>
               updateFormValue(setting.key, newValue, checkboxSetting)
             }
-            title={checkboxSetting.title}
+            title={checkboxSetting.label}
             skipTranslation={true}
             hint={checkboxSetting.hint}
             skipHintTranslation={true}
@@ -161,7 +168,6 @@ const PluginDetailsPage = ({
         );
       case PluginSettingType.DROPDOWN:
         const dropdownSetting = setting as DropdownSetting;
-
         return (
           <div
             className={`select-container ${
@@ -169,7 +175,7 @@ const PluginDetailsPage = ({
             }`}
             key={`${dropdownSetting.type}-${index}`}>
             <div className="title">
-              {dropdownSetting.title} {dropdownSetting.required ? '*' : ''}
+              {dropdownSetting.label} {dropdownSetting.required ? '*' : ''}
             </div>
             <Select
               values={[form[setting.key].value]}
@@ -278,16 +284,14 @@ const PluginDetailsPage = ({
             <Tabs>
               <TabList>
                 <Tab>
-                  <div className="tab-label">
-                    <span>
-                      {chrome.i18n.getMessage(
-                        'popup_html_plugin_general_settings',
-                      )}
-                    </span>
-                    {generalSectionHasError && (
-                      <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
+                  <span>
+                    {chrome.i18n.getMessage(
+                      'popup_html_plugin_general_settings',
                     )}
-                  </div>
+                  </span>
+                  {generalSectionHasError && (
+                    <Icon type={IconType.OUTLINED} name={Icons.ERROR} />
+                  )}
                 </Tab>
                 <Tab>
                   <span>

@@ -8,12 +8,14 @@ interface InputProps {
   onChange: (value: any) => void;
   value: any;
   logo?: Icons | string;
+  label?: string;
   placeholder: string;
   type: InputType;
   step?: number;
   min?: number;
   max?: number;
-  skipTranslation?: boolean;
+  skipLabelTranslation?: boolean;
+  skipPlaceholderTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
   autocompleteValues?: any[];
@@ -50,12 +52,14 @@ const InputComponent = (props: InputProps) => {
 
   return (
     <div className="custom-input">
-      <div className="label">
-        {props.skipTranslation
-          ? props.placeholder
-          : chrome.i18n.getMessage(props.placeholder)}{' '}
-        {props.required ? '*' : ''}
-      </div>
+      {props.label && (
+        <div className="label">
+          {props.skipLabelTranslation
+            ? props.label
+            : chrome.i18n.getMessage(props.label)}{' '}
+          {props.required ? '*' : ''}
+        </div>
+      )}
       <div
         className={`input-container ${props.logo ? '' : 'no-logo'} ${
           props.type === InputType.PASSWORD ? 'password-type' : ''
@@ -68,7 +72,7 @@ const InputComponent = (props: InputProps) => {
               : props.type
           }
           placeholder={`${
-            props.skipTranslation
+            props.skipPlaceholderTranslation
               ? props.placeholder
               : chrome.i18n.getMessage(props.placeholder)
           } ${props.required ? '*' : ''}`}

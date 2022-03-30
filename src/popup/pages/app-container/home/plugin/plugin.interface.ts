@@ -7,7 +7,7 @@ export interface PluginDefinition {
 
 export interface PluginSetting {
   key: string;
-  title: string;
+  label: string;
   hint: string;
   type: PluginSettingType;
   defaultValue?: string | DropdownSettingData;
