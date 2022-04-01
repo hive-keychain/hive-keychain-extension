@@ -1,34 +1,19 @@
 // Content script interfacing the website and the extension
 
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import schemas, {
-  commonRequestParams,
-} from 'src/content-scripts/web-interface/input-validation';
+import { KeychainRequestWrapper } from 'src/content-scripts/keychain-request-wrapper.type';
 import {
   cancelPreviousRequest,
   sendIncompleteDataResponse,
   sendRequestToBackground,
-  sendResponse,
 } from 'src/content-scripts/web-interface/response.logic';
+import { WebInterfaceUtils } from 'src/content-scripts/web-interface/web-interface.utils';
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
-import Logger from 'src/utils/logger.utils';
 
 let req: KeychainRequest | null = null;
 
 // Injecting Keychain
-
-const setupInjection = () => {
-  try {
-    var scriptTag = document.createElement('script');
-    scriptTag.src = chrome.runtime.getURL('./hive_keychain.js');
-    var container = document.head || document.documentElement;
-    container.insertBefore(scriptTag, container.children[0]);
-  } catch (e) {
-    Logger.error('Hive Keychain injection failed.', e);
-  }
-};
-
-setupInjection();
+WebInterfaceUtils.setupInjection();
 
 // Answering the handshakes
 document.addEventListener('swHandshake_hive', () => {
@@ -41,14 +26,23 @@ document.addEventListener('swHandshake_hive', () => {
 });
 
 // Answering the requests
-type KeychainRequestWrapper = {
-  detail: KeychainRequest;
+
+const requestHandler = (
+  message: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void,
+) => {
+  console.log(message, sender);
+  if (message.command === DialogCommand.ANSWER_REQUEST) {
+    sendResponse(message.msg);
+    req = null;
+  }
 };
+
 document.addEventListener('swRequest_hive', (request: object) => {
   const prevReq = req;
   req = (request as KeychainRequestWrapper).detail;
-  const validation = validateRequest(req);
-  const { error, value } = validation;
+  const { error, value } = WebInterfaceUtils.validateRequest(req);
   if (!error) {
     sendRequestToBackground(value);
     if (prevReq) {
@@ -60,18 +54,11 @@ document.addEventListener('swRequest_hive', (request: object) => {
   }
 });
 
+chrome.runtime.onMessageExternal.addListener(
+  (message, sender, sendResponse) => {
+    console.log(message, sender);
+  },
+);
+
 // Get notification from the background upon request completion and pass it back to the dApp.
-chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
-  if (obj.command === DialogCommand.ANSWER_REQUEST) {
-    sendResponse(obj.msg);
-    req = null;
-  }
-});
-
-// Request validation
-const validateRequest = (req: KeychainRequest) => {
-  if (!req) return { value: req, error: 'Missing request.' };
-  if (!req.type) return { value: req, error: 'Missing request type.' };
-
-  return schemas[req.type].append(commonRequestParams).validate(req);
-};
+chrome.runtime.onMessage.addListener(requestHandler);
