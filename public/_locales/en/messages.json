@@ -463,6 +463,10 @@
     "message": "Please confirm your transfer.<br>This cannot be undone.",
     "description": "On transfer confirmation page"
   },
+  "popup_html_transfer_confirm_cancel_recurrent": {
+    "message": "<br>Please confirm that you want to cancel this recurrent transfer.",
+    "description": "On transfer confirmation page"
+  },
   "popup_html_transfer_from": {
     "message": "From",
     "description": "On transfer confirmation page"
@@ -1752,6 +1756,10 @@
     "message": "Recurrent transfer to $1 ($2) successful! It will happen $4 times (every $3 hours).",
     "description": "In transfer fund page"
   },
+  "popup_html_cancel_transfer_recurrent_successful": {
+    "message": "Successfully stopped a recurrent transfer to $1.",
+    "description": "In transfer fund page"
+  },
   "popup_html_transfer_failed": {
     "message": "Transfer failed",
     "description": "In transfer fund page"
@@ -2125,15 +2133,15 @@
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_recurrent_transfer_out": {
-    "message": "Started recurrent transfer of $1 to @$2 (every $3 hours - $4 times)",
+    "message": "Started recurrent transfer of $1 to @$2 (every $4 hours - $3 times)",
     "description": "wallet information transfer out"
   },
   "popup_html_wallet_info_recurrent_transfer_in": {
-    "message": "@$1 started transfer of $2 every $3 hours $4 times",
+    "message": "@$1 started transfer of $2 (every $4 hours - $3 times)",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_canceled_recurrent_transfer": {
-    "message": "@$1 canceled recurrent transfer to @$2",
+    "message": "@$1 canceled a recurrent transfer to @$2",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_fill_recurrent_transfer_out": {

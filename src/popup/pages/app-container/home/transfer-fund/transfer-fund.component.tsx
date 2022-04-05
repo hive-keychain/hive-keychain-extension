@@ -162,7 +162,7 @@ const TransferFunds = ({
       memoField = chrome.i18n.getMessage('popup_empty');
     }
 
-    const fields = [
+    let fields = [
       { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
       { label: 'popup_html_transfer_to', value: `@${receiverUsername}` },
       { label: 'popup_html_transfer_amount', value: formattedAmount },
@@ -180,6 +180,9 @@ const TransferFunds = ({
         ]),
       });
     }
+    if (isCancelRecurrent) {
+      fields = [fields[0], fields[1]];
+    }
 
     let warningMessage = await TransferUtils.getExchangeValidationWarning(
       receiverUsername,
@@ -194,7 +197,11 @@ const TransferFunds = ({
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: chrome.i18n.getMessage(
+        isCancelRecurrent
+          ? 'popup_html_transfer_confirm_cancel_recurrent'
+          : 'popup_html_transfer_confirm_text',
+      ),
       fields: fields,
       warningMessage: warningMessage,
       title: isCancelRecurrent
@@ -245,12 +252,17 @@ const TransferFunds = ({
               formattedAmount,
             ]);
           } else {
-            setSuccessMessage('popup_html_transfer_recurrent_successful', [
-              `@${receiverUsername}`,
-              formattedAmount,
-              frequency,
-              iteration,
-            ]);
+            isCancelRecurrent
+              ? setSuccessMessage(
+                  'popup_html_cancel_transfer_recurrent_successful',
+                  [`@${receiverUsername}`],
+                )
+              : setSuccessMessage('popup_html_transfer_recurrent_successful', [
+                  `@${receiverUsername}`,
+                  formattedAmount,
+                  frequency,
+                  iteration,
+                ]);
           }
         } else {
           setErrorMessage('popup_html_transfer_failed');
