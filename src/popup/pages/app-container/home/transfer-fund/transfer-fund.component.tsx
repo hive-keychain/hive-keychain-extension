@@ -340,7 +340,7 @@ const TransferFunds = ({
             }
             checked={isRecurrent}
             onChange={setIsRecurrent}></CheckboxComponent>
-          {isRecurrent && amount === 0 && (
+          {isRecurrent && parseFloat(amount) !== 0 && (
             <div className="recurrent-panel">
               <InputComponent
                 type={InputType.NUMBER}
