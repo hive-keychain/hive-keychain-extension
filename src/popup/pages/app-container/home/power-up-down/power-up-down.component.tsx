@@ -265,7 +265,7 @@ const PowerUpDown = ({
             className="power-down-panel"
             data-for="tooltip"
             data-tip={chrome.i18n.getMessage('popup_next_powerdown', [
-              powerDownInfo[2],
+              powerDownInfo[2].split('T').join(', '),
             ])}
             data-iscapture="true">
             <div className="power-down-text">
