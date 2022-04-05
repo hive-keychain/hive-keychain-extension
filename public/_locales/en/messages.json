@@ -1957,11 +1957,11 @@
     "description": "load witness ranking operation"
   },
   "html_popup_vote_witness_operation": {
-    "message": "Vote witness operation",
+    "message": "Voting for witness",
     "description": "vote witness operation"
   },
   "html_popup_unvote_witness_operation": {
-    "message": "Unvote witness operation",
+    "message": "Unvoting a witness",
     "description": "unvote witness operation"
   },
   "html_popup_confirm_transaction_operation": {
