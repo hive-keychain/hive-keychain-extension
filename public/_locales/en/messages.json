@@ -407,6 +407,14 @@
     "message": "Key copied to clipboard!",
     "description": "on preferences when clicking on a key"
   },
+  "popup_html_text_copied": {
+    "message": "'$1' copied to clipboard!",
+    "description": "info message copy to clipboard"
+  },
+  "popup_html_copy_username_tooltip_text": {
+    "message": "Click here to copy username",
+    "description": "after clicking on copy username to clipboard button on home page"
+  },
   "popup_html_change_password_text": {
     "message": "Input your old password for confirmation, then chose a new password.",
     "description": "on change password"
@@ -1925,7 +1933,7 @@
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_stoodkev_witness_success": {
-    "message": "Successfully voted @stoodkev as a witness. Thank you for the support! ",
+    "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
   },
   "html_popup_witness_vote_transaction_not_had_error": {
@@ -1953,11 +1961,11 @@
     "description": "load witness ranking operation"
   },
   "html_popup_vote_witness_operation": {
-    "message": "Vote witness operation",
+    "message": "Voting for witness",
     "description": "vote witness operation"
   },
   "html_popup_unvote_witness_operation": {
-    "message": "Unvote witness operation",
+    "message": "Unvoting a witness",
     "description": "unvote witness operation"
   },
   "html_popup_confirm_transaction_operation": {
@@ -2093,7 +2101,7 @@
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
-    "message": "Overwhelmed by governance matters ? Set @keychain as proxy!",
+    "message": "Overwhelmed by governance votes? Set @keychain as proxy to automatically follow Keychain team witness and proposal votes. You can change this anytime from the governance menu.",
     "description": "If no witness voted"
   },
   "popup_html_set_proxy": {
@@ -2185,7 +2193,11 @@
     "description": "Wallet information claim rewards"
   },
   "popup_html_wallet_info_power_down": {
-    "message": "Powered down $1",
+    "message": "Initiated a $1 power down",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_cancel_power_down": {
+    "message": "Canceled power down",
     "description": "Wallet information claim rewards"
   },
   "popup_html_wallet_info_power_up": {
@@ -2396,5 +2408,9 @@
   "popup_html_hive_engine_error": {
     "message": "Hive Engine error: $1",
     "description": "Hive engine error template"
+  },
+  "html_popup_ok": {
+    "message": "Ok!",
+    "description": "general word"
   }
 }

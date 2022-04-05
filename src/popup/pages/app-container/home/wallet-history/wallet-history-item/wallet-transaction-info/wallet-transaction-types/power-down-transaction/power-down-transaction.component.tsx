@@ -14,9 +14,13 @@ const PowerDownTransaction = ({
   transaction,
 }: PropsFromRedux & PowerDownTransactionProps) => {
   const getDetail = () => {
-    return chrome.i18n.getMessage('popup_html_wallet_info_power_down', [
-      FormatUtils.withCommas(transaction.amount, 3),
-    ]);
+    if (parseFloat(transaction.amount.split(' ')[0]) === 0) {
+      return chrome.i18n.getMessage('popup_html_wallet_info_cancel_power_down');
+    } else {
+      return chrome.i18n.getMessage('popup_html_wallet_info_power_down', [
+        FormatUtils.withCommas(transaction.amount, 3),
+      ]);
+    }
   };
 
   return (

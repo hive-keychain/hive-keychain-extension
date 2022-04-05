@@ -55,7 +55,7 @@ document.addEventListener('swRequest_hive', (request: object) => {
       cancelPreviousRequest(prevReq);
     }
   } else {
-    sendIncompleteDataResponse(value, error);
+    sendIncompleteDataResponse(value!, error);
     req = prevReq;
   }
 });

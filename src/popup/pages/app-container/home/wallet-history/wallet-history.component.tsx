@@ -83,7 +83,7 @@ const WalletHistory = ({
 
   const walletItemList = useRef<HTMLDivElement>(null);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [previousTransactionLength, setPreviousTransactionLength] = useState(0);
 
@@ -97,7 +97,7 @@ const WalletHistory = ({
       [transactionName]: !filter?.selectedTransactionTypes![transactionName],
     };
 
-    setFilter({
+    updateFilter({
       ...filter,
       selectedTransactionTypes: newFilter,
     });
@@ -108,7 +108,7 @@ const WalletHistory = ({
       ...filter,
       inSelected: !filter.inSelected,
     };
-    setFilter(newFilter);
+    updateFilter(newFilter);
   };
 
   const toggleFilterOut = () => {
@@ -116,7 +116,7 @@ const WalletHistory = ({
       ...filter,
       outSelected: !filter.outSelected,
     };
-    setFilter(newFilter);
+    updateFilter(newFilter);
   };
 
   const updateFilterValue = (value: string) => {
@@ -124,7 +124,18 @@ const WalletHistory = ({
       ...filter,
       filterValue: value,
     };
-    setFilter(newFilter);
+    updateFilter(newFilter);
+  };
+
+  const updateFilter = (filter: any) => {
+    setFilter(filter);
+    setTimeout(() => {
+      walletItemList?.current?.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    }, 200);
   };
 
   useEffect(() => {
@@ -300,6 +311,13 @@ const WalletHistory = ({
 
   const clearFilters = () => {
     setFilter(DEFAULT_FILTER);
+    setTimeout(() => {
+      walletItemList?.current?.scrollTo({
+        top: 0,
+        left: 0,
+        behavior: 'smooth',
+      });
+    }, 200);
   };
 
   const renderListItem = (transaction: Transaction) => {
@@ -324,6 +342,7 @@ const WalletHistory = ({
   };
 
   const handleScroll = (event: any) => {
+    if (transactions.list[transactions.list.length - 1]?.last === true) return;
     setDisplayedScrollToTop(event.target.scrollTop !== 0);
 
     if (
@@ -409,23 +428,27 @@ const WalletHistory = ({
           renderItem={renderListItem}
           renderOnScroll
           renderWhenEmpty={() => {
-            return (
-              <div className="empty-list">
-                <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
-                <div className="labels">
-                  <span>
-                    {chrome.i18n.getMessage(
-                      'popup_html_transaction_list_is_empty',
-                    )}
-                  </span>
-                  <span>
-                    {chrome.i18n.getMessage(
-                      'popup_html_transaction_list_is_empty_try_clear_filter',
-                    )}
-                  </span>
+            if (loading) {
+              return <div></div>;
+            } else {
+              return (
+                <div className="empty-list">
+                  <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
+                  <div className="labels">
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty',
+                      )}
+                    </span>
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty_try_clear_filter',
+                      )}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            );
+              );
+            }
           }}
         />
         {transactions.list[transactions.list.length - 1]?.last === false &&
@@ -437,7 +460,11 @@ const WalletHistory = ({
               <Icon name={Icons.ADD_CIRCLE} type={IconType.OUTLINED}></Icon>
             </div>
           )}
-        {loading && <RotatingLogoComponent></RotatingLogoComponent>}
+        {loading && (
+          <div className="rotating-logo-container">
+            <RotatingLogoComponent></RotatingLogoComponent>
+          </div>
+        )}
         {displayScrollToTop && <BackToTopButton element={walletItemList} />}
       </div>
     </div>

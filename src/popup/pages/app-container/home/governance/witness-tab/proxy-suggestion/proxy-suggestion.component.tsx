@@ -1,4 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -18,6 +19,7 @@ const ProxySuggestion = ({
   setSuccessMessage,
   setErrorMessage,
   isMessageContainerDisplayed,
+  refreshActiveAccount,
 }: PropsType) => {
   const [forceClosed, setForcedClosed] = useState(false);
 
@@ -42,6 +44,7 @@ const ProxySuggestion = ({
     if (success) {
       setSuccessMessage('popup_success_proxy', ['keychain']);
       handleClose();
+      refreshActiveAccount();
     } else {
       setErrorMessage('popup_error_proxy', ['keychain']);
     }
@@ -76,7 +79,7 @@ const ProxySuggestion = ({
         <OperationButtonComponent
           requiredKey={KeychainKeyTypesLC.active}
           onClick={handleSetProxy}
-          label={'html_popup_vote'}
+          label={'html_popup_ok'}
         />
       </div>
     </div>
@@ -93,6 +96,7 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setSuccessMessage,
   setErrorMessage,
+  refreshActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

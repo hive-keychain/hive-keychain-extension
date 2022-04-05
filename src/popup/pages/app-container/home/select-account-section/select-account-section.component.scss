@@ -22,6 +22,16 @@
   box-sizing: border-box;
   width: 100%;
 
+  .copy-username-button {
+    display: none;
+  }
+  &:hover {
+    .copy-username-button {
+      display: block;
+      font-size: small;
+    }
+  }
+
   img {
     border-radius: 50%;
     width: 46px;
@@ -31,6 +41,7 @@
 .selected-account-panel .selected-account-name,
 .select-account-item .account-name {
   font-size: 18px;
+  user-select: none;
 }
 
 .select-account-item {
@@ -41,14 +52,29 @@
   box-sizing: border-box;
   background: $black-transparent;
 
+  .copy-username-button {
+    display: none;
+  }
+
   &:hover,
   &.selected {
     background: $red-dark;
+  }
+
+  &:hover {
+    .copy-username-button {
+      display: block;
+      font-size: medium;
+    }
   }
 
   img {
     border-radius: 50%;
     width: 46px;
     height: 46px;
+  }
+
+  .account-name {
+    flex: 1;
   }
 }

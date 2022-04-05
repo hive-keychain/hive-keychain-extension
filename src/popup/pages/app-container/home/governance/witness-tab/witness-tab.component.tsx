@@ -180,31 +180,30 @@ const WitnessTab = ({
               additionalClassName="link-to-witness-page"></Icon>
           )}
         </div>
-        <div className="action">
-          <img
-            className={
-              (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
-              ' ' +
-              (usingProxy ? 'using-proxy' : '')
-            }
-            src="assets/images/voted.png"
-            onClick={() => handleVotedButtonClick(witness)}
-            data-for={`${witness.name}-tooltip`}
-            data-tip={
-              usingProxy
-                ? chrome.i18n.getMessage('html_popup_witness_vote_error_proxy')
-                : ''
-            }
-            data-iscapture="true"
-          />
-          <ReactTooltip
-            id={`${witness.name}-tooltip`}
-            place="top"
-            type="light"
-            effect="solid"
-            multiline={true}
-          />
-        </div>
+        <img
+          className={
+            'action ' +
+            (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
+            ' ' +
+            (usingProxy ? 'using-proxy' : '')
+          }
+          src="assets/images/voted.png"
+          onClick={() => handleVotedButtonClick(witness)}
+          data-for={`${witness.name}-tooltip`}
+          data-tip={
+            usingProxy
+              ? chrome.i18n.getMessage('html_popup_witness_vote_error_proxy')
+              : ''
+          }
+          data-iscapture="true"
+        />
+        <ReactTooltip
+          id={`${witness.name}-tooltip`}
+          place="top"
+          type="light"
+          effect="solid"
+          multiline={true}
+        />
       </div>
     );
   };

@@ -1,4 +1,5 @@
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
+import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -25,8 +26,10 @@ const TopBar = ({
   globalProperties,
   addToLoadingList,
   removeFromLoadingList,
+  loadGlobalProperties,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
+  const [rotateLogo, setRotateLogo] = useState(false);
 
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -45,6 +48,13 @@ const TopBar = ({
     }
   }, [activeAccount]);
 
+  const refresh = () => {
+    setRotateLogo(true);
+    refreshActiveAccount();
+    loadGlobalProperties();
+    setTimeout(() => setRotateLogo(false), 1000);
+  };
+
   const lockPopup = (): void => {
     resetNav();
     forgetMk();
@@ -61,17 +71,21 @@ const TopBar = ({
     if (claimSuccessful) {
       removeFromLoadingList('popup_html_claiming_rewards');
       setHasRewardToClaim(false);
-      refreshActiveAccount();
+      setTimeout(() => {
+        refreshActiveAccount();
+      }, 2000);
     }
   };
 
   return (
     <div className="top-bar">
       <img
+        className={rotateLogo ? 'rotate' : ''}
         src="/assets/images/keychain_icon_small.png"
-        onClick={() => refreshActiveAccount()}
+        onClick={refresh}
       />
       <div className="spacer"></div>
+
       {hasRewardToClaim && (
         <Icon
           name={Icons.CLAIM}
@@ -107,6 +121,7 @@ const connector = connect(mapStateToProps, {
   refreshActiveAccount,
   addToLoadingList,
   removeFromLoadingList,
+  loadGlobalProperties,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

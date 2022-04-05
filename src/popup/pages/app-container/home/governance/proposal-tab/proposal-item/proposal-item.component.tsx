@@ -69,10 +69,15 @@ const ProposalItem = ({
   };
 
   return (
-    <div className={`proposal-item`} key={proposal.proposalId}>
+    <div
+      className={`proposal-item`}
+      key={proposal.proposalId}
+      onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}>
       <div className="title">
-        <div onClick={() => goTo(proposal.link)}>
-          #{proposal.id} - {proposal.subject}
+        <div>
+          <span onClick={() => goTo(proposal.link)}>
+            #{proposal.id} - {proposal.subject}
+          </span>
         </div>
         <Icon
           name={Icons.EXPAND_MORE}
@@ -124,7 +129,7 @@ const ProposalItem = ({
             )} - ${proposal.endDate.format('L')}`}
             data-iscapture="true">
             <div className="value">
-              <Icon name={Icons.SHOW_CHART} type={IconType.OUTLINED} />
+              <Icon name={Icons.ARROW_CIRCLE_UP} type={IconType.OUTLINED} />
               <div>{proposal.totalVotes}</div>
             </div>
             <div>
