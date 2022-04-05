@@ -217,7 +217,7 @@ const PowerUpDown = ({
       fields: [],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        addToLoadingList('html_popup_power_down_operation');
+        addToLoadingList('html_popup_cancel_power_down_operation');
         let success = await HiveUtils.powerDown(
           receiver,
           `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
@@ -225,7 +225,7 @@ const PowerUpDown = ({
           )} VESTS`,
         );
 
-        removeFromLoadingList('html_popup_power_down_operation');
+        removeFromLoadingList('html_popup_cancel_power_down_operation');
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);

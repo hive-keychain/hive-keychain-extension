@@ -1737,11 +1737,11 @@
     "description": "Success of power down or up"
   },
   "popup_html_cancel_power_down_success": {
-    "message": "Cancel power down successful !",
+    "message": "Successfully canceled a power down!",
     "description": "Success of power down or up"
   },
   "popup_html_cancel_power_down_fail": {
-    "message": "Cancel power down failed !",
+    "message": "Failed to cancel a power down!",
     "description": "Success of power down or up"
   },
   "popup_html_power_up_down_error": {
@@ -2022,6 +2022,10 @@
   },
   "html_popup_power_down_operation": {
     "message": "Powering down",
+    "description": "Power down operation"
+  },
+  "html_popup_cancel_power_down_operation": {
+    "message": "Canceling a power down",
     "description": "Power down operation"
   },
   "html_popup_power_up": {

@@ -28,7 +28,7 @@ const ConfirmationPage = ({
       isBackButtonEnabled: false,
     });
   });
-
+  const hasField = fields && fields.length !== 0;
   return (
     <div className="confirmation-page">
       <div className="confirmation-top">
@@ -45,9 +45,9 @@ const ConfirmationPage = ({
               : chrome.i18n.getMessage(warningMessage, warningParams)}
           </div>
         )}
-        <div className="fields">
-          {fields &&
-            fields.map((field) => (
+        {hasField && (
+          <div className="fields">
+            {fields.map((field) => (
               <div className="field" key={field.label}>
                 <div className="label">
                   {chrome.i18n.getMessage(field.label)}
@@ -55,7 +55,8 @@ const ConfirmationPage = ({
                 <div className="value">{field.value}</div>
               </div>
             ))}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="bottom-panel">
