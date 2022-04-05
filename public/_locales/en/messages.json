@@ -1749,7 +1749,7 @@
     "description": "In transfer fund page"
   },
   "popup_html_transfer_recurrent_successful": {
-    "message": "Recurrent transfer to $1 ($2) successful! It will happen every $3 hours $4 times",
+    "message": "Recurrent transfer to $1 ($2) successful! It will happen $4 times (every $3 hours).",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_failed": {
@@ -2125,7 +2125,7 @@
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_recurrent_transfer_out": {
-    "message": "Started transfer of $1 to @$2 every $3 hours $4 times",
+    "message": "Started recurrent transfer of $1 to @$2 (every $3 hours - $4 times)",
     "description": "wallet information transfer out"
   },
   "popup_html_wallet_info_recurrent_transfer_in": {

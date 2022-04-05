@@ -226,8 +226,8 @@ const TransferFunds = ({
           formattedAmount,
           memoParam,
           isRecurrent,
-          isCancelRecurrent ? 2 : iteration,
-          isCancelRecurrent ? 24 : frequency,
+          isCancelRecurrent ? 2 : +iteration,
+          isCancelRecurrent ? 24 : +frequency,
         );
 
         removeFromLoadingList('html_popup_transfer_fund_operation');
