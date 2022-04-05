@@ -169,11 +169,19 @@ const SavingsPage = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
-          setSuccessMessage('popup_html_power_up_down_success', [
-            operationString,
-          ]);
+          setSuccessMessage(
+            selectedSavingOperationType === SavingOperationType.DEPOSIT
+              ? 'popup_html_deposit_success'
+              : 'popup_html_withdraw_success',
+            [`${value} ${selectedCurrency.toUpperCase()}`],
+          );
         } else {
-          setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+          setErrorMessage(
+            selectedSavingOperationType === SavingOperationType.DEPOSIT
+              ? 'popup_html_deposit_fail'
+              : 'popup_html_withdraw_fail',
+            [selectedCurrency.toUpperCase()],
+          );
         }
       },
     });

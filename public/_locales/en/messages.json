@@ -1567,6 +1567,22 @@
     "message": "Withdraw $1",
     "description": "On savings menu"
   },
+  "popup_html_deposit_success": {
+    "message": "Successfully deposited $1 to savings",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit_fail": {
+    "message": "Failed to deposit $1 to savings",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_success": {
+    "message": "Successfully started a $1  withdrawal from savings",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_fail": {
+    "message": "Failed to withdraw $1 from savings",
+    "description": "On savings menu"
+  },
   "popup_html_savings_available": {
     "message": "Liquid",
     "description": "On savings menu"
@@ -1697,7 +1713,7 @@
     "description": "On main page"
   },
   "popup_html_confirm_power_up_down_message": {
-    "message": "Please confirm $1.",
+    "message": "Please confirm your $1.",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_power_down_message": {
@@ -1797,7 +1813,7 @@
     "description": "Conversion confirm page"
   },
   "popup_html_hive_to_hbd_conversion_success": {
-    "message": "Conversion from HIVE to HBD succeeded!",
+    "message": "Conversion from HIVE to HBD successful!",
     "description": "Conversion confirm page"
   },
   "popup_html_hive_to_hbd_conversion_fail": {
@@ -1805,7 +1821,7 @@
     "description": "Conversion confirm page"
   },
   "popup_html_hbd_to_hive_conversion_success": {
-    "message": "Conversion from HBD to HIVE succeeded!",
+    "message": "Conversion from HBD to HIVE successful!",
     "description": "Conversion confirm page"
   },
   "popup_html_hbd_to_hive_conversion_fail": {
