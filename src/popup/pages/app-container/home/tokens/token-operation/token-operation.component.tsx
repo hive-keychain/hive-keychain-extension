@@ -216,6 +216,19 @@ const TokensOperation = ({
     });
   };
 
+  const getSubmitButtonLabel = () => {
+    switch (operationType) {
+      case TokenOperationType.DELEGATE:
+        return 'popup_html_token_delegate';
+      case TokenOperationType.STAKE:
+        return 'popup_html_token_stake';
+      case TokenOperationType.UNSTAKE:
+        return 'popup_html_token_unstake';
+      default:
+        return 'popup_html_send_transfer';
+    }
+  };
+
   return (
     <div className="transfer-tokens-page">
       <AvailableCurrentPanelComponent
@@ -252,7 +265,7 @@ const TokensOperation = ({
 
       <OperationButtonComponent
         requiredKey={KeychainKeyTypesLC.active}
-        label={'popup_html_send_transfer'}
+        label={getSubmitButtonLabel()}
         onClick={handleClickOnSend}
         fixToBottom
       />
