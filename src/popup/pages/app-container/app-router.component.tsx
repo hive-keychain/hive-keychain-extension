@@ -11,6 +11,7 @@ import { GovernanceComponent } from '@popup/pages/app-container/home/governance/
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
+import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { TokensHistoryComponent } from '@popup/pages/app-container/home/tokens/tokens-history/tokens-history.component';
 import { TokensSettingsComponent } from '@popup/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
@@ -83,6 +84,8 @@ const AppRouter = ({
         return <TokensTransferComponent />;
       case Screen.TOKENS_OPERATION:
         return <TokensOperationComponent />;
+      case Screen.TOKENS_DELEGATIONS:
+        return <TokenIncomingOutgoingPageComponent />;
 
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:

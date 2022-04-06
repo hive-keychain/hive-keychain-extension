@@ -43,6 +43,10 @@
       padding: 0px 24px;
       font-size: 16px;
       row-gap: 4px;
+
+      .delegation-line {
+        cursor: pointer;
+      }
     }
     .button-panel {
       display: flex;

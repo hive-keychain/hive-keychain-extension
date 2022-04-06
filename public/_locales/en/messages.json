@@ -2325,6 +2325,10 @@
     "message": "Delegating token",
     "description": "delegate token title"
   },
+  "popup_html_cancel_delegation_tokens": {
+    "message": "Cancel token delegation",
+    "description": "delegate token title"
+  },
   "popup_html_stake_tokens_failed": {
     "message": "The stake token operation failed",
     "description": "stake token title"
@@ -2335,6 +2339,10 @@
   },
   "popup_html_delegate_tokens_failed": {
     "message": "The token delegation failed",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_failed": {
+    "message": "Cancelled token delegation failed",
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_success": {
@@ -2349,6 +2357,10 @@
     "message": "The token delegation was successful",
     "description": "delegate token title"
   },
+  "popup_html_cancel_delegation_tokens_success": {
+    "message": "Cancel delegation was successful",
+    "description": "delegate token title"
+  },
   "popup_html_stake_tokens_confirm_text": {
     "message": "Please confirm that you want to stake your token.",
     "description": "stake token title"
@@ -2359,6 +2371,10 @@
   },
   "popup_html_delegate_tokens_confirm_text": {
     "message": "Please confirm that you want to delegate your token.",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_confirm_text": {
+    "message": "Please confirm that you want to cancel the delegation of your token.",
     "description": "delegate token title"
   },
   "popup_html_load_more": {

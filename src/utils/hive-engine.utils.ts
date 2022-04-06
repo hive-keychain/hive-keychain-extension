@@ -1,5 +1,6 @@
 import { hsc } from '@api/hiveEngine';
 import { PrivateKey } from '@hiveio/dhive';
+import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import Config from 'src/config';
 import HiveUtils from 'src/utils/hive.utils';
 type SendTokenProps = {
@@ -81,10 +82,49 @@ const delegateToken = (
   );
 };
 
+const cancelDelegationToken = (
+  activePrivateKey: string,
+  from: string,
+  symbol: string,
+  amount: string,
+  activeAccountName: string,
+) => {
+  const id = Config.hiveEngine.MAINNET;
+  const json = JSON.stringify({
+    contractName: 'tokens',
+    contractAction: 'undelegate',
+    contractPayload: { from: from, symbol: symbol, quantity: amount },
+  });
+  console.log(json);
+  return HiveUtils.getClient().broadcast.json(
+    {
+      required_posting_auths: [],
+      required_auths: [activeAccountName],
+      id,
+      json,
+    },
+    PrivateKey.fromString(activePrivateKey),
+  );
+};
+
 const getUserBalance = (account: string) => {
   return hsc.find('tokens', 'balances', {
     account,
   });
+};
+
+const getIncomingDelegations = async (
+  symbol: string,
+  username: string,
+): Promise<TokenDelegation[]> => {
+  return hsc.find('tokens', 'delegations', { to: username, symbol: symbol });
+};
+
+const getOutgoingDelegations = async (
+  symbol: string,
+  username: string,
+): Promise<TokenDelegation[]> => {
+  return hsc.find('tokens', 'delegations', { from: username, symbol: symbol });
 };
 
 const sendToken = (data: SendTokenProps, key: PrivateKey) => {
@@ -111,6 +151,9 @@ const HiveEngineUtils = {
   stakeToken,
   unstakeToken,
   delegateToken,
+  cancelDelegationToken,
+  getIncomingDelegations,
+  getOutgoingDelegations,
 };
 
 export default HiveEngineUtils;

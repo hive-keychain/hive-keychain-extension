@@ -1,6 +1,7 @@
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
+import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
@@ -47,6 +48,20 @@ const TokenItem = ({
     navigateToWithParams(Screen.TOKENS_OPERATION, {
       tokenBalance,
       operationType: TokenOperationType.DELEGATE,
+    });
+  };
+
+  const goToOutgoingDelegations = () => {
+    navigateToWithParams(Screen.TOKENS_DELEGATIONS, {
+      tokenBalance: tokenBalance,
+      delegationType: DelegationType.OUTGOING,
+    });
+  };
+
+  const goToIncomingDelegations = () => {
+    navigateToWithParams(Screen.TOKENS_DELEGATIONS, {
+      tokenBalance: tokenBalance,
+      delegationType: DelegationType.INCOMING,
     });
   };
 
@@ -127,13 +142,17 @@ const TokenItem = ({
                 </div>
               )}
             {token.delegationEnabled && (
-              <div>
+              <div
+                className="delegation-line"
+                onClick={goToIncomingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
                 {tokenBalance.delegationsIn}
               </div>
             )}
             {token.delegationEnabled && (
-              <div>
+              <div
+                className="delegation-line"
+                onClick={goToOutgoingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
                 {tokenBalance.delegationsOut}
               </div>
