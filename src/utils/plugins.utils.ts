@@ -1,6 +1,9 @@
 import { PluginMessage } from '@popup/pages/app-container/home/plugin/plugin-message.enum';
 import { Plugin } from '@popup/pages/app-container/home/plugin/plugin.interface';
-import { Extension } from '@popup/pages/app-container/home/plugin/plugins.whitelist';
+import {
+  Extension,
+  PluginsWhitelist,
+} from '@popup/pages/app-container/home/plugin/plugins.whitelist';
 
 const getPluginInfo = async (plugin: Extension): Promise<Plugin> => {
   return new Promise(async (fulfill) => {
@@ -26,7 +29,14 @@ const checkPluginInstalled = async (plugin: Extension): Promise<boolean> => {
   });
 };
 
+const isPluginWhitelisted = (senderExtensionId: string): boolean => {
+  return PluginsWhitelist.some(
+    (extension) => extension.extensionId === senderExtensionId,
+  );
+};
+
 export const PluginsUtils = {
   getPluginInfo,
   checkPluginInstalled,
+  isPluginWhitelisted,
 };

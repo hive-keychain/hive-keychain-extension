@@ -9,6 +9,7 @@ import {
 } from 'src/content-scripts/web-interface/response.logic';
 import { WebInterfaceUtils } from 'src/content-scripts/web-interface/web-interface.utils';
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
+import { KeychainRequestsUtils } from 'src/utils/keychain-requests.utils';
 
 let req: KeychainRequest | null = null;
 
@@ -40,9 +41,10 @@ const requestHandler = (
 };
 
 document.addEventListener('swRequest_hive', (request: object) => {
+  console.log(request);
   const prevReq = req;
   req = (request as KeychainRequestWrapper).detail;
-  const { error, value } = WebInterfaceUtils.validateRequest(req);
+  const { error, value } = KeychainRequestsUtils.validateRequest(req);
   if (!error) {
     sendRequestToBackground(value);
     if (prevReq) {
@@ -53,12 +55,6 @@ document.addEventListener('swRequest_hive', (request: object) => {
     req = prevReq;
   }
 });
-
-chrome.runtime.onMessageExternal.addListener(
-  (message, sender, sendResponse) => {
-    console.log(message, sender);
-  },
-);
 
 // Get notification from the background upon request completion and pass it back to the dApp.
 chrome.runtime.onMessage.addListener(requestHandler);

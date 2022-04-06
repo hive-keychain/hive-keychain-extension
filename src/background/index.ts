@@ -15,8 +15,10 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { KeychainRequestsUtils } from 'src/utils/keychain-requests.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { PluginsUtils } from 'src/utils/plugins.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
@@ -34,6 +36,7 @@ import MkModule from './mk.module';
 
 //@ts-ignore
 chrome.i18n.getMessage = getMessage;
+let req: KeychainRequest | null = null;
 
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
@@ -55,14 +58,7 @@ const chromeMessageHandler = async (
       RPCModule.setActiveRpc(backgroundMessage.value);
       break;
     case BackgroundCommand.SEND_REQUEST:
-      const requestHandler = await RequestsHandler.getFromLocalStorage();
-      if (requestHandler) {
-        requestHandler.closeWindow();
-      }
-      new RequestsHandler().sendRequest(
-        sender,
-        backgroundMessage as KeychainRequestWrapper,
-      );
+      processRequest(backgroundMessage as KeychainRequestWrapper, sender);
       break;
     case BackgroundCommand.UNLOCK_FROM_DIALOG: {
       const { mk, domain, data, tab } = backgroundMessage.value;
@@ -110,6 +106,51 @@ const chromeMessageHandler = async (
   }
 };
 
+const processRequest = async (
+  backgroundMessage: KeychainRequestWrapper,
+  sender: any,
+) => {
+  const requestHandler = await RequestsHandler.getFromLocalStorage();
+  if (requestHandler) {
+    requestHandler.closeWindow();
+  }
+  new RequestsHandler().sendRequest(sender, backgroundMessage);
+};
+
+const externalMessagesHandler = (
+  externalMessage: any,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: any) => void,
+) => {
+  if (PluginsUtils.isPluginWhitelisted(sender.id!)) {
+    console.log('This extension is whitelisted');
+    const { error, value } = KeychainRequestsUtils.validateRequest(
+      externalMessage as KeychainRequest,
+    );
+    console.log(error, value);
+    if (!error) {
+      processRequest(
+        {
+          command: 'sendRequest',
+          domain: 'localhost',
+          request: value,
+          request_id: value.request_id,
+        } as KeychainRequestWrapper,
+        sender,
+      );
+      // sendRequestToBackground(value);
+      // if (prevReq) {
+      //   cancelPreviousRequest(prevReq);
+      // }
+    } else {
+      // sendIncompleteDataResponse(value!, error);
+      // req = prevReq;
+    }
+  } else {
+    console.log('This extension is not whitelisted... aborting...');
+  }
+};
+
 export const performOperationFromIndex = async (
   requestHandler: RequestsHandler,
   tab: number,
@@ -119,3 +160,5 @@ export const performOperationFromIndex = async (
 };
 
 chrome.runtime.onMessage.addListener(chromeMessageHandler);
+
+chrome.runtime.onMessageExternal.addListener(externalMessagesHandler);

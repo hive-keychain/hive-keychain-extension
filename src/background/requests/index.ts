@@ -94,7 +94,7 @@ export class RequestsHandler {
     sender: chrome.runtime.MessageSender,
     msg: KeychainRequestWrapper,
   ) {
-    this.data.tab = sender.tab!.id;
+    this.data.tab = sender.tab?.id;
     this.data.request = msg.request;
     this.data.request_id = msg.request_id;
     init(msg.request, this.data.tab, msg.domain, this);

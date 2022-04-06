@@ -131,7 +131,9 @@ export const performOperation = async (
         message = await recurrentTransfer(requestHandler, data);
         break;
     }
-    chrome.tabs.sendMessage(tab, message);
+    if (tab) {
+      chrome.tabs.sendMessage(tab, message);
+    }
   } catch (e) {
     Logger.error(e);
     sendErrors(
@@ -150,5 +152,8 @@ export const performOperation = async (
       }
     } else chrome.runtime.sendMessage(message);
     requestHandler.reset(false);
+    if (!tab) {
+      console.log('here need to send response to plugin');
+    }
   }
 };
