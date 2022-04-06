@@ -25,12 +25,6 @@ const TokenItem = ({
 }: PropsFromRedux) => {
   const [isExpandablePanelOpen, setExpandablePanelOpen] = useState(false);
   const [token, setToken] = useState<Token>();
-  const [description, setDescription] = useState();
-
-  useEffect(() => {
-    const parsedMetadata = JSON.parse(tokenInfo.metadata);
-    setDescription(parsedMetadata.desc);
-  }, []);
 
   useEffect(() => {
     console.log(tokenInfo);
@@ -72,6 +66,10 @@ const TokenItem = ({
       tokenBalance: tokenBalance,
       delegationType: DelegationType.INCOMING,
     });
+  };
+
+  const goToTokenWebsite = () => {
+    chrome.tabs.create({ url: tokenInfo.metadata.url });
   };
 
   return (
@@ -128,9 +126,14 @@ const TokenItem = ({
               : 'expandable-panel closed'
           }>
           <div className="token-info">
-            <div className="token-description">
-              {tokenInfo.name}
-              {description ? ` - ${description}` : ''}
+            <div className="token-description" onClick={goToTokenWebsite}>
+              <img className="token-icon" src={tokenInfo.metadata.icon} />
+              <div className="token-name-issuer">
+                <span className="token-name">{tokenInfo.name}</span>
+                {tokenInfo.issuer && tokenInfo.issuer !== 'null' && (
+                  <span className="token-issuer">@{tokenInfo.issuer}</span>
+                )}
+              </div>
             </div>
             <div>
               {chrome.i18n.getMessage('dialog_balance')} :{' '}

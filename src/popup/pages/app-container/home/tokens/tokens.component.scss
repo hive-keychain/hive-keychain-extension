@@ -3,6 +3,7 @@
 .tokens-page {
   @include pageLayoutRowGap;
   row-gap: 32px;
+  overflow: hidden;
   .disclaimer {
     font-size: 18px;
     padding: 0px 24px;
@@ -18,6 +19,7 @@
   }
 
   .my-tokens {
+    overflow: auto;
     .token-item {
       background: $red-transparent;
       &:nth-child(even) {

@@ -40,9 +40,33 @@
     .token-info {
       display: flex;
       flex-direction: column;
-      padding: 0px 24px;
+      padding: 8px 24px;
       font-size: 16px;
       row-gap: 4px;
+
+      .token-description {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        cursor: pointer;
+        margin-bottom: 8px;
+        .token-name-issuer {
+          display: flex;
+          flex-direction: column;
+          padding-top: 1px;
+          .token-issuer {
+            font-size: 16px;
+            font-style: italic;
+          }
+          .token-name {
+            font-size: 18px;
+          }
+        }
+        .token-icon {
+          height: 36px;
+          width: 36px;
+        }
+      }
 
       .delegation-line {
         cursor: pointer;
@@ -56,6 +80,7 @@
       align-items: center;
       .action-button {
         padding: 4px;
+        padding-top: 6px;
         border-radius: 8px;
         border: 1px solid white;
         min-width: 70px;

@@ -25,7 +25,7 @@ export interface Token {
   delegationEnabled: boolean;
   issuer: string;
   maxSupply: string;
-  metadata: string;
+  metadata: TokenMetadata;
   name: string;
   numberTransactions: number;
   precision: number;
@@ -35,6 +35,12 @@ export interface Token {
   totalStaked: string;
   undelegationCooldown: number;
   unstakingCooldown: number;
+}
+
+export interface TokenMetadata {
+  url: string;
+  icon: string;
+  desc: string;
 }
 
 export interface TokenMarket {

@@ -13,7 +13,14 @@ import Logger from 'src/utils/logger.utils';
 export const loadTokens = (): AppThunk => async (dispatch) => {
   const action: ActionPayload<Token[]> = {
     type: ActionType.LOAD_TOKENS,
-    payload: await hsc.find('tokens', 'tokens', {}, 1000, 0, []),
+    payload: (await hsc.find('tokens', 'tokens', {}, 1000, 0, [])).map(
+      (t: any) => {
+        return {
+          ...t,
+          metadata: JSON.parse(t.metadata),
+        };
+      },
+    ),
   };
   dispatch(action);
 };
