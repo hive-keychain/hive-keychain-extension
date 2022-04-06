@@ -30,4 +30,16 @@
     font-size: 18px;
     padding: 0px 24px;
   }
+
+  .rotating-logo-container {
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    .rotating-logo {
+      align-self: center;
+      justify-self: center;
+      height: 50px;
+      width: 50px;
+    }
+  }
 }

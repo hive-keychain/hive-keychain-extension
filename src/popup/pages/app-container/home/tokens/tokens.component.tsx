@@ -17,6 +17,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens.component.scss';
 
@@ -30,9 +31,7 @@ const Tokens = ({
   setTitleContainerProperties,
   loadTokens,
 }: PropsFromRedux) => {
-  const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>(
-    [],
-  );
+  const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
 
   const loadHiddenTokens = async () => {
@@ -78,16 +77,23 @@ const Tokens = ({
         name={Icons.SETTINGS}
         type={IconType.OUTLINED}
         additionalClassName="settings"></Icon>
-      {filteredTokenList.length > 0 && (
+      {filteredTokenList && filteredTokenList.length > 0 && (
         <div className="my-tokens">
           {filteredTokenList.map((token) => (
             <TokenItemComponent key={token.symbol} tokenBalance={token} />
           ))}
         </div>
       )}
-      {filteredTokenList.length === 0 && (
-        <div className="no-tokens">
-          {chrome.i18n.getMessage('popup_html_tokens_no_tokens')}
+      {!userTokens.loading &&
+        filteredTokenList &&
+        filteredTokenList.length === 0 && (
+          <div className="no-tokens">
+            {chrome.i18n.getMessage('popup_html_tokens_no_tokens')}
+          </div>
+        )}
+      {userTokens.loading && (
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent></RotatingLogoComponent>
         </div>
       )}
     </div>
