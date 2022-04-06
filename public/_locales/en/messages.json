@@ -348,7 +348,7 @@
     "description": "on manage accounts"
   },
   "popup_html_delete_account_confirmation_message": {
-    "message": "You are about to remove @$1 from Keychain. This cannot be undone. Please confirm to proceed.",
+    "message": "You are about to remove @$1 from Keychain. This cannot be undone without reimporting your keys. Please confirm to proceed.",
     "description": "on manage accounts"
   },
   "popup_html_show_qr": {
@@ -1793,7 +1793,7 @@
     "description": "In settings menu"
   },
   "popup_html_save_successful": {
-    "message": "Save successful",
+    "message": "Successfully saved settings",
     "description": "General message"
   },
   "popup_html_wallet_add_memo": {
