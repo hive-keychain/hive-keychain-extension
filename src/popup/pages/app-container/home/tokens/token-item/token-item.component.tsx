@@ -14,17 +14,26 @@ import './token-item.component.scss';
 
 interface TokenItemProps {
   tokenBalance: TokenBalance;
+  tokenInfo: Token;
 }
 
 const TokenItem = ({
   tokenBalance,
   tokens,
+  tokenInfo,
   navigateToWithParams,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpen, setExpandablePanelOpen] = useState(false);
   const [token, setToken] = useState<Token>();
+  const [description, setDescription] = useState();
 
   useEffect(() => {
+    const parsedMetadata = JSON.parse(tokenInfo.metadata);
+    setDescription(parsedMetadata.desc);
+  }, []);
+
+  useEffect(() => {
+    console.log(tokenInfo);
     if (tokens && tokens.length) {
       setToken(tokens.find((t) => t.symbol === tokenBalance.symbol));
     }
@@ -119,6 +128,10 @@ const TokenItem = ({
               : 'expandable-panel closed'
           }>
           <div className="token-info">
+            <div className="token-description">
+              {tokenInfo.name}
+              {description ? ` - ${description}` : ''}
+            </div>
             <div>
               {chrome.i18n.getMessage('dialog_balance')} :{' '}
               {FormatUtils.hasMoreThanXDecimal(

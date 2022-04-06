@@ -24,6 +24,7 @@ import './tokens.component.scss';
 const Tokens = ({
   activeAccount,
   userTokens,
+  allTokens,
   loadUserTokens,
   navigateTo,
   addToLoadingList,
@@ -77,13 +78,19 @@ const Tokens = ({
         name={Icons.SETTINGS}
         type={IconType.OUTLINED}
         additionalClassName="settings"></Icon>
-      {filteredTokenList && filteredTokenList.length > 0 && (
-        <div className="my-tokens">
-          {filteredTokenList.map((token) => (
-            <TokenItemComponent key={token.symbol} tokenBalance={token} />
-          ))}
-        </div>
-      )}
+      {allTokens.length > 0 &&
+        filteredTokenList &&
+        filteredTokenList.length > 0 && (
+          <div className="my-tokens">
+            {filteredTokenList.map((token) => (
+              <TokenItemComponent
+                key={token.symbol}
+                tokenBalance={token}
+                tokenInfo={allTokens.find((t) => t.symbol === token.symbol)!}
+              />
+            ))}
+          </div>
+        )}
       {!userTokens.loading &&
         filteredTokenList &&
         filteredTokenList.length === 0 && (
@@ -101,7 +108,11 @@ const Tokens = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount, userTokens: state.userTokens };
+  return {
+    activeAccount: state.activeAccount,
+    userTokens: state.userTokens,
+    allTokens: state.tokens,
+  };
 };
 
 const connector = connect(mapStateToProps, {
