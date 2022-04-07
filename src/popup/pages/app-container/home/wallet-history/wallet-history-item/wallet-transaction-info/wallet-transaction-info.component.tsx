@@ -1,8 +1,11 @@
 import {
   ClaimAccount,
   ClaimReward,
+  Convert,
   Delegation,
   DepositSavings,
+  FillCollateralizedConvert,
+  FillConvert,
   FillRecurrentTransfer,
   PowerDown,
   PowerUp,
@@ -14,8 +17,12 @@ import {
 } from '@interfaces/transaction.interface';
 import { ClaimAccountTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/claim-account-transaction/claim-account-transaction.component';
 import { ClaimRewardsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/claim-rewards-transaction/claim-rewards-transaction.component';
+import { CollateralizedConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/collateralized-convert-transaction/collateralized-convert-transaction.component';
+import { ConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/convert-transaction/convert-transaction.component';
 import { DelegationTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/delegation-transaction/delegation-transaction.component';
 import { DepositSavingsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/deposit-savings-transaction/deposit-savings-transaction.component';
+import { FillCollateralizedConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-collateralized-convert-transaction/fill-collateralized-convert-transaction.component';
+import { FillConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-convert-transaction/fill-convert-transaction.component';
 import { FillRecurrentTransferTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-recurrent-transfer-transaction/fill-recurrent-transfer-transaction.component';
 import { PowerDownTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/power-down-transaction/power-down-transaction.component';
 import { PowerUpTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/power-up-transaction/power-up-transaction.component';
@@ -106,6 +113,34 @@ const WalletTransactionInfo = ({
             return (
               <PowerUpTransactionComponent
                 transaction={transaction as PowerUp}
+              />
+            );
+        }
+      }
+      case 'convert': {
+        switch (transaction.subType) {
+          case 'convert':
+            return (
+              <ConvertTransactionComponent
+                transaction={transaction as Convert}
+              />
+            );
+          case 'collateralized_convert':
+            return (
+              <CollateralizedConvertTransactionComponent
+                transaction={transaction as Convert}
+              />
+            );
+          case 'fill_convert_request':
+            return (
+              <FillConvertTransactionComponent
+                transaction={transaction as FillConvert}
+              />
+            );
+          case 'fill_collateralized_convert_request':
+            return (
+              <FillCollateralizedConvertTransactionComponent
+                transaction={transaction as FillCollateralizedConvert}
               />
             );
         }

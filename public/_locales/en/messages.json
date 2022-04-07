@@ -2182,55 +2182,71 @@
   },
   "popup_html_wallet_info_delegation_out": {
     "message": "Delegated $1 to @$2",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information delegation outgoing"
   },
   "popup_html_wallet_info_delegation_in": {
     "message": "@$1 delegated $2",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information delegation incoming"
   },
   "popup_html_wallet_info_cancel_delegation_out": {
     "message": "Canceled delegation to @$1",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel delegation outgoing"
   },
   "popup_html_wallet_info_cancel_delegation_in": {
     "message": "@$1 canceled delegation",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel delegation incoming"
   },
   "popup_html_wallet_info_received_interests": {
     "message": "Received $1 of interests from savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information claim interest"
   },
   "popup_html_wallet_info_claim_account": {
     "message": "Claimed account",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information claim account"
   },
   "popup_html_wallet_info_deposit_savings": {
     "message": "Deposit of $1 into savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information deposit savings"
   },
   "popup_html_wallet_info_deposit_savings_other_account": {
     "message": "@$1 made a deposit of $2 into @$3's savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
     "message": "Withdrawn $1 from savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
     "message": "Initiated a $1 power down",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power down"
   },
   "popup_html_wallet_info_cancel_power_down": {
     "message": "Canceled power down",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel power down"
   },
   "popup_html_wallet_info_power_up": {
     "message": "Powered up $1",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power up"
   },
   "popup_html_wallet_info_power_up_other_account": {
     "message": "@$1 powered up $2 for @$3",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power up"
+  },
+  "popup_html_wallet_info_convert": {
+    "message": "Started a $1 conversion",
+    "description": "Wallet information convert hbd to hive"
+  },
+  "popup_html_wallet_info_collateralized_convert": {
+    "message": "Started a $2 collateralized conversion",
+    "description": "Wallet information convert hive to hbd"
+  },
+  "popup_html_wallet_info_fill_convert_request": {
+    "message": "Filled conversion: $1 -> $2",
+    "description": "Wallet information receive conversion"
+  },
+  "popup_html_wallet_info_fill_collateralized_convert_request": {
+    "message": "Filled conversion: $1 -> $2",
+    "description": "Wallet information receive conversion"
   },
 
   "popup_html_filter_in": {

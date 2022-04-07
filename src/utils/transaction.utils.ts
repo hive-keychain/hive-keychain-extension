@@ -2,8 +2,12 @@ import { utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimAccount,
   ClaimReward,
+  CollateralizedConvert,
+  Convert,
   Delegation,
   DepositSavings,
+  FillCollateralizedConvert,
+  FillConvert,
   FillRecurrentTransfer,
   PowerDown,
   PowerUp,
@@ -45,6 +49,10 @@ const getAccountTransactions = async (
       op.transfer_to_savings,
       op.transfer_from_savings,
       op.claim_account,
+      op.convert,
+      op.fill_convert_request,
+      op.collateralized_convert,
+      op.fill_collateralized_convert_request,
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
@@ -144,6 +152,30 @@ const getAccountTransactions = async (
           }
           case 'claim_account': {
             specificTransaction = e[1].op[1] as ClaimAccount;
+            break;
+          }
+          case 'convert': {
+            specificTransaction = e[1].op[1] as Convert;
+            specificTransaction.type = 'convert';
+            specificTransaction.subType = 'convert';
+            break;
+          }
+          case 'collateralized_convert': {
+            specificTransaction = e[1].op[1] as CollateralizedConvert;
+            specificTransaction.type = 'convert';
+            specificTransaction.subType = 'collateralized_convert';
+            break;
+          }
+          case 'fill_convert_request': {
+            specificTransaction = e[1].op[1] as FillConvert;
+            specificTransaction.type = 'convert';
+            specificTransaction.subType = 'fill_convert_request';
+            break;
+          }
+          case 'fill_collateralized_convert_request': {
+            specificTransaction = e[1].op[1] as FillCollateralizedConvert;
+            specificTransaction.type = 'convert';
+            specificTransaction.subType = 'fill_collateralized_convert_request';
             break;
           }
         }
