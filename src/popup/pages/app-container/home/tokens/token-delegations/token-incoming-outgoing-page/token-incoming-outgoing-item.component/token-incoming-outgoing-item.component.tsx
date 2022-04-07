@@ -115,10 +115,9 @@ const TokenIncomingOutgoing = ({
 
     const valueString = `${value} ${symbol}`;
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage('popup_html_confirm_delegation', [
-        value,
-        `@${username}`,
-      ]),
+      message: chrome.i18n.getMessage(
+        'popup_html_delegate_tokens_confirm_text',
+      ),
       title: 'popup_html_delegation',
       fields: [
         { label: 'popup_html_transfer_to', value: `@${username}` },

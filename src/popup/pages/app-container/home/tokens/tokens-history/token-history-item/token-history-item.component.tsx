@@ -67,7 +67,7 @@ const TokenHistoryItem = ({
         } else {
           return chrome.i18n.getMessage(
             'popup_html_token_wallet_info_delegation_in',
-            [t.delegatee, t.amount],
+            [t.delegator, t.amount],
           );
         }
       }
@@ -81,7 +81,7 @@ const TokenHistoryItem = ({
         } else {
           return chrome.i18n.getMessage(
             'popup_html_token_wallet_info_start_cancel_delegation_in',
-            [t.delegatee, t.amount],
+            [t.delegator, t.amount],
           );
         }
       }
@@ -95,7 +95,7 @@ const TokenHistoryItem = ({
         } else {
           return chrome.i18n.getMessage(
             'popup_html_token_wallet_info_cancel_delegation_in',
-            [t.delegatee, t.amount],
+            [t.delegator, t.amount],
           );
         }
       }

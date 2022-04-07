@@ -1953,7 +1953,7 @@
     "description": "delegation operation"
   },
   "html_popup_cancel_delegation_operation": {
-    "message": "Cancel delegation operation",
+    "message": "Canceling a delegation",
     "description": "delegation operation"
   },
   "html_popup_load_witness_ranking_operation": {
@@ -1969,7 +1969,7 @@
     "description": "unvote witness operation"
   },
   "html_popup_confirm_transaction_operation": {
-    "message": "Confirm transaction operation",
+    "message": "Confirming transaction",
     "description": "Confirmation transaction operation"
   },
   "html_popup_delete_account_operation": {
@@ -2330,11 +2330,11 @@
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_failed": {
-    "message": "The stake token operation failed",
+    "message": "Failed to stake a token",
     "description": "stake token title"
   },
   "popup_html_unstake_tokens_failed": {
-    "message": "The unstake token operation failed",
+    "message": "Failed to start unstaking a token",
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens_failed": {
@@ -2342,7 +2342,7 @@
     "description": "delegate token title"
   },
   "popup_html_cancel_delegation_tokens_failed": {
-    "message": "Cancelled token delegation failed",
+    "message": "Failed to cancel the token delegation",
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_success": {
@@ -2350,7 +2350,7 @@
     "description": "stake token title"
   },
   "popup_html_unstake_tokens_success": {
-    "message": "Successfully unstaked token",
+    "message": "Successfully started unstaking token",
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens_success": {
@@ -2358,7 +2358,7 @@
     "description": "delegate token title"
   },
   "popup_html_cancel_delegation_tokens_success": {
-    "message": "Cancel delegation was successful",
+    "message": "Successfully canceled the delegation",
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_confirm_text": {
@@ -2454,19 +2454,19 @@
     "description": "wallet information delegation out"
   },
   "popup_html_token_wallet_info_cancel_delegation_out": {
-    "message": "Canceled delegation of $1 to @$2",
+    "message": "Canceled a delegation of $1 to @$2",
     "description": "Token wallet information canceled delegation out "
   },
   "popup_html_token_wallet_info_cancel_delegation_in": {
-    "message": "@$1 canceled delegation of $2",
+    "message": "@$1 canceled a $2 delegation",
     "description": "Token wallet information canceled delegation in"
   },
   "popup_html_token_wallet_info_start_cancel_delegation_out": {
-    "message": "Starting canceling delegation of $1 to @$2",
+    "message": "Canceled a $1 delegation to @$2",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_start_cancel_delegation_in": {
-    "message": "@$1 started canceling delegation of $2",
+    "message": "@$1 canceled a $2 delegation",
     "description": "Token wallet information start canceling delegation in"
   },
   "popup_html_token_wallet_info_stake": {
@@ -2482,7 +2482,7 @@
     "description": "Token wallet information canceled delegation in"
   },
   "popup_html_token_wallet_info_start_unstake": {
-    "message": "Starting unstaking $1",
+    "message": "Started unstaking $1",
     "description": "Token wallet information start canceling delegation out"
   }
 }
