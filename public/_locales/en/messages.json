@@ -348,7 +348,7 @@
     "description": "on manage accounts"
   },
   "popup_html_delete_account_confirmation_message": {
-    "message": "You are about to remove @$1 from Keychain. This cannot be undone. Please confirm to proceed.",
+    "message": "You are about to remove @$1 from Keychain. This cannot be undone without reimporting your keys. Please confirm to proceed.",
     "description": "on manage accounts"
   },
   "popup_html_show_qr": {
@@ -461,6 +461,10 @@
   },
   "popup_html_transfer_confirm_text": {
     "message": "Please confirm your transfer.<br>This cannot be undone.",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_confirm_cancel_recurrent": {
+    "message": "<br>Please confirm that you want to cancel this recurrent transfer.",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_from": {
@@ -1567,6 +1571,22 @@
     "message": "Withdraw $1",
     "description": "On savings menu"
   },
+  "popup_html_deposit_success": {
+    "message": "Successfully deposited $1 to savings",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit_fail": {
+    "message": "Failed to deposit $1 to savings",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_success": {
+    "message": "Successfully started a $1  withdrawal from savings",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_fail": {
+    "message": "Failed to withdraw $1 from savings",
+    "description": "On savings menu"
+  },
   "popup_html_savings_available": {
     "message": "Liquid",
     "description": "On savings menu"
@@ -1697,7 +1717,7 @@
     "description": "On main page"
   },
   "popup_html_confirm_power_up_down_message": {
-    "message": "Please confirm $1.",
+    "message": "Please confirm your $1.",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_power_down_message": {
@@ -1721,11 +1741,11 @@
     "description": "Success of power down or up"
   },
   "popup_html_cancel_power_down_success": {
-    "message": "Cancel power down successful !",
+    "message": "Successfully canceled a power down!",
     "description": "Success of power down or up"
   },
   "popup_html_cancel_power_down_fail": {
-    "message": "Cancel power down failed !",
+    "message": "Failed to cancel a power down!",
     "description": "Success of power down or up"
   },
   "popup_html_power_up_down_error": {
@@ -1753,7 +1773,11 @@
     "description": "In transfer fund page"
   },
   "popup_html_transfer_recurrent_successful": {
-    "message": "Recurrent transfer to $1 ($2) successful! It will happen every $3 hours $4 times",
+    "message": "Recurrent transfer to $1 ($2) successful! It will happen $4 times (every $3 hours).",
+    "description": "In transfer fund page"
+  },
+  "popup_html_cancel_transfer_recurrent_successful": {
+    "message": "Successfully stopped a recurrent transfer to $1.",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_failed": {
@@ -1773,7 +1797,7 @@
     "description": "In settings menu"
   },
   "popup_html_save_successful": {
-    "message": "Save successful",
+    "message": "Successfully saved settings",
     "description": "General message"
   },
   "popup_html_wallet_add_memo": {
@@ -1793,7 +1817,7 @@
     "description": "Conversion confirm page"
   },
   "popup_html_hive_to_hbd_conversion_success": {
-    "message": "Conversion from HIVE to HBD succeeded!",
+    "message": "Conversion from HIVE to HBD successful!",
     "description": "Conversion confirm page"
   },
   "popup_html_hive_to_hbd_conversion_fail": {
@@ -1801,7 +1825,7 @@
     "description": "Conversion confirm page"
   },
   "popup_html_hbd_to_hive_conversion_success": {
-    "message": "Conversion from HBD to HIVE succeeded!",
+    "message": "Conversion from HBD to HIVE successful!",
     "description": "Conversion confirm page"
   },
   "popup_html_hbd_to_hive_conversion_fail": {
@@ -1945,19 +1969,19 @@
     "description": "Error while trying to confirm unvote witness"
   },
   "html_popup_conversion_operation": {
-    "message": "Conversion operation",
+    "message": "Conversion",
     "description": "conversion operation"
   },
   "html_popup_delegation_operation": {
-    "message": "Delegation operation",
+    "message": "Delegating",
     "description": "delegation operation"
   },
   "html_popup_cancel_delegation_operation": {
-    "message": "Canceling a delegation",
+    "message": "Canceling delegation",
     "description": "delegation operation"
   },
   "html_popup_load_witness_ranking_operation": {
-    "message": "Load witness ranking",
+    "message": "Loading witness ranking",
     "description": "load witness ranking operation"
   },
   "html_popup_vote_witness_operation": {
@@ -1973,35 +1997,39 @@
     "description": "Confirmation transaction operation"
   },
   "html_popup_delete_account_operation": {
-    "message": "Delete account operation",
+    "message": "Deleting account",
     "description": "delete account operation"
   },
   "html_popup_transfer_fund_operation": {
-    "message": "Transfer fund operation",
+    "message": "Transferring funds",
     "description": "Transfer fund operation"
   },
   "html_popup_transfer_token_operation": {
-    "message": "Transfer token operation",
+    "message": "Transferring tokens",
     "description": "Transfer token operation"
   },
   "html_popup_loading_tokens_operation": {
-    "message": "Loading tokens operation",
+    "message": "Loading tokens",
     "description": "Loading tokens operation"
   },
   "html_popup_deposit_to_savings_operation": {
-    "message": "Deposit to savings operation",
+    "message": "Depositing to savings",
     "description": "Deposit to savings operation"
   },
   "html_popup_withdraw_from_savings_operation": {
-    "message": "Withdraw from savings operation",
+    "message": "Withdrawing from savings",
     "description": "Withdraw from savings operation"
   },
   "html_popup_power_up_operation": {
-    "message": "Power up operation",
+    "message": "Powering up",
     "description": "Power up operation"
   },
   "html_popup_power_down_operation": {
-    "message": "Power down operation",
+    "message": "Powering down",
+    "description": "Power down operation"
+  },
+  "html_popup_cancel_power_down_operation": {
+    "message": "Canceling a power down",
     "description": "Power down operation"
   },
   "html_popup_power_up": {
@@ -2045,11 +2073,11 @@
     "description": "In account's keys while using authorized account"
   },
   "popup_html_cancel_delegation_successful": {
-    "message": "Cancel delegation successful",
+    "message": "Successfully canceled a delegation",
     "description": "Success message cancel delegation"
   },
   "popup_html_cancel_delegation_fail": {
-    "message": "Cancel delegation has failed",
+    "message": "Failed to cancel a delegation",
     "description": "Failed message cancel delegation"
   },
   "popup_html_delegation_successful": {
@@ -2129,15 +2157,15 @@
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_recurrent_transfer_out": {
-    "message": "Started transfer of $1 to @$2 every $3 hours $4 times",
+    "message": "Started recurrent transfer of $1 to @$2 (every $4 hours - $3 times)",
     "description": "wallet information transfer out"
   },
   "popup_html_wallet_info_recurrent_transfer_in": {
-    "message": "@$1 started transfer of $2 every $3 hours $4 times",
+    "message": "@$1 started transfer of $2 (every $4 hours - $3 times)",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_canceled_recurrent_transfer": {
-    "message": "@$1 canceled recurrent transfer to @$2",
+    "message": "@$1 canceled a recurrent transfer to @$2",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_fill_recurrent_transfer_out": {
@@ -2158,55 +2186,71 @@
   },
   "popup_html_wallet_info_delegation_out": {
     "message": "Delegated $1 to @$2",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information delegation outgoing"
   },
   "popup_html_wallet_info_delegation_in": {
     "message": "@$1 delegated $2",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information delegation incoming"
   },
   "popup_html_wallet_info_cancel_delegation_out": {
     "message": "Canceled delegation to @$1",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel delegation outgoing"
   },
   "popup_html_wallet_info_cancel_delegation_in": {
     "message": "@$1 canceled delegation",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel delegation incoming"
   },
   "popup_html_wallet_info_received_interests": {
     "message": "Received $1 of interests from savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information claim interest"
   },
   "popup_html_wallet_info_claim_account": {
     "message": "Claimed account",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information claim account"
   },
   "popup_html_wallet_info_deposit_savings": {
     "message": "Deposit of $1 into savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information deposit savings"
   },
   "popup_html_wallet_info_deposit_savings_other_account": {
     "message": "@$1 made a deposit of $2 into @$3's savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
     "message": "Withdrawn $1 from savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
     "message": "Initiated a $1 power down",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power down"
   },
   "popup_html_wallet_info_cancel_power_down": {
     "message": "Canceled power down",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel power down"
   },
   "popup_html_wallet_info_power_up": {
     "message": "Powered up $1",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power up"
   },
   "popup_html_wallet_info_power_up_other_account": {
     "message": "@$1 powered up $2 for @$3",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power up"
+  },
+  "popup_html_wallet_info_convert": {
+    "message": "Started a $1 conversion",
+    "description": "Wallet information convert hbd to hive"
+  },
+  "popup_html_wallet_info_collateralized_convert": {
+    "message": "Started a $2 collateralized conversion",
+    "description": "Wallet information convert hive to hbd"
+  },
+  "popup_html_wallet_info_fill_convert_request": {
+    "message": "Filled conversion: $1 -> $2",
+    "description": "Wallet information receive conversion"
+  },
+  "popup_html_wallet_info_fill_collateralized_convert_request": {
+    "message": "Filled conversion: $1 -> $2",
+    "description": "Wallet information receive conversion"
   },
 
   "popup_html_filter_in": {

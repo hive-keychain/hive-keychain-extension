@@ -59,16 +59,6 @@ const SelectAccountSection = ({
           }}
         />
         <div className="selected-account-name">{selectedLocalAccount}</div>
-        <Icon
-          additionalClassName="copy-username-button"
-          name={Icons.COPY}
-          type={IconType.OUTLINED}
-          onClick={($event) => {
-            copyUsernameToClipboard($event, selectedLocalAccount);
-            selectProps.methods.dropDown('close');
-          }}
-          tooltipMessage="popup_html_copy_username_tooltip_text"
-        />
       </div>
     );
   };

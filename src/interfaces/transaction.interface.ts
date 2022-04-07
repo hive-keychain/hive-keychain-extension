@@ -71,3 +71,18 @@ export interface WithdrawSavings extends Transaction {
 }
 
 export interface ClaimAccount extends Transaction {}
+
+export interface Convert extends Transaction {
+  amount: string;
+}
+export interface CollateralizedConvert extends Transaction {
+  amount: string;
+}
+export interface FillConvert extends Transaction {
+  amount_in: string;
+  amount_out: string;
+}
+export interface FillCollateralizedConvert extends Transaction {
+  amount_in: string;
+  amount_out: string;
+}
