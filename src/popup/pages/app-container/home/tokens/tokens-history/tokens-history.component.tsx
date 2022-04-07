@@ -43,7 +43,6 @@ const TokensHistory = ({
   }, []);
 
   useEffect(() => {
-    console.log(tokenHistory);
     setDisplayedTransactions(
       tokenHistory.filter((item) => {
         return (

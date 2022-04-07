@@ -27,7 +27,6 @@ const TokenItem = ({
   const [token, setToken] = useState<Token>();
 
   useEffect(() => {
-    console.log(tokenInfo);
     if (tokens && tokens.length) {
       setToken(tokens.find((t) => t.symbol === tokenBalance.symbol));
     }

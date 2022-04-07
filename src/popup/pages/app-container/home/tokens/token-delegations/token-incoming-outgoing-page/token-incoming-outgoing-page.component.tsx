@@ -57,8 +57,6 @@ const TokenIncomingOutgoingPage = ({
 
     setDelegationList(delegations);
 
-    console.log(delegations);
-
     const balance =
       delegationType === DelegationType.INCOMING
         ? tokenBalance.delegationsIn

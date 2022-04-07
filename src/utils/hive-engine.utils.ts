@@ -95,7 +95,6 @@ const cancelDelegationToken = (
     contractAction: 'undelegate',
     contractPayload: { from: from, symbol: symbol, quantity: amount },
   });
-  console.log(json);
   return HiveUtils.getClient().broadcast.json(
     {
       required_posting_auths: [],

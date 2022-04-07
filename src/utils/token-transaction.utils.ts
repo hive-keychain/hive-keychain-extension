@@ -22,7 +22,7 @@ const filterTransfer = (
   return (
     t.to.toLowerCase().includes(value) ||
     t.from.toLowerCase().includes(value) ||
-    t.memo.toLowerCase().includes(value)
+    t.memo?.toLowerCase().includes(value)
   );
 };
 
