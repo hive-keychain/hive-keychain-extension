@@ -1,23 +1,57 @@
 export interface TokenTransaction {
-  account: string;
-  amount: string;
   blockNumber: number;
   operation: OperationsHiveEngine;
-  poolId?: string;
-  from?: string;
-  to?: string;
-  memo?: string;
-  quantity: string;
   symbol: string;
   timestamp: number;
   transactionId: string;
   _id: string;
+  account: string;
+  amount: string;
 }
 
+export interface TransferTokenTransaction extends TokenTransaction {
+  from: string;
+  to: string;
+  memo: string;
+}
+
+export interface MiningLotteryTransaction extends TokenTransaction {
+  poolId: string;
+}
+
+export interface CommentCurationTransaction extends TokenTransaction {
+  authorPerm: string;
+}
+
+export interface DelegationTokenTransaction extends TokenTransaction {
+  delegatee: string;
+  delegator: string;
+}
+export interface UndelegateTokenStartTransaction
+  extends DelegationTokenTransaction {}
+
+export interface UndelegateTokenDoneTransaction
+  extends DelegationTokenTransaction {}
+
+export interface DelegateTokenTransaction extends DelegationTokenTransaction {}
+
+export interface StakeTokenTransaction extends TokenTransaction {
+  from: string;
+  to: string;
+}
+export interface UnStakeTokenStartTransaction extends TokenTransaction {}
+export interface UnStakeTokenDoneTransaction extends TokenTransaction {}
+
 export enum OperationsHiveEngine {
-  'mining_lottery',
-  'tokens_transfer',
-  'tokens_stake',
+  CURATION_REWARD = 'comments_curationReward',
+  MINING_LOTTERY = 'mining_lottery',
+  TOKENS_TRANSFER = 'tokens_transfer',
+  TOKENS_DELEGATE = 'tokens_delegate',
+  TOKEN_UNDELEGATE_START = 'tokens_undelegateStart',
+  TOKEN_UNDELEGATE_DONE = 'tokens_undelegateDone',
+  TOKEN_STAKE = 'tokens_stake',
+  TOKEN_UNSTAKE_START = 'tokens_unstakeStart',
+  TOKEN_UNSTAKE_DONE = 'tokens_unstakeDone',
 }
 
 export interface Token {

@@ -1,4 +1,13 @@
-import { TokenBalance, TokenTransaction } from '@interfaces/tokens.interface';
+import {
+  CommentCurationTransaction,
+  DelegationTokenTransaction,
+  MiningLotteryTransaction,
+  OperationsHiveEngine,
+  StakeTokenTransaction,
+  TokenBalance,
+  TokenTransaction,
+  TransferTokenTransaction,
+} from '@interfaces/tokens.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { loadTokenHistory } from '@popup/actions/token.actions';
 import { TokenHistoryItemComponent } from '@popup/pages/app-container/home/tokens/tokens-history/token-history-item/token-history-item.component';
@@ -8,6 +17,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { TokenTransactionUtils } from 'src/utils/token-transaction.utils';
 import './tokens-history.component.scss';
 
 const TokensHistory = ({
@@ -33,15 +43,36 @@ const TokensHistory = ({
   }, []);
 
   useEffect(() => {
+    console.log(tokenHistory);
     setDisplayedTransactions(
       tokenHistory.filter((item) => {
         return (
-          item.memo?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          item.amount?.toLowerCase().includes(filterValue.toLowerCase()) ||
-          (item.to !== activeAccountName &&
-            item.to?.toLowerCase().includes(filterValue.toLowerCase())) ||
-          (item.from !== activeAccountName &&
-            item.from?.toLowerCase().includes(filterValue.toLowerCase())) ||
+          (item.operation === OperationsHiveEngine.CURATION_REWARD &&
+            TokenTransactionUtils.filterCurationReward(
+              item as CommentCurationTransaction,
+              filterValue,
+            )) ||
+          (item.operation === OperationsHiveEngine.TOKENS_TRANSFER &&
+            TokenTransactionUtils.filterTransfer(
+              item as TransferTokenTransaction,
+              filterValue,
+            )) ||
+          (item.operation === OperationsHiveEngine.TOKEN_STAKE &&
+            TokenTransactionUtils.filterStake(
+              item as StakeTokenTransaction,
+              filterValue,
+            )) ||
+          (item.operation === OperationsHiveEngine.MINING_LOTTERY &&
+            TokenTransactionUtils.filterMiningLottery(
+              item as MiningLotteryTransaction,
+              filterValue,
+            )) ||
+          (item.operation === OperationsHiveEngine.TOKENS_DELEGATE &&
+            TokenTransactionUtils.filterDelegation(
+              item as DelegationTokenTransaction,
+              filterValue,
+            )) ||
+          item.amount.toLowerCase().includes(filterValue.toLowerCase()) ||
           (item.timestamp &&
             moment(item.timestamp)
               .format('L')

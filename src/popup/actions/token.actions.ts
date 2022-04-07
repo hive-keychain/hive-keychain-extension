@@ -2,6 +2,7 @@ import { historyHiveEngineAPI, hsc } from '@api/hiveEngine';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
 import {
+  OperationsHiveEngine,
   Token,
   TokenBalance,
   TokenMarket,
@@ -59,21 +60,79 @@ export const loadUserTokens =
 export const loadTokenHistory =
   (account: string, currency: string): AppThunk =>
   async (dispatch) => {
-    let tokenHistory: TokenTransaction[] = (
-      await historyHiveEngineAPI.get('accountHistory', {
-        params: {
-          account,
-          symbol: currency,
-          type: 'user',
-          limit: 20,
-          offset: 0,
-        },
-      })
-    ).data;
-    tokenHistory = tokenHistory.map((e) => {
-      e.amount = `${e.quantity} ${e.symbol}`;
-      return e;
+    let tokenHistory: TokenTransaction[] = [];
+
+    let start = 0;
+    let previousTokenHistoryLength = 0;
+
+    do {
+      previousTokenHistoryLength = tokenHistory.length;
+      let result: TokenTransaction[] = (
+        await historyHiveEngineAPI.get('accountHistory', {
+          params: {
+            account,
+            symbol: currency,
+            type: 'user',
+            offset: start,
+          },
+        })
+      ).data;
+      start += 1000;
+      tokenHistory = [...tokenHistory, ...result];
+    } while (previousTokenHistoryLength !== tokenHistory.length);
+
+    //------- this is for debug -----//
+    let tokenOperationTypes = tokenHistory.map((e: any) => e.operation);
+    tokenOperationTypes = [...new Set(tokenOperationTypes)];
+    console.log(tokenOperationTypes);
+
+    for (const type of tokenOperationTypes) {
+      console.log(tokenHistory.find((e: any) => e.operation === type));
+    }
+    //-------------------------------//
+
+    tokenHistory = tokenHistory.map((t: any) => {
+      console.log(t);
+      t.amount = `${t.quantity} ${t.symbol}`;
+      switch (t.operation) {
+        case OperationsHiveEngine.CURATION_REWARD:
+          return {
+            ...(t as TokenTransaction),
+            authorPerm: t.authorperm,
+          };
+        case OperationsHiveEngine.MINING_LOTTERY:
+          return { ...(t as TokenTransaction), poolId: t.poolId };
+        case OperationsHiveEngine.TOKENS_TRANSFER:
+          return {
+            ...(t as TokenTransaction),
+            from: t.from,
+            to: t.to,
+            memo: t.memo,
+          };
+        case OperationsHiveEngine.TOKEN_STAKE:
+          return {
+            ...(t as TokenTransaction),
+            from: t.from,
+            to: t.to,
+          };
+        case OperationsHiveEngine.TOKENS_DELEGATE:
+          return {
+            ...(t as TokenTransaction),
+            delegator: t.from,
+            delegatee: t.to,
+          };
+        case OperationsHiveEngine.TOKEN_UNDELEGATE_START:
+        case OperationsHiveEngine.TOKEN_UNDELEGATE_DONE:
+          return {
+            ...(t as TokenTransaction),
+            delegator: t.to,
+            delegatee: t.from,
+          };
+        default:
+          return t as TokenTransaction;
+      }
     });
+
     const action: ActionPayload<TokenTransaction[]> = {
       type: ActionType.LOAD_TOKEN_HISTORY,
       payload: tokenHistory,
