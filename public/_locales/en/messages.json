@@ -2394,7 +2394,7 @@
     "description": "stake token title"
   },
   "popup_html_unstake_tokens_success": {
-    "message": "Successfully started unstaking token",
+    "message": "Successfully started to unstake a token",
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens_success": {
@@ -2526,7 +2526,7 @@
     "description": "Token wallet information canceled delegation in"
   },
   "popup_html_token_wallet_info_start_unstake": {
-    "message": "Started unstaking $1",
+    "message": "Started to unstake $1",
     "description": "Token wallet information start canceling delegation out"
   }
 }
