@@ -36,6 +36,7 @@ const TokenItem = ({
     navigateToWithParams(Screen.TOKENS_OPERATION, {
       tokenBalance,
       operationType: TokenOperationType.STAKE,
+      tokenInfo: token,
     });
   };
 
@@ -43,6 +44,7 @@ const TokenItem = ({
     navigateToWithParams(Screen.TOKENS_OPERATION, {
       tokenBalance,
       operationType: TokenOperationType.UNSTAKE,
+      tokenInfo: token,
     });
   };
 
@@ -50,6 +52,7 @@ const TokenItem = ({
     navigateToWithParams(Screen.TOKENS_OPERATION, {
       tokenBalance,
       operationType: TokenOperationType.DELEGATE,
+      tokenInfo: token,
     });
   };
 
@@ -57,6 +60,7 @@ const TokenItem = ({
     navigateToWithParams(Screen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.OUTGOING,
+      tokenInfo: token,
     });
   };
 
@@ -64,6 +68,7 @@ const TokenItem = ({
     navigateToWithParams(Screen.TOKENS_DELEGATIONS, {
       tokenBalance: tokenBalance,
       delegationType: DelegationType.INCOMING,
+      tokenInfo: token,
     });
   };
 
@@ -126,7 +131,12 @@ const TokenItem = ({
           }>
           <div className="token-info">
             <div className="token-description" onClick={goToTokenWebsite}>
-              <img className="token-icon" src={tokenInfo.metadata.icon} />
+              <img
+                className="token-icon"
+                src={
+                  tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg'
+                }
+              />
               <div className="token-name-issuer">
                 <span className="token-name">{tokenInfo.name}</span>
                 {tokenInfo.issuer && tokenInfo.issuer !== 'null' && (
@@ -162,14 +172,22 @@ const TokenItem = ({
                 onClick={goToIncomingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
                 {tokenBalance.delegationsIn}
+                {parseFloat(tokenBalance.delegationsIn) > 0 && (
+                  <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                )}
               </div>
             )}
             {token.delegationEnabled && (
               <div
                 className="delegation-line"
                 onClick={goToOutgoingDelegations}>
-                {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
-                {tokenBalance.delegationsOut}
+                <div>
+                  {chrome.i18n.getMessage('popup_html_token_delegation_out')} :{' '}
+                  {tokenBalance.delegationsOut}
+                </div>
+                {parseFloat(tokenBalance.delegationsOut) > 0 && (
+                  <Icon type={IconType.OUTLINED} name={Icons.LIST} />
+                )}
               </div>
             )}
             {token.delegationEnabled &&

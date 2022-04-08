@@ -1,5 +1,6 @@
 import {
   CommentCurationTransaction,
+  CURATIONS_REWARDS_TYPES,
   DelegationTokenTransaction,
   MiningLotteryTransaction,
   OperationsHiveEngine,
@@ -46,7 +47,7 @@ const TokensHistory = ({
     setDisplayedTransactions(
       tokenHistory.filter((item) => {
         return (
-          (item.operation === OperationsHiveEngine.CURATION_REWARD &&
+          (CURATIONS_REWARDS_TYPES.includes(item.operation) &&
             TokenTransactionUtils.filterCurationReward(
               item as CommentCurationTransaction,
               filterValue,
@@ -72,6 +73,7 @@ const TokensHistory = ({
               filterValue,
             )) ||
           item.amount.toLowerCase().includes(filterValue.toLowerCase()) ||
+          item.operation.toLowerCase().includes(filterValue.toLowerCase()) ||
           (item.timestamp &&
             moment(item.timestamp)
               .format('L')
@@ -92,7 +94,7 @@ const TokensHistory = ({
       <div className="item-list">
         {displayedTransactions.map((transaction: TokenTransaction) => (
           <TokenHistoryItemComponent
-            key={transaction.transactionId}
+            key={transaction._id}
             transaction={transaction}></TokenHistoryItemComponent>
         ))}
       </div>

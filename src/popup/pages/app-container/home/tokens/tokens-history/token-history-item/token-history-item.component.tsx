@@ -1,5 +1,7 @@
 import {
+  AuthorCurationTransaction,
   CommentCurationTransaction,
+  CurationRewardTransaction,
   DelegateTokenTransaction,
   MiningLotteryTransaction,
   OperationsHiveEngine,
@@ -29,10 +31,17 @@ const TokenHistoryItem = ({
 
   const getLabel = () => {
     switch (transaction.operation) {
-      case OperationsHiveEngine.CURATION_REWARD: {
+      case OperationsHiveEngine.COMMENT_AUTHOR_REWARD: {
+        const t = transaction as AuthorCurationTransaction;
+        return chrome.i18n.getMessage(
+          'popup_html_token_wallet_info_author_reward',
+          [t.amount],
+        );
+      }
+      case OperationsHiveEngine.COMMENT_CURATION_REWARD: {
         const t = transaction as CommentCurationTransaction;
         return chrome.i18n.getMessage(
-          'popup_html_token_wallet_info_curation_reward',
+          'popup_html_token_wallet_info_comment_curation_reward',
           [t.amount],
         );
       }
@@ -125,6 +134,15 @@ const TokenHistoryItem = ({
           [t.amount],
         );
       }
+      case OperationsHiveEngine.TOKEN_ISSUE:
+        return chrome.i18n.getMessage('popup_html_token_wallet_info_issue', [
+          transaction.amount,
+        ]);
+      case OperationsHiveEngine.HIVE_PEGGED_BUY:
+        return chrome.i18n.getMessage(
+          'popup_html_token_wallet_info_pegged_buy',
+          [transaction.amount],
+        );
     }
   };
 
@@ -134,8 +152,9 @@ const TokenHistoryItem = ({
         const t = transaction as TransferTokenTransaction;
         return t.memo;
       }
-      case OperationsHiveEngine.CURATION_REWARD: {
-        const t = transaction as CommentCurationTransaction;
+      case OperationsHiveEngine.COMMENT_AUTHOR_REWARD:
+      case OperationsHiveEngine.COMMENT_CURATION_REWARD: {
+        const t = transaction as CurationRewardTransaction;
         return t.authorPerm;
       }
       default:

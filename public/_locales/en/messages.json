@@ -2485,8 +2485,12 @@
     "message": "Received $1 from mining lottery ($2)",
     "description": "token wallet information mining lottery"
   },
-  "popup_html_token_wallet_info_curation_reward": {
-    "message": "Received $1 as curation reward",
+  "popup_html_token_wallet_info_author_reward": {
+    "message": "Received $1 as author reward",
+    "description": "wallet information author reward"
+  },
+  "popup_html_token_wallet_info_comment_curation_reward": {
+    "message": "Received $1 as comment curation reward",
     "description": "wallet information curation reward"
   },
   "popup_html_token_wallet_info_delegation_in": {
@@ -2527,6 +2531,22 @@
   },
   "popup_html_token_wallet_info_start_unstake": {
     "message": "Started to unstake $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_issue": {
+    "message": "Issued $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_pegged_buy": {
+    "message": "Bought $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_undelegation_cooldown_disclaimer": {
+    "message": "Canceling a delegation will take $1 day(s) before being effective.",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_unstake_cooldown_disclaimer": {
+    "message": "Unstaking token will take $1 day(s) before being effective.",
     "description": "Token wallet information start canceling delegation out"
   }
 }

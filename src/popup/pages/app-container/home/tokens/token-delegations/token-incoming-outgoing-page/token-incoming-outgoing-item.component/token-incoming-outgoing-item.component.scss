@@ -19,6 +19,12 @@
     column-gap: 8px;
     align-items: center;
 
+    .value {
+      display: flex;
+      align-items: center;
+      padding-top: 4px;
+    }
+
     .icon {
       cursor: pointer;
       display: none;

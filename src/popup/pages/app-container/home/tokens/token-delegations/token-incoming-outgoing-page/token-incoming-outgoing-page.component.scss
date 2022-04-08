@@ -4,6 +4,11 @@
   @include pageLayoutRowGap;
   row-gap: 32px;
   padding: 0px 24px;
+
+  .cooldown-message {
+    font-size: 18px;
+  }
+
   .total {
     display: flex;
     justify-content: space-between;

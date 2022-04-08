@@ -1,5 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { TokenBalance } from '@interfaces/tokens.interface';
+import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
   addToLoadingList,
@@ -44,13 +44,12 @@ const TokensOperation = ({
   operationType,
   activeAccount,
   tokenBalance,
-  phishing,
+  tokenInfo,
   formParams,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
   navigateTo,
-  fetchPhishingAccounts,
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
@@ -91,7 +90,6 @@ const TokensOperation = ({
       title: `popup_html_${operationType}_tokens`,
       isBackButtonEnabled: true,
     });
-    fetchPhishingAccounts();
     loadAutocompleteTransferUsernames();
   }, []);
 
@@ -235,10 +233,18 @@ const TokensOperation = ({
         available={balance}
         availableCurrency={symbol}
         availableLabel={'popup_html_balance'}></AvailableCurrentPanelComponent>
-
       <div className="disclaimer">
         {chrome.i18n.getMessage('popup_html_tokens_operation_text')}
       </div>
+      {operationType === TokenOperationType.UNSTAKE &&
+        tokenInfo.unstakingCooldown > 0 && (
+          <div className="cooldown-message">
+            {chrome.i18n.getMessage(
+              'popup_html_token_unstake_cooldown_disclaimer',
+              [tokenInfo.unstakingCooldown.toString()],
+            )}
+          </div>
+        )}
       {operationType === TokenOperationType.DELEGATE && (
         <InputComponent
           type={InputType.TEXT}
@@ -262,7 +268,6 @@ const TokensOperation = ({
         </div>
         <div className="symbol">{symbol}</div>
       </div>
-
       <OperationButtonComponent
         requiredKey={KeychainKeyTypesLC.active}
         label={getSubmitButtonLabel()}
@@ -279,6 +284,7 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
+    tokenInfo: state.navigation.stack[0].params.tokenInfo as Token,
     operationType: state.navigation.stack[0].params
       ?.operationType as TokenOperationType,
     formParams: state.navigation.stack[0].previousParams?.formParams

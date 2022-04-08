@@ -35,6 +35,7 @@ export enum Icons {
   IMPORT_EXPORT = 'import_export',
   KEY = 'key',
   LINK = 'link',
+  LIST = 'list',
   LOCK = 'lock',
   LOGIN = 'login',
   LOGOUT = 'logout',

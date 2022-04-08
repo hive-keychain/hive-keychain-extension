@@ -69,7 +69,13 @@
       }
 
       .delegation-line {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         cursor: pointer;
+        .icon-component {
+          @include icon-size(20px);
+        }
       }
     }
     .button-panel {

@@ -1,3 +1,18 @@
+export enum OperationsHiveEngine {
+  COMMENT_CURATION_REWARD = 'comments_curationReward',
+  COMMENT_AUTHOR_REWARD = 'comments_authorReward',
+  MINING_LOTTERY = 'mining_lottery',
+  TOKENS_TRANSFER = 'tokens_transfer',
+  TOKENS_DELEGATE = 'tokens_delegate',
+  TOKEN_UNDELEGATE_START = 'tokens_undelegateStart',
+  TOKEN_UNDELEGATE_DONE = 'tokens_undelegateDone',
+  TOKEN_STAKE = 'tokens_stake',
+  TOKEN_UNSTAKE_START = 'tokens_unstakeStart',
+  TOKEN_UNSTAKE_DONE = 'tokens_unstakeDone',
+  TOKEN_ISSUE = 'tokens_issue',
+  HIVE_PEGGED_BUY = 'hivepegged_buy',
+}
+
 export interface TokenTransaction {
   blockNumber: number;
   operation: OperationsHiveEngine;
@@ -19,9 +34,16 @@ export interface MiningLotteryTransaction extends TokenTransaction {
   poolId: string;
 }
 
-export interface CommentCurationTransaction extends TokenTransaction {
+export interface CurationRewardTransaction extends TokenTransaction {
   authorPerm: string;
 }
+export interface CommentCurationTransaction extends CurationRewardTransaction {}
+export interface AuthorCurationTransaction extends CurationRewardTransaction {}
+
+export const CURATIONS_REWARDS_TYPES = [
+  OperationsHiveEngine.COMMENT_AUTHOR_REWARD,
+  OperationsHiveEngine.COMMENT_CURATION_REWARD,
+];
 
 export interface DelegationTokenTransaction extends TokenTransaction {
   delegatee: string;
@@ -42,17 +64,8 @@ export interface StakeTokenTransaction extends TokenTransaction {
 export interface UnStakeTokenStartTransaction extends TokenTransaction {}
 export interface UnStakeTokenDoneTransaction extends TokenTransaction {}
 
-export enum OperationsHiveEngine {
-  CURATION_REWARD = 'comments_curationReward',
-  MINING_LOTTERY = 'mining_lottery',
-  TOKENS_TRANSFER = 'tokens_transfer',
-  TOKENS_DELEGATE = 'tokens_delegate',
-  TOKEN_UNDELEGATE_START = 'tokens_undelegateStart',
-  TOKEN_UNDELEGATE_DONE = 'tokens_undelegateDone',
-  TOKEN_STAKE = 'tokens_stake',
-  TOKEN_UNSTAKE_START = 'tokens_unstakeStart',
-  TOKEN_UNSTAKE_DONE = 'tokens_unstakeDone',
-}
+export interface IssueTokenTransaction extends TokenTransaction {}
+export interface BoughtTokenTransaction extends TokenTransaction {}
 
 export interface Token {
   circulatingSupply: string;

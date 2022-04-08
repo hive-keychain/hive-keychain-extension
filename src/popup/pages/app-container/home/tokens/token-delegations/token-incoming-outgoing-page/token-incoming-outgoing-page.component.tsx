@@ -1,5 +1,5 @@
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
-import { TokenBalance } from '@interfaces/tokens.interface';
+import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -21,6 +21,7 @@ import './token-incoming-outgoing-page.component.scss';
 const TokenIncomingOutgoingPage = ({
   delegationType,
   tokenBalance,
+  tokenInfo,
   activeAccountName,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -72,6 +73,15 @@ const TokenIncomingOutgoingPage = ({
 
   return (
     <div className="incoming-outgoing-page">
+      {delegationType === DelegationType.OUTGOING &&
+        tokenInfo.undelegationCooldown > 0 && (
+          <div className="cooldown-message">
+            {chrome.i18n.getMessage(
+              'popup_html_token_undelegation_cooldown_disclaimer',
+              [tokenInfo.undelegationCooldown.toString()],
+            )}
+          </div>
+        )}
       <div className="total">
         <div className="label">{chrome.i18n.getMessage(header)}</div>
         <div className="value">
@@ -104,6 +114,7 @@ const mapStateToProps = (state: RootState) => {
     delegationType: state.navigation.stack[0].params
       .delegationType as DelegationType,
     tokenBalance: state.navigation.stack[0].params.tokenBalance as TokenBalance,
+    tokenInfo: state.navigation.stack[0].params.tokenInfo as Token,
   };
 };
 
