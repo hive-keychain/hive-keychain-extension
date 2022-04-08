@@ -70,9 +70,7 @@ const TopBar = ({
     );
     removeFromLoadingList('popup_html_claiming_rewards');
     if (claimSuccessful) {
-      setTimeout(() => {
-        refreshActiveAccount();
-      }, 1000);
+      refreshActiveAccount();
     }
   };
 
