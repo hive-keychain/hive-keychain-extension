@@ -1,5 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { TokenBalance } from '@interfaces/tokens.interface';
+import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
   addToLoadingList,
@@ -10,6 +10,7 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import {
+  goBack,
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
@@ -27,48 +28,68 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
-import HiveUtils from 'src/utils/hive.utils';
+import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
-import './tokens-transfer.component.scss';
+import './token-operation.component.scss';
 
-const TokensTransfer = ({
+export enum TokenOperationType {
+  STAKE = 'stake',
+  UNSTAKE = 'unstake',
+  DELEGATE = 'delegate',
+}
+
+const TokensOperation = ({
+  operationType,
   activeAccount,
   tokenBalance,
-  phishing,
+  tokenInfo,
   formParams,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
   navigateTo,
-  fetchPhishingAccounts,
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  goBack,
 }: PropsFromRedux) => {
   const [receiverUsername, setReceiverUsername] = useState(
-    formParams.receiverUsername ? formParams.receiverUsername : '',
+    formParams.receiverUsername
+      ? formParams.receiverUsername
+      : operationType === TokenOperationType.DELEGATE
+      ? ''
+      : activeAccount.name,
   );
   const [amount, setAmount] = useState(
     formParams.amount ? formParams.amount : '',
   );
+  let balance: number | string;
+  switch (operationType) {
+    case TokenOperationType.UNSTAKE:
+      balance = tokenBalance.stake;
+      break;
+    case TokenOperationType.STAKE:
+      balance = tokenBalance.balance;
+      break;
+    case TokenOperationType.DELEGATE:
+      balance =
+        parseFloat(tokenBalance.stake) -
+        parseFloat(tokenBalance.pendingUnstake);
+      break;
+  }
 
-  const balance = formParams.balance
-    ? formParams.balance
-    : tokenBalance.balance;
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
-  const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
     useState<string[]>([]);
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_transfer_tokens',
+      title: `popup_html_${operationType}_tokens`,
       isBackButtonEnabled: true,
     });
-    fetchPhishingAccounts();
     loadAutocompleteTransferUsernames();
   }, []);
 
@@ -89,10 +110,9 @@ const TokensTransfer = ({
   const getFormParams = () => {
     return {
       receiverUsername: receiverUsername,
-      amount: amount,
+      amount: amount.toString(),
       symbol: symbol,
       balance: balance,
-      memo: memo,
     };
   };
 
@@ -107,109 +127,104 @@ const TokensTransfer = ({
       return;
     }
     const formattedAmount = `${parseFloat(amount.toString()).toFixed(
-      3,
+      8,
     )} ${symbol}`;
 
-    let memoField = memo;
-    if (memo.length) {
-      if (memo.startsWith('#')) {
-        memoField = `${memo} (${chrome.i18n.getMessage('popup_encrypted')})`;
-        if (!activeAccount.keys.memo) {
-          setErrorMessage('popup_html_memo_key_missing');
-          return;
-        }
-      }
-    } else {
-      memoField = chrome.i18n.getMessage('popup_empty');
-    }
-
     const fields = [
-      { label: 'popup_html_transfer_from', value: `@${activeAccount.name}` },
-      { label: 'popup_html_transfer_to', value: `@${receiverUsername}` },
       { label: 'popup_html_transfer_amount', value: formattedAmount },
-      { label: 'popup_html_transfer_memo', value: memoField },
     ];
 
-    let warningMessage = await TransferUtils.getExchangeValidationWarning(
-      receiverUsername,
-      symbol,
-      memo.length > 0,
-    );
-
-    if (phishing.includes(receiverUsername)) {
-      warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
-        receiverUsername,
-      ]);
+    if (operationType === TokenOperationType.DELEGATE) {
+      fields.unshift({
+        label: 'popup_html_transfer_to',
+        value: `@${receiverUsername}`,
+      });
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: chrome.i18n.getMessage(
+        `popup_html_${operationType}_tokens_confirm_text`,
+      ),
       fields: fields,
-      warningMessage: warningMessage,
-      title: 'popup_html_transfer_tokens',
+      title: `popup_html_${operationType}_tokens`,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        let memoParam = memo;
-        if (memo.length) {
-          if (memo.startsWith('#')) {
-            if (!activeAccount.keys.memo) {
-              setErrorMessage('popup_html_memo_key_missing');
-              return;
-            } else {
-              memoParam = HiveUtils.encodeMemo(
-                memo,
-                activeAccount.keys.memo.toString(),
-                await AccountUtils.getPublicMemo(receiverUsername),
-              );
-            }
-          }
+        addToLoadingList(`popup_html_${operationType}_tokens`);
+        let tokenOperationResult = null;
+
+        switch (operationType) {
+          case TokenOperationType.DELEGATE:
+            tokenOperationResult = await HiveEngineUtils.delegateToken(
+              activeAccount.keys.active as string,
+              receiverUsername,
+              symbol,
+              amount.toString(),
+              activeAccount.name!,
+            );
+            break;
+          case TokenOperationType.STAKE:
+            tokenOperationResult = await HiveEngineUtils.stakeToken(
+              activeAccount.keys.active as string,
+              receiverUsername,
+              symbol,
+              amount.toString(),
+              activeAccount.name!,
+            );
+            break;
+          case TokenOperationType.UNSTAKE:
+            tokenOperationResult = await HiveEngineUtils.unstakeToken(
+              activeAccount.keys.active as string,
+              symbol,
+              amount.toString(),
+              activeAccount.name!,
+            );
+            break;
         }
 
-        const json = {
-          contractName: 'tokens',
-          contractAction: 'transfer',
-          contractPayload: {
-            symbol: symbol,
-            to: receiverUsername,
-            quantity: amount,
-            memo: memo,
-          },
-        };
-
-        addToLoadingList('html_popup_transfer_token_operation');
-        let sendTokenResult: any = await HiveUtils.sendCustomJson(
-          json,
-          activeAccount,
-        );
-
-        if (sendTokenResult.id) {
+        if (tokenOperationResult.id) {
           addToLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList('html_popup_transfer_token_operation');
+          removeFromLoadingList(`popup_html_${operationType}_tokens`);
           let confirmationResult: any =
             await BlockchainTransactionUtils.tryConfirmTransaction(
-              sendTokenResult.id,
+              tokenOperationResult.id,
             );
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           if (confirmationResult.confirmed) {
-            navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveTransferRecipient(
-              receiverUsername,
-              activeAccount,
-            );
-
-            setSuccessMessage('popup_html_transfer_successful', [
-              `@${receiverUsername}`,
-              formattedAmount,
-            ]);
+            if (confirmationResult.error) {
+              setErrorMessage('popup_html_hive_engine_error', [
+                confirmationResult.error,
+              ]);
+              goBack();
+            } else {
+              await TransferUtils.saveTransferRecipient(
+                receiverUsername,
+                activeAccount,
+              );
+              setSuccessMessage(`popup_html_${operationType}_tokens_success`);
+              navigateTo(Screen.HOME_PAGE, true);
+            }
           } else {
             setErrorMessage('popup_token_timeout');
           }
         } else {
           removeFromLoadingList('html_popup_transfer_token_operation');
-          setErrorMessage('popup_html_transfer_failed');
+          setErrorMessage(`popup_html_${operationType}_tokens_failed`);
         }
       },
     });
+  };
+
+  const getSubmitButtonLabel = () => {
+    switch (operationType) {
+      case TokenOperationType.DELEGATE:
+        return 'popup_html_token_delegate';
+      case TokenOperationType.STAKE:
+        return 'popup_html_token_stake';
+      case TokenOperationType.UNSTAKE:
+        return 'popup_html_token_unstake';
+      default:
+        return 'popup_html_send_transfer';
+    }
   };
 
   return (
@@ -218,18 +233,28 @@ const TokensTransfer = ({
         available={balance}
         availableCurrency={symbol}
         availableLabel={'popup_html_balance'}></AvailableCurrentPanelComponent>
-
       <div className="disclaimer">
-        {chrome.i18n.getMessage('popup_html_tokens_send_text')}
+        {chrome.i18n.getMessage('popup_html_tokens_operation_text')}
       </div>
-      <InputComponent
-        type={InputType.TEXT}
-        logo={Icons.AT}
-        placeholder="popup_html_username"
-        value={receiverUsername}
-        onChange={setReceiverUsername}
-        autocompleteValues={autocompleteTransferUsernames}
-      />
+      {operationType === TokenOperationType.UNSTAKE &&
+        tokenInfo.unstakingCooldown > 0 && (
+          <div className="cooldown-message">
+            {chrome.i18n.getMessage(
+              'popup_html_token_unstake_cooldown_disclaimer',
+              [tokenInfo.unstakingCooldown.toString()],
+            )}
+          </div>
+        )}
+      {operationType === TokenOperationType.DELEGATE && (
+        <InputComponent
+          type={InputType.TEXT}
+          logo={Icons.AT}
+          placeholder="popup_html_username"
+          value={receiverUsername}
+          onChange={setReceiverUsername}
+          autocompleteValues={autocompleteTransferUsernames}
+        />
+      )}
       <div className="value-panel">
         <div className="value-input-panel">
           <InputComponent
@@ -243,16 +268,9 @@ const TokensTransfer = ({
         </div>
         <div className="symbol">{symbol}</div>
       </div>
-
-      <InputComponent
-        type={InputType.TEXT}
-        placeholder="popup_html_memo_optional"
-        value={memo}
-        onChange={setMemo}
-      />
       <OperationButtonComponent
         requiredKey={KeychainKeyTypesLC.active}
-        label={'popup_html_send_transfer'}
+        label={getSubmitButtonLabel()}
         onClick={handleClickOnSend}
         fixToBottom
       />
@@ -266,6 +284,9 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
+    tokenInfo: state.navigation.stack[0].params.tokenInfo as Token,
+    operationType: state.navigation.stack[0].params
+      ?.operationType as TokenOperationType,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
@@ -282,7 +303,8 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  goBack,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const TokensTransferComponent = connector(TokensTransfer);
+export const TokensOperationComponent = connector(TokensOperation);

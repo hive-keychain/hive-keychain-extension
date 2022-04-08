@@ -23,12 +23,13 @@ const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   (parseFloat(hp) / parseFloat(props.total_vesting_fund_hive + '')) *
   parseFloat(props.total_vesting_shares + '');
 
-const formatCurrencyValue = (value: string | Asset | number) => {
+const formatCurrencyValue = (value: string | Asset | number, digits = 3) => {
   if (value === undefined || value === null) {
     return '...';
   }
   return withCommas(
     value.toString().replace('HBD', '').replace('HIVE', '').trim(),
+    digits,
   );
 };
 
