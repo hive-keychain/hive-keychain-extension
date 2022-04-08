@@ -1,7 +1,11 @@
 import {
   ClaimReward,
+  CollateralizedConvert,
+  Convert,
   Delegation,
   DepositSavings,
+  FillCollateralizedConvert,
+  FillConvert,
   PowerDown,
   PowerUp,
   ReceivedInterests,
@@ -68,6 +72,31 @@ export const filterInterest = (
   return interest.interest.toLowerCase().includes(filterValue.toLowerCase());
 };
 
+export const filterConversion = (
+  conversion: Convert | CollateralizedConvert,
+  filterValue: string,
+) => {
+  return conversion.amount
+    .toString()
+    .toLowerCase()
+    .includes(filterValue.toLowerCase());
+};
+export const filterFillConversion = (
+  fillConversion: FillConvert | FillCollateralizedConvert,
+  filterValue: string,
+) => {
+  return (
+    fillConversion.amount_in
+      .toString()
+      .toLowerCase()
+      .includes(filterValue.toLowerCase()) ||
+    fillConversion.amount_out
+      .toString()
+      .toLowerCase()
+      .includes(filterValue.toLowerCase())
+  );
+};
+
 export const WalletHistoryUtils = {
   filterTransfer,
   filterClaimReward,
@@ -75,4 +104,6 @@ export const WalletHistoryUtils = {
   filterPowerUpDown,
   filterSavingsTransaction,
   filterInterest,
+  filterFillConversion,
+  filterConversion,
 };

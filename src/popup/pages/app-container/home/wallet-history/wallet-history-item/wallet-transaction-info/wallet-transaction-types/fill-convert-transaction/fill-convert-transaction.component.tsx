@@ -10,10 +10,10 @@ interface Props {
 export const FillConvertTransactionComponent = ({ transaction }: Props) => {
   useEffect;
   const getDetail = () => {
-    return chrome.i18n.getMessage('popup_html_wallet_info_fill_convert', [
-      transaction.amount_in,
-      transaction.amount_out,
-    ]);
+    return chrome.i18n.getMessage(
+      'popup_html_wallet_info_fill_convert_request',
+      [transaction.amount_in, transaction.amount_out],
+    );
   };
   return (
     <GenericTransactionComponent
