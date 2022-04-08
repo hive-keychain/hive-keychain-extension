@@ -2237,15 +2237,15 @@
     "description": "Wallet information convert hbd to hive"
   },
   "popup_html_wallet_info_collateralized_convert": {
-    "message": "Started a $2 collateralized conversion",
+    "message": "Started a $1 collateralized conversion",
     "description": "Wallet information convert hive to hbd"
   },
   "popup_html_wallet_info_fill_convert_request": {
-    "message": "Filled conversion: $1 -> $2",
+    "message": "Filled conversion: $1 => $2",
     "description": "Wallet information receive conversion"
   },
   "popup_html_wallet_info_fill_collateralized_convert_request": {
-    "message": "Filled conversion: $1 -> $2",
+    "message": "Filled conversion: $1 => $2",
     "description": "Wallet information receive conversion"
   },
 
@@ -2310,7 +2310,7 @@
     "description": "Wallet filters"
   },
   "popup_html_filter_type_convert": {
-    "message": "Convert",
+    "message": "Conversion",
     "description": "Wallet filters"
   },
   "popup_html_clear_filters": {
