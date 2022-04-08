@@ -82,13 +82,13 @@ export const loadTokenHistory =
     } while (previousTokenHistoryLength !== tokenHistory.length);
 
     //------- this is for debug -----//
-    let tokenOperationTypes = tokenHistory.map((e: any) => e.operation);
-    tokenOperationTypes = [...new Set(tokenOperationTypes)];
-    console.log(tokenOperationTypes);
+    // let tokenOperationTypes = tokenHistory.map((e: any) => e.operation);
+    // tokenOperationTypes = [...new Set(tokenOperationTypes)];
+    // console.log(tokenOperationTypes);
 
-    for (const type of tokenOperationTypes) {
-      console.log(tokenHistory.find((e: any) => e.operation === type));
-    }
+    // for (const type of tokenOperationTypes) {
+    //   console.log(tokenHistory.find((e: any) => e.operation === type));
+    // }
     //-------------------------------//
 
     tokenHistory = tokenHistory.map((t: any) => {
