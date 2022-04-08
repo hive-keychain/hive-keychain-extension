@@ -2542,11 +2542,11 @@
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_undelegation_cooldown_disclaimer": {
-    "message": "Canceling a delegation will take $1 day(s) before being effective.",
+    "message": "After removing a $1 delegation, the staked tokens will be available after a $2 days cooldown.",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_unstake_cooldown_disclaimer": {
-    "message": "Unstaking token will take $1 day(s) before being effective.",
+    "message": "Unstaking this token will take $1 day(s).",
     "description": "Token wallet information start canceling delegation out"
   }
 }

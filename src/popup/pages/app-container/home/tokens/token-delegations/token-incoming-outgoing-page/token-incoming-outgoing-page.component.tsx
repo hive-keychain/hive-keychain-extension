@@ -78,7 +78,7 @@ const TokenIncomingOutgoingPage = ({
           <div className="cooldown-message">
             {chrome.i18n.getMessage(
               'popup_html_token_undelegation_cooldown_disclaimer',
-              [tokenInfo.undelegationCooldown.toString()],
+              [tokenInfo.symbol, tokenInfo.undelegationCooldown.toString()],
             )}
           </div>
         )}
