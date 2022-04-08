@@ -101,7 +101,7 @@ const SelectAccountSection = ({
   ) => {
     event.preventDefault();
     event.stopPropagation();
-    navigator.clipboard.writeText(activeAccount.name!);
+    navigator.clipboard.writeText(username);
     setInfoMessage('popup_html_text_copied', [username]);
   };
 
