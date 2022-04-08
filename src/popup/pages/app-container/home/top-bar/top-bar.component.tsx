@@ -68,12 +68,11 @@ const TopBar = ({
       activeAccount.account.reward_hbd_balance,
       activeAccount.account.reward_vesting_balance,
     );
+    removeFromLoadingList('popup_html_claiming_rewards');
     if (claimSuccessful) {
-      removeFromLoadingList('popup_html_claiming_rewards');
-      setHasRewardToClaim(false);
       setTimeout(() => {
         refreshActiveAccount();
-      }, 2000);
+      }, 1000);
     }
   };
 
