@@ -49,6 +49,8 @@ const GenericTransaction = ({
         return Icons.DELEGATIONS;
       case 'claim_account':
         return Icons.ACCOUNT;
+      case 'convert':
+        return Icons.CONVERT;
       default:
         return Icons.LINK;
     }

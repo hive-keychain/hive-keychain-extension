@@ -30,6 +30,13 @@ export const TRANSFER_TYPE_TRANSACTIONS = [
   'recurrent_transfer',
 ];
 
+export const CONVERT_TYPE_TRANSACTIONS = [
+  'convert',
+  'fill_collateralized_convert_request',
+  'fill_convert_request',
+  'collateralized_convert',
+];
+
 const getAccountTransactions = async (
   accountName: string,
   start: number,

@@ -2309,6 +2309,10 @@
     "message": "Savings",
     "description": "Wallet filters"
   },
+  "popup_html_filter_type_convert": {
+    "message": "Convert",
+    "description": "Wallet filters"
+  },
   "popup_html_clear_filters": {
     "message": "Clear",
     "description": "Wallet filters"

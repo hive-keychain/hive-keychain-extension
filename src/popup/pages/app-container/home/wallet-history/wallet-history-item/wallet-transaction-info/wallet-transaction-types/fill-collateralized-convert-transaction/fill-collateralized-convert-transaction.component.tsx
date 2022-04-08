@@ -13,7 +13,7 @@ export const FillCollateralizedConvertTransactionComponent = ({
   useEffect;
   const getDetail = () => {
     return chrome.i18n.getMessage(
-      'popup_html_wallet_info_fill_collateralized_convert',
+      'popup_html_wallet_info_fill_collateralized_convert_request',
       [transaction.amount_in, transaction.amount_out],
     );
   };
