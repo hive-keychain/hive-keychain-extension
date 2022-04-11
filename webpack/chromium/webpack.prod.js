@@ -7,7 +7,7 @@ module.exports = merge(common, {
   mode: 'production',
   devtool: 'source-map',
   output: {
-    path: path.join(__dirname, 'dist-prod'),
+    path: path.join(__dirname, '../../dist-prod'),
     filename: '[name]Bundle.js',
   },
 });
