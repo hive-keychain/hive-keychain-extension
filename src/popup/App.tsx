@@ -203,7 +203,6 @@ const App = ({
     setActiveRpc(switchToRpc!);
     setDisplayChangeRpcPopup(false);
   };
-  console.log(process.env);
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {activeRpc && renderMainLayoutNav()}
