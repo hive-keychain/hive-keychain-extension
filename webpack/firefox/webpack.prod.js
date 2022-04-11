@@ -1,5 +1,5 @@
 const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+const common = require('./webpack.firefox.js');
 const path = require('path');
 const WebpackBundleAnalyzer = require('webpack-bundle-analyzer');
 
@@ -13,9 +13,7 @@ module.exports = merge(common, {
   plugins: [
     new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
     new DefinePlugin({
-      'process.env': JSON.stringify(
-        dotenv.config({ path: '../../env/firefox/prod/.env' }).parsed,
-      ),
+      'process.env.IS_FIREFOX': JSON.stringify(true),
     }),
   ],
 });

@@ -1,5 +1,5 @@
 const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
+const common = require('./webpack.chromium.js');
 const path = require('path');
 const dotenv = require('dotenv');
 const { DefinePlugin } = require('webpack');
@@ -16,9 +16,7 @@ module.exports = merge(common, {
   },
   plugins: [
     new DefinePlugin({
-      'process.env': JSON.stringify(
-        dotenv.config({ path: '/env/chromium/dev/.env' }).parsed,
-      ),
+      'process.env': JSON.stringify(dotenv.config().parsed),
     }),
   ],
 });
