@@ -69,6 +69,9 @@ const config = {
     new CopyPlugin({
       patterns: [{ from: 'public', to: '.' }],
     }),
+    new CopyPlugin({
+      patterns: [{ from: 'manifest/firefox', to: '.' }],
+    }),
     new NodePolyfillPlugin(),
   ],
 };

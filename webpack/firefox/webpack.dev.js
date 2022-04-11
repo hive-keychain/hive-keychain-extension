@@ -8,10 +8,10 @@ module.exports = merge(common, {
   mode: 'development',
   devtool: 'inline-source-map',
   devServer: {
-    static: './dist-dev',
+    static: '../../dist-dev-firefox',
   },
   output: {
-    path: path.join(__dirname, 'dist-dev'),
+    path: path.join(__dirname, '../../dist-dev-firefox'),
     filename: '[name]Bundle.js',
   },
   plugins: [
