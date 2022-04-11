@@ -5,6 +5,7 @@ import Register from 'src/dialog/pages/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
 import Unlock from 'src/dialog/pages/unlock';
+import BrowserUtils from 'src/utils/browser.utils';
 import Logger from 'src/utils/logger.utils';
 import './dialog.scss';
 
@@ -15,9 +16,9 @@ const App = () => {
       sender,
       sendResp,
     ) {
-      Logger.log(data);
+      Logger.log('receiving info:', data, sendResp);
       if (data.command === DialogCommand.READY) {
-        sendResp(true);
+        return BrowserUtils.sendResponse(true, sendResp);
       } else {
         setData(data);
       }
