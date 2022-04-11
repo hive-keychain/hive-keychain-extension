@@ -14,7 +14,7 @@ import {
 } from 'src/interfaces/keychain.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 //@ts-ignore
-global.window = { crypto };
+// global.window = { crypto };
 
 type RequestData = {
   tab?: number;
