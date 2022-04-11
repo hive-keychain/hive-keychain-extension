@@ -10,5 +10,12 @@ module.exports = merge(common, {
     path: path.join(__dirname, 'dist-prod-firefox'),
     filename: '[name]Bundle.js',
   },
-  plugins: [new WebpackBundleAnalyzer.BundleAnalyzerPlugin()],
+  plugins: [
+    new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
+    new DefinePlugin({
+      'process.env': JSON.stringify(
+        dotenv.config({ path: '../../env/firefox/prod/.env' }).parsed,
+      ),
+    }),
+  ],
 });

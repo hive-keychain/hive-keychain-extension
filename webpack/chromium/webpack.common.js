@@ -70,7 +70,7 @@ const config = {
       patterns: [{ from: 'public', to: '.' }],
     }),
     new CopyPlugin({
-      patterns: [{ from: 'manifest/chrome', to: '.' }],
+      patterns: [{ from: 'manifest/chromium', to: '.' }],
     }),
     new NodePolyfillPlugin(),
   ],

@@ -16,7 +16,9 @@ module.exports = merge(common, {
   },
   plugins: [
     new DefinePlugin({
-      'process.env': JSON.stringify(dotenv.config().parsed),
+      'process.env': JSON.stringify(
+        dotenv.config({ path: '/env/chromium/dev/.env' }).parsed,
+      ),
     }),
   ],
 });

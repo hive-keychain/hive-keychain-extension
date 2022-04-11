@@ -13,8 +13,11 @@ import {
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-//@ts-ignore
-// global.window = { crypto };
+
+if (!process.env.IS_FIREFOX) {
+  //@ts-ignore
+  global.window = { crypto };
+}
 
 type RequestData = {
   tab?: number;

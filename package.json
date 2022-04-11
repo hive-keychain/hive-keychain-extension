@@ -7,11 +7,11 @@
     "example": "example"
   },
   "scripts": {
-    "dev": "npm outdated & webpack --config webpack/chrome/webpack.dev.js -w",
+    "dev": "npm outdated & webpack --config webpack/chromium/webpack.dev.js -w",
     "dev-firefox": "npm outdated & webpack --config webpack/firefox/webpack.dev.js -w",
-    "build": "rm -rf ./dist-prod & webpack --config webpack/chrome/webpack.prod.js",
+    "build": "rm -rf ./dist-prod & webpack --config webpack/chromium/webpack.prod.js",
     "build-firefox": "rm -rf ./dist-prod-firefox & webpack --config webpack/firefox/webpack.prod.js",
-    "analyze": "npx webpack --profile --json > stats.json --config webpack/chrome/webpack.prod.js",
+    "analyze": "npx webpack --profile --json > stats.json --config webpack/chromium/webpack.prod.js",
     "analyz-firefox": "npx webpack --profile --json > stats.json --config webpack/firefox/webpack.prod.js",
     "doc": "documentation build js/hive_keychain.js -f md -c documentation.yml -o README.md",
     "postinstall": "sed -i '' 's/require(\"cross-fetch\")/require(\"node-fetch\")/g' node_modules/@hiveio/dhive/lib/utils.js; echo 'Update dhive so that keychain background can use it directly'"
