@@ -356,7 +356,7 @@
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_balance": {
-    "message": "$1餘額",
+    "message": "餘額",
     "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
   },
   "popup_html_loading": {

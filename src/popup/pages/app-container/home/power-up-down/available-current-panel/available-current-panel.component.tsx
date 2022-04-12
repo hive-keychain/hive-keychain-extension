@@ -24,10 +24,10 @@ const AvailableCurrentPanel = ({
   console.log(current, currentLabel, available, availableLabel);
   return (
     <div className="power-up-down-top-panel">
-      {current !== null && current !== undefined && (
+      {current !== null && current !== undefined && currentLabel && (
         <div className="current panel-row">
           <div className="current-title">
-            {chrome.i18n.getMessage(currentLabel!)}
+            {chrome.i18n.getMessage(currentLabel)}
           </div>
           <div className="current-value">
             {FormatUtils.formatCurrencyValue(
