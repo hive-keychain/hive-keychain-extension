@@ -17,7 +17,6 @@ import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -160,14 +159,6 @@ const Conversion = ({
         label={title}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
-      />
-
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
       />
     </div>
   );

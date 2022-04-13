@@ -1,8 +1,7 @@
-import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import AccountUtils from 'src/utils/account.utils';
 import './estimated-account-value-section.component.scss';
 
@@ -10,7 +9,6 @@ const EstimatedAccountValueSection = ({
   activeAccount,
   currencyPrices,
   globalProperties,
-  navigateTo,
 }: PropsFromRedux) => {
   const [accountValue, setAccountValue] = useState<string | number>('...');
   useEffect(() => {
@@ -27,27 +25,19 @@ const EstimatedAccountValueSection = ({
     <>
       <div className="estimated-account-value-section">
         <div className="label-panel">
-          <div
-            className="label"
-            data-for={`estimated-account-value-tooltip`}
-            data-tip={chrome.i18n.getMessage('popup_html_estimation_info_text')}
-            data-iscapture="true">
-            {chrome.i18n.getMessage('popup_html_estimation')}
-          </div>
+          <CustomTooltip
+            message="popup_html_estimation_info_text"
+            delayShow={500}
+            position="bottom">
+            <div className="label">
+              {chrome.i18n.getMessage('popup_html_estimation')}
+            </div>
+          </CustomTooltip>
         </div>
         <div className="value">
           {accountValue ? `$ ${accountValue} USD` : '...'}
         </div>
       </div>
-      <ReactTooltip
-        id="estimated-account-value-tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
-        delayShow={500}
-        className="estimated-account-value-tooltip"
-      />
     </>
   );
 };
@@ -60,7 +50,7 @@ const mapStateToProps = (state: RootState) => {
   };
 };
 
-const connector = connect(mapStateToProps, { navigateTo });
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const EstimatedAccountValueSectionComponent = connector(

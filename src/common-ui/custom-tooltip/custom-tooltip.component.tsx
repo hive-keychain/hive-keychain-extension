@@ -1,45 +1,48 @@
 import React, { useState } from 'react';
 import './custom-tooltip.component.scss';
 
+export type CustomTooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 interface TooltipProps {
-  position?: 'top' | 'bottom' | 'left' | 'right';
+  position?: CustomTooltipPosition;
   delayShow?: number;
-  delayHide?: number;
   children: any;
-  message: string;
+  message?: string;
+  skipTranslation?: boolean;
 }
 
-export const CustomTooltip = (props: TooltipProps) => {
+export const CustomTooltip = ({
+  position,
+  delayShow,
+  message,
+  skipTranslation,
+  children,
+}: TooltipProps) => {
   const [isOpen, setOpen] = useState(false);
+  let timeout: NodeJS.Timeout;
 
-  const toggleOpen = (isOpen: boolean) => {
-    if (!isOpen) {
-      setTimeout(
-        () => {
-          setOpen(false);
-        },
-        props.delayHide ? props.delayHide : 0,
-      );
-    } else {
-      setTimeout(
-        () => {
-          setOpen(true);
-        },
-        props.delayShow ? props.delayShow : 0,
-      );
-    }
+  const show = () => {
+    timeout = setTimeout(
+      () => {
+        setOpen(true);
+      },
+      delayShow ? delayShow : 0,
+    );
+  };
+
+  const hide = () => {
+    clearTimeout(timeout);
+    setOpen(false);
   };
 
   return (
-    <div
-      className="tooltip-container"
-      onMouseOver={() => toggleOpen(true)}
-      onMouseOut={() => toggleOpen(false)}>
-      <div className="tooltip-anchor">{props.children}</div>
-      {isOpen && (
-        <div className={`tooltip ${props.position ? props.position : 'top'}`}>
-          {props.message}
-        </div>
+    <div className="tooltip-container" onMouseEnter={show} onMouseLeave={hide}>
+      <div className="tooltip-anchor">{children}</div>
+      {isOpen && message && (
+        <div
+          className={`tooltip ${position ? position : 'top'}`}
+          dangerouslySetInnerHTML={{
+            __html: skipTranslation ? message : chrome.i18n.getMessage(message),
+          }}></div>
       )}
     </div>
   );

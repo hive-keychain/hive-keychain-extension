@@ -2,7 +2,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './resource-item.component.scss';
 
@@ -22,31 +22,22 @@ const ResourceItem = ({
   secondaryValue,
 }: PropsType) => {
   return (
-    <div className="resource-item" data-for="tooltip" data-tip={tooltipText}>
-      <Icon
-        name={icon}
-        type={IconType.STROKED}
-        additionalClassName="icon"></Icon>
-      <div className="right-panel">
-        <div className="top">
-          <div className="label">{chrome.i18n.getMessage(label)}</div>
-        </div>
-        <div className="bottom">
-          {value} {secondaryValue && `(${secondaryValue})`}
+    <CustomTooltip message={tooltipText} skipTranslation>
+      <div className="resource-item">
+        <Icon
+          name={icon}
+          type={IconType.STROKED}
+          additionalClassName="icon"></Icon>
+        <div className="right-panel">
+          <div className="top">
+            <div className="label">{chrome.i18n.getMessage(label)}</div>
+          </div>
+          <div className="bottom">
+            {value} {secondaryValue && `(${secondaryValue})`}
+          </div>
         </div>
       </div>
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
-        delayShow={500}
-        delayHide={60000}
-        clickable={true}
-        wrapper={'span'}
-      />
-    </div>
+    </CustomTooltip>
   );
 };
 

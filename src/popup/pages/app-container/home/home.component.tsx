@@ -14,7 +14,6 @@ import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wall
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
@@ -79,12 +78,6 @@ const Home = ({
           <EstimatedAccountValueSectionComponent />
           <WalletInfoSectionComponent />
           <ActionsSectionComponent />
-          <CustomTooltip
-            message={'tooltip message'}
-            position="top"
-            delayHide={2000}>
-            <div>totototot</div>
-          </CustomTooltip>
         </div>
       )}
 

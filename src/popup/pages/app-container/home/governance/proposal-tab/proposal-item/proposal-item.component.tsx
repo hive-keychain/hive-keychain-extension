@@ -12,7 +12,7 @@ import { RootState } from '@popup/store';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
@@ -121,50 +121,43 @@ const ProposalItem = ({
               ? 'expandable-panel opened'
               : 'expandable-panel closed'
           }>
-          <div
-            className="extra-info"
-            data-for={`remaining-tooltip`}
-            data-tip={`${proposal.startDate.format(
+          <CustomTooltip
+            message={`${proposal.startDate.format(
               'L',
-            )} - ${proposal.endDate.format('L')}`}
-            data-iscapture="true">
-            <div className="value">
-              <Icon name={Icons.ARROW_CIRCLE_UP} type={IconType.OUTLINED} />
-              <div>{proposal.totalVotes}</div>
-            </div>
-            <div>
-              <Icon name={Icons.TIMELAPSE} type={IconType.OUTLINED} />
+            )} ${proposal.endDate.format('L')}`}
+            skipTranslation>
+            <div className="extra-info">
+              <div className="value">
+                <Icon name={Icons.ARROW_CIRCLE_UP} type={IconType.OUTLINED} />
+                <div>{proposal.totalVotes}</div>
+              </div>
               <div>
-                {chrome.i18n.getMessage('popup_html_days_remaining', [
-                  FormatUtils.withCommas(
-                    proposal.endDate
-                      .diff(moment(new Date()), 'days')
-                      .toString(),
-                    0,
-                  ),
-                ])}
+                <Icon name={Icons.TIMELAPSE} type={IconType.OUTLINED} />
+                <div>
+                  {chrome.i18n.getMessage('popup_html_days_remaining', [
+                    FormatUtils.withCommas(
+                      proposal.endDate
+                        .diff(moment(new Date()), 'days')
+                        .toString(),
+                      0,
+                    ),
+                  ])}
+                </div>
+              </div>
+              <div>
+                <Icon name={Icons.ATTACH_MONEY} type={IconType.OUTLINED} />
+                <div>
+                  {FormatUtils.withCommas(proposal.dailyPay)}/
+                  {chrome.i18n.getMessage('day')}
+                </div>
               </div>
             </div>
-            <div>
-              <Icon name={Icons.ATTACH_MONEY} type={IconType.OUTLINED} />
-              <div>
-                {FormatUtils.withCommas(proposal.dailyPay)}/
-                {chrome.i18n.getMessage('day')}
-              </div>
-            </div>
-          </div>
+          </CustomTooltip>
           <div className={`funded-chip ${proposal.funded}`}>
             {chrome.i18n.getMessage(
               `popup_html_proposal_funded_option_${proposal.funded}`,
             )}
           </div>
-          <ReactTooltip
-            id={'remaining-tooltip'}
-            place="top"
-            type="light"
-            effect="solid"
-            multiline={true}
-          />
         </div>
       )}
     </div>
