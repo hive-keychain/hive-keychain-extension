@@ -363,49 +363,9 @@
     "message": "備註",
     "description": "On transfer confirmation page"
   },
-  "popup_html_not_now": {
-    "message": "暫時不要",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_redeem": {
-    "message": "領取",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_witness_title": {
-    "message": "見證人投票",
-    "description": "On witness page"
-  },
-  "popup_html_witness_disclaimer": {
-    "message": "您最多可以投票給30位見證人。",
-    "description": "On witness page"
-  },
   "popup_html_witness_remaining": {
     "message": "剩餘投票數：<span> 30 </span>",
     "description": "On witness page"
-  },
-  "popup_html_witness_voted": {
-    "message": "已投票",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_top": {
-    "message": "前100名",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_add": {
-    "message": "新增",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_proxy_desc": {
-    "message": "您可以手動輸入用戶投票見證人或將其設置為代理。",
-    "description": "On witness page > Add"
-  },
-  "popup_html_witness_vote": {
-    "message": "見證人投票",
-    "description": "On witness page > Add > Dropdown"
-  },
-  "popup_html_chose_proxy": {
-    "message": "選擇代理",
-    "description": "On witness page > Add > Dropdown"
   },
   "popup_html_tokens_available": {
     "message": "可用代幣",
@@ -421,10 +381,6 @@
   },
   "popup_html_tokens_send_text": {
     "message": "發送代幣可能最多需要30秒才能確認，請耐心等待。",
-    "description": "On tokens page > Send"
-  },
-  "popup_html_recipient": {
-    "message": "接受者",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {

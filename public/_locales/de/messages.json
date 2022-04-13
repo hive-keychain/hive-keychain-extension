@@ -363,49 +363,9 @@
     "message": "Memo",
     "description": "On transfer confirmation page"
   },
-  "popup_html_not_now": {
-    "message": "Nicht jetzt",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_redeem": {
-    "message": "Einfordern",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_witness_title": {
-    "message": "Witness Wählen",
-    "description": "On witness page"
-  },
-  "popup_html_witness_disclaimer": {
-    "message": "Sie können für bis zu 30 Witnesses stimmen.",
-    "description": "On witness page"
-  },
   "popup_html_witness_remaining": {
     "message": "Verbleibende Stimmen: <span>30</span>",
     "description": "On witness page"
-  },
-  "popup_html_witness_voted": {
-    "message": "Gewählt",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_top": {
-    "message": "Top 100",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_add": {
-    "message": "Hinzufügen",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_proxy_desc": {
-    "message": "Du kannst einen Kontonamen manuell eingeben um für ihn als Witness zu stimmen oder durch einen Proxy wählen.",
-    "description": "On witness page > Add"
-  },
-  "popup_html_witness_vote": {
-    "message": "Für ein Witness abstimmen",
-    "description": "On witness page > Add > Dropdown"
-  },
-  "popup_html_chose_proxy": {
-    "message": "Proxy auswählen",
-    "description": "On witness page > Add > Dropdown"
   },
   "popup_html_tokens_available": {
     "message": "Verfügbare Token",
@@ -421,10 +381,6 @@
   },
   "popup_html_tokens_send_text": {
     "message": "Das Senden Ihrer Token kann bis zu 30 Sekunden in Anspruch nehmen, bitte haben Sie Geduld.",
-    "description": "On tokens page > Send"
-  },
-  "popup_html_recipient": {
-    "message": "Empfänger",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {

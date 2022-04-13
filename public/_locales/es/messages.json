@@ -363,49 +363,9 @@
     "message": "Memo",
     "description": "On transfer confirmation page"
   },
-  "popup_html_not_now": {
-    "message": "No ahora",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_redeem": {
-    "message": "Reclamar",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_witness_title": {
-    "message": "Votación para Witness",
-    "description": "On witness page"
-  },
-  "popup_html_witness_disclaimer": {
-    "message": "Puedes votar a favor de hasta 30 witnesses.",
-    "description": "On witness page"
-  },
   "popup_html_witness_remaining": {
     "message": "Votos restantes: <span>30</span>",
     "description": "On witness page"
-  },
-  "popup_html_witness_voted": {
-    "message": "Votado",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_top": {
-    "message": "Mejores 100",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_add": {
-    "message": "Agregar",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_proxy_desc": {
-    "message": "Puede introducir manualmente un usuario para votar por Witness o para establecer como Proxy.",
-    "description": "On witness page > Add"
-  },
-  "popup_html_witness_vote": {
-    "message": "Vota por un Witness",
-    "description": "On witness page > Add > Dropdown"
-  },
-  "popup_html_chose_proxy": {
-    "message": "Elegir proxy",
-    "description": "On witness page > Add > Dropdown"
   },
   "popup_html_tokens_available": {
     "message": "Tokens disponibles",
@@ -421,10 +381,6 @@
   },
   "popup_html_tokens_send_text": {
     "message": "Enviar sus tokens puede tardar hasta 30 segundos en confirmar, por favor sea paciente.",
-    "description": "On tokens page > Send"
-  },
-  "popup_html_recipient": {
-    "message": "Destinatario",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {
