@@ -8,6 +8,6 @@
     "gruntfuggly.todo-tree",
     "formulahendry.auto-rename-tag",
     "mikestead.dotenv",
-    "dsznajder.es7-react-js-snippets"
+    "dsznajder.es7-react-js-snippets",
   ]
 }

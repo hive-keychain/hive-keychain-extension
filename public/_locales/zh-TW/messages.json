@@ -7,10 +7,6 @@
     "message": "Secure Hive Wallet Extension.",
     "description": "Extension description, as shown in the store."
   },
-  "transaction_error": {
-    "message": "交易錯誤",
-    "description": "Generic error during transaction"
-  },
   "memo": {
     "message": "備註",
     "description": "type of key"
@@ -219,20 +215,12 @@
     "message": "變更密碼",
     "description": "on settings page"
   },
-  "popup_html_pref": {
-    "message": "偏好設定",
-    "description": "on settings page"
-  },
   "popup_html_autolock": {
     "message": "自動鎖定",
     "description": "on settings page"
   },
   "popup_html_keychainify": {
     "message": "Keychainify",
-    "description": "on settings page"
-  },
-  "popup_html_import_export": {
-    "message": "Import / Export",
     "description": "on settings page"
   },
   "popup_html_about": {
@@ -279,10 +267,6 @@
     "message": "當前僅支持Steem Connect傳輸URL。",
     "description": "on keychainify settings"
   },
-  "popup_html_import_export_text": {
-    "message": "You can export all your keys encrypted in a file. This will allow you to import them to Keychain on another device or simply safeguard them.<br/><br/>When importing, only accounts that are not already present on the instance will be added.",
-    "description": "on import / export settings"
-  },
   "popup_html_import": {
     "message": "Import",
     "description": "on import / export settings"
@@ -295,17 +279,9 @@
     "message": "The overall idea and concept for the Hive Keychain browser extension was created on Steem by <a href=\"https://steempeak.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steempeak.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem/Hive developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
     "description": "on about keychain"
   },
-  "popup_html_remove": {
-    "message": "移除",
-    "description": "on manage accounts, remove key"
-  },
   "popup_html_delete_account": {
     "message": "刪除此帳號",
     "description": "on manage accounts"
-  },
-  "popup_html_select_rpc": {
-    "message": "選擇一個RPC",
-    "description": "on preferences"
   },
   "popup_html_notif_pref": {
     "message": "通知喜好設定",
@@ -366,18 +342,6 @@
   "popup_html_memo_optional": {
     "message": "備註（可選）",
     "description": "When initiating a HIVE or HBD transfer"
-  },
-  "popup_html_encrypt_memo": {
-    "message": "加密備忘錄",
-    "description": "When initiating a HIVE or HBD transfer"
-  },
-  "popup_html_add_active": {
-    "message": "Please add an active key to send HIVE or HBD.",
-    "description": "When trying to send HIVE or HBD but active key was not stored"
-  },
-  "popup_html_transfer": {
-    "message": "轉帳",
-    "description": "On transfer confirmation page"
   },
   "popup_html_transfer_confirm_text": {
     "message": "請確認您的轉移。此操作無法撤消。",

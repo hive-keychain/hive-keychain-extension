@@ -18,6 +18,12 @@ const BuyCoins = ({
   });
   return (
     <div className="buy-coins-page">
+      <div className="disclaimer">
+        {chrome.i18n.getMessage(
+          'popup_html_buy_intro',
+          buyCoinType === BuyCoinType.BUY_HDB ? 'HBD' : 'HIVE',
+        )}
+      </div>
       {BuyCoinsListItem(buyCoinType).map((category) => (
         <div className="category" key={category.categoryLabel}>
           <h2 className="category-title">
