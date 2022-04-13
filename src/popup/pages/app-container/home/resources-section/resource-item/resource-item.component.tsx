@@ -22,11 +22,7 @@ const ResourceItem = ({
   secondaryValue,
 }: PropsType) => {
   return (
-    <div
-      className="resource-item"
-      data-for="tooltip"
-      data-tip={tooltipText}
-      data-iscapture="true">
+    <div className="resource-item" data-for="tooltip" data-tip={tooltipText}>
       <Icon
         name={icon}
         type={IconType.STROKED}
@@ -46,6 +42,9 @@ const ResourceItem = ({
         effect="solid"
         multiline={true}
         delayShow={500}
+        delayHide={60000}
+        clickable={true}
+        wrapper={'span'}
       />
     </div>
   );

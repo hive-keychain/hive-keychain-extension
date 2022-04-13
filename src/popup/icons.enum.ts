@@ -18,7 +18,7 @@ export enum Icons {
   CLAIM = 'redeem',
   CLEAR = 'clear',
   CLOSE = 'clear',
-  CONVERT = 'sync_alt',
+  CONVERT = 'currency_exchange',
   COPY = 'file_copy',
   DELEGATIONS = 'swap_horiz',
   DELETE = 'delete',

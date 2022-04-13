@@ -26,8 +26,13 @@
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-        height: 600px;
-        width: 350px;
+      }
+
+      @-moz-document url-prefix() {
+        #root {
+          height: 600px;
+          width: 350px;
+        }
       }
     </style>
   </head>
