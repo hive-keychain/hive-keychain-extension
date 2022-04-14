@@ -1,6 +1,6 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
-import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -94,9 +94,9 @@ const TokensOperation = ({
   }, []);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: TransferToItems =
+    const transferTo: FavoriteUserItems =
       await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+        LocalStorageKeyEnum.FAVORITE_USERS,
       );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
