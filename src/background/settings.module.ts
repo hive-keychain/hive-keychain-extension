@@ -1,8 +1,8 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { Settings } from '@interfaces/settings.interface';
-import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import ArrayUtils from 'src/utils/array.utils';
@@ -113,17 +113,20 @@ const sendBackImportedFileContent = async (fileContent: any) => {
       }
 
       if (settings.transfer_to) {
-        let existingTransferTo: TransferToItems =
+        let existingTransferTo: FavoriteUserItems =
           await LocalStorageUtils.getValueFromLocalStorage(
-            LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+            LocalStorageKeyEnum.FAVORITE_USERS,
           );
 
         if (!existingTransferTo) existingTransferTo = {};
         for (const username of Object.keys(settings.transfer_to)) {
-          existingTransferTo[username] = settings.transfer_to[username];
+          existingTransferTo[username] = [
+            ...existingTransferTo[username],
+            ...settings.transfer_to[username],
+          ];
         }
         await LocalStorageUtils.saveValueInLocalStorage(
-          LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+          LocalStorageKeyEnum.FAVORITE_USERS,
           existingTransferTo,
         );
       }

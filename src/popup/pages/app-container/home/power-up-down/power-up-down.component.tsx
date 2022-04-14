@@ -62,7 +62,7 @@ const PowerUpDown = ({
 
   const loadAutocompleteTransferUsernames = async () => {
     const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+      LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
