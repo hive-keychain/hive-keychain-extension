@@ -6,7 +6,7 @@ const common = require('../webpack.common.js');
 const config = merge(common, {
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: 'manifest/firefox', to: '.' }],
+      patterns: [{ from: 'manifests/firefox', to: '.' }],
     }),
   ],
 });
