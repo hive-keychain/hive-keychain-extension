@@ -46,7 +46,7 @@
     }
 
     .ranking {
-      height: 278px;
+      height: 265px;
       overflow: auto;
 
       .error-witness {
@@ -110,17 +110,21 @@
           }
         }
 
-        .action {
-          height: 24px;
-          width: 24px;
-          justify-self: center;
-          opacity: 0.3;
-          cursor: pointer;
-          &.voted {
-            opacity: 1;
-          }
-          &.using-proxy {
-            cursor: not-allowed;
+        .tooltip-container {
+          height: 28px;
+
+          .action {
+            @include icon-size(28px);
+            justify-self: center;
+            opacity: 0.3;
+            cursor: pointer;
+
+            &.voted {
+              opacity: 1;
+            }
+            &.using-proxy {
+              cursor: not-allowed;
+            }
           }
         }
 

@@ -3,7 +3,6 @@ import { WalletTransactionInfoComponent } from '@popup/pages/app-container/home/
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import './wallet-history-item.component.scss';
 
 interface WalletHistoryItemProps {
@@ -15,13 +14,6 @@ const WalletHistoryItem = ({ transaction }: PropsFromRedux) => {
     <div id={`index-${transaction.index}`} className={`wallet-history-item`}>
       <WalletTransactionInfoComponent
         transaction={transaction}></WalletTransactionInfoComponent>
-      <ReactTooltip
-        id="datetime-tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
-      />
     </div>
   );
 };
