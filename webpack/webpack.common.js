@@ -69,6 +69,7 @@ const config = {
     new CopyPlugin({
       patterns: [{ from: 'public', to: '.' }],
     }),
+
     new NodePolyfillPlugin(),
   ],
 };

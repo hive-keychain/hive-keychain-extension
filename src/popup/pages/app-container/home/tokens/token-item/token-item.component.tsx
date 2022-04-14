@@ -7,7 +7,7 @@ import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import './token-item.component.scss';
@@ -81,24 +81,16 @@ const TokenItem = ({
       <div
         className="token"
         onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}>
-        <div
-          className="balance"
-          data-for={`full-balance-tooltip`}
-          data-tip={
+        <CustomTooltip
+          message={
             FormatUtils.hasMoreThanXDecimal(parseFloat(tokenBalance.balance), 3)
               ? FormatUtils.withCommas(tokenBalance.balance, 8)
-              : null
-          }
-          data-iscapture="true">
-          {FormatUtils.withCommas(tokenBalance.balance, 3)}
-        </div>
-        <ReactTooltip
-          id="full-balance-tooltip"
-          place="top"
-          type="light"
-          effect="solid"
-          multiline={true}
-        />
+              : undefined
+          }>
+          <div className="balance">
+            {FormatUtils.withCommas(tokenBalance.balance, 3)}
+          </div>
+        </CustomTooltip>
         <div className="symbol">{tokenBalance.symbol}</div>
         <Icon
           name={Icons.HISTORY}
