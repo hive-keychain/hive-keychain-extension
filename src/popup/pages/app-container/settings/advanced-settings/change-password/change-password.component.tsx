@@ -67,6 +67,7 @@ const ChangePassword = ({
         onChange={setOldPassword}
         logo={Icons.PASSWORD}
         placeholder="popup_html_old_password"
+        label="popup_html_old_password"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
       />
@@ -75,6 +76,7 @@ const ChangePassword = ({
         onChange={setNewPassword}
         logo={Icons.PASSWORD}
         placeholder="popup_html_new_password"
+        label="popup_html_new_password"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
       />
@@ -83,6 +85,7 @@ const ChangePassword = ({
         onChange={setNewPasswordConfirm}
         logo={Icons.PASSWORD}
         placeholder="popup_html_confirm"
+        label="popup_html_confirm"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
       />
