@@ -49,17 +49,6 @@ const AccountKeysListItem = ({
     }
   }, [publicKey]);
 
-  useEffect(() => {
-    console.log(
-      privateKey,
-      publicKey,
-      keyName,
-      keyType,
-      activeAccount,
-      isAuthorizedAccount,
-    );
-  });
-
   const copyToClipboard = (key: Key | undefined) => {
     if (key) {
       navigator.clipboard.writeText(key!.toString());
