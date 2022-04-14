@@ -12,4 +12,5 @@ export interface Settings {
   no_confirm?: NoConfirm;
   rpc?: Rpc[];
   transfer_to?: FavoriteUserItems;
+  switchRpcAuto?: boolean;
 }

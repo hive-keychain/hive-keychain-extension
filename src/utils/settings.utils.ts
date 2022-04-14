@@ -13,6 +13,7 @@ const exportSettings = async () => {
     LocalStorageKeyEnum.RPC_LIST,
     LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
     LocalStorageKeyEnum.CURRENT_RPC,
+    LocalStorageKeyEnum.SWITCH_RPC_AUTO,
   ]);
 
   var data = new Blob([JSON.stringify(val)], {
