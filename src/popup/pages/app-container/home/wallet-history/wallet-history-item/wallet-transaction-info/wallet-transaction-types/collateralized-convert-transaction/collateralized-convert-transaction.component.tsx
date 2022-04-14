@@ -12,7 +12,6 @@ export const CollateralizedConvertTransactionComponent = ({
 }: Props) => {
   useEffect;
   const getDetail = () => {
-    console.log('transaction', transaction);
     return chrome.i18n.getMessage(
       'popup_html_wallet_info_collateralized_convert',
       [transaction.amount],
