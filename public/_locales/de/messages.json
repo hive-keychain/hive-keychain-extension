@@ -551,17 +551,9 @@
     "message": "Sie haben derzeit keine benutzerdefinierten Token. Klicken Sie auf das Einstellungsrad, um Informationen über die verfügbaren Token anzuzeigen.",
     "description": "on tokens page when you dont have any"
   },
-  "popup_token_key": {
-    "message": "Bitte fügen Sie Ihren active-key hinzu, um Token zu verschicken!",
-    "description": "on tokens when trying to send tokens without having an active key registed "
-  },
   "popup_no_such_account": {
     "message": "Dieser Benutzername ist nicht auf der Blockchain registriert!",
     "description": "on tokens page when trying to send tokens to a non existing user"
-  },
-  "popup_token_success": {
-    "message": "Token erfolgreich gesendet!",
-    "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
     "message": "Transaktionszeitüberschreitung ohne Antwort. Bitte überprüfen Sie Ihr Token-Guthaben, vor einem erneuten Versuch.",
@@ -598,10 +590,6 @@
   "dialog_cancel": {
     "message": "Abbrechen",
     "description": "Cancel button"
-  },
-  "dialog_broadcasting": {
-    "message": "Übertragung der Transaktion an die Blockchain...",
-    "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
     "message": "Benutzerkonto",
@@ -659,10 +647,6 @@
     "message": "Saldo",
     "description": "When website request a transfer"
   },
-  "dialog_future_balance": {
-    "message": "Zukünftiger Saldo",
-    "description": "When website request a transfer"
-  },
   "dialog_daily_pay": {
     "message": "Tägliche Bezahlung",
     "description": "When website request a proposal creation"
@@ -682,10 +666,6 @@
   "dialog_period": {
     "message": "Zeitraum",
     "description": "When website request a proposal creation"
-  },
-  "dialog_extensions": {
-    "message": "Erweiterungen",
-    "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
     "message": "JSON Metadaten",
@@ -707,7 +687,7 @@
     "message": "Max. Akzeptierte Auszahlung: ",
     "description": "When website request a post"
   },
-  "dialog_percentage_sbd": {
+  "dialog_percentage_hbd": {
     "message": "Prozentsatz SBD : ",
     "description": "When website request a post"
   },
@@ -742,9 +722,6 @@
   "dialog_confirm": {
     "message": "Bestätigen"
   },
-  "dialog_body_toggle": {
-    "message": "Body <span class='small'>(Zum Anzeigen Klicken)</span>"
-  },
   "dialog_options_toggle": {
     "message": "Optionen <span class='small'>(Zum Anzeigen Klicken)</span>"
   },
@@ -765,10 +742,6 @@
   },
   "dialog_header_wrong_pwd": {
     "message": "Falsches Passwort!"
-  },
-  "dialog_header_broadcasting": {
-    "message": "Übertragung im Gange",
-    "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
     "message": "Benutzerdefinierte Transaktion",
@@ -794,16 +767,8 @@
     "message": "Übertragung",
     "description": "Website request title"
   },
-  "dialog_title_call": {
-    "message": "Signierter Anruf",
-    "description": "Website request title"
-  },
   "dialog_title_post": {
     "message": "Post",
-    "description": "Website request title"
-  },
-  "dialog_title_vote": {
-    "message": "Vote",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
@@ -861,10 +826,6 @@
   "dialog_desc_sign": {
     "message": "Die Webseite $1 möchte eine Nachricht mit dem $2-Schlüssel für @$3 unterschreiben",
     "description": "Sign message"
-  },
-  "dialog_expand": {
-    "message": "...(zum erweitern klicken)",
-    "description": "Toggle"
   },
   "bgd_init_no_wallet": {
     "message": "Kein Wallet!",
@@ -946,9 +907,6 @@
   "bgd_ops_tokens": {
     "message": "Die Transaktion wurde erfolgreich übertragen. Bitte überprüfen sie Ihr Saldo um zu bestätigen dass die Transaktion erfolgreich bearbeitet wurde."
   },
-  "bgd_ops_signed_call": {
-    "message": "Erfolg!"
-  },
   "bgd_ops_sign_success": {
     "message": "Nachricht erfolgreich signiert."
   },
@@ -1016,10 +974,6 @@
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
-  "dialog_auth_key": {
-    "message": "Key",
-    "description": "New key to be added"
-  },
   "bgd_ops_add_key_auth": {
     "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
     "description": "Succesfully added a new keypair"
@@ -1043,9 +997,6 @@
   "popup_html_auth_text": {
     "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
     "description": "On Add new account => via auth"
-  },
-  "popup_html_auth_placeholder_username": {
-    "message": "Username"
   },
   "popup_html_auth_placeholder_username_auth": {
     "message": "Authorized Account",

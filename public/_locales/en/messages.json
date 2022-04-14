@@ -401,7 +401,7 @@
   },
   "popup_html_send_max": {
     "message": "Max",
-    "description": "on transfer"
+    "description": "In input (keep it short eg maximum 3 characters)"
   },
   "popup_html_transfer_funds": {
     "message": "Transfer Funds",
@@ -663,17 +663,9 @@
     "message": "You currently don't have any custom tokens. Click on the settings wheel to get information about the tokens available.",
     "description": "on tokens page when you dont have any"
   },
-  "popup_token_key": {
-    "message": "Please add your active key to send tokens!",
-    "description": "on tokens when trying to send tokens without having an active key registed "
-  },
   "popup_no_such_account": {
     "message": "This username is not registered on the blockchain!",
     "description": "on tokens page when trying to send tokens to a non existing user"
-  },
-  "popup_token_success": {
-    "message": "Tokens sent succesfully!",
-    "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
     "message": "Transaction timed out without response. Please double check your token balance before trying to send again.",
@@ -726,10 +718,6 @@
   "dialog_cancel": {
     "message": "Cancel",
     "description": "Cancel button"
-  },
-  "dialog_broadcasting": {
-    "message": "Broadcasting transaction to the blockchain...",
-    "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
     "message": "Account",
@@ -791,10 +779,6 @@
     "message": "Balance",
     "description": "When website request a transfer"
   },
-  "dialog_future_balance": {
-    "message": "Future balance",
-    "description": "When website request a transfer"
-  },
   "dialog_daily_pay": {
     "message": "Daily Pay",
     "description": "When website request a proposal creation"
@@ -814,10 +798,6 @@
   "dialog_period": {
     "message": "Period",
     "description": "When website request a proposal creation"
-  },
-  "dialog_extensions": {
-    "message": "Extensions",
-    "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
     "message": "JSON Metadata (Click to show)",
@@ -843,7 +823,7 @@
     "message": "Max Accepted Payout : ",
     "description": "When website request a post"
   },
-  "dialog_percentage_sbd": {
+  "dialog_percentage_hbd": {
     "message": "Percentage SBD : ",
     "description": "When website request a post"
   },
@@ -878,9 +858,6 @@
   "dialog_confirm": {
     "message": "Confirm"
   },
-  "dialog_body_toggle": {
-    "message": "Body <span class='small'>(click to show)</span>"
-  },
   "dialog_options_toggle": {
     "message": "Options <span class='small'>(click to show)</span>"
   },
@@ -901,10 +878,6 @@
   },
   "dialog_header_wrong_pwd": {
     "message": "Wrong password!"
-  },
-  "dialog_header_broadcasting": {
-    "message": "Broadcasting",
-    "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
     "message": "Custom Transaction",
@@ -938,16 +911,8 @@
     "message": "Sign Transaction",
     "description": "Website request title"
   },
-  "dialog_title_call": {
-    "message": "Signed Call",
-    "description": "Website request title"
-  },
   "dialog_title_post": {
     "message": "Post",
-    "description": "Website request title"
-  },
-  "dialog_title_vote": {
-    "message": "Vote",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
@@ -1002,10 +967,6 @@
     "message": "Do not prompt again to send $1 transactions from the @$2 account on $3",
     "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
   },
-  "dialog_no_prompt_no_username": {
-    "message": "Do not prompt again to send $1 transactions from the selected account on $2",
-    "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
-  },
   "dialog_desc_verify": {
     "message": "The website $1 would like to verify that you have access to the private $2 key for the account: @$3",
     "description": "key verification message"
@@ -1013,14 +974,6 @@
   "dialog_desc_sign": {
     "message": "The website $1 would like to sign a message using the $2 key for the account: @$3",
     "description": "Sign message"
-  },
-  "dialog_desc_sign_user_unknown": {
-    "message": "The website $1 would like to sign a message using the $2 key.",
-    "description": "Sign message"
-  },
-  "dialog_expand": {
-    "message": "...(click to expand)",
-    "description": "Toggle"
   },
   "dialog_recurrence": {
     "message": "Recurrence",
@@ -1142,9 +1095,6 @@
   "bgd_ops_tokens": {
     "message": "The transaction has been broadcasted successfully. Please check your balance to confirm that it was processed succesfully."
   },
-  "bgd_ops_signed_call": {
-    "message": "Success!"
-  },
   "bgd_ops_sign_success": {
     "message": "Message signed succesfully."
   },
@@ -1236,10 +1186,6 @@
   "dialog_title_recurrent_transfer": {
     "message": "Recurrent Transfer"
   },
-  "dialog_auth_key": {
-    "message": "Key",
-    "description": "New key to be added"
-  },
   "bgd_ops_add_key_auth": {
     "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
     "description": "Succesfully added a new keypair"
@@ -1271,9 +1217,6 @@
   "popup_html_auth_text": {
     "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
     "description": "On Add new account => via auth"
-  },
-  "popup_html_auth_placeholder_username": {
-    "message": "Username"
   },
   "popup_html_auth_placeholder_username_auth": {
     "message": "Authorized Account",
@@ -1346,10 +1289,6 @@
     "message": "Convert HIVE",
     "description": "When clicking on the Hbd arrow menu"
   },
-  "popup_html_convert_title": {
-    "message": "Convert $1",
-    "description": "When clicking on the arrow menu"
-  },
   "popup_html_convert_hbd_intro": {
     "message": "Your HBD will take 3.5 days to get converted to approximately 1 USD worth of HIVE tokens, based on its 3.5 days median price.",
     "description": "When clicking on the Hbd arrow menu"
@@ -1358,22 +1297,6 @@
   "popup_html_convert_hive_intro": {
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
-  },
-  "popup_html_convert_max": {
-    "message": "Convert Max",
-    "description": "When clicking on the Hbd arrow menu"
-  },
-  "popup_html_convert_button": {
-    "message": "Confirm",
-    "description": "When clicking on the Hbd arrow menu"
-  },
-  "popup_html_convert_success": {
-    "message": "The HBD conversion successfully started",
-    "description": "When clicking on the Hbd arrow menu"
-  },
-  "popup_html_convert_error": {
-    "message": "Something went wrong!",
-    "description": "When clicking on the Hbd arrow menu"
   },
   "popup_html_save_hive": {
     "message": "HIVE Savings",
@@ -1600,10 +1523,6 @@
     "message": "Transfer failed",
     "description": "In transfer fund page"
   },
-  "popup_html_operation": {
-    "message": "Operation",
-    "description": "In confirmation page"
-  },
   "popup_html_value": {
     "message": "Value",
     "description": "In confirmation page"
@@ -1615,10 +1534,6 @@
   "popup_html_save_successful": {
     "message": "Successfully saved settings",
     "description": "General message"
-  },
-  "popup_html_wallet_add_memo": {
-    "message": "Please add your memo key to decrypt this message.",
-    "description": "Wallet error message"
   },
   "popup_html_receiver": {
     "message": "Receiver",
@@ -1728,10 +1643,6 @@
     "message": "Clear proxy",
     "description": "Governance"
   },
-  "html_popup_clear_proxy_success": {
-    "message": "Successfully removed proxy",
-    "description": "Clear proxy success"
-  },
   "html_popup_clear_proxy_error": {
     "message": "Error while removing proxy",
     "description": "Clear proxy error"
@@ -1775,14 +1686,6 @@
   "html_popup_vote_stoodkev_witness_success": {
     "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
-  },
-  "html_popup_witness_vote_transaction_not_had_error": {
-    "message": "There was an error while confirming your vote. Please wait a moment and refresh your extension",
-    "description": "Error while trying to confirm vote for witness"
-  },
-  "html_popup_witness_unvote_transaction_not_had_error": {
-    "message": "There was an error while confirming your vote. Please wait a moment and refresh your extension",
-    "description": "Error while trying to confirm unvote witness"
   },
   "html_popup_conversion_operation": {
     "message": "Conversion",
@@ -1860,14 +1763,6 @@
     "message": "Vote",
     "description": "vote"
   },
-  "html_popup_processing_transactions": {
-    "message": "Processing transactions",
-    "description": "loading message for transactions"
-  },
-  "html_popup_downloading_transactions": {
-    "message": "Downloading transactions",
-    "description": "Downloading message for transactions"
-  },
   "html_popup_voting_no_hp": {
     "message": "Please power up to get voting mana",
     "description": "Message when no HP in voting mana section"
@@ -1943,10 +1838,6 @@
   "popup_html_proxy_suggestion": {
     "message": "Overwhelmed by governance votes? Set @keychain as proxy to automatically follow Keychain team witness and proposal votes. You can change this anytime from the governance menu.",
     "description": "If no witness voted"
-  },
-  "popup_html_set_proxy": {
-    "message": "Set proxy",
-    "description": "in proxy suggestion popup"
   },
   "popup_html_setting_proxy": {
     "message": "Setting proxy",
@@ -2276,10 +2167,6 @@
   "popup_html_proposal_funded_option_not_funded": {
     "message": "Not funded",
     "description": "Proposal funded option"
-  },
-  "popup_html_loading_proposals": {
-    "message": "Loading proposals",
-    "description": "proposal tab"
   },
   "popup_html_hive_engine_error": {
     "message": "Hive Engine error: $1",

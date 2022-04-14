@@ -551,17 +551,9 @@
     "message": "현재 보유 중인 커스텀 토큰이 없습니다. 톱니 바퀴 모양의 설정 버튼을 클릭하면 이용 <br>가능한 토큰 정보를 확인할 수 있습니다.",
     "description": "on tokens page when you dont have any"
   },
-  "popup_token_key": {
-    "message": "토큰을 보내려면 액티브 키를 추가해야 합니다!",
-    "description": "on tokens when trying to send tokens without having an active key registed "
-  },
   "popup_no_such_account": {
     "message": "블록체인에 존재하지 않는 사용자 이름입니다!",
     "description": "on tokens page when trying to send tokens to a non existing user"
-  },
-  "popup_token_success": {
-    "message": "토큰 전송 성공!",
-    "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
     "message": "아무런 응답 없이 트랜잭션이 타임 아웃되었습니다. 다시 보내기 전에 토큰 잔액을 다시 한번 확인하세요.",
@@ -598,10 +590,6 @@
   "dialog_cancel": {
     "message": "취소",
     "description": "Cancel button"
-  },
-  "dialog_broadcasting": {
-    "message": "블록체인에 트랜잭션 브로드캐스팅 중...",
-    "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
     "message": "계정",
@@ -659,10 +647,6 @@
     "message": "현재 잔액",
     "description": "When website request a transfer"
   },
-  "dialog_future_balance": {
-    "message": "전송 후 잔액",
-    "description": "When website request a transfer"
-  },
   "dialog_daily_pay": {
     "message": "일일 요청량",
     "description": "When website request a proposal creation"
@@ -682,10 +666,6 @@
   "dialog_period": {
     "message": "기간",
     "description": "When website request a proposal creation"
-  },
-  "dialog_extensions": {
-    "message": "확장",
-    "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
     "message": "JSON 메타데이터",
@@ -707,7 +687,7 @@
     "message": "최대 페이아웃 : ",
     "description": "When website request a post"
   },
-  "dialog_percentage_sbd": {
+  "dialog_percentage_hbd": {
     "message": "SBD 비율 : ",
     "description": "When website request a post"
   },
@@ -742,9 +722,6 @@
   "dialog_confirm": {
     "message": "확인"
   },
-  "dialog_body_toggle": {
-    "message": "본문 <span class='small'>(클릭해서 내용 보기)</span>"
-  },
   "dialog_options_toggle": {
     "message": "옵션 <span class='small'>(클릭해서 내용 보기)</span>"
   },
@@ -765,10 +742,6 @@
   },
   "dialog_header_wrong_pwd": {
     "message": "잘못된 비밀번호입니다!"
-  },
-  "dialog_header_broadcasting": {
-    "message": "브로드캐스팅",
-    "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
     "message": "커스텀 트랜잭션",
@@ -794,16 +767,8 @@
     "message": "브로드캐스트",
     "description": "Website request title"
   },
-  "dialog_title_call": {
-    "message": "서명된 호출",
-    "description": "Website request title"
-  },
   "dialog_title_post": {
     "message": "포스트",
-    "description": "Website request title"
-  },
-  "dialog_title_vote": {
-    "message": "투표",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
@@ -861,10 +826,6 @@
   "dialog_desc_sign": {
     "message": "$1 웹사이트에서 @$3 계정의 $2 키를 이용해 메시지에 서명하려고 합니다.",
     "description": "Sign message"
-  },
-  "dialog_expand": {
-    "message": "...(클릭하면 확장됩니다)",
-    "description": "Toggle"
   },
   "bgd_init_no_wallet": {
     "message": "지갑 생성이 필요합니다!",
@@ -946,9 +907,6 @@
   "bgd_ops_tokens": {
     "message": "트랜잭션이 브로드캐스트되었습니다. 잔액을 확인해서 잘 처리되었는지 체크해보세요."
   },
-  "bgd_ops_signed_call": {
-    "message": "성공!"
-  },
   "bgd_ops_sign_success": {
     "message": "메시지 서명 성공."
   },
@@ -1016,10 +974,6 @@
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
-  "dialog_auth_key": {
-    "message": "Key",
-    "description": "New key to be added"
-  },
   "bgd_ops_add_key_auth": {
     "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
     "description": "Succesfully added a new keypair"
@@ -1043,9 +997,6 @@
   "popup_html_auth_text": {
     "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
     "description": "On Add new account => via auth"
-  },
-  "popup_html_auth_placeholder_username": {
-    "message": "Username"
   },
   "popup_html_auth_placeholder_username_auth": {
     "message": "Authorized Account",

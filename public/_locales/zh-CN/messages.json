@@ -551,17 +551,9 @@
     "message": "查看您的自定代币餘额。 您可以隐藏某些代币并通过点击设定来查看更多资讯。",
     "description": "on tokens page when you dont have any"
   },
-  "popup_token_key": {
-    "message": "请新增您的活跃金钥以发送代币！",
-    "description": "on tokens when trying to send tokens without having an active key registed "
-  },
   "popup_no_such_account": {
     "message": "该用户名未在区块链上註册！",
     "description": "on tokens page when trying to send tokens to a non existing user"
-  },
-  "popup_token_success": {
-    "message": "代币已成功发送！",
-    "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
     "message": "交易超时无回应。 请再次检查您的代币餘额，然后再尝试发送。",
@@ -598,10 +590,6 @@
   "dialog_cancel": {
     "message": "取消",
     "description": "Cancel button"
-  },
-  "dialog_broadcasting": {
-    "message": "将交易播送到区块链...",
-    "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
     "message": "帐号",
@@ -659,10 +647,6 @@
     "message": "餘额",
     "description": "When website request a transfer"
   },
-  "dialog_future_balance": {
-    "message": "终值",
-    "description": "When website request a transfer"
-  },
   "dialog_daily_pay": {
     "message": "日常开支",
     "description": "When website request a proposal creation"
@@ -682,10 +666,6 @@
   "dialog_period": {
     "message": "期间",
     "description": "When website request a proposal creation"
-  },
-  "dialog_extensions": {
-    "message": "附加元件管理员",
-    "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
     "message": "JSON元资料",
@@ -707,7 +687,7 @@
     "message": "最高接受付款： ",
     "description": "When website request a post"
   },
-  "dialog_percentage_sbd": {
+  "dialog_percentage_hbd": {
     "message": "SBD百分比： ",
     "description": "When website request a post"
   },
@@ -742,9 +722,6 @@
   "dialog_confirm": {
     "message": "确认"
   },
-  "dialog_body_toggle": {
-    "message": "内文<span class ='small'>（点击以显示）</span>"
-  },
   "dialog_options_toggle": {
     "message": "选项<span class ='small'>（点击以显示）</span>"
   },
@@ -765,10 +742,6 @@
   },
   "dialog_header_wrong_pwd": {
     "message": "密码错误 ！"
-  },
-  "dialog_header_broadcasting": {
-    "message": "播送",
-    "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
     "message": "自订交易",
@@ -794,16 +767,8 @@
     "message": "播送",
     "description": "Website request title"
   },
-  "dialog_title_call": {
-    "message": "签署要求",
-    "description": "Website request title"
-  },
   "dialog_title_post": {
     "message": "贴文",
-    "description": "Website request title"
-  },
-  "dialog_title_vote": {
-    "message": "投票",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
@@ -861,10 +826,6 @@
   "dialog_desc_sign": {
     "message": "网站$1想使用帐户的$2密钥签名讯息：@$3",
     "description": "Sign message"
-  },
-  "dialog_expand": {
-    "message": "...（点击展开）",
-    "description": "Toggle"
   },
   "bgd_init_no_wallet": {
     "message": "没有钱包！",
@@ -946,9 +907,6 @@
   "bgd_ops_tokens": {
     "message": "交易已成功播送。 请检查您的餘额以确认过程是否已成功。"
   },
-  "bgd_ops_signed_call": {
-    "message": "成功!"
-  },
   "bgd_ops_sign_success": {
     "message": "讯息签署已成功。"
   },
@@ -1016,10 +974,6 @@
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
-  "dialog_auth_key": {
-    "message": "Key",
-    "description": "New key to be added"
-  },
   "bgd_ops_add_key_auth": {
     "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
     "description": "Succesfully added a new keypair"
@@ -1043,9 +997,6 @@
   "popup_html_auth_text": {
     "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
     "description": "On Add new account => via auth"
-  },
-  "popup_html_auth_placeholder_username": {
-    "message": "Username"
   },
   "popup_html_auth_placeholder_username_auth": {
     "message": "Authorized Account",
