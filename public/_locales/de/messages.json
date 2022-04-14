@@ -7,10 +7,6 @@
     "message": "Secure Hive Wallet Extension.",
     "description": "Extension description, as shown in the store."
   },
-  "transaction_error": {
-    "message": "Transaktionsfehler",
-    "description": "Generic error during transaction"
-  },
   "memo": {
     "message": "Memo",
     "description": "type of key"
@@ -219,20 +215,12 @@
     "message": "Passwort ändern",
     "description": "on settings page"
   },
-  "popup_html_pref": {
-    "message": "Präferenzen",
-    "description": "on settings page"
-  },
   "popup_html_autolock": {
     "message": "Automatische Sperrung",
     "description": "on settings page"
   },
   "popup_html_keychainify": {
     "message": "Keychainify",
-    "description": "on settings page"
-  },
-  "popup_html_import_export": {
-    "message": "Import / Export",
     "description": "on settings page"
   },
   "popup_html_about": {
@@ -279,10 +267,6 @@
     "message": "Derzeit werden nur Transfer-URLs von Steem Connect unterstützt.",
     "description": "on keychainify settings"
   },
-  "popup_html_import_export_text": {
-    "message": "You can export all your keys encrypted in a file. This will allow you to import them to Keychain on another device or simply safeguard them.<br/><br/>When importing, only accounts that are not already present on the instance will be added.",
-    "description": "on import / export settings"
-  },
   "popup_html_import": {
     "message": "Import",
     "description": "on import / export settings"
@@ -295,17 +279,9 @@
     "message": "The overall idea and concept for the Hive Keychain browser extension was created on Steem by <a href=\"https://steempeak.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steempeak.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem/Hive developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
     "description": "on about keychain"
   },
-  "popup_html_remove": {
-    "message": "Entfernen",
-    "description": "on manage accounts, remove key"
-  },
   "popup_html_delete_account": {
     "message": "DIESES KONTO LÖSCHEN",
     "description": "on manage accounts"
-  },
-  "popup_html_select_rpc": {
-    "message": "Wählen Sie eine RPC-Node",
-    "description": "on preferences"
   },
   "popup_html_notif_pref": {
     "message": "Benachrichtigungseinstellungen",
@@ -367,18 +343,6 @@
     "message": "MEMO (optional)",
     "description": "When initiating a HIVE or HBD transfer"
   },
-  "popup_html_encrypt_memo": {
-    "message": "Memo verschlüsseln",
-    "description": "When initiating a HIVE or HBD transfer"
-  },
-  "popup_html_add_active": {
-    "message": "Please add an active key to send HIVE or HBD.",
-    "description": "When trying to send HIVE or HBD but active key was not stored"
-  },
-  "popup_html_transfer": {
-    "message": "Transfer",
-    "description": "On transfer confirmation page"
-  },
   "popup_html_transfer_confirm_text": {
     "message": "Bitte bestätigen Sie Ihren Transfer.<br>Dies kann nicht rückgängig gemacht werden.",
     "description": "On transfer confirmation page"
@@ -399,49 +363,9 @@
     "message": "Memo",
     "description": "On transfer confirmation page"
   },
-  "popup_html_not_now": {
-    "message": "Nicht jetzt",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_redeem": {
-    "message": "Einfordern",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_witness_title": {
-    "message": "Witness Wählen",
-    "description": "On witness page"
-  },
-  "popup_html_witness_disclaimer": {
-    "message": "Sie können für bis zu 30 Witnesses stimmen.",
-    "description": "On witness page"
-  },
   "popup_html_witness_remaining": {
     "message": "Verbleibende Stimmen: <span>30</span>",
     "description": "On witness page"
-  },
-  "popup_html_witness_voted": {
-    "message": "Gewählt",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_top": {
-    "message": "Top 100",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_add": {
-    "message": "Hinzufügen",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_proxy_desc": {
-    "message": "Du kannst einen Kontonamen manuell eingeben um für ihn als Witness zu stimmen oder durch einen Proxy wählen.",
-    "description": "On witness page > Add"
-  },
-  "popup_html_witness_vote": {
-    "message": "Für ein Witness abstimmen",
-    "description": "On witness page > Add > Dropdown"
-  },
-  "popup_html_chose_proxy": {
-    "message": "Proxy auswählen",
-    "description": "On witness page > Add > Dropdown"
   },
   "popup_html_tokens_available": {
     "message": "Verfügbare Token",
@@ -457,10 +381,6 @@
   },
   "popup_html_tokens_send_text": {
     "message": "Das Senden Ihrer Token kann bis zu 30 Sekunden in Anspruch nehmen, bitte haben Sie Geduld.",
-    "description": "On tokens page > Send"
-  },
-  "popup_html_recipient": {
-    "message": "Empfänger",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {
@@ -511,33 +431,13 @@
     "message": "Gesamt Eingehend",
     "description": "Main page > Delegate > Click on Incoming"
   },
-  "popup_html_edit_delegations": {
-    "message": "Delegation bearbeiten",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_edit_delegations_text": {
-    "message": "Sie ändern den an diesen Benutzer delegierten Betrag. Bearbeiten Sie den Betrag und speichern Sie Ihre Änderung.",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_support": {
-    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
-    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
-  },
   "popup_accounts_reveal_private": {
     "message": "Klicken Sie hier, um den privaten Schlüssel anzuzeigen",
     "description": "On manage accounts"
   },
-  "popup_accounts_no_bittrex": {
-    "message": "Bittrex ist nicht erreichbar",
-    "description": "instead of estimated value, if cant reach bittrex api"
-  },
   "popup_accounts_add_memo": {
     "message": "Fügen Sie Ihren privaten Memo-key hinzu, um dieses Memo zu lesen",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
-  },
-  "popup_accounts_no_recent_transfers": {
-    "message": "Keine kürzlichen Transfers",
-    "description": "if history is empty"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
@@ -559,22 +459,6 @@
     "message": "Bitte alle Felder ausfüllen.",
     "description": "when adding new account but not filling all fields"
   },
-  "popup_accounts_already_have_key": {
-    "message": "Sie haben bereits Ihren $1-key eingegeben!",
-    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_your_key": {
-    "message": "Dies ist nicht ihr $1-key!",
-    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_wif": {
-    "message": "Dies ist kein privates WIF!",
-    "description": "not a private key"
-  },
-  "popup_accounts_try_again": {
-    "message": "Bitte versuchen Sie es später erneut!",
-    "description": "Generic unknown error, user is invited to try again"
-  },
   "popup_accounts_no_key_selected": {
     "message": "You didn't select any key. Please select at least one.",
     "description": "when trying to save keys on selecting keys page"
@@ -583,18 +467,6 @@
     "message": "Sie müssen Ihren privaten posting-key eingeben um Belohnungen abzuholen!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
-  "popup_delegate_key": {
-    "message": "Bitte fügen Sie Ihren active-key hinzu, um Steem Power zu delegieren!",
-    "description": "When trying to send delegation but user doenst have a stored active key"
-  },
-  "popup_delegate_success": {
-    "message": "Ihre Delegation war erfolgreich!",
-    "description": "Main menu > Delegate"
-  },
-  "popup_delegate_change_success": {
-    "message": "Die Änderung der Delegation war erfolgreich!",
-    "description": "After editing a delegation"
-  },
   "popup_password_mismatch": {
     "message": "Die Passwörter stimmen nicht überein!",
     "description": "when registering a password on keychain"
@@ -602,10 +474,6 @@
   "popup_password_regex": {
     "message": "Ihr Passwort muss mindestens 8 Zeichen lang sein und einen Kleinbuchstaben, einen Großbuchstaben und eine Ziffer enthalten oder mindestens 16 Zeichen lang sein.",
     "description": "when registering the master pwd on keychain"
-  },
-  "popup_add_account": {
-    "message": "Neues Konto hinzufügen",
-    "description": "From accounts list dropdown"
   },
   "popup_empty": {
     "message": "Leer",
@@ -619,60 +487,12 @@
     "message": "Bitte fügen Sie Ihren active-key hinzu, um für Witnesses zu stimmen!",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
-  "popup_transfer_success": {
-    "message": "Transfer erfolgreich!",
-    "description": "after sending a transfer"
-  },
   "popup_next_powerdown": {
     "message": "Nächster Power Down ist am $1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
-  "popup_pu_key": {
-    "message": "Bitte fügen Sie Ihren active-key hinzu, um den Power Up auszuführen!",
-    "description": "When wanting to powerup but no active key stored"
-  },
-  "popup_pd_key": {
-    "message": "Bitte fügen Sie Ihren active-key hinzu, zum Power Down!",
-    "description": "When wanting to power down but no active key stored"
-  },
-  "popup_pu_success": {
-    "message": "Power Up erfolgreich durchgeführt!",
-    "description": "After powering up"
-  },
-  "popup_pd_success": {
-    "message": "Sie haben erfolgreich einen Power Down gestartet!",
-    "description": "After powering down"
-  },
-  "popup_pd_stop": {
-    "message": "Sie haben erfolgreich den Power Down gestoppt!",
-    "description": "After powering down 0SP"
-  },
-  "popup_rpc_add": {
-    "message": "RPC hinzufügen",
-    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
-  },
-  "popup_rpc_added": {
-    "message": "RPC erfolgreich hinzugefügt!",
-    "description": "On preferences >Add RPC "
-  },
-  "popup_rpc_default": {
-    "message": "STANDARD",
-    "description": "On preferences, rpc dropdown."
-  },
   "popup_master_changed": {
     "message": "Ihr Master Passwort wurde erfolgreich geändert",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_stronger": {
-    "message": "Bitte verwenden Sie ein stärkeres Passwort!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_match": {
-    "message": "Die neuen Passwörter stimmen nicht überein!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_wrong_current_pwd": {
-    "message": "Ihr aktuelles Passwort ist nicht korrekt",
     "description": "When changing pwd from settings"
   },
   "popup_website": {
@@ -731,17 +551,9 @@
     "message": "Sie haben derzeit keine benutzerdefinierten Token. Klicken Sie auf das Einstellungsrad, um Informationen über die verfügbaren Token anzuzeigen.",
     "description": "on tokens page when you dont have any"
   },
-  "popup_token_key": {
-    "message": "Bitte fügen Sie Ihren active-key hinzu, um Token zu verschicken!",
-    "description": "on tokens when trying to send tokens without having an active key registed "
-  },
   "popup_no_such_account": {
     "message": "Dieser Benutzername ist nicht auf der Blockchain registriert!",
     "description": "on tokens page when trying to send tokens to a non existing user"
-  },
-  "popup_token_success": {
-    "message": "Token erfolgreich gesendet!",
-    "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
     "message": "Transaktionszeitüberschreitung ohne Antwort. Bitte überprüfen Sie Ihr Token-Guthaben, vor einem erneuten Versuch.",
@@ -778,10 +590,6 @@
   "dialog_cancel": {
     "message": "Abbrechen",
     "description": "Cancel button"
-  },
-  "dialog_broadcasting": {
-    "message": "Übertragung der Transaktion an die Blockchain...",
-    "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
     "message": "Benutzerkonto",
@@ -839,10 +647,6 @@
     "message": "Saldo",
     "description": "When website request a transfer"
   },
-  "dialog_future_balance": {
-    "message": "Zukünftiger Saldo",
-    "description": "When website request a transfer"
-  },
   "dialog_daily_pay": {
     "message": "Tägliche Bezahlung",
     "description": "When website request a proposal creation"
@@ -862,10 +666,6 @@
   "dialog_period": {
     "message": "Zeitraum",
     "description": "When website request a proposal creation"
-  },
-  "dialog_extensions": {
-    "message": "Erweiterungen",
-    "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
     "message": "JSON Metadaten",
@@ -887,7 +687,7 @@
     "message": "Max. Akzeptierte Auszahlung: ",
     "description": "When website request a post"
   },
-  "dialog_percentage_sbd": {
+  "dialog_percentage_hbd": {
     "message": "Prozentsatz SBD : ",
     "description": "When website request a post"
   },
@@ -922,9 +722,6 @@
   "dialog_confirm": {
     "message": "Bestätigen"
   },
-  "dialog_body_toggle": {
-    "message": "Body <span class='small'>(Zum Anzeigen Klicken)</span>"
-  },
   "dialog_options_toggle": {
     "message": "Optionen <span class='small'>(Zum Anzeigen Klicken)</span>"
   },
@@ -945,10 +742,6 @@
   },
   "dialog_header_wrong_pwd": {
     "message": "Falsches Passwort!"
-  },
-  "dialog_header_broadcasting": {
-    "message": "Übertragung im Gange",
-    "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
     "message": "Benutzerdefinierte Transaktion",
@@ -974,16 +767,8 @@
     "message": "Übertragung",
     "description": "Website request title"
   },
-  "dialog_title_call": {
-    "message": "Signierter Anruf",
-    "description": "Website request title"
-  },
   "dialog_title_post": {
     "message": "Post",
-    "description": "Website request title"
-  },
-  "dialog_title_vote": {
-    "message": "Vote",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
@@ -1041,10 +826,6 @@
   "dialog_desc_sign": {
     "message": "Die Webseite $1 möchte eine Nachricht mit dem $2-Schlüssel für @$3 unterschreiben",
     "description": "Sign message"
-  },
-  "dialog_expand": {
-    "message": "...(zum erweitern klicken)",
-    "description": "Toggle"
   },
   "bgd_init_no_wallet": {
     "message": "Kein Wallet!",
@@ -1126,9 +907,6 @@
   "bgd_ops_tokens": {
     "message": "Die Transaktion wurde erfolgreich übertragen. Bitte überprüfen sie Ihr Saldo um zu bestätigen dass die Transaktion erfolgreich bearbeitet wurde."
   },
-  "bgd_ops_signed_call": {
-    "message": "Erfolg!"
-  },
   "bgd_ops_sign_success": {
     "message": "Nachricht erfolgreich signiert."
   },
@@ -1196,10 +974,6 @@
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
-  "dialog_auth_key": {
-    "message": "Key",
-    "description": "New key to be added"
-  },
   "bgd_ops_add_key_auth": {
     "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
     "description": "Succesfully added a new keypair"
@@ -1223,9 +997,6 @@
   "popup_html_auth_text": {
     "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
     "description": "On Add new account => via auth"
-  },
-  "popup_html_auth_placeholder_username": {
-    "message": "Username"
   },
   "popup_html_auth_placeholder_username_auth": {
     "message": "Authorized Account",

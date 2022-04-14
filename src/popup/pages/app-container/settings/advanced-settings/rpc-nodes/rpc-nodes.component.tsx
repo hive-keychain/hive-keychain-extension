@@ -234,7 +234,7 @@ const RpcNodes = ({
               value={addRpcNodeChainId}
               onChange={setAddRpcNodeChainId}
               placeholder="Chain Id"
-              skipTranslation={true}
+              skipPlaceholderTranslation={true}
               onEnterPress={handleSaveNewRpcClicked}
             />
           )}

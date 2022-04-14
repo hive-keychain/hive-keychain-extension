@@ -267,6 +267,7 @@ const addKey = async (
         account.keys.memoPubkey = keys.memoPubkey;
         break;
     }
+    AccountUtils.saveAccounts(accounts, store.getState().mk);
     store.dispatch(setSuccessMessage('import_html_success'));
     return accounts;
   }

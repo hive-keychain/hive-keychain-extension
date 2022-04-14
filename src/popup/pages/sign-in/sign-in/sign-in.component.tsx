@@ -46,7 +46,7 @@ const SignIn = ({
       <p
         className="introduction"
         dangerouslySetInnerHTML={{
-          __html: chrome.i18n.getMessage('popup_html_register'),
+          __html: chrome.i18n.getMessage('popup_html_unlock'),
         }}></p>
 
       <InputComponent

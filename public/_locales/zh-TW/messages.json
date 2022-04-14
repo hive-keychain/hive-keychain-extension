@@ -7,10 +7,6 @@
     "message": "Secure Hive Wallet Extension.",
     "description": "Extension description, as shown in the store."
   },
-  "transaction_error": {
-    "message": "交易錯誤",
-    "description": "Generic error during transaction"
-  },
   "memo": {
     "message": "備註",
     "description": "type of key"
@@ -219,20 +215,12 @@
     "message": "變更密碼",
     "description": "on settings page"
   },
-  "popup_html_pref": {
-    "message": "偏好設定",
-    "description": "on settings page"
-  },
   "popup_html_autolock": {
     "message": "自動鎖定",
     "description": "on settings page"
   },
   "popup_html_keychainify": {
     "message": "Keychainify",
-    "description": "on settings page"
-  },
-  "popup_html_import_export": {
-    "message": "Import / Export",
     "description": "on settings page"
   },
   "popup_html_about": {
@@ -279,10 +267,6 @@
     "message": "當前僅支持Steem Connect傳輸URL。",
     "description": "on keychainify settings"
   },
-  "popup_html_import_export_text": {
-    "message": "You can export all your keys encrypted in a file. This will allow you to import them to Keychain on another device or simply safeguard them.<br/><br/>When importing, only accounts that are not already present on the instance will be added.",
-    "description": "on import / export settings"
-  },
   "popup_html_import": {
     "message": "Import",
     "description": "on import / export settings"
@@ -295,17 +279,9 @@
     "message": "The overall idea and concept for the Hive Keychain browser extension was created on Steem by <a href=\"https://steempeak.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steempeak.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem/Hive developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
     "description": "on about keychain"
   },
-  "popup_html_remove": {
-    "message": "移除",
-    "description": "on manage accounts, remove key"
-  },
   "popup_html_delete_account": {
     "message": "刪除此帳號",
     "description": "on manage accounts"
-  },
-  "popup_html_select_rpc": {
-    "message": "選擇一個RPC",
-    "description": "on preferences"
   },
   "popup_html_notif_pref": {
     "message": "通知喜好設定",
@@ -367,18 +343,6 @@
     "message": "備註（可選）",
     "description": "When initiating a HIVE or HBD transfer"
   },
-  "popup_html_encrypt_memo": {
-    "message": "加密備忘錄",
-    "description": "When initiating a HIVE or HBD transfer"
-  },
-  "popup_html_add_active": {
-    "message": "Please add an active key to send HIVE or HBD.",
-    "description": "When trying to send HIVE or HBD but active key was not stored"
-  },
-  "popup_html_transfer": {
-    "message": "轉帳",
-    "description": "On transfer confirmation page"
-  },
   "popup_html_transfer_confirm_text": {
     "message": "請確認您的轉移。此操作無法撤消。",
     "description": "On transfer confirmation page"
@@ -399,49 +363,9 @@
     "message": "備註",
     "description": "On transfer confirmation page"
   },
-  "popup_html_not_now": {
-    "message": "暫時不要",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_redeem": {
-    "message": "領取",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_witness_title": {
-    "message": "見證人投票",
-    "description": "On witness page"
-  },
-  "popup_html_witness_disclaimer": {
-    "message": "您最多可以投票給30位見證人。",
-    "description": "On witness page"
-  },
   "popup_html_witness_remaining": {
     "message": "剩餘投票數：<span> 30 </span>",
     "description": "On witness page"
-  },
-  "popup_html_witness_voted": {
-    "message": "已投票",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_top": {
-    "message": "前100名",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_add": {
-    "message": "新增",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_proxy_desc": {
-    "message": "您可以手動輸入用戶投票見證人或將其設置為代理。",
-    "description": "On witness page > Add"
-  },
-  "popup_html_witness_vote": {
-    "message": "見證人投票",
-    "description": "On witness page > Add > Dropdown"
-  },
-  "popup_html_chose_proxy": {
-    "message": "選擇代理",
-    "description": "On witness page > Add > Dropdown"
   },
   "popup_html_tokens_available": {
     "message": "可用代幣",
@@ -457,10 +381,6 @@
   },
   "popup_html_tokens_send_text": {
     "message": "發送代幣可能最多需要30秒才能確認，請耐心等待。",
-    "description": "On tokens page > Send"
-  },
-  "popup_html_recipient": {
-    "message": "接受者",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {
@@ -511,33 +431,13 @@
     "message": "總收入",
     "description": "Main page > Delegate > Click on Incoming"
   },
-  "popup_html_edit_delegations": {
-    "message": "編輯委託",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_edit_delegations_text": {
-    "message": "您正在更改委託給該用戶的金額。 編輯金額並保存更改。",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_support": {
-    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
-    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
-  },
   "popup_accounts_reveal_private": {
     "message": "點擊顯示私鑰",
     "description": "On manage accounts"
   },
-  "popup_accounts_no_bittrex": {
-    "message": "無法連接至Bittrex",
-    "description": "instead of estimated value, if cant reach bittrex api"
-  },
   "popup_accounts_add_memo": {
     "message": "添加您的私人備忘錄密鑰以瀏覽此備忘錄",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
-  },
-  "popup_accounts_no_recent_transfers": {
-    "message": "近期無交易",
-    "description": "if history is empty"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
@@ -559,22 +459,6 @@
     "message": "請輸入所有欄位。",
     "description": "when adding new account but not filling all fields"
   },
-  "popup_accounts_already_have_key": {
-    "message": "您已經輸入了$1的金鑰！",
-    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_your_key": {
-    "message": "這不是您的$1私鑰！",
-    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_wif": {
-    "message": "這不是私人WIF！",
-    "description": "not a private key"
-  },
-  "popup_accounts_try_again": {
-    "message": "請稍後再試。",
-    "description": "Generic unknown error, user is invited to try again"
-  },
   "popup_accounts_no_key_selected": {
     "message": "You didn't select any key. Please select at least one.",
     "description": "when trying to save keys on selecting keys page"
@@ -583,18 +467,6 @@
     "message": "您需要輸入私人posting金鑰才能領取獎勵！",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
-  "popup_delegate_key": {
-    "message": "請新增您的活躍金密鑰以發送委託！",
-    "description": "When trying to send delegation but user doenst have a stored active key"
-  },
-  "popup_delegate_success": {
-    "message": "您的委託成功了！",
-    "description": "Main menu > Delegate"
-  },
-  "popup_delegate_change_success": {
-    "message": "您的委託更改成功！",
-    "description": "After editing a delegation"
-  },
   "popup_password_mismatch": {
     "message": "您的密碼不符！",
     "description": "when registering a password on keychain"
@@ -602,10 +474,6 @@
   "popup_password_regex": {
     "message": "您的密碼必須至少8個字符長，並且包含小寫字母，大寫字母和數字，或者至少16個字符長且不受限制。",
     "description": "when registering the master pwd on keychain"
-  },
-  "popup_add_account": {
-    "message": "新增帳號",
-    "description": "From accounts list dropdown"
   },
   "popup_empty": {
     "message": "清空",
@@ -619,60 +487,12 @@
     "message": "請新增您的活躍金鑰以投票給見證人！",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
-  "popup_transfer_success": {
-    "message": "轉賬成功",
-    "description": "after sending a transfer"
-  },
   "popup_next_powerdown": {
     "message": "下次power down$1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
-  "popup_pu_key": {
-    "message": "請新增您的活躍金鑰以power up！",
-    "description": "When wanting to powerup but no active key stored"
-  },
-  "popup_pd_key": {
-    "message": "請新增您的活躍金鑰以power down！",
-    "description": "When wanting to power down but no active key stored"
-  },
-  "popup_pu_success": {
-    "message": "您已成功power up！",
-    "description": "After powering up"
-  },
-  "popup_pd_success": {
-    "message": "您已成功啟動power down！",
-    "description": "After powering down"
-  },
-  "popup_pd_stop": {
-    "message": "您已成功停止power down！",
-    "description": "After powering down 0SP"
-  },
-  "popup_rpc_add": {
-    "message": "增加RPC",
-    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
-  },
-  "popup_rpc_added": {
-    "message": "新增RPC成功！",
-    "description": "On preferences >Add RPC "
-  },
-  "popup_rpc_default": {
-    "message": "默認",
-    "description": "On preferences, rpc dropdown."
-  },
   "popup_master_changed": {
     "message": "您的主密碼已成功更改",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_stronger": {
-    "message": "請使用更強的密碼！",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_match": {
-    "message": "新密碼不符！",
-    "description": "When changing pwd from settings"
-  },
-  "popup_wrong_current_pwd": {
-    "message": "當前密碼錯誤",
     "description": "When changing pwd from settings"
   },
   "popup_website": {
@@ -731,17 +551,9 @@
     "message": "查看您的自定代幣餘額。 您可以隱藏某些代幣並通過點擊設定來查看更多資訊。",
     "description": "on tokens page when you dont have any"
   },
-  "popup_token_key": {
-    "message": "請新增您的活躍金鑰以發送代幣！",
-    "description": "on tokens when trying to send tokens without having an active key registed "
-  },
   "popup_no_such_account": {
     "message": "該用戶名未在區塊鏈上註冊！",
     "description": "on tokens page when trying to send tokens to a non existing user"
-  },
-  "popup_token_success": {
-    "message": "代幣已成功發送！",
-    "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
     "message": "交易超時無回應。 請再次檢查您的代幣餘額，然後再嘗試發送。",
@@ -778,10 +590,6 @@
   "dialog_cancel": {
     "message": "取消",
     "description": "Cancel button"
-  },
-  "dialog_broadcasting": {
-    "message": "將交易播送到區塊鏈...",
-    "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
     "message": "帳號",
@@ -839,10 +647,6 @@
     "message": "餘額",
     "description": "When website request a transfer"
   },
-  "dialog_future_balance": {
-    "message": "終值",
-    "description": "When website request a transfer"
-  },
   "dialog_daily_pay": {
     "message": "日常開支",
     "description": "When website request a proposal creation"
@@ -862,10 +666,6 @@
   "dialog_period": {
     "message": "期間",
     "description": "When website request a proposal creation"
-  },
-  "dialog_extensions": {
-    "message": "附加元件管理員",
-    "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
     "message": "JSON元資料",
@@ -887,7 +687,7 @@
     "message": "最高接受付款： ",
     "description": "When website request a post"
   },
-  "dialog_percentage_sbd": {
+  "dialog_percentage_hbd": {
     "message": "SBD百分比： ",
     "description": "When website request a post"
   },
@@ -922,9 +722,6 @@
   "dialog_confirm": {
     "message": "確認"
   },
-  "dialog_body_toggle": {
-    "message": "內文<span class ='small'>（點擊以顯示）</span>"
-  },
   "dialog_options_toggle": {
     "message": "選項<span class ='small'>（點擊以顯示）</span>"
   },
@@ -945,10 +742,6 @@
   },
   "dialog_header_wrong_pwd": {
     "message": "密碼錯誤 ！"
-  },
-  "dialog_header_broadcasting": {
-    "message": "播送",
-    "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
     "message": "自訂交易",
@@ -974,16 +767,8 @@
     "message": "播送",
     "description": "Website request title"
   },
-  "dialog_title_call": {
-    "message": "簽署要求",
-    "description": "Website request title"
-  },
   "dialog_title_post": {
     "message": "貼文",
-    "description": "Website request title"
-  },
-  "dialog_title_vote": {
-    "message": "投票",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
@@ -1041,10 +826,6 @@
   "dialog_desc_sign": {
     "message": "網站$1想使用帳戶的$2密鑰簽名訊息：@$3",
     "description": "Sign message"
-  },
-  "dialog_expand": {
-    "message": "...（點擊展開）",
-    "description": "Toggle"
   },
   "bgd_init_no_wallet": {
     "message": "沒有錢包！",
@@ -1126,9 +907,6 @@
   "bgd_ops_tokens": {
     "message": "交易已成功播送。 請檢查您的餘額以確認過程是否已成功。"
   },
-  "bgd_ops_signed_call": {
-    "message": "成功!"
-  },
   "bgd_ops_sign_success": {
     "message": "訊息簽署已成功。"
   },
@@ -1196,10 +974,6 @@
   "dialog_title_remove_key_auth": {
     "message": "Remove Key"
   },
-  "dialog_auth_key": {
-    "message": "Key",
-    "description": "New key to be added"
-  },
   "bgd_ops_add_key_auth": {
     "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
     "description": "Succesfully added a new keypair"
@@ -1223,9 +997,6 @@
   "popup_html_auth_text": {
     "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
     "description": "On Add new account => via auth"
-  },
-  "popup_html_auth_placeholder_username": {
-    "message": "Username"
   },
   "popup_html_auth_placeholder_username_auth": {
     "message": "Authorized Account",

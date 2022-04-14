@@ -5,15 +5,6 @@ export const BuyCoinsListItem = (type: BuyCoinType) => {
     case BuyCoinType.BUY_HIVE:
       return [
         {
-          categoryLabel: 'popup_html_buy_moonpay_title',
-          items: [
-            {
-              image: 'moonpay.png',
-              link: 'https://buy.moonpay.io/?apiKey=pk_live_aT4LSjpZc2LEPe8dVyBzVQhImGOT3OZ&currencyCode=HIVE',
-            },
-          ],
-        },
-        {
           categoryLabel: 'popup_html_buy_swap_title',
           items: [
             {

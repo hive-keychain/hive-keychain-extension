@@ -4,6 +4,7 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -27,6 +28,7 @@ const TopBar = ({
   addToLoadingList,
   removeFromLoadingList,
   loadGlobalProperties,
+  setErrorMessage,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -61,6 +63,11 @@ const TopBar = ({
   };
 
   const claim = async (): Promise<void> => {
+    if (!activeAccount.keys.posting) {
+      setErrorMessage('popup_accounts_err_claim');
+      return;
+    }
+
     addToLoadingList('popup_html_claiming_rewards');
     const claimSuccessful = await HiveUtils.claimRewards(
       activeAccount,
@@ -119,6 +126,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   loadGlobalProperties,
+  setErrorMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

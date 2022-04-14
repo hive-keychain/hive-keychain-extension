@@ -38,12 +38,12 @@ const getExchangeValidationWarning = async (
   return null;
 };
 
-const saveTransferRecipient = async (
+const saveFavoriteUser = async (
   username: string,
   activeAccount: ActiveAccount,
 ) => {
   let transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+    LocalStorageKeyEnum.FAVORITE_USERS,
   );
   if (!transferTo) {
     transferTo = { [activeAccount.name!]: [] };
@@ -56,14 +56,14 @@ const saveTransferRecipient = async (
     transferTo[activeAccount.name!].push(username);
   }
   LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+    LocalStorageKeyEnum.FAVORITE_USERS,
     transferTo,
   );
 };
 
 const TransferUtils = {
   getExchangeValidationWarning,
-  saveTransferRecipient,
+  saveTransferRecipient: saveFavoriteUser,
 };
 
 export default TransferUtils;

@@ -1,6 +1,6 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
-import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -73,9 +73,9 @@ const TokensTransfer = ({
   }, []);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: TransferToItems =
+    const transferTo: FavoriteUserItems =
       await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+        LocalStorageKeyEnum.FAVORITE_USERS,
       );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
@@ -143,7 +143,7 @@ const TokensTransfer = ({
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
       title: 'popup_html_transfer_tokens',
@@ -235,7 +235,7 @@ const TokensTransfer = ({
           <InputComponent
             type={InputType.NUMBER}
             placeholder="0.000"
-            skipTranslation={true}
+            skipPlaceholderTranslation={true}
             value={amount}
             onChange={setAmount}
             onSetToMaxClicked={setAmountToMaxValue}

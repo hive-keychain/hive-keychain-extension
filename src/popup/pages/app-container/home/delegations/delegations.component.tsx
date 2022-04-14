@@ -69,7 +69,7 @@ const Delegations = ({
 
   const loadAutocompleteTransferUsernames = async () => {
     const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+      LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
@@ -284,7 +284,7 @@ const Delegations = ({
           <InputComponent
             type={InputType.NUMBER}
             placeholder="0.000"
-            skipTranslation={true}
+            skipPlaceholderTranslation={true}
             value={value}
             onChange={setValue}
             onSetToMaxClicked={setToMax}

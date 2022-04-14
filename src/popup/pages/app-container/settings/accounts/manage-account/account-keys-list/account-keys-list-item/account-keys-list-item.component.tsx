@@ -94,7 +94,16 @@ const AccountKeysListItem = ({
             additionalClassName="remove-button"></Icon>
         )}
       </div>
-      {publicKey && privateKey ? (
+
+      {!privateKey && !publicKey && (
+        <Icon
+          onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
+          name={Icons.ADD_CIRCLE}
+          type={IconType.OUTLINED}
+          additionalClassName="add-key-icon"></Icon>
+      )}
+
+      {(publicKey || privateKey) && (
         <div className="keys-panel">
           {!isAuthorizedAccount && (
             <>
@@ -118,7 +127,7 @@ const AccountKeysListItem = ({
               </div>
             </>
           )}
-          {isAuthorizedAccount && (
+          {isAuthorizedAccount && publicKey && (
             <div
               className="using-authorized-account"
               onClick={() => goToAccount(publicKey)}>
@@ -128,12 +137,6 @@ const AccountKeysListItem = ({
             </div>
           )}
         </div>
-      ) : (
-        <Icon
-          onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
-          name={Icons.ADD_CIRCLE}
-          type={IconType.OUTLINED}
-          additionalClassName="add-key-icon"></Icon>
       )}
     </div>
   );

@@ -62,7 +62,7 @@ const PowerUpDown = ({
 
   const loadAutocompleteTransferUsernames = async () => {
     const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+      LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
@@ -268,6 +268,7 @@ const PowerUpDown = ({
             skipTranslation>
             <div className="power-down-panel">
               <div className="power-down-text">
+                {chrome.i18n.getMessage('popup_html_powering_down')}{' '}
                 {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
               </div>
               <img
@@ -294,7 +295,7 @@ const PowerUpDown = ({
           <InputComponent
             type={InputType.NUMBER}
             placeholder="0.000"
-            skipTranslation={true}
+            skipPlaceholderTranslation={true}
             value={value}
             onChange={setValue}
             onSetToMaxClicked={setToMax}

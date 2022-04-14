@@ -1,6 +1,9 @@
 .buy-coins-page {
   padding: 0px 24px;
   padding-bottom: 16px;
+  .disclaimer {
+    font-size: 20px;
+  }
   .category {
     .items {
       display: flex;
