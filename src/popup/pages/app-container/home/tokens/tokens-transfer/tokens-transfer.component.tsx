@@ -143,7 +143,7 @@ const TokensTransfer = ({
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
       title: 'popup_html_transfer_tokens',

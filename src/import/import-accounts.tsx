@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ImportFile from './import-file.component';
 
+// TODO add import_html_error
 ReactDOM.render(
   <ImportFile
     title={'import_html_title'}

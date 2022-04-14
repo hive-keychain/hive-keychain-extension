@@ -268,6 +268,7 @@ const PowerUpDown = ({
             skipTranslation>
             <div className="power-down-panel">
               <div className="power-down-text">
+                {chrome.i18n.getMessage('popup_html_powering_down')}{' '}
                 {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
               </div>
               <img

@@ -123,7 +123,7 @@ const InputComponent = (props: InputProps) => {
       )}
       {props.onSetToMaxClicked && (
         <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>
-          MAX
+          {chrome.i18n.getMessage('popup_html_send_max')}
         </span>
       )}
     </div>
