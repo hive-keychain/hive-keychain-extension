@@ -298,7 +298,7 @@ const SavingsPage = ({
           <InputComponent
             type={InputType.NUMBER}
             placeholder="0.000"
-            skipTranslation={true}
+            skipPlaceholderTranslation={true}
             value={value}
             onChange={setValue}
             onSetToMaxClicked={setToMax}
