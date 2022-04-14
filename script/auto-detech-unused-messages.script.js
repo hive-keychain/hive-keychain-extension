@@ -12,6 +12,7 @@ const EXCLUDED_KEYS = [
   '_tokens',
   '_tokens_failed',
   'popup_html_notif_pref',
+  'popup_broadcast',
 ];
 
 function getAllKeys() {

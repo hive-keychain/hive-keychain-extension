@@ -431,33 +431,13 @@
     "message": "임대 받은 수량 합계",
     "description": "Main page > Delegate > Click on Incoming"
   },
-  "popup_html_edit_delegations": {
-    "message": "임대 정책 편집",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_edit_delegations_text": {
-    "message": "이 사용자에게 임대한 수량을 변경하는 곳입니다. 수량 입력 후 변경 사항을 저장하세요.",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_support": {
-    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
-    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
-  },
   "popup_accounts_reveal_private": {
     "message": "개인 키 보기",
     "description": "On manage accounts"
   },
-  "popup_accounts_no_bittrex": {
-    "message": "Bittrex와 연결할 수 없습니다",
-    "description": "instead of estimated value, if cant reach bittrex api"
-  },
   "popup_accounts_add_memo": {
     "message": "이 메모를 읽으려면 개인 메모키를 추가해야 합니다.",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
-  },
-  "popup_accounts_no_recent_transfers": {
-    "message": "최근 전송 내역이 없습니다",
-    "description": "if history is empty"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
@@ -479,22 +459,6 @@
     "message": "필수 입력사항을 모두 입력해주세요.",
     "description": "when adding new account but not filling all fields"
   },
-  "popup_accounts_already_have_key": {
-    "message": "$1 키는 이미 등록되어 있습니다!",
-    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_your_key": {
-    "message": "이것은 당신의 $1 키가 아닙니다!",
-    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_wif": {
-    "message": "이것은 개인 키 포맷이 아닙니다!",
-    "description": "not a private key"
-  },
-  "popup_accounts_try_again": {
-    "message": "나중에 다시 시도해주세요!",
-    "description": "Generic unknown error, user is invited to try again"
-  },
   "popup_accounts_no_key_selected": {
     "message": "You didn't select any key. Please select at least one.",
     "description": "when trying to save keys on selecting keys page"
@@ -503,18 +467,6 @@
     "message": "보상 요청은 개인 포스팅 키 등록이 필요합니다!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
-  "popup_delegate_key": {
-    "message": "임대를 보내려면 액티브 키를 추가해야 합니다!",
-    "description": "When trying to send delegation but user doenst have a stored active key"
-  },
-  "popup_delegate_success": {
-    "message": "임대 성공!",
-    "description": "Main menu > Delegate"
-  },
-  "popup_delegate_change_success": {
-    "message": "임대 변경 성공!",
-    "description": "After editing a delegation"
-  },
   "popup_password_mismatch": {
     "message": "비밀번호가 일치하지 않습니다!",
     "description": "when registering a password on keychain"
@@ -522,10 +474,6 @@
   "popup_password_regex": {
     "message": "비밀번호는 소문자, 대문자, 숫자를 포함한 <br> 최소 8자 이상 또는 16자 이상(아무런 제약없이 구성 가능)이어야 합니다.",
     "description": "when registering the master pwd on keychain"
-  },
-  "popup_add_account": {
-    "message": "새 계정 추가",
-    "description": "From accounts list dropdown"
   },
   "popup_empty": {
     "message": "메모없음",
@@ -539,60 +487,12 @@
     "message": "증인 투표에 참여하려면 액티브 키를 등록해야 합니다!",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
-  "popup_transfer_success": {
-    "message": "전송 성공!",
-    "description": "after sending a transfer"
-  },
   "popup_next_powerdown": {
     "message": "다음 번 파워 다운: $1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
-  "popup_pu_key": {
-    "message": "파워 업을 하려면 액티브 키를 추가해야 합니다!",
-    "description": "When wanting to powerup but no active key stored"
-  },
-  "popup_pd_key": {
-    "message": "파워 다운을 하려면 액티브 키를 추가해야 합니다!",
-    "description": "When wanting to power down but no active key stored"
-  },
-  "popup_pu_success": {
-    "message": "파워 업 성공!",
-    "description": "After powering up"
-  },
-  "popup_pd_success": {
-    "message": "파워 다운이 시작되었습니다!",
-    "description": "After powering down"
-  },
-  "popup_pd_stop": {
-    "message": "파워 다운이 중지되었습니다!",
-    "description": "After powering down 0SP"
-  },
-  "popup_rpc_add": {
-    "message": "RPC 추가",
-    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
-  },
-  "popup_rpc_added": {
-    "message": "RPC 추가 성공!",
-    "description": "On preferences >Add RPC "
-  },
-  "popup_rpc_default": {
-    "message": "기본",
-    "description": "On preferences, rpc dropdown."
-  },
   "popup_master_changed": {
     "message": "마스터 비밀번호가 변경되었습니다",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_stronger": {
-    "message": "더 강력한 비밀번호를 사용해주세요!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_match": {
-    "message": "새로운 비밀번호가 일치하지 않습니다!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_wrong_current_pwd": {
-    "message": "기존 비밀번호가 일치하지 않습니다",
     "description": "When changing pwd from settings"
   },
   "popup_website": {

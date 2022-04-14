@@ -531,33 +531,13 @@
     "message": "Total Incoming",
     "description": "Main page > Delegate > Click on Incoming"
   },
-  "popup_html_edit_delegations": {
-    "message": "Edit Delegation",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_edit_delegations_text": {
-    "message": "You are changing the amount delegated to this user. Edit the amount and save your change.",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_support": {
-    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
-    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
-  },
   "popup_accounts_reveal_private": {
     "message": "Click to show private key",
     "description": "On manage accounts"
   },
-  "popup_accounts_no_bittrex": {
-    "message": "Bittrex is unreachable",
-    "description": "instead of estimated value, if cant reach bittrex api"
-  },
   "popup_accounts_add_memo": {
     "message": "Add your private memo key to read this memo",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
-  },
-  "popup_accounts_no_recent_transfers": {
-    "message": "No recent transfer",
-    "description": "if history is empty"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
@@ -579,22 +559,6 @@
     "message": "Please fill the fields.",
     "description": "when adding new account but not filling all fields"
   },
-  "popup_accounts_already_have_key": {
-    "message": "You already entered your $1 key!",
-    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_your_key": {
-    "message": "This is not your $1 key!",
-    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_wif": {
-    "message": "This is not a private WIF!",
-    "description": "not a private key"
-  },
-  "popup_accounts_try_again": {
-    "message": "Please try again later!",
-    "description": "Generic unknown error, user is invited to try again"
-  },
   "popup_accounts_no_key_selected": {
     "message": "You didn't select any key. Please select at least one.",
     "description": "when trying to save keys on selecting keys page"
@@ -603,21 +567,9 @@
     "message": "You need to enter your private posting key to claim rewards!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
-  "popup_delegate_key": {
-    "message": "Please add your active key to send delegations!",
-    "description": "When trying to send delegation but user doenst have a stored active key"
-  },
   "popup_missing_key": {
     "message": "Please add your $1 key to perform this operation!",
     "description": "When trying to perform an operation without a stored private $1 key"
-  },
-  "popup_delegate_success": {
-    "message": "Your delegation was succesful!",
-    "description": "Main menu > Delegate"
-  },
-  "popup_delegate_change_success": {
-    "message": "Your delegation change was succesful!",
-    "description": "After editing a delegation"
   },
   "popup_password_mismatch": {
     "message": "Your passwords do not match!",
@@ -626,10 +578,6 @@
   "popup_password_regex": {
     "message": "Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter and a digit or be at least 16 characters long without restriction.",
     "description": "when registering the master pwd on keychain"
-  },
-  "popup_add_account": {
-    "message": "Add New Account",
-    "description": "From accounts list dropdown"
   },
   "popup_empty": {
     "message": "Empty",
@@ -643,60 +591,12 @@
     "message": "Please add your active key to vote for witnesses!",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
-  "popup_transfer_success": {
-    "message": "Transfer successful!",
-    "description": "after sending a transfer"
-  },
   "popup_next_powerdown": {
     "message": "Next power down on $1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
-  "popup_pu_key": {
-    "message": "Please add your active key to power up!",
-    "description": "When wanting to powerup but no active key stored"
-  },
-  "popup_pd_key": {
-    "message": "Please add your active key to power down!",
-    "description": "When wanting to power down but no active key stored"
-  },
-  "popup_pu_success": {
-    "message": "You succesfully powered up!",
-    "description": "After powering up"
-  },
-  "popup_pd_success": {
-    "message": "You succesfully started a power down!",
-    "description": "After powering down"
-  },
-  "popup_pd_stop": {
-    "message": "You succesfully stopped a power down!",
-    "description": "After powering down 0SP"
-  },
-  "popup_rpc_add": {
-    "message": "ADD RPC",
-    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
-  },
-  "popup_rpc_added": {
-    "message": "RPC added succesfully!",
-    "description": "On preferences >Add RPC "
-  },
-  "popup_rpc_default": {
-    "message": "DEFAULT",
-    "description": "On preferences, rpc dropdown."
-  },
   "popup_master_changed": {
     "message": "Your master password was changed succesfully",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_stronger": {
-    "message": "Please use a stronger password!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_match": {
-    "message": "The new passwords do not match!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_wrong_current_pwd": {
-    "message": "Wrong current password",
     "description": "When changing pwd from settings"
   },
   "popup_website": {

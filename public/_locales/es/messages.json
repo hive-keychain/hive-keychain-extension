@@ -431,33 +431,13 @@
     "message": "Total entrante",
     "description": "Main page > Delegate > Click on Incoming"
   },
-  "popup_html_edit_delegations": {
-    "message": "Editar Delegación",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_edit_delegations_text": {
-    "message": "Estás cambiando la cantidad delegada a este usuario. Edita la cantidad y guarda tu cambio.",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_support": {
-    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
-    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
-  },
   "popup_accounts_reveal_private": {
     "message": "Haga clic para mostrar la clave privada",
     "description": "On manage accounts"
   },
-  "popup_accounts_no_bittrex": {
-    "message": "Bittrex es inaccesible",
-    "description": "instead of estimated value, if cant reach bittrex api"
-  },
   "popup_accounts_add_memo": {
     "message": "Añade tu clave privada de memo para leer este memo",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
-  },
-  "popup_accounts_no_recent_transfers": {
-    "message": "No hay transferencias recientes",
-    "description": "if history is empty"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
@@ -479,22 +459,6 @@
     "message": "Por favor, rellene los campos.",
     "description": "when adding new account but not filling all fields"
   },
-  "popup_accounts_already_have_key": {
-    "message": "¡Ya ha introducido su clave $1!",
-    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_your_key": {
-    "message": "¡Esta no es su clave $1!",
-    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_wif": {
-    "message": "¡Esto no es un Wi-Fi privado!",
-    "description": "not a private key"
-  },
-  "popup_accounts_try_again": {
-    "message": "¡Por favor, inténtalo de nuevo más tarde!",
-    "description": "Generic unknown error, user is invited to try again"
-  },
   "popup_accounts_no_key_selected": {
     "message": "You didn't select any key. Please select at least one.",
     "description": "when trying to save keys on selecting keys page"
@@ -503,18 +467,6 @@
     "message": "¡Necesitas introducir tu clave privada de publicación para reclamar recompensas!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
-  "popup_delegate_key": {
-    "message": "¡Por favor, añade tu clave activa para enviar delegaciones!",
-    "description": "When trying to send delegation but user doenst have a stored active key"
-  },
-  "popup_delegate_success": {
-    "message": "¡Su delegación ha sido exitosa!",
-    "description": "Main menu > Delegate"
-  },
-  "popup_delegate_change_success": {
-    "message": "¡Su cambio de delegación fue exitoso!",
-    "description": "After editing a delegation"
-  },
   "popup_password_mismatch": {
     "message": "¡Sus contraseñas no coinciden!",
     "description": "when registering a password on keychain"
@@ -522,10 +474,6 @@
   "popup_password_regex": {
     "message": "Tu contraseña debe tener al menos 8 caracteres e incluir una letra minúscula, una letra mayúscula y un dígito o tener al menos 16 caracteres sin restricciones.",
     "description": "when registering the master pwd on keychain"
-  },
-  "popup_add_account": {
-    "message": "Añadir nueva cuenta",
-    "description": "From accounts list dropdown"
   },
   "popup_empty": {
     "message": "Vacío",
@@ -539,60 +487,12 @@
     "message": "¡Por favor, añade tu clave activa para votar por los witness!",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
-  "popup_transfer_success": {
-    "message": "¡Transferencia exitosa!",
-    "description": "after sending a transfer"
-  },
   "popup_next_powerdown": {
     "message": "El próximo power down en $1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
-  "popup_pu_key": {
-    "message": "¡Por favor, añade tu clave activa para hacer un power up!",
-    "description": "When wanting to powerup but no active key stored"
-  },
-  "popup_pd_key": {
-    "message": "¡Por favor, añade tu clave activa para hacer un power down!",
-    "description": "When wanting to power down but no active key stored"
-  },
-  "popup_pu_success": {
-    "message": "¡Hiciste un power up con éxito!",
-    "description": "After powering up"
-  },
-  "popup_pd_success": {
-    "message": "¡Has empezado con éxito un power down!",
-    "description": "After powering down"
-  },
-  "popup_pd_stop": {
-    "message": "¡Has detenido con éxito un power down!",
-    "description": "After powering down 0SP"
-  },
-  "popup_rpc_add": {
-    "message": "AGREGAR RPC",
-    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
-  },
-  "popup_rpc_added": {
-    "message": "¡RPC agregado exitosamente!",
-    "description": "On preferences >Add RPC "
-  },
-  "popup_rpc_default": {
-    "message": "POR DEFECTO",
-    "description": "On preferences, rpc dropdown."
-  },
   "popup_master_changed": {
     "message": "Su contraseña maestra fue cambiada con éxito",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_stronger": {
-    "message": "¡Por favor, utiliza una contraseña más fuerte!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_match": {
-    "message": "¡Las nuevas contraseñas no coinciden!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_wrong_current_pwd": {
-    "message": "Contraseña actual incorrecta",
     "description": "When changing pwd from settings"
   },
   "popup_website": {

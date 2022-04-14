@@ -431,33 +431,13 @@
     "message": "总收入",
     "description": "Main page > Delegate > Click on Incoming"
   },
-  "popup_html_edit_delegations": {
-    "message": "编辑委託",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_edit_delegations_text": {
-    "message": "您正在更改委託给该用户的金额。 编辑金额并保存更改。",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_support": {
-    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
-    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
-  },
   "popup_accounts_reveal_private": {
     "message": "点击显示私钥",
     "description": "On manage accounts"
   },
-  "popup_accounts_no_bittrex": {
-    "message": "无法连接至Bittrex",
-    "description": "instead of estimated value, if cant reach bittrex api"
-  },
   "popup_accounts_add_memo": {
     "message": "添加您的私人备忘录密钥以瀏览此备忘录",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
-  },
-  "popup_accounts_no_recent_transfers": {
-    "message": "近期无交易",
-    "description": "if history is empty"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
@@ -479,22 +459,6 @@
     "message": "请输入所有栏位。",
     "description": "when adding new account but not filling all fields"
   },
-  "popup_accounts_already_have_key": {
-    "message": "您已经输入了$1的金钥！",
-    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_your_key": {
-    "message": "这不是您的$1私钥！",
-    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_wif": {
-    "message": "这不是私人WIF！",
-    "description": "not a private key"
-  },
-  "popup_accounts_try_again": {
-    "message": "请稍后再试。",
-    "description": "Generic unknown error, user is invited to try again"
-  },
   "popup_accounts_no_key_selected": {
     "message": "You didn't select any key. Please select at least one.",
     "description": "when trying to save keys on selecting keys page"
@@ -503,18 +467,6 @@
     "message": "您需要输入私人posting金钥才能领取奖励！",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
-  "popup_delegate_key": {
-    "message": "请新增您的活跃金密钥以发送委託！",
-    "description": "When trying to send delegation but user doenst have a stored active key"
-  },
-  "popup_delegate_success": {
-    "message": "您的委託成功了！",
-    "description": "Main menu > Delegate"
-  },
-  "popup_delegate_change_success": {
-    "message": "您的委託更改成功！",
-    "description": "After editing a delegation"
-  },
   "popup_password_mismatch": {
     "message": "您的密码不符！",
     "description": "when registering a password on keychain"
@@ -522,10 +474,6 @@
   "popup_password_regex": {
     "message": "您的密码必须至少8个字符长，并且包含小写字母，大写字母和数字，或者至少16个字符长且不受限制。",
     "description": "when registering the master pwd on keychain"
-  },
-  "popup_add_account": {
-    "message": "新增帐号",
-    "description": "From accounts list dropdown"
   },
   "popup_empty": {
     "message": "清空",
@@ -539,60 +487,12 @@
     "message": "请新增您的活跃金钥以投票给见证人！",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
-  "popup_transfer_success": {
-    "message": "转账成功",
-    "description": "after sending a transfer"
-  },
   "popup_next_powerdown": {
     "message": "下次power down$1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
-  "popup_pu_key": {
-    "message": "请新增您的活跃金钥以power up！",
-    "description": "When wanting to powerup but no active key stored"
-  },
-  "popup_pd_key": {
-    "message": "请新增您的活跃金钥以power down！",
-    "description": "When wanting to power down but no active key stored"
-  },
-  "popup_pu_success": {
-    "message": "您已成功power up！",
-    "description": "After powering up"
-  },
-  "popup_pd_success": {
-    "message": "您已成功啟动power down！",
-    "description": "After powering down"
-  },
-  "popup_pd_stop": {
-    "message": "您已成功停止power down！",
-    "description": "After powering down 0SP"
-  },
-  "popup_rpc_add": {
-    "message": "增加RPC",
-    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
-  },
-  "popup_rpc_added": {
-    "message": "新增RPC成功！",
-    "description": "On preferences >Add RPC "
-  },
-  "popup_rpc_default": {
-    "message": "默认",
-    "description": "On preferences, rpc dropdown."
-  },
   "popup_master_changed": {
     "message": "您的主密码已成功更改",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_stronger": {
-    "message": "请使用更强的密码！",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_match": {
-    "message": "新密码不符！",
-    "description": "When changing pwd from settings"
-  },
-  "popup_wrong_current_pwd": {
-    "message": "当前密码错误",
     "description": "When changing pwd from settings"
   },
   "popup_website": {
