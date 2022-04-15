@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 const log = (...message: any[]) => {
   console.log(...message);
 };
