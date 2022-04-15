@@ -139,10 +139,17 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
 
-      if (importedSettings.switchRpcAuto) {
+      if (importedSettings.switchRpcAuto !== null) {
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.SWITCH_RPC_AUTO,
           importedSettings.switchRpcAuto,
+        );
+      }
+
+      if (importedSettings.current_rpc) {
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.CURRENT_RPC,
+          importedSettings.current_rpc,
         );
       }
     }
