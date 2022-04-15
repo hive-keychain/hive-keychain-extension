@@ -59,7 +59,7 @@ const decryptToJsonWithoutMD5Check = (msg: string, pwd: string) => {
     }
   } catch (e: any) {
     Logger.error('Error while decrypting', e);
-    return null;
+    throw new Error(e);
   }
 };
 
