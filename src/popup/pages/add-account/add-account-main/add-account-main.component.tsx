@@ -46,7 +46,7 @@ const AddAccountMain = ({
 
   const onSentBackAccountsListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
-      if (message.value?.length) {
+      if (!(typeof message.value === 'string') && message.value?.length) {
         setAccounts(message.value);
         // chrome.windows.remove(importWindow!);
       }
