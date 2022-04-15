@@ -13,6 +13,7 @@
     "build": "npm outdated; concurrently  \"npm:build:*\"",
     "build:chromium": "rm -rf ./dist-prod & webpack --config webpack/chromium/webpack.prod.js",
     "build:firefox": "rm -rf ./dist-prod-firefox & webpack --config webpack/firefox/webpack.prod.js",
+    "build:beta": "rm -rf ./dist-prod-beta; npm run build:chromium; cp -R ./dist-prod ./dist-prod-beta; sed -i '' 's/__MSG_keychain__/Hive Keychain Beta/g' ./dist-prod-beta/manifest.json; sed -i '' 's/__MSG_description__/Hive Keychain Beta/g' ./dist-prod-beta/manifest.json; sed -i '' 's/iconhive.png/iconhive-beta.png/g' ./dist-prod-beta/manifest.json;",
     "analyze": "concurrently  \"npm:analyze:*\"",
     "analyze:chromium": "npx webpack --profile --json > stats.json --config webpack/chromium/webpack.prod.js",
     "analyze:firefox": "npx webpack --profile --json > stats.json --config webpack/firefox/webpack.prod.js",
