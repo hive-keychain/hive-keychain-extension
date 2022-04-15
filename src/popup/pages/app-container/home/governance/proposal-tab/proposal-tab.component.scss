@@ -1,9 +1,14 @@
 @import '../../../../../variable.scss';
 .proposal-tab {
+  .using-proxy {
+    font-size: 16px;
+    padding: 0px 24px;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
   .proposal-list {
-    display: flex;
     flex-direction: column;
-    max-height: 462px;
+    max-height: 412px;
     overflow: auto;
     .proposal-item {
       &:nth-child(even) {
