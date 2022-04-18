@@ -1248,12 +1248,6 @@
   "import_permissions_html_text": {
     "message": "Import your settings from another Keychain instance using a .kc.json file."
   },
-  "import_permissions_html_success": {
-    "message": "You successfully imported your settings!"
-  },
-  "import_permissions_html_error": {
-    "message": "There was an error importing your settings."
-  },
   "bgd_auth_no_active": {
     "message": "No account with active authority."
   },
