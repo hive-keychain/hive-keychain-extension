@@ -1,8 +1,8 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { Settings } from '@interfaces/settings.interface';
-import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import ArrayUtils from 'src/utils/array.utils';
@@ -10,15 +10,15 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const sendBackImportedFileContent = async (fileContent: any) => {
-  const settings: Settings = fileContent;
+  const importedSettings: Settings = fileContent;
   try {
     if (
-      settings &&
+      importedSettings &&
       !Object.values(LocalStorageKeyEnum).includes(
-        Object.keys(settings)[0] as LocalStorageKeyEnum,
+        Object.keys(importedSettings)[0] as LocalStorageKeyEnum,
       )
     ) {
-      const importedNoConfirm: any = settings;
+      const importedNoConfirm: any = importedSettings;
       let existingNoConfirm: NoConfirm =
         await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_CONFIRM,
@@ -37,20 +37,21 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         existingNoConfirm,
       );
     } else {
-      if (settings.autolock) {
+      if (importedSettings.autolock) {
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.AUTOLOCK,
-          settings.autolock,
+          importedSettings.autolock,
         );
       }
-      if (settings.claimAccounts) {
+      if (importedSettings.claimAccounts) {
         let existingClaimsAccounts: LocalStorageClaimItem =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.CLAIM_ACCOUNTS,
           );
         if (!existingClaimsAccounts) existingClaimsAccounts = {};
-        for (const username of Object.keys(settings.claimAccounts)) {
-          existingClaimsAccounts[username] = settings.claimAccounts[username];
+        for (const username of Object.keys(importedSettings.claimAccounts)) {
+          existingClaimsAccounts[username] =
+            importedSettings.claimAccounts[username];
         }
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.CLAIM_ACCOUNTS,
@@ -58,14 +59,15 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
 
-      if (settings.claimRewards) {
+      if (importedSettings.claimRewards) {
         let existingClaimsRewards: LocalStorageClaimItem =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.CLAIM_REWARDS,
           );
         if (!existingClaimsRewards) existingClaimsRewards = {};
-        for (const username of Object.keys(settings.claimRewards)) {
-          existingClaimsRewards[username] = settings.claimRewards[username];
+        for (const username of Object.keys(importedSettings.claimRewards)) {
+          existingClaimsRewards[username] =
+            importedSettings.claimRewards[username];
         }
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.CLAIM_REWARDS,
@@ -73,25 +75,27 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
 
-      if (settings.keychainify_enabled) {
+      if (importedSettings.keychainify_enabled) {
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.KEYCHAINIFY_ENABLED,
-          settings.keychainify_enabled,
+          importedSettings.keychainify_enabled,
         );
       }
 
-      if (settings.no_confirm) {
+      if (importedSettings.no_confirm) {
         let existingNoConfirm: NoConfirm =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.NO_CONFIRM,
           );
 
         if (!existingNoConfirm) existingNoConfirm = {};
-        for (const username of Object.keys(settings.no_confirm)) {
+        for (const username of Object.keys(importedSettings.no_confirm)) {
           if (!existingNoConfirm[username]) existingNoConfirm[username] = {};
-          for (const website of Object.keys(settings.no_confirm[username])) {
+          for (const website of Object.keys(
+            importedSettings.no_confirm[username],
+          )) {
             existingNoConfirm[username][website] =
-              settings.no_confirm[username][website];
+              importedSettings.no_confirm[username][website];
           }
         }
         await LocalStorageUtils.saveValueInLocalStorage(
@@ -100,7 +104,7 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
 
-      if (settings.rpc) {
+      if (importedSettings.rpc) {
         let existingRpc: Rpc[] =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.RPC_LIST,
@@ -108,23 +112,37 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         if (!existingRpc) existingRpc = [];
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.RPC_LIST,
-          ArrayUtils.mergeWithoutDuplicate(existingRpc, settings.rpc, 'uri'),
+          ArrayUtils.mergeWithoutDuplicate(
+            existingRpc,
+            importedSettings.rpc,
+            'uri',
+          ),
         );
       }
 
-      if (settings.transfer_to) {
-        let existingTransferTo: TransferToItems =
+      if (importedSettings.transfer_to) {
+        let existingTransferTo: FavoriteUserItems =
           await LocalStorageUtils.getValueFromLocalStorage(
-            LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+            LocalStorageKeyEnum.FAVORITE_USERS,
           );
 
         if (!existingTransferTo) existingTransferTo = {};
-        for (const username of Object.keys(settings.transfer_to)) {
-          existingTransferTo[username] = settings.transfer_to[username];
+        for (const username of Object.keys(importedSettings.transfer_to)) {
+          existingTransferTo[username] = [
+            ...existingTransferTo[username],
+            ...importedSettings.transfer_to[username],
+          ];
         }
         await LocalStorageUtils.saveValueInLocalStorage(
-          LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+          LocalStorageKeyEnum.FAVORITE_USERS,
           existingTransferTo,
+        );
+      }
+
+      if (importedSettings.switchRpcAuto) {
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+          importedSettings.switchRpcAuto,
         );
       }
     }

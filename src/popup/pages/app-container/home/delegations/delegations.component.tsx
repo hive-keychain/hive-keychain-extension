@@ -69,7 +69,7 @@ const Delegations = ({
 
   const loadAutocompleteTransferUsernames = async () => {
     const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+      LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
@@ -146,9 +146,6 @@ const Delegations = ({
       cancelDelegation();
     }
 
-    const operationString = chrome.i18n
-      .getMessage('popup_html_delegations')
-      .toLowerCase();
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${
       currencyLabels.hp
     }`;

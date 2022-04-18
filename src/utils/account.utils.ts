@@ -267,6 +267,7 @@ const addKey = async (
         account.keys.memoPubkey = keys.memoPubkey;
         break;
     }
+    AccountUtils.saveAccounts(accounts, store.getState().mk);
     store.dispatch(setSuccessMessage('import_html_success'));
     return accounts;
   }
@@ -395,6 +396,10 @@ const doesAccountExist = async (username: string) => {
   );
 };
 
+const getExtendedAccount = async (username: string) => {
+  return (await HiveUtils.getClient().database.getAccounts([username]))[0];
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -412,6 +417,7 @@ const AccountUtils = {
   getPublicMemo,
   getPowerDown,
   doesAccountExist,
+  getExtendedAccount,
   AccountErrorMessages,
 };
 

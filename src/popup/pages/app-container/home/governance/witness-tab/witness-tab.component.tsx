@@ -15,14 +15,15 @@ import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import ReactTooltip from 'react-tooltip';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
@@ -51,17 +52,24 @@ const WitnessTab = ({
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
     setRemainingVotes(
       MAX_WITNESS_VOTE - activeAccount.account.witnesses_voted_for,
     );
-    setUsingProxy(activeAccount.account.proxy.length > 0);
+
+    let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
+
+    setUsingProxy(proxy !== null);
     initWitnessRanking();
-    if (activeAccount.account.proxy.length > 0) {
-      initProxyVotes();
+    if (proxy) {
+      initProxyVotes(proxy);
     } else {
       setVotedWitnesses(activeAccount.account.witness_votes);
     }
-  }, []);
+  };
 
   useEffect(() => {
     setVotedWitnesses(activeAccount.account.witness_votes);
@@ -87,9 +95,9 @@ const WitnessTab = ({
     );
   }, [ranking, filterValue, displayVotedOnly, votedWitnesses, hideNonActive]);
 
-  const initProxyVotes = async () => {
+  const initProxyVotes = async (proxy: string) => {
     const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
-      activeAccount.account.proxy,
+      proxy,
     ]);
     setVotedWitnesses(hiveAccounts[0].witness_votes);
   };
@@ -180,29 +188,20 @@ const WitnessTab = ({
               additionalClassName="link-to-witness-page"></Icon>
           )}
         </div>
-        <img
-          className={
+        <Icon
+          additionalClassName={
             'action ' +
             (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
             ' ' +
             (usingProxy ? 'using-proxy' : '')
           }
-          src="assets/images/voted.png"
+          name={Icons.ARROW_CIRCLE_UP}
+          type={IconType.OUTLINED}
           onClick={() => handleVotedButtonClick(witness)}
-          data-for={`${witness.name}-tooltip`}
-          data-tip={
-            usingProxy
-              ? chrome.i18n.getMessage('html_popup_witness_vote_error_proxy')
-              : ''
+          tooltipMessage={
+            usingProxy ? 'html_popup_witness_vote_error_proxy' : undefined
           }
-          data-iscapture="true"
-        />
-        <ReactTooltip
-          id={`${witness.name}-tooltip`}
-          place="top"
-          type="light"
-          effect="solid"
-          multiline={true}
+          tooltipPosition="left"
         />
       </div>
     );
@@ -264,42 +263,34 @@ const WitnessTab = ({
                 }}></CheckboxComponent>
             </div>
           </div>
-          <div
-            className="ranking"
-            data-for={`no-private-key-tooltip`}
-            data-tip={
-              activeAccount.keys.active
-                ? ''
-                : chrome.i18n.getMessage('popup_witness_key')
-            }
-            data-iscapture="true">
-            <FlatList
-              list={filteredRanking}
-              renderItem={renderWitnessItem}
-              renderOnScroll
-              renderWhenEmpty={() => {
-                return (
-                  hasError && (
-                    <div className="error-witness">
-                      <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
-                      <span>
-                        {chrome.i18n.getMessage(
-                          'popup_html_error_retrieving_witness_ranking',
-                        )}
-                      </span>
-                    </div>
-                  )
-                );
-              }}
-            />
-          </div>
-          <ReactTooltip
-            id={`no-private-key-tooltip`}
-            place="top"
-            type="light"
-            effect="solid"
-            multiline={true}
-          />
+          <CustomTooltip
+            message={
+              activeAccount.keys.active ? undefined : 'popup_witness_key'
+            }>
+            <div className="ranking">
+              <FlatList
+                list={filteredRanking}
+                renderItem={renderWitnessItem}
+                renderOnScroll
+                renderWhenEmpty={() => {
+                  return (
+                    hasError && (
+                      <div className="error-witness">
+                        <Icon
+                          name={Icons.ERROR}
+                          type={IconType.OUTLINED}></Icon>
+                        <span>
+                          {chrome.i18n.getMessage(
+                            'popup_html_error_retrieving_witness_ranking',
+                          )}
+                        </span>
+                      </div>
+                    )
+                  );
+                }}
+              />
+            </div>
+          </CustomTooltip>
         </div>
       )}
 

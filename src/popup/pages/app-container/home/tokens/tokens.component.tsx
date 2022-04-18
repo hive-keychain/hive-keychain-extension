@@ -8,32 +8,31 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { loadUserTokens } from '@popup/actions/token.actions';
+import { loadTokens, loadUserTokens } from '@popup/actions/token.actions';
 import { Icons } from '@popup/icons.enum';
+import { TokenItemComponent } from '@popup/pages/app-container/home/tokens/token-item/token-item.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import FormatUtils from 'src/utils/format.utils';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens.component.scss';
 
 const Tokens = ({
   activeAccount,
   userTokens,
+  allTokens,
   loadUserTokens,
   navigateTo,
-  navigateToWithParams,
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadTokens,
 }: PropsFromRedux) => {
-  const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>(
-    [],
-  );
+  const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
 
   const loadHiddenTokens = async () => {
@@ -45,6 +44,7 @@ const Tokens = ({
   };
 
   useEffect(() => {
+    loadTokens();
     loadHiddenTokens();
     loadUserTokens(activeAccount.name!);
     setTitleContainerProperties({
@@ -78,54 +78,29 @@ const Tokens = ({
         name={Icons.SETTINGS}
         type={IconType.OUTLINED}
         additionalClassName="settings"></Icon>
-      {filteredTokenList.length > 0 && (
-        <div className="my-tokens">
-          {userTokens.list.map((token) => (
-            <div className="token" key={token.symbol}>
-              <div
-                className="balance"
-                data-for={`full-balance-tooltip`}
-                data-tip={
-                  FormatUtils.hasMoreThanXDecimal(parseFloat(token.balance), 3)
-                    ? FormatUtils.withCommas(token.balance, 8)
-                    : null
-                }
-                data-iscapture="true">
-                {FormatUtils.withCommas(token.balance, 3)}
-                {FormatUtils.hasMoreThanXDecimal(parseFloat(token.balance), 3)
-                  ? '...'
-                  : null}
-              </div>
-              <ReactTooltip
-                id="full-balance-tooltip"
-                place="top"
-                type="light"
-                effect="solid"
-                multiline={true}
+      {allTokens.length > 0 &&
+        filteredTokenList &&
+        filteredTokenList.length > 0 && (
+          <div className="my-tokens">
+            {filteredTokenList.map((token) => (
+              <TokenItemComponent
+                key={token.symbol}
+                tokenBalance={token}
+                tokenInfo={allTokens.find((t) => t.symbol === token.symbol)!}
               />
-              <div className="symbol">{token.symbol}</div>
-              <Icon
-                name={Icons.HISTORY}
-                onClick={() =>
-                  navigateToWithParams(Screen.TOKENS_HISTORY, { token })
-                }
-                additionalClassName="history"
-                type={IconType.OUTLINED}></Icon>
-
-              <Icon
-                name={Icons.SEND}
-                onClick={() =>
-                  navigateToWithParams(Screen.TOKENS_TRANSFER, { token })
-                }
-                additionalClassName="send"
-                type={IconType.OUTLINED}></Icon>
-            </div>
-          ))}
-        </div>
-      )}
-      {filteredTokenList.length === 0 && (
-        <div className="no-tokens">
-          {chrome.i18n.getMessage('popup_html_tokens_no_tokens')}
+            ))}
+          </div>
+        )}
+      {!userTokens.loading &&
+        filteredTokenList &&
+        filteredTokenList.length === 0 && (
+          <div className="no-tokens">
+            {chrome.i18n.getMessage('popup_html_tokens_no_tokens')}
+          </div>
+        )}
+      {userTokens.loading && (
+        <div className="rotating-logo-container">
+          <RotatingLogoComponent></RotatingLogoComponent>
         </div>
       )}
     </div>
@@ -133,7 +108,11 @@ const Tokens = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount, userTokens: state.userTokens };
+  return {
+    activeAccount: state.activeAccount,
+    userTokens: state.userTokens,
+    allTokens: state.tokens,
+  };
 };
 
 const connector = connect(mapStateToProps, {
@@ -143,6 +122,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadTokens,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

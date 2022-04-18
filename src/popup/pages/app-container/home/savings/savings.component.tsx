@@ -23,7 +23,6 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -169,11 +168,19 @@ const SavingsPage = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
-          setSuccessMessage('popup_html_power_up_down_success', [
-            operationString,
-          ]);
+          setSuccessMessage(
+            selectedSavingOperationType === SavingOperationType.DEPOSIT
+              ? 'popup_html_deposit_success'
+              : 'popup_html_withdraw_success',
+            [`${value} ${selectedCurrency.toUpperCase()}`],
+          );
         } else {
-          setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+          setErrorMessage(
+            selectedSavingOperationType === SavingOperationType.DEPOSIT
+              ? 'popup_html_deposit_fail'
+              : 'popup_html_withdraw_fail',
+            [selectedCurrency.toUpperCase()],
+          );
         }
       },
     });
@@ -317,14 +324,6 @@ const SavingsPage = ({
         labelParams={[currency]}
         onClick={() => handleButtonClick()}
         fixToBottom
-      />
-
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
       />
     </div>
   );

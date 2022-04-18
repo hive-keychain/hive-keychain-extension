@@ -2,7 +2,6 @@ import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
 
 const isEmpty = (activeAccount: ActiveAccount) => {
   return Object.keys(activeAccount.account).length === 0;
@@ -49,13 +48,6 @@ const getAvailableRewards = (activeAccount: ActiveAccount) => {
   if (getValFromString(reward_hive as string) != 0)
     rewardText += reward_hive + ' / ';
   rewardText = rewardText.slice(0, -3);
-  Logger.log(
-    'Available rewards',
-    reward_hbd,
-    reward_hp,
-    reward_hive,
-    rewardText,
-  );
   return [reward_hbd, reward_hp, reward_hive, rewardText];
 };
 

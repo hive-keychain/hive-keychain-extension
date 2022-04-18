@@ -53,12 +53,13 @@ const ImportFile = ({
     sendResp: (response?: any) => void,
   ) => {
     if (backgroundMessage.command === callBackCommand) {
-      if (callBackCommand === BackgroundCommand.IMPORT_SETTINGS_CALLBACK) {
+      if (typeof backgroundMessage.value === 'string') {
         setFeedBack(backgroundMessage.value);
+      } else {
+        setTimeout(() => {
+          window.close();
+        }, 3000);
       }
-      setTimeout(() => {
-        window.close();
-      }, 3000);
       chrome.runtime.onMessage.removeListener(
         onCallBackCommandeMessageListener,
       );
@@ -105,7 +106,11 @@ const ImportFile = ({
       )}
 
       {feedback.length ? (
-        <div className="feedback">{chrome.i18n.getMessage(feedback)}</div>
+        <div
+          className="feedback"
+          dangerouslySetInnerHTML={{
+            __html: chrome.i18n.getMessage(feedback),
+          }}></div>
       ) : null}
     </div>
   );

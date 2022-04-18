@@ -17,7 +17,6 @@ import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -83,7 +82,6 @@ const Conversion = ({
     }
 
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
-
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         conversionType === ConversionType.CONVERT_HBD_TO_HIVE
@@ -109,13 +107,13 @@ const Conversion = ({
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
           setSuccessMessage(
-            ConversionType.CONVERT_HBD_TO_HIVE
+            conversionType === ConversionType.CONVERT_HBD_TO_HIVE
               ? 'popup_html_hbd_to_hive_conversion_success'
               : 'popup_html_hive_to_hbd_conversion_success',
           );
         } else {
           setErrorMessage(
-            ConversionType.CONVERT_HBD_TO_HIVE
+            conversionType === ConversionType.CONVERT_HBD_TO_HIVE
               ? 'popup_html_hbd_to_hive_conversion_fail'
               : 'popup_html_hive_to_hbd_conversion_fail',
           );
@@ -161,14 +159,6 @@ const Conversion = ({
         label={title}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
-      />
-
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
       />
     </div>
   );

@@ -1,4 +1,7 @@
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
@@ -21,6 +24,7 @@ const ChangePassword = ({
   accounts,
   mk,
   setTitleContainerProperties,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -43,6 +47,7 @@ const ChangePassword = ({
         AccountUtils.saveAccounts(accounts, newPassword);
         setMk(newPassword, true);
         navigateTo(Screen.HOME_PAGE, true);
+        setSuccessMessage('popup_master_changed');
       } else {
         setErrorMessage('popup_password_regex');
       }
@@ -62,6 +67,7 @@ const ChangePassword = ({
         onChange={setOldPassword}
         logo={Icons.PASSWORD}
         placeholder="popup_html_old_password"
+        label="popup_html_old_password"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
       />
@@ -70,6 +76,7 @@ const ChangePassword = ({
         onChange={setNewPassword}
         logo={Icons.PASSWORD}
         placeholder="popup_html_new_password"
+        label="popup_html_new_password"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
       />
@@ -78,6 +85,7 @@ const ChangePassword = ({
         onChange={setNewPasswordConfirm}
         logo={Icons.PASSWORD}
         placeholder="popup_html_confirm"
+        label="popup_html_confirm"
         type={InputType.PASSWORD}
         onEnterPress={submitMk}
       />
@@ -100,6 +108,7 @@ const connector = connect(mapStateToProps, {
   setMk,
   navigateTo,
   setTitleContainerProperties,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

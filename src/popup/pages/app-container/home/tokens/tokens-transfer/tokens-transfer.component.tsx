@@ -1,6 +1,6 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
-import { TransferToItems } from '@interfaces/transfer-to-username.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -35,7 +35,7 @@ import './tokens-transfer.component.scss';
 
 const TokensTransfer = ({
   activeAccount,
-  token,
+  tokenBalance,
   phishing,
   formParams,
   setErrorMessage,
@@ -54,8 +54,10 @@ const TokensTransfer = ({
     formParams.amount ? formParams.amount : '',
   );
 
-  const balance = formParams.balance ? formParams.balance : token.balance;
-  const symbol = formParams.symbol ? formParams.symbol : token.symbol;
+  const balance = formParams.balance
+    ? formParams.balance
+    : tokenBalance.balance;
+  const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
   const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
@@ -71,9 +73,9 @@ const TokensTransfer = ({
   }, []);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: TransferToItems =
+    const transferTo: FavoriteUserItems =
       await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+        LocalStorageKeyEnum.FAVORITE_USERS,
       );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
@@ -141,7 +143,7 @@ const TokensTransfer = ({
     }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage('popup_html_transfer_confirm_text'),
+      message: chrome.i18n.getMessage('popup_html_token_confirm_text'),
       fields: fields,
       warningMessage: warningMessage,
       title: 'popup_html_transfer_tokens',
@@ -262,7 +264,8 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
-    token: state.navigation.stack[0].params?.token as TokenBalance,
+    tokenBalance: state.navigation.stack[0].params
+      ?.tokenBalance as TokenBalance,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},

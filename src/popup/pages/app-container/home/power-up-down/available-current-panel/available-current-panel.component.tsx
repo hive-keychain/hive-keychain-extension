@@ -23,13 +23,19 @@ const AvailableCurrentPanel = ({
 }: PropsType) => {
   return (
     <div className="power-up-down-top-panel">
-      {current !== null && current !== undefined && (
+      {current !== null && current !== undefined && currentLabel && (
         <div className="current panel-row">
           <div className="current-title">
-            {chrome.i18n.getMessage(currentLabel!)}
+            {chrome.i18n.getMessage(currentLabel)}
           </div>
           <div className="current-value">
-            {FormatUtils.formatCurrencyValue(current)} {currentCurrency}
+            {FormatUtils.formatCurrencyValue(
+              current,
+              FormatUtils.hasMoreThanXDecimal(parseFloat(current as string), 3)
+                ? 8
+                : 3,
+            )}{' '}
+            {currentCurrency}
           </div>
         </div>
       )}
@@ -38,7 +44,13 @@ const AvailableCurrentPanel = ({
           {chrome.i18n.getMessage(availableLabel)}
         </div>
         <div className="available-value">
-          {FormatUtils.formatCurrencyValue(available)} {availableCurrency}
+          {FormatUtils.formatCurrencyValue(
+            available,
+            FormatUtils.hasMoreThanXDecimal(parseFloat(available as string), 3)
+              ? 8
+              : 3,
+          )}{' '}
+          {availableCurrency}
         </div>
       </div>
     </div>

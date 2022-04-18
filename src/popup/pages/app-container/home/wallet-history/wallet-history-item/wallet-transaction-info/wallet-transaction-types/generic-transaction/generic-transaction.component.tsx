@@ -5,6 +5,7 @@ import moment from 'moment';
 import React, { BaseSyntheticEvent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './generic-transaction.component.scss';
 
@@ -49,6 +50,8 @@ const GenericTransaction = ({
         return Icons.DELEGATIONS;
       case 'claim_account':
         return Icons.ACCOUNT;
+      case 'convert':
+        return Icons.CONVERT;
       default:
         return Icons.LINK;
     }
@@ -74,15 +77,16 @@ const GenericTransaction = ({
             name={getIcon()}
             type={IconType.OUTLINED}
             onClick={openTransactionOnHiveblocks}></Icon>
-          <div
-            className="date"
-            data-for={`datetime-tooltip`}
-            data-tip={moment(transaction.timestamp).format(
+          <CustomTooltip
+            message={moment(transaction.timestamp).format(
               'YYYY/MM/DD , hh:mm:ss a',
             )}
-            data-iscapture="true">
-            {moment(transaction.timestamp).format('L')}
-          </div>
+            skipTranslation>
+            <div className="date">
+              {moment(transaction.timestamp).format('L')}
+            </div>
+          </CustomTooltip>
+          <div className="divider"></div>
           {expandableContent && (
             <Icon
               name={Icons.EXPAND_MORE}

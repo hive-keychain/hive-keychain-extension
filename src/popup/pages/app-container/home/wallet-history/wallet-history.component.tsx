@@ -1,7 +1,11 @@
 import {
   ClaimReward,
+  CollateralizedConvert,
+  Convert,
   Delegation,
   DepositSavings,
+  FillCollateralizedConvert,
+  FillConvert,
   PowerDown,
   PowerUp,
   ReceivedInterests,
@@ -50,6 +54,7 @@ const DEFAULT_FILTER: WalletHistoryFilter = {
     claim_account: false,
     savings: false,
     power_up_down: false,
+    convert: false,
   },
 };
 const MINIMUM_FETCHED_TRANSACTIONS = 1;
@@ -286,6 +291,26 @@ const WalletHistory = ({
         (transaction.subType === 'interest' &&
           WalletHistoryUtils.filterInterest(
             transaction as ReceivedInterests,
+            filter.filterValue,
+          )) ||
+        (transaction.subType === 'fill_collateralized_convert_request' &&
+          WalletHistoryUtils.filterFillConversion(
+            transaction as FillCollateralizedConvert,
+            filter.filterValue,
+          )) ||
+        (transaction.subType === 'fill_convert_request' &&
+          WalletHistoryUtils.filterFillConversion(
+            transaction as FillConvert,
+            filter.filterValue,
+          )) ||
+        (transaction.subType === 'collateralized_convert' &&
+          WalletHistoryUtils.filterConversion(
+            transaction as CollateralizedConvert,
+            filter.filterValue,
+          )) ||
+        (transaction.subType === 'convert' &&
+          WalletHistoryUtils.filterConversion(
+            transaction as Convert,
             filter.filterValue,
           )) ||
         (transaction.timestamp &&

@@ -14,6 +14,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import ProposalUtils from 'src/utils/proposal.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import './proposal-tab.component.scss';
 
 export enum FundedOption {
@@ -44,6 +45,7 @@ const ProposalTab = ({
 }: PropsFromRedux) => {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [isLoading, setLoading] = useState(false);
+  const [displayingProxyVotes, setDisplayingProxyVotes] = useState(false);
 
   useEffect(() => {
     initList();
@@ -51,7 +53,17 @@ const ProposalTab = ({
 
   const initList = async () => {
     setLoading(true);
-    const proposals = await ProposalUtils.getProposalList(activeAccount);
+    let proposals;
+    let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
+    if (proxy) {
+      setDisplayingProxyVotes(true);
+    } else {
+      setDisplayingProxyVotes(false);
+    }
+    proposals = await ProposalUtils.getProposalList(
+      proxy ?? activeAccount.name!,
+    );
+
     setProposals(proposals);
     setLoading(false);
   };
@@ -70,15 +82,24 @@ const ProposalTab = ({
   return (
     <div className={`proposal-tab ${isLoading ? 'loading' : ''}`}>
       {!isLoading && (
-        <div className="proposal-list">
-          {proposals.map((proposal) => (
-            <ProposalItemComponent
-              key={proposal.proposalId}
-              proposal={proposal}
-              onVoteUnvoteSuccessful={() => toggleVoteInArray(proposal.id)}
-            />
-          ))}
-        </div>
+        <>
+          {displayingProxyVotes && (
+            <div className="using-proxy">
+              {chrome.i18n.getMessage('html_popup_currently_using_proxy', [
+                activeAccount.account.proxy,
+              ])}
+            </div>
+          )}
+          <div className="proposal-list">
+            {proposals.map((proposal) => (
+              <ProposalItemComponent
+                key={proposal.proposalId}
+                proposal={proposal}
+                onVoteUnvoteSuccessful={() => toggleVoteInArray(proposal.id)}
+              />
+            ))}
+          </div>
+        </>
       )}
       {isLoading && <RotatingLogoComponent></RotatingLogoComponent>}
     </div>

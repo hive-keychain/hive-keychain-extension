@@ -21,7 +21,9 @@ const Convert = (props: Props) => {
   return (
     <Operation
       title={chrome.i18n.getMessage(
-        `popup_html_convert_${data.collaterized ? 'hive' : 'hbd'}`,
+        data.collaterized
+          ? 'popup_html_proposal_funded_option_hive'
+          : 'popup_html_proposal_funded_option_hbd',
       )}
       header={
         data.collaterized

@@ -8,10 +8,20 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const sendBackImportedAccounts = async (fileContent: string) => {
   if (fileContent?.length) {
     const mk = await MkModule.getMk();
-    const importedAccounts = BgdAccountsUtils.getAccountsFromFileData(
-      fileContent,
-      mk,
-    );
+    let importedAccounts;
+    try {
+      importedAccounts = BgdAccountsUtils.getAccountsFromFileData(
+        fileContent,
+        mk,
+      );
+    } catch (e) {
+      chrome.runtime.sendMessage({
+        command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
+        value: 'import_html_error',
+      });
+      return;
+    }
+
     const accounts =
       EncryptUtils.decryptToJson(
         await LocalStorageUtils.getValueFromLocalStorage(
@@ -19,14 +29,19 @@ const sendBackImportedAccounts = async (fileContent: string) => {
         ),
         mk,
       ) || [];
+
     const newAccounts =
       BgdAccountsUtils.mergeImportedAccountsToExistingAccounts(
         importedAccounts,
-        accounts,
+        accounts.list || [],
       );
+    const newAccountsEncrypted = EncryptUtils.encryptJson(
+      { list: newAccounts },
+      mk,
+    );
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.ACCOUNTS,
-      newAccounts,
+      newAccountsEncrypted,
     );
     chrome.runtime.sendMessage({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,

@@ -43,9 +43,7 @@ const unvoteProposal = async (
   return await HiveUtils.unvoteProposal(activeAccount, proposalId);
 };
 
-const getProposalList = async (
-  activeAccount: ActiveAccount,
-): Promise<Proposal[]> => {
+const getProposalList = async (accountName: string): Promise<Proposal[]> => {
   const result = await hive.api.callAsync('database_api.list_proposals', {
     start: [-1],
     limit: 1000,
@@ -56,14 +54,14 @@ const getProposalList = async (
 
   const listProposalVotes = (
     await hive.api.callAsync('database_api.list_proposal_votes', {
-      start: [activeAccount.name],
+      start: [accountName],
       limit: 1000,
       order: 'by_voter_proposal',
       order_direction: 'descending',
       status: 'votable',
     })
   ).proposal_votes
-    .filter((item: any) => item.voter === activeAccount.name)
+    .filter((item: any) => item.voter === accountName)
     .map((item: any) => item.proposal);
 
   let dailyBudget = await HiveUtils.getProposalDailyBudget();

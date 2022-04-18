@@ -13,7 +13,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const start = async () => {
-  Logger.log(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
+  Logger.info(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
   chrome.alarms.create({ periodInMinutes: Config.claims.FREQUENCY });
   alarmHandler();
 };
@@ -69,7 +69,7 @@ const iterateClaimRewards = async (users: string[], mk: string) => {
         activeAccount.account.reward_hive_balance as string,
       )
     ) {
-      Logger.log(`Claiming rewards for @${activeAccount.name}`);
+      Logger.info(`Claiming rewards for @${activeAccount.name}`);
       await BgdHiveUtils.claimRewards(
         activeAccount,
         userAccount.reward_hive_balance,
@@ -165,8 +165,8 @@ const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
         ],
         PrivateKey.fromString(activeAccount.keys.active as string),
       );
-      Logger.log(`Claiming free account for @${activeAccount.name}`);
-    } else Logger.log('Not enough RC% to claim account');
+      Logger.info(`Claiming free account for @${activeAccount.name}`);
+    } else Logger.info('Not enough RC% to claim account');
   } catch (err) {
     Logger.error(err);
   }

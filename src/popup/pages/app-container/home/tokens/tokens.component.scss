@@ -3,6 +3,8 @@
 .tokens-page {
   @include pageLayoutRowGap;
   row-gap: 32px;
+  overflow: hidden;
+  flex: 1;
   .disclaimer {
     font-size: 18px;
     padding: 0px 24px;
@@ -18,27 +20,11 @@
   }
 
   .my-tokens {
-    .token {
-      display: grid;
-      grid-template-columns: 2fr 3fr 1fr 1fr;
-      font-size: 18px;
-      align-items: center;
+    overflow: auto;
+    .token-item {
       background: $red-transparent;
-      padding: 0px 24px;
-      min-height: 50px;
-
       &:nth-child(even) {
         background: $black-transparent;
-      }
-
-      .history,
-      .send {
-        height: 24px;
-        width: 24px;
-        cursor: pointer;
-      }
-      .send {
-        justify-self: flex-end;
       }
     }
   }
@@ -46,5 +32,17 @@
   .no-tokens {
     font-size: 18px;
     padding: 0px 24px;
+  }
+
+  .rotating-logo-container {
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    .rotating-logo {
+      align-self: center;
+      justify-self: center;
+      height: 50px;
+      width: 50px;
+    }
   }
 }

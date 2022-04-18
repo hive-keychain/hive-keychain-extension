@@ -19,8 +19,8 @@ import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-t
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import ReactTooltip from 'react-tooltip';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -62,7 +62,7 @@ const PowerUpDown = ({
 
   const loadAutocompleteTransferUsernames = async () => {
     const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.TRANSFER_TO_USERNAMES,
+      LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
       transferTo ? transferTo[activeAccount.name!] : [],
@@ -217,7 +217,7 @@ const PowerUpDown = ({
       fields: [],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        addToLoadingList('html_popup_power_down_operation');
+        addToLoadingList('html_popup_cancel_power_down_operation');
         let success = await HiveUtils.powerDown(
           receiver,
           `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
@@ -225,7 +225,7 @@ const PowerUpDown = ({
           )} VESTS`,
         );
 
-        removeFromLoadingList('html_popup_power_down_operation');
+        removeFromLoadingList('html_popup_cancel_power_down_operation');
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
@@ -261,22 +261,23 @@ const PowerUpDown = ({
       {powerType === PowerType.POWER_DOWN &&
         powerDownInfo &&
         powerDownInfo[1] !== '0' && (
-          <div
-            className="power-down-panel"
-            data-for="tooltip"
-            data-tip={chrome.i18n.getMessage('popup_next_powerdown', [
-              powerDownInfo[2],
+          <CustomTooltip
+            message={chrome.i18n.getMessage('popup_next_powerdown', [
+              powerDownInfo[2].split('T').join(', '),
             ])}
-            data-iscapture="true">
-            <div className="power-down-text">
-              {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
+            skipTranslation>
+            <div className="power-down-panel">
+              <div className="power-down-text">
+                {chrome.i18n.getMessage('popup_html_powering_down')}{' '}
+                {powerDownInfo[0]} / {powerDownInfo[1]} {currencyLabels.hp}
+              </div>
+              <img
+                className="icon-button"
+                src="/assets/images/delete.png"
+                onClick={handleCancelButtonClick}
+              />
             </div>
-            <img
-              className="icon-button"
-              src="/assets/images/delete.png"
-              onClick={handleCancelButtonClick}
-            />
-          </div>
+          </CustomTooltip>
         )}
 
       {powerType === PowerType.POWER_UP && (
@@ -307,14 +308,6 @@ const PowerUpDown = ({
         requiredKey={KeychainKeyTypesLC.active}
         label={title}
         onClick={() => handleButtonClick()}
-      />
-
-      <ReactTooltip
-        id="tooltip"
-        place="top"
-        type="light"
-        effect="solid"
-        multiline={true}
       />
     </div>
   );

@@ -7,10 +7,6 @@
     "message": "Secure Hive Wallet Extension.",
     "description": "Extension description, as shown in the store."
   },
-  "transaction_error": {
-    "message": "Transaction error",
-    "description": "Generic error during transaction"
-  },
   "popup_html_wrong_key": {
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
@@ -243,20 +239,12 @@
     "message": "Change password",
     "description": "on settings page"
   },
-  "popup_html_pref": {
-    "message": "Preferences",
-    "description": "on settings page"
-  },
   "popup_html_autolock": {
     "message": "Auto lock",
     "description": "on settings page"
   },
   "popup_html_keychainify": {
     "message": "Keychainify",
-    "description": "on settings page"
-  },
-  "popup_html_import_export": {
-    "message": "Import / Export",
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
@@ -319,10 +307,6 @@
     "message": "When enabled, this feature will open a Keychain pop when you click on supported links.",
     "description": "on keychainify settings"
   },
-  "popup_html_import_export_text": {
-    "message": "You can export all your keys encrypted in a file. This will allow you to import them to Keychain on another device or simply safeguard them.<br/><br/>When importing, only accounts that are not already present on the instance will be added.",
-    "description": "on import / export settings"
-  },
   "popup_html_import": {
     "message": "Import",
     "description": "on import / export settings"
@@ -339,16 +323,12 @@
     "message": "The overall idea and concept for the Hive Keychain browser extension was created by <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Hive blockchain. It was primarily developed by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Hive developer and witness. The design and development were funded by @aggroed and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Hive blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
     "description": "on about keychain"
   },
-  "popup_html_remove": {
-    "message": "Remove",
-    "description": "on manage accounts, remove key"
-  },
   "popup_html_delete_account": {
     "message": "Remove from Keychain",
     "description": "on manage accounts"
   },
   "popup_html_delete_account_confirmation_message": {
-    "message": "You are about to remove @$1 from Keychain. This cannot be undone. Please confirm to proceed.",
+    "message": "You are about to remove @$1 from Keychain. This cannot be undone without reimporting your keys. Please confirm to proceed.",
     "description": "on manage accounts"
   },
   "popup_html_show_qr": {
@@ -358,10 +338,6 @@
   "popup_html_hide_qr": {
     "message": "Hide QR Code",
     "description": "on manage accounts"
-  },
-  "popup_html_select_rpc": {
-    "message": "Select an RPC node",
-    "description": "on preferences"
   },
   "popup_html_set_new_rpc_as_active": {
     "message": "Set new RPC node as active",
@@ -425,14 +401,14 @@
   },
   "popup_html_send_max": {
     "message": "Max",
-    "description": "on transfer"
+    "description": "In input (keep it short eg maximum 3 characters)"
   },
   "popup_html_transfer_funds": {
     "message": "Transfer Funds",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_balance": {
-    "message": "$1 Balance",
+    "message": "Balance",
     "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
   },
   "popup_html_loading": {
@@ -443,24 +419,16 @@
     "message": "MEMO (optional)",
     "description": "When initiating a HIVE or HBD transfer"
   },
-  "popup_html_encrypt_memo": {
-    "message": "Encrypt Memo",
-    "description": "When initiating a HIVE or HBD transfer"
-  },
   "popup_html_memo_key_missing": {
     "message": "Please add your memo key to encrypt and decrypt messages.",
     "description": "When initiating a HIVE or HBD transfer"
   },
-  "popup_html_add_active": {
-    "message": "Please add an active key to send HIVE or HBD.",
-    "description": "When trying to send HIVE or HBD but active key was not stored"
-  },
-  "popup_html_transfer": {
-    "message": "Transfer",
-    "description": "On transfer confirmation page"
-  },
   "popup_html_transfer_confirm_text": {
     "message": "Please confirm your transfer.<br>This cannot be undone.",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_confirm_cancel_recurrent": {
+    "message": "<br>Please confirm that you want to cancel this recurrent transfer.",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_from": {
@@ -487,53 +455,13 @@
     "message": "Every $1 hours, $2 times",
     "description": "On transfer confirmation page"
   },
-  "popup_html_not_now": {
-    "message": "Not Now",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
-  "popup_html_redeem": {
-    "message": "Claim",
-    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
-  },
   "popup_html_claiming_rewards": {
     "message": "Claiming rewards",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
   },
-  "popup_html_witness_title": {
-    "message": "Witness Voting",
-    "description": "On witness page"
-  },
-  "popup_html_witness_disclaimer": {
-    "message": "You may vote for up to $1 witnesses.",
-    "description": "On witness page"
-  },
   "popup_html_witness_remaining": {
     "message": "Votes remaining: $1",
     "description": "On witness page"
-  },
-  "popup_html_witness_voted": {
-    "message": "Voted",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_top": {
-    "message": "Top 100",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_witness_add": {
-    "message": "Add",
-    "description": "On witness page. Tab name, keep short"
-  },
-  "popup_html_proxy_desc": {
-    "message": "You may manually enter a user to vote for Witness or to set as Proxy.",
-    "description": "On witness page > Add"
-  },
-  "popup_html_witness_vote": {
-    "message": "Vote for Witness",
-    "description": "On witness page > Add > Dropdown"
-  },
-  "popup_html_chose_proxy": {
-    "message": "Chose Proxy",
-    "description": "On witness page > Add > Dropdown"
   },
   "popup_html_tokens_available": {
     "message": "Tokens Available",
@@ -551,8 +479,8 @@
     "message": "Sending your tokens may take up to 30 seconds to confirm, please be patient.",
     "description": "On tokens page > Send"
   },
-  "popup_html_recipient": {
-    "message": "Recipient",
+  "popup_html_tokens_operation_text": {
+    "message": "Operations on tokens may take up to 30 seconds to confirm, please be patient.",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {
@@ -603,33 +531,13 @@
     "message": "Total Incoming",
     "description": "Main page > Delegate > Click on Incoming"
   },
-  "popup_html_edit_delegations": {
-    "message": "Edit Delegation",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_edit_delegations_text": {
-    "message": "You are changing the amount delegated to this user. Edit the amount and save your change.",
-    "description": "Main page > Delegate > Click on Outgoing > Edit one of the outgoing delegations"
-  },
-  "popup_html_support": {
-    "message": "Click here to support Hive Keychain development by casting your witness votes for the creators!",
-    "description": "Support text on the bottom of popup. If you already voted yabapmatt aggroed and stoodkev for witnesses it wont show."
-  },
   "popup_accounts_reveal_private": {
     "message": "Click to show private key",
     "description": "On manage accounts"
   },
-  "popup_accounts_no_bittrex": {
-    "message": "Bittrex is unreachable",
-    "description": "instead of estimated value, if cant reach bittrex api"
-  },
   "popup_accounts_add_memo": {
     "message": "Add your private memo key to read this memo",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
-  },
-  "popup_accounts_no_recent_transfers": {
-    "message": "No recent transfer",
-    "description": "if history is empty"
   },
   "popup_account_password_is_public_key": {
     "message": "This is a public key! Please enter a private key or your master key.",
@@ -651,22 +559,6 @@
     "message": "Please fill the fields.",
     "description": "when adding new account but not filling all fields"
   },
-  "popup_accounts_already_have_key": {
-    "message": "You already entered your $1 key!",
-    "description": "when trying to add a new key for the account (in manage accounts), but the key is already there. $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_your_key": {
-    "message": "This is not your $1 key!",
-    "description": "Trying to add the wrong key from manage accounts.  $1 can stand for active memo or posting"
-  },
-  "popup_accounts_not_wif": {
-    "message": "This is not a private WIF!",
-    "description": "not a private key"
-  },
-  "popup_accounts_try_again": {
-    "message": "Please try again later!",
-    "description": "Generic unknown error, user is invited to try again"
-  },
   "popup_accounts_no_key_selected": {
     "message": "You didn't select any key. Please select at least one.",
     "description": "when trying to save keys on selecting keys page"
@@ -675,21 +567,9 @@
     "message": "You need to enter your private posting key to claim rewards!",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
   },
-  "popup_delegate_key": {
-    "message": "Please add your active key to send delegations!",
-    "description": "When trying to send delegation but user doenst have a stored active key"
-  },
   "popup_missing_key": {
     "message": "Please add your $1 key to perform this operation!",
     "description": "When trying to perform an operation without a stored private $1 key"
-  },
-  "popup_delegate_success": {
-    "message": "Your delegation was succesful!",
-    "description": "Main menu > Delegate"
-  },
-  "popup_delegate_change_success": {
-    "message": "Your delegation change was succesful!",
-    "description": "After editing a delegation"
   },
   "popup_password_mismatch": {
     "message": "Your passwords do not match!",
@@ -698,10 +578,6 @@
   "popup_password_regex": {
     "message": "Your password must be at least 8 characters long and include a lowercase letter, an uppercase letter and a digit or be at least 16 characters long without restriction.",
     "description": "when registering the master pwd on keychain"
-  },
-  "popup_add_account": {
-    "message": "Add New Account",
-    "description": "From accounts list dropdown"
   },
   "popup_empty": {
     "message": "Empty",
@@ -715,60 +591,12 @@
     "message": "Please add your active key to vote for witnesses!",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
-  "popup_transfer_success": {
-    "message": "Transfer successful!",
-    "description": "after sending a transfer"
-  },
   "popup_next_powerdown": {
     "message": "Next power down on $1",
     "description": "on powerdown tab, when a powerdown is currently ongoing,on hover"
   },
-  "popup_pu_key": {
-    "message": "Please add your active key to power up!",
-    "description": "When wanting to powerup but no active key stored"
-  },
-  "popup_pd_key": {
-    "message": "Please add your active key to power down!",
-    "description": "When wanting to power down but no active key stored"
-  },
-  "popup_pu_success": {
-    "message": "You succesfully powered up!",
-    "description": "After powering up"
-  },
-  "popup_pd_success": {
-    "message": "You succesfully started a power down!",
-    "description": "After powering down"
-  },
-  "popup_pd_stop": {
-    "message": "You succesfully stopped a power down!",
-    "description": "After powering down 0SP"
-  },
-  "popup_rpc_add": {
-    "message": "ADD RPC",
-    "description": "On preferences, rpc dropdown. RPC stands for rpc node"
-  },
-  "popup_rpc_added": {
-    "message": "RPC added succesfully!",
-    "description": "On preferences >Add RPC "
-  },
-  "popup_rpc_default": {
-    "message": "DEFAULT",
-    "description": "On preferences, rpc dropdown."
-  },
   "popup_master_changed": {
     "message": "Your master password was changed succesfully",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_stronger": {
-    "message": "Please use a stronger password!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_pwd_match": {
-    "message": "The new passwords do not match!",
-    "description": "When changing pwd from settings"
-  },
-  "popup_wrong_current_pwd": {
-    "message": "Wrong current password",
     "description": "When changing pwd from settings"
   },
   "popup_website": {
@@ -835,17 +663,9 @@
     "message": "You currently don't have any custom tokens. Click on the settings wheel to get information about the tokens available.",
     "description": "on tokens page when you dont have any"
   },
-  "popup_token_key": {
-    "message": "Please add your active key to send tokens!",
-    "description": "on tokens when trying to send tokens without having an active key registed "
-  },
   "popup_no_such_account": {
     "message": "This username is not registered on the blockchain!",
     "description": "on tokens page when trying to send tokens to a non existing user"
-  },
-  "popup_token_success": {
-    "message": "Tokens sent succesfully!",
-    "description": "on tokens page when transfer was succesful"
   },
   "popup_token_timeout": {
     "message": "Transaction timed out without response. Please double check your token balance before trying to send again.",
@@ -898,10 +718,6 @@
   "dialog_cancel": {
     "message": "Cancel",
     "description": "Cancel button"
-  },
-  "dialog_broadcasting": {
-    "message": "Broadcasting transaction to the blockchain...",
-    "description": "When a website requested a transaction and it was approved."
   },
   "dialog_account": {
     "message": "Account",
@@ -963,10 +779,6 @@
     "message": "Balance",
     "description": "When website request a transfer"
   },
-  "dialog_future_balance": {
-    "message": "Future balance",
-    "description": "When website request a transfer"
-  },
   "dialog_daily_pay": {
     "message": "Daily Pay",
     "description": "When website request a proposal creation"
@@ -986,10 +798,6 @@
   "dialog_period": {
     "message": "Period",
     "description": "When website request a proposal creation"
-  },
-  "dialog_extensions": {
-    "message": "Extensions",
-    "description": "When website request a generic broadcast"
   },
   "dialog_meta": {
     "message": "JSON Metadata (Click to show)",
@@ -1015,7 +823,7 @@
     "message": "Max Accepted Payout : ",
     "description": "When website request a post"
   },
-  "dialog_percentage_sbd": {
+  "dialog_percentage_hbd": {
     "message": "Percentage SBD : ",
     "description": "When website request a post"
   },
@@ -1050,9 +858,6 @@
   "dialog_confirm": {
     "message": "Confirm"
   },
-  "dialog_body_toggle": {
-    "message": "Body <span class='small'>(click to show)</span>"
-  },
   "dialog_options_toggle": {
     "message": "Options <span class='small'>(click to show)</span>"
   },
@@ -1073,10 +878,6 @@
   },
   "dialog_header_wrong_pwd": {
     "message": "Wrong password!"
-  },
-  "dialog_header_broadcasting": {
-    "message": "Broadcasting",
-    "description": "when waiting from confirmation"
   },
   "dialog_title_custom": {
     "message": "Custom Transaction",
@@ -1110,16 +911,8 @@
     "message": "Sign Transaction",
     "description": "Website request title"
   },
-  "dialog_title_call": {
-    "message": "Signed Call",
-    "description": "Website request title"
-  },
   "dialog_title_post": {
     "message": "Post",
-    "description": "Website request title"
-  },
-  "dialog_title_vote": {
-    "message": "Vote",
     "description": "Website request title"
   },
   "dialog_title_transfer": {
@@ -1174,10 +967,6 @@
     "message": "Do not prompt again to send $1 transactions from the @$2 account on $3",
     "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
   },
-  "dialog_no_prompt_no_username": {
-    "message": "Do not prompt again to send $1 transactions from the selected account on $2",
-    "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
-  },
   "dialog_desc_verify": {
     "message": "The website $1 would like to verify that you have access to the private $2 key for the account: @$3",
     "description": "key verification message"
@@ -1185,14 +974,6 @@
   "dialog_desc_sign": {
     "message": "The website $1 would like to sign a message using the $2 key for the account: @$3",
     "description": "Sign message"
-  },
-  "dialog_desc_sign_user_unknown": {
-    "message": "The website $1 would like to sign a message using the $2 key.",
-    "description": "Sign message"
-  },
-  "dialog_expand": {
-    "message": "...(click to expand)",
-    "description": "Toggle"
   },
   "dialog_recurrence": {
     "message": "Recurrence",
@@ -1314,9 +1095,6 @@
   "bgd_ops_tokens": {
     "message": "The transaction has been broadcasted successfully. Please check your balance to confirm that it was processed succesfully."
   },
-  "bgd_ops_signed_call": {
-    "message": "Success!"
-  },
   "bgd_ops_sign_success": {
     "message": "Message signed succesfully."
   },
@@ -1408,10 +1186,6 @@
   "dialog_title_recurrent_transfer": {
     "message": "Recurrent Transfer"
   },
-  "dialog_auth_key": {
-    "message": "Key",
-    "description": "New key to be added"
-  },
   "bgd_ops_add_key_auth": {
     "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
     "description": "Succesfully added a new keypair"
@@ -1443,9 +1217,6 @@
   "popup_html_auth_text": {
     "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
     "description": "On Add new account => via auth"
-  },
-  "popup_html_auth_placeholder_username": {
-    "message": "Username"
   },
   "popup_html_auth_placeholder_username_auth": {
     "message": "Authorized Account",
@@ -1518,10 +1289,6 @@
     "message": "Convert HIVE",
     "description": "When clicking on the Hbd arrow menu"
   },
-  "popup_html_convert_title": {
-    "message": "Convert $1",
-    "description": "When clicking on the arrow menu"
-  },
   "popup_html_convert_hbd_intro": {
     "message": "Your HBD will take 3.5 days to get converted to approximately 1 USD worth of HIVE tokens, based on its 3.5 days median price.",
     "description": "When clicking on the Hbd arrow menu"
@@ -1530,22 +1297,6 @@
   "popup_html_convert_hive_intro": {
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
-  },
-  "popup_html_convert_max": {
-    "message": "Convert Max",
-    "description": "When clicking on the Hbd arrow menu"
-  },
-  "popup_html_convert_button": {
-    "message": "Confirm",
-    "description": "When clicking on the Hbd arrow menu"
-  },
-  "popup_html_convert_success": {
-    "message": "The HBD conversion successfully started",
-    "description": "When clicking on the Hbd arrow menu"
-  },
-  "popup_html_convert_error": {
-    "message": "Something went wrong!",
-    "description": "When clicking on the Hbd arrow menu"
   },
   "popup_html_save_hive": {
     "message": "HIVE Savings",
@@ -1561,6 +1312,22 @@
   },
   "popup_html_withdraw_param": {
     "message": "Withdraw $1",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit_success": {
+    "message": "Successfully deposited $1 to savings",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit_fail": {
+    "message": "Failed to deposit $1 to savings",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_success": {
+    "message": "Successfully started a $1  withdrawal from savings",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_fail": {
+    "message": "Failed to withdraw $1 from savings",
     "description": "On savings menu"
   },
   "popup_html_savings_available": {
@@ -1593,10 +1360,6 @@
   },
   "popup_html_buy_intro": {
     "message": "Chose your favorite method and buy $1 fast and easily. Keychain do not take any additional fees on the transactions.",
-    "description": "When accessing the buy HIVE/HBD page"
-  },
-  "popup_html_buy_moonpay_title": {
-    "message": "Credit Card / Transfer",
     "description": "When accessing the buy HIVE/HBD page"
   },
   "popup_html_buy_swap_title": {
@@ -1693,7 +1456,7 @@
     "description": "On main page"
   },
   "popup_html_confirm_power_up_down_message": {
-    "message": "Please confirm $1.",
+    "message": "Please confirm your $1.",
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_power_down_message": {
@@ -1717,11 +1480,11 @@
     "description": "Success of power down or up"
   },
   "popup_html_cancel_power_down_success": {
-    "message": "Cancel power down successful !",
+    "message": "Successfully canceled a power down!",
     "description": "Success of power down or up"
   },
   "popup_html_cancel_power_down_fail": {
-    "message": "Cancel power down failed !",
+    "message": "Failed to cancel a power down!",
     "description": "Success of power down or up"
   },
   "popup_html_power_up_down_error": {
@@ -1749,16 +1512,16 @@
     "description": "In transfer fund page"
   },
   "popup_html_transfer_recurrent_successful": {
-    "message": "Recurrent transfer to $1 ($2) successful! It will happen every $3 hours $4 times",
+    "message": "Recurrent transfer to $1 ($2) successful! It will happen $4 times (every $3 hours).",
+    "description": "In transfer fund page"
+  },
+  "popup_html_cancel_transfer_recurrent_successful": {
+    "message": "Successfully stopped a recurrent transfer to $1.",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_failed": {
     "message": "Transfer failed",
     "description": "In transfer fund page"
-  },
-  "popup_html_operation": {
-    "message": "Operation",
-    "description": "In confirmation page"
   },
   "popup_html_value": {
     "message": "Value",
@@ -1769,12 +1532,8 @@
     "description": "In settings menu"
   },
   "popup_html_save_successful": {
-    "message": "Save successful",
+    "message": "Successfully saved settings",
     "description": "General message"
-  },
-  "popup_html_wallet_add_memo": {
-    "message": "Please add your memo key to decrypt this message.",
-    "description": "Wallet error message"
   },
   "popup_html_receiver": {
     "message": "Receiver",
@@ -1789,7 +1548,7 @@
     "description": "Conversion confirm page"
   },
   "popup_html_hive_to_hbd_conversion_success": {
-    "message": "Conversion from HIVE to HBD succeeded!",
+    "message": "Conversion from HIVE to HBD successful!",
     "description": "Conversion confirm page"
   },
   "popup_html_hive_to_hbd_conversion_fail": {
@@ -1797,7 +1556,7 @@
     "description": "Conversion confirm page"
   },
   "popup_html_hbd_to_hive_conversion_success": {
-    "message": "Conversion from HBD to HIVE succeeded!",
+    "message": "Conversion from HBD to HIVE successful!",
     "description": "Conversion confirm page"
   },
   "popup_html_hbd_to_hive_conversion_fail": {
@@ -1884,10 +1643,6 @@
     "message": "Clear proxy",
     "description": "Governance"
   },
-  "html_popup_clear_proxy_success": {
-    "message": "Successfully removed proxy",
-    "description": "Clear proxy success"
-  },
   "html_popup_clear_proxy_error": {
     "message": "Error while removing proxy",
     "description": "Clear proxy error"
@@ -1932,72 +1687,64 @@
     "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
   },
-  "html_popup_witness_vote_transaction_not_had_error": {
-    "message": "There was an error while confirming your vote. Please wait a moment and refresh your extension",
-    "description": "Error while trying to confirm vote for witness"
-  },
-  "html_popup_witness_unvote_transaction_not_had_error": {
-    "message": "There was an error while confirming your vote. Please wait a moment and refresh your extension",
-    "description": "Error while trying to confirm unvote witness"
-  },
   "html_popup_conversion_operation": {
-    "message": "Conversion operation",
+    "message": "Conversion",
     "description": "conversion operation"
   },
   "html_popup_delegation_operation": {
-    "message": "Delegation operation",
+    "message": "Delegating",
     "description": "delegation operation"
   },
   "html_popup_cancel_delegation_operation": {
-    "message": "Cancel delegation operation",
+    "message": "Canceling delegation",
     "description": "delegation operation"
   },
-  "html_popup_load_witness_ranking_operation": {
-    "message": "Load witness ranking",
-    "description": "load witness ranking operation"
-  },
   "html_popup_vote_witness_operation": {
-    "message": "Vote witness operation",
+    "message": "Voting for witness",
     "description": "vote witness operation"
   },
   "html_popup_unvote_witness_operation": {
-    "message": "Unvote witness operation",
+    "message": "Unvoting a witness",
     "description": "unvote witness operation"
   },
   "html_popup_confirm_transaction_operation": {
-    "message": "Confirm transaction operation",
+    "message": "Confirming transaction",
     "description": "Confirmation transaction operation"
   },
   "html_popup_delete_account_operation": {
-    "message": "Delete account operation",
+    "message": "Deleting account",
     "description": "delete account operation"
   },
   "html_popup_transfer_fund_operation": {
-    "message": "Transfer fund operation",
+    "message": "Transferring funds",
     "description": "Transfer fund operation"
   },
   "html_popup_transfer_token_operation": {
-    "message": "Transfer token operation",
+    "message": "Transferring tokens",
     "description": "Transfer token operation"
   },
   "html_popup_loading_tokens_operation": {
-    "message": "Loading tokens operation",
+    "message": "Loading tokens",
     "description": "Loading tokens operation"
   },
   "html_popup_deposit_to_savings_operation": {
-    "message": "Deposit to savings operation",
+    "message": "Depositing to savings",
     "description": "Deposit to savings operation"
   },
   "html_popup_withdraw_from_savings_operation": {
-    "message": "Withdraw from savings operation",
+    "message": "Withdrawing from savings",
     "description": "Withdraw from savings operation"
   },
   "html_popup_power_up_operation": {
-    "message": "Power up operation",
+    "message": "Powering up",
     "description": "Power up operation"
   },
   "html_popup_power_down_operation": {
-    "message": "Power down operation",
+    "message": "Powering down",
+    "description": "Power down operation"
+  },
+  "html_popup_cancel_power_down_operation": {
+    "message": "Canceling a power down",
     "description": "Power down operation"
   },
   "html_popup_power_up": {
@@ -2016,14 +1763,6 @@
     "message": "Vote",
     "description": "vote"
   },
-  "html_popup_processing_transactions": {
-    "message": "Processing transactions",
-    "description": "loading message for transactions"
-  },
-  "html_popup_downloading_transactions": {
-    "message": "Downloading transactions",
-    "description": "Downloading message for transactions"
-  },
   "html_popup_voting_no_hp": {
     "message": "Please power up to get voting mana",
     "description": "Message when no HP in voting mana section"
@@ -2041,11 +1780,11 @@
     "description": "In account's keys while using authorized account"
   },
   "popup_html_cancel_delegation_successful": {
-    "message": "Cancel delegation successful",
+    "message": "Successfully canceled a delegation",
     "description": "Success message cancel delegation"
   },
   "popup_html_cancel_delegation_fail": {
-    "message": "Cancel delegation has failed",
+    "message": "Failed to cancel a delegation",
     "description": "Failed message cancel delegation"
   },
   "popup_html_delegation_successful": {
@@ -2100,10 +1839,6 @@
     "message": "Overwhelmed by governance votes? Set @keychain as proxy to automatically follow Keychain team witness and proposal votes. You can change this anytime from the governance menu.",
     "description": "If no witness voted"
   },
-  "popup_html_set_proxy": {
-    "message": "Set proxy",
-    "description": "in proxy suggestion popup"
-  },
   "popup_html_setting_proxy": {
     "message": "Setting proxy",
     "description": "in proxy suggestion popup"
@@ -2125,15 +1860,15 @@
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_recurrent_transfer_out": {
-    "message": "Started transfer of $1 to @$2 every $3 hours $4 times",
+    "message": "Started recurrent transfer of $1 to @$2 (every $4 hours - $3 times)",
     "description": "wallet information transfer out"
   },
   "popup_html_wallet_info_recurrent_transfer_in": {
-    "message": "@$1 started transfer of $2 every $3 hours $4 times",
+    "message": "@$1 started transfer of $2 (every $4 hours - $3 times)",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_canceled_recurrent_transfer": {
-    "message": "@$1 canceled recurrent transfer to @$2",
+    "message": "@$1 canceled a recurrent transfer to @$2",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_fill_recurrent_transfer_out": {
@@ -2154,55 +1889,71 @@
   },
   "popup_html_wallet_info_delegation_out": {
     "message": "Delegated $1 to @$2",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information delegation outgoing"
   },
   "popup_html_wallet_info_delegation_in": {
     "message": "@$1 delegated $2",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information delegation incoming"
   },
   "popup_html_wallet_info_cancel_delegation_out": {
     "message": "Canceled delegation to @$1",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel delegation outgoing"
   },
   "popup_html_wallet_info_cancel_delegation_in": {
     "message": "@$1 canceled delegation",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel delegation incoming"
   },
   "popup_html_wallet_info_received_interests": {
     "message": "Received $1 of interests from savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information claim interest"
   },
   "popup_html_wallet_info_claim_account": {
     "message": "Claimed account",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information claim account"
   },
   "popup_html_wallet_info_deposit_savings": {
     "message": "Deposit of $1 into savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information deposit savings"
   },
   "popup_html_wallet_info_deposit_savings_other_account": {
     "message": "@$1 made a deposit of $2 into @$3's savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
     "message": "Withdrawn $1 from savings",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
     "message": "Initiated a $1 power down",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power down"
   },
   "popup_html_wallet_info_cancel_power_down": {
     "message": "Canceled power down",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information cancel power down"
   },
   "popup_html_wallet_info_power_up": {
     "message": "Powered up $1",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power up"
   },
   "popup_html_wallet_info_power_up_other_account": {
     "message": "@$1 powered up $2 for @$3",
-    "description": "Wallet information claim rewards"
+    "description": "Wallet information power up"
+  },
+  "popup_html_wallet_info_convert": {
+    "message": "Started a $1 conversion",
+    "description": "Wallet information convert hbd to hive"
+  },
+  "popup_html_wallet_info_collateralized_convert": {
+    "message": "Started a $1 collateralized conversion",
+    "description": "Wallet information convert hive to hbd"
+  },
+  "popup_html_wallet_info_fill_convert_request": {
+    "message": "Filled conversion: $1 => $2",
+    "description": "Wallet information receive conversion"
+  },
+  "popup_html_wallet_info_fill_collateralized_convert_request": {
+    "message": "Filled conversion: $1 => $2",
+    "description": "Wallet information receive conversion"
   },
 
   "popup_html_filter_in": {
@@ -2265,6 +2016,10 @@
     "message": "Savings",
     "description": "Wallet filters"
   },
+  "popup_html_filter_type_convert": {
+    "message": "Conversion",
+    "description": "Wallet filters"
+  },
   "popup_html_clear_filters": {
     "message": "Clear",
     "description": "Wallet filters"
@@ -2276,6 +2031,102 @@
   "popup_html_error_retrieving_incoming_delegations": {
     "message": "An error occured while retrieving the incoming delegations. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_token_stake": {
+    "message": "Stake",
+    "description": "token action"
+  },
+  "popup_html_token_unstake": {
+    "message": "Unstake",
+    "description": "token action"
+  },
+  "popup_html_token_delegate": {
+    "message": "Delegate",
+    "description": "token action"
+  },
+  "popup_html_token_staking": {
+    "message": "Staking",
+    "description": "token action"
+  },
+  "popup_html_token_pending_unstake": {
+    "message": "Pending unstake",
+    "description": "token action"
+  },
+  "popup_html_token_delegation_out": {
+    "message": "Delegation out",
+    "description": "token action"
+  },
+  "popup_html_token_delegation_in": {
+    "message": "Delegation in",
+    "description": "token action"
+  },
+  "popup_html_token_pending_undelegation": {
+    "message": "Pending undelegation",
+    "description": "token action"
+  },
+  "popup_html_stake_tokens": {
+    "message": "Staking token",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens": {
+    "message": "Unstaking token",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens": {
+    "message": "Delegating token",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens": {
+    "message": "Cancel token delegation",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_failed": {
+    "message": "Failed to stake a token",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_failed": {
+    "message": "Failed to start unstaking a token",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_failed": {
+    "message": "The token delegation failed",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_failed": {
+    "message": "Failed to cancel the token delegation",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_success": {
+    "message": "Successfully staked token",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_success": {
+    "message": "Successfully started to unstake a token",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_success": {
+    "message": "The token delegation was successful",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_success": {
+    "message": "Successfully canceled the delegation",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_confirm_text": {
+    "message": "Please confirm that you want to stake your token.",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_confirm_text": {
+    "message": "Please confirm that you want to unstake your token.",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_confirm_text": {
+    "message": "Please confirm that you want to delegate your token.",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_confirm_text": {
+    "message": "Please confirm that you want to cancel the delegation of your token.",
+    "description": "delegate token title"
   },
   "popup_html_load_more": {
     "message": "Click to load more",
@@ -2317,9 +2168,9 @@
     "message": "Not funded",
     "description": "Proposal funded option"
   },
-  "popup_html_loading_proposals": {
-    "message": "Loading proposals",
-    "description": "proposal tab"
+  "popup_html_hive_engine_error": {
+    "message": "Hive Engine error: $1",
+    "description": "Hive engine error template"
   },
   "popup_html_plugins": {
     "message": "Plugins",
@@ -2364,5 +2215,81 @@
   "html_popup_interval": {
     "message": "Interval",
     "description": "interval"
+  ],
+  "popup_html_token_wallet_info_transfer_in": {
+    "message": "Received $1 from @$2",
+    "description": "token wallet information transfer in"
+  },
+  "popup_html_token_wallet_info_transfer_out": {
+    "message": "Sent $1 to @$2",
+    "description": "token wallet information transfer out"
+  },
+  "popup_html_token_wallet_info_mining_lottery": {
+    "message": "Received $1 from mining lottery ($2)",
+    "description": "token wallet information mining lottery"
+  },
+  "popup_html_token_wallet_info_author_reward": {
+    "message": "Received $1 as author reward",
+    "description": "wallet information author reward"
+  },
+  "popup_html_token_wallet_info_comment_curation_reward": {
+    "message": "Received $1 as comment curation reward",
+    "description": "wallet information curation reward"
+  },
+  "popup_html_token_wallet_info_delegation_in": {
+    "message": "@$1 delegated $2",
+    "description": "wallet information delegation in"
+  },
+  "popup_html_token_wallet_info_delegation_out": {
+    "message": "Delegated $1 to @$2",
+    "description": "wallet information delegation out"
+  },
+  "popup_html_token_wallet_info_cancel_delegation_out": {
+    "message": "Canceled a delegation of $1 to @$2",
+    "description": "Token wallet information canceled delegation out "
+  },
+  "popup_html_token_wallet_info_cancel_delegation_in": {
+    "message": "@$1 canceled a $2 delegation",
+    "description": "Token wallet information canceled delegation in"
+  },
+  "popup_html_token_wallet_info_start_cancel_delegation_out": {
+    "message": "Canceled a $1 delegation to @$2",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_start_cancel_delegation_in": {
+    "message": "@$1 canceled a $2 delegation",
+    "description": "Token wallet information start canceling delegation in"
+  },
+  "popup_html_token_wallet_info_stake": {
+    "message": "Staked $1",
+    "description": "Token wallet information stake"
+  },
+  "popup_html_token_wallet_info_stake_other_user": {
+    "message": "@$1 staked $2 for @$3",
+    "description": "Token wallet information stake for other user"
+  },
+  "popup_html_token_wallet_info_unstake_done": {
+    "message": "$1 unstaked",
+    "description": "Token wallet information canceled delegation in"
+  },
+  "popup_html_token_wallet_info_start_unstake": {
+    "message": "Started to unstake $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_issue": {
+    "message": "Issued $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_pegged_buy": {
+    "message": "Bought $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_undelegation_cooldown_disclaimer": {
+    "message": "After removing a $1 delegation, the staked tokens will be available after a $2 days cooldown.",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_unstake_cooldown_disclaimer": {
+    "message": "Unstaking this token will take $1 day(s).",
+    "description": "Token wallet information start canceling delegation out"
   }
 }

@@ -11,6 +11,11 @@ type ResultMessage = {
 };
 
 const RequestResponse = ({ data }: Props) => {
+  if (data.msg.success) {
+    setTimeout(() => {
+      window.close();
+    }, 3000);
+  }
   return (
     <>
       <DialogHeader
