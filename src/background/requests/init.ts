@@ -46,7 +46,7 @@ export default async (
   }
   const { username, type } = request;
   const mk = await MkModule.getMk();
-  Logger.log('Initializing request logic');
+  Logger.info('Initializing request logic');
   if (!items.accounts && type !== KeychainRequestTypes.addAccount) {
     // Wallet not initialized
     Logic.initializeWallet(requestHandler, tab!, request);
