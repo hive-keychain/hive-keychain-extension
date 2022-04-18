@@ -632,10 +632,10 @@ const sendOperationWithConfirmation = async (
     await sleep(500);
   } while (transaction.status == 'within_mempool');
   if (transaction.status == 'within_reversible_block') {
-    Logger.log('Transaction confirmed');
+    Logger.info('Transaction confirmed');
     return true;
   } else {
-    Logger.log(`Transaction failed with status: ${transaction.status}`);
+    Logger.info(`Transaction failed with status: ${transaction.status}`);
     return false;
   }
 };
