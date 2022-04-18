@@ -2215,7 +2215,7 @@
   "html_popup_interval": {
     "message": "Interval",
     "description": "interval"
-  ],
+  },
   "popup_html_token_wallet_info_transfer_in": {
     "message": "Received $1 from @$2",
     "description": "token wallet information transfer in"
