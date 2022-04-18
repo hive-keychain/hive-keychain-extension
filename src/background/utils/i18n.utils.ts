@@ -13,7 +13,6 @@ const getMessage = async (name: string, options?: string[]) => {
       ? withOptions(file[name].message, options)
       : `[Missing ${name} locale]`;
   } finally {
-    //Logger.log('[i18n]', lang, name, res);
     return res;
   }
 };
