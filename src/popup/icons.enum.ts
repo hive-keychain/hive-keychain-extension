@@ -40,6 +40,7 @@ export enum Icons {
   LOGIN = 'login',
   LOGOUT = 'logout',
   MANAGE_ACCOUNTS = 'manage_accounts',
+  MARKET = 'store',
   MENU = 'menu',
   MORE_VERT = 'more_vert',
   OPEN_IN_NEW = 'open_in_new',

@@ -2245,5 +2245,13 @@
   "popup_html_token_unstake_cooldown_disclaimer": {
     "message": "Unstaking this token will take $1 day(s).",
     "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_delegation_market_short": {
+    "message": "Del. mar.",
+    "description": "short version of delegation market for button in home page"
+  },
+  "popup_html_delegation_market": {
+    "message": "Delegation market",
+    "description": "Title of delegation market page"
   }
 }

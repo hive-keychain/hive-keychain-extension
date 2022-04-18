@@ -8,6 +8,7 @@
   cursor: pointer;
   row-gap: 8px;
   user-select: none;
+  width: 80px;
 
   .icon-container {
     height: 50px;
@@ -19,10 +20,6 @@
     align-items: center;
     justify-content: center;
 
-    &:hover {
-      background: $red-dark;
-      border-color: $red-dark;
-    }
     .icon {
       color: white;
       font-size: 24px;
@@ -34,8 +31,19 @@
   }
 
   .label {
+    display: none;
     font-size: 14px;
     color: white;
     text-transform: uppercase;
+  }
+
+  &:hover {
+    .icon-container {
+      background: $red-dark;
+      border-color: $red-dark;
+    }
+    .label {
+      display: block;
+    }
   }
 }
