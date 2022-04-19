@@ -74,10 +74,14 @@ const DelegationMarket = ({
           <TabContainerComponent
             delegationRequests={leaseMarket}
             hideDisplayChip
+            displayAddButton
           />
         </TabPanel>
         <TabPanel>
-          <TabContainerComponent delegationRequests={myLeases} />
+          <TabContainerComponent
+            delegationRequests={myLeases}
+            displayAddButton
+          />
         </TabPanel>
         <TabPanel>
           <TabContainerComponent delegationRequests={myDelegations} />
