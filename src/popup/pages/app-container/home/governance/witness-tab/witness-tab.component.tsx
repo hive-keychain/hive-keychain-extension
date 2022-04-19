@@ -23,6 +23,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
@@ -51,17 +52,24 @@ const WitnessTab = ({
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
     setRemainingVotes(
       MAX_WITNESS_VOTE - activeAccount.account.witnesses_voted_for,
     );
-    setUsingProxy(activeAccount.account.proxy.length > 0);
+
+    let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
+
+    setUsingProxy(proxy !== null);
     initWitnessRanking();
-    if (activeAccount.account.proxy.length > 0) {
-      initProxyVotes();
+    if (proxy) {
+      initProxyVotes(proxy);
     } else {
       setVotedWitnesses(activeAccount.account.witness_votes);
     }
-  }, []);
+  };
 
   useEffect(() => {
     setVotedWitnesses(activeAccount.account.witness_votes);
@@ -87,9 +95,9 @@ const WitnessTab = ({
     );
   }, [ranking, filterValue, displayVotedOnly, votedWitnesses, hideNonActive]);
 
-  const initProxyVotes = async () => {
+  const initProxyVotes = async (proxy: string) => {
     const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
-      activeAccount.account.proxy,
+      proxy,
     ]);
     setVotedWitnesses(hiveAccounts[0].witness_votes);
   };

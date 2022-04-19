@@ -7,7 +7,7 @@ const common = require('../webpack.common.js');
 const config = merge(common, {
   plugins: [
     new CopyPlugin({
-      patterns: [{ from: 'manifest/chromium', to: '.' }],
+      patterns: [{ from: 'manifests/chromium', to: '.' }],
     }),
   ],
 });

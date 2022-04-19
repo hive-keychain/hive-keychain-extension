@@ -21,7 +21,6 @@ const AvailableCurrentPanel = ({
   availableLabel,
   availableCurrency,
 }: PropsType) => {
-  console.log(current, currentLabel, available, availableLabel);
   return (
     <div className="power-up-down-top-panel">
       {current !== null && current !== undefined && currentLabel && (

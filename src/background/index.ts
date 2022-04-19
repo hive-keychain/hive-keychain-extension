@@ -21,7 +21,7 @@ import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
 (async () => {
-  Logger.log('Initializing background tasks');
+  Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
   ClaimModule.start();
   AutolockModule.start();

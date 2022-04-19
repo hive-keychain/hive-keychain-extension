@@ -321,7 +321,7 @@ const TransferFunds = ({
               <InputComponent
                 type={InputType.NUMBER}
                 placeholder="0.000"
-                skipTranslation={true}
+                skipPlaceholderTranslation={true}
                 value={amount}
                 min={0}
                 onChange={setAmount}

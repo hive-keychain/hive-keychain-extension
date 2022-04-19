@@ -116,11 +116,11 @@
           .action {
             @include icon-size(28px);
             justify-self: center;
-            opacity: 0.3;
+            color: $grey;
             cursor: pointer;
 
             &.voted {
-              opacity: 1;
+              color: white;
             }
             &.using-proxy {
               cursor: not-allowed;

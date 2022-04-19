@@ -7,11 +7,15 @@ const getAccountsFromFileData = (
   fileContent: string,
   mk: string,
 ): LocalAccount[] => {
-  const accounts = EncryptUtils.decryptToJsonWithoutMD5Check(fileContent, mk);
-  if (accounts) {
-    return accounts?.list;
-  } else {
-    return [];
+  try {
+    const accounts = EncryptUtils.decryptToJsonWithoutMD5Check(fileContent, mk);
+    if (accounts) {
+      return accounts?.list;
+    } else {
+      return [];
+    }
+  } catch (e) {
+    throw new Error();
   }
 };
 
