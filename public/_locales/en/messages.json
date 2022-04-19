@@ -2253,5 +2253,57 @@
   "popup_html_delegation_market": {
     "message": "Delegation market",
     "description": "Title of delegation market page"
+  },
+  "popup_html_delegation_market_introduction": {
+    "message": "Welcome to Keychain delegation market. From here, you'll be able to request or accept a delegation in exchange of HIVE or HBD... etc",
+    "description": "Introduction of the delegation market"
+  },
+  "popup_html_delegation_market_leave_market": {
+    "message": "Lease market",
+    "description": "In delegation market => lease market"
+  },
+  "popup_html_delegation_market_my_lease": {
+    "message": "My leases",
+    "description": "In delegation market => My leases"
+  },
+  "popup_html_delegation_market_my_delegations": {
+    "message": "My delegations",
+    "description": "In delegation market => My delegations"
+  },
+  "popup_html_delegation_market_request": {
+    "message": "Request",
+    "description": "Delegation request"
+  },
+  "popup_html_delegation_market_payout": {
+    "message": "Payout",
+    "description": "Delegation payout"
+  },
+  "popup_html_delegation_market_nb_days": {
+    "message": "Duration",
+    "description": "Delegation duration"
+  },
+  "popup_html_delegation_request_status_active": {
+    "message": "Active",
+    "description": "Delegation Request status"
+  },
+  "popup_html_delegation_request_status_pending": {
+    "message": "Pending",
+    "description": "Delegation Request status"
+  },
+  "popup_html_delegation_request_status_finished": {
+    "message": "Finished",
+    "description": "Delegation Request status"
+  },
+  "popup_html_delegation_request_undelegate": {
+    "message": "Undelegate",
+    "description": "Undelegate button"
+  },
+  "popup_html_delegation_request_delegate": {
+    "message": "Delegate",
+    "description": "Delegate button"
+  },
+  "popup_html_delegation_request_created_at": {
+    "message": "Creation date",
+    "description": "Delegate button"
   }
 }

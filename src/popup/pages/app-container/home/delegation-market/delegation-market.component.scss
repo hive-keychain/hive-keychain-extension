@@ -1,4 +1,18 @@
 @import '../../../../variable.scss';
 
 .delegation-market {
+  .introduction {
+    font-size: 16px;
+    margin-bottom: 32px;
+    padding: 0px 24px;
+  }
+  .react-tabs__tab-list {
+    display: grid;
+    grid-template-columns: 3fr 3fr 4fr;
+
+    .react-tabs__tab {
+      font-size: 16px;
+      padding: 6px 10px;
+    }
+  }
 }

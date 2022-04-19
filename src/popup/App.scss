@@ -124,3 +124,19 @@
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: #e31337;
 }
+
+.react-tabs__tab {
+  text-align: center;
+  font-size: 18px;
+  background: $black-transparent;
+  color: white;
+  user-select: none;
+}
+.react-tabs__tab--selected {
+  background: $red-dark;
+  border: unset;
+
+  &::after {
+    display: none;
+  }
+}

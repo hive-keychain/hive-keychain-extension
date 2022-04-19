@@ -1,0 +1,78 @@
+@import '../../../../../variable.scss';
+
+.delegation-request-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  column-gap: 8px;
+  padding: 12px 24px;
+  .left-panel {
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+    .creator {
+      font-size: 18px;
+    }
+    .delegation-created-at {
+      font-style: italic;
+      margin-top: -10px;
+      font-size: 14px;
+    }
+    .delegation-value {
+    }
+    .delegation-payout {
+    }
+  }
+  .right-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 12px;
+    .button-panel {
+      min-height: 40px;
+      .delegate-undelegate-button {
+        padding: 8px;
+        border: 1px solid white;
+        border-radius: 12px;
+        min-width: 80px;
+        font-size: 14px;
+        text-align: center;
+        cursor: pointer;
+        &:hover {
+          background: white;
+          color: black;
+        }
+      }
+    }
+    .status-chip {
+      border: 1px solid white;
+      border-radius: 16px;
+      padding: 4px 8px 2px 8px;
+      font-size: 14px;
+      min-width: 64px;
+      text-align: center;
+      vertical-align: middle;
+      &.active {
+        background: white;
+        color: black;
+      }
+      &.finished {
+        background: $grey;
+        color: white;
+      }
+
+      &.pending {
+        background: transparent;
+        color: white;
+      }
+    }
+  }
+
+  &.finished {
+    .icon-component {
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+}
