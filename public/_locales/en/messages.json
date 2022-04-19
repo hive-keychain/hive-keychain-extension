@@ -248,7 +248,7 @@
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
-    "message": "Import / Export",
+    "message": "Import / Export Settings",
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
@@ -1425,7 +1425,7 @@
     "description": "Advanced settings sub menu"
   },
   "popup_html_rpc_node_text": {
-    "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.<br/><br/>Use 'DEFAULT' RPC to let Hive Keychain choose the best RPC node at a given time.",
+    "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.",
     "description": "Text on rpc node settings page"
   },
   "popup_html_rpc_missing_fields": {
@@ -1654,11 +1654,11 @@
     "description": "General"
   },
   "html_popup_import_settings_successful": {
-    "message": "Import settings successful",
+    "message": "Successfully imported settings",
     "description": "Import settings success message"
   },
   "html_popup_import_settings_error": {
-    "message": "Import settings failed",
+    "message": "Failed to import settings",
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {

@@ -122,14 +122,13 @@ const sendBackImportedFileContent = async (fileContent: any) => {
 
       if (importedSettings.transfer_to) {
         let existingTransferTo: FavoriteUserItems =
-          await LocalStorageUtils.getValueFromLocalStorage(
+          (await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
-          );
+          )) || {};
 
-        if (!existingTransferTo) existingTransferTo = {};
         for (const username of Object.keys(importedSettings.transfer_to)) {
           existingTransferTo[username] = [
-            ...existingTransferTo[username],
+            ...(existingTransferTo[username] || []),
             ...importedSettings.transfer_to[username],
           ];
         }
@@ -139,10 +138,17 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
 
-      if (importedSettings.switchRpcAuto) {
+      if (importedSettings.switchRpcAuto !== null) {
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.SWITCH_RPC_AUTO,
           importedSettings.switchRpcAuto,
+        );
+      }
+
+      if (importedSettings.current_rpc) {
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.CURRENT_RPC,
+          importedSettings.current_rpc,
         );
       }
     }
