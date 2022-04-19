@@ -122,14 +122,13 @@ const sendBackImportedFileContent = async (fileContent: any) => {
 
       if (importedSettings.transfer_to) {
         let existingTransferTo: FavoriteUserItems =
-          await LocalStorageUtils.getValueFromLocalStorage(
+          (await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
-          );
+          )) || {};
 
-        if (!existingTransferTo) existingTransferTo = {};
         for (const username of Object.keys(importedSettings.transfer_to)) {
           existingTransferTo[username] = [
-            ...existingTransferTo[username],
+            ...(existingTransferTo[username] || []),
             ...importedSettings.transfer_to[username],
           ];
         }
