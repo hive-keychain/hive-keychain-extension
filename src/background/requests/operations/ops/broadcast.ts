@@ -64,7 +64,6 @@ export const broadcastOperations = async (
         if (!op[1].required_auths) {
           op[1].required_auths = [];
         }
-        console.log(op);
       }
     }
     result = await client.broadcast.sendOperations(
@@ -72,7 +71,6 @@ export const broadcastOperations = async (
       PrivateKey.from(key!),
     );
   } catch (e) {
-    console.log(e);
     err = e;
   } finally {
     const err_message = await beautifyErrorMessage(err);
