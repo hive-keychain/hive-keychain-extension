@@ -54,8 +54,8 @@ const SavingsPage = ({
   const [value, setValue] = useState<string | number>(
     formParams.value ? formParams.value : 0,
   );
-  const [current, setCurrent] = useState<string | number>('...');
-  const [available, setAvailable] = useState<string | number>('...');
+  const [savings, setSavings] = useState<string | number>('...');
+  const [liquid, setLiquid] = useState<string | number>('...');
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
     useState<string>(
@@ -105,8 +105,8 @@ const SavingsPage = ({
     const hbd = FormatUtils.toNumber(activeAccount.account.hbd_balance);
     const hive = FormatUtils.toNumber(activeAccount.account.balance);
 
-    setAvailable(selectedCurrency === 'hive' ? hive : hbd);
-    setCurrent(selectedCurrency === 'hive' ? hiveSavings : hbdSavings);
+    setLiquid(selectedCurrency === 'hive' ? hive : hbd);
+    setSavings(selectedCurrency === 'hive' ? hiveSavings : hbdSavings);
   }, [selectedCurrency]);
 
   useEffect(() => {
@@ -124,7 +124,12 @@ const SavingsPage = ({
   }, [selectedCurrency, selectedSavingOperationType]);
 
   const handleButtonClick = () => {
-    if (parseFloat(value.toString()) > parseFloat(available.toString())) {
+    if (
+      (selectedSavingOperationType === SavingOperationType.DEPOSIT &&
+        parseFloat(value.toString()) > parseFloat(liquid.toString())) ||
+      (selectedSavingOperationType === SavingOperationType.WITHDRAW &&
+        parseFloat(value.toString()) > parseFloat(savings.toString()))
+    ) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
@@ -197,9 +202,9 @@ const SavingsPage = ({
 
   const setToMax = () => {
     if (selectedSavingOperationType === SavingOperationType.WITHDRAW) {
-      setValue(current);
+      setValue(savings);
     } else {
-      setValue(available);
+      setValue(liquid);
     }
   };
 
@@ -265,10 +270,10 @@ const SavingsPage = ({
   return (
     <div className="savings-page">
       <AvailableCurrentPanelComponent
-        available={available}
+        available={liquid}
         availableCurrency={currency}
         availableLabel={'popup_html_savings_available'}
-        current={current}
+        current={savings}
         currentCurrency={currency}
         currentLabel={'popup_html_savings_current'}
       />
