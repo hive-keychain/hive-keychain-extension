@@ -46,7 +46,8 @@ export const broadcastOperations = async (
         op[0] === 'create_proposal' ||
         op[0] === 'remove_proposal' ||
         op[0] === 'account_update2' ||
-        op[0] === 'account_update'
+        op[0] === 'account_update' ||
+        op[0] === 'recurrent_transfer'
       ) {
         if (!op[1].extensions) {
           op[1].extensions = [];
