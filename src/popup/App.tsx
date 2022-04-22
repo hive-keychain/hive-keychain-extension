@@ -56,6 +56,7 @@ const App = ({
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();

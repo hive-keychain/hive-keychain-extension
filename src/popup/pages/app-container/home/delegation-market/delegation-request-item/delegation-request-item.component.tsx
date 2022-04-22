@@ -3,7 +3,6 @@ import {
   DelegationRequestStatus,
 } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
 import { RootState } from '@popup/store';
-import moment from 'moment';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import CurrencyUtils from 'src/utils/currency.utils';
@@ -30,23 +29,21 @@ const DelegationRequestItem = ({
     <div className={`delegation-request-item ${delegationRequest.status}`}>
       <div className="left-panel">
         <div className="creator">@{delegationRequest.creator}</div>
-        <div className="delegation-created-at">
-          {chrome.i18n.getMessage('popup_html_delegation_request_created_at')} :{' '}
-          {moment(delegationRequest.creationDate).format('L')}
-        </div>
         <div className="delegation-value">
           {chrome.i18n.getMessage('popup_html_delegation_market_request')} :{' '}
           {delegationRequest.value} {currencyLabels.hp}
         </div>
         <div className="delegation-payout">
           {chrome.i18n.getMessage('popup_html_delegation_market_payout')} :{' '}
-          {delegationRequest.payAmount}{' '}
-          {currencyLabels[delegationRequest.payCurrency]}
+          {delegationRequest.dailyPay}{' '}
+          {currencyLabels[delegationRequest.currency]}
         </div>
         <div className="delegation-nb-days">
-          {chrome.i18n.getMessage('popup_html_delegation_market_nb_days')} :{' '}
-          {delegationRequest.days}{' '}
-          {chrome.i18n.getMessage(delegationRequest.days > 1 ? 'days' : 'day')}
+          {chrome.i18n.getMessage('popup_html_delegation_market_duration')} :{' '}
+          {delegationRequest.duration / 7}{' '}
+          {chrome.i18n.getMessage(
+            delegationRequest.duration / 7 > 1 ? 'weeks' : 'week',
+          )}
         </div>
       </div>
       <div className="right-panel">

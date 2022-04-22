@@ -4,17 +4,21 @@ export enum DelegationRequestStatus {
   PENDING = 'pending',
   ACTIVE = 'active',
   FINISHED = 'finished',
+  CANCELED = 'canceled',
 }
 
 export interface DelegationRequest {
   id: string;
-  creationDate: Date | string;
-  activatedDate?: Date | string;
   creator: string;
-  value: number; // Value of the delegation
-  days: number; // How many days is the delegation for
-  payAmount: number; // How much is the delegatee willing to pay
-  payCurrency: DelegationCurrency;
-  status: DelegationRequestStatus;
+  creationDate: Date | string;
   delegator?: string;
+  activatedDate?: Date | string;
+  dailyPay: number;
+  dailyFee: number;
+  currency: DelegationCurrency;
+  value: number; // Value of the delegation
+  totalAmount: number;
+  duration: number; // days
+  status: string;
+  cancelationDate?: Date | string;
 }

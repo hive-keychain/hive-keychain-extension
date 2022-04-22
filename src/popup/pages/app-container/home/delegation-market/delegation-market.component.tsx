@@ -27,22 +27,22 @@ const DelegationMarket = ({
   }, []);
 
   const initDelegationMarket = async () => {
-    const allDelegations = await DelegationMarketUtils.downloadAllProposals();
+    const allLeases = await DelegationMarketUtils.downloadAllLeases();
     setLeaseMarket(
-      allDelegations.filter(
+      allLeases.filter(
         (delegationRequest: DelegationRequest) =>
           delegationRequest.creator !== activeAccount.name! &&
           delegationRequest.status === DelegationRequestStatus.PENDING,
       ),
     );
     setMyLeases(
-      allDelegations.filter(
+      allLeases.filter(
         (delegationRequest: DelegationRequest) =>
           delegationRequest.creator === activeAccount.name!,
       ),
     );
     setMyDelegations(
-      allDelegations.filter(
+      allLeases.filter(
         (delegationRequest: DelegationRequest) =>
           delegationRequest.delegator === activeAccount.name!,
       ),

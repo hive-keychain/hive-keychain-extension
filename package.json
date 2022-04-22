@@ -39,7 +39,7 @@
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
     "@crowdin/cli": "^3.7.8",
-    "@hiveio/dhive": "^1.0.1",
+    "@hiveio/dhive": "^1.2.0",
     "@hiveio/hive-js": "^2.0.4",
     "@types/chrome": "^0.0.177",
     "@types/crypto-js": "^4.0.2",
@@ -66,6 +66,7 @@
     "redux-thunk": "^2.3.0",
     "sscjs": "^0.0.9",
     "url-loader": "^4.1.1",
+    "uuidv4": "^6.2.13",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {

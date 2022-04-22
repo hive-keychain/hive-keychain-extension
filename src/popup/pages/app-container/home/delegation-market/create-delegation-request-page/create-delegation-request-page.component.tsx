@@ -1,7 +1,17 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { CurrencyListItem } from '@interfaces/list-item.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
+import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -15,19 +25,38 @@ import CurrencyUtils, {
   BaseCurrencies,
   CurrencyLabels,
 } from 'src/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
+import HiveUtils from 'src/utils/hive.utils';
+import { v4 as uuidv4 } from 'uuid';
 import './create-delegation-request-page.component.scss';
+
+const DELEGATION_CUSTOM_JSON_ID = 'TO_DEFINE';
+const LEASE_KEY = 'keychain_lease';
+const KEYCHAIN_DELEGATION_MARKET_ACCOUNT = 'cedric.tests';
+
+interface LeaseRequest {
+  id: string;
+  weeklyPay: number;
+  weeklyPayCurrency: BaseCurrencies;
+  duration: number;
+  delegationValue: number;
+}
 
 const CreateDelegationRequestPage = ({
   activeAccount,
   currencyLabels,
   setTitleContainerProperties,
+  navigateToWithParams,
+  setErrorMessage,
+  setSuccessMessage,
 }: PropsFromRedux) => {
-  const [valueDelegation, setValueDelegation] = useState('');
-  const [valuePayout, setValuePayout] = useState('');
-  const [currencyPayout, setCurrencyPayout] = useState<keyof CurrencyLabels>(
-    BaseCurrencies.HIVE,
-  );
-  const [valueDuration, setValueDuration] = useState('');
+  const [leaseRequestForm, setLeaseRequestForm] = useState<LeaseRequest>({
+    id: uuidv4(),
+    delegationValue: 0,
+    weeklyPay: 0,
+    weeklyPayCurrency: BaseCurrencies.HIVE,
+    duration: 0,
+  });
 
   const options = [
     { label: currencyLabels.hive, value: 'hive' as keyof CurrencyLabels },
@@ -41,6 +70,10 @@ const CreateDelegationRequestPage = ({
     });
   }, []);
 
+  const updateForm = (newValue: any) => {
+    setLeaseRequestForm({ ...leaseRequestForm, ...newValue });
+  };
+
   const customLabelRender = (selectProps: SelectRenderer<CurrencyListItem>) => {
     return (
       <div
@@ -48,7 +81,7 @@ const CreateDelegationRequestPage = ({
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        {currencyLabels[currencyPayout]}
+        {currencyLabels[leaseRequestForm.weeklyPayCurrency]}
       </div>
     );
   };
@@ -58,10 +91,12 @@ const CreateDelegationRequestPage = ({
     return (
       <div
         className={`select-account-item ${
-          currencyPayout === selectProps.item.value ? 'selected' : ''
+          leaseRequestForm.weeklyPayCurrency === selectProps.item.value
+            ? 'selected'
+            : ''
         }`}
         onClick={() => {
-          setCurrencyPayout(selectProps.item.value);
+          updateForm({ weeklyPayCurrency: selectProps.item.value });
           selectProps.methods.dropDown('close');
         }}>
         <div className="currency">{selectProps.item.label}</div>
@@ -70,11 +105,85 @@ const CreateDelegationRequestPage = ({
   };
 
   const submit = async () => {
-    console.log({
-      valueDelegation,
-      valuePayout,
-      currencyPayout,
-      valueDuration,
+    const transferMemo = {
+      key: LEASE_KEY,
+      ...leaseRequestForm,
+    };
+    const totalAmount =
+      parseFloat(leaseRequestForm.weeklyPay.toString()) *
+      parseInt(leaseRequestForm.duration.toString());
+    const formattedTotalAmount = `${totalAmount.toFixed(3)} ${
+      currencyLabels[leaseRequestForm.weeklyPayCurrency]
+    }`;
+
+    if (leaseRequestForm.weeklyPayCurrency === BaseCurrencies.HBD) {
+      if (
+        parseFloat(activeAccount.account.hbd_balance.toString().split(' ')[0]) <
+        totalAmount
+      ) {
+        setErrorMessage('popup_html_delegation_market_unsuficient_funds');
+        return;
+      }
+    }
+    if (leaseRequestForm.weeklyPayCurrency === BaseCurrencies.HIVE) {
+      if (
+        parseFloat(activeAccount.account.balance.toString().split(' ')[0]) <
+        totalAmount
+      ) {
+        setErrorMessage('popup_html_delegation_market_unsuficient_funds');
+        return;
+      }
+    }
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage(
+        'popup_html_transfer_confirm_delegation_lease_request_message',
+      ),
+      fields: [
+        {
+          label: 'popup_html_delegation_market_requested_delegation',
+          value: `${FormatUtils.formatCurrencyValue(
+            leaseRequestForm.delegationValue,
+          )} ${currencyLabels.hp}`,
+        },
+        {
+          label: 'popup_html_delegation_market_payout',
+          value: `${FormatUtils.formatCurrencyValue(
+            leaseRequestForm.weeklyPay,
+          )} ${currencyLabels[leaseRequestForm.weeklyPayCurrency]}`,
+        },
+        {
+          label: 'popup_html_delegation_market_duration',
+          value: `${leaseRequestForm.duration} ${chrome.i18n.getMessage(
+            leaseRequestForm.duration > 1 ? 'weeks' : 'week',
+          )}`,
+        },
+        {
+          label: 'popup_html_delegation_market_total_cost',
+          value: formattedTotalAmount,
+        },
+      ],
+      title: 'popup_html_transfer_confirm_delegation_lease_request',
+      formParams: leaseRequestForm,
+      afterConfirmAction: async () => {
+        addToLoadingList('html_popup_delegation_lease_request_operation');
+        let success = false;
+
+        success = await HiveUtils.transfer(
+          activeAccount.name!,
+          KEYCHAIN_DELEGATION_MARKET_ACCOUNT,
+          formattedTotalAmount,
+          JSON.stringify(transferMemo),
+          false,
+        );
+
+        removeFromLoadingList('html_popup_delegation_lease_request_operation');
+
+        if (success) {
+          setSuccessMessage('html_popup_delegation_lease_request_success');
+        } else {
+          setErrorMessage('html_popup_delegation_lease_request_failed');
+        }
+      },
     });
   };
 
@@ -87,45 +196,40 @@ const CreateDelegationRequestPage = ({
       </div>
       <div className="form">
         <InputComponent
-          onChange={setValueDelegation}
-          value={valueDelegation}
+          onChange={(newValue) => updateForm({ delegationValue: newValue })}
+          value={leaseRequestForm.delegationValue}
           label="popup_html_delegation_market_requested_delegation"
           hint="popup_html_delegation_market_delegation_value_hint"
           placeholder="0.000"
           skipPlaceholderTranslation
           type={InputType.NUMBER}
-          required
         />
-        <div className="value-input-panel">
-          <InputComponent
-            type={InputType.NUMBER}
-            placeholder="0.000"
-            label="popup_html_delegation_market_payout"
-            hint="popup_html_delegation_market_payout_hint"
-            skipPlaceholderTranslation
-            value={valuePayout}
-            min={0}
-            onChange={setValuePayout}
-            required
-          />
-          <Select
-            values={[]}
-            options={options}
-            onChange={() => undefined}
-            contentRenderer={customLabelRender}
-            itemRenderer={customItemRender}
-            className="select-dropdown"
-          />
-        </div>
+        <InputComponent
+          type={InputType.NUMBER}
+          placeholder="0.000"
+          label="popup_html_delegation_market_payout"
+          hint="popup_html_delegation_market_payout_hint"
+          skipPlaceholderTranslation
+          value={leaseRequestForm.weeklyPay}
+          min={0}
+          onChange={(newValue) => updateForm({ weeklyPay: newValue })}
+        />
+        <Select
+          values={[]}
+          options={options}
+          onChange={() => undefined}
+          contentRenderer={customLabelRender}
+          itemRenderer={customItemRender}
+          className="select-dropdown"
+        />
         <InputComponent
           type={InputType.NUMBER}
           placeholder="0"
-          label="popup_html_delegation_market_nb_days"
+          label="popup_html_delegation_market_duration"
           skipPlaceholderTranslation
-          hint="popup_html_delegation_market_nb_days_hint"
-          onChange={setValueDuration}
-          value={valueDuration}
-          required
+          hint="popup_html_delegation_market_duration_hint"
+          onChange={(newValue) => updateForm({ duration: newValue })}
+          value={leaseRequestForm.duration}
         />
 
         <OperationButtonComponent
@@ -150,6 +254,9 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
+  navigateToWithParams,
+  setErrorMessage,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

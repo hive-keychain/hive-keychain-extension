@@ -342,8 +342,8 @@ const transfer = async (
   amount: string,
   memo: string,
   recurrent: boolean,
-  iterations: number,
-  frequency: number,
+  iterations?: number,
+  frequency?: number,
 ) => {
   try {
     if (!recurrent) {
