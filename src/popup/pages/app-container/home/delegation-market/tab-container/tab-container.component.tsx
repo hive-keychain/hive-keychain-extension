@@ -1,7 +1,7 @@
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
-import { DelegationRequest } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
-import { DelegationRequestItemComponent } from '@popup/pages/app-container/home/delegation-market/delegation-request-item/delegation-request-item.component';
+import { Lease } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
+import { LeaseItemComponent } from '@popup/pages/app-container/home/delegation-market/lease-item/lease-item.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
@@ -10,13 +10,13 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './tab-container.component.scss';
 
 interface TabContainerProps {
-  delegationRequests: DelegationRequest[] | undefined;
+  leases: Lease[] | undefined;
   hideDisplayChip?: boolean;
   displayAddButton?: boolean;
 }
 
 const TabContainer = ({
-  delegationRequests,
+  leases,
   hideDisplayChip,
   displayAddButton,
   navigateTo,
@@ -25,11 +25,11 @@ const TabContainer = ({
 
   return (
     <div className="tab-container">
-      {delegationRequests &&
-        delegationRequests.map((delegationRequest: DelegationRequest) => (
-          <DelegationRequestItemComponent
-            key={delegationRequest.id}
-            delegationRequest={delegationRequest}
+      {leases &&
+        leases.map((lease: Lease) => (
+          <LeaseItemComponent
+            key={lease.id}
+            lease={lease}
             hideDisplayChip={hideDisplayChip}
           />
         ))}

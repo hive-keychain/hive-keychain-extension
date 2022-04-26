@@ -1,13 +1,13 @@
-export type DelegationCurrency = 'hive' | 'hbd';
+export type LeaseCurrency = 'hive' | 'hbd';
 
-export enum DelegationRequestStatus {
+export enum LeaseStatus {
   PENDING = 'pending',
   ACTIVE = 'active',
   FINISHED = 'finished',
   CANCELED = 'canceled',
 }
 
-export interface DelegationRequest {
+export interface Lease {
   id: string;
   creator: string;
   creationDate: Date | string;
@@ -15,7 +15,7 @@ export interface DelegationRequest {
   activatedDate?: Date | string;
   dailyPay: number;
   dailyFee: number;
-  currency: DelegationCurrency;
+  currency: LeaseCurrency;
   value: number; // Value of the delegation
   totalAmount: number;
   duration: number; // days

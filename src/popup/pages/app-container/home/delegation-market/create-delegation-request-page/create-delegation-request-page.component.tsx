@@ -25,13 +25,12 @@ import CurrencyUtils, {
   BaseCurrencies,
   CurrencyLabels,
 } from 'src/utils/currency.utils';
+import { LeaseKeys } from 'src/utils/delegation-market.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { v4 as uuidv4 } from 'uuid';
 import './create-delegation-request-page.component.scss';
 
-const DELEGATION_CUSTOM_JSON_ID = 'TO_DEFINE';
-const LEASE_KEY = 'keychain_lease';
 const KEYCHAIN_DELEGATION_MARKET_ACCOUNT = 'cedric.tests';
 
 interface LeaseRequest {
@@ -106,7 +105,7 @@ const CreateDelegationRequestPage = ({
 
   const submit = async () => {
     const transferMemo = {
-      key: LEASE_KEY,
+      key: LeaseKeys.REQUEST,
       ...leaseRequestForm,
     };
     const totalAmount =
@@ -115,6 +114,15 @@ const CreateDelegationRequestPage = ({
     const formattedTotalAmount = `${totalAmount.toFixed(3)} ${
       currencyLabels[leaseRequestForm.weeklyPayCurrency]
     }`;
+
+    if (leaseRequestForm.weeklyPay < 1) {
+      setErrorMessage('popup_html_delegation_market_payout_too_low');
+      return;
+    }
+    if (leaseRequestForm.duration > 24) {
+      setErrorMessage('popup_html_delegation_market_duration_too_long');
+      return;
+    }
 
     if (leaseRequestForm.weeklyPayCurrency === BaseCurrencies.HBD) {
       if (
@@ -211,7 +219,7 @@ const CreateDelegationRequestPage = ({
           hint="popup_html_delegation_market_payout_hint"
           skipPlaceholderTranslation
           value={leaseRequestForm.weeklyPay}
-          min={0}
+          min={1}
           onChange={(newValue) => updateForm({ weeklyPay: newValue })}
         />
         <Select
@@ -229,6 +237,7 @@ const CreateDelegationRequestPage = ({
           skipPlaceholderTranslation
           hint="popup_html_delegation_market_duration_hint"
           onChange={(newValue) => updateForm({ duration: newValue })}
+          max={24}
           value={leaseRequestForm.duration}
         />
 

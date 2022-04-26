@@ -1,7 +1,7 @@
 @import '../../../../../variable.scss';
 
 .tab-container {
-  .delegation-request-item {
+  .lease-item {
     &:nth-child(odd) {
       background: $red-transparent;
     }

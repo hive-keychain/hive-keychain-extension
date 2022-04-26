@@ -1,7 +1,7 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import {
-  DelegationRequest,
-  DelegationRequestStatus,
+  Lease,
+  LeaseStatus,
 } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
 import { TabContainerComponent } from '@popup/pages/app-container/home/delegation-market/tab-container/tab-container.component';
 import { RootState } from '@popup/store';
@@ -15,9 +15,9 @@ const DelegationMarket = ({
   activeAccount,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [myDelegations, setMyDelegations] = useState<DelegationRequest[]>();
-  const [myLeases, setMyLeases] = useState<DelegationRequest[]>();
-  const [leaseMarket, setLeaseMarket] = useState<DelegationRequest[]>();
+  const [myDelegations, setMyDelegations] = useState<Lease[]>();
+  const [myLeases, setMyLeases] = useState<Lease[]>();
+  const [leaseMarket, setLeaseMarket] = useState<Lease[]>();
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_delegation_market',
@@ -30,21 +30,17 @@ const DelegationMarket = ({
     const allLeases = await DelegationMarketUtils.downloadAllLeases();
     setLeaseMarket(
       allLeases.filter(
-        (delegationRequest: DelegationRequest) =>
-          delegationRequest.creator !== activeAccount.name! &&
-          delegationRequest.status === DelegationRequestStatus.PENDING,
+        (lease: Lease) =>
+          lease.creator !== activeAccount.name! &&
+          lease.status === LeaseStatus.PENDING,
       ),
     );
     setMyLeases(
-      allLeases.filter(
-        (delegationRequest: DelegationRequest) =>
-          delegationRequest.creator === activeAccount.name!,
-      ),
+      allLeases.filter((lease: Lease) => lease.creator === activeAccount.name!),
     );
     setMyDelegations(
       allLeases.filter(
-        (delegationRequest: DelegationRequest) =>
-          delegationRequest.delegator === activeAccount.name!,
+        (lease: Lease) => lease.delegator === activeAccount.name!,
       ),
     );
   };
@@ -72,19 +68,16 @@ const DelegationMarket = ({
         </TabList>
         <TabPanel>
           <TabContainerComponent
-            delegationRequests={leaseMarket}
+            leases={leaseMarket}
             hideDisplayChip
             displayAddButton
           />
         </TabPanel>
         <TabPanel>
-          <TabContainerComponent
-            delegationRequests={myLeases}
-            displayAddButton
-          />
+          <TabContainerComponent leases={myLeases} displayAddButton />
         </TabPanel>
         <TabPanel>
-          <TabContainerComponent delegationRequests={myDelegations} />
+          <TabContainerComponent leases={myDelegations} />
         </TabPanel>
       </Tabs>
     </div>

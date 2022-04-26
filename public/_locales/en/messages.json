@@ -2295,7 +2295,7 @@
     "description": "Delegation Request status"
   },
   "popup_html_delegation_request_status_canceled": {
-    "message": "Finished",
+    "message": "Canceled",
     "description": "Delegation Request status"
   },
   "popup_html_delegation_request_undelegate": {
@@ -2315,11 +2315,11 @@
     "description": "Delegation request"
   },
   "popup_html_delegation_market_duration_hint": {
-    "message": "How many weeks do you want to lease the HP for?",
+    "message": "How many weeks do you want to lease the HP for? (maximum 24)",
     "description": "Delegation request"
   },
   "popup_html_delegation_market_payout_hint": {
-    "message": "How much do you want to pay per week?",
+    "message": "How much do you want to pay per week? (minimum 1 HIVE/HBD)",
     "description": "Delegation request"
   },
   "popup_html_delegation_market_delegation_value_hint": {
@@ -2361,5 +2361,25 @@
   "week": {
     "message": "week",
     "description": "global word"
+  },
+  "popup_html_delegation_market_payout_too_low": {
+    "message": "Payout is too low. Please set a minimum of one HIVE/HBD",
+    "description": "global word"
+  },
+  "popup_html_delegation_market_duration_too_long": {
+    "message": "Duration is too long. Please set a duration lower 24 weeks.",
+    "description": "global word"
+  },
+  "popup_html_delegation_request_cancel": {
+    "message": "Cancel",
+    "description": "cancel lease request"
+  },
+  "popup_html_delegation_request_cancel_success": {
+    "message": "You successfully canceled your lease request.",
+    "description": "cancel lease request success message"
+  },
+  "popup_html_delegation_request_cancel_failed": {
+    "message": "There was an error while canceling your lease request. Please try again later",
+    "description": "cancel lease request failed message"
   }
 }
