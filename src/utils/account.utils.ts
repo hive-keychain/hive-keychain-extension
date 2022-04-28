@@ -5,7 +5,7 @@ import { resetAccount } from '@popup/actions/account.actions';
 import { resetActiveAccount } from '@popup/actions/active-account.actions';
 import {
   setErrorMessage,
-  setSuccessMessage,
+  setSuccessMessage
 } from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { store } from '@popup/store';
