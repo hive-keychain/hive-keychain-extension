@@ -4,8 +4,20 @@
     "description": "Extension name, night not need to translate it."
   },
   "description": {
-    "message": "Secure Hive Wallet Extension.",
+    "message": "安全 Hive 钱包扩充",
     "description": "Extension description, as shown in the store."
+  },
+  "popup_html_wrong_key": {
+    "message": "错误的密钥。 请使用 $1",
+    "description": "while using wrong private key"
+  },
+  "common_yes": {
+    "message": "是",
+    "description": "Generic"
+  },
+  "common_no": {
+    "message": "否",
+    "description": "Generic"
   },
   "memo": {
     "message": "备註",
@@ -48,19 +60,19 @@
     "description": "Full in x days x hours x minutes"
   },
   "minutes": {
-    "message": "分鐘",
+    "message": "分钟",
     "description": "Full in x days x hours x minutes"
   },
   "minute": {
-    "message": "分鐘",
+    "message": "分钟",
     "description": "Full in x days x hours x minutes"
   },
   "popup_html_register": {
-    "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
+    "message": "<strong> HIVE </strong>钱包。<br/><br/>管理HIVE资产，并连接到HIVE应用程式。<br/><br/>简单。 轻巧。 安全。",
     "description": "Text on registration page"
   },
   "popup_html_unlock": {
-    "message": "The ultimate <strong>HIVE</strong> wallet.<br/><br/>Manage HIVE assets, and connect to HIVE applications.<br/><br/>Simple. Lightweight. Secure.",
+    "message": "<strong> HIVE </strong>钱包。<br/><br/>管理HIVE资产，并连接到HIVE应用程式。<br/><br/>简单。 轻巧。 安全。",
     "description": "Text on unlock page"
   },
   "popup_html_new_password": {
@@ -94,6 +106,10 @@
     "message": "如果您忘记了密码，您可以清除您的数据，但将重新再次输入所有的密钥。",
     "description": "text after clicking forgot password"
   },
+  "popup_html_clear_all_data_desc": {
+    "message": "通过确认，您的所有数据都将遗失。 请确保您的密钥保存在Keychain之外",
+    "description": "description of clear all data confirm page"
+  },
   "popup_html_vm": {
     "message": "Mana投票",
     "description": "on Keychain popup main page"
@@ -110,7 +126,7 @@
     "message": "Power Up"
   },
   "popup_html_pd": {
-    "message": "Power Down"
+    "message": "Power down"
   },
   "popup_html_delegate": {
     "message": "委託"
@@ -120,7 +136,7 @@
     "description": "on popup main page"
   },
   "popup_html_history": {
-    "message": "歷史纪录",
+    "message": "历史纪录",
     "description": "on popup main page"
   },
   "popup_html_tokens": {
@@ -128,7 +144,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "见证人",
+    "message": "见證人",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -140,11 +156,11 @@
     "description": "on popup main page, click info near estimated value"
   },
   "popup_html_wallet_history": {
-    "message": "钱包歷史纪录",
+    "message": "钱包历史纪录",
     "description": "Upon clicking on History"
   },
   "popup_html_setup_text": {
-    "message": "Enter your Hive account name and either the master password or the private posting or active key for that account below. Your master password will NOT be saved and will only be used to generate your private keys.<br/><br/> You may add / remove Hive accounts or keys at any time. If you need to create a new Hive account, you can do so at <a href=\"https://signup.hive.io/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">signup.hive.io/</a>.",
+    "message": "在下面输入您的Hive帐户名称以及该帐户的主密码或私人贴文或活跃私钥。 您的主密码将不会保存，只会使用於生成私钥。<br/><br/> 您可以随时新增/删除Hive帐户或私钥。 如果您需要建立一个新的Hive帐户，可以在<a href=\"https://signup.hive.io/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">signup.hive.io/</a>。",
     "description": "When adding new account"
   },
   "popup_html_setup": {
@@ -160,15 +176,19 @@
     "description": "placeholder for entering username"
   },
   "popup_html_import_keys": {
-    "message": "匯入金钥",
+    "message": "汇入密钥",
     "description": "Import all keys"
   },
+  "popup_html_import_permissions": {
+    "message": "载入设定",
+    "description": "Import permissions"
+  },
   "popup_html_import_key": {
-    "message": "匯入金钥",
+    "message": "汇入金钥",
     "description": "Import one key"
   },
   "popup_html_import_success": {
-    "message": "Import successful! <br><br>Please select the Keys you wish to store with Hive Keychain:",
+    "message": "导入成功！<br><br>请选择您要与Hive Keychain一起储存的金钥：",
     "description": "When adding an account via master key"
   },
   "popup_html_posting": {
@@ -176,7 +196,7 @@
     "description": "When adding an account via master key"
   },
   "popup_html_active": {
-    "message": "啟用金钥",
+    "message": "启用金钥",
     "description": "When adding an account via master key"
   },
   "popup_html_memo": {
@@ -207,6 +227,10 @@
     "message": "新增帐号",
     "description": "on settings page"
   },
+  "popup_html_accounts": {
+    "message": "帐号",
+    "description": "on settings page"
+  },
   "popup_html_manage_accounts": {
     "message": "管理帐号",
     "description": "on settings page"
@@ -223,8 +247,24 @@
     "message": "Keychainify",
     "description": "on settings page"
   },
+  "popup_html_import_export_settings": {
+    "message": "汇入/汇出设定",
+    "description": "on settings page"
+  },
+  "popup_html_automated_tasks": {
+    "message": "自动执行任务",
+    "description": "on settings page"
+  },
+  "popup_html_operations": {
+    "message": "操作",
+    "description": "on settings page"
+  },
+  "popup_html_operation_popup": {
+    "message": "操作视窗弹出",
+    "description": "on settings page"
+  },
   "popup_html_about": {
-    "message": "About Hive Keychain",
+    "message": "关於Hive Keychain",
     "description": "on settings page"
   },
   "popup_html_clear": {
@@ -236,7 +276,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "手动或是在关闭瀏览器时锁定keychain。",
+    "message": "手动或是在关闭浏览器时锁定keychain。",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
@@ -248,51 +288,71 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
-    "message": "Idle 锁",
+    "message": "Idle 锁定",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "在瀏览器窗口閒置指定的分鐘数后，自动锁定keychain。",
+    "message": "在浏览器窗口閒置指定的分钟数後，自动锁定keychain。",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
-    "message": "This feature allows you to trigger a Hive Keychain operation when clicking on a supported link on a web page or accessing the URL directly in a browser tab.",
+    "message": "此功能允许您在点击网页上支援的连结或直接在浏览器标籤页中存取 URL 时触发 Keychain 操作。 目前支持以下 Hivesigner 连结：转让、委託、自定义 JSON、见證代理和投票。",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_title": {
-    "message": "啟用Keychainify",
+    "message": "启用Keychainify",
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "当前仅支持Steem Connect传输URL。",
+    "message": "启用後，当您点击支援的连结时，此功能将开启Keychain弹出视窗。",
     "description": "on keychainify settings"
   },
   "popup_html_import": {
-    "message": "Import",
+    "message": "汇入",
     "description": "on import / export settings"
   },
   "popup_html_export": {
-    "message": "Export",
+    "message": "汇出",
+    "description": "on import / export settings"
+  },
+  "popup_html_export_permissions": {
+    "message": "汇出设定",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "The overall idea and concept for the Hive Keychain browser extension was created on Steem by <a href=\"https://steempeak.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Steem blockchain. It was primarily developed by <a href=\"https://steempeak.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Steem/Hive developer (SteemPlus) and witness. The design and development were funded by @aggroed (a top 20 Steem witness) and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Steem blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
+    "message": "Hive Keychain 团队由开发人员<a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>和 Hive 见證人，包括 3 个全职开发人员带领。我们还受益於 Splinterlands 的创意总监 <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a> 和许多其他社区成员的帮助。<br>< br>该项目目前由去中心化 Hive 基金 (DHF) 资助，最初的想法和资金是由 <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> 和 <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a>(见證人)透过他们共同经营的 Splinterlands，这是一款基於区块链的可收藏集换式卡牌遊戏建立在 Hive 区块链。请务必查看 <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!<br/><br/>有关更多我们的产品讯息(浏览器扩展和行动应用程式)，请访问我们的<a href='https://hive-keychain.com' target='__blank'>登录页面</a>。",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
-    "message": "删除此帐号",
+    "message": "从Keychain中移除",
     "description": "on manage accounts"
+  },
+  "popup_html_delete_account_confirmation_message": {
+    "message": "您即将从Keychain中删除 @$1。 如果不重新导入您的密钥，将无法撤消。 请确认继续。",
+    "description": "on manage accounts"
+  },
+  "popup_html_show_qr": {
+    "message": "显示 QR 代码",
+    "description": "on manage accounts"
+  },
+  "popup_html_hide_qr": {
+    "message": "隐藏QR代码",
+    "description": "on manage accounts"
+  },
+  "popup_html_set_new_rpc_as_active": {
+    "message": "将新的 RPC 节点设置为活动状态",
+    "description": "in add rpc node screen"
   },
   "popup_html_notif_pref": {
     "message": "通知喜好设定",
     "description": "on preferences"
   },
   "popup_html_pref_info": {
-    "message": "查看和更新您已选择不接收确认提示的网站和交易类型。",
+    "message": "为了获得更好的体验，您可以在 dApp 请求时将非活动权限操作列入白名单。 您不会收到这些操作的确认提示。",
     "description": "on preferences"
   },
   "popup_html_no_pref": {
-    "message": "无喜好设定",
+    "message": "无白名单操作",
     "description": "on preferences"
   },
   "popup_html_add_rpc": {
@@ -304,8 +364,12 @@
     "description": "on preferences"
   },
   "popup_html_rpc_node": {
-    "message": "RPC Node",
+    "message": "远端程序呼叫 Node",
     "description": "on preferences"
+  },
+  "popup_none": {
+    "message": "无",
+    "description": "On send HIVE/HBD confirmation page, when memo is empty"
   },
   "popup_html_add_key": {
     "message": "新增金钥",
@@ -316,23 +380,35 @@
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
-    "message": "金钥已复製到剪贴簿",
+    "message": "金钥已複製到剪贴簿",
     "description": "on preferences when clicking on a key"
   },
+  "popup_html_text_copied": {
+    "message": "'$1' 已复製到剪贴簿！",
+    "description": "info message copy to clipboard"
+  },
+  "popup_html_copy_username_tooltip_text": {
+    "message": "点击此处複製使用者名称",
+    "description": "after clicking on copy username to clipboard button on home page"
+  },
   "popup_html_change_password_text": {
-    "message": "输入您的旧密码进行确认，然后选择一个新密码。",
+    "message": "输入您的旧密码进行确认，然後选择一个新密码。",
     "description": "on change password"
   },
   "popup_html_old_password": {
     "message": "旧密码",
     "description": "on change password"
   },
+  "popup_html_send_max": {
+    "message": "最大値",
+    "description": "In input (keep it short eg maximum 3 characters)"
+  },
   "popup_html_transfer_funds": {
     "message": "转帐",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_balance": {
-    "message": "餘额",
+    "message": "馀额",
     "description": "When initiating a HIVE or HBD transfer. $1 is a variable that will be replaced by a currency name."
   },
   "popup_html_loading": {
@@ -343,8 +419,16 @@
     "message": "备註（可选）",
     "description": "When initiating a HIVE or HBD transfer"
   },
+  "popup_html_memo_key_missing": {
+    "message": "请添加您的备忘录密钥以加密和解密讯息。",
+    "description": "When initiating a HIVE or HBD transfer"
+  },
   "popup_html_transfer_confirm_text": {
     "message": "请确认您的转移。此操作无法撤消。",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_confirm_cancel_recurrent": {
+    "message": "<br>请确认您要取消此约定转帐。",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_from": {
@@ -363,8 +447,20 @@
     "message": "备註",
     "description": "On transfer confirmation page"
   },
+  "popup_html_transfer_recurrence": {
+    "message": "定期进程",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_transfer_recurrence_value": {
+    "message": "每 $1 小时，$2 次",
+    "description": "On transfer confirmation page"
+  },
+  "popup_html_claiming_rewards": {
+    "message": "领取奖励",
+    "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
+  },
   "popup_html_witness_remaining": {
-    "message": "剩餘投票数：<span> 30 </span>",
+    "message": "剩馀票数：$1",
     "description": "On witness page"
   },
   "popup_html_tokens_available": {
@@ -372,7 +468,7 @@
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
-    "message": "查看代币资讯并选择要显示的代币。 在<a href=\"https://steem-engine.com\" target=\"_blank\"> https://steem-engine.com </a>上了解有关Steem区块链上订製代币的更多讯息。",
+    "message": "查看代币资讯并选择要显示的代币。 在<a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>上了解有关Hive区块链上订製代币的更多讯息。",
     "description": "On tokens page"
   },
   "popup_html_available": {
@@ -381,6 +477,10 @@
   },
   "popup_html_tokens_send_text": {
     "message": "发送代币可能最多需要30秒才能确认，请耐心等待。",
+    "description": "On tokens page > Send"
+  },
+  "popup_html_tokens_operation_text": {
+    "message": "代币操作可能需要30秒才能确认，请耐心等待。",
     "description": "On tokens page > Send"
   },
   "popup_html_token_confirm_text": {
@@ -392,11 +492,11 @@
     "description": "Main page > Power Up . Current HP balance"
   },
   "popup_html_powerup_text": {
-    "message": "Power Up your HIVE to transform it in Hive Power.",
+    "message": "Power Up您的HIVE，以将其转换为HIVE Power。",
     "description": "Main page > Power Up"
   },
   "popup_html_powerdown_text": {
-    "message": "Power Down your Hive Power to get liquid HIVE. The entire Power Down process will take 13 weeks.",
+    "message": "Power Down您的HIVE Power，以得到流动HIVE。 整个Power Down过程将花费13週。",
     "description": "Main page > Power Down"
   },
   "popup_html_powering_down": {
@@ -408,7 +508,7 @@
     "description": "Main page > Delegate"
   },
   "popup_html_delegations_text": {
-    "message": "You may delegate your Hive Power (HP) to another user. Click on the Outgoing amount to review or make changes.",
+    "message": "您可以将Hive Power (HP) 委託给另一个用户。 点击支付金额以查看或进行更改。",
     "description": "Main page > Delegate"
   },
   "popup_html_incoming": {
@@ -436,11 +536,11 @@
     "description": "On manage accounts"
   },
   "popup_accounts_add_memo": {
-    "message": "添加您的私人备忘录密钥以瀏览此备忘录",
+    "message": "添加您的私人备忘录密钥以浏览此备忘录",
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
   },
   "popup_account_password_is_public_key": {
-    "message": "This is a public key! Please enter a private key or your master key.",
+    "message": "这是公钥！ 请输入私钥或您的主密钥。",
     "description": "If entered password is public key"
   },
   "popup_accounts_already_registered": {
@@ -452,7 +552,7 @@
     "description": "when adding new account with incorrect key"
   },
   "popup_accounts_incorrect_user": {
-    "message": "请检查用户名，然后再试一次。",
+    "message": "请检查用户名，然後再试一次。",
     "description": "when adding new account but the username doesnt exist"
   },
   "popup_accounts_fill": {
@@ -460,12 +560,16 @@
     "description": "when adding new account but not filling all fields"
   },
   "popup_accounts_no_key_selected": {
-    "message": "You didn't select any key. Please select at least one.",
+    "message": "您没有选择任何密钥。 请至少选择一项。",
     "description": "when trying to save keys on selecting keys page"
   },
   "popup_accounts_err_claim": {
     "message": "您需要输入私人posting金钥才能领取奖励！",
     "description": "When trying to claim rewards but account doesnt havea stored active key"
+  },
+  "popup_missing_key": {
+    "message": "请加入您的 $1 密钥以执行此操作！",
+    "description": "When trying to perform an operation without a stored private $1 key"
   },
   "popup_password_mismatch": {
     "message": "您的密码不符！",
@@ -477,14 +581,14 @@
   },
   "popup_empty": {
     "message": "清空",
-    "description": "On send STEEM/SBD confirmation page, when memo is empty"
+    "description": "On send HIVE/HBD confirmation page, when memo is empty"
   },
   "popup_encrypted": {
     "message": "已加密",
-    "description": "On send STEEM/SBD confirmation page, when memo is encrypted"
+    "description": "On send HIVE/HBD confirmation page, when memo is encrypted"
   },
   "popup_witness_key": {
-    "message": "请新增您的活跃金钥以投票给见证人！",
+    "message": "请新增您的活跃金钥以投票给见證人！",
     "description": "When trying to vote for witness but user doenst have a stored active key"
   },
   "popup_next_powerdown": {
@@ -496,7 +600,11 @@
     "description": "When changing pwd from settings"
   },
   "popup_website": {
-    "message": "网站",
+    "message": "dApps",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
+  "popup_encode": {
+    "message": "编码讯息",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_broadcast": {
@@ -515,12 +623,16 @@
     "message": "自订交易",
     "description": "On preferences, list of rights that were given to some websites."
   },
+  "popup_sign_tx": {
+    "message": "签名交易",
+    "description": "On preferences, list of rights that were given to some websites."
+  },
   "popup_decode": {
-    "message": "验证码",
+    "message": "验證码",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_sign_buffer": {
-    "message": "签署",
+    "message": "签署讯息",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_signed_call": {
@@ -544,11 +656,11 @@
     "description": "tokens > setting wheel"
   },
   "popup_view_tokens_balance": {
-    "message": "查看您的自定代币餘额。 您可以隐藏某些代币并通过点击设定来查看更多资讯。",
+    "message": "查看您的自定代币馀额。 您可以隐藏某些代币并通过点击设定来查看更多资讯。",
     "description": "on tokens page "
   },
   "popup_no_tokens": {
-    "message": "查看您的自定代币餘额。 您可以隐藏某些代币并通过点击设定来查看更多资讯。",
+    "message": "查看您的自定代币馀额。 您可以隐藏某些代币并通过点击设定来查看更多资讯。",
     "description": "on tokens page when you dont have any"
   },
   "popup_no_such_account": {
@@ -556,24 +668,40 @@
     "description": "on tokens page when trying to send tokens to a non existing user"
   },
   "popup_token_timeout": {
-    "message": "交易超时无回应。 请再次检查您的代币餘额，然后再尝试发送。",
+    "message": "交易超时无回应。 请再次检查您的代币馀额，然後再尝试发送。",
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
-    "message": "代理",
+    "message": "代理伺服器",
     "description": "on witness page "
   },
   "popup_success_wit": {
-    "message": "成功投票通过@$1作为见证人。",
+    "message": "成功投票通过@$1作为见證人。",
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "成功未投票@$1作见证人。",
+    "message": "成功未投票@$1作见證人。",
+    "description": "on witness page when unvoting a witness"
+  },
+  "popup_error_wit": {
+    "message": "为 @$1 作为见證人投票时出现错误。",
+    "description": "on witness page "
+  },
+  "popup_error_unvote_wit": {
+    "message": "取消@$1 作为见證人的投票时出现错误。",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_proxy": {
     "message": "成功选择@$1作为代理。",
     "description": "on tokens page when chosing a proxy"
+  },
+  "popup_error_proxy": {
+    "message": "将 @$1 设定为代理时出错。",
+    "description": "on tokens page when chosing a proxy"
+  },
+  "bgd_ops_unproxy": {
+    "message": "成功地移除了这个伺服器。",
+    "description": "when removing proxy"
   },
   "popup_utils_full": {
     "message": "已经满了！",
@@ -639,12 +767,16 @@
     "message": "至",
     "description": "When website request a transfer"
   },
+  "dialog_tx": {
+    "message": "交易(点击显示)",
+    "description": "When website request signing a tx"
+  },
   "dialog_amount": {
     "message": "金额",
     "description": "When website request a transfer"
   },
   "dialog_balance": {
-    "message": "餘额",
+    "message": "馀额",
     "description": "When website request a transfer"
   },
   "dialog_daily_pay": {
@@ -668,7 +800,7 @@
     "description": "When website request a proposal creation"
   },
   "dialog_meta": {
-    "message": "JSON元资料",
+    "message": "JSON 元数据(点击显示)",
     "description": "When website request a post"
   },
   "dialog_pu": {
@@ -683,12 +815,16 @@
     "message": "数据<span class ='small'>（点击以显示）</span>",
     "description": "When website request a post"
   },
+  "dialog_operations": {
+    "message": "操作(点击显示)",
+    "description": "When website request a generic broadcast"
+  },
   "dialog_max_payout": {
     "message": "最高接受付款： ",
     "description": "When website request a post"
   },
   "dialog_percentage_hbd": {
-    "message": "SBD百分比： ",
+    "message": "HBD 百分比： ",
     "description": "When website request a post"
   },
   "dialog_allow_votes": {
@@ -712,7 +848,7 @@
     "description": "When website request a custom json"
   },
   "dialog_witness": {
-    "message": "见证人",
+    "message": "见證人",
     "description": "When website request a witness vote"
   },
   "dialog_vote": {
@@ -748,7 +884,11 @@
     "description": "Website request title"
   },
   "dialog_title_decode": {
-    "message": "验证码",
+    "message": "验證码",
+    "description": "Website request title"
+  },
+  "dialog_title_encode": {
+    "message": "编码讯息",
     "description": "Website request title"
   },
   "dialog_title_sign": {
@@ -767,6 +907,10 @@
     "message": "播送",
     "description": "Website request title"
   },
+  "dialog_title_sign_tx": {
+    "message": "签名交易",
+    "description": "Website request title"
+  },
   "dialog_title_post": {
     "message": "贴文",
     "description": "Website request title"
@@ -780,7 +924,11 @@
     "description": "Website request title"
   },
   "dialog_title_wit": {
-    "message": "见证人投票",
+    "message": "见證人投票",
+    "description": "Website request title"
+  },
+  "dialog_title_proxy": {
+    "message": "选择代理伺服器",
     "description": "Website request title"
   },
   "dialog_title_token": {
@@ -800,11 +948,11 @@
     "description": "Website request title"
   },
   "dialog_title_create_proposal": {
-    "message": "建立工作者提议",
+    "message": "建立提案",
     "description": "Website request title"
   },
   "dialog_title_remove_proposal": {
-    "message": "移除工作者提议",
+    "message": "移除提案",
     "description": "Website request title"
   },
   "dialog_title_vote_proposal": {
@@ -812,7 +960,7 @@
     "description": "Website request title"
   },
   "dialog_no_prompt_verify": {
-    "message": "不要再次提示验证$2上@$1帐户的密钥",
+    "message": "不要再次提示验證$2上@$1帐户的密钥",
     "description": "When a website request a verification using posting key and you dont want it to pop all the time"
   },
   "dialog_no_prompt": {
@@ -820,15 +968,43 @@
     "description": "When a website request a transaction using posting key and you dont want it to pop all the time"
   },
   "dialog_desc_verify": {
-    "message": "网站$1想验证您是否有权限访问帐户的$2私钥：@$3",
+    "message": "网站$1想验證您是否有权限访问帐户的$2私钥：@$3",
     "description": "key verification message"
   },
   "dialog_desc_sign": {
     "message": "网站$1想使用帐户的$2密钥签名讯息：@$3",
     "description": "Sign message"
   },
+  "dialog_recurrence": {
+    "message": "定期进程",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions": {
+    "message": "执行",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_executions_times": {
+    "message": "$1 次",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_hours": {
+    "message": "每$1小时",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days": {
+    "message": "每$1天",
+    "description": "When requesting recurrent transfers"
+  },
+  "dialog_recurrence_days_hours": {
+    "message": "每$1天和$2小时",
+    "description": "When requesting recurrent transfers"
+  },
   "bgd_init_no_wallet": {
     "message": "没有钱包！",
+    "description": "when user didnt create a wallet yet"
+  },
+  "bgd_init_no_wallet_explained": {
+    "message": "为了能够使用 Hive Keychain，请设定您的钱包。 点击浏览器右上角的 Hive keychain标誌(它可能隐藏在扩展清单中)，然後设定您的密码并导入您的帐号。",
     "description": "when user didnt create a wallet yet"
   },
   "bgd_lifecycle_request_canceled": {
@@ -836,7 +1012,7 @@
     "description": "Generic answer to websites when user cancel transaction (in the background so it wont show on screen)"
   },
   "bgd_context_transfer_user": {
-    "message": "Transfer HIVE/HBD to @%s",
+    "message": "将 HIVE/HBD 转移到 @%s",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_memo_user": {
@@ -848,7 +1024,7 @@
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_transfer_author": {
-    "message": "Transfer HIVE/HBD to this author",
+    "message": "将 HIVE/HBD 转移给该创办者",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_memo_author": {
@@ -863,49 +1039,61 @@
     "message": "钱包已上锁！"
   },
   "bgd_auth_locked_desc": {
-    "message": "The current website is trying to send a request to the Hive Keychain browser extension. Please enter your password below to unlock the wallet and continue."
+    "message": "目前网站正在尝试向 Hive Keychain 浏览器扩充功能发送请求。 请在下面输入密码以解锁钱包并继续。"
   },
   "bgd_auth_canceled": {
     "message": "用户已取消请求。"
   },
   "bgd_auth_transfer_no_active": {
-    "message": "The current website is trying to send a transfer request to the Hive Keychain browser extension for account @$1 using the active key, which has not been added to the wallet."
+    "message": "目前网站正尝试使用活跃金钥向帐户 @$1 的 Hive Keychain 浏览器扩充功能发送转移请求，该钥尚未新增到钱包中。"
   },
   "bgd_auth_transfer_no_memo": {
-    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 using the memo key, which has not been added to the wallet."
+    "message": "目前网站正尝试使用备註金钥向帐户 @$1 的 Hive Keychain 浏览器扩充功能发送转移请求，该钥尚未新增到钱包中。"
   },
   "bgd_auth_no_account": {
-    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 which has not been added to the wallet."
+    "message": "目前网站正尝试 Hive Keychain 浏览器扩充功能发送请求，该帐户@$1尚未新增到钱包。"
   },
   "bgd_auth_no_key": {
-    "message": "The current website is trying to send a request to the Hive Keychain browser extension for account @$1 using the $2 key, which has not been added to the wallet."
+    "message": "目前网站正尝试使用 $2 金钥向帐户 @$1 的 Hive Keychain 浏览器扩充功能发送转移请求，该钥尚未新增到钱包中。"
   },
   "bgd_ops_witness_voted": {
-    "message": "成功投票通过@$1作为见证人。"
+    "message": "成功投票通过@$1作为见證人。"
   },
   "bgd_ops_witness_unvoted": {
-    "message": "成功未投票@$1作见证人。"
+    "message": "成功未投票@$1作见證人。"
   },
   "bgd_ops_vote": {
     "message": "已成功以@3％的价格投票给@$1的贴文$2。"
   },
   "bgd_ops_transfer_adjust_balance": {
-    "message": "$2帐户中的餘额不足$1。"
+    "message": "$2帐户中的馀额不足$1。"
+  },
+  "dialog_insufficient_balance": {
+    "message": "资金不足"
   },
   "bgd_ops_transfer_get_account": {
     "message": "找不到帐户@$1。"
   },
   "bgd_ops_error_broadcasting": {
-    "message": "播送此交易时出错，请稍后再试。"
+    "message": "播送此交易时出错，请稍後再试。"
   },
   "bgd_ops_error": {
     "message": "播送此交易时出错："
   },
+  "bgd_ops_add_account_error": {
+    "message": "添加此帐号时出现错误。 请验證其密钥。"
+  },
+  "bgd_ops_add_account_error_invalid": {
+    "message": "此帐号使用者名不存在。"
+  },
+  "bgd_ops_add_account": {
+    "message": "已成功将帐号 @$1 添加到Keychain。"
+  },
   "bgd_ops_transfer_success": {
-    "message": "已成功将$1 $2从@$3转移到@$4。"
+    "message": "已成功将$1$2从@$3转移到@$4。"
   },
   "bgd_ops_tokens": {
-    "message": "交易已成功播送。 请检查您的餘额以确认过程是否已成功。"
+    "message": "交易已成功播送。 请检查您的馀额以确认过程是否已成功。"
   },
   "bgd_ops_sign_success": {
     "message": "讯息签署已成功。"
@@ -922,14 +1110,20 @@
   "bgd_ops_proposal_vote": {
     "message": "成功为提议#$1投票。"
   },
+  "bgd_ops_proposal_votes": {
+    "message": "成功为提案 #$1 投票。"
+  },
   "bgd_ops_proposal_unvote": {
     "message": "未投票提议#$1成功。"
   },
+  "bgd_ops_proposal_unvotes": {
+    "message": "未投票成功的提案#$1。"
+  },
   "bgd_ops_pu": {
-    "message": "Powered up $1 HIVE on @$2."
+    "message": "在 @$2 上Powered up $1 HIVE。"
   },
   "bgd_ops_pd": {
-    "message": "Started a $1 HP power down on @$2."
+    "message": "在 @$2 上启动 $1 HP power down。"
   },
   "bgd_ops_pd_stop": {
     "message": "在@$1上停止Power Down。"
@@ -941,16 +1135,31 @@
     "message": "成功停止从帐户@$2到@$1的委託。"
   },
   "bgd_ops_delegate": {
-    "message": "Succesfully delegated $1 from @$3 to @$2."
+    "message": "成功将 $1 从 @$3 授权给 @$2。"
   },
   "bgd_ops_decode": {
     "message": "备忘录已成功解码。"
   },
   "bgd_ops_decode_err": {
-    "message": "无法验证密钥。"
+    "message": "无法验證密钥。"
+  },
+  "bgd_ops_encode": {
+    "message": "讯息编码成功。"
+  },
+  "bgd_ops_encode_err": {
+    "message": "无法对讯息进行编码。"
   },
   "bgd_ops_broadcast": {
     "message": "交易已成功播送。"
+  },
+  "bgd_ops_sign_tx": {
+    "message": "交易签名已成功。"
+  },
+  "bgd_ops_convert": {
+    "message": "以@$2 的帐号成功开始将 $1 HBD 转换为 HIVE。"
+  },
+  "bgd_ops_convert_collaterized": {
+    "message": "以@$2 的帐号成功开始将 $1 HIVE 转换为 HBD。"
   },
   "bgd_ops_create_account": {
     "message": "已成功建立帐户@$1。"
@@ -969,53 +1178,1069 @@
     "message": "送出"
   },
   "dialog_title_add_key_auth": {
-    "message": "Add Key"
+    "message": "新增密钥"
   },
   "dialog_title_remove_key_auth": {
-    "message": "Remove Key"
+    "message": "移除密钥"
+  },
+  "dialog_title_recurrent_transfer": {
+    "message": "约定转帐"
   },
   "bgd_ops_add_key_auth": {
-    "message": "$1 has been added as a $2 key for account @$3 with a weight of $4.",
+    "message": "已为帐户 @$3 添加 $1 作为 $2 密钥，权重为 $4。",
     "description": "Succesfully added a new keypair"
   },
   "bgd_ops_remove_key_auth": {
-    "message": "$1 has been removed as a $2 key for account @$3.",
+    "message": "$1 已被移除，$2 为帐户 @$3 的密钥。",
     "description": "succesfully removed a keypair"
   },
+  "bgd_ops_recurrent_transfer": {
+    "message": "已成功启动约定转帐。",
+    "description": "when starting a recurrent transfer"
+  },
+  "bgd_ops_stop_recurrent_transfer": {
+    "message": "已成功停止约定转帐。",
+    "description": "when starting a recurrent transfer"
+  },
   "popup_html_add_by_keys": {
-    "message": "Use keys/pwd",
+    "message": "使用密钥/密码",
     "description": "When adding new account. In a button, must keep short. "
   },
   "popup_html_add_by_auth": {
-    "message": "Use authorized account",
+    "message": "使用授权帐户",
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "You can add your keys by entring a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
+    "message": "您可以通过输入私钥或主密码来添加密钥。<br/>或者，您可以指定授权帐号或汇入您的密钥。",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
-    "message": "Add the new account by specifying an account that has authority over it, and that is already saved in Hive Keychain.",
+    "message": "通过指定对具有权限的帐户添加新帐户，该帐户已经保存在 Hive Keychain 中。",
     "description": "On Add new account => via auth"
   },
   "popup_html_auth_placeholder_username_auth": {
-    "message": "Authorized Account",
+    "message": "授权帐户",
     "description": "The placeholder for the authorized account that will use its keys for this account."
   },
   "popup_no_auth_account": {
-    "message": "Please save @$1 in Hive Keychain to use it as an authorized account."
+    "message": "请在 Hive Keychain 串中保存 @$1，以将其用作授权帐户。"
   },
   "popup_accounts_no_auth": {
-    "message": "@$1 does not have authority over @$2.",
+    "message": "@$1 的权限不超过 @$2。",
     "description": "When trying to add an account via authority"
   },
+  "import_html_title": {
+    "message": "汇入密钥",
+    "description": "Title of import keys popup"
+  },
   "import_html_text": {
-    "message": "Import your keys from another Keychain instance using a .kc file.<br/><br/>You need to use the same master password on both instances to decrypt the keys."
+    "message": "使用 .kc file 从另一个 Keychain 实际输入密钥。<br/><br/> 您需要在两个实际上使用相同的主密码来解密密钥。"
   },
   "import_html_success": {
-    "message": "You succesfully imported your keys!"
+    "message": "您已成功输入密钥！"
   },
   "import_html_error": {
-    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+    "message": "输入密钥时出错。<br/> 请确保使用与输出文件时相同的主密钥。"
+  },
+  "import_permissions_html_title": {
+    "message": "汇入设定值"
+  },
+  "import_permissions_html_text": {
+    "message": "使用 .kc.json 档案从另一个 Keychain 实例汇入您的设定。"
+  },
+  "bgd_auth_no_active": {
+    "message": "没有拥有有效权限的帐户。"
+  },
+  "popup_warning_phishing": {
+    "message": "@$1 已被列为潜在的网络钓鱼帐号，请检查拼写并确保它是您要转移到的帐号。",
+    "description": "When trying to transfer to a blacklisted account"
+  },
+  "popup_warning_exchange_deposit": {
+    "message": "此兑换帐户不接受$1的储存。",
+    "description": "When trying to transfer to an exchange that does not accept this currency."
+  },
+  "popup_warning_exchange_memo": {
+    "message": "确保转移到交换帐户时添加了备忘录。",
+    "description": "When forgetting memo to transfer to exchange."
+  },
+  "popup_warning_exchange_wallet": {
+    "message": "警告：此交易所禁止存款/取款。",
+    "description": "When wallet is disabled on exchange."
+  },
+  "popup_html_buy_hive": {
+    "message": "购买 HIVE",
+    "description": "When clicking on the Hive arrow menu"
+  },
+  "popup_html_buy_hbd": {
+    "message": "购买HBD",
+    "description": "When clicking on the Hbd arrow menu"
+  },
+  "popup_html_convert_hbd": {
+    "message": "转换 HBD",
+    "description": "When clicking on the Hbd arrow menu"
+  },
+  "popup_html_convert_hive": {
+    "message": "转换 HIVE",
+    "description": "When clicking on the Hbd arrow menu"
+  },
+  "popup_html_convert_hbd_intro": {
+    "message": "根据 3.5 天的中间价格，您的 HBD 需要 3.5 天才能转换为价值约 1 USD的 HIVE 代币。",
+    "description": "When clicking on the Hbd arrow menu"
+  },
+  "popup_html_convert_hive_intro": {
+    "message": "您存入抵押品(HIVE)，然後您将获得价值一半的抵押品金额的 HBD(减去 5% 的费用)。 您的正式最终付款将在 3.5 天内完成。 此时剩馀的抵押品(HIVE) 将被退回。",
+    "description": "When clicking on the HIVE arrow menu"
+  },
+  "popup_html_save_hive": {
+    "message": "HIVE存款",
+    "description": "When clicking on the Hive arrow menu"
+  },
+  "popup_html_save_hbd": {
+    "message": "HBD存款",
+    "description": "When clicking on the HBD arrow menu"
+  },
+  "popup_html_deposit_param": {
+    "message": "存款 $1",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_param": {
+    "message": "提取$1",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit_success": {
+    "message": "成功存入 $1 储蓄",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit_fail": {
+    "message": "未能将 $1存入储蓄",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_success": {
+    "message": "成功从储蓄中提取$1",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_fail": {
+    "message": "未能从储蓄中提取 $1",
+    "description": "On savings menu"
+  },
+  "popup_html_savings_available": {
+    "message": "液体",
+    "description": "On savings menu"
+  },
+  "popup_html_savings_current": {
+    "message": "储蓄",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw_text": {
+    "message": "从储蓄中提取资金需要 3.5 天。",
+    "description": "when withdrawing from savings"
+  },
+  "popup_html_deposit": {
+    "message": "存款",
+    "description": "On savings menu"
+  },
+  "popup_html_withdraw": {
+    "message": "提取",
+    "description": "On savings menu"
+  },
+  "popup_html_deposit_hbd_text": {
+    "message": "见證人确定将 HBD 存入储蓄目前会产生 1% 的 APR。",
+    "description": "when withdrawing from savings"
+  },
+  "popup_html_savings": {
+    "message": "$1储蓄",
+    "description": "Saving page title"
+  },
+  "popup_html_buy_intro": {
+    "message": "选择您最喜欢的方式，快速轻松地购买 $1。 Keychain 不会对交易收取任何额外费用。",
+    "description": "When accessing the buy HIVE/HBD page"
+  },
+  "popup_html_buy_swap_title": {
+    "message": "快速交易",
+    "description": "When accessing the buy HIVE/HBD page"
+  },
+  "popup_html_buy_exchanges_title": {
+    "message": "传统交易所",
+    "description": "When accessing the buy HIVE/HBD page"
+  },
+  "dialog_keys": {
+    "message": "私密金钥",
+    "description": "When adding an account by request"
+  },
+  "dialog_new_account": {
+    "message": "新帐号",
+    "description": "When adding an account by request"
+  },
+  "dialog_header_register": {
+    "message": "欢迎来到Keychain",
+    "description": "When registering from request"
+  },
+  "popup_html_automated_intro": {
+    "message": "如果适合您的条件，设置将每小时执行自动化任务。",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_rewards": {
+    "message": "领取奖励",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_rewards_info": {
+    "message": "定期领取您的奖励可以增加您的收益。",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_accounts": {
+    "message": "连结帐号:",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_accounts_info": {
+    "message": "当您的 RC 百分比超过 1% 时，索取免费帐号券。 根据您的 Hive Power，这可能会耗尽您的 RC 的很大一部分。",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_proposal_request": {
+    "message": "支援 Keychain 开发提案",
+    "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_kc_proposal_vote_successful": {
+    "message": "投票成功！ 感谢您通过我们的 DHF 提案支援 Keychain 开发",
+    "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_proposal_vote_successful": {
+    "message": "投票成功！",
+    "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_proposal_unvote_successful": {
+    "message": "取消投票成功！",
+    "description": "When user doesnt vote for proposal"
+  },
+  "popup_html_proposal_vote_fail": {
+    "message": "对提案进行投票时出现错误。 稍後再试",
+    "description": "Error while voting for proposal"
+  },
+  "popup_html_proposal_unvote_fail": {
+    "message": "对提案取消投票时出现错误。 稍後再试",
+    "description": "Error while voting for proposal"
+  },
+  "popup_html_advanced_settings": {
+    "message": "进阶",
+    "description": "Advanced settings sub menu"
+  },
+  "popup_html_rpc_node_text": {
+    "message": "您可以选择使用 RPC 节点从 Hive 区块链读取讯息和广播交易。",
+    "description": "Text on rpc node settings page"
+  },
+  "popup_html_rpc_missing_fields": {
+    "message": "您至少需要填写 RPC Node",
+    "description": "Error message on rpc node settings page"
+  },
+  "popup_html_rpc_uri_already_existing": {
+    "message": "Rpc 节点已经存在",
+    "description": "Error message on rpc node settings page"
+  },
+  "popup_html_wallet_savings": {
+    "message": "储蓄",
+    "description": "In wallet"
+  },
+  "popup_html_claim_error": {
+    "message": "领取失败。 请稍後再试",
+    "description": "Error message while trying to claim rewards"
+  },
+  "popup_html_claim_success": {
+    "message": "成功领取$1！ 恭喜！",
+    "description": "On main page"
+  },
+  "popup_html_confirm_power_up_down_message": {
+    "message": "请确认您的 $1。",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_confirm_cancel_power_down_message": {
+    "message": "请确认您要取消power down。",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_confirm_cancel_delegation_message": {
+    "message": "请确认您要取消此委託。",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_cancel_delegation": {
+    "message": "取消委託",
+    "description": "while confirming power up and down"
+  },
+  "popup_html_power_up_down_fail": {
+    "message": "执行 $1 时出现错误。 稍後再试。 如果错误仍然存在，请联繫支援人员。",
+    "description": "Error while power down or up"
+  },
+  "popup_html_power_up_down_success": {
+    "message": "$1成功！",
+    "description": "Success of power down or up"
+  },
+  "popup_html_cancel_power_down_success": {
+    "message": "成功取消power down！",
+    "description": "Success of power down or up"
+  },
+  "popup_html_cancel_power_down_fail": {
+    "message": "取消power down失败！",
+    "description": "Success of power down or up"
+  },
+  "popup_html_power_up_down_error": {
+    "message": "价值大於可用的",
+    "description": "Error  power down or up"
+  },
+  "popup_html_recurrent_transfer": {
+    "message": "约定转帐",
+    "description": "In transfer fund page"
+  },
+  "popup_html_cancel_recurrent_transfer": {
+    "message": "取消约定转帐",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfer_frequency": {
+    "message": "频率",
+    "description": "In transfer fund page"
+  },
+  "popup_html_recurrent_transfer_frequency_hint": {
+    "message": "频率(以小时为单位)。 最少 24 小时",
+    "description": "In transfer fund page"
+  },
+  "popup_html_transfer_successful": {
+    "message": "转入 $1 ($2) 成功",
+    "description": "In transfer fund page"
+  },
+  "popup_html_transfer_recurrent_successful": {
+    "message": "约定转帐到$1($2) 成功！ 这会发生$4 次(每 $3 小时)。",
+    "description": "In transfer fund page"
+  },
+  "popup_html_cancel_transfer_recurrent_successful": {
+    "message": "成功停止$1的约定转帐。",
+    "description": "In transfer fund page"
+  },
+  "popup_html_transfer_failed": {
+    "message": "转移失败",
+    "description": "In transfer fund page"
+  },
+  "popup_html_value": {
+    "message": "价值",
+    "description": "In confirmation page"
+  },
+  "popup_html_user_preferences": {
+    "message": "使用者偏好",
+    "description": "In settings menu"
+  },
+  "popup_html_save_successful": {
+    "message": "已成功储存设定",
+    "description": "General message"
+  },
+  "popup_html_receiver": {
+    "message": "接收人",
+    "description": "General word"
+  },
+  "popup_html_confirm_hive_to_hbd_conversion": {
+    "message": "请确认您从 HIVE 转换为 HBD",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_confirm_hbd_to_hive_conversion": {
+    "message": "请确认您从 HBD 转换为 HIVE",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hive_to_hbd_conversion_success": {
+    "message": "从 HIVE 到 HBD 转换成功！",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hive_to_hbd_conversion_fail": {
+    "message": "从 HIVE 到 HBD 转换失败！",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hbd_to_hive_conversion_success": {
+    "message": "从 HBD 到 HIVE 转换成功！",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_hbd_to_hive_conversion_fail": {
+    "message": "从 HBD 到 HIVE 转换失败！",
+    "description": "Conversion confirm page"
+  },
+  "popup_html_amount": {
+    "message": "金额",
+    "description": "General word"
+  },
+  "popup_html_recurrent_transfer_iterations": {
+    "message": "迭代",
+    "decription": "In transfer page"
+  },
+  "popup_html_recurrent_transfer_iterations_hint": {
+    "message": "迭代。 最少 2",
+    "decription": "In transfer page"
+  },
+  "popup_html_confirm_savings_withdraw": {
+    "message": "请确认您要从储蓄中提取 $1",
+    "description": "Withdraw savings confirmation message"
+  },
+  "popup_html_confirm_savings_deposit": {
+    "message": "请确认您想将 $1存入储蓄帐号",
+    "description": "Withdraw savings confirmation message"
+  },
+  "popup_html_confirm_delegation": {
+    "message": "请确认您要将 $1委託给 $2",
+    "description": "Withdraw savings confirmation message"
+  },
+  "popup_html_tokens_history": {
+    "message": "$1 历史纪录",
+    "description": "Tokens history title"
+  },
+  "popup_html_tokens_no_tokens": {
+    "message": "您目前没有任何自定代币。 点击设定轮以获取有关可用代币的讯息。",
+    "description": "If no tokens"
+  },
+  "popup_html_governance": {
+    "message": "管理",
+    "description": "Governance"
+  },
+  "popup_html_gov": {
+    "message": "Gov.",
+    "description": "Governance"
+  },
+  "popup_html_proxy": {
+    "message": "代理",
+    "description": "Governance"
+  },
+  "popup_html_proposal": {
+    "message": "提案",
+    "description": "Governance"
+  },
+  "html_popup_witness_display_voted_only": {
+    "message": "只投给",
+    "description": "Governance"
+  },
+  "html_popup_witness_vote_error_proxy": {
+    "message": "目前已设定代理，请在投票给见證人之前清除代理",
+    "description": "Governance"
+  },
+  "html_popup_currently_using_proxy": {
+    "message": "您目前正在使用 @$1 作为代理。 显示他/她的投票。",
+    "description": "Governance"
+  },
+  "html_popup_witness_hide_inactive": {
+    "message": "隐藏不活动",
+    "description": "Governance"
+  },
+  "html_popup_witness_proxy_definition": {
+    "message": "添加帐号作为代理这表示代理帐号可以在管理事务(投票给见證人和提案) 中使用您的 HP 的影响力。 这不会影响您在管理方面的 HP，并且您可以在任何给定时刻删除代理。 ",
+    "description": "Proxy tab"
+  },
+  "html_popup_witness_has_proxy": {
+    "message": "代理帐号代表您做出管理决策。 如果您想自己投票给见證人和提案，您必须先删除代理。",
+    "description": "Governance"
+  },
+  "html_popup_set_as_proxy": {
+    "message": "设定为代理",
+    "description": "Proxy"
+  },
+  "html_popup_clear_proxy": {
+    "message": "清除代理",
+    "description": "Governance"
+  },
+  "html_popup_clear_proxy_error": {
+    "message": "删除代理时出现错误",
+    "description": "Clear proxy error"
+  },
+  "html_popup_proxy_requires_active_key": {
+    "message": "要更改您的代理，您必须首先添加您的帐号活动密钥",
+    "description": "Proxy error"
+  },
+  "html_popup_coming_soon": {
+    "message": "即将上线",
+    "description": "General"
+  },
+  "html_popup_work_in_progress": {
+    "message": "工作正在进行中...",
+    "description": "General"
+  },
+  "html_popup_import_settings_successful": {
+    "message": "成功汇入设定",
+    "description": "Import settings success message"
+  },
+  "html_popup_import_settings_error": {
+    "message": "汇入设定失败",
+    "description": "Import settings failed message"
+  },
+  "html_popup_link_to_witness_website": {
+    "message": "欲了解更多讯息，请点击此处访问见證数据库",
+    "description": "Link to witness website"
+  },
+  "html_popup_vote_for_witness": {
+    "message": "投票@stoodkev 作为见證人",
+    "description": "On main page, in the vote witness section"
+  },
+  "html_popup_made_with_love_by_stoodkev": {
+    "message": "Keychain Team 用 ❤ 製作",
+    "description": "Footer"
+  },
+  "html_popup_vote_stoodkev_witness_error_30_votes": {
+    "message": "您已经为 30 位證人投票。 请在为@stoodkev 投票之前删除一个",
+    "description": "Error message when vote for stoodkev as witness with 30 votes"
+  },
+  "html_popup_vote_stoodkev_witness_success": {
+    "message": "成功投票给@stoodkev 作为见證人。 谢谢您的支持！",
+    "description": "Success message when vote for stoodkev as witness"
+  },
+  "html_popup_conversion_operation": {
+    "message": "转换",
+    "description": "conversion operation"
+  },
+  "html_popup_delegation_operation": {
+    "message": "委託",
+    "description": "delegation operation"
+  },
+  "html_popup_cancel_delegation_operation": {
+    "message": "取消委託",
+    "description": "delegation operation"
+  },
+  "html_popup_vote_witness_operation": {
+    "message": "投票给见證人",
+    "description": "vote witness operation"
+  },
+  "html_popup_unvote_witness_operation": {
+    "message": "取消对见證人的投票",
+    "description": "unvote witness operation"
+  },
+  "html_popup_confirm_transaction_operation": {
+    "message": "确认交易",
+    "description": "Confirmation transaction operation"
+  },
+  "html_popup_delete_account_operation": {
+    "message": "删除帐号",
+    "description": "delete account operation"
+  },
+  "html_popup_transfer_fund_operation": {
+    "message": "转移资金",
+    "description": "Transfer fund operation"
+  },
+  "html_popup_transfer_token_operation": {
+    "message": "转移代币",
+    "description": "Transfer token operation"
+  },
+  "html_popup_loading_tokens_operation": {
+    "message": "正在载入代币",
+    "description": "Loading tokens operation"
+  },
+  "html_popup_deposit_to_savings_operation": {
+    "message": "存入储蓄",
+    "description": "Deposit to savings operation"
+  },
+  "html_popup_withdraw_from_savings_operation": {
+    "message": "从储蓄中提取",
+    "description": "Withdraw from savings operation"
+  },
+  "html_popup_power_up_operation": {
+    "message": "Powering up",
+    "description": "Power up operation"
+  },
+  "html_popup_power_down_operation": {
+    "message": "Powering down",
+    "description": "Power down operation"
+  },
+  "html_popup_cancel_power_down_operation": {
+    "message": "取消power down",
+    "description": "Power down operation"
+  },
+  "html_popup_power_up": {
+    "message": "Power up",
+    "description": "Power up"
+  },
+  "html_popup_power_down": {
+    "message": "Power down",
+    "description": "Power down"
+  },
+  "html_popup_read": {
+    "message": "已读",
+    "description": "read"
+  },
+  "html_popup_vote": {
+    "message": "投票",
+    "description": "vote"
+  },
+  "html_popup_voting_no_hp": {
+    "message": "请power up以获得投票mana",
+    "description": "Message when no HP in voting mana section"
+  },
+  "html_popup_delete_key_confirm": {
+    "message": "您即将删除帐号 @$2 的 $1 密钥。<br/>在继续之前，请确保您拥有此密钥的副本。",
+    "description": "Confirmation message when deleting key"
+  },
+  "html_popup_delete_key": {
+    "message": "删除金钥",
+    "description": "confirmation title while deleting key"
+  },
+  "html_popup_using_authorized_account": {
+    "message": "使用 $1 的帐号签名",
+    "description": "In account's keys while using authorized account"
+  },
+  "popup_html_cancel_delegation_successful": {
+    "message": "成功取消委託",
+    "description": "Success message cancel delegation"
+  },
+  "popup_html_cancel_delegation_fail": {
+    "message": "无法取消委託",
+    "description": "Failed message cancel delegation"
+  },
+  "popup_html_delegation_successful": {
+    "message": "委託成功",
+    "description": "Success message cancel delegation"
+  },
+  "popup_html_delegation_fail": {
+    "message": "委託失败",
+    "description": "Failed message cancel delegation"
+  },
+  "popup_html_delegation": {
+    "message": "委託",
+    "description": "Delegation"
+  },
+  "popup_html_transfer_tokens": {
+    "message": "转移代币",
+    "description": "Transfer tokens"
+  },
+  "popup_html_fill_form_error": {
+    "message": "请填写表格",
+    "description": "Error of missing fields in form"
+  },
+  "popup_html_need_positive_amount": {
+    "message": "金额需要大於0",
+    "description": "Amount error in form"
+  },
+  "popup_html_deleting_account_linked_to_authorized": {
+    "message": "您的某些帐号正在使用@$1 作为授权帐号，将无法再执行操作。",
+    "description": "when deleting account from keychain"
+  },
+  "popup_html_account_already_existing": {
+    "message": "帐号已经存在",
+    "description": "while trying to add a new account"
+  },
+  "popup_html_switch_rpc": {
+    "message": "切换 RPC",
+    "description": "At start up, when active rpc not responding"
+  },
+  "popup_html_rpc_not_responding_error": {
+    "message": "$1 节点没有回应。 您想切换到 $2 吗？",
+    "description": "At start up, when active rpc not responding"
+  },
+  "popup_html_rpc_automatic_mode": {
+    "message": "自动切换",
+    "description": "Node Rpc auto selection"
+  },
+  "popup_html_rpc_automatic_mode_hint": {
+    "message": "将始终为您选择最佳 RPC 节点",
+    "description": "Node Rpc auto selection hint"
+  },
+  "popup_html_proxy_suggestion": {
+    "message": "被管理投票压得喘不过气来？ 将@keychain 设置为代理以自动关注 Keychain 团队见證和提案投票。 您可以随时从管理清单中更改此设置。",
+    "description": "If no witness voted"
+  },
+  "popup_html_setting_proxy": {
+    "message": "设置代理",
+    "description": "in proxy suggestion popup"
+  },
+  "popup_html_clearing_proxy": {
+    "message": "清除代理",
+    "description": "in proxy suggestion popup"
+  },
+  "popup_html_close": {
+    "message": "关闭",
+    "description": "general"
+  },
+  "popup_html_contact_support": {
+    "message": "联繫支援",
+    "description": "Contact support"
+  },
+  "popup_html_wallet_info_transfer_in": {
+    "message": "已从@$2接收$1",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_recurrent_transfer_out": {
+    "message": "开始约定转帐 $1 到 @$2(每 $4 小时 - $3 次)",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_recurrent_transfer_in": {
+    "message": "@$1 开始转帐 $2(每 $4 小时 - $3 次)",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_canceled_recurrent_transfer": {
+    "message": "@$1 取消了到 @$2 的约定转帐",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_fill_recurrent_transfer_out": {
+    "message": "向@$2 发送 $1(剩馀 $3)",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_fill_recurrent_transfer_in": {
+    "message": "从@$2 收到 $1(剩馀 $3)",
+    "description": "wallet information transfer in"
+  },
+  "popup_html_wallet_info_transfer_out": {
+    "message": "向@$2 发送了 $1",
+    "description": "wallet information transfer out"
+  },
+  "popup_html_wallet_info_claim_rewards": {
+    "message": "领取$1",
+    "description": "Wallet information claim rewards"
+  },
+  "popup_html_wallet_info_delegation_out": {
+    "message": "将 $1委託给 @$2",
+    "description": "Wallet information delegation outgoing"
+  },
+  "popup_html_wallet_info_delegation_in": {
+    "message": "@$1 委託 $2",
+    "description": "Wallet information delegation incoming"
+  },
+  "popup_html_wallet_info_cancel_delegation_out": {
+    "message": "取消对@$1 的委託",
+    "description": "Wallet information cancel delegation outgoing"
+  },
+  "popup_html_wallet_info_cancel_delegation_in": {
+    "message": "@$1 取消委託",
+    "description": "Wallet information cancel delegation incoming"
+  },
+  "popup_html_wallet_info_received_interests": {
+    "message": "从储蓄中获得 $1的利息",
+    "description": "Wallet information claim interest"
+  },
+  "popup_html_wallet_info_claim_account": {
+    "message": "领取帐号",
+    "description": "Wallet information claim account"
+  },
+  "popup_html_wallet_info_deposit_savings": {
+    "message": "将 $1存入储蓄",
+    "description": "Wallet information deposit savings"
+  },
+  "popup_html_wallet_info_deposit_savings_other_account": {
+    "message": "@$1 向 @$3 的储蓄存入了 $2",
+    "description": "Wallet information deposit savings to another account"
+  },
+  "popup_html_wallet_info_withdraw_savings": {
+    "message": "从储蓄中提取 $1",
+    "description": "Wallet information withdraw from savings"
+  },
+  "popup_html_wallet_info_power_down": {
+    "message": "启动了 $1 power down",
+    "description": "Wallet information power down"
+  },
+  "popup_html_wallet_info_cancel_power_down": {
+    "message": "取消power down",
+    "description": "Wallet information cancel power down"
+  },
+  "popup_html_wallet_info_power_up": {
+    "message": "Powered up $1",
+    "description": "Wallet information power up"
+  },
+  "popup_html_wallet_info_power_up_other_account": {
+    "message": "@$1 为 @$3 powered up $2",
+    "description": "Wallet information power up"
+  },
+  "popup_html_wallet_info_convert": {
+    "message": "开始了 $1的转换",
+    "description": "Wallet information convert hbd to hive"
+  },
+  "popup_html_wallet_info_collateralized_convert": {
+    "message": "开始了 $1的抵押转换",
+    "description": "Wallet information convert hive to hbd"
+  },
+  "popup_html_wallet_info_fill_convert_request": {
+    "message": "填入转换：$1 => $2",
+    "description": "Wallet information receive conversion"
+  },
+  "popup_html_wallet_info_fill_collateralized_convert_request": {
+    "message": "填入转换：$1 => $2",
+    "description": "Wallet information receive conversion"
+  },
+  "popup_html_filter_in": {
+    "message": "进",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_out": {
+    "message": "移出",
+    "description": "Wallet filters"
+  },
+  "popup_html_search": {
+    "message": "搜寻",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer": {
+    "message": "转帐",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_claim_reward_balance": {
+    "message": "领取报酬",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_delegate_vesting_shares": {
+    "message": "委託",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_claim_account": {
+    "message": "领取帐号",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_interest": {
+    "message": "利息",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_from_savings": {
+    "message": "和。 储蓄",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_to_savings": {
+    "message": "Dep. 储蓄",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_transfer_to_vesting": {
+    "message": "Power Up",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_withdraw_vesting": {
+    "message": "Power down",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_vote": {
+    "message": "投票",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_power_up_down": {
+    "message": "Power up/down",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_savings": {
+    "message": "储蓄",
+    "description": "Wallet filters"
+  },
+  "popup_html_filter_type_convert": {
+    "message": "转换",
+    "description": "Wallet filters"
+  },
+  "popup_html_clear_filters": {
+    "message": "清除",
+    "description": "Wallet filters"
+  },
+  "popup_html_error_retrieving_witness_ranking": {
+    "message": "检视见證排名时发生错误。 请稍後再试。",
+    "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_error_retrieving_incoming_delegations": {
+    "message": "检视汇入委託时发生错误。 请稍後再试。",
+    "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_token_stake": {
+    "message": "抵押",
+    "description": "token action"
+  },
+  "popup_html_token_unstake": {
+    "message": "解除抵押",
+    "description": "token action"
+  },
+  "popup_html_token_delegate": {
+    "message": "委託",
+    "description": "token action"
+  },
+  "popup_html_token_staking": {
+    "message": "抵押",
+    "description": "token action"
+  },
+  "popup_html_token_pending_unstake": {
+    "message": "待取消抵押",
+    "description": "token action"
+  },
+  "popup_html_token_delegation_out": {
+    "message": "委託出",
+    "description": "token action"
+  },
+  "popup_html_token_delegation_in": {
+    "message": "委派出进",
+    "description": "token action"
+  },
+  "popup_html_token_pending_undelegation": {
+    "message": "待取消授权",
+    "description": "token action"
+  },
+  "popup_html_stake_tokens": {
+    "message": "抵押代币",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens": {
+    "message": "取消抵押代币",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens": {
+    "message": "委託代币",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens": {
+    "message": "取消代币委託",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_failed": {
+    "message": "无法抵押代币",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_failed": {
+    "message": "无法开始取消抵押代币",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_failed": {
+    "message": "代币委託失败",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_failed": {
+    "message": "无法取消代币委託",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_success": {
+    "message": "成功抵押代币",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_success": {
+    "message": "成功开始解除抵押",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_success": {
+    "message": "代币委託成功",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_success": {
+    "message": "成功取消委託",
+    "description": "delegate token title"
+  },
+  "popup_html_stake_tokens_confirm_text": {
+    "message": "请确认您要抵押您的代币。",
+    "description": "stake token title"
+  },
+  "popup_html_unstake_tokens_confirm_text": {
+    "message": "请确认您要取消抵押您的代币。",
+    "description": "unstake token title"
+  },
+  "popup_html_delegate_tokens_confirm_text": {
+    "message": "请确认您要委託您的代币。",
+    "description": "delegate token title"
+  },
+  "popup_html_cancel_delegation_tokens_confirm_text": {
+    "message": "请确认您要取消代币的委託。",
+    "description": "delegate token title"
+  },
+  "popup_html_load_more": {
+    "message": "点击加载更多",
+    "description": "on wallet history"
+  },
+  "popup_html_transaction_list_is_empty": {
+    "message": "没有交易可显示",
+    "description": "on wallet history when no transactions to display"
+  },
+  "popup_html_transaction_list_is_empty_try_clear_filter": {
+    "message": "尝试清除您的过滤器",
+    "description": "on wallet history when no transactions to display"
+  },
+  "popup_html_days_remaining": {
+    "message": "还剩 1 天",
+    "description": "Days remaining proposal"
+  },
+  "popup_html_proposal_by": {
+    "message": "由@$1",
+    "description": "In proposal tab"
+  },
+  "popup_html_voting_for_proposal": {
+    "message": "为提案投票",
+    "description": "Loading message voting for proposal"
+  },
+  "popup_html_unvoting_for_proposal": {
+    "message": "不投票提案",
+    "description": "Loading message unvoting for proposal"
+  },
+  "popup_html_proposal_funded_option_totally_funded": {
+    "message": "资助",
+    "description": "Proposal funded option"
+  },
+  "popup_html_proposal_funded_option_partially_funded": {
+    "message": "部分资助",
+    "description": "Proposal funded option"
+  },
+  "popup_html_proposal_funded_option_not_funded": {
+    "message": "没有资助",
+    "description": "Proposal funded option"
+  },
+  "popup_html_hive_engine_error": {
+    "message": "Hive 引擎错误：$1",
+    "description": "Hive engine error template"
+  },
+  "html_popup_ok": {
+    "message": "好的！",
+    "description": "general word"
+  },
+  "popup_html_token_wallet_info_transfer_in": {
+    "message": "从@$2 收到 $1",
+    "description": "token wallet information transfer in"
+  },
+  "popup_html_token_wallet_info_transfer_out": {
+    "message": "向@$2 发送了 $1",
+    "description": "token wallet information transfer out"
+  },
+  "popup_html_token_wallet_info_mining_lottery": {
+    "message": "从采矿彩券中($2) 获得 $1",
+    "description": "token wallet information mining lottery"
+  },
+  "popup_html_token_wallet_info_author_reward": {
+    "message": "获得 $1作为作者奖励",
+    "description": "wallet information author reward"
+  },
+  "popup_html_token_wallet_info_comment_curation_reward": {
+    "message": "收到 $1作为评论管理奖励",
+    "description": "wallet information curation reward"
+  },
+  "popup_html_token_wallet_info_delegation_in": {
+    "message": "@$1 委託 $2",
+    "description": "wallet information delegation in"
+  },
+  "popup_html_token_wallet_info_delegation_out": {
+    "message": "将 $1委託给 @$2",
+    "description": "wallet information delegation out"
+  },
+  "popup_html_token_wallet_info_cancel_delegation_out": {
+    "message": "取消了对@$2 的 $1 委託",
+    "description": "Token wallet information canceled delegation out "
+  },
+  "popup_html_token_wallet_info_cancel_delegation_in": {
+    "message": "@$1 取消了 $2 委託",
+    "description": "Token wallet information canceled delegation in"
+  },
+  "popup_html_token_wallet_info_start_cancel_delegation_out": {
+    "message": "取消了对@$2 的 $1 委託",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_start_cancel_delegation_in": {
+    "message": "取消了对@$2 的 $1 委託",
+    "description": "Token wallet information start canceling delegation in"
+  },
+  "popup_html_token_wallet_info_stake": {
+    "message": "押注 $1",
+    "description": "Token wallet information stake"
+  },
+  "popup_html_token_wallet_info_stake_other_user": {
+    "message": "@$1 以 $2 换取 @$3",
+    "description": "Token wallet information stake for other user"
+  },
+  "popup_html_token_wallet_info_unstake_done": {
+    "message": "$1未下注",
+    "description": "Token wallet information canceled delegation in"
+  },
+  "popup_html_token_wallet_info_start_unstake": {
+    "message": "开始取消下注 $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_issue": {
+    "message": "已发行$1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_wallet_info_pegged_buy": {
+    "message": "买了 $1",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_undelegation_cooldown_disclaimer": {
+    "message": "移除 $1的委託後，投注的代币将在 $2 天的冷却後可用。",
+    "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_token_unstake_cooldown_disclaimer": {
+    "message": "取消这个代币将需要 $1 天。",
+    "description": "Token wallet information start canceling delegation out"
   }
 }
