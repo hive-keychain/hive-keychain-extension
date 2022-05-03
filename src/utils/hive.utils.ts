@@ -4,6 +4,8 @@ import {
   ClaimRewardBalanceOperation,
   Client,
   CollateralizedConvertOperation,
+  CustomJsonOperation,
+  DelegateVestingSharesOperation,
   ExtendedAccount,
   PrivateKey,
   RecurrentTransferOperation,
@@ -21,6 +23,7 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
+import { Lease } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
 import { store } from '@popup/store';
 import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
@@ -29,6 +32,7 @@ import { Conversion } from 'src/interfaces/conversion.interface';
 import { Delegator } from 'src/interfaces/delegations.interface';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
+import { LeaseKeys } from 'src/utils/delegation-market.utils';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
@@ -660,7 +664,48 @@ const getProposalDailyBudget = async () => {
   );
 };
 
+const sendLeaseDelegation = async (
+  activeAccount: ActiveAccount,
+  lease: Lease,
+) => {
+  return await sendOperationWithConfirmation(
+    getClient().broadcast.sendOperations(
+      [
+        [
+          'custom_json',
+          {
+            id: LeaseKeys.ACCEPT_REQUEST,
+            required_auths: [activeAccount.name!],
+            required_posting_auths: activeAccount.keys.active
+              ? []
+              : [activeAccount.name!],
+            json: JSON.stringify({
+              leaseId: lease.id,
+            }),
+          } as CustomJsonOperation[1],
+        ],
+        [
+          'delegate_vesting_shares',
+          {
+            delegator: activeAccount.name!,
+            delegatee: lease.creator,
+            vesting_shares:
+              FormatUtils.fromHP(
+                lease.value + ' HP',
+                store.getState().globalProperties.globals!,
+              ).toFixed(6) + ' VESTS',
+          } as DelegateVestingSharesOperation[1],
+        ],
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    ),
+  );
+};
+
 const HiveUtils = {
+  sendLeaseDelegation,
   getClient,
   setRpc,
   getVP,

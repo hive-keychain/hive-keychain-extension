@@ -28,8 +28,32 @@ const LeaseItem = ({
 }: PropsFromRedux) => {
   useEffect(() => {}, []);
 
-  const toggleSupport = () => {
-    console.log('try to support ', lease);
+  const toggleSupport = async () => {
+    if (lease.status === LeaseStatus.ACTIVE) {
+      const success = await DelegationMarketUtils.cancelLeaseRequest(
+        lease,
+        activeAccount,
+      );
+      if (success) {
+        chrome.i18n.getMessage(
+          'popup_html_delegation_request_undelegate_success',
+        );
+      } else {
+        chrome.i18n.getMessage(
+          'popup_html_delegation_request_undelegate_failed',
+        );
+      }
+    } else if (lease.status === LeaseStatus.PENDING) {
+      const success = await DelegationMarketUtils.acceptLeaseRequest(
+        lease,
+        activeAccount,
+      );
+      if (success) {
+        chrome.i18n.getMessage('popup_html_delegation_request_accept_success');
+      } else {
+        chrome.i18n.getMessage('popup_html_delegation_request_accept_failed');
+      }
+    }
   };
 
   const cancelLease = async () => {
