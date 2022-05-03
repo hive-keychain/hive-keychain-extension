@@ -46,7 +46,8 @@ export const broadcastOperations = async (
         op[0] === 'create_proposal' ||
         op[0] === 'remove_proposal' ||
         op[0] === 'account_update2' ||
-        op[0] === 'account_update'
+        op[0] === 'account_update' ||
+        op[0] === 'recurrent_transfer'
       ) {
         if (!op[1].extensions) {
           op[1].extensions = [];
@@ -58,10 +59,10 @@ export const broadcastOperations = async (
           op[1].approve = op[1].approve === 'true';
         }
       } else if (op[0] === 'custom_json') {
-        if (op[1].required_posting_auths === 0) {
+        if (!op[1].required_posting_auths) {
           op[1].required_posting_auths = [];
         }
-        if (op[1].required_auths === 0) {
+        if (!op[1].required_auths) {
           op[1].required_auths = [];
         }
       }

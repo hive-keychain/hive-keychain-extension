@@ -248,7 +248,7 @@
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
-    "message": "Import / Export",
+    "message": "Import / Export Settings",
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
@@ -320,7 +320,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "The overall idea and concept for the Hive Keychain browser extension was created by <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Hive blockchain. It was primarily developed by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Hive developer and witness. The design and development were funded by @aggroed and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Hive blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
+    "message": "The Hive Keychain team is led by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, a developer and Hive witness, and consists of a total of 3 full-time developers at the moment. We also benefit from the help of <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a>, Splinterlands's Creative Director, and many other community members.<br><br>While the project is currently funded through the Decentralized Hive Fund (DHF), the original idea and funds were provided by <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> and <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> (witnesses) through their joint business Splinterlands, a blockchain-based collectible trading card game built on top of the Hive blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!<br/><br/>For more information on our products (browser extensions and mobile Apps), visit our <a href='https://hive-keychain.com' target='__blank'>landing page</a>.",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -824,7 +824,7 @@
     "description": "When website request a post"
   },
   "dialog_percentage_hbd": {
-    "message": "Percentage SBD : ",
+    "message": "Percentage HBD : ",
     "description": "When website request a post"
   },
   "dialog_allow_votes": {
@@ -1211,7 +1211,7 @@
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "You can add your keys by entring a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
+    "message": "You can add your keys by entering a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
@@ -1425,7 +1425,7 @@
     "description": "Advanced settings sub menu"
   },
   "popup_html_rpc_node_text": {
-    "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.<br/><br/>Use 'DEFAULT' RPC to let Hive Keychain choose the best RPC node at a given time.",
+    "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.",
     "description": "Text on rpc node settings page"
   },
   "popup_html_rpc_missing_fields": {
@@ -1654,11 +1654,11 @@
     "description": "General"
   },
   "html_popup_import_settings_successful": {
-    "message": "Import settings successful",
+    "message": "Successfully imported settings",
     "description": "Import settings success message"
   },
   "html_popup_import_settings_error": {
-    "message": "Import settings failed",
+    "message": "Failed to import settings",
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
