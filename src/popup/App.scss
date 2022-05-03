@@ -59,6 +59,11 @@
       height: 36px;
     }
   }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+  }
 }
 
 .react-dropdown-select-dropdown-handle {
@@ -109,11 +114,6 @@
   -webkit-box-shadow: unset;
   box-shadow: unset;
   border-radius: 4px;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
   background-color: transparent;
 }
 
