@@ -325,12 +325,11 @@ var hive_keychain = {
       type: 'custom',
       username: account,
       id: id, //can be "custom", "follow", "reblog" etc.
-      method: key, // Posting key is used by default, active can be specified for id=custom .
+      method: key || 'Posting', // Posting key is used by default, active can be specified for id=custom .
       json: json, //content of your json
       display_msg: display_msg,
       rpc,
     };
-
     this.dispatchCustomEvent('swRequest_hive', request, callback);
   },
   /**

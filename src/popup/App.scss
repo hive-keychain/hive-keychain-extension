@@ -7,7 +7,6 @@
 
 .App {
   height: 600px;
-  width: 350px;
   font-family: Futura !important;
   font-weight: 400;
   background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
@@ -60,6 +59,11 @@
       height: 36px;
     }
   }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+  }
 }
 
 .react-dropdown-select-dropdown-handle {
@@ -110,11 +114,6 @@
   -webkit-box-shadow: unset;
   box-shadow: unset;
   border-radius: 4px;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
   background-color: transparent;
 }
 

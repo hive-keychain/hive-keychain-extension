@@ -39,7 +39,6 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@crowdin/cli": "^3.7.8",
     "@hiveio/dhive": "^1.0.1",
     "@hiveio/hive-js": "^2.0.4",
     "@types/chrome": "^0.0.177",
