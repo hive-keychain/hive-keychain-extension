@@ -276,7 +276,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "Lock the keychain manually or when the browser is closed.",
+    "message": "Lock Keychain manually.",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
@@ -284,7 +284,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
-    "message": "Auto-lock the keychain when the device locks.",
+    "message": "Auto-lock Keychain when the device locks.",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
@@ -292,7 +292,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "Auto-lock the keychain after the browser window is idle for the specified number of minutes.",
+    "message": "Auto-lock Keychain after the browser window is idle for the specified number of minutes.",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {

@@ -276,7 +276,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "手動或是在關閉瀏覽器時鎖定keychain。",
+    "message": "手动锁定Keychain。",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
@@ -284,7 +284,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
-    "message": "裝置鎖定時自動鎖定keychain。",
+    "message": "装置锁定时自动锁定Keychain。",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
@@ -292,7 +292,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "在瀏覽器窗口閒置指定的分鐘數後，自動鎖定keychain。",
+    "message": "在浏览器窗口閒置指定的分钟数後，自动锁定Keychain。",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
