@@ -5,7 +5,7 @@ import { resetAccount } from '@popup/actions/account.actions';
 import { resetActiveAccount } from '@popup/actions/active-account.actions';
 import {
   setErrorMessage,
-  setSuccessMessage
+  setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { store } from '@popup/store';
@@ -95,7 +95,7 @@ const verifyAccount = async (
 
   return getKeys(username, password);
 };
-
+/* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
   const accounts: Accounts = { list: localAccounts };
   const encyptedAccounts = await encryptAccounts(accounts, mk);
@@ -104,7 +104,7 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
     encyptedAccounts,
   );
 };
-
+/* istanbul ignore next */
 const getAccountsFromLocalStorage = async (
   mk: string,
 ): Promise<LocalAccount[]> => {
@@ -119,14 +119,18 @@ const isAccountNameAlreadyExisting = (
   existingAccounts: LocalAccount[],
   accountName: string,
 ): boolean => {
-  if (!existingAccounts || existingAccounts.length) {
+  //this was initially as (!existingAccounts || existingAccounts.length) which I believe is trying to return false
+  //if the array contains no records in it, so no needs to compare.
+  //I changed as existingAccounts.length === 0 because now it does the checking but let me know is my mistake or not.
+  //also one question is there a case on this function when existingAccount won't be provided
+  if (!existingAccounts || existingAccounts.length === 0) {
     return false;
   }
   return existingAccounts.some(
     (account: LocalAccount) => account.name === accountName,
   );
 };
-
+/* istanbul ignore next */
 const encryptAccounts = async (accounts: Accounts, mk: string) => {
   return EncryptUtils.encryptJson(accounts, mk);
 };
@@ -219,7 +223,8 @@ const addKey = async (
   privateKey: string,
   keyType: KeyType,
 ) => {
-  if (privateKey.length === 0 || privateKey.length === 0) {
+  //changed one of the conditions as was repeated I guess it refers to the accounts.length === 0
+  if (privateKey.length === 0 || accounts.length === 0) {
     store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
     return null;
   }
@@ -234,6 +239,7 @@ const addKey = async (
   let account = accounts.find(
     (account: LocalAccount) => account.name === activeAccount.name,
   );
+
   if (keys && account) {
     switch (keyType) {
       case KeyType.ACTIVE:
@@ -267,6 +273,7 @@ const addKey = async (
         account.keys.memoPubkey = keys.memoPubkey;
         break;
     }
+
     AccountUtils.saveAccounts(accounts, store.getState().mk);
     store.dispatch(setSuccessMessage('import_html_success'));
     return accounts;
@@ -314,7 +321,7 @@ const isAccountListIdentical = (
 ): boolean => {
   return JSON.stringify(a) === JSON.stringify(b);
 };
-
+/* istanbul ignore next */
 const downloadAccounts = async () => {
   const accounts = { list: store.getState().accounts };
   var data = new Blob([await encryptAccounts(accounts, store.getState().mk)], {
@@ -326,7 +333,7 @@ const downloadAccounts = async () => {
   a.download = 'accounts.kc';
   a.click();
 };
-
+/* istanbul ignore next */
 const clearAllData = () => {
   LocalStorageUtils.clearLocalStorage();
   store.dispatch(resetAccount());
@@ -358,7 +365,7 @@ const getAccountValue = (
     ).toString(),
   );
 };
-
+/* istanbul ignore next */
 const getPublicMemo = async (username: string): Promise<string> => {
   const extendedAccounts = await HiveUtils.getClient().database.getAccounts([
     username,
@@ -395,7 +402,7 @@ const doesAccountExist = async (username: string) => {
     (await HiveUtils.getClient().database.getAccounts([username])).length > 0
   );
 };
-
+/* istanbul ignore next */
 const getExtendedAccount = async (username: string) => {
   return (await HiveUtils.getClient().database.getAccounts([username]))[0];
 };
@@ -419,6 +426,7 @@ const AccountUtils = {
   doesAccountExist,
   getExtendedAccount,
   AccountErrorMessages,
+  isAccountNameAlreadyExisting,
 };
 
 export const BackgroundAccountUtils = {

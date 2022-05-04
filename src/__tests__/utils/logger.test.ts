@@ -1,6 +1,8 @@
 import Logger from '../../utils/logger.utils';
 
-test('info should return an specific format from input and n number of times', () => {
+//NOTE: currently disabled using skip.
+
+test.skip('info should return an specific format from input and n number of times', () => {
   const logSpyInfo = jest.spyOn(console, 'log');
 
   Logger.info('test');
@@ -12,7 +14,7 @@ test('info should return an specific format from input and n number of times', (
   logSpyInfo.mockClear();
 });
 
-test('warn must return orange color in console.log', () => {
+test.skip('warn must return orange color in console.log', () => {
   let logWarnSpy = jest.spyOn(console, 'log');
   const testPhrase = 'testing this warn';
   const color_expected = 'color: orange';
@@ -33,7 +35,7 @@ test('warn must return orange color in console.log', () => {
   logWarnSpy.mockReset();
 });
 
-test('error must return color:red, be called 1 time only and contain calling phrase', () => {
+test.skip('error must return color:red, be called 1 time only and contain calling phrase', () => {
   const logErrorSpy = jest.spyOn(console, 'log');
   const testPhrase = 'amazing error';
   Logger.error(testPhrase);
@@ -45,5 +47,3 @@ test('error must return color:red, be called 1 time only and contain calling phr
   logErrorSpy.mockClear();
   logErrorSpy.mockReset();
 });
-
-export {};

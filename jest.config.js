@@ -22,7 +22,8 @@ module.exports = {
   },
   modulePaths: ['<rootDir>'],
   collectCoverageFrom: ['<rootDir>/**/*.{ts, tsx}'],
-  collectCoverage: true,
+  collectCoverage: false,
+  modulePathIgnorePatterns: ['<rootDir>/src/__tests__/utilsForTesting/'],
   //until here
   //working configuration until here
 };
