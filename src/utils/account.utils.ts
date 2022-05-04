@@ -223,8 +223,7 @@ const addKey = async (
   privateKey: string,
   keyType: KeyType,
 ) => {
-  //changed one of the conditions as was repeated I guess it refers to the accounts.length === 0
-  if (privateKey.length === 0 || accounts.length === 0) {
+  if (privateKey.length === 0 || privateKey.length === 0) {
     store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
     return null;
   }

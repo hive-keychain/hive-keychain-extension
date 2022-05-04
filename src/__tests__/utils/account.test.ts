@@ -1,42 +1,42 @@
+import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import FormatUtils from 'src/utils/format.utils';
+import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import utilsT from 'src/__tests__/utilsForTesting/utilsT';
 import { ActiveAccount } from '../../interfaces/active-account.interface';
 import { setErrorMessage } from '../../popup/actions/message.actions';
 import { store } from '../../popup/store';
 import AccountUtils from '../../utils/account.utils';
-//chrome issue
-const chrome = require('sinon-chrome');
-beforeAll(() => {
-  global.chrome = chrome;
-});
-afterAll(() => {
-  chrome.flush();
-});
-//endchrome
-
-//TODO: change all variables/constants as camelCase.
 
 //testing data
 const userData = {
   username: 'workerjab1',
-  encrypt_keys: {
+  encryptKeys: {
     owner: 'STM8X56V5jtFwmchDiDfyb4YgMfjfCVrUnPVZYkuqKuWw1ZAm3jV8',
     active: 'STM85Hcqk92kE1AtueigBAtHD2kZRcqji9Gi38ZaiW8xcWcQJLof6',
     posting: 'STM7cfYmyCU6J45NjBSBUwZAV6c2ttZoNjTeaxkWSYq5HDZDWtzC3',
     memo: 'STM6mbGVeyUkC1DZUBW5wx6okDskTqGLm1VgbPCRCGyw6CPSn1VNY',
-    randomString_53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
+    randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
   },
-  non_encrypt_keys: {
+  nonEncryptKeys: {
     owner: '5KCfdJFryAt2edxqcbsct9RgJKy1kdBL3Sfn5mTQ5ovxxKZfD1P',
     active: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v7',
     posting: '5JGFDQkqQMibxq1w7aJpBpEnozrjyUfaWcQqCaLbFsmKnestVEV',
     memo: '5KWEtbou93CkWUKdz5ubHFXnnAvcjiCUixXTUz1SVYLigQJFu7k',
     fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
-    randomStringKey_51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
+    randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
   },
+};
+const userDataKeys: Keys = {
+  active: userData.nonEncryptKeys.active,
+  posting: userData.nonEncryptKeys.posting,
+  memo: userData.nonEncryptKeys.memo,
+  activePubkey: userData.encryptKeys.active,
+  postingPubkey: userData.encryptKeys.posting,
+  memoPubkey: userData.encryptKeys.memo,
 };
 const activeAccountData: ActiveAccount = {
   account: {
@@ -64,12 +64,12 @@ const accounts: LocalAccount[] = [
   {
     name: userData.username,
     keys: {
-      activePubkey: userData.encrypt_keys.active,
-      postingPubkey: userData.encrypt_keys.posting,
-      memoPubkey: userData.encrypt_keys.memo,
-      posting: userData.non_encrypt_keys.posting,
-      memo: userData.non_encrypt_keys.memo,
-      active: userData.non_encrypt_keys.active,
+      activePubkey: userData.encryptKeys.active,
+      postingPubkey: userData.encryptKeys.posting,
+      memoPubkey: userData.encryptKeys.memo,
+      posting: userData.nonEncryptKeys.posting,
+      memo: userData.nonEncryptKeys.memo,
+      active: userData.nonEncryptKeys.active,
     },
   },
 ];
@@ -83,14 +83,16 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.fn().mockClear();
+  //jest.fn().mockClear(); original
+  jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 
 describe('getKeys tests', () => {
   test('getKeys returns null when passed an encrypted password and setErrorMessage', async () => {
     const getAccount = await AccountUtils.getKeys(
       userData.username,
-      userData.encrypt_keys.active,
+      userData.encryptKeys.active,
     );
 
     expect(getAccount).toBeNull();
@@ -106,15 +108,15 @@ describe('getKeys tests', () => {
 
   test('getKeys must returns null if username not found in Hive DB and setMessageError as INCORRECT_USER', async () => {
     const userObject: {
-      bad_username: string;
-      active_password_unencrypted: string;
+      badUsername: string;
+      activePasswordUnencrypted: string;
     } = {
-      bad_username: 'workerjaasasdasdasd',
-      active_password_unencrypted: userData.non_encrypt_keys.active,
+      badUsername: 'workerjaasasdasdasd',
+      activePasswordUnencrypted: userData.nonEncryptKeys.active,
     };
     const resultsGetAcc = await AccountUtils.getKeys(
-      userObject.bad_username,
-      userObject.active_password_unencrypted,
+      userObject.badUsername,
+      userObject.activePasswordUnencrypted,
     );
     expect(resultsGetAcc).toBeNull();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
@@ -125,45 +127,45 @@ describe('getKeys tests', () => {
 
   test('getKeys returns a valid object when passed username and unencrypted password in 3 correct formats', async () => {
     //memo
-    const valid_data_user_memo = await AccountUtils.getKeys(
+    const validDataUserMemo = await AccountUtils.getKeys(
       userData.username,
-      userData.non_encrypt_keys.memo,
+      userData.nonEncryptKeys.memo,
     );
     const expected_obj_memo: Keys = {
-      memo: userData.non_encrypt_keys.memo,
-      memoPubkey: userData.encrypt_keys.memo,
+      memo: userData.nonEncryptKeys.memo,
+      memoPubkey: userData.encryptKeys.memo,
     };
-    expect(valid_data_user_memo).toEqual(expected_obj_memo);
+    expect(validDataUserMemo).toEqual(expected_obj_memo);
 
     //posting key
-    const valid_data_user_posting = await AccountUtils.getKeys(
+    const validDataUserPosting = await AccountUtils.getKeys(
       userData.username,
-      userData.non_encrypt_keys.posting,
+      userData.nonEncryptKeys.posting,
     );
     const expected_obj_posting: Keys = {
-      posting: userData.non_encrypt_keys.posting,
-      postingPubkey: userData.encrypt_keys.posting,
+      posting: userData.nonEncryptKeys.posting,
+      postingPubkey: userData.encryptKeys.posting,
     };
-    expect(valid_data_user_posting).toEqual(expected_obj_posting);
+    expect(validDataUserPosting).toEqual(expected_obj_posting);
 
     //active key
-    const valid_data_user_active = await AccountUtils.getKeys(
+    const validDataUserActive = await AccountUtils.getKeys(
       userData.username,
-      userData.non_encrypt_keys.active,
+      userData.nonEncryptKeys.active,
     );
     const expected_obj_active: Keys = {
-      active: userData.non_encrypt_keys.active,
-      activePubkey: userData.encrypt_keys.active,
+      active: userData.nonEncryptKeys.active,
+      activePubkey: userData.encryptKeys.active,
     };
-    expect(valid_data_user_active).toEqual(expected_obj_active);
+    expect(validDataUserActive).toEqual(expected_obj_active);
   });
 
   test('getKeys returns null when passed the owner key and setErrorMessage as INCORRECT_KEY', async () => {
-    const valid_data_user_owner = await AccountUtils.getKeys(
+    const validDataUserOwner = await AccountUtils.getKeys(
       userData.username,
-      userData.non_encrypt_keys.owner,
+      userData.nonEncryptKeys.owner,
     );
-    expect(valid_data_user_owner).toBeNull();
+    expect(validDataUserOwner).toBeNull();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
       setErrorMessage('popup_accounts_incorrect_key'),
@@ -171,11 +173,11 @@ describe('getKeys tests', () => {
   });
 
   test('getKeys returns null when passed a non valid unencrypted(fake key) and setErrorMessage as INCORRECT_KEY', async () => {
-    const valid_data_user_fakeKey = await AccountUtils.getKeys(
+    const validDataUserFakeKey = await AccountUtils.getKeys(
       userData.username,
-      userData.non_encrypt_keys.fakeKey,
+      userData.nonEncryptKeys.fakeKey,
     );
-    expect(valid_data_user_fakeKey).toBeNull();
+    expect(validDataUserFakeKey).toBeNull();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
       setErrorMessage('popup_accounts_incorrect_key'),
@@ -183,11 +185,11 @@ describe('getKeys tests', () => {
   });
 
   test('getKeys returns null when passed random string as keys 53 chars, and setErrorMessage as INCORRECT_KEY', async () => {
-    const valid_user_randomString_key_53 = await AccountUtils.getKeys(
+    const validUserRandomStringKey53 = await AccountUtils.getKeys(
       userData.username,
-      userData.encrypt_keys.randomString_53,
+      userData.encryptKeys.randomString53,
     );
-    expect(valid_user_randomString_key_53).toBeNull();
+    expect(validUserRandomStringKey53).toBeNull();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
       setErrorMessage('popup_accounts_incorrect_key'),
@@ -195,11 +197,11 @@ describe('getKeys tests', () => {
   });
 
   test('getKeys returns null when passed a random string as keys 51 chars, and setErrorMessage as INCORRECT_KEY', async () => {
-    const valid_user_randomString_key_51 = await AccountUtils.getKeys(
+    const validUserRandomStringKey51 = await AccountUtils.getKeys(
       userData.username,
-      userData.non_encrypt_keys.randomStringKey_51,
+      userData.nonEncryptKeys.randomStringKey51,
     );
-    expect(valid_user_randomString_key_51).toBeNull();
+    expect(validUserRandomStringKey51).toBeNull();
     expect(store.dispatch).toHaveBeenCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
       setErrorMessage('popup_accounts_incorrect_key'),
@@ -209,12 +211,12 @@ describe('getKeys tests', () => {
 
 describe('verifyAccount tests', () => {
   test('verifyAccount with empty username must return null and setErrorMessage as MISSING_FIELDS', async () => {
-    const result_verifyAccount = await AccountUtils.verifyAccount(
+    const resultVerifyAccount = await AccountUtils.verifyAccount(
       '',
       '12345678',
       [],
     );
-    expect(result_verifyAccount).toBeNull();
+    expect(resultVerifyAccount).toBeNull();
     expect(store.dispatch).toBeCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
       setErrorMessage('popup_accounts_fill'),
@@ -222,12 +224,12 @@ describe('verifyAccount tests', () => {
   });
 
   test('verifyAccount with empty password must return null and setErrorMessage as MISSING_FIELDS', async () => {
-    const result_verifyAccount = await AccountUtils.verifyAccount(
+    const resultVerifyAccount = await AccountUtils.verifyAccount(
       'workerjab1',
       '',
       [],
     );
-    expect(result_verifyAccount).toBeNull();
+    expect(resultVerifyAccount).toBeNull();
     expect(store.dispatch).toBeCalledTimes(1);
     expect(store.dispatch).toBeCalledWith(
       setErrorMessage('popup_accounts_fill'),
@@ -239,29 +241,28 @@ describe('verifyAccount tests', () => {
       { name: userData.username, keys: {} },
       { name: 'user2', keys: {} },
     ];
-    const result_valid_on_array = await AccountUtils.verifyAccount(
+    const resultValidOnArray = await AccountUtils.verifyAccount(
       userData.username,
-      userData.non_encrypt_keys.active,
+      userData.nonEncryptKeys.active,
       existingAccounts,
     );
-    expect(result_valid_on_array).toBeNull();
+    expect(resultValidOnArray).toBeNull();
     expect(store.dispatch).toBeCalledWith(
       setErrorMessage('popup_accounts_already_registered'),
     );
   });
 
   test('verifyAccount must run the function getKey() as returned value(returning a valid key object), when passing an account which not exist on the existingAccounts array', async () => {
-    const result_validData_NonExistingAccounts =
-      await AccountUtils.verifyAccount(
-        userData.username,
-        userData.non_encrypt_keys.active,
-        [],
-      );
+    const resultValidDataNonExistingAccounts = await AccountUtils.verifyAccount(
+      userData.username,
+      userData.nonEncryptKeys.active,
+      [],
+    );
     const expected_obj_active: Keys = {
-      active: userData.non_encrypt_keys.active,
-      activePubkey: userData.encrypt_keys.active,
+      active: userData.nonEncryptKeys.active,
+      activePubkey: userData.encryptKeys.active,
     };
-    expect(result_validData_NonExistingAccounts).toEqual(expected_obj_active);
+    expect(resultValidDataNonExistingAccounts).toEqual(expected_obj_active);
   });
 });
 
@@ -279,7 +280,7 @@ describe('isAccountNameAlreadyExisting tests', () => {
     { name: userData.username, keys: {} },
     { name: 'user2', keys: {} },
   ];
-  test('when passed empty accountName must return false ', () => {
+  test('when passed empty accountName must return false', () => {
     const result = AccountUtils.isAccountNameAlreadyExisting(
       existingAccountsUserPresent,
       '',
@@ -356,6 +357,396 @@ describe('hasStoredAccounts tests', () => {
     const result = await AccountUtils.hasStoredAccounts();
     expect(result).toBe(true);
     expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
+  });
+});
+
+describe('addKey tests', () => {
+  test('test with empty key must return null and setErrorMessage as  popup_accounts_fill', async () => {
+    const result = await AccountUtils.addKey(
+      activeAccountData,
+      [{ name: 'test', keys: {} }],
+      '',
+      KeyType.ACTIVE,
+    );
+    expect(result).toBeNull();
+    expect(store.dispatch).toBeCalledWith({
+      payload: {
+        key: 'popup_accounts_fill',
+        params: [],
+        type: 'ERROR',
+      },
+      type: 'SET_MESSAGE',
+    });
+  });
+  test.skip('test with empty accounts array should return null and setErrorMessage as popup_accounts_fill?', async () => {
+    //the condition is repeated and only check for the privateKey.length
+    //let me know if this case is needed.
+    const result = await AccountUtils.addKey(
+      activeAccountData,
+      [],
+      'testaccount',
+      KeyType.ACTIVE,
+    );
+    expect(result).toBeNull();
+    expect(store.dispatch).toBeCalledWith({
+      payload: {
+        key: 'popup_accounts_fill',
+        params: [],
+        type: 'ERROR',
+      },
+      type: 'SET_MESSAGE',
+    });
+  });
+  test('test with public key (STM) must return null and setErrorMessage as PASSWORD_IS_PUBLIC_KEY', async () => {
+    const result = await AccountUtils.addKey(
+      activeAccountData,
+      accounts,
+      userData.encryptKeys.active, //key passed as STM on pourpose.
+      KeyType.ACTIVE,
+    );
+    expect(result).toBeNull();
+    expect(store.dispatch).toBeCalledWith({
+      payload: {
+        key: 'popup_account_password_is_public_key',
+        params: [],
+        type: 'ERROR',
+      },
+      type: 'SET_MESSAGE',
+    });
+  });
+  test.skip('test with private key in valid format but getKeys return null', async () => {
+    //this is another case I have created as if getKeys returns null for any reason.
+    //I don't know if this is needed, let me know.
+    //note: in the code there is no handling on the case that the condition (keys && account) do not pass
+    //right now is returning undefined.
+    // Mock store.dispatch, setErrorMessage, saveAccounts, getKeys
+    AccountUtils.getKeys = jest.fn().mockResolvedValue(null);
+    const result = await AccountUtils.addKey(
+      activeAccountData,
+      accounts,
+      userData.nonEncryptKeys.active, //now a valid unencrypcted key
+      KeyType.ACTIVE,
+    );
+    expect(result).toBe(undefined);
+    //NOTE: should this case not be handled at all? Right now is returning undefined as the condition (keys && account)
+    //do not handle the opposite.
+  });
+  test('test passing valid data(active key) and mocking getKeys returns expected keys, must return saved message from saveAccounts mocked and the accounts obj', async () => {
+    let passedKeyObj: Keys = {
+      active: userData.nonEncryptKeys.active,
+      activePubkey: userData.encryptKeys.active,
+    };
+    AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+    AccountUtils.saveAccounts = jest
+      .fn()
+      .mockResolvedValue('data saved mocked!');
+    const result = await AccountUtils.addKey(
+      activeAccountData,
+      accounts,
+      userData.nonEncryptKeys.active, //now a valid unencrypcted key
+      KeyType.ACTIVE,
+    );
+    expect(result).toEqual(accounts);
+    expect(AccountUtils.getKeys).toBeCalledWith(
+      activeAccountData.name,
+      userData.nonEncryptKeys.active,
+    );
+    expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
+  });
+  test('test passing valid data(posting key) and mocking getKeys returns expected keys, must return saved message from saveAccounts mocked and the accounts obj', async () => {
+    let passedKeyObj: Keys = {
+      posting: userData.nonEncryptKeys.posting,
+      postingPubkey: userData.encryptKeys.posting,
+    };
+    AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+    AccountUtils.saveAccounts = jest
+      .fn()
+      .mockResolvedValue('data saved mocked!');
+    const result = await AccountUtils.addKey(
+      activeAccountData,
+      accounts,
+      userData.nonEncryptKeys.posting, //now a valid unencrypcted key
+      KeyType.POSTING,
+    );
+    expect(result).toEqual(accounts);
+    expect(AccountUtils.getKeys).toBeCalledWith(
+      activeAccountData.name,
+      userData.nonEncryptKeys.posting,
+    );
+    expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
+  });
+  test('test passing valid data(memo key) and mocking getKeys returns expected keys, must return saved message from saveAccounts mocked and the accounts obj', async () => {
+    let passedKeyObj: Keys = {
+      memo: userData.nonEncryptKeys.memo,
+      memoPubkey: userData.encryptKeys.memo,
+    };
+    AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+    AccountUtils.saveAccounts = jest
+      .fn()
+      .mockResolvedValue('data saved mocked!');
+    const result = await AccountUtils.addKey(
+      activeAccountData,
+      accounts,
+      userData.nonEncryptKeys.memo, //now a valid unencrypcted key
+      KeyType.MEMO,
+    );
+    expect(result).toEqual(accounts);
+    expect(AccountUtils.getKeys).toBeCalledWith(
+      activeAccountData.name,
+      userData.nonEncryptKeys.memo,
+    );
+    expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
+  });
+});
+
+describe('deleteKey tests', () => {
+  test('KeyType.MEMO and username in the array, should return accounts with that key removed', () => {
+    const _accounts: LocalAccount[] = [
+      {
+        name: userData.username,
+        keys: {
+          activePubkey: userData.encryptKeys.active,
+          postingPubkey: userData.encryptKeys.posting,
+          memoPubkey: userData.encryptKeys.memo,
+          posting: userData.nonEncryptKeys.posting,
+          memo: userData.nonEncryptKeys.memo,
+          active: userData.nonEncryptKeys.active,
+        },
+      },
+    ];
+    const result = AccountUtils.deleteKey(
+      KeyType.MEMO,
+      _accounts,
+      activeAccountData,
+    );
+    const expected_obj = [
+      {
+        name: userData.username,
+        keys: {
+          activePubkey: userData.encryptKeys.active,
+          postingPubkey: userData.encryptKeys.posting,
+          posting: userData.nonEncryptKeys.posting,
+          active: userData.nonEncryptKeys.active,
+        },
+      },
+    ];
+    expect(result).toEqual(expected_obj);
+  });
+  test('KeyType.POSTING and username in the array, should return accounts with that key removed', () => {
+    const _accounts: LocalAccount[] = [
+      //for some reason when using a "new array" as [...accounts] it get modified.
+      {
+        name: userData.username,
+        keys: {
+          activePubkey: userData.encryptKeys.active,
+          postingPubkey: userData.encryptKeys.posting,
+          memoPubkey: userData.encryptKeys.memo,
+          posting: userData.nonEncryptKeys.posting,
+          memo: userData.nonEncryptKeys.memo,
+          active: userData.nonEncryptKeys.active,
+        },
+      },
+    ];
+    const result = AccountUtils.deleteKey(
+      KeyType.POSTING,
+      _accounts,
+      activeAccountData,
+    );
+    const expected_obj = [
+      {
+        name: userData.username,
+        keys: {
+          activePubkey: userData.encryptKeys.active,
+          memoPubkey: userData.encryptKeys.memo,
+          memo: userData.nonEncryptKeys.memo,
+          active: userData.nonEncryptKeys.active,
+        },
+      },
+    ];
+    expect(result).toEqual(expected_obj);
+  });
+  test('KeyType.ACTIVE and username in the array, should return accounts with that key removed', () => {
+    const _accounts: LocalAccount[] = [
+      {
+        name: userData.username,
+        keys: {
+          activePubkey: userData.encryptKeys.active,
+          postingPubkey: userData.encryptKeys.posting,
+          memoPubkey: userData.encryptKeys.memo,
+          posting: userData.nonEncryptKeys.posting,
+          memo: userData.nonEncryptKeys.memo,
+          active: userData.nonEncryptKeys.active,
+        },
+      },
+    ];
+    const result = AccountUtils.deleteKey(
+      KeyType.ACTIVE,
+      _accounts,
+      activeAccountData,
+    );
+    const expected_obj = [
+      {
+        name: userData.username,
+        keys: {
+          postingPubkey: userData.encryptKeys.posting,
+          memoPubkey: userData.encryptKeys.memo,
+          posting: userData.nonEncryptKeys.posting,
+          memo: userData.nonEncryptKeys.memo,
+        },
+      },
+    ];
+    expect(result).toEqual(expected_obj);
+  });
+  test('when passed an activeAccount which name is not in localAccounts must return same localAccounts', () => {
+    const _accounts: LocalAccount[] = [
+      {
+        name: 'anotherUserHere',
+        keys: {
+          activePubkey: userData.encryptKeys.active,
+          postingPubkey: userData.encryptKeys.posting,
+          memoPubkey: userData.encryptKeys.memo,
+          posting: userData.nonEncryptKeys.posting,
+          memo: userData.nonEncryptKeys.memo,
+          active: userData.nonEncryptKeys.active,
+        },
+      },
+    ];
+    const result = AccountUtils.deleteKey(
+      KeyType.ACTIVE,
+      _accounts,
+      activeAccountData,
+    );
+    expect(result).toEqual(_accounts);
+  });
+});
+
+describe('deleteAccount tests', () => {
+  test('when passed a localAccounts array with the accountName in it, must return the filtered array', () => {
+    const _accounts: LocalAccount[] = [
+      { name: 'workerjab1', keys: {} },
+      { name: 'workerjab2', keys: {} },
+    ];
+    const result = AccountUtils.deleteAccount('workerjab1', _accounts);
+    const expected_obj = _accounts.filter((item) => item.name !== 'workerjab1');
+    expect(result).toEqual(expected_obj);
+  });
+  test('when passed a localAccounts array without the accountName in it, must return the original filtered array', () => {
+    const _accounts: LocalAccount[] = [
+      { name: 'workerjab1', keys: {} },
+      { name: 'workerjab2', keys: {} },
+    ];
+    const result = AccountUtils.deleteAccount('workerjab3', _accounts);
+    const expected_obj = _accounts.filter((item) => item.name !== 'workerjab3');
+    expect(result).toEqual(expected_obj);
+  });
+});
+
+describe('isAccountListIdentical tests', () => {
+  test('returns true if both lists are identical', () => {
+    const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
+    const _accounts2: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
+    const result = AccountUtils.isAccountListIdentical(_accounts1, _accounts2);
+    expect(result).toBe(true);
+  });
+  test.skip('must returns true if both lists are identical, even on disorder lists, needs a sort function', () => {
+    //skipped for now as there is no function to sort the fielnd inside each list
+    //if you consider this is not needed I will remove it.
+    const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
+    const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
+    const result = AccountUtils.isAccountListIdentical(_accounts1, _accounts2);
+    expect(result).toBe(true);
+  });
+  test('returns false if both lists are not identical', () => {
+    const _accounts1: LocalAccount[] = [
+      { name: 'theghost1980', keys: { posting: '12345678' } },
+    ];
+    const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
+    const result = AccountUtils.isAccountListIdentical(_accounts1, _accounts2);
+    expect(result).toBe(false);
+  });
+});
+
+describe('getAccountValue tests', () => {
+  //Mock toHp and withComma
+  FormatUtils.withCommas = jest.fn().mockReturnValue(1.51);
+  FormatUtils.toHP = jest.fn().mockReturnValue(1.51);
+  const balances = {
+    hbd_balance: '1.00',
+    balance: '1.00',
+    vesting_shares: '1.00',
+    savings_balance: '1.00',
+    savings_hbd_balance: '1.00',
+  } as ExtendedAccount;
+  test('must return 0 when passed invalid hiveDollar.usd', () => {
+    const currencies = {
+      hive: { usd: 1.0 },
+      hive_dollar: {}, //lacking the .usd value
+      bitcoin: {},
+    } as CurrencyPrices;
+    const result = AccountUtils.getAccountValue(
+      balances,
+      currencies,
+      utilsT.dynamicPropertiesObj,
+    );
+    expect(result).toBe(0);
+  });
+  test('must return 0 when passed invalid hive.usd', () => {
+    const currencies = {
+      hive: {}, //lacking the .usd value
+      hive_dollar: { usd: 1.0 },
+      bitcoin: {},
+    } as CurrencyPrices;
+    const result = AccountUtils.getAccountValue(
+      balances,
+      currencies,
+      utilsT.dynamicPropertiesObj,
+    );
+    expect(result).toBe(0);
+  });
+  test('must return valid value of 1, when passed valids hive.usd and hive_dollar.usd', () => {
+    const currencies = {
+      hive: { usd: 1.0 },
+      hive_dollar: { usd: 1.0 },
+      bitcoin: {},
+    } as CurrencyPrices;
+    const result = AccountUtils.getAccountValue(
+      balances,
+      currencies,
+      utilsT.dynamicPropertiesObj,
+    );
+    expect(result).toBe(1.51);
+  });
+});
+
+describe('getPowerDown tests', () => {
+  test('must return a valid array as [withdrawn, total_withdrawing, next_vesting_withdrawal]', () => {
+    const account_details = {
+      withdrawn: '1.00',
+      to_withdraw: '1.00',
+      next_vesting_withdrawal: '1.00',
+    } as ExtendedAccount;
+    const globalPropsUsed = {
+      total_vesting_fund_hive: '1.0 HIVE',
+      total_vesting_shares: '1.0 VESTS',
+    } as DynamicGlobalProperties;
+    const result_array = AccountUtils.getPowerDown(
+      account_details,
+      globalPropsUsed,
+    );
+    expect(result_array).toEqual(['0', '0', '1.00']);
+  });
+  //as this function do not have validation I assume the data is comming from an already validated source
+  //so no more tests cases i could add for now.
+});
+
+describe('doesAccountExist tests', () => {
+  test('with a existing account must return true', async () => {
+    const result = await AccountUtils.doesAccountExist('theghost1980');
+    expect(result).toBe(true);
+  });
+  test('with a non existing account must return false', async () => {
+    const result = await AccountUtils.doesAccountExist('theghost19809918912');
+    expect(result).toBe(false);
   });
 });
 
@@ -442,350 +833,49 @@ describe('addAuthorizedAccount tests', () => {
     //clearing the HiveUtils mock
     // jest.fn().mockClear();
   });
-  test.skip('test with account with authority must return 000000 ', async () => {
-    //note using response from HIVE DB.
+  test('test with account with no authority', async () => {
+    //Let's mock only once to get a fake response about this quentin acc with no auth.
+    HiveUtils.getClient().database.getAccounts = jest
+      .fn()
+      .mockImplementationOnce((...args: any) => [
+        utilsT.fakeQuentinAccResponseWithNoAuth,
+        'fakeData ;)',
+      ]);
     const result_addAuthorizedAccount = await AccountUtils.addAuthorizedAccount(
-      'workerjab1',
-      'jobaboard',
-      [
-        { name: 'jobaboard', keys: {} },
-        { name: 'leofinance', keys: {} },
-      ],
+      'quentin', //account to add
+      'workerjab1', //main account
+      [{ name: 'workerjab1', keys: userDataKeys }],
       _setErrorMessage,
     );
+
     expect(result_addAuthorizedAccount).toBeNull();
-    expect(_setErrorMessage).toBeCalledWith('let us learn about this answer');
+    expect(_setErrorMessage).toBeCalledWith('popup_accounts_no_auth', [
+      'workerjab1',
+      'quentin',
+    ]);
   });
-  test.todo('need more explanation about how this auth works.');
-  test.todo('test with account with authority');
-});
-
-describe('addKey tests', () => {
-  test.todo(
-    'blanks auth I need explanations about how to build the testing object as type ActiveAccount',
-  );
-  test('test with empty key must return null and setErrorMessage as  popup_accounts_fill', async () => {
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      [{ name: 'test', keys: {} }],
-      '',
-      KeyType.ACTIVE,
-    );
-    expect(result).toBeNull();
-    expect(store.dispatch).toBeCalledWith({
-      payload: {
-        key: 'popup_accounts_fill',
-        params: [],
-        type: 'ERROR',
-      },
-      type: 'SET_MESSAGE',
-    });
-  });
-  test('test with empty accounts array must return null and setErrorMessage as popup_accounts_fill', async () => {
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      [],
-      'testaccount',
-      KeyType.ACTIVE,
-    );
-    expect(result).toBeNull();
-    expect(store.dispatch).toBeCalledWith({
-      payload: {
-        key: 'popup_accounts_fill',
-        params: [],
-        type: 'ERROR',
-      },
-      type: 'SET_MESSAGE',
-    });
-  });
-  test('test with public key (STM) must return null and setErrorMessage as PASSWORD_IS_PUBLIC_KEY', async () => {
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      accounts,
-      userData.encrypt_keys.active, //key passed as STM on pourpose.
-      KeyType.ACTIVE,
-    );
-    expect(result).toBeNull();
-    expect(store.dispatch).toBeCalledWith({
-      payload: {
-        key: 'popup_account_password_is_public_key',
-        params: [],
-        type: 'ERROR',
-      },
-      type: 'SET_MESSAGE',
-    });
-  });
-  test('test with private key in valid format but getKeys return null', async () => {
-    // Mock store.dispatch, setErrorMessage, saveAccounts, getKeys
-    AccountUtils.getKeys = jest.fn().mockResolvedValue(null); //creating the case when "for some reason" account.utils.getKeys() return null.
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      accounts,
-      userData.non_encrypt_keys.active, //now a valid unencrypcted key
-      KeyType.ACTIVE,
-    );
-    expect(result).toBe(undefined);
-    //NOTE: should this case not be handled at all? Right now is returning undefined as the condition (keys && account)
-    //do not handle the opposite.
-  });
-  test('test passing valid data(active key) and mocking getKeys returns expected keys, must return saved message from saveAccounts mocked and the accounts obj', async () => {
-    let passedKeyObj: Keys = {
-      active: userData.non_encrypt_keys.active,
-      activePubkey: userData.encrypt_keys.active,
-    };
-    AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
-    AccountUtils.saveAccounts = jest
+  test('test with account with authority on posting/active keys, must return keys object as the requested account was added ', async () => {
+    //Let's mock only once to get a fake response about this quentin acc with auth.
+    HiveUtils.getClient().database.getAccounts = jest
       .fn()
-      .mockResolvedValue('data saved mocked!');
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      accounts,
-      userData.non_encrypt_keys.active, //now a valid unencrypcted key
-      KeyType.ACTIVE,
-    );
-    expect(result).toEqual(accounts);
-    expect(AccountUtils.getKeys).toBeCalledWith(
-      activeAccountData.name,
-      userData.non_encrypt_keys.active,
-    );
-    expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
-  });
-  test('test passing valid data(posting key) and mocking getKeys returns expected keys, must return saved message from saveAccounts mocked and the accounts obj', async () => {
-    let passedKeyObj: Keys = {
-      posting: userData.non_encrypt_keys.posting,
-      postingPubkey: userData.encrypt_keys.posting,
+      .mockImplementationOnce((...args: any) => [
+        utilsT.fakeQuentinAccResponseWithAuth,
+        'fakeData ;)',
+      ]);
+
+    const expectedKeysObject = {
+      posting: userData.nonEncryptKeys.posting,
+      postingPubkey: `@${userData.username}`,
+      active: userData.nonEncryptKeys.active,
+      activePubkey: `@${userData.username}`,
     };
-    AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
-    AccountUtils.saveAccounts = jest
-      .fn()
-      .mockResolvedValue('data saved mocked!');
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      accounts,
-      userData.non_encrypt_keys.posting, //now a valid unencrypcted key
-      KeyType.POSTING,
+    const result_addAuthorizedAccount = await AccountUtils.addAuthorizedAccount(
+      'quentin', //account to add
+      'workerjab1', //main account
+      [{ name: 'workerjab1', keys: userDataKeys }],
+      _setErrorMessage,
     );
-    expect(result).toEqual(accounts);
-    expect(AccountUtils.getKeys).toBeCalledWith(
-      activeAccountData.name,
-      userData.non_encrypt_keys.posting,
-    );
-    expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
-  });
-  test('test passing valid data(memo key) and mocking getKeys returns expected keys, must return saved message from saveAccounts mocked and the accounts obj', async () => {
-    let passedKeyObj: Keys = {
-      memo: userData.non_encrypt_keys.memo,
-      memoPubkey: userData.encrypt_keys.memo,
-    };
-    AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
-    AccountUtils.saveAccounts = jest
-      .fn()
-      .mockResolvedValue('data saved mocked!');
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      accounts,
-      userData.non_encrypt_keys.memo, //now a valid unencrypcted key
-      KeyType.MEMO,
-    );
-    expect(result).toEqual(accounts);
-    expect(AccountUtils.getKeys).toBeCalledWith(
-      activeAccountData.name,
-      userData.non_encrypt_keys.memo,
-    );
-    expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
-  });
-});
 
-describe('deleteKey tests', () => {
-  test('KeyType.MEMO and username in the array, should return accounts with that key removed', () => {
-    const _accounts: LocalAccount[] = [
-      {
-        name: userData.username,
-        keys: {
-          activePubkey: userData.encrypt_keys.active,
-          postingPubkey: userData.encrypt_keys.posting,
-          memoPubkey: userData.encrypt_keys.memo,
-          posting: userData.non_encrypt_keys.posting,
-          memo: userData.non_encrypt_keys.memo,
-          active: userData.non_encrypt_keys.active,
-        },
-      },
-    ];
-    const result = AccountUtils.deleteKey(
-      KeyType.MEMO,
-      _accounts,
-      activeAccountData,
-    );
-    const expected_obj = [
-      {
-        name: userData.username,
-        keys: {
-          activePubkey: userData.encrypt_keys.active,
-          postingPubkey: userData.encrypt_keys.posting,
-          posting: userData.non_encrypt_keys.posting,
-          active: userData.non_encrypt_keys.active,
-        },
-      },
-    ];
-    expect(result).toEqual(expected_obj);
-  });
-  test('KeyType.POSTING and username in the array, should return accounts with that key removed', () => {
-    const _accounts: LocalAccount[] = [
-      //for some reason when using a "new array" as [...accounts] it get modified.
-      {
-        name: userData.username,
-        keys: {
-          activePubkey: userData.encrypt_keys.active,
-          postingPubkey: userData.encrypt_keys.posting,
-          memoPubkey: userData.encrypt_keys.memo,
-          posting: userData.non_encrypt_keys.posting,
-          memo: userData.non_encrypt_keys.memo,
-          active: userData.non_encrypt_keys.active,
-        },
-      },
-    ];
-    const result = AccountUtils.deleteKey(
-      KeyType.POSTING,
-      _accounts,
-      activeAccountData,
-    );
-    const expected_obj = [
-      {
-        name: userData.username,
-        keys: {
-          activePubkey: userData.encrypt_keys.active,
-          memoPubkey: userData.encrypt_keys.memo,
-          memo: userData.non_encrypt_keys.memo,
-          active: userData.non_encrypt_keys.active,
-        },
-      },
-    ];
-    expect(result).toEqual(expected_obj);
-  });
-  test('KeyType.ACTIVE and username in the array, should return accounts with that key removed', () => {
-    const _accounts: LocalAccount[] = [
-      {
-        name: userData.username,
-        keys: {
-          activePubkey: userData.encrypt_keys.active,
-          postingPubkey: userData.encrypt_keys.posting,
-          memoPubkey: userData.encrypt_keys.memo,
-          posting: userData.non_encrypt_keys.posting,
-          memo: userData.non_encrypt_keys.memo,
-          active: userData.non_encrypt_keys.active,
-        },
-      },
-    ];
-    const result = AccountUtils.deleteKey(
-      KeyType.ACTIVE,
-      _accounts,
-      activeAccountData,
-    );
-    const expected_obj = [
-      {
-        name: userData.username,
-        keys: {
-          postingPubkey: userData.encrypt_keys.posting,
-          memoPubkey: userData.encrypt_keys.memo,
-          posting: userData.non_encrypt_keys.posting,
-          memo: userData.non_encrypt_keys.memo,
-        },
-      },
-    ];
-    expect(result).toEqual(expected_obj);
-  });
-  test('when passed an activeAccount which name is not in localAccounts must return same localAccounts', () => {
-    const _accounts: LocalAccount[] = [
-      {
-        name: 'anotherUserHere',
-        keys: {
-          activePubkey: userData.encrypt_keys.active,
-          postingPubkey: userData.encrypt_keys.posting,
-          memoPubkey: userData.encrypt_keys.memo,
-          posting: userData.non_encrypt_keys.posting,
-          memo: userData.non_encrypt_keys.memo,
-          active: userData.non_encrypt_keys.active,
-        },
-      },
-    ];
-    const result = AccountUtils.deleteKey(
-      KeyType.ACTIVE,
-      _accounts,
-      activeAccountData,
-    );
-    expect(result).toEqual(_accounts);
-  });
-});
-
-describe('deleteAccount tests', () => {
-  test('when passed a localAccounts array with the accountName in it, must return the filtered array', () => {
-    const _accounts: LocalAccount[] = [
-      { name: 'workerjab1', keys: {} },
-      { name: 'workerjab2', keys: {} },
-    ];
-    const result = AccountUtils.deleteAccount('workerjab1', _accounts);
-    const expected_obj = _accounts.filter((item) => item.name !== 'workerjab1');
-    expect(result).toEqual(expected_obj);
-  });
-  test('when passed a localAccounts array without the accountName in it, must return the original filtered array', () => {
-    const _accounts: LocalAccount[] = [
-      { name: 'workerjab1', keys: {} },
-      { name: 'workerjab2', keys: {} },
-    ];
-    const result = AccountUtils.deleteAccount('workerjab3', _accounts);
-    const expected_obj = _accounts.filter((item) => item.name !== 'workerjab3');
-    expect(result).toEqual(expected_obj);
-  });
-});
-
-describe('isAccountListIdentical tests', () => {
-  test('returns true if both lists are identical', () => {
-    const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
-    const _accounts2: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
-    const result = AccountUtils.isAccountListIdentical(_accounts1, _accounts2);
-    expect(result).toBe(true);
-  });
-  test.skip('must returns true if both lists are identical, even on disorder lists, needs a sort function', () => {
-    //skipped for now as there is no function to sort the fielnd inside each list
-    //if you consider this is not needed I will remove it.
-    const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
-    const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
-    const result = AccountUtils.isAccountListIdentical(_accounts1, _accounts2);
-    expect(result).toBe(true);
-  });
-  test('returns false if both lists are not identical', () => {
-    const _accounts1: LocalAccount[] = [
-      { name: 'theghost1980', keys: { posting: '12345678' } },
-    ];
-    const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
-    const result = AccountUtils.isAccountListIdentical(_accounts1, _accounts2);
-    expect(result).toBe(false);
-  });
-});
-
-describe('getAccountValue tests', () => {
-  //Mock toHp and withComma
-  FormatUtils.withCommas = jest.fn().mockReturnValue(1.0);
-  FormatUtils.toHP = jest.fn().mockReturnValue(1.0);
-  test.todo(
-    'Need explanation about how to construct this input as Extended Account',
-  );
-  test.skip('must return the values when passed valid hiveDollar.usd', () => {
-    const result = 0;
-  });
-});
-
-describe('getPowerDown tests', () => {
-  test.todo('same as above to contruct those objects.');
-});
-
-describe('doesAccountExist tests', () => {
-  test('with a existing account must return true', async () => {
-    const result = await AccountUtils.doesAccountExist('theghost1980');
-    expect(result).toBe(true);
-  });
-  test('with a non existing account must return false', async () => {
-    const result = await AccountUtils.doesAccountExist('theghost19809918912');
-    expect(result).toBe(false);
+    expect(result_addAuthorizedAccount).toEqual(expectedKeysObject);
   });
 });
