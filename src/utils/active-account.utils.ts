@@ -6,14 +6,14 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const isEmpty = (activeAccount: ActiveAccount) => {
   return Object.keys(activeAccount.account).length === 0;
 };
-
+/* istanbul ignore next */
 const saveActiveAccountNameInLocalStorage = (activeAccountName: string) => {
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
     activeAccountName,
   );
 };
-
+/* istanbul ignore next */
 const getActiveAccountNameFromLocalStorage = async () => {
   return await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
@@ -57,6 +57,7 @@ const ActiveAccountUtils = {
   getActiveAccountNameFromLocalStorage,
   hasReward,
   getAvailableRewards,
+  getValFromString, //to mock needed to export it.
 };
 
 export default ActiveAccountUtils;

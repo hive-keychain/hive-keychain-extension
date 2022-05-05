@@ -5,7 +5,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import utilsT from 'src/__tests__/utilsForTesting/utilsT';
+import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { ActiveAccount } from '../../interfaces/active-account.interface';
 import { setErrorMessage } from '../../popup/actions/message.actions';
 import { store } from '../../popup/store';
