@@ -57,7 +57,7 @@ const ActiveAccountUtils = {
   getActiveAccountNameFromLocalStorage,
   hasReward,
   getAvailableRewards,
-  getValFromString, //to mock needed to export it.
+  getValFromString, //to mock, needed to export it.
 };
 
 export default ActiveAccountUtils;
