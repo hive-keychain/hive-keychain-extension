@@ -173,7 +173,12 @@ const WalletInfoSection = ({
           <div className="balance">{currencyLabels.hp}</div>
           {hasDelegation && (
             <div className="savings">
-              ({chrome.i18n.getMessage('popup_html_delegations')})
+              (
+              {chrome.i18n.getMessage('popup_html_delegations').length <= 5
+                ? chrome.i18n.getMessage('popup_html_delegations')
+                : chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) +
+                  '.'}
+              )
             </div>
           )}
         </div>
