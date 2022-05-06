@@ -379,7 +379,7 @@ describe('addKey tests', () => {
     });
   });
   test.skip('test with empty accounts array should return null and setErrorMessage as popup_accounts_fill?', async () => {
-    //the condition is repeated and only check for the privateKey.length
+    //the condition inside the function: AccountUtils.addKey is repeated and only check for the privateKey.length
     //let me know if this case is needed.
     const result = await AccountUtils.addKey(
       activeAccountData,
@@ -419,6 +419,7 @@ describe('addKey tests', () => {
     //I don't know if this is needed, let me know.
     //note: in the code there is no handling on the case that the condition (keys && account) do not pass
     //right now is returning undefined.
+
     // Mock store.dispatch, setErrorMessage, saveAccounts, getKeys
     AccountUtils.getKeys = jest.fn().mockResolvedValue(null);
     const result = await AccountUtils.addKey(
@@ -650,7 +651,7 @@ describe('isAccountListIdentical tests', () => {
   });
   test.skip('must returns true if both lists are identical, even on disorder lists, needs a sort function', () => {
     //skipped for now as there is no function to sort the fielnd inside each list
-    //if you consider this is not needed I will remove it.
+    //if you consider this is not need for this case I will remove it.
     const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
     const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
     const result = AccountUtils.isAccountListIdentical(_accounts1, _accounts2);
