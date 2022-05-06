@@ -65,6 +65,7 @@
   }
 
   .expandable-panel {
+    justify-content: space-between;
     max-height: 0;
     transition: max-height 0.5s ease-out;
     font-size: 14px;

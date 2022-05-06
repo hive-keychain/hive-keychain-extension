@@ -14,6 +14,11 @@ const FillRecurrentTransferTransaction = ({
   transaction,
   activeAccountName,
 }: PropsFromRedux & FillRecurrentTransferTransactionProps) => {
+  console.log(
+    transaction,
+    transaction.amount,
+    FormatUtils.withCommas(transaction.amount, 3),
+  );
   const getDetail = () => {
     return chrome.i18n.getMessage(
       activeAccountName === transaction.from
