@@ -52,9 +52,9 @@ describe(' active-account.utils tests', () => {
     test('passing reward_hbd, must return true', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '2.00 HBD',
-        reward_hp: '0.00 HP',
-        reward_hive: '0 HIVE',
+        reward_hbd: '2.000 HBD',
+        reward_hp: '0.000 HP',
+        reward_hive: '0.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -67,9 +67,9 @@ describe(' active-account.utils tests', () => {
     test('passing reward_hp, must return true', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '0.00 HBD',
-        reward_hp: '1.00 HP',
-        reward_hive: '0 HIVE',
+        reward_hbd: '0.000 HBD',
+        reward_hp: '1.000 HP',
+        reward_hive: '0.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -82,9 +82,9 @@ describe(' active-account.utils tests', () => {
     test('passing reward_hive, must return true', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '0.00 HBD',
-        reward_hp: '0.00 HP',
-        reward_hive: '10 HIVE',
+        reward_hbd: '0.000 HBD',
+        reward_hp: '0.000 HP',
+        reward_hive: '10.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -97,9 +97,9 @@ describe(' active-account.utils tests', () => {
     test('Passing 0 value as rewards, must return false', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '0.00 HBD',
-        reward_hp: '0.00 HP',
-        reward_hive: '0.0000 HIVE',
+        reward_hbd: '0.000 HBD',
+        reward_hp: '0.000 HP',
+        reward_hive: '0.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -216,7 +216,7 @@ describe(' active-account.utils tests', () => {
           rewardsObj.reward_hp,
           rewardsObj.reward_hive,
         ),
-      ).toBe(1);
+      ).toBe(false);
 
       //expect(mReturnValue.getValFromString).toBeCalledTimes(1);
       //expect(mReturnValue.getValFromString).toHaveBeenCalledTimes(3);
