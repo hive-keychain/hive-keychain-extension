@@ -26,9 +26,9 @@ const hasReward = (
   reward_hive: string,
 ): boolean => {
   return (
-    getValFromString(reward_hbd) != 0 ||
-    getValFromString(reward_hp) != 0 ||
-    getValFromString(reward_hive) != 0
+    ActiveAccountUtils.getValFromString(reward_hbd) !== 0 || // to observe it, need to call the function through the module
+    ActiveAccountUtils.getValFromString(reward_hp) !== 0 || // calling getValFromString directly wont work
+    ActiveAccountUtils.getValFromString(reward_hive) !== 0
   );
 };
 

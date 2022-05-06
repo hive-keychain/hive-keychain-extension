@@ -51,9 +51,9 @@ describe(' active-account.utils tests', () => {
     test('passing reward_hbd, must return true', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '2.00 HBD',
-        reward_hp: '0.00 HP',
-        reward_hive: '0 HIVE',
+        reward_hbd: '2.000 HBD',
+        reward_hp: '0.000 HP',
+        reward_hive: '0.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -66,9 +66,9 @@ describe(' active-account.utils tests', () => {
     test('passing reward_hp, must return true', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '0.00 HBD',
-        reward_hp: '1.00 HP',
-        reward_hive: '0 HIVE',
+        reward_hbd: '0.000 HBD',
+        reward_hp: '1.000 HP',
+        reward_hive: '0.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -81,9 +81,9 @@ describe(' active-account.utils tests', () => {
     test('passing reward_hive, must return true', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '0.00 HBD',
-        reward_hp: '0.00 HP',
-        reward_hive: '10 HIVE',
+        reward_hbd: '0.000 HBD',
+        reward_hp: '0.000 HP',
+        reward_hive: '10.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -96,9 +96,9 @@ describe(' active-account.utils tests', () => {
     test('Passing 0 value as rewards, must return false', () => {
       //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
-        reward_hbd: '0.00 HBD',
-        reward_hp: '0.00 HP',
-        reward_hive: '0.0000 HIVE',
+        reward_hbd: '0.000 HBD',
+        reward_hp: '0.000 HP',
+        reward_hive: '0.000 HIVE',
       };
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
@@ -190,7 +190,7 @@ describe(' active-account.utils tests', () => {
     });
   });
 
-  describe.skip('hasRewards tests with mocking functions', () => {
+  describe.only('hasRewards tests with mocking functions', () => {
     //NOTE it is been skipped and need research to find a way to test
     // the return mockec value within another function call.
 
@@ -198,17 +198,16 @@ describe(' active-account.utils tests', () => {
 
     test('passing Not rewards on rewardsObj, must return false', () => {
       const rewardsObj = {
-        reward_hbd: '1.00 HDB',
-        reward_hp: '1.00 HP',
-        reward_hive: '1.00 HIVE',
+        reward_hbd: '1.000 HBD',
+        reward_hp: '0.000 HP',
+        reward_hive: '0.000 HIVE',
       };
 
-      ActiveAccountUtils.getValFromString = jest
-        .fn()
-        .mockReturnValue(console.log('hi from getValue'));
-      // ActiveAccountUtils.getValFromString = jest
-      //   .fn()
-      //   .mockImplementation(() => console.log('HI THERE!'));
+      jest
+        .spyOn(ActiveAccountUtils, 'getValFromString')
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(0);
 
       expect(
         ActiveAccountUtils.hasReward(
@@ -216,7 +215,7 @@ describe(' active-account.utils tests', () => {
           rewardsObj.reward_hp,
           rewardsObj.reward_hive,
         ),
-      ).toBe(1);
+      ).toBe(false);
 
       //expect(mReturnValue.getValFromString).toBeCalledTimes(1);
       //expect(mReturnValue.getValFromString).toHaveBeenCalledTimes(3);
