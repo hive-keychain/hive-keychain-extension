@@ -294,7 +294,16 @@ const WitnessTab = ({
         </div>
       )}
 
-      {isLoading && <RotatingLogoComponent></RotatingLogoComponent>}
+      {isLoading && (
+        <div
+          style={{
+            height: '300px',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
+          <RotatingLogoComponent></RotatingLogoComponent>
+        </div>
+      )}
     </div>
   );
 };
