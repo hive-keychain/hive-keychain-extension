@@ -296,6 +296,7 @@ const deleteKey = (
       delete account?.keys.memoPubkey;
       break;
   }
+  AccountUtils.saveAccounts(accounts, store.getState().mk);
   return accounts;
 };
 
