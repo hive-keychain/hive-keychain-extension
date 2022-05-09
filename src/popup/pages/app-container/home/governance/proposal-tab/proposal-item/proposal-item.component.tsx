@@ -126,6 +126,14 @@ const ProposalItem = ({
             }
             name={Icons.ARROW_CIRCLE_UP}
             type={IconType.OUTLINED}
+            tooltipPosition="left"
+            tooltipMessage={
+              !activeAccount.keys.active
+                ? 'popup_missing_key_proposal'
+                : usingProxy
+                ? 'html_popup_proposal_vote_error_proxy'
+                : undefined
+            }
           />
         </div>
       </div>
