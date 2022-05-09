@@ -18,13 +18,11 @@
     column-gap: 8px;
 
     .more {
-      padding-right: 6px;
       margin-top: -4px;
     }
 
     .more.opened {
       padding-right: unset;
-      padding-left: 6px;
       transform: rotate(180deg);
     }
   }
@@ -34,13 +32,22 @@
     align-items: center;
 
     .icon-component {
-      @include icon-size(36px);
+      @include icon-size(28px);
+      &.using-proxy {
+        cursor: not-allowed;
+        padding: unset;
+      }
       &.not-voted {
         color: $grey;
+        &:not(.using-proxy):hover {
+          color: white;
+        }
       }
-
-      &:hover {
-        color: $red-dark;
+      &.voted {
+        color: white;
+        &:not(.using-proxy):hover {
+          color: $grey;
+        }
       }
     }
 

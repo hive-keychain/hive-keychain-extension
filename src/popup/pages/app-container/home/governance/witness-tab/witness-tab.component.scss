@@ -97,9 +97,15 @@
         }
         .not-voted {
           color: $grey;
+          &:not(.using-proxy):hover {
+            color: white;
+          }
         }
         .voted {
           color: white;
+          &:not(.using-proxy):hover {
+            color: $grey;
+          }
         }
         .name {
           display: flex;
