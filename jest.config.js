@@ -1,9 +1,8 @@
 /** @type {import('ts-jest/dist/types').InitialOptionsTsJest} */
 module.exports = {
-  //working configuration fomr here
+  setupFiles: ['dotenv/config'],
   preset: 'ts-jest',
   testEnvironment: 'node',
-  //added to see if fix the issue
   rootDir: '.',
   testMatch: [
     '**/__tests__/**/*.+(ts|tsx|js)',

@@ -12,24 +12,7 @@ import { store } from '../../popup/store';
 import AccountUtils from '../../utils/account.utils';
 
 //testing data
-const userData = {
-  username: 'workerjab1',
-  encryptKeys: {
-    owner: 'STM8X56V5jtFwmchDiDfyb4YgMfjfCVrUnPVZYkuqKuWw1ZAm3jV8',
-    active: 'STM85Hcqk92kE1AtueigBAtHD2kZRcqji9Gi38ZaiW8xcWcQJLof6',
-    posting: 'STM7cfYmyCU6J45NjBSBUwZAV6c2ttZoNjTeaxkWSYq5HDZDWtzC3',
-    memo: 'STM6mbGVeyUkC1DZUBW5wx6okDskTqGLm1VgbPCRCGyw6CPSn1VNY',
-    randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
-  },
-  nonEncryptKeys: {
-    owner: '5KCfdJFryAt2edxqcbsct9RgJKy1kdBL3Sfn5mTQ5ovxxKZfD1P',
-    active: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v7',
-    posting: '5JGFDQkqQMibxq1w7aJpBpEnozrjyUfaWcQqCaLbFsmKnestVEV',
-    memo: '5KWEtbou93CkWUKdz5ubHFXnnAvcjiCUixXTUz1SVYLigQJFu7k',
-    fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
-    randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
-  },
-};
+const userData = { ...utilsT.userData };
 const userDataKeys: Keys = {
   active: userData.nonEncryptKeys.active,
   posting: userData.nonEncryptKeys.posting,
@@ -79,17 +62,15 @@ jest.setTimeout(10000);
 
 beforeEach(() => {
   store.dispatch = jest.fn();
-  //_setErrorMessage = jest.fn();
 });
 
 afterEach(() => {
-  //jest.fn().mockClear(); original
   jest.clearAllMocks();
   jest.restoreAllMocks();
 });
 
 describe('getKeys tests', () => {
-  test('getKeys returns null when passed an encrypted password and setErrorMessage', async () => {
+  test('Passing a public key must return null and dispatch an error message', async () => {
     const getAccount = await AccountUtils.getKeys(
       userData.username,
       userData.encryptKeys.active,
@@ -125,8 +106,7 @@ describe('getKeys tests', () => {
     );
   });
 
-  test('getKeys returns a valid object when passed username and unencrypted password in 3 correct formats', async () => {
-    //memo
+  test('Passing valid username and unencrypted MEMO key must return a valid MEMO Key Object', async () => {
     const validDataUserMemo = await AccountUtils.getKeys(
       userData.username,
       userData.nonEncryptKeys.memo,
@@ -136,8 +116,9 @@ describe('getKeys tests', () => {
       memoPubkey: userData.encryptKeys.memo,
     };
     expect(validDataUserMemo).toEqual(expected_obj_memo);
+  });
 
-    //posting key
+  test('Passing valid username and unencrypted POSTING key must return a valid POSTING Key Object', async () => {
     const validDataUserPosting = await AccountUtils.getKeys(
       userData.username,
       userData.nonEncryptKeys.posting,
@@ -147,8 +128,9 @@ describe('getKeys tests', () => {
       postingPubkey: userData.encryptKeys.posting,
     };
     expect(validDataUserPosting).toEqual(expected_obj_posting);
+  });
 
-    //active key
+  test('Passing valid username and unencrypted ACTIVE key must return a valid ACTIVE Key Object', async () => {
     const validDataUserActive = await AccountUtils.getKeys(
       userData.username,
       userData.nonEncryptKeys.active,
@@ -160,7 +142,7 @@ describe('getKeys tests', () => {
     expect(validDataUserActive).toEqual(expected_obj_active);
   });
 
-  test('getKeys returns null when passed the owner key and setErrorMessage as INCORRECT_KEY', async () => {
+  test('Passing the OWNER key and username, must return null and dispatch an error', async () => {
     const validDataUserOwner = await AccountUtils.getKeys(
       userData.username,
       userData.nonEncryptKeys.owner,
@@ -172,7 +154,7 @@ describe('getKeys tests', () => {
     );
   });
 
-  test('getKeys returns null when passed a non valid unencrypted(fake key) and setErrorMessage as INCORRECT_KEY', async () => {
+  test('Passing a fake key and username, must return null and dispatch an error', async () => {
     const validDataUserFakeKey = await AccountUtils.getKeys(
       userData.username,
       userData.nonEncryptKeys.fakeKey,
@@ -184,7 +166,7 @@ describe('getKeys tests', () => {
     );
   });
 
-  test('getKeys returns null when passed random string as keys 53 chars, and setErrorMessage as INCORRECT_KEY', async () => {
+  test('Passing a random string key(53 chars) must return null and dispatch an error message', async () => {
     const validUserRandomStringKey53 = await AccountUtils.getKeys(
       userData.username,
       userData.encryptKeys.randomString53,
@@ -196,7 +178,7 @@ describe('getKeys tests', () => {
     );
   });
 
-  test('getKeys returns null when passed a random string as keys 51 chars, and setErrorMessage as INCORRECT_KEY', async () => {
+  test('Passing a random string as key(51 chars), must return null and dispatch error message', async () => {
     const validUserRandomStringKey51 = await AccountUtils.getKeys(
       userData.username,
       userData.nonEncryptKeys.randomStringKey51,
@@ -210,7 +192,7 @@ describe('getKeys tests', () => {
 });
 
 describe('verifyAccount tests', () => {
-  test('verifyAccount with empty username must return null and setErrorMessage as MISSING_FIELDS', async () => {
+  test('Passing an empty username must return null and dispatch MISSING_FIELDS error', async () => {
     const resultVerifyAccount = await AccountUtils.verifyAccount(
       '',
       '12345678',
@@ -223,7 +205,7 @@ describe('verifyAccount tests', () => {
     );
   });
 
-  test('verifyAccount with empty password must return null and setErrorMessage as MISSING_FIELDS', async () => {
+  test('Passing an empty password must return null and dispatch a MISSING_FIELDS error', async () => {
     const resultVerifyAccount = await AccountUtils.verifyAccount(
       'workerjab1',
       '',
@@ -236,7 +218,7 @@ describe('verifyAccount tests', () => {
     );
   });
 
-  test('verifyAccount must return null and setErrorMessage as ALREADY_REGISTERED, when passed an existing account, which is already on existingAccounts array', async () => {
+  test('Passing an account, already registered, must return null and dispatch an error', async () => {
     const existingAccounts = [
       { name: userData.username, keys: {} },
       { name: 'user2', keys: {} },
@@ -252,7 +234,7 @@ describe('verifyAccount tests', () => {
     );
   });
 
-  test('verifyAccount must run the function getKey() as returned value(returning a valid key object), when passing an account which not exist on the existingAccounts array', async () => {
+  test('Passing an account that is not registered, must return a valid Key Object', async () => {
     const resultValidDataNonExistingAccounts = await AccountUtils.verifyAccount(
       userData.username,
       userData.nonEncryptKeys.active,
@@ -414,24 +396,7 @@ describe('addKey tests', () => {
       type: 'SET_MESSAGE',
     });
   });
-  test.skip('test with private key in valid format but getKeys return null', async () => {
-    //this is another case I have created as if getKeys returns null for any reason.
-    //I don't know if this is needed, let me know.
-    //note: in the code there is no handling on the case that the condition (keys && account) do not pass
-    //right now is returning undefined.
 
-    // Mock store.dispatch, setErrorMessage, saveAccounts, getKeys
-    AccountUtils.getKeys = jest.fn().mockResolvedValue(null);
-    const result = await AccountUtils.addKey(
-      activeAccountData,
-      accounts,
-      userData.nonEncryptKeys.active, //now a valid unencrypcted key
-      KeyType.ACTIVE,
-    );
-    expect(result).toBe(undefined);
-    //NOTE: should this case not be handled at all? Right now is returning undefined as the condition (keys && account)
-    //do not handle the opposite.
-  });
   test('test passing valid data(active key) and mocking getKeys returns expected keys, must return saved message from saveAccounts mocked and the accounts obj', async () => {
     let passedKeyObj: Keys = {
       active: userData.nonEncryptKeys.active,
@@ -535,7 +500,6 @@ describe('deleteKey tests', () => {
   });
   test('KeyType.POSTING and username in the array, should return accounts with that key removed', () => {
     const _accounts: LocalAccount[] = [
-      //for some reason when using a "new array" as [...accounts] it get modified.
       {
         name: userData.username,
         keys: {
@@ -668,7 +632,6 @@ describe('isAccountListIdentical tests', () => {
 });
 
 describe('getAccountValue tests', () => {
-  //Mock toHp and withComma
   FormatUtils.withCommas = jest.fn().mockReturnValue(1.51);
   FormatUtils.toHP = jest.fn().mockReturnValue(1.51);
   const balances = {
@@ -681,7 +644,7 @@ describe('getAccountValue tests', () => {
   test('must return 0 when passed invalid hiveDollar.usd', () => {
     const currencies = {
       hive: { usd: 1.0 },
-      hive_dollar: {}, //lacking the .usd value
+      hive_dollar: {},
       bitcoin: {},
     } as CurrencyPrices;
     const result = AccountUtils.getAccountValue(
@@ -693,7 +656,7 @@ describe('getAccountValue tests', () => {
   });
   test('must return 0 when passed invalid hive.usd', () => {
     const currencies = {
-      hive: {}, //lacking the .usd value
+      hive: {},
       hive_dollar: { usd: 1.0 },
       bitcoin: {},
     } as CurrencyPrices;
@@ -736,8 +699,6 @@ describe('getPowerDown tests', () => {
     );
     expect(result_array).toEqual(['0', '0', '1.00']);
   });
-  //as this function do not have validation I assume the data is comming from an already validated source
-  //so no more tests cases i could add for now.
 });
 
 describe('doesAccountExist tests', () => {
@@ -752,8 +713,6 @@ describe('doesAccountExist tests', () => {
 });
 
 describe('addAuthorizedAccount tests', () => {
-  //Mock HiveUtils.getClient().database.getAccounts(...)
-  //HiveUtils.getClient = jest.fn().mockResolvedValue({})
   let _setErrorMessage = setErrorMessage;
 
   beforeEach(() => {
@@ -814,9 +773,6 @@ describe('addAuthorizedAccount tests', () => {
     );
   });
   test('test with account not existing must return null', async () => {
-    // HiveUtils.getClient().database.getAccounts = jest
-    //   .fn()
-    //   .mockResolvedValue([]);
     const result_addAuthorizedAccount = await AccountUtils.addAuthorizedAccount(
       'workerjab17787',
       'someguy123',
@@ -831,11 +787,8 @@ describe('addAuthorizedAccount tests', () => {
       'popup_accounts_incorrect_user',
       [],
     );
-    //clearing the HiveUtils mock
-    // jest.fn().mockClear();
   });
   test('test with account with no authority', async () => {
-    //Let's mock only once to get a fake response about this quentin acc with no auth.
     HiveUtils.getClient().database.getAccounts = jest
       .fn()
       .mockImplementationOnce((...args: any) => [
@@ -856,7 +809,6 @@ describe('addAuthorizedAccount tests', () => {
     ]);
   });
   test('test with account with authority on posting/active keys, must return keys object as the requested account was added ', async () => {
-    //Let's mock only once to get a fake response about this quentin acc with auth.
     HiveUtils.getClient().database.getAccounts = jest
       .fn()
       .mockImplementationOnce((...args: any) => [

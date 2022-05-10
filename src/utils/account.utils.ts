@@ -119,10 +119,6 @@ const isAccountNameAlreadyExisting = (
   existingAccounts: LocalAccount[],
   accountName: string,
 ): boolean => {
-  //this was initially as (!existingAccounts || existingAccounts.length) which I believe is trying to return false
-  //if the array contains no records in it, so no needs to compare.
-  //I changed as existingAccounts.length === 0 because now it does the checking but let me know is my mistake or not.
-  //also one question is there a case on this function when existingAccount won't be provided
   if (!existingAccounts || existingAccounts.length === 0) {
     return false;
   }
