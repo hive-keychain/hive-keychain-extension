@@ -1,6 +1,22 @@
 import ArrayUtils from 'src/utils/array.utils';
 
-describe('mergeWithoutDuplicate tests', () => {
+describe('mergeWithoutDuplicate tests:\n', () => {
+  test('Passing 2 arrays of strings and no key, must merge them without having duplicates', () => {
+    const array1 = ['The World', 'The World', 'is', 'a', 'BIG', 'BIG'];
+    const array2 = ['Mistery', 'BIG', 'can', 'YOU', 'TELL', '?'];
+    expect(ArrayUtils.mergeWithoutDuplicate(array1, array2)).toEqual([
+      'The World',
+      'is',
+      'a',
+      'BIG',
+      'Mistery',
+      'can',
+      'YOU',
+      'TELL',
+      '?',
+    ]);
+  });
+
   test('providing the key name, must 2 merge arrays of and have no duplicates on the resulting array', () => {
     const array1 = [
       { name: 'theghost1980' },
@@ -54,6 +70,7 @@ describe('mergeWithoutDuplicate tests', () => {
   });
 
   test('Not providing the key name(undefined instead), will just merge two arrays with duplicates', () => {
+    //NOTE: this may need a validation on case that passing key name as undefined.
     const array1 = [
       { name: 'theghost1980', age: 100 },
       { name: 'aggroed', age: 100 },

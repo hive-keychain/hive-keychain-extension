@@ -1,15 +1,11 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
-//chrome
 const chrome = require('chrome-mock');
 global.chrome = chrome;
-//end Chrome
 
 describe(' active-account.utils tests', () => {
   describe('isEmpty tests', () => {
-    //Note waiting for Cedric clarification about how the function should work.
-    //for now I changed to return true is the whole object is empty.
     test('Passing an object without the account key must return true', () => {
       const notEmptyObject = {
         account: { id: 1234 },
@@ -25,7 +21,7 @@ describe(' active-account.utils tests', () => {
     });
   });
 
-  describe.skip('getValFromString tests', () => {
+  describe('getValFromString tests', () => {
     const stringCase1 = '12.000 HIVE';
     const stringCase2 = '10.000 JustAnother.string';
     const stringToFail = 'Hello HBD';
@@ -38,19 +34,13 @@ describe(' active-account.utils tests', () => {
       expect(numbeResult).toBe(10);
     });
     test(`passing an non expected string formatted as ${stringToFail} must return NaN`, () => {
-      //Note: if the expected input will always be formatted as required this is an extra case
-      //otherwise a validation may be required.
       const numbeResult = ActiveAccountUtils.getValFromString(stringToFail);
       expect(numbeResult).toBe(NaN);
     });
   });
 
   describe('hasRewards tests without mocking functions', () => {
-    //Note as mocking the functions is required
-    //if needed in the future, all this decribe block can be .skip
-    //so the file will only run the next one that has the mocks.
     test('passing reward_hbd, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '2.000 HBD',
         reward_hp: '0.000 HP',
@@ -65,7 +55,6 @@ describe(' active-account.utils tests', () => {
     });
 
     test('passing reward_hp, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '0.000 HBD',
         reward_hp: '1.000 HP',
@@ -80,7 +69,6 @@ describe(' active-account.utils tests', () => {
     });
 
     test('passing reward_hive, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '0.000 HBD',
         reward_hp: '0.000 HP',
@@ -95,7 +83,6 @@ describe(' active-account.utils tests', () => {
     });
 
     test('Passing 0 value as rewards, must return false', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '0.000 HBD',
         reward_hp: '0.000 HP',
@@ -111,11 +98,7 @@ describe(' active-account.utils tests', () => {
   });
 
   describe('hasRewards tests without mocking functions', () => {
-    //Note as mocking the functions is required
-    //if needed in the future, all this decribe block can be .skip
-    //so the file will only run the next one that has the mocks.
     test('passing reward_hbd, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '2.00 HBD',
         reward_hp: '0.00 HP',
@@ -130,7 +113,6 @@ describe(' active-account.utils tests', () => {
     });
 
     test('passing reward_hp, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '0.00 HBD',
         reward_hp: '1.00 HP',
@@ -145,7 +127,6 @@ describe(' active-account.utils tests', () => {
     });
 
     test('passing reward_hive, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '0.00 HBD',
         reward_hp: '0.00 HP',
@@ -160,7 +141,6 @@ describe(' active-account.utils tests', () => {
     });
 
     test('Passing 0 value as rewards, must return false', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: '0.00 HBD',
         reward_hp: '0.00 HP',
@@ -174,9 +154,7 @@ describe(' active-account.utils tests', () => {
       expect(result).toBe(false);
     });
 
-    //possible case to review the getValueFromString function
     test('Passing string value as any of the rewards, is returning true as NaN != 0', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
       const rewardsObj = {
         reward_hbd: 'aaasadas',
         reward_hp: 'asdas HP',
@@ -191,19 +169,20 @@ describe(' active-account.utils tests', () => {
     });
   });
 
-  describe.only('hasRewards tests with mocking functions', () => {
-    //NOTE it is been skipped and need research to find a way to test
-    // the return mockec value within another function call.
-
-    //end test
-
-    test('passing Not rewards on rewardsObj, must return false', () => {
+  describe('hasRewards tests with mocking functions:\n', () => {
+    // beforeEach(() => {
+    //   jest.fn().mockClear();
+    // });
+    afterEach(() => {
+      jest.fn().mockClear();
+    });
+    test('passing no rewards on rewardsObj, must return false', () => {
       const rewardsObj = {
-        reward_hbd: '1.00 HDB',
+        reward_hbd: '0.00 HDB',
         reward_hp: '0.00 HP',
         reward_hive: '0.00 HIVE',
       };
-
+      jest.resetModules();
       jest
         .spyOn(ActiveAccountUtils, 'getValFromString')
         .mockReturnValueOnce(0)
@@ -217,18 +196,21 @@ describe(' active-account.utils tests', () => {
           rewardsObj.reward_hive,
         ),
       ).toBe(false);
-
-      //expect(mReturnValue.getValFromString).toBeCalledTimes(1);
-      //expect(mReturnValue.getValFromString).toHaveBeenCalledTimes(3);
     });
 
-    test.skip('passing reward_hp, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
+    test('passing reward_hp, must return true', () => {
       const rewardsObj = {
         reward_hbd: '0.00 HBD',
         reward_hp: '1.00 HP',
         reward_hive: '0 HIVE',
       };
+      jest.resetModules();
+      ActiveAccountUtils.getValFromString = jest
+        .fn()
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(10)
+        .mockReturnValueOnce(0);
+
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
@@ -237,28 +219,41 @@ describe(' active-account.utils tests', () => {
       expect(result).toBe(true);
     });
 
-    test.skip('passing reward_hive, must return true', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
+    test('passing reward_hive, must return true', () => {
       const rewardsObj = {
         reward_hbd: '0.00 HBD',
         reward_hp: '0.00 HP',
         reward_hive: '10 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
-        rewardsObj.reward_hbd,
-        rewardsObj.reward_hp,
-        rewardsObj.reward_hive,
-      );
-      expect(result).toBe(true);
+      jest.resetModules();
+      ActiveAccountUtils.getValFromString = jest
+        .fn()
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(10);
+
+      expect(
+        ActiveAccountUtils.hasReward(
+          rewardsObj.reward_hbd,
+          rewardsObj.reward_hp,
+          rewardsObj.reward_hive,
+        ),
+      ).toBe(true);
     });
 
-    test.skip('Passing 0 value as rewards, must return false', () => {
-      //reward_hbd: string, reward_hp: string, reward_hive: string,
+    test('Passing 0 value as rewards, must return false', () => {
       const rewardsObj = {
         reward_hbd: '0.00 HBD',
         reward_hp: '0.00 HP',
         reward_hive: '0.0000 HIVE',
       };
+      jest.resetModules();
+      ActiveAccountUtils.getValFromString = jest
+        .fn()
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(0)
+        .mockReturnValueOnce(0);
+
       const result = ActiveAccountUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
@@ -269,7 +264,6 @@ describe(' active-account.utils tests', () => {
   });
 
   describe('getAvailableRewards tests', () => {
-    //mock getValFromString, chrome.getMessage, FormatUtils.toHP, activeAccount to make sure test is stable
     test('passing an active account object with all rewards must return especific format as seen on expectedRewardText bellow', () => {
       const justRewardsObj = {
         account: {
@@ -346,7 +340,6 @@ describe(' active-account.utils tests', () => {
         ActiveAccountUtils.getAvailableRewards(justRewardsObj);
       expect(JSON.stringify(resultBalances)).toBe(expectedRewardText);
     });
-    //optional test
     test('passing an active account object with NaN reward values will return those values without validation in the same format as above', () => {
       const justRewardsObj = {
         account: {

@@ -1,8 +1,25 @@
 //data needed to be used on some tests.
-// regex to filter exact word \wordYouNeedToFilter\b
-
 import { DynamicGlobalProperties } from '@hiveio/dhive';
+require('dotenv').config();
 
+const userData = {
+  username: 'workerjab1',
+  encryptKeys: {
+    owner: 'STM8X56V5jtFwmchDiDfyb4YgMfjfCVrUnPVZYkuqKuWw1ZAm3jV8',
+    active: 'STM85Hcqk92kE1AtueigBAtHD2kZRcqji9Gi38ZaiW8xcWcQJLof6',
+    posting: 'STM7cfYmyCU6J45NjBSBUwZAV6c2ttZoNjTeaxkWSYq5HDZDWtzC3',
+    memo: 'STM6mbGVeyUkC1DZUBW5wx6okDskTqGLm1VgbPCRCGyw6CPSn1VNY',
+    randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
+  },
+  nonEncryptKeys: {
+    owner: process.env.OWNER_KEY || 'error, please check',
+    active: process.env.ACTIVE_KEY || 'error, please check',
+    posting: process.env.POSTING_KEY || 'error, please check',
+    memo: process.env.MEMO_KEY || 'error, please check',
+    fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
+    randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
+  },
+};
 //data extended account
 /* istanbul ignore next */
 const dataUserExtended = {
@@ -26,9 +43,7 @@ const dataUserExtended = {
   memo_key: 'STM6mbGVeyUkC1DZUBW5wx6okDskTqGLm1VgbPCRCGyw6CPSn1VNY',
   json_metadata:
     '{"beneficiaries":[{"name":"tipu","weight":100,"label":"creator"},{"name":"hiveonboard","weight":100,"label":"provider"}]}',
-  //posting_json_metadata: '',
   proxy: '',
-  //previous_owner_update: '1970-01-01T00:00:00',
   last_owner_update: '1970-01-01T00:00:00',
   last_account_update: '2021-03-06T17:18:51',
   created: '2021-02-27T12:44:12',
@@ -44,10 +59,6 @@ const dataUserExtended = {
     current_mana: 0,
     last_update_time: 1615046820,
   },
-  // downvote_manabar: {
-  //   current_mana: 0,
-  //   last_update_time: 1615046820,
-  // },
   voting_power: 0,
   balance: '0.000 HIVE',
   savings_balance: '0.000 HIVE',
@@ -466,162 +477,7 @@ const utilsT = {
   fakeQuentinAccResponseWithAuth,
   fakeQuentinAccResponseWithNoAuth,
   bittrexResultArray,
+  userData,
 };
 /* istanbul ignore next */
 export default utilsT;
-
-//helping code
-// const result_addAuthorizedAccount = await AccountUtils.addAuthorizedAccount(
-//   'quentin', //account to add
-//   'theghost1980', //main account
-//   [
-//     { name: 'theghost1980', keys: {} },
-//     { name: 'workerjab1', keys: {} },
-//   ],
-//   _setErrorMessage,
-
-////organise it later
-// {
-//   "id": 128755,
-//   "name": "theghost1980",
-//   "owner": {
-//       "weight_threshold": 1,
-//       "account_auths": [],
-//       "key_auths": [
-//           [
-//               "STM7oa2cb9UNNMB5qt5rmgUPS4vhNRVM8ngk2susT98YDd3eSR9Es",
-//               1
-//           ]
-//       ]
-//   },
-//   "active": {
-//       "weight_threshold": 1,
-//       "account_auths": [],
-//       "key_auths": [
-//           [
-//               "STM8RET8exknjBbc76n45iEk1sZd5dS7FEhrs3pKuVg4sUKezozg8",
-//               1
-//           ]
-//       ]
-//   },
-//   "posting": {
-//       "weight_threshold": 1,
-//       "account_auths": [
-//           [
-//               "hive.blog",
-//               1
-//           ],
-//           [
-//               "jobaboard",
-//               1
-//           ],
-//           [
-//               "threespeak",
-//               1
-//           ]
-//       ],
-//       "key_auths": [
-//           [
-//               "STM4vnb83aALsV3dnjzH7e1QqeJaKaKcmCJENHFNyYq9GXf98Nqbb",
-//               1
-//           ]
-//       ]
-//   },
-//   "memo_key": "STM7Ng3hzFFCwS84kcvWJsn1ChB7hw1XLT5LvLPtDxGzrcEcurT8V",
-//   "json_metadata": "{\"profile\":{\"profile_image\":\"https://s5.postimg.org/ql4grup8n/logo_circular_theghost-final.png\",\"name\":\"TheGhost1980 \",\"about\":\"Full time blogger, crypto currencies teacher and Steemit lover | Blogger a tiempo completo, profesor de cripto monedas y amante de Steemit.\",\"location\":\"Steemit's world / Venezuela \",\"website\":\"https://whaleshares.io/@theghost1980\",\"dtube_pub\":\"eBwxKKkZpt48qPLGJ3Xd2WDqSCiocKibSWJ8CtyRnuyN\"}}",
-//   "posting_json_metadata": "{\"profile\":{\"profile_image\":\"https://images.hive.blog/DQmfPbauGCnFrWwaMjnsuJkutwefeqBExoTv1TbDJFJ5HBo/ghost_pink.png\",\"name\":\"theghost1980\",\"about\":\"Dev, musician & human. \",\"location\":\"Venezuela\",\"website\":\"https://saturnoman.com/\",\"dtube_pub\":\"eBwxKKkZpt48qPLGJ3Xd2WDqSCiocKibSWJ8CtyRnuyN\",\"is_public\":false,\"redirect_uris\":[\"https://jobaboard.net/callbackhs\"],\"type\":\"app\",\"creator\":\"theghost1980\",\"version\":2}}",
-//   "proxy": "",
-//   "previous_owner_update": "2017-08-13T03:30:39",
-//   "last_owner_update": "2021-04-01T12:39:30",
-//   "last_account_update": "2022-01-12T19:59:24",
-//   "created": "2017-01-24T12:35:18",
-//   "mined": false,
-//   "recovery_account": "steem",
-//   "last_account_recovery": "1970-01-01T00:00:00",
-//   "reset_account": "null",
-//   "comment_count": 0,
-//   "lifetime_vote_count": 0,
-//   "post_count": 2594,
-//   "can_vote": true,
-//   "voting_manabar": {
-//       "current_mana": "829597313123",
-//       "last_update_time": 1646925051
-//   },
-//   "downvote_manabar": {
-//       "current_mana": "207399328280",
-//       "last_update_time": 1646925051
-//   },
-//   "voting_power": 0,
-//   "balance": "35.529 HIVE",
-//   "savings_balance": "0.000 HIVE",
-//   "hbd_balance": "0.729 HBD",
-//   "hbd_seconds": "475209",
-//   "hbd_seconds_last_update": "2021-06-03T11:38:03",
-//   "hbd_last_interest_payment": "2021-06-02T16:46:36",
-//   "savings_hbd_balance": "0.000 HBD",
-//   "savings_hbd_seconds": "0",
-//   "savings_hbd_seconds_last_update": "2017-09-14T02:33:42",
-//   "savings_hbd_last_interest_payment": "2017-09-14T02:33:42",
-//   "savings_withdraw_requests": 0,
-//   "reward_hbd_balance": "0.000 HBD",
-//   "reward_hive_balance": "0.000 HIVE",
-//   "reward_vesting_balance": "0.000000 VESTS",
-//   "reward_vesting_hive": "0.000 HIVE",
-//   "vesting_shares": "490225.129097 VESTS",
-//   "delegated_vesting_shares": "0.000000 VESTS",
-//   "received_vesting_shares": "0.000000 VESTS",
-//   "vesting_withdraw_rate": "56562.030671 VESTS",
-//   "post_voting_power": "490225.129097 VESTS",
-//   "next_vesting_withdrawal": "2022-05-08T17:22:12",
-//   "withdrawn": "339372184026",
-//   "to_withdraw": "735306398716",
-//   "withdraw_routes": 0,
-//   "pending_transfers": 0,
-//   "curation_rewards": 146871,
-//   "posting_rewards": 8059709,
-//   "proxied_vsf_votes": [
-//       0,
-//       0,
-//       0,
-//       0
-//   ],
-//   "witnesses_voted_for": 18,
-//   "last_post": "2022-02-01T18:01:18",
-//   "last_root_post": "2022-02-01T18:01:18",
-//   "last_vote_time": "2021-12-21T09:30:42",
-//   "post_bandwidth": 10000,
-//   "pending_claimed_accounts": 0,
-//   "governance_vote_expiration_ts": "2023-04-22T14:19:30",
-//   "delayed_votes": [],
-//   "open_recurrent_transfers": 0,
-//   "vesting_balance": "0.000 HIVE",
-//   "reputation": "85840972666032",
-//   "transfer_history": [],
-//   "market_history": [],
-//   "post_history": [],
-//   "vote_history": [],
-//   "other_history": [],
-//   "witness_votes": [
-//       "abit",
-//       "aggroed",
-//       "bhuz",
-//       "blocktrades",
-//       "curie",
-//       "drakos",
-//       "followbtcnews",
-//       "jesta",
-//       "leofinance",
-//       "ocd-witness",
-//       "pfunk",
-//       "roelandp",
-//       "roomservice",
-//       "someguy123",
-//       "steempress",
-//       "stoodkev",
-//       "therealwolf",
-//       "yabapmatt"
-//   ],
-//   "tags_usage": [],
-//   "guest_bloggers": []
-// }
-/////
