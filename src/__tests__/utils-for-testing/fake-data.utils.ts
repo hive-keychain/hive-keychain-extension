@@ -444,6 +444,51 @@ const fakeQuentinAccResponseWithNoAuth = {
   lifetime_bandwidth: '',
   last_active_proved: '',
 };
+//data for specific test files
+//to be used on: format.utils.tests.ts
+//for nFormatter
+/* istanbul ignore next */
+const iterationValuesNoDecimals = [
+  { input: 1e3, expectedString: '1k' },
+  { input: 10e3, expectedString: '10k' },
+  { input: 100e3, expectedString: '100k' },
+  { input: 1e6, expectedString: '1M' },
+  { input: 10e6, expectedString: '10M' },
+  { input: 100e6, expectedString: '100M' },
+  { input: 1e9, expectedString: '1G' },
+  { input: 10e9, expectedString: '10G' },
+  { input: 100e9, expectedString: '100G' },
+  { input: 1e12, expectedString: '1T' },
+  { input: 10e12, expectedString: '10T' },
+  { input: 100e12, expectedString: '100T' },
+  { input: 1e15, expectedString: '1P' },
+  { input: 10e15, expectedString: '10P' },
+  { input: 100e15, expectedString: '100P' },
+  { input: 1e18, expectedString: '1E' },
+];
+/* istanbul ignore next */
+const iterationValuesWithDecimals1 = [
+  { input: 0.0, expectedString: '0', decimals: 1 },
+  { input: 0.0, expectedString: '0', decimals: 2 },
+  { input: 0.1, expectedString: '0.1', decimals: 1 },
+  { input: 0.1234, expectedString: '0.12', decimals: 2 },
+  { input: 0.1234, expectedString: '0.123', decimals: 3 },
+  { input: 0.1234, expectedString: '0.1234', decimals: 4 },
+];
+/* istanbul ignore next */
+const iterationValuesWithDecimals2 = [
+  { input: 1000.0123, expectedString: '1k', decimals: 1 },
+  { input: 100000.0123, expectedString: '100k', decimals: 2 },
+  { input: 10000000.1, expectedString: '10M', decimals: 1 },
+  { input: 1000000000000.1234, expectedString: '1T', decimals: 2 },
+  { input: 10000000000000.12345432, expectedString: '10T', decimals: 5 },
+  { input: 10000045600000.12345432, expectedString: '10.00005T', decimals: 5 },
+  { input: 100000000000000.12345432, expectedString: '100T', decimals: 4 },
+  { input: 1450000000000000.12345432, expectedString: '1.45P', decimals: 4 },
+];
+//end for nFormatter
+
+//end data for specific test files
 /* istanbul ignore next */
 const utilsT = {
   dataUserExtended,
@@ -452,6 +497,9 @@ const utilsT = {
   fakeQuentinAccResponseWithAuth,
   fakeQuentinAccResponseWithNoAuth,
   userData,
+  iterationValuesNoDecimals,
+  iterationValuesWithDecimals1,
+  iterationValuesWithDecimals2,
 };
 /* istanbul ignore next */
 export default utilsT;
