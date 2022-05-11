@@ -6,14 +6,14 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const isEmpty = (activeAccount: ActiveAccount) => {
   return Object.keys(activeAccount.account).length === 0;
 };
-
+/* istanbul ignore next */
 const saveActiveAccountNameInLocalStorage = (activeAccountName: string) => {
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
     activeAccountName,
   );
 };
-
+/* istanbul ignore next */
 const getActiveAccountNameFromLocalStorage = async () => {
   return await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
@@ -26,9 +26,9 @@ const hasReward = (
   reward_hive: string,
 ): boolean => {
   return (
-    getValFromString(reward_hbd) != 0 ||
-    getValFromString(reward_hp) != 0 ||
-    getValFromString(reward_hive) != 0
+    ActiveAccountUtils.getValFromString(reward_hbd) !== 0 || // to observe it, need to call the function through the module
+    ActiveAccountUtils.getValFromString(reward_hp) !== 0 || // calling getValFromString directly wont work
+    ActiveAccountUtils.getValFromString(reward_hive) !== 0
   );
 };
 
@@ -57,6 +57,7 @@ const ActiveAccountUtils = {
   getActiveAccountNameFromLocalStorage,
   hasReward,
   getAvailableRewards,
+  getValFromString, //to mock, needed to export it.
 };
 
 export default ActiveAccountUtils;
