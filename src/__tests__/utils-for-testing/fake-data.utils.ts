@@ -1,7 +1,7 @@
 //data needed to be used on some tests.
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 require('dotenv').config();
-
+/* istanbul ignore next */
 const userData = {
   username: 'workerjab1',
   encryptKeys: {
@@ -19,6 +19,12 @@ const userData = {
     fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
     randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
   },
+};
+/* istanbul ignore next */
+//TODO add priv keys into the .env
+//TODO add pub keys, fakeKey and random
+const userData2 = {
+  username: 'workerjab2',
 };
 //data extended account
 /* istanbul ignore next */
@@ -497,6 +503,7 @@ const utilsT = {
   fakeQuentinAccResponseWithAuth,
   fakeQuentinAccResponseWithNoAuth,
   userData,
+  userData2,
   iterationValuesNoDecimals,
   iterationValuesWithDecimals1,
   iterationValuesWithDecimals2,
