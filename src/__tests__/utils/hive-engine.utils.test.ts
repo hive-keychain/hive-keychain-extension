@@ -88,7 +88,7 @@ describe('hive-engine.utils tests:\n', () => {
             });
         } catch (error) {
           if (showError) {
-            console.log('Error on @hiveio');
+            //console.log('Error on @hiveio');
             console.log(error);
           }
         }
