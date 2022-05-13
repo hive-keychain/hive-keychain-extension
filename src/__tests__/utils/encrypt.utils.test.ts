@@ -45,23 +45,30 @@ describe('encrypt.utils tests:\n', () => {
   describe('decryptToJson tests:\n', () => {
     test('Passing a valid encoded message, must equal expected obj and contain hash property', () => {
       const expectedDecodedObj = {
-        list: {
-          name: utilsT.userData.username,
-          keys: {
-            active: utilsT.userData.encryptKeys.active,
-            posting: utilsT.userData.encryptKeys.posting,
+        list: [
+          {
+            name: utilsT.userData.username,
+            keys: {
+              active: utilsT.userData.nonEncryptKeys.active,
+              posting: utilsT.userData.nonEncryptKeys.posting,
+              activePubkey: utilsT.userData.encryptKeys.active,
+              postingPubkey: utilsT.userData.encryptKeys.posting,
+            },
           },
-        },
+        ],
         hash: '3449c9e5e332f1dbb81505cd739fbf3f',
       };
       const encodedMessage =
-        'aa9e6eaac0b82ebf4fd00f37af5379c1d8c2741ab6e65421f10284eb133584a43Rnhqhy1RNtixb9DEJsI1VkdSaqKzz/jLpt7eVQc1AlQkkIOZ0RB+htmb8emgDn5pdS2oPcj4VaMTY4NVP38nx9kws0rSBBRId3oAj1Y753VdRj5/KZ4oHc2FBsUQ+4be23TOb2SsA9uc77P3fC9i50XT56GhWqjQYiczp6KW70xlZHt9mINDethi0AQIu2DU7TvAuydeoWoPeyVJD56x3v76SPEjeLYfRBUWehMVbrLXw1rQ86+4rnEyT3lWjRpOOc16TOFjVanOTHsNTk0cIE/qi5qh9+HpTlvU9QKLY8=';
-      const passwordUsed = 'new key';
+        process.env._TEST_USER_ENCRYPTED_ACCOUNTS || 'error';
+      const passwordUsed = process.env._TEST_USER_PWD || 'error';
+
+      console.log(encodedMessage, passwordUsed);
+
       const result = EncryptUtils.decryptToJson(encodedMessage, passwordUsed);
       expect(result).not.toBeNull();
       expect(result).not.toBeUndefined();
       expect(result.hash).toBeDefined();
-      expect(result).toEqual(expectedDecodedObj);
+      expect(result.list).toEqual(expectedDecodedObj.list);
     });
 
     test('Passing an empty message and empty password must return null', () => {
