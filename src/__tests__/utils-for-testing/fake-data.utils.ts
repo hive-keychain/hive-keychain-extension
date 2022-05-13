@@ -1,7 +1,7 @@
 //data needed to be used on some tests.
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 require('dotenv').config();
-
+/* istanbul ignore next */
 const userData = {
   username: 'workerjab1',
   encryptKeys: {
@@ -19,6 +19,10 @@ const userData = {
     fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
     randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
   },
+};
+/* istanbul ignore next */
+const userData2 = {
+  username: 'workerjab2',
 };
 //data extended account
 /* istanbul ignore next */
@@ -488,6 +492,204 @@ const iterationValuesWithDecimals2 = [
 ];
 //end for nFormatter
 
+//for hive-engine.utils
+//Mocking responses API HIVE -> Tokens.
+const getFakeTransactionInfo = {
+  logErrors: [
+    {
+      typeError: 'symbol_not_exist',
+      fakeBlockDataResponse: {
+        blockNumber: 17301178,
+        refHiveBlockNumber: 64291054,
+        transactionId: '4dbf9462be2cbeb9d970fc777cea795521284fc1',
+        sender: 'workerjab1',
+        contract: 'tokens',
+        action: 'stake',
+        payload:
+          '{"to":"workerjab1","symbol":"HIVE","quantity":"0.1","isSignedWithActiveKey":true}',
+        executedCodeHash:
+          '815ad74975ef2099fb0d332f42eb5503e27c52c78002f3d408fb0ca67bc37edb',
+        hash: 'f14b438daad79be8c4f359e3dc58e85a2ff9bc4256f470e4208fe5b3ddb37efb',
+        databaseHash:
+          '77f388ce4c4a5c625fcc09ff4e3f5e9389c27b7bd78d010357b13ff97df2d9c6',
+        logs: '{"errors":["symbol does not exist"]}',
+      },
+    },
+    {
+      typeError: 'staking_not_enabled',
+      fakeBlockDataResponse: {
+        blockNumber: 17317874,
+        refHiveBlockNumber: 64307759,
+        transactionId: '2e5e95280ce4356b3eefc76b4ac30ace70f70cde',
+        sender: 'workerjab1',
+        contract: 'tokens',
+        action: 'stake',
+        payload:
+          '{"to":"workerjab1","symbol":"SPS","quantity":"0.1","isSignedWithActiveKey":true}',
+        executedCodeHash:
+          '815ad74975ef2099fb0d332f42eb5503e27c52c78002f3d408fb0ca67bc37edb',
+        hash: '47dce43771f4da8020428bf88a24e6eab34fa5b882c3281bb6840dda0080c4bb',
+        databaseHash:
+          'f7614ac1d8c8d59aa79ac03f28f22a0516cd765cfe1f77a21da706dc09cf0a23',
+        logs: '{"errors":["staking not enabled"]}',
+      },
+    },
+    {
+      typeError: 'balance_does_not_exist',
+      fakeBlockDataResponse: {
+        blockNumber: 17318075,
+        refHiveBlockNumber: 64307960,
+        transactionId: 'a3a105d9e3d254c5d5bbf0ea91395d3d92bc2c9f',
+        sender: 'workerjab1',
+        contract: 'tokens',
+        action: 'stake',
+        payload:
+          '{"to":"workerjab1","symbol":"LEO","quantity":"0.1","isSignedWithActiveKey":true}',
+        executedCodeHash:
+          '815ad74975ef2099fb0d332f42eb5503e27c52c78002f3d408fb0ca67bc37edb',
+        hash: 'eecc338c2ae8563a679dbdb9853e6d074edbb511dac2fb9eaa5c24b946e0c838',
+        databaseHash:
+          'aff267166a5dbb9dcaa17209f1fba3ff1799a05e66e743f280397181fd031678',
+        logs: '{"errors":["balance does not exist"]}',
+      },
+    },
+    {
+      typeError: 'symbol_precision_mismatch',
+      fakeBlockDataResponse: {
+        blockNumber: 17318676,
+        refHiveBlockNumber: 64308562,
+        transactionId: 'cc47d88589b9977260f96629a310e646e9268800',
+        sender: 'workerjab1',
+        contract: 'tokens',
+        action: 'stake',
+        payload:
+          '{"to":"workerjab1","symbol":"CTPM","quantity":"0.00000001","isSignedWithActiveKey":true}',
+        executedCodeHash:
+          '815ad74975ef2099fb0d332f42eb5503e27c52c78002f3d408fb0ca67bc37edb',
+        hash: '856ba05419de95c44bc91efe1297ce682f696b9f4854c2d32bcda4bb488a97a9',
+        databaseHash:
+          '48939031f4210b7582caba0ce5527ed683a71fd20be5174d8d2ba970c9d97e47',
+        logs: '{"errors":["symbol precision mismatch"]}',
+      },
+    },
+    {
+      typeError: 'overdrawn_balance',
+      fakeBlockDataResponse: {
+        blockNumber: 17319064,
+        refHiveBlockNumber: 64308950,
+        transactionId: '803e8c82a48d5c9a452df2eb96bf49996f300f06',
+        sender: 'workerjab1',
+        contract: 'tokens',
+        action: 'stake',
+        payload:
+          '{"to":"workerjab1","symbol":"CTPM","quantity":"10","isSignedWithActiveKey":true}',
+        executedCodeHash:
+          '815ad74975ef2099fb0d332f42eb5503e27c52c78002f3d408fb0ca67bc37edb',
+        hash: 'd3a44a6a902fae21104513041edbfcbc7edc3200668a5c02392c300d8b791824',
+        databaseHash:
+          '2bbfd08c6ff2b4286bdb6831b5465a002a2adbdbb6b37362c707a3c4ed1cd3cd',
+        logs: '{"errors":["overdrawn balance"]}',
+      },
+    },
+  ],
+  onSucessStake: {
+    blockNumber: 17318440,
+    refHiveBlockNumber: 64308326,
+    transactionId: 'd9cb2e5a92aaf39829acfa57fe1481340e412644',
+    sender: 'workerjab1',
+    contract: 'tokens',
+    action: 'stake',
+    payload:
+      '{"to":"workerjab1","symbol":"CTPM","quantity":"0.1","isSignedWithActiveKey":true}',
+    executedCodeHash:
+      '815ad74975ef2099fb0d332f42eb5503e27c52c78002f3d408fb0ca67bc37edb139f5a4f412cdf6f2c8edb3df8f3d6d5334754e62bc4982d392aea34ac085c3a7fbee164be0e58a72b6e9b0441e6086fd2b9513d8034e0e315d70ae13478177c',
+    hash: 'c8b6ffe196d1ac084436df627422f64748357c756d6c9e93a7deb1c085618325',
+    databaseHash:
+      'f2a31e96e3d85f83833bb1bdf1268b516a22b173d938d50501d542705f93f692',
+    logs: '{"events":[{"contract":"tokens","event":"stake","data":{"account":"workerjab1","symbol":"CTPM","quantity":"0.1"}}]}',
+  },
+};
+const fakeResponseHavingTokenBalances = [
+  {
+    _id: 186225,
+    account: 'workerjab1',
+    symbol: 'SWAP.HIVE',
+    balance: '0.00000000',
+    stake: '0',
+    pendingUnstake: '0',
+    delegationsIn: '0',
+    delegationsOut: '0',
+    pendingUndelegations: '0',
+  },
+  {
+    _id: 186226,
+    account: 'workerjab1',
+    symbol: 'BEE',
+    balance: '1.00565819',
+    stake: '0',
+    pendingUnstake: '0',
+    delegationsIn: '0',
+    delegationsOut: '0',
+    pendingUndelegations: '0',
+  },
+  {
+    _id: 459696,
+    account: 'workerjab1',
+    symbol: 'WAIV',
+    balance: '0',
+    stake: '10.00000000',
+    pendingUnstake: '0',
+    delegationsIn: '0',
+    delegationsOut: '0',
+    pendingUndelegations: '0',
+  },
+  {
+    _id: 947092,
+    account: 'workerjab1',
+    symbol: 'CTPM',
+    balance: '1.900',
+    stake: '0.100',
+    pendingUnstake: '0',
+    delegationsIn: '0',
+    delegationsOut: '0',
+    pendingUndelegations: '0',
+  },
+];
+/* istanbul ignore next */
+const fakeIncommingDelegations = [
+  {
+    _id: 1454,
+    from: 'discohedge',
+    to: 'upfundme',
+    symbol: 'BEE',
+    quantity: '58.07691880',
+    created: 1607062680000,
+    updated: 1627314099000,
+  },
+  {
+    _id: 1906,
+    from: 'archon-mining',
+    to: 'upfundme',
+    symbol: 'BEE',
+    quantity: '282.23886099',
+    created: 1612166238000,
+    updated: 1634164284000,
+  },
+];
+const fakeOutgoingDelegations = [
+  {
+    _id: 3781,
+    from: 'coininstant',
+    to: 'firealien',
+    symbol: 'BEE',
+    quantity: '11',
+    created: 1617321279000,
+    updated: 1617321279000,
+  },
+];
+//end for hive-engine.utils
+
+//end data for specific test files
 //end data for specific test files
 /* istanbul ignore next */
 const bittrexResultArray = [
@@ -523,9 +725,13 @@ const utilsT = {
   fakeQuentinAccResponseWithNoAuth,
   bittrexResultArray,
   userData,
+  userData2,
   iterationValuesNoDecimals,
   iterationValuesWithDecimals1,
   iterationValuesWithDecimals2,
+  fakeResponseHavingTokenBalances,
+  fakeIncommingDelegations,
+  fakeOutgoingDelegations,
 };
 /* istanbul ignore next */
 export default utilsT;
