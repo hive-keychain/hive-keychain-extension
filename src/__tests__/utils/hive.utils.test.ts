@@ -14,6 +14,7 @@ describe('hive.utils tests:\n', () => {
       expect(getClientObj.address).toBeDefined();
     });
   });
+  console.log('a change');
   describe('setRpc tests:\n', () => {
     afterEach(() => {
       jest.clearAllMocks();
