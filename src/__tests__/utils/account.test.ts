@@ -287,14 +287,14 @@ describe('isAccountNameAlreadyExisting tests', () => {
   test('when accountName is present in existingAccounts must return true', () => {
     const result = AccountUtils.isAccountNameAlreadyExisting(
       existingAccountsUserPresent,
-      'workerjab1',
+      process.env._TEST_USERNAME!,
     );
     expect(result).toBe(true);
   });
   test('when accountName is present more than once in the existingAccount array must return true', () => {
     const result = AccountUtils.isAccountNameAlreadyExisting(
       existingAccountsUserPresentTwice,
-      'workerjab1',
+      process.env._TEST_USERNAME!,
     );
     expect(result).toBe(true);
   });
@@ -824,10 +824,11 @@ describe('addAuthorizedAccount tests', () => {
     };
     const result_addAuthorizedAccount = await AccountUtils.addAuthorizedAccount(
       'quentin', //account to add
-      'workerjab1', //main account
-      [{ name: 'workerjab1', keys: userDataKeys }],
+      'keychain.tests', //main account
+      [{ name: 'keychain.tests', keys: userDataKeys }],
       _setErrorMessage,
     );
+    console.log(result_addAuthorizedAccount);
 
     expect(result_addAuthorizedAccount).toEqual(expectedKeysObject);
   });

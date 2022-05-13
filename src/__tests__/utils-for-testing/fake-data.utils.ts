@@ -3,19 +3,19 @@ import { DynamicGlobalProperties } from '@hiveio/dhive';
 require('dotenv').config();
 /* istanbul ignore next */
 const userData = {
-  username: 'workerjab1',
+  username: process.env._TEST_USERNAME || 'error, please check',
   encryptKeys: {
-    owner: 'STM8X56V5jtFwmchDiDfyb4YgMfjfCVrUnPVZYkuqKuWw1ZAm3jV8',
-    active: 'STM85Hcqk92kE1AtueigBAtHD2kZRcqji9Gi38ZaiW8xcWcQJLof6',
-    posting: 'STM7cfYmyCU6J45NjBSBUwZAV6c2ttZoNjTeaxkWSYq5HDZDWtzC3',
-    memo: 'STM6mbGVeyUkC1DZUBW5wx6okDskTqGLm1VgbPCRCGyw6CPSn1VNY',
+    owner: process.env._TEST_OWNER_PUB || 'error, please check',
+    active: process.env._TEST_ACTIVE_PUB || 'error, please check',
+    posting: process.env._TEST_POSTING_PUB || 'error, please check',
+    memo: process.env._TEST_MEMO_PUB || 'error, please check',
     randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
   },
   nonEncryptKeys: {
-    owner: process.env.OWNER_KEY || 'error, please check',
-    active: process.env.ACTIVE_KEY || 'error, please check',
-    posting: process.env.POSTING_KEY || 'error, please check',
-    memo: process.env.MEMO_KEY || 'error, please check',
+    owner: process.env._TEST_OWNER || 'error, please check',
+    active: process.env._TEST_ACTIVE || 'error, please check',
+    posting: process.env._TEST_POSTING || 'error, please check',
+    memo: process.env._TEST_MEMO || 'error, please check',
     fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
     randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
   },
@@ -275,12 +275,12 @@ const fakeQuentinAccResponseWithAuth = {
   owner: { weight_threshold: 1, account_auths: [], key_auths: [] },
   active: {
     weight_threshold: 1,
-    account_auths: [['workerjab1', 1]],
+    account_auths: [[process.env._TEST_USERNAME, 1]],
     key_auths: [['STM85Hcqk92kE1AtueigBAtHD2kZRcqji9Gi38ZaiW8xcWcQJLof6', 1]],
   },
   posting: {
     weight_threshold: 1,
-    account_auths: [['workerjab1', 1]],
+    account_auths: [[process.env._TEST_USERNAME, 1]],
     key_auths: [['STM7cfYmyCU6J45NjBSBUwZAV6c2ttZoNjTeaxkWSYq5HDZDWtzC3', 1]],
   },
   memo_key: 'STM5NT27Z4XVgtpxTf6i5uB9pYmXC6syiHUSqzVZvQ1iN8BgJsLC2',
@@ -690,6 +690,32 @@ const fakeOutgoingDelegations = [
 //end for hive-engine.utils
 
 //end data for specific test files
+//end data for specific test files
+/* istanbul ignore next */
+const bittrexResultArray = [
+  {
+    Currency: 'BTC',
+    CurrencyLong: 'Bitcoin',
+    MinConfirmation: 2,
+    TxFee: 0.0003,
+    IsActive: true,
+    IsRestricted: false,
+    CoinType: 'BITCOIN',
+    BaseAddress: '1N52wHoVR79PMDishab2XmRHsbekCdGquK',
+    Notice: '',
+  },
+  {
+    Currency: 'LTC',
+    CurrencyLong: 'Litecoin',
+    MinConfirmation: 6,
+    TxFee: 0.01,
+    IsActive: true,
+    IsRestricted: false,
+    CoinType: 'BITCOIN16',
+    BaseAddress: 'LhyLNfBkoKshT7R8Pce6vkB9T2cP2o84hx',
+    Notice: '',
+  },
+];
 /* istanbul ignore next */
 const utilsT = {
   dataUserExtended,
@@ -697,6 +723,7 @@ const utilsT = {
   dynamicPropertiesObj,
   fakeQuentinAccResponseWithAuth,
   fakeQuentinAccResponseWithNoAuth,
+  bittrexResultArray,
   userData,
   userData2,
   iterationValuesNoDecimals,

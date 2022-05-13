@@ -26,8 +26,8 @@ const saveClaims = async (
   claimAccount: boolean,
   username: string,
 ) => {
-  let allRewards = await getAllClaimRewards();
-  let allAccounts = await getAllClaimAccounts();
+  let allRewards = await AutomatedTasksUtils.getAllClaimRewards(); //modified to being able to read the mocked value
+  let allAccounts = await AutomatedTasksUtils.getAllClaimAccounts(); //modified to being able to read the mocked value
 
   allRewards = allRewards ?? {};
   allAccounts = allAccounts ?? {};
@@ -71,8 +71,8 @@ const getAllClaimRewards = async () => {
 };
 
 const initBackgroundClaims = async () => {
-  let allRewards = await getAllClaimRewards();
-  let allAccounts = await getAllClaimAccounts();
+  let allRewards = await AutomatedTasksUtils.getAllClaimRewards(); //modified to being able to test
+  let allAccounts = await AutomatedTasksUtils.getAllClaimAccounts(); //modified to being able to test
   chrome.runtime.sendMessage({
     command: BackgroundCommand.UPDATE_CLAIMS,
     value: {
@@ -86,6 +86,8 @@ const AutomatedTasksUtils = {
   getClaims,
   saveClaims,
   initBackgroundClaims,
+  getAllClaimAccounts, //to being able to mock it
+  getAllClaimRewards, //to being able to mock it
 };
 
 export default AutomatedTasksUtils;
