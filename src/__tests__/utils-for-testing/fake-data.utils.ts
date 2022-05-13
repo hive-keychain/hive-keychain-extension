@@ -275,12 +275,12 @@ const fakeQuentinAccResponseWithAuth = {
   owner: { weight_threshold: 1, account_auths: [], key_auths: [] },
   active: {
     weight_threshold: 1,
-    account_auths: [['workerjab1', 1]],
+    account_auths: [[process.env._TEST_USERNAME, 1]],
     key_auths: [['STM85Hcqk92kE1AtueigBAtHD2kZRcqji9Gi38ZaiW8xcWcQJLof6', 1]],
   },
   posting: {
     weight_threshold: 1,
-    account_auths: [['workerjab1', 1]],
+    account_auths: [[process.env._TEST_USERNAME, 1]],
     key_auths: [['STM7cfYmyCU6J45NjBSBUwZAV6c2ttZoNjTeaxkWSYq5HDZDWtzC3', 1]],
   },
   memo_key: 'STM5NT27Z4XVgtpxTf6i5uB9pYmXC6syiHUSqzVZvQ1iN8BgJsLC2',

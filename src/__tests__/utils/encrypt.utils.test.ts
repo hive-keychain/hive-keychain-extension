@@ -62,8 +62,6 @@ describe('encrypt.utils tests:\n', () => {
         process.env._TEST_USER_ENCRYPTED_ACCOUNTS || 'error';
       const passwordUsed = process.env._TEST_USER_PWD || 'error';
 
-      console.log(encodedMessage, passwordUsed);
-
       const result = EncryptUtils.decryptToJson(encodedMessage, passwordUsed);
       expect(result).not.toBeNull();
       expect(result).not.toBeUndefined();
