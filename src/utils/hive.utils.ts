@@ -72,7 +72,7 @@ const getVP = (account: ExtendedAccount) => {
   const estimated_pct = (estimated_mana / estimated_max) * 100;
   return estimated_pct;
 };
-
+/* istanbul ignore next */
 const getEffectiveVestingSharesPerAccount = (account: ExtendedAccount) => {
   const effective_vesting_shares =
     parseFloat((account.vesting_shares as string).replace(' VESTS', '')) +
@@ -95,10 +95,10 @@ const getVotingDollarsPerAccount = (
     return null;
   }
   const vp = getVP(account)! * 100;
-  const rewardBalance = getRewardBalance(properties);
-  const recentClaims = getRecentClaims(properties);
-  const hivePrice = getHivePrice(properties);
-  const votePowerReserveRate = getVotePowerReserveRate(properties);
+  const rewardBalance = HiveUtils.getRewardBalance(properties); //modified for testing
+  const recentClaims = HiveUtils.getRecentClaims(properties); //modified for testing
+  const hivePrice = HiveUtils.getHivePrice(properties); //modified for testing
+  const votePowerReserveRate = HiveUtils.getVotePowerReserveRate(properties); //modified for testing
 
   if (rewardBalance && recentClaims && hivePrice && votePowerReserveRate) {
     const effective_vesting_shares = Math.round(
@@ -121,27 +121,28 @@ const getVotingDollarsPerAccount = (
     return;
   }
 };
+/* istanbul ignore next */
 const getRC = async (accountName: string) => {
   const rcAcc = await getClient().rc.findRCAccounts([accountName]);
   const rc = await getClient().rc.calculateRCMana(rcAcc[0]);
   return rc;
 };
-
+/* istanbul ignore next */
 const getRewardBalance = (properties: GlobalProperties) => {
   return parseFloat(properties.rewardFund!.reward_balance);
 };
-
+/* istanbul ignore next */
 const getRecentClaims = (properties: GlobalProperties) => {
   return parseInt(properties.rewardFund!.recent_claims, 10);
 };
-
+/* istanbul ignore next */
 const getHivePrice = (properties: GlobalProperties) => {
   return (
     parseFloat(properties.price!.base + '') /
     parseFloat(properties.price!.quote + '')
   );
 };
-
+/* istanbul ignore next */
 const getVotePowerReserveRate = (properties: GlobalProperties) => {
   return properties.globals!.vote_power_reserve_rate;
 };
@@ -161,7 +162,6 @@ const getTimeBeforeFull = (votingPower: number) => {
     let fullInMinutes = parseInt(
       (minutesNeeded - fullInDays * 1440 - fullInHours * 60).toString(),
     );
-
     const fullIn = [];
 
     if (fullInDays) {
@@ -681,6 +681,10 @@ const HiveUtils = {
   sendOperationWithConfirmation,
   unvoteProposal,
   getProposalDailyBudget,
+  getRewardBalance, //exported for testing
+  getRecentClaims, //exported for testing
+  getHivePrice, //exported for testing
+  getVotePowerReserveRate, //exported for testing
 };
 
 export default HiveUtils;
