@@ -8,7 +8,18 @@ on:
     branches: [master, beta, dev]
   pull_request:
     branches: [master, beta, dev]
-
+env:
+  _TEST_USERNAME: ${{secrets._TEST_USERNAME}}
+  _TEST_OWNER: ${{secrets._TEST_OWNER}}
+  _TEST_OWNER_PUB: ${{secrets._TEST_OWNER_PUB}}
+  _TEST_ACTIVE: ${{secrets._TEST_ACTIVE}}
+  _TEST_ACTIVE_PUB: ${{secrets._TEST_ACTIVE_PUB}}
+  _TEST_POSTING: ${{secrets._TEST_POSTING}}
+  _TEST_POSTING_PUB: ${{secrets._TEST_POSTING_PUB}}
+  _TEST_MEMO: ${{secrets._TEST_MEMO}}
+  _TEST_MEMO_PUB: ${{secrets._TEST_MEMO_PUB}}
+  _TEST_USER_PWD: ${{secrets._TEST_USER_PWD}}
+  _TEST_USER_ENCRYPTED_ACCOUNTS: ${{secrets._TEST_USER_ENCRYPTED_ACCOUNTS}}
 jobs:
   build:
     runs-on: ubuntu-latest
