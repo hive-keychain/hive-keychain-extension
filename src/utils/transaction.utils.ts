@@ -92,9 +92,17 @@ const getAccountTransactions = async (
             break;
           }
           case 'fill_recurrent_transfer': {
-            let amount = `${
-              parseFloat(e[1].op[1].amount.amount) / 1000
-            } ${FormatUtils.getSymbol(e[1].op[1].amount.nai)}`;
+            const amtObj = e[1].op[1].amount;
+            const amt =
+              typeof amtObj === 'object'
+                ? parseFloat(amtObj.amount) / 100
+                : parseFloat(amtObj.split(' ')[0]);
+            const currency =
+              typeof amtObj === 'object'
+                ? FormatUtils.getSymbol(amtObj.nai)
+                : amtObj.split(' ')[1];
+            let amount = `${amt} ${currency}`;
+
             specificTransaction = e[1].op[1] as FillRecurrentTransfer;
             specificTransaction.amount = amount;
             specificTransaction.remainingExecutions =

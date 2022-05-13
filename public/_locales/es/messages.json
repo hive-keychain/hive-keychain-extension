@@ -276,7 +276,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "Bloquea el keychain manualmente o cuando el navegador esté cerrado.",
+    "message": "Bloquea Keychain manualmente.",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
@@ -284,7 +284,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
-    "message": "Bloquea automáticamente el keychain cuando el dispositivo se bloquea.",
+    "message": "Bloquea automáticamente Keychain cuando el dispositivo se bloquea.",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
@@ -292,7 +292,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "Bloquear automáticamente el keychain después de que la ventana del navegador esté inactiva durante el número de minutos especificado.",
+    "message": "Bloquea automáticamente Keychain después de que la ventana del navegador esté inactiva durante el número de minutos especificado.",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {

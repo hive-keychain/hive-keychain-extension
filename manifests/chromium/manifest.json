@@ -3,7 +3,7 @@
   "description": "__MSG_description__",
   "default_locale": "en",
   "version": "2.0.0.0",
-  "permissions": ["storage", "idle", "webNavigation", "alarms"],
+  "permissions": ["storage", "idle", "alarms"],
   "host_permissions": ["https://*/*"],
   "action": {
     "default_popup": "popup.html",

@@ -9,7 +9,7 @@ const Config = {
       MIN_RC: +(process.env.DEV_CLAIM_ACCOUNT_MIN_RC || 1.2 * 10 * 10 ** 12), // 20% more than 10^13 (current creation cost)
     },
   },
-  PROPOSAL: 174,
+  PROPOSAL: 216,
   MIN_LOADING_TIME: 1000,
   rpc: {
     DEFAULT: { uri: 'https://api.hive.blog', testnet: false },

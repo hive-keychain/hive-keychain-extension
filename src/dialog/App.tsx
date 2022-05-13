@@ -17,7 +17,7 @@ const App = () => {
     ) {
       if (data.command === DialogCommand.READY) {
         return BrowserUtils.sendResponse(true, sendResp);
-      } else {
+      } else if (Object.values(DialogCommand).includes(data.command)) {
         setData(data);
       }
       chrome.windows.update((await chrome.windows.getCurrent()).id!, {

@@ -10,12 +10,13 @@ import { Icons } from '@popup/icons.enum';
 import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { RootState } from '@popup/store';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import './proposal-item.component.scss';
 
 interface ProposalItemProps {
@@ -33,6 +34,16 @@ const ProposalItem = ({
   onVoteUnvoteSuccessful,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
+  const [usingProxy, setUsingProxy] = useState(false);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
+    setUsingProxy(proxy !== null);
+  };
 
   const goTo = (link: Proposal['link']) => {
     chrome.tabs.create({ url: link });
@@ -108,9 +119,21 @@ const ProposalItem = ({
         <div className="nb-votes">
           <Icon
             onClick={() => toggleSupport(proposal)}
-            additionalClassName={(proposal.voted ? 'voted' : 'not-voted') + ' '}
+            additionalClassName={
+              (proposal.voted ? 'voted' : 'not-voted') +
+              ' ' +
+              (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
+            }
             name={Icons.ARROW_CIRCLE_UP}
             type={IconType.OUTLINED}
+            tooltipPosition="left"
+            tooltipMessage={
+              !activeAccount.keys.active
+                ? 'popup_missing_key_proposal'
+                : usingProxy
+                ? 'html_popup_proposal_vote_error_proxy'
+                : undefined
+            }
           />
         </div>
       </div>

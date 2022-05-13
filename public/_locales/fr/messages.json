@@ -28,7 +28,7 @@
     "description": "type of key"
   },
   "active": {
-    "message": "actif",
+    "message": "active",
     "description": "type of key"
   },
   "unknown_error": {
@@ -107,7 +107,7 @@
     "description": "text after clicking forgot password"
   },
   "popup_html_clear_all_data_desc": {
-    "message": "En confirmant, toutes vos données seront perdues. Assurez-vous que toutes vos clés sont enregistrées en dehors du Trousseau",
+    "message": "En confirmant, toutes vos données seront perdues. Assurez-vous que toutes vos clés sont enregistrées en dehors de Keychain",
     "description": "description of clear all data confirm page"
   },
   "popup_html_vm": {
@@ -160,7 +160,7 @@
     "description": "Upon clicking on History"
   },
   "popup_html_setup_text": {
-    "message": "Entrez ci-dessous l'identifiant de votre compte Hive et le mot de passe principal ou la clé privée active ou de publication pour le compte. Votre mot de passe principal ne sera PAS sauvegardé et ne sera utilisé que pour générer vos clés privées.<br/><br/> Vous pouvez ajouter/supprimer des comptes Hive ou des clés à tout moment. Si vous devez créer un nouveau compte Hive, vous pouvez le faire sur <a href=\"https://signup.hive.io/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">signup.hive.io/</a>.",
+    "message": "Entrez ci-dessous votre identifiant Hive et soit mot de passe principal de votre compte, soit une de vos clés privées (active ou de publication). Votre mot de passe principal ne sera PAS sauvegardé et ne sera utilisé que pour générer vos clés privées.<br/><br/> Vous pouvez ajouter/supprimer des comptes Hive ou des clés à tout moment. Si vous devez créer un nouveau compte Hive, vous pouvez le faire sur <a href=\"https://signup.hive.io/\" target=\"_blank\" style=\"text-decoration: underline; color: white;\">signup.hive.io/</a>.",
     "description": "When adding new account"
   },
   "popup_html_setup": {
@@ -248,7 +248,7 @@
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
-    "message": "Import / Export Settings",
+    "message": "Importer / Exporter les paramètres",
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
@@ -260,7 +260,7 @@
     "description": "on settings page"
   },
   "popup_html_operation_popup": {
-    "message": "Opération en popup",
+    "message": "Popup d'opérations",
     "description": "on settings page"
   },
   "popup_html_about": {
@@ -276,11 +276,11 @@
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "Verrouillez Keychain manuellement ou lorsque le navigateur est fermé.",
+    "message": "Verrouiller Keychain manuellement.",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
-    "message": "Verrouillage",
+    "message": "Au verrouillage de l'appareil",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
@@ -292,7 +292,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "Verrouiller automatiquement Keychain lorsque le navigateur est inactif durant le temps spécifié.",
+    "message": "Verrouillage automatique de Keychain lorsque le navigateur est inactif pendant un temps donné.",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
@@ -304,7 +304,7 @@
     "description": "on keychainify settings"
   },
   "popup_html_enable_keychainify_info": {
-    "message": "Lorsqu'elle est activée, cette fonctionnalité ouvrira une Keychain pop lorsque vous cliquez sur les liens pris en charge.",
+    "message": "Cette fonctionnalité ouvre une popup Keychain lorsque vous cliquez sur les liens pris en charge.",
     "description": "on keychainify settings"
   },
   "popup_html_import": {
@@ -316,23 +316,23 @@
     "description": "on import / export settings"
   },
   "popup_html_export_permissions": {
-    "message": "Paramètres d'exportation",
+    "message": "Exporter les paramètres",
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "The Hive Keychain team is led by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, a developer and Hive witness, and consists of a total of 3 full-time developers at the moment. We also benefit from the help of <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a>, Splinterlands's Creative Director, and many other community members.<br><br>While the project is currently funded through the Decentralized Hive Fund (DHF), the original idea and funds were provided by <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> and <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> (witnesses) through their joint business Splinterlands, a blockchain-based collectible trading card game built on top of the Hive blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!<br/><br/>For more information on our products (browser extensions and mobile Apps), visit our <a href='https://hive-keychain.com' target='__blank'>landing page</a>.",
+    "message": "L'équipe de Hive Keychain est dirigée par <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, un développeur et witness sur Hive, et se compose d'un total de 3 développeurs à temps plein. Nous bénéficions également de l'aide de <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a>, directeur créatif de Splinterlands, et de nombreux autres membres de la communauté.<br><br>Alors que le projet est actuellement financé par le Decentralized Hive Fund (DHF), l'idée originale et les fonds ont été fournis par <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> et <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> (witness) via leur entreprise commune Splinterlands, un jeu de cartes à collectionner construit sur Hive. N'oubliez pas d'y jeter un oeil à <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands. o</a>!<br/><br/>Pour plus d'informations sur nos produits (extensions et applications mobiles), visitez notre <a href='https://hive-keychain.com' target='__blank'>site web</a>.",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
-    "message": "Retirer de la Keychain",
+    "message": "Retirer de Keychain",
     "description": "on manage accounts"
   },
   "popup_html_delete_account_confirmation_message": {
-    "message": "Vous êtes sur le point de supprimer @$1 de la Keychain. Cela ne peut pas être annulé sans devoir réimporter vos clés. Veuillez confirmer pour continuer.",
+    "message": "Vous êtes sur le point de supprimer le compte @$1 de Keychain. Vous devrez rajouter vos clés pour ajouter ce compte à nouveau. Veuillez confirmer pour continuer.",
     "description": "on manage accounts"
   },
   "popup_html_show_qr": {
-    "message": "Montrer le QR Code",
+    "message": "Afficher le QR Code",
     "description": "on manage accounts"
   },
   "popup_html_hide_qr": {
@@ -340,7 +340,7 @@
     "description": "on manage accounts"
   },
   "popup_html_set_new_rpc_as_active": {
-    "message": "Définir un nouveau noeud RPC comme étant actif",
+    "message": "Définir ce nouveau RPC comme actif",
     "description": "in add rpc node screen"
   },
   "popup_html_notif_pref": {
@@ -348,7 +348,7 @@
     "description": "on preferences"
   },
   "popup_html_pref_info": {
-    "message": "Pour une meilleure expérience, vous pouvez mettre en whitelist les opérations d'autorité non actives lorsque dApps les demande. Vous ne recevrez pas de message de confirmation pour ces opérations.",
+    "message": "Pour une meilleure expérience, vous pouvez mettre en whitelist les opérations non actives lorsque les dApps en font la requête. Vous ne recevrez pas de message de confirmation pour ces opérations.",
     "description": "on preferences"
   },
   "popup_html_no_pref": {
@@ -420,7 +420,7 @@
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_memo_key_missing": {
-    "message": "Veuillez ajouter votre clé de mémo pour crypter et décrypter les messages.",
+    "message": "Veuillez ajouter votre clé de mémo pour chiffrer et déchiffrer les messages.",
     "description": "When initiating a HIVE or HBD transfer"
   },
   "popup_html_transfer_confirm_text": {
@@ -428,7 +428,7 @@
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_confirm_cancel_recurrent": {
-    "message": "<br>Veuillez confirmer que vous souhaitez annuler ce transfert récurrent.",
+    "message": "<br>Veuillez confirmer l'annulation de ce transfert récurrent.",
     "description": "On transfer confirmation page"
   },
   "popup_html_transfer_from": {
@@ -456,7 +456,7 @@
     "description": "On transfer confirmation page"
   },
   "popup_html_claiming_rewards": {
-    "message": "Réclamer mes récompenses",
+    "message": "Réclamer mes rewards",
     "description": "On claim reward page (click little gift icon from main page when rewards are available to claim)"
   },
   "popup_html_witness_remaining": {
@@ -468,7 +468,7 @@
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
-    "message": "Afficher les informations des tokens et choisir lesquels afficher. En savoir plus sur les tokens Hive personnalisés sur<a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>.",
+    "message": "Afficher les informations des tokens et choisir lesquels afficher. Pour en savoir plus sur les tokens, consultez <a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>.",
     "description": "On tokens page"
   },
   "popup_html_available": {
@@ -492,11 +492,11 @@
     "description": "Main page > Power Up . Current HP balance"
   },
   "popup_html_powerup_text": {
-    "message": "Utilisez le Power Up sur votre Hive et passez à Hive Power.",
+    "message": "Utilisez le Power Up sur votre Hive pour obtenir du Hive Power.",
     "description": "Main page > Power Up"
   },
   "popup_html_powerdown_text": {
-    "message": "Utilisez le Power Down sur votre Hive et obtenez de la liquidité Hive. La procédure de Power Down prendra 13 semaines.",
+    "message": "Utilisez le Power Down sur votre Hive Power pour obtenir du Hive liquide. La procédure de Power Down prendra 13 semaines.",
     "description": "Main page > Power Down"
   },
   "popup_html_powering_down": {
@@ -540,7 +540,7 @@
     "description": "if account consults history and there s an encrypted memo, but no memo key for the account"
   },
   "popup_account_password_is_public_key": {
-    "message": "Ceci est une clé publique! Veuillez entrer une clé privée ou votre clé principale.",
+    "message": "C'est une clé publique! Veuillez entrer une clé privée ou votre clé principale.",
     "description": "If entered password is public key"
   },
   "popup_accounts_already_registered": {
@@ -604,7 +604,7 @@
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_encode": {
-    "message": "Crypter le message",
+    "message": "Chiffrer le message",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_broadcast": {
@@ -644,7 +644,7 @@
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_vote": {
-    "message": "Voter",
+    "message": "Vote",
     "description": "On preferences, list of rights that were given to some websites."
   },
   "popup_token_issued_by": {
@@ -688,7 +688,7 @@
     "description": "on witness page "
   },
   "popup_error_unvote_wit": {
-    "message": "Erreur lors de la suppression de @$1 en tant que witness.",
+    "message": "Erreur lors de la suppression du vote pour @$1 en tant que witness.",
     "description": "on witness page when unvoting a witness"
   },
   "popup_success_proxy": {
@@ -696,7 +696,7 @@
     "description": "on tokens page when chosing a proxy"
   },
   "popup_error_proxy": {
-    "message": "Erreur lors de la définition de @$1 comme proxy.",
+    "message": "Erreur lors de l'ajout de @$1 comme proxy.",
     "description": "on tokens page when chosing a proxy"
   },
   "bgd_ops_unproxy": {
@@ -800,7 +800,7 @@
     "description": "When website request a proposal creation"
   },
   "dialog_meta": {
-    "message": "Métadonnées JSON (Cliquez pour afficher)",
+    "message": "Métadonnées (Cliquez pour afficher)",
     "description": "When website request a post"
   },
   "dialog_pu": {
@@ -888,7 +888,7 @@
     "description": "Website request title"
   },
   "dialog_title_encode": {
-    "message": "Encoder le message",
+    "message": "Chiffrer le message",
     "description": "Website request title"
   },
   "dialog_title_sign": {
@@ -948,11 +948,11 @@
     "description": "Website request title"
   },
   "dialog_title_create_proposal": {
-    "message": "Créer une proposition",
+    "message": "Créer un proposal",
     "description": "Website request title"
   },
   "dialog_title_remove_proposal": {
-    "message": "Supprimer la proposition",
+    "message": "Supprimer un proposal",
     "description": "Website request title"
   },
   "dialog_title_vote_proposal": {
@@ -988,7 +988,7 @@
     "description": "When requesting recurrent transfers"
   },
   "dialog_recurrence_hours": {
-    "message": "Toute(s) les $1 heure(s)",
+    "message": "Toutes les $1 heure(s)",
     "description": "When requesting recurrent transfers"
   },
   "dialog_recurrence_days": {
@@ -1004,7 +1004,7 @@
     "description": "when user didnt create a wallet yet"
   },
   "bgd_init_no_wallet_explained": {
-    "message": "Pour pouvoir utiliser Hive Keychain, veuillez définir votre portefeuille. Cliquez sur le logo Hive Keychain en haut à droite de votre navigateur (il peut se trouver dans le menu extension), puis configurez votre mot de passe et importez vos comptes.",
+    "message": "Pour pouvoir utiliser Hive Keychain, veuillez créer votre portefeuille. Cliquez sur le logo Hive Keychain en haut à droite de votre navigateur (il peut se trouver dans le menu extension), puis configurez votre mot de passe et importez vos comptes.",
     "description": "when user didnt create a wallet yet"
   },
   "bgd_lifecycle_request_canceled": {
@@ -1024,7 +1024,7 @@
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_transfer_author": {
-    "message": "Transférer le HIVE/HBD à cet utilisateur",
+    "message": "Transférer du HIVE/HBD à cet utilisateur",
     "description": "Context menu (when right click on a username on steemit)"
   },
   "bgd_context_memo_author": {
@@ -1039,22 +1039,22 @@
     "message": "Le portefeuille est verrouillé !"
   },
   "bgd_auth_locked_desc": {
-    "message": "Le site Web essaie d'envoyer une requête à l'extension Hive Keychain. Veuillez entrer votre mot de passe ci-dessous pour déverrouiller le portefeuille et continuer."
+    "message": "Une dApp essaie d'envoyer une requête à l'extension Hive Keychain. Veuillez entrer votre mot de passe ci-dessous pour déverrouiller le portefeuille et continuer."
   },
   "bgd_auth_canceled": {
     "message": "La requête a été annulée par l'utilisateur."
   },
   "bgd_auth_transfer_no_active": {
-    "message": "Le site Web essaie d'envoyer une demande de transfert à la Keychain Hive pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
+    "message": "Une dApp essaie d'envoyer une demande de transfert à Hive Keychain pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
   },
   "bgd_auth_transfer_no_memo": {
-    "message": "Le site Web essaie d'envoyer une demande de transfert à l'extension Hive Keychain pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
+    "message": "Une dApp essaie d'envoyer une demande de transfert à l'extension Hive Keychain pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
   },
   "bgd_auth_no_account": {
-    "message": "Le site Web essaie d'envoyer une requête à l'extension Hive Keychain pour le compte @$1 qui n'a pas été ajouté au portefeuille."
+    "message": "Une dApp essaie d'envoyer une requête à l'extension Hive Keychain pour le compte @$1 qui n'a pas été ajouté au portefeuille."
   },
   "bgd_auth_no_key": {
-    "message": "Le site Web essaie d'envoyer une demande de transfert à l'extension Hive Keychain pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
+    "message": "Une dApp essaie d'envoyer une demande de transfert à l'extension Hive Keychain pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
   },
   "bgd_ops_witness_voted": {
     "message": "A voté avec succès @$1 pour témoin."
@@ -1081,13 +1081,13 @@
     "message": "Une erreur s'est produite lors de la transmission de cette transaction :"
   },
   "bgd_ops_add_account_error": {
-    "message": "Une erreur s'est produite lors de l'ajout de ce compte. Veuillez vérifier ses clés."
+    "message": "Une erreur s'est produite lors de l'ajout de ce compte. Veuillez vérifier vos clés."
   },
   "bgd_ops_add_account_error_invalid": {
     "message": "Ce nom d'utilisateur n'existe pas."
   },
   "bgd_ops_add_account": {
-    "message": "Le compte @$1 a été ajouté avec succès à la Keychain."
+    "message": "Le compte @$1 a été ajouté avec succès à Keychain."
   },
   "bgd_ops_transfer_success": {
     "message": "Transféré avec succès $1 $2 de @$3 à @$4."
@@ -1111,7 +1111,7 @@
     "message": "Voté avec succès pour le proposal #$1."
   },
   "bgd_ops_proposal_votes": {
-    "message": "A voté avec succès pour les propositions #$1."
+    "message": "A voté avec succès pour les proposals #$1."
   },
   "bgd_ops_proposal_unvote": {
     "message": "Le vote a bien été retiré du proposal #$1."
@@ -1120,10 +1120,10 @@
     "message": "Le vote du proposal #$1 a bien été retiré."
   },
   "bgd_ops_pu": {
-    "message": "A propulsé $1 Hive sur @$2."
+    "message": "A Power Up $1 Hive sur @$2."
   },
   "bgd_ops_pd": {
-    "message": "Un $1 HP power down a commencé sur @$2."
+    "message": "Un Power Down de $1 HP a été lancé pour @$2."
   },
   "bgd_ops_pd_stop": {
     "message": "Arrêt du Power Down sur @$1."
@@ -1135,7 +1135,7 @@
     "message": "La délégation à @$1 a été arrêtée avec succès depuis le compte @$2."
   },
   "bgd_ops_delegate": {
-    "message": "$1 de @$3 à @$2 transféré avec succès."
+    "message": "$1 ont été délégués de @$3 à @$2 avec succès."
   },
   "bgd_ops_decode": {
     "message": "Mémo décodé avec succès."
@@ -1144,10 +1144,10 @@
     "message": "Impossible de vérifier la clé."
   },
   "bgd_ops_encode": {
-    "message": "Message encodé avec succès."
+    "message": "Message chiffré avec succès."
   },
   "bgd_ops_encode_err": {
-    "message": "Le message n'a pas pu être encodé."
+    "message": "Le message n'a pas pu être chiffré."
   },
   "bgd_ops_broadcast": {
     "message": "La transaction a été envoyée avec succès."
@@ -1156,10 +1156,10 @@
     "message": "La transaction a été signée avec succès."
   },
   "bgd_ops_convert": {
-    "message": "La conversion de $1 HBD en HIVE a été effectuée avec succès sur le compte @$2."
+    "message": "La conversion de $1 HBD en HIVE a été lancée avec succès sur le compte @$2."
   },
   "bgd_ops_convert_collaterized": {
-    "message": "La conversion de $1 HBD en HIVE a été effectuée avec succès sur le compte @$2."
+    "message": "La conversion de $1 HBD en HIVE a été lancée avec succès sur le compte @$2."
   },
   "bgd_ops_create_account": {
     "message": "Compte @$1 créé avec succès."
@@ -1181,13 +1181,13 @@
     "message": "Ajouter une clé"
   },
   "dialog_title_remove_key_auth": {
-    "message": "Supprimer la clé"
+    "message": "Supprimer une clé"
   },
   "dialog_title_recurrent_transfer": {
-    "message": "Transfert périodique"
+    "message": "Transfert récurrent"
   },
   "bgd_ops_add_key_auth": {
-    "message": "$1 a été ajouté en tant que clé $2 pour le compte @$3 avec un weight de $4.",
+    "message": "$1 a été ajouté en tant que clé $2 pour le compte @$3 avec un poids de $4.",
     "description": "Succesfully added a new keypair"
   },
   "bgd_ops_remove_key_auth": {
@@ -1195,15 +1195,15 @@
     "description": "succesfully removed a keypair"
   },
   "bgd_ops_recurrent_transfer": {
-    "message": "Transfert périodique lancé avec succès.",
+    "message": "Transfert récurrent lancé avec succès.",
     "description": "when starting a recurrent transfer"
   },
   "bgd_ops_stop_recurrent_transfer": {
-    "message": "Transfert périodique arrêté avec succès.",
+    "message": "Transfert récurrent arrêté avec succès.",
     "description": "when starting a recurrent transfer"
   },
   "popup_html_add_by_keys": {
-    "message": "Utiliser des clés/pwd",
+    "message": "Utiliser une clé/pwd",
     "description": "When adding new account. In a button, must keep short. "
   },
   "popup_html_add_by_auth": {
@@ -1211,11 +1211,11 @@
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "Vous pouvez ajouter vos clés en entrant une clé privée ou votre mot de passe principal (master password).<br/>D'une autre manière, vous pouvez aussi spécifier un compte autorisé ou importer vos clés.",
+    "message": "Vous pouvez ajouter vos clés en entrant une clé privée ou votre clé principale.<br/>Vous pouvez aussi ajouter le compte via un compte autorisé ou importer vos clés depuis un fichier .kc.",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
-    "message": "Ajoutez le nouveau compte en spécifiant un compte qui a autorité sur lui, et qui est déjà enregistré dans la Keychain Hive.",
+    "message": "Ajoutez le nouveau compte en spécifiant un compte qui a autorité sur lui, et qui est déjà enregistré sur Hive Keychain.",
     "description": "On Add new account => via auth"
   },
   "popup_html_auth_placeholder_username_auth": {
@@ -1223,10 +1223,10 @@
     "description": "The placeholder for the authorized account that will use its keys for this account."
   },
   "popup_no_auth_account": {
-    "message": "Veuillez enregistrer @$1 dans la Keychain Hive afin de l'utiliser en tant que compte autorisé."
+    "message": "Veuillez enregistrer @$1 sur Hive Keychain Hive avant de l'utiliser en tant que compte autorisé."
   },
   "popup_accounts_no_auth": {
-    "message": "@$1 n'a pas d'autorité sur @$2.",
+    "message": "@$1 n'a pas autorité sur @$2.",
     "description": "When trying to add an account via authority"
   },
   "import_html_title": {
@@ -1234,69 +1234,69 @@
     "description": "Title of import keys popup"
   },
   "import_html_text": {
-    "message": "Importez vos keys depuis une autre instance de la Keychain en utilisant un fichier .kc.<br/><br/>Vous devez utiliser le même master password sur les deux instances pour déchiffrer les clés."
+    "message": "Importez vos clés depuis une autre instance de la Keychain en utilisant un fichier .kc.<br/><br/>Vous devez utiliser le même mot de passe sur les deux instances pour déchiffrer les clés."
   },
   "import_html_success": {
     "message": "Vous avez importé vos clés avec succès !"
   },
   "import_html_error": {
-    "message": "Une erreur s'est produite lors de l'importation de vos clés.<br/>Assurez-vous d'utiliser la même clé principale que lorsque vous avez exporté le fichier."
+    "message": "Une erreur s'est produite lors de l'importation de vos clés.<br/>Assurez-vous d'utiliser le même mot de passe que lorsque vous avez exporté le fichier."
   },
   "import_permissions_html_title": {
-    "message": "Paramètres d'importation"
+    "message": "Importer les paramètres"
   },
   "import_permissions_html_text": {
-    "message": "Importez vos paramètres depuis une autre instance Keychain en utilisant un fichier .kc.json."
+    "message": "Importez vos paramètres depuis une autre instance Keychain en utilisant un fichier .kc."
   },
   "bgd_auth_no_active": {
     "message": "Pas de compte avec autorité active."
   },
   "popup_warning_phishing": {
-    "message": "@$1 a été listé comme un compte fraude potentiel, vérifiez l'orthographe et assurez-vous que c'est le compte vers lequel vous voulez transférer.",
+    "message": "@$1 a été listé comme un compte de phishing potentiel, vérifiez l'orthographe et assurez-vous que c'est le compte vers lequel vous voulez effectuer un transfert.",
     "description": "When trying to transfer to a blacklisted account"
   },
   "popup_warning_exchange_deposit": {
-    "message": "Ce compte de change n'accepte pas les dépôts de $1.",
+    "message": "Cet échange n'accepte pas les dépôts de $1.",
     "description": "When trying to transfer to an exchange that does not accept this currency."
   },
   "popup_warning_exchange_memo": {
-    "message": "N'oubliez pas d'ajouter un mémo lors d'un transfert vers un compte d'échange.",
+    "message": "N'oubliez pas d'ajouter un mémo lors de transferts vers des échanges.",
     "description": "When forgetting memo to transfer to exchange."
   },
   "popup_warning_exchange_wallet": {
-    "message": "AVERTISSEMENT : Les dépôts/retraits sont désactivés sur cet échange.",
+    "message": "ATTENTION : Les dépôts/retraits sont désactivés sur cet échange.",
     "description": "When wallet is disabled on exchange."
   },
   "popup_html_buy_hive": {
-    "message": "Acheter du HIVE",
+    "message": "Acheter HIVE",
     "description": "When clicking on the Hive arrow menu"
   },
   "popup_html_buy_hbd": {
-    "message": "Acheter du HBD",
+    "message": "Acheter HBD",
     "description": "When clicking on the Hbd arrow menu"
   },
   "popup_html_convert_hbd": {
-    "message": "Convertir du HBD",
+    "message": "Convertir HBD",
     "description": "When clicking on the Hbd arrow menu"
   },
   "popup_html_convert_hive": {
-    "message": "Convertir du HIVE",
+    "message": "Convertir HIVE",
     "description": "When clicking on the Hbd arrow menu"
   },
   "popup_html_convert_hbd_intro": {
-    "message": "Votre HBD prendra 3.5 jours pour être converti à environ 1 USD de tokens HIVE, basé sur son prix médian de 3.5 jours.",
+    "message": "Votre HBD prendra 3.5 jours pour être convertis pour environ 1 USD de HIVE, basé sur son prix médian de 3.5 jours.",
     "description": "When clicking on the Hbd arrow menu"
   },
   "popup_html_convert_hive_intro": {
-    "message": "Vous déposez des garanties (HIVE), puis vous recevez des HBD à l'avance d'une valeur de la moitié du montant de la garantie (moins 5% de frais). Votre paiement final officiel est dans 3.5 jours. À ce moment-là, les garanties restantes (HIVE) sont remboursées.",
+    "message": "Vous déposez un collatéral (HIVE), puis vous recevrez des HBD à l'avance d'une valeur de la moitié du montant du collatéral (moins 5% de frais). Votre paiement final officiel est dans 3.5 jours. À ce moment-là, les garanties restantes (HIVE) seront remboursées.",
     "description": "When clicking on the HIVE arrow menu"
   },
   "popup_html_save_hive": {
-    "message": "Économies de HIVE",
+    "message": "Épargne HIVE",
     "description": "When clicking on the Hive arrow menu"
   },
   "popup_html_save_hbd": {
-    "message": "Économies de HBD",
+    "message": "Épargne HBD",
     "description": "When clicking on the HBD arrow menu"
   },
   "popup_html_deposit_param": {
@@ -1328,7 +1328,7 @@
     "description": "On savings menu"
   },
   "popup_html_savings_current": {
-    "message": "Épargnes",
+    "message": "Épargne",
     "description": "On savings menu"
   },
   "popup_html_withdraw_text": {
@@ -1344,7 +1344,7 @@
     "description": "On savings menu"
   },
   "popup_html_deposit_hbd_text": {
-    "message": "Déposer du HBD dans votre épargne rapporte actuellement un taux de rendement annuel de $1 % déterminé par les witness.",
+    "message": "Déposer du HBD sur votre épargne rapporte actuellement un taux de rendement annuel de $1 % déterminé par les witness.",
     "description": "when withdrawing from savings"
   },
   "popup_html_savings": {
@@ -1352,11 +1352,11 @@
     "description": "Saving page title"
   },
   "popup_html_buy_intro": {
-    "message": "Choisissez votre méthode préférée et achetez $1 rapidement et facilement. La Keychain ne prend pas de frais supplémentaires sur les transactions.",
+    "message": "Choisissez votre méthode préférée et achetez du $1 rapidement et facilement. Hive Keychain ne prend pas de frais supplémentaires sur les transactions.",
     "description": "When accessing the buy HIVE/HBD page"
   },
   "popup_html_buy_swap_title": {
-    "message": "Transaction rapide",
+    "message": "Échange rapide",
     "description": "When accessing the buy HIVE/HBD page"
   },
   "popup_html_buy_exchanges_title": {
@@ -1372,35 +1372,35 @@
     "description": "When adding an account by request"
   },
   "dialog_header_register": {
-    "message": "Bienvenue sur la Keychain",
+    "message": "Bienvenue sur Hive Keychain",
     "description": "When registering from request"
   },
   "popup_html_automated_intro": {
-    "message": "Configurez des tâches automatisées qui s'exécuteront toutes les heures si vos conditions sont remplies.",
+    "message": "Configurez des tâches automatisées qui s'exécuteront toutes les heures selon vos spécifications.",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_rewards": {
-    "message": "Réclamer vos récompenses",
+    "message": "Réclamer vos rewards",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_rewards_info": {
-    "message": "Réclamer régulièrement vos récompenses peut augmenter vos gains.",
+    "message": "Réclamer régulièrement vos rewards peut augmenter vos gains.",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts": {
-    "message": "Réclamer votre compte",
+    "message": "Récupérer un ticket de création de compte",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts_info": {
-    "message": "Réclamez un billet gratuit lorsque le pourcentage de votre RC est supérieur à $1 %. Selon votre Hive Power, cela pourrait utiliser une grosse partie de votre RC.",
+    "message": "Réclamez un ticket de création de compte lorsque le pourcentage de votre RC est supérieur à $1 %. Selon votre Hive Power, cette opération peut utiliser une grosse partie de votre RC.",
     "description": "When on automated tasks page"
   },
   "popup_html_proposal_request": {
-    "message": "Soutenir la proposition de développement Keychain",
+    "message": "Soutenir le proposal de développement de Hive Keychain",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_kc_proposal_vote_successful": {
-    "message": "À voté ! Merci de soutenir le développement de la Keychain grâce à notre proposition DHF",
+    "message": "À voté ! Merci de soutenir le développement de Keychain via le DHF",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_successful": {
@@ -1408,31 +1408,31 @@
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_unvote_successful": {
-    "message": "À dévoté !",
+    "message": "Vote retiré !",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_fail": {
-    "message": "Une erreur s’est produite lors de l’envoi de votre offre. Essayez de nouveau plus tard",
+    "message": "Une erreur s’est produite lors du vote de proposal. Veuillez réessayer de nouveau plus tard",
     "description": "Error while voting for proposal"
   },
   "popup_html_proposal_unvote_fail": {
-    "message": "Une erreur s’est produite lors de l’envoi de votre offre. Essayez de nouveau plus tard",
+    "message": "Une erreur s’est produite lors du retrait de votre vote pour le proposal. Veuillez réessayer de nouveau plus tard",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
-    "message": "Avancé",
+    "message": "Paramètres Avancés",
     "description": "Advanced settings sub menu"
   },
   "popup_html_rpc_node_text": {
-    "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.",
+    "message": "Vous pouvez choisir quel RPC sera utilisé pour lire les informations et diffuser les transactions de/vers la blockchain Hive.",
     "description": "Text on rpc node settings page"
   },
   "popup_html_rpc_missing_fields": {
-    "message": "Vous devez remplir au moins un node RPC",
+    "message": "Veuillez ajouter l'adresse du RPC",
     "description": "Error message on rpc node settings page"
   },
   "popup_html_rpc_uri_already_existing": {
-    "message": "Le noeud Rpc existe déjà",
+    "message": "Ce Rpc est déjà enregistré",
     "description": "Error message on rpc node settings page"
   },
   "popup_html_wallet_savings": {
@@ -1440,11 +1440,11 @@
     "description": "In wallet"
   },
   "popup_html_claim_error": {
-    "message": "La demande a échoué. Veuillez réessayer plus tard",
+    "message": "La requête a échoué. Veuillez réessayer plus tard",
     "description": "Error message while trying to claim rewards"
   },
   "popup_html_claim_success": {
-    "message": "Demande $1 réussie ! Félicitations !",
+    "message": "Récupération de $1 réussie ! Félicitations !",
     "description": "On main page"
   },
   "popup_html_confirm_power_up_down_message": {
@@ -1484,11 +1484,11 @@
     "description": "Error  power down or up"
   },
   "popup_html_recurrent_transfer": {
-    "message": "Transfert périodique",
+    "message": "Transfert récurrent",
     "description": "In transfer fund page"
   },
   "popup_html_cancel_recurrent_transfer": {
-    "message": "Annuler le transfert périodique",
+    "message": "Annuler le transfert récurrent",
     "description": "In transfer fund page"
   },
   "popup_html_recurrent_transfer_frequency": {
@@ -1496,7 +1496,7 @@
     "description": "In transfer fund page"
   },
   "popup_html_recurrent_transfer_frequency_hint": {
-    "message": "Fréquence (en heures). Minimum 24 heures",
+    "message": "Récurrence (en heures). Minimum 24 heures",
     "description": "In transfer fund page"
   },
   "popup_html_transfer_successful": {
@@ -1504,7 +1504,7 @@
     "description": "In transfer fund page"
   },
   "popup_html_transfer_recurrent_successful": {
-    "message": "Transfert récurrent à $1 ($2) réussi! Il se produira $4 fois (toutes les $3 heures).",
+    "message": "Transfert récurrent vers $1 ($2) réussi! Il se produira $4 fois (toutes les $3 heures).",
     "description": "In transfer fund page"
   },
   "popup_html_cancel_transfer_recurrent_successful": {
@@ -1532,11 +1532,11 @@
     "description": "General word"
   },
   "popup_html_confirm_hive_to_hbd_conversion": {
-    "message": "Veuillez confirmer votre conversion de HIVE à HBD",
+    "message": "Veuillez confirmer votre conversion de HIVE vers HBD",
     "description": "Conversion confirm page"
   },
   "popup_html_confirm_hbd_to_hive_conversion": {
-    "message": "Veuillez confirmer votre conversion de HBD à HIVE",
+    "message": "Veuillez confirmer votre conversion de HBD vers HIVE",
     "description": "Conversion confirm page"
   },
   "popup_html_hive_to_hbd_conversion_success": {
@@ -1568,11 +1568,11 @@
     "decription": "In transfer page"
   },
   "popup_html_confirm_savings_withdraw": {
-    "message": "Veuillez confirmer que vous souhaitez retirer $1 de vos économies",
+    "message": "Veuillez confirmer que vous souhaitez retirer $1 de votre épargne",
     "description": "Withdraw savings confirmation message"
   },
   "popup_html_confirm_savings_deposit": {
-    "message": "Veuillez confirmer le dépôt de $1 dans vos économies",
+    "message": "Veuillez confirmer le dépôt de $1 sur votre épargne",
     "description": "Withdraw savings confirmation message"
   },
   "popup_html_confirm_delegation": {
@@ -1592,7 +1592,7 @@
     "description": "Governance"
   },
   "popup_html_gov": {
-    "message": "Gov.",
+    "message": "Gouv.",
     "description": "Governance"
   },
   "popup_html_proxy": {
@@ -1600,7 +1600,7 @@
     "description": "Governance"
   },
   "popup_html_proposal": {
-    "message": "Offre",
+    "message": "Proposal",
     "description": "Governance"
   },
   "html_popup_witness_display_voted_only": {
@@ -1608,11 +1608,11 @@
     "description": "Governance"
   },
   "html_popup_witness_vote_error_proxy": {
-    "message": "Un proxy est actuellement défini, veuillez effacer le proxy avant de voter pour un witness",
+    "message": "Un proxy est actuellement défini, veuillez le retirer avant de voter pour un witness",
     "description": "Governance"
   },
   "html_popup_currently_using_proxy": {
-    "message": "Vous utilisez actuellement @$1 comme proxy. Son vote est affiché.",
+    "message": "Vous utilisez actuellement @$1 comme proxy. Ses votes sont affichés ci-dessous.",
     "description": "Governance"
   },
   "html_popup_witness_hide_inactive": {
@@ -1620,15 +1620,15 @@
     "description": "Governance"
   },
   "html_popup_witness_proxy_definition": {
-    "message": "L'ajout d'un compte en tant que mandataire signifie que le compte proxy peut utiliser le weight de votre HP en matière de gouvernance (voter pour les witness et les propositions). Cela n'affectera pas vos HP en ce qui concerne la conservation, et vous pouvez retirer le proxy à tout moment. ",
+    "message": "L'ajout d'un compte en tant que proxy signifie que le compte proxy peut utiliser le poids de votre HP en matière de gouvernance (voter pour les witness et les proposals). Cela n'affectera pas vos HP en ce qui concerne la curation, et vous pouvez retirer le proxy à tout moment. ",
     "description": "Proxy tab"
   },
   "html_popup_witness_has_proxy": {
-    "message": "Le compte proxy prend des décisions de gouvernance en votre nom. Si vous souhaitez voter pour les witness et les propositions par vous-même, vous devez d'abord supprimer le proxy.",
+    "message": "Le compte proxy prend des décisions de gouvernance en votre nom. Si vous souhaitez voter pour les witness et les proposals par vous-même, vous devez d'abord supprimer le proxy.",
     "description": "Governance"
   },
   "html_popup_set_as_proxy": {
-    "message": "Définir comme proxy",
+    "message": "Choisir comme proxy",
     "description": "Proxy"
   },
   "html_popup_clear_proxy": {
@@ -1640,23 +1640,23 @@
     "description": "Clear proxy error"
   },
   "html_popup_proxy_requires_active_key": {
-    "message": "Pour changer votre proxy, vous devez d'abord ajouter votre clé active de compte",
+    "message": "Pour changer votre proxy, vous devez d'abord ajouter votre clé active",
     "description": "Proxy error"
   },
   "html_popup_coming_soon": {
-    "message": "Prochainement",
+    "message": "Bientôt disponible",
     "description": "General"
   },
   "html_popup_work_in_progress": {
-    "message": "Travail en cours...",
+    "message": "Bientôt disponible...",
     "description": "General"
   },
   "html_popup_import_settings_successful": {
-    "message": "Successfully imported settings",
+    "message": "Les paramètres ont été importés avec succès",
     "description": "Import settings success message"
   },
   "html_popup_import_settings_error": {
-    "message": "Failed to import settings",
+    "message": "Erreur lors de l'import des paramètres",
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
@@ -1672,7 +1672,7 @@
     "description": "Footer"
   },
   "html_popup_vote_stoodkev_witness_error_30_votes": {
-    "message": "Vous avez déjà voté pour 30 witness. Veuillez en supprimer un avant de voter pour @stoodkev",
+    "message": "Vous avez déjà voté pour 30 witness. Veuillez en retirer un avant de voter pour @stoodkev",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
   "html_popup_vote_stoodkev_witness_success": {
@@ -1684,11 +1684,11 @@
     "description": "conversion operation"
   },
   "html_popup_delegation_operation": {
-    "message": "Déléguer à",
+    "message": "Délégation",
     "description": "delegation operation"
   },
   "html_popup_cancel_delegation_operation": {
-    "message": "Annuler la délégation",
+    "message": "Annulation de la délégation",
     "description": "delegation operation"
   },
   "html_popup_vote_witness_operation": {
@@ -1708,7 +1708,7 @@
     "description": "delete account operation"
   },
   "html_popup_transfer_fund_operation": {
-    "message": "Transférer des fonds",
+    "message": "Transfert des fonds",
     "description": "Transfer fund operation"
   },
   "html_popup_transfer_token_operation": {
@@ -1716,7 +1716,7 @@
     "description": "Transfer token operation"
   },
   "html_popup_loading_tokens_operation": {
-    "message": "Chargement des tokens en cours",
+    "message": "Chargement des tokens",
     "description": "Loading tokens operation"
   },
   "html_popup_deposit_to_savings_operation": {
@@ -1724,7 +1724,7 @@
     "description": "Deposit to savings operation"
   },
   "html_popup_withdraw_from_savings_operation": {
-    "message": "Retrait",
+    "message": "Retrait de l'épargne",
     "description": "Withdraw from savings operation"
   },
   "html_popup_power_up_operation": {
@@ -1756,11 +1756,11 @@
     "description": "vote"
   },
   "html_popup_voting_no_hp": {
-    "message": "Veuillez utiliser le Power Up pour obtenir un mana de vote",
+    "message": "Veuillez effectuer un Power Up pour obtenir plus de voting mana",
     "description": "Message when no HP in voting mana section"
   },
   "html_popup_delete_key_confirm": {
-    "message": "Vous êtes sur le point de supprimer la key $1 pour le compte @$2.<br/>Assurez-vous d'avoir une copie de cette key avant de continuer.",
+    "message": "Vous êtes sur le point de supprimer la clé $1 pour le compte @$2.<br/>Assurez-vous d'avoir une copie de cette clé avant de continuer.",
     "description": "Confirmation message when deleting key"
   },
   "html_popup_delete_key": {
@@ -1768,7 +1768,7 @@
     "description": "confirmation title while deleting key"
   },
   "html_popup_using_authorized_account": {
-    "message": "Se connecter via le compte $1",
+    "message": "Signer via le compte $1",
     "description": "In account's keys while using authorized account"
   },
   "popup_html_cancel_delegation_successful": {
@@ -1776,11 +1776,11 @@
     "description": "Success message cancel delegation"
   },
   "popup_html_cancel_delegation_fail": {
-    "message": "Impossible d'annuler la délégation",
+    "message": "Erreur lors de l'annulation de la délégation",
     "description": "Failed message cancel delegation"
   },
   "popup_html_delegation_successful": {
-    "message": "Délégation réussie",
+    "message": "Délégation effectuée avec succès",
     "description": "Success message cancel delegation"
   },
   "popup_html_delegation_fail": {
@@ -1804,11 +1804,11 @@
     "description": "Amount error in form"
   },
   "popup_html_deleting_account_linked_to_authorized": {
-    "message": "Certains de vos comptes utilisent @$1 comme compte autorisé et ne pourront plus effectuer d'opérations.",
+    "message": "Certains de vos comptes utilisent les clés de @$1 pour signer et ne pourront plus effectuer d'opérations.",
     "description": "when deleting account from keychain"
   },
   "popup_html_account_already_existing": {
-    "message": "Ce compte existe déjà",
+    "message": "Ce compte est déjà enregistré",
     "description": "while trying to add a new account"
   },
   "popup_html_switch_rpc": {
@@ -1816,7 +1816,7 @@
     "description": "At start up, when active rpc not responding"
   },
   "popup_html_rpc_not_responding_error": {
-    "message": "Le noeud $1 ne répond pas. Voulez-vous passer à $2 ?",
+    "message": "Le RPC $1 ne répond pas. Voulez-vous passer à $2 ?",
     "description": "At start up, when active rpc not responding"
   },
   "popup_html_rpc_automatic_mode": {
@@ -1824,19 +1824,19 @@
     "description": "Node Rpc auto selection"
   },
   "popup_html_rpc_automatic_mode_hint": {
-    "message": "Sélectionnera toujours le meilleur node RPC pour vous",
+    "message": "Sélectionne en permanence le meilleur node RPC pour vous",
     "description": "Node Rpc auto selection hint"
   },
   "popup_html_proxy_suggestion": {
-    "message": "Submergé par les votes de gouvernance? Définissez @keychain comme proxy pour suivre automatiquement le witness de l'équipe Keychain et les votes de propositions. Vous pouvez modifier cela à tout moment à partir du menu de gouvernance.",
+    "message": "Vous ne voulez pas vous préoccuper de tout ce qui touche à la gouvernance? Définissez @keychain comme proxy pour suivre automatiquement les votes de witness/proposals de l'équipe Keychain. Vous pouvez modifier cela à tout moment à partir du menu de gouvernance.",
     "description": "If no witness voted"
   },
   "popup_html_setting_proxy": {
-    "message": "Configuration du proxy",
+    "message": "Ajout du proxy",
     "description": "in proxy suggestion popup"
   },
   "popup_html_clearing_proxy": {
-    "message": "Effacer le proxy",
+    "message": "Suppression du proxy",
     "description": "in proxy suggestion popup"
   },
   "popup_html_close": {
@@ -1852,35 +1852,35 @@
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_recurrent_transfer_out": {
-    "message": "Démarrage du transfert récurrent de $1 à @$2 ($3 fois, toutes les $4 heures)",
+    "message": "Démarrage d'un transfert récurrent de $1 à @$2 ($3 fois, toutes les $4 heures)",
     "description": "wallet information transfer out"
   },
   "popup_html_wallet_info_recurrent_transfer_in": {
-    "message": "Démarrage du transfert de @$1 à $2 ($3 fois, toutes les $4 heures)",
+    "message": "@$1 a démarré un transfert récurrent de $2 ($3 fois, toutes les $4 heures)",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_canceled_recurrent_transfer": {
-    "message": "@$1 a annulé un transfert récurrent à @$2",
+    "message": "@$1 a annulé un transfert récurrent vers @$2",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_fill_recurrent_transfer_out": {
-    "message": "$1 envoyé à @$2 ($3 restants)",
+    "message": "$1 envoyés à @$2 ($3 restants)",
     "description": "wallet information transfer out"
   },
   "popup_html_wallet_info_fill_recurrent_transfer_in": {
-    "message": "$1 reçu de @$2 ($3 restants)",
+    "message": "$1 reçus de @$2 ($3 restants)",
     "description": "wallet information transfer in"
   },
   "popup_html_wallet_info_transfer_out": {
-    "message": "Envoyé $1 à @$2",
+    "message": "$1 envoyés à @$2",
     "description": "wallet information transfer out"
   },
   "popup_html_wallet_info_claim_rewards": {
-    "message": "$1 réclamé",
+    "message": "$1 récupérés",
     "description": "Wallet information claim rewards"
   },
   "popup_html_wallet_info_delegation_out": {
-    "message": "$1 délégué à @$2",
+    "message": "$1 délégués à @$2",
     "description": "Wallet information delegation outgoing"
   },
   "popup_html_wallet_info_delegation_in": {
@@ -1888,19 +1888,19 @@
     "description": "Wallet information delegation incoming"
   },
   "popup_html_wallet_info_cancel_delegation_out": {
-    "message": "La délégation à @$1 a été annulée",
+    "message": "La délégation vers @$1 a été annulée",
     "description": "Wallet information cancel delegation outgoing"
   },
   "popup_html_wallet_info_cancel_delegation_in": {
-    "message": "@$1 a annulé la délégation",
+    "message": "@$1 a annulé sa délégation",
     "description": "Wallet information cancel delegation incoming"
   },
   "popup_html_wallet_info_received_interests": {
-    "message": "Received $1 of interests from savings",
+    "message": "Reçu 1 $ d'intérêts sur votre épargne",
     "description": "Wallet information claim interest"
   },
   "popup_html_wallet_info_claim_account": {
-    "message": "Récupérer votre compte",
+    "message": "Un ticket de création de compte a été récupéré",
     "description": "Wallet information claim account"
   },
   "popup_html_wallet_info_deposit_savings": {
@@ -1908,15 +1908,15 @@
     "description": "Wallet information deposit savings"
   },
   "popup_html_wallet_info_deposit_savings_other_account": {
-    "message": "@$1 made a deposit of $2 into @$3's savings",
+    "message": "@$1 a effectué un dépôt de $2 sur le compte d'épargne de @$3",
     "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
-    "message": "Retirer $1 de votre épargne",
+    "message": "Retrait de $1 de votre épargne",
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
-    "message": "Initiated a $1 power down",
+    "message": "Lancement d'un power down de $1",
     "description": "Wallet information power down"
   },
   "popup_html_wallet_info_cancel_power_down": {
@@ -1924,27 +1924,27 @@
     "description": "Wallet information cancel power down"
   },
   "popup_html_wallet_info_power_up": {
-    "message": "$1 a été Power Upé",
+    "message": "$1 a été Power Up",
     "description": "Wallet information power up"
   },
   "popup_html_wallet_info_power_up_other_account": {
-    "message": "@$1 a Power Upé $2 pour @$3",
+    "message": "@$1 a Power Up $2 pour @$3",
     "description": "Wallet information power up"
   },
   "popup_html_wallet_info_convert": {
-    "message": "A démarré une conversion de $1",
+    "message": "Démarrage d'une conversion de $1",
     "description": "Wallet information convert hbd to hive"
   },
   "popup_html_wallet_info_collateralized_convert": {
-    "message": "A démarré une conversion sécurisée de $1",
+    "message": "Démarrage d'une conversion de $1",
     "description": "Wallet information convert hive to hbd"
   },
   "popup_html_wallet_info_fill_convert_request": {
-    "message": "Filled conversion: $1 => $2",
+    "message": "Conversion complète : $1 => $2",
     "description": "Wallet information receive conversion"
   },
   "popup_html_wallet_info_fill_collateralized_convert_request": {
-    "message": "Filled conversion: $1 => $2",
+    "message": "Conversion complète : $1 => $2",
     "description": "Wallet information receive conversion"
   },
   "popup_html_filter_in": {
@@ -1956,15 +1956,15 @@
     "description": "Wallet filters"
   },
   "popup_html_search": {
-    "message": "Rechercher",
+    "message": "Filtrer",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_transfer": {
-    "message": "Transférer",
+    "message": "Transfers",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_claim_reward_balance": {
-    "message": "Réclamer vos récompenses",
+    "message": "Rewards",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_delegate_vesting_shares": {
@@ -1972,19 +1972,19 @@
     "description": "Wallet filters"
   },
   "popup_html_filter_type_claim_account": {
-    "message": "Réclamer votre compte",
+    "message": "Comptes",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_interest": {
-    "message": "Interêt",
+    "message": "Intérêt",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_transfer_from_savings": {
-    "message": "Épargne de retrait",
+    "message": "Retrait d'épargne",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_transfer_to_savings": {
-    "message": "Dep. savings",
+    "message": "Dépôt d'épargne",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_transfer_to_vesting": {
@@ -1996,7 +1996,7 @@
     "description": "Wallet filters"
   },
   "popup_html_filter_type_vote": {
-    "message": "Voter",
+    "message": "Votes",
     "description": "Wallet filters"
   },
   "popup_html_filter_type_power_up_down": {
@@ -2012,7 +2012,7 @@
     "description": "Wallet filters"
   },
   "popup_html_clear_filters": {
-    "message": "Nettoyer",
+    "message": "Effacer",
     "description": "Wallet filters"
   },
   "popup_html_error_retrieving_witness_ranking": {
@@ -2024,11 +2024,11 @@
     "description": "Error while retrieving witness ranking, hivesql not down"
   },
   "popup_html_token_stake": {
-    "message": "Investir",
+    "message": "Stake",
     "description": "token action"
   },
   "popup_html_token_unstake": {
-    "message": "Retirer",
+    "message": "Unstake",
     "description": "token action"
   },
   "popup_html_token_delegate": {
@@ -2036,23 +2036,23 @@
     "description": "token action"
   },
   "popup_html_token_staking": {
-    "message": "Investissement",
+    "message": "Staking",
     "description": "token action"
   },
   "popup_html_token_pending_unstake": {
-    "message": "Pending unstake",
+    "message": "Unstake en cours",
     "description": "token action"
   },
   "popup_html_token_delegation_out": {
-    "message": "Délégation out",
+    "message": "Délégations sortantes",
     "description": "token action"
   },
   "popup_html_token_delegation_in": {
-    "message": "Délégation In",
+    "message": "Délégations entrantes",
     "description": "token action"
   },
   "popup_html_token_pending_undelegation": {
-    "message": "En attente de dé-délégation",
+    "message": "En attente de suppression de délégation",
     "description": "token action"
   },
   "popup_html_stake_tokens": {
@@ -2064,35 +2064,35 @@
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens": {
-    "message": "Delegating token",
+    "message": "Délégation de token",
     "description": "delegate token title"
   },
   "popup_html_cancel_delegation_tokens": {
-    "message": "Cancel token delegation",
+    "message": "Annulation de délégation",
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_failed": {
-    "message": "Failed to stake a token",
+    "message": "Erreur lors du staking du token",
     "description": "stake token title"
   },
   "popup_html_unstake_tokens_failed": {
-    "message": "Failed to start unstaking a token",
+    "message": "Erreur lors de l'unstaking du token",
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens_failed": {
-    "message": "The token delegation failed",
+    "message": "Erreur lors de la délégation du token",
     "description": "delegate token title"
   },
   "popup_html_cancel_delegation_tokens_failed": {
-    "message": "Impossible d'annuler la délégation des tokens",
+    "message": "Impossible d'annuler la délégation de tokens",
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_success": {
-    "message": "Successfully staked token",
+    "message": "Le stoken a été stake avec succès",
     "description": "stake token title"
   },
   "popup_html_unstake_tokens_success": {
-    "message": "Le démarrage du retrait d'un token a été réussi",
+    "message": "Unstaking du token démarré avec succès",
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens_success": {
@@ -2104,11 +2104,11 @@
     "description": "delegate token title"
   },
   "popup_html_stake_tokens_confirm_text": {
-    "message": "Veuillez confirmer que vous souhaitez investir vos tokens.",
+    "message": "Veuillez confirmer que vous souhaitez staker vos tokens.",
     "description": "stake token title"
   },
   "popup_html_unstake_tokens_confirm_text": {
-    "message": "Veuillez confirmer que vous souhaitez retirer vos tokens.",
+    "message": "Veuillez confirmer que vous souhaitez unstaker vos tokens.",
     "description": "unstake token title"
   },
   "popup_html_delegate_tokens_confirm_text": {
@@ -2144,7 +2144,7 @@
     "description": "Loading message voting for proposal"
   },
   "popup_html_unvoting_for_proposal": {
-    "message": "Voter contre le proposal",
+    "message": "Retirer le vote du proposal",
     "description": "Loading message unvoting for proposal"
   },
   "popup_html_proposal_funded_option_totally_funded": {
@@ -2172,7 +2172,7 @@
     "description": "token wallet information transfer in"
   },
   "popup_html_token_wallet_info_transfer_out": {
-    "message": "$1 envoyé à @$2",
+    "message": "$1 envoyé(s) à @$2",
     "description": "token wallet information transfer out"
   },
   "popup_html_token_wallet_info_mining_lottery": {
@@ -2180,51 +2180,51 @@
     "description": "token wallet information mining lottery"
   },
   "popup_html_token_wallet_info_author_reward": {
-    "message": "$1 reçu en guise de author reward",
+    "message": "$1 reçu en récompense d'auteur",
     "description": "wallet information author reward"
   },
   "popup_html_token_wallet_info_comment_curation_reward": {
-    "message": "$1 reçu en guise de comment curation reward",
+    "message": "$1 reçu en curation",
     "description": "wallet information curation reward"
   },
   "popup_html_token_wallet_info_delegation_in": {
-    "message": "@$1 délégué à $2",
+    "message": "@$1 a délégué $2",
     "description": "wallet information delegation in"
   },
   "popup_html_token_wallet_info_delegation_out": {
-    "message": "Déléguer $1 à @$2",
+    "message": "$1 délégués à @$2",
     "description": "wallet information delegation out"
   },
   "popup_html_token_wallet_info_cancel_delegation_out": {
-    "message": "Annuler la délégation de $1 à @$2",
+    "message": "Une délégation de $1 à @$2 a été annulée",
     "description": "Token wallet information canceled delegation out "
   },
   "popup_html_token_wallet_info_cancel_delegation_in": {
-    "message": "@$1 a annulé la délégation $2",
+    "message": "@$1 a annulé une délégation de $2",
     "description": "Token wallet information canceled delegation in"
   },
   "popup_html_token_wallet_info_start_cancel_delegation_out": {
-    "message": "La délégation de $1 à @$2 a été annulée",
+    "message": "Une délégation de $1 à @$2 a été annulée",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_start_cancel_delegation_in": {
-    "message": "@$1 a annulé la délégation $2",
+    "message": "@$1 a annulé une délégation de $2",
     "description": "Token wallet information start canceling delegation in"
   },
   "popup_html_token_wallet_info_stake": {
-    "message": "1 $ investi(s)",
+    "message": "1 $ staked",
     "description": "Token wallet information stake"
   },
   "popup_html_token_wallet_info_stake_other_user": {
-    "message": "@$1 a investi $2 pour @$3",
+    "message": "@$1 a staké $2 pour @$3",
     "description": "Token wallet information stake for other user"
   },
   "popup_html_token_wallet_info_unstake_done": {
-    "message": "$1 a été débité",
+    "message": "$1 a été unstaked",
     "description": "Token wallet information canceled delegation in"
   },
   "popup_html_token_wallet_info_start_unstake": {
-    "message": "Le retrait de $1 a démarré",
+    "message": "Un unstaking de $1 a démarré",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_issue": {
@@ -2232,15 +2232,15 @@
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_pegged_buy": {
-    "message": "$1 acheté",
+    "message": "$1 achetés",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_undelegation_cooldown_disclaimer": {
-    "message": "Après avoir retiré la délégation $1, les tokens misés seront disponibles après un délai de récupération de $2 jours.",
+    "message": "Après avoir retiré la délégation de $1, les tokens seront disponibles après un délai de récupération de $2 jours.",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_unstake_cooldown_disclaimer": {
-    "message": "Retirer ce token prendra $1 jour(s).",
+    "message": "Unstaking ce token prendra $1 jour(s).",
     "description": "Token wallet information start canceling delegation out"
   }
 }
