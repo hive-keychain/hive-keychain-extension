@@ -11,7 +11,7 @@ import AddKeyAuthority from 'src/dialog/pages/requests/authority/add-key-authori
 import RemoveAccountAuthority from 'src/dialog/pages/requests/authority/remove-account-authority';
 import RemoveKeyAuthority from 'src/dialog/pages/requests/authority/remove-key-authority';
 import Broadcast from 'src/dialog/pages/requests/broadcast';
-import Convert from 'src/dialog/pages/requests/Convert';
+import Convert from 'src/dialog/pages/requests/convert';
 import CreateClaimedAccount from 'src/dialog/pages/requests/create-claimed-account';
 import CustomJson from 'src/dialog/pages/requests/custom-json';
 import DecodeMemo from 'src/dialog/pages/requests/decode-memo';
