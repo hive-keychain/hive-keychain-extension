@@ -10,8 +10,8 @@ const findUserProxy = async (user: ExtendedAccount): Promise<string | null> => {
       if (previousChecked.includes(proxy)) return null;
       previousChecked.push(proxy);
       proxy = (await AccountUtils.getExtendedAccount(proxy)).proxy;
-    } while (proxy.length === 0);
-    return proxy;
+    } while (proxy.length !== 0);
+    return previousChecked[previousChecked.length - 1];
   }
 };
 

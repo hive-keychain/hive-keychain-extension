@@ -276,7 +276,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "Lock the keychain manually or when the browser is closed.",
+    "message": "Lock Keychain manually.",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
@@ -284,7 +284,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
-    "message": "Auto-lock the keychain when the device locks.",
+    "message": "Auto-lock Keychain when the device locks.",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
@@ -292,7 +292,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "Auto-lock the keychain after the browser window is idle for the specified number of minutes.",
+    "message": "Auto-lock Keychain after the browser window is idle for the specified number of minutes.",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
@@ -570,6 +570,10 @@
   "popup_missing_key": {
     "message": "Please add your $1 key to perform this operation!",
     "description": "When trying to perform an operation without a stored private $1 key"
+  },
+  "popup_missing_key_proposal": {
+    "message": "Please add your active key to vote for proposals.",
+    "description": "When voting for a proposal"
   },
   "popup_password_mismatch": {
     "message": "Your passwords do not match!",
@@ -1611,6 +1615,10 @@
   },
   "html_popup_witness_vote_error_proxy": {
     "message": "A proxy is currently set, please clear the proxy before voting for a witness",
+    "description": "Governance"
+  },
+  "html_popup_proposal_vote_error_proxy": {
+    "message": "A proxy is currently set, please clear the proxy before voting for a proposal",
     "description": "Governance"
   },
   "html_popup_currently_using_proxy": {

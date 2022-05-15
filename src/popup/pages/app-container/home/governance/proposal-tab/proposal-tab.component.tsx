@@ -101,7 +101,17 @@ const ProposalTab = ({
           </div>
         </>
       )}
-      {isLoading && <RotatingLogoComponent></RotatingLogoComponent>}
+      {isLoading && (
+        <div
+          style={{
+            height: '400px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+          }}>
+          <RotatingLogoComponent></RotatingLogoComponent>
+        </div>
+      )}
     </div>
   );
 };

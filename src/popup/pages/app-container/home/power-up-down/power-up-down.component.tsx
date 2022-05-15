@@ -260,7 +260,8 @@ const PowerUpDown = ({
 
       {powerType === PowerType.POWER_DOWN &&
         powerDownInfo &&
-        powerDownInfo[1] !== '0' && (
+        powerDownInfo[1] !== '0' &&
+        powerDownInfo[0] !== powerDownInfo[1] && (
           <CustomTooltip
             message={chrome.i18n.getMessage('popup_next_powerdown', [
               powerDownInfo[2].split('T').join(', '),

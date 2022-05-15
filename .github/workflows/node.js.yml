@@ -1,0 +1,41 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [master, beta, dev]
+  pull_request:
+    branches: [master, beta, dev]
+env:
+  _TEST_USERNAME: ${{secrets._TEST_USERNAME}}
+  _TEST_OWNER: ${{secrets._TEST_OWNER}}
+  _TEST_OWNER_PUB: ${{secrets._TEST_OWNER_PUB}}
+  _TEST_ACTIVE: ${{secrets._TEST_ACTIVE}}
+  _TEST_ACTIVE_PUB: ${{secrets._TEST_ACTIVE_PUB}}
+  _TEST_POSTING: ${{secrets._TEST_POSTING}}
+  _TEST_POSTING_PUB: ${{secrets._TEST_POSTING_PUB}}
+  _TEST_MEMO: ${{secrets._TEST_MEMO}}
+  _TEST_MEMO_PUB: ${{secrets._TEST_MEMO_PUB}}
+  _TEST_USER_PWD: ${{secrets._TEST_USER_PWD}}
+  _TEST_USER_ENCRYPTED_ACCOUNTS: ${{secrets._TEST_USER_ENCRYPTED_ACCOUNTS}}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build:chromium --if-present
+      - run: npm test
