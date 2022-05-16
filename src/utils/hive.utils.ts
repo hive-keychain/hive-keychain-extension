@@ -246,8 +246,10 @@ const claimRewards = async (
   rewardVests: string | Asset,
 ): Promise<boolean> => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      //modified for testing
+      HiveUtils.getClient().broadcast.sendOperations(
+        //modified for testing
         [
           [
             'claim_reward_balance',
@@ -269,7 +271,6 @@ const claimRewards = async (
           store.getState().globalProperties.globals,
         ).toString(),
       ) + ' HP';
-
     let claimedResources = [rewardHBD, rewardHive, rewardHp].filter(
       (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
     );
@@ -289,8 +290,10 @@ const claimRewards = async (
 
 const powerUp = async (from: string, to: string, amount: string) => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      //modified for testing
+      HiveUtils.getClient().broadcast.sendOperations(
+        //modified for testing
         [
           [
             'transfer_to_vesting',
@@ -306,8 +309,10 @@ const powerUp = async (from: string, to: string, amount: string) => {
         ),
       ),
     );
+    console.log('true inside powerUp'); //TO REMOVE Ojo
     return true;
   } catch (err) {
+    console.log(err); //To REMOVE ojo
     return false;
   }
 };
@@ -626,16 +631,20 @@ const sendOperationWithConfirmation = async (
   const transactionConfirmation = await transactionConfirmationPromise;
   let transaction = null;
   do {
-    transaction = await getClient().transaction.findTransaction(
+    transaction = await HiveUtils.getClient().transaction.findTransaction(
+      // modified for testing
       transactionConfirmation.id,
     );
     await sleep(500);
   } while (transaction.status == 'within_mempool');
+  console.log('trans obj'); // TO REMOVE
+  console.log(transaction); // TO REMOVE
   if (transaction.status == 'within_reversible_block') {
     Logger.info('Transaction confirmed');
     return true;
   } else {
     Logger.info(`Transaction failed with status: ${transaction.status}`);
+    console.log('false inside sendOperationWithConfirmation'); //TO REMOVE Ojo
     return false;
   }
 };
