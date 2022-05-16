@@ -828,7 +828,6 @@ describe('addAuthorizedAccount tests', () => {
       [{ name: 'keychain.tests', keys: userDataKeys }],
       _setErrorMessage,
     );
-    console.log(result_addAuthorizedAccount);
 
     expect(result_addAuthorizedAccount).toEqual(expectedKeysObject);
   });
