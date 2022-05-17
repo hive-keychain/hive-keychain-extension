@@ -22,6 +22,7 @@ import {
 } from '@popup/actions/message.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { store } from '@popup/store';
+import { error } from 'console';
 import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
@@ -642,6 +643,7 @@ const sendOperationWithConfirmation = async (
     return true;
   } else {
     Logger.info(`Transaction failed with status: ${transaction.status}`);
+    console.log('second message'); //TO REMOVE
     return false;
   }
 };
