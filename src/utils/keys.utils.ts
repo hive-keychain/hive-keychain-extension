@@ -64,25 +64,27 @@ const derivateFromMasterPassword = (
     return null;
   }
 };
-
+/* istanbul ignore next */
 const hasKeys = (keys: Keys): boolean => {
   return keysCount(keys) > 0;
 };
-
+/* istanbul ignore next */
 const keysCount = (keys: Keys): number => {
   return Object.keys(keys).length;
 };
-
+/* istanbul ignore next */
 const hasActive = (keys: Keys): boolean => {
   return keys.active !== undefined;
 };
+/* istanbul ignore next */
 const hasPosting = (keys: Keys): boolean => {
   return keys.posting !== undefined;
 };
+/* istanbul ignore next */
 const hasMemo = (keys: Keys): boolean => {
   return keys.memo !== undefined;
 };
-
+/* istanbul ignore next */
 const isAuthorizedAccount = (key: Key): boolean => {
   return key!.toString().startsWith('@');
 };
