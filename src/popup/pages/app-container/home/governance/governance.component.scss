@@ -24,5 +24,21 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     margin: 0 0 32px !important;
+
+    .react-tabs__tab {
+      text-align: center;
+      font-size: 18px;
+      background: $black-transparent;
+      color: white;
+      user-select: none;
+    }
+
+    .react-tabs__tab--selected {
+      background: $red-dark;
+      border: unset;
+      &::after {
+        display: none;
+      }
+    }
   }
 }

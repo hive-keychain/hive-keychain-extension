@@ -56,10 +56,15 @@
     row-gap: 16px;
     .total-incoming,
     .total-outgoing,
+    .total-pending,
     .total-available {
       display: flex;
       justify-content: space-between;
       font-size: 20px;
+
+      .label {
+        max-width: 50%;
+      }
     }
 
     .total-incoming,
@@ -83,13 +88,18 @@
     }
   }
 
-  .amount-panel {
+  .form-container {
     display: flex;
-    column-gap: 16px;
-    align-items: baseline;
+    flex-direction: column;
+    row-gap: 16px;
+    .amount-panel {
+      display: flex;
+      column-gap: 16px;
+      align-items: baseline;
 
-    .currency {
-      @include fake-input;
+      .currency {
+        @include fake-input;
+      }
     }
   }
 }
