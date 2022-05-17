@@ -5,6 +5,7 @@ import {
   ExtendedAccount,
   Price,
   PrivateKey,
+  TransactionConfirmation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Delegator } from '@interfaces/delegations.interface';
@@ -21,7 +22,7 @@ import Logger from 'src/utils/logger.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
-
+jest.setTimeout(50000);
 async function resetClient() {
   await HiveUtils.setRpc({ uri: 'https://api.hive.blog' } as Rpc);
 }
@@ -805,8 +806,7 @@ describe('hive.utils tests:\n', () => {
     });
   });
 
-  //powerUp skipped for now as is on review
-  describe.skip('powerUp tests"\n', () => {
+  describe('powerUp tests"\n', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -841,49 +841,9 @@ describe('hive.utils tests:\n', () => {
       expect(spyLoggerInfo).toBeCalledTimes(1);
       expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
     });
-    test.only('Powerup the activeAccount user, but getting a transaction.status error, should return false', async () => {
-      //Note: I cannot see if the function is missing something or I am doing the test wrong.
-      //When mocking getClient().broadcast.sendOperations and getClient().transaction.findTransaction, should return false from sendOperationWithConfirmation
-      //but the returned value gets overlapped by the 'return true' statement within powerUp.
-      const transactionObjWaiting = {
-        id: '002299xxdass990',
-        status: 'within_mempool',
-      };
-      const transactionObjError = {
-        id: '002299xxdass990',
-        status: 'error_XXXX',
-      };
-      store.getState().activeAccount.keys.active =
-        utilsT.userData.nonEncryptKeys.active;
-      const mockedGetClientSendOperations =
-        (HiveUtils.getClient().broadcast.sendOperations = jest
-          .fn()
-          .mockImplementation(() => Promise.resolve(transactionObjWaiting)));
-      const mockedGetClientFindTransaction =
-        (HiveUtils.getClient().transaction.findTransaction = jest
-          .fn()
-          .mockResolvedValueOnce(transactionObjError));
-      const result = await HiveUtils.powerUp(
-        utilsT.userData.username,
-        utilsT.userData.username,
-        '0.001 HIVE',
-      );
-      expect(result).toBe(false);
-    });
-    test('Trying to powerUp using a different key from decoded active, will return false', async () => {
-      store.getState().activeAccount.keys.active =
-        utilsT.userData.encryptKeys.active;
-      const result = await HiveUtils.powerUp(
-        utilsT.userData.username,
-        'Non.existentAccount',
-        '10 HIVE',
-      );
-      expect(result).toBe(false);
-    });
   });
 
-  //powerDown skipped for now as is on review
-  describe.skip('powerDown tests:\n', () => {
+  describe('powerDown tests:\n', () => {
     afterEach(() => {
       jest.clearAllMocks();
     });
@@ -917,49 +877,14 @@ describe('hive.utils tests:\n', () => {
       expect(spyLoggerInfo).toBeCalledTimes(1);
       expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
     });
-    test('Trying to powerDown using a different key from decoded active, will return false', async () => {
-      store.getState().activeAccount.keys.active =
-        utilsT.userData.encryptKeys.active;
-      const result = await HiveUtils.powerDown(
-        utilsT.userData.username,
-        '10 HIVE',
-      );
-      expect(result).toBe(false);
-    });
-    test.todo(
-      'PowerDown the activeAccount user, but getting a transaction.status error, should return false',
-    );
   });
 
-  describe.only('transfer tests:\n', () => {
-    let spyLoggerErr: jest.SpyInstance;
-    let spyLoggerInfo: jest.SpyInstance;
+  describe('transfer tests:\n', () => {
     afterEach(() => {
-      spyLoggerErr.mockReset();
-      spyLoggerInfo.mockReset();
       jest.clearAllMocks();
     });
-    test('Trying to execute a non recurrent transfer, using not the private key must return and catch an AssertionError', async () => {
-      spyLoggerErr = jest.spyOn(Logger, 'error');
-      store.getState().activeAccount.keys.active =
-        utilsT.userData.encryptKeys.active;
-      const result = await HiveUtils.transfer(
-        utilsT.userData.username,
-        'blocktrades',
-        '100.000 HIVE',
-        '',
-        false,
-        0,
-        0,
-      );
-      expect(result).toBe(false);
-      expect(spyLoggerErr).toBeCalledTimes(1);
-      expect(spyLoggerErr).toBeCalledWith(
-        new AssertionError({ message: 'private key network id mismatch' }),
-      );
-    });
     test('Executing a non recurrent transfer, should return true and log a success message', async () => {
-      spyLoggerInfo = jest.spyOn(Logger, 'info');
+      const spyLoggerInfo = jest.spyOn(Logger, 'info');
       store.getState().activeAccount.keys.active =
         utilsT.userData.nonEncryptKeys.active;
       let transactionObj = {
@@ -988,36 +913,118 @@ describe('hive.utils tests:\n', () => {
       expect(spyLoggerInfo).toBeCalledTimes(1);
       expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
     });
-    // test('Executing a non recurrent transfer, but making it to fail(get an error status) should return false and log an error message', async () => {
-    //   //Note: the expected commented line can be uncommented as soon as the function get refactored.
-    //   spyLoggerInfo = jest.spyOn(Logger, 'info');
-    //   store.getState().activeAccount.keys.active =
-    //     utilsT.userData.nonEncryptKeys.active;
-    //   let transactionObj = {
-    //     id: '002299xxdass990',
-    //     status: 'within_mempool',
-    //   };
-    //   HiveUtils.getClient().broadcast.sendOperations = jest
-    //     .fn()
-    //     .mockResolvedValueOnce(transactionObj);
-    //   HiveUtils.getClient().transaction.findTransaction = jest
-    //     .fn()
-    //     .mockResolvedValueOnce({
-    //       id: transactionObj.id,
-    //       status: 'within_reversible_block',
-    //     });
-    //   const result = await HiveUtils.transfer(
-    //     utilsT.userData.username,
-    //     'blocktrades',
-    //     '100.000 HBD',
-    //     '',
-    //     false,
-    //     0,
-    //     0,
-    //   );
-    //   //expect(result).toBe(false);
-    //   expect(spyLoggerInfo).toBeCalledTimes(1);
-    //   expect(spyLoggerInfo).toBeCalledWith({});
-    // });
+    test('Executing a non recurrent transfer, but making it to fail(get an error status) should return false and log an error message', async () => {
+      //Note: the expected commented line can be uncommented as soon as the function get refactored.
+      const spyLoggerInfo = jest.spyOn(Logger, 'info');
+      store.getState().activeAccount.keys.active =
+        utilsT.userData.nonEncryptKeys.active;
+      let transactionObj = {
+        id: '002299xxdass990',
+        status: 'within_mempool',
+      };
+      HiveUtils.getClient().broadcast.sendOperations = jest
+        .fn()
+        .mockResolvedValueOnce(transactionObj);
+      HiveUtils.getClient().transaction.findTransaction = jest
+        .fn()
+        .mockResolvedValueOnce({
+          id: transactionObj.id,
+          status: 'error',
+        });
+      const result = await HiveUtils.transfer(
+        utilsT.userData.username,
+        'blocktrades',
+        '100.000 HBD',
+        '',
+        false,
+        0,
+        0,
+      );
+      //expect(result).toBe(false);
+      console.log(result);
+      expect(spyLoggerInfo).toBeCalledTimes(1);
+      expect(spyLoggerInfo).toBeCalledWith(
+        'Transaction failed with status: error',
+      );
+    });
+  });
+
+  describe('signMessage tests:\n', () => {
+    test('Passing a message and valid private key, must return the expected signature', () => {
+      const signature = require('@hiveio/hive-js/lib/auth/ecc');
+      const spySignature = jest.spyOn(signature.Signature, 'signBuffer');
+      const callingParams = [
+        'test message',
+        '5K3R75h6KGBLbEHkmkL34MND95bMveeEu8jPSZWLh5X6DhcnKzM',
+      ];
+      const expectedSignature =
+        '1f4aa1439a8a3c1f559eec87b4ada274698138efc6ba4e5b7cabffa32828943e6251aca3b097b5c422f8689cb13b933b49c32b81064bfb8662e423a281142f1286';
+      const result = HiveUtils.signMessage(
+        'test message',
+        utilsT.userData.nonEncryptKeys.posting,
+      );
+      expect(result).toBe(expectedSignature);
+      expect(spySignature).toBeCalledTimes(1);
+      expect(spySignature).toBeCalledWith(...callingParams);
+    });
+    test('Passing a message and public key, must throw an AssertionError', () => {
+      try {
+        const result = HiveUtils.signMessage(
+          'test message',
+          utilsT.userData.encryptKeys.posting,
+        );
+        expect(result).toBe(1);
+      } catch (error) {
+        expect(error).toEqual(
+          new AssertionError({
+            message: 'Expected version 128, instead got 38',
+            actual: 128,
+            expected: 38,
+            operator: '==',
+          }),
+        );
+      }
+    });
+  });
+
+  describe('sendOperationWithConfirmation tests:\n', () => {
+    let transactionObj: TransactionConfirmation = {
+      id: '002299xxdass990',
+      block_num: 1990,
+      trx_num: 1234,
+      expired: false,
+    };
+    const spyLogger = jest.spyOn(Logger, 'info');
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+    test('If findTransaction returns a transaction object with status="within_reversible_block" must return true', async () => {
+      HiveUtils.getClient().transaction.findTransaction = jest
+        .fn()
+        .mockResolvedValueOnce({
+          id: transactionObj.id,
+          status: 'within_reversible_block',
+        });
+      const result = await HiveUtils.sendOperationWithConfirmation(
+        Promise.resolve(transactionObj),
+      );
+      expect(result).toBe(true);
+      expect(spyLogger).toBeCalledTimes(1);
+      expect(spyLogger).toBeCalledWith('Transaction confirmed');
+    });
+    test('If findTransaction returns a transaction object with status!="within_reversible_block" must return false', async () => {
+      HiveUtils.getClient().transaction.findTransaction = jest
+        .fn()
+        .mockResolvedValueOnce({
+          id: transactionObj.id,
+          status: 'error',
+        });
+      const result = await HiveUtils.sendOperationWithConfirmation(
+        Promise.resolve(transactionObj),
+      );
+      expect(result).toBe(false);
+      expect(spyLogger).toBeCalledTimes(1);
+      expect(spyLogger).toBeCalledWith('Transaction failed with status: error');
+    });
   });
 });

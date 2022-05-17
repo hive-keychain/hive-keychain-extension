@@ -22,7 +22,6 @@ import {
 } from '@popup/actions/message.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { store } from '@popup/store';
-import { error } from 'console';
 import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
@@ -395,7 +394,7 @@ const transfer = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const convertOperation = async (
   activeAccount: ActiveAccount,
   conversions: Conversion[],
@@ -427,7 +426,7 @@ const convertOperation = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const encodeMemo = (
   memo: string,
   privateKey: string,
@@ -435,7 +434,7 @@ const encodeMemo = (
 ) => {
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
-
+/* istanbul ignore next */
 const decodeMemo = (memo: string, privateKey: string) => {
   return hive.memo.decode(privateKey, memo);
 };
@@ -466,7 +465,7 @@ const signMessage = (message: string, privateKey: string) => {
   }
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
-
+/* istanbul ignore next */
 const deposit = async (
   activeAccount: ActiveAccount,
   amount: string,
@@ -501,6 +500,7 @@ const deposit = async (
     return false;
   }
 };
+/* istanbul ignore next */
 const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
   const savings = await hive.api.getSavingsWithdrawFromAsync(
     activeAccount.name,
@@ -532,7 +532,7 @@ const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
     return false;
   }
 };
-
+/* istanbul ignore next */
 const delegateVestingShares = async (
   activeAccount: ActiveAccount,
   delegatee: string,
@@ -558,7 +558,7 @@ const delegateVestingShares = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
@@ -574,7 +574,7 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
     ),
   );
 };
-
+/* istanbul ignore next */
 const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -587,7 +587,7 @@ const voteForProposal = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const unvoteProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -600,7 +600,7 @@ const unvoteProposal = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const updateProposalVote = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -643,11 +643,10 @@ const sendOperationWithConfirmation = async (
     return true;
   } else {
     Logger.info(`Transaction failed with status: ${transaction.status}`);
-    console.log('second message'); //TO REMOVE
     return false;
   }
 };
-
+/* istanbul ignore next */
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
     setTimeout(async function () {
@@ -655,7 +654,7 @@ const getDelayedTransactionInfo = (trxID: string) => {
     }, 500);
   });
 };
-
+/* istanbul ignore next */
 const getProposalDailyBudget = async () => {
   return parseFloat(
     (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
