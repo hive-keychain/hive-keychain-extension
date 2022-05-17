@@ -986,7 +986,7 @@ describe('hive.utils tests:\n', () => {
       );
       expect(result).toBe(true);
       expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith("Transaction confirmed");
+      expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
     });
     // test('Executing a non recurrent transfer, but making it to fail(get an error status) should return false and log an error message', async () => {
     //   //Note: the expected commented line can be uncommented as soon as the function get refactored.
