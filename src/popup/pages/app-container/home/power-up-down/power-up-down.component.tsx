@@ -39,7 +39,6 @@ const PowerUpDown = ({
   powerType,
   globalProperties,
   formParams,
-  delegations,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
@@ -86,13 +85,6 @@ const PowerUpDown = ({
   useEffect(() => {
     const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
 
-    let totalOutgoingVestingShares = 0;
-    for (const delegation of delegations.outgoing) {
-      totalOutgoingVestingShares += parseFloat(
-        delegation.vesting_shares.toString().split(' ')[0],
-      );
-    }
-
     const hpBalance = (
       FormatUtils.toHP(
         (
@@ -100,7 +92,12 @@ const PowerUpDown = ({
             activeAccount.account.vesting_shares
               .toString()
               .replace('VESTS', ''),
-          ) - totalOutgoingVestingShares
+          ) -
+          parseFloat(
+            activeAccount.account.delegated_vesting_shares
+              .toString()
+              .replace(' VESTS', ''),
+          )
         ).toString(),
         globalProperties.globals,
       ) - (powerType === PowerType.POWER_UP ? 0 : 5)
@@ -108,7 +105,7 @@ const PowerUpDown = ({
 
     setAvailable(powerType === PowerType.POWER_UP ? hiveBalance : hpBalance);
     setCurrent(powerType === PowerType.POWER_UP ? hpBalance : hiveBalance);
-  }, [activeAccount, delegations]);
+  }, [activeAccount]);
 
   const title =
     powerType === PowerType.POWER_UP ? 'popup_html_pu' : 'popup_html_pd';
@@ -323,7 +320,6 @@ const mapStateToProps = (state: RootState) => {
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
-    delegations: state.delegations,
   };
 };
 
