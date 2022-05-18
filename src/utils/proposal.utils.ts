@@ -22,6 +22,7 @@ const hasVotedForProposal = async (
     'ascending',
     'all',
   );
+  console.log(listProposalVotes);
   return listProposalVotes[0].voter === activeAccount.name;
 };
 
