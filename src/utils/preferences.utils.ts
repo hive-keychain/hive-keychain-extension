@@ -29,7 +29,7 @@ export const isWhitelisted = (
     return false;
   }
 };
-
+/* istanbul ignore next */
 export const addToWhitelist = (
   username: string,
   domain: string,
