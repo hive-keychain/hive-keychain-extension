@@ -13,6 +13,7 @@ const userData = {
     randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
   },
   nonEncryptKeys: {
+    master: process.env._TEST_MASTER || 'error, please check',
     owner: process.env._TEST_OWNER || 'error, please check',
     active: process.env._TEST_ACTIVE || 'error, please check',
     posting: process.env._TEST_POSTING || 'error, please check',
