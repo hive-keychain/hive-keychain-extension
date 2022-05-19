@@ -72,14 +72,14 @@ describe('keys.utils tests:\n', () => {
     test('Passing valid account obj, master key and username must return all keys', () => {
       const account = {
         id: 1,
-        name: utilsT.userData2.username,
+        name: utilsT.userData.username,
         posting: {
           weight_threshold: 1,
           account_auths: [
             ['peakd.app', 1],
             ['stoodkev', 1],
           ],
-          key_auths: [[utilsT.userData2.encryptKeys.posting, 1]],
+          key_auths: [[utilsT.userData.encryptKeys.posting, 1]],
         },
         active: {
           weight_threshold: 1,
@@ -87,23 +87,23 @@ describe('keys.utils tests:\n', () => {
             ['peakd.app', 1],
             ['stoodkev', 1],
           ],
-          key_auths: [[utilsT.userData2.encryptKeys.active, 1]],
+          key_auths: [[utilsT.userData.encryptKeys.active, 1]],
         },
-        memo_key: utilsT.userData2.encryptKeys.memo,
+        memo_key: utilsT.userData.encryptKeys.memo,
       } as Account;
       expect(
         KeysUtils.derivateFromMasterPassword(
           account.name,
-          utilsT.userData2.nonEncryptKeys.master,
+          utilsT.userData.nonEncryptKeys.master,
           account,
         ),
       ).toEqual({
-        active: utilsT.userData2.nonEncryptKeys.active,
-        activePubkey: utilsT.userData2.encryptKeys.active,
-        posting: utilsT.userData2.nonEncryptKeys.posting,
-        postingPubkey: utilsT.userData2.encryptKeys.posting,
-        memo: utilsT.userData2.nonEncryptKeys.memo,
-        memoPubkey: utilsT.userData2.encryptKeys.memo,
+        active: utilsT.userData.nonEncryptKeys.active,
+        activePubkey: utilsT.userData.encryptKeys.active,
+        posting: utilsT.userData.nonEncryptKeys.posting,
+        postingPubkey: utilsT.userData.encryptKeys.posting,
+        memo: utilsT.userData.nonEncryptKeys.memo,
+        memoPubkey: utilsT.userData.encryptKeys.memo,
       });
     });
   });
