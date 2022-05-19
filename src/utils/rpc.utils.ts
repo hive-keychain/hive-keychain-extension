@@ -44,11 +44,11 @@ const getCurrentRpc = async (): Promise<Rpc> => {
   );
   return currentRpc ? currentRpc : { uri: 'DEFAULT', testnet: false };
 };
-
+/* istanbul ignore next */
 const saveCustomRpc = (rpcs: Rpc[]) => {
   LocalStorageUtils.saveValueInLocalStorage(LocalStorageKeyEnum.RPC_LIST, rpcs);
 };
-
+/* istanbul ignore next */
 const saveCurrentRpc = (rpc: Rpc) => {
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CURRENT_RPC,
@@ -57,7 +57,7 @@ const saveCurrentRpc = (rpc: Rpc) => {
 };
 
 const findRpc = async (uri: string) => {
-  const list = [...getFullList(), ...(await getCustomRpcs())];
+  const list = [...getFullList(), ...(await RpcUtils.getCustomRpcs())]; //modified for testing
   return list.find(
     (e) => e.uri === uri || e.uri === uri + '/' || e.uri + '/' === uri,
   );
