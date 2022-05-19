@@ -25,3 +25,12 @@ export const navigateToWithParams =
 export const goBack = (): AppThunk => async (dispatch, getState) => {
   dispatch({ type: ActionType.GO_BACK });
 };
+
+export const goBackTo =
+  (screen: Screen): AppThunk =>
+  async (dispatch, getState) => {
+    dispatch({
+      type: ActionType.GO_BACK_TO,
+      payload: { nextPage: screen, resetStack: false },
+    });
+  };

@@ -8,7 +8,11 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import {
+  goBack,
+  goBackTo,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
@@ -48,6 +52,10 @@ const CreateDelegationRequestPage = ({
   navigateToWithParams,
   setErrorMessage,
   setSuccessMessage,
+  goBack,
+  goBackTo,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [leaseRequestForm, setLeaseRequestForm] = useState<LeaseRequest>({
     id: uuidv4(),
@@ -188,8 +196,10 @@ const CreateDelegationRequestPage = ({
 
         if (success) {
           setSuccessMessage('html_popup_delegation_lease_request_success');
+          goBackTo(Screen.DELEGATION_MARKET);
         } else {
           setErrorMessage('html_popup_delegation_lease_request_failed');
+          goBack();
         }
       },
     });
@@ -266,6 +276,10 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   setErrorMessage,
   setSuccessMessage,
+  goBack,
+  goBackTo,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -48,7 +48,7 @@ export const NavigationReducer = (
       } else {
         return state;
       }
-    case ActionType.GO_BACK:
+    case ActionType.GO_BACK: {
       const newStack = state.stack;
       if (newStack.length > 1) {
         newStack[1].previousParams = newStack[0].params;
@@ -57,7 +57,14 @@ export const NavigationReducer = (
       return {
         stack: newStack,
       };
-
+    }
+    case ActionType.GO_BACK_TO: {
+      const newStack = state.stack;
+      do {
+        newStack.shift();
+      } while (newStack[0].currentPage !== payload?.nextPage);
+      return { stack: newStack };
+    }
     default:
       return state;
   }
