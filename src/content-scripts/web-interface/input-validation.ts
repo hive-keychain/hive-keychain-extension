@@ -99,7 +99,7 @@ const post = Joi.object({
 });
 
 const custom = Joi.object({
-  username: Joi.string().allow(null),
+  username: Joi.string().allow(null).allow(''),
   json: Joi.string().required(),
   id: Joi.string().required(),
   display_msg: Joi.string(),
