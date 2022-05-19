@@ -1,4 +1,5 @@
 import { Account } from '@hiveio/dhive';
+import { Keys } from '@interfaces/keys.interface';
 import KeysUtils from 'src/utils/keys.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
@@ -47,12 +48,12 @@ describe('keys.utils tests:\n', () => {
         ['peakd.app', 1],
         ['stoodkev', 1],
       ],
-      key_auths: [[utilsT.userData2.encryptKeys.posting, 1]],
+      key_auths: [[utilsT.userData.encryptKeys.posting, 1]],
     };
     test('Passing a posting key authority object with weigth must return 1', () => {
       expect(
         KeysUtils.getPubkeyWeight(
-          utilsT.userData2.encryptKeys.posting,
+          utilsT.userData.encryptKeys.posting,
           postingHasWeight,
         ),
       ).toBe(1);
@@ -61,10 +62,125 @@ describe('keys.utils tests:\n', () => {
       postingHasWeight.key_auths = [];
       expect(
         KeysUtils.getPubkeyWeight(
-          utilsT.userData2.encryptKeys.posting,
+          utilsT.userData.encryptKeys.posting,
           postingHasWeight,
         ),
       ).toBe(0);
+    });
+  });
+
+  describe('hasKeys tests:\n', () => {
+    test('Passing an empty Keys object must return false', () => {
+      expect(KeysUtils.hasKeys({} as Keys)).toBe(false);
+    });
+    test('Passing a Keys object with at least one key must return true', () => {
+      expect(
+        KeysUtils.hasKeys({
+          activePubkey: utilsT.userData.encryptKeys.active,
+        } as Keys),
+      ).toBe(true);
+    });
+  });
+
+  describe('keysCount tests:\n', () => {
+    test('Passing an empty Keys Object must return 0', () => {
+      expect(KeysUtils.keysCount({} as Keys)).toBe(0);
+    });
+    test('Passing a Keys Object with 1 key, must return 1', () => {
+      expect(
+        KeysUtils.keysCount({
+          memoPubkey: utilsT.userData.encryptKeys.memo,
+        } as Keys),
+      ).toBe(1);
+    });
+    test('Passing a Keys Object with 4 keys, must return 4', () => {
+      expect(
+        KeysUtils.keysCount({
+          activePubkey: utilsT.userData.encryptKeys.active,
+          active: utilsT.userData.nonEncryptKeys.active,
+          postingPubkey: utilsT.userData.encryptKeys.posting,
+          posting: utilsT.userData.nonEncryptKeys.posting,
+        } as Keys),
+      ).toBe(4);
+    });
+  });
+
+  describe('hasActive tests:\n', () => {
+    test('Passing an empty Keys object must return false', () => {
+      expect(KeysUtils.hasActive({} as Keys)).toBe(false);
+    });
+    test('Passing a Keys object with active key present, must return true', () => {
+      expect(
+        KeysUtils.hasActive({
+          active: utilsT.userData.nonEncryptKeys.active,
+          activePubkey: utilsT.userData.encryptKeys.active,
+        } as Keys),
+      ).toBe(true);
+    });
+    test('Passing a Keys object with keys but no active key present, must return false', () => {
+      expect(
+        KeysUtils.hasActive({
+          memo: utilsT.userData.nonEncryptKeys.memo,
+          activePubkey: utilsT.userData.encryptKeys.active,
+        } as Keys),
+      ).toBe(false);
+    });
+  });
+
+  describe('hasPosting tests:\n', () => {
+    test('Passing an empty Keys object must return false', () => {
+      expect(KeysUtils.hasPosting({} as Keys)).toBe(false);
+    });
+    test('Passing a Keys object with posting key present, must return true', () => {
+      expect(
+        KeysUtils.hasPosting({
+          posting: utilsT.userData.nonEncryptKeys.posting,
+          activePubkey: utilsT.userData.encryptKeys.active,
+        } as Keys),
+      ).toBe(true);
+    });
+    test('Passing a Keys object with keys but no posting key present, must return false', () => {
+      expect(
+        KeysUtils.hasPosting({
+          memo: utilsT.userData.nonEncryptKeys.memo,
+          activePubkey: utilsT.userData.encryptKeys.active,
+        } as Keys),
+      ).toBe(false);
+    });
+  });
+
+  describe('hasMemo tests:\n', () => {
+    test('Passing an empty Keys object must return false', () => {
+      expect(KeysUtils.hasMemo({} as Keys)).toBe(false);
+    });
+    test('Passing a Keys object with memo key present, must return true', () => {
+      expect(
+        KeysUtils.hasMemo({
+          memo: utilsT.userData.nonEncryptKeys.memo,
+          activePubkey: utilsT.userData.encryptKeys.active,
+        } as Keys),
+      ).toBe(true);
+    });
+    test('Passing a Keys object with keys but no memo key present, must return false', () => {
+      expect(
+        KeysUtils.hasMemo({
+          posting: utilsT.userData.nonEncryptKeys.posting,
+          activePubkey: utilsT.userData.encryptKeys.active,
+        } as Keys),
+      ).toBe(false);
+    });
+  });
+
+  describe('isAuthorizedAccount tests:\n', () => {
+    test('Passing a key without @ at the beginning, must return false', () => {
+      expect(
+        KeysUtils.isAuthorizedAccount(utilsT.userData.nonEncryptKeys.active),
+      ).toBe(false);
+    });
+    test('Passing a public key that starts with @, must return true', () => {
+      expect(
+        KeysUtils.isAuthorizedAccount(`@${utilsT.userData.encryptKeys.active}`),
+      ).toBe(true);
     });
   });
 

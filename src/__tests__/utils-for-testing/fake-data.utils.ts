@@ -24,26 +24,7 @@ const userData = {
 };
 
 const userData2 = {
-  username: process.env._TEST_USERNAME2 || 'error, please check',
-  encryptKeys: {
-    owner: process.env._TEST_OWNER_PUB2 || 'error, please check',
-    active: process.env._TEST_ACTIVE_PUB2 || 'error, please check',
-    posting: process.env._TEST_POSTING_PUB2 || 'error, please check',
-    memo: process.env._TEST_MEMO_PUB2 || 'error, please check',
-    randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
-  },
-  nonEncryptKeys: {
-    master: process.env._TEST_MASTER2 || 'error, please check',
-    owner: process.env._TEST_OWNER2 || 'error, please check',
-    active: process.env._TEST_ACTIVE2 || 'error, please check',
-    posting: process.env._TEST_POSTING2 || 'error, please check',
-    memo: process.env._TEST_MEMO2 || 'error, please check',
-    fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
-    randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
-  },
-};
-const userWMaster = {
-  username: process.env._TEST_USERNAME2 || 'error, please check',
+  username: 'workerjab2',
 };
 //data extended account
 const dataUserExtended = {
