@@ -1,6 +1,8 @@
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import axios from 'axios';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
 afterEach(() => {
@@ -70,7 +72,7 @@ describe('rpc.utils tests:\n', () => {
       expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
       expect(mockSaveValueInLocalStorage).toBeCalledWith('rpc', [customRpc]);
     });
-    test('Adding a customRpc into and non empty rpc onject in localStorage, must call saveValueInLocalStorage adding the new rpc into that object', async () => {
+    test('Adding a customRpc into and non empty rpc object in localStorage, must call saveValueInLocalStorage adding the new rpc into that object', async () => {
       const customRpcs: Rpc[] = [
         { uri: 'https://apiHive/', testnet: true },
         { uri: 'https://apiHive2/', testnet: false },
@@ -170,6 +172,45 @@ describe('rpc.utils tests:\n', () => {
         .mockResolvedValueOnce(customRpcList));
       expect(await RpcUtils.findRpc('https://apiHive2.blog/')).toBe(undefined);
       expect(mockGetCustomRpcs).toBeCalledTimes(1);
+    });
+  });
+
+  describe('checkRpcStatus tests:\n', () => {
+    const fakeResponse = {
+      status: 'OK',
+      datetime: '2022-05-19T18:14:33.440167',
+      source_commit: '',
+      docker_tag: '',
+      jussi_num: 64517562,
+    };
+    const hardCodedUri = 'https://hived.emre.sh';
+    test('Checking on uri "DEFAULT" will check on "defaultAPI/health" and return status', async () => {
+      const spyAxiosGet = jest
+        .spyOn(axios, 'get')
+        .mockResolvedValueOnce(fakeResponse);
+      expect(await RpcUtils.checkRpcStatus('DEFAULT')).toBe(true);
+      expect(spyAxiosGet).toBeCalledTimes(1);
+      expect(spyAxiosGet).toBeCalledWith('api.hive.blog/health');
+    });
+    test('Checking on a hardcoded uri, will check on "uri/health" and return status', async () => {
+      const spyAxiosGet = jest
+        .spyOn(axios, 'get')
+        .mockResolvedValueOnce(fakeResponse);
+      expect(await RpcUtils.checkRpcStatus(hardCodedUri)).toBe(true);
+      expect(spyAxiosGet).toBeCalledTimes(1);
+      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`);
+    });
+    test('If the checked uri returns an error, an error will be thrown by the interceptor as "RPC NOK" and will return false', async () => {
+      const error = new Error('RPC NOK');
+      const spyLoggerError = jest.spyOn(Logger, 'error');
+      const spyAxiosGet = jest
+        .spyOn(axios, 'get')
+        .mockImplementationOnce((...args) => Promise.reject(error));
+      expect(await RpcUtils.checkRpcStatus(hardCodedUri)).toBe(false);
+      expect(spyAxiosGet).toBeCalledTimes(1);
+      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`);
+      expect(spyLoggerError).toBeCalledTimes(1);
+      expect(spyLoggerError).toBeCalledWith(error);
     });
   });
 });
