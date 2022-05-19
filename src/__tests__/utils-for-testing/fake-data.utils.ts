@@ -1,7 +1,8 @@
+/* istanbul ignore file */
 //data needed to be used on some tests.
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 require('dotenv').config();
-/* istanbul ignore next */
+
 const userData = {
   username: process.env._TEST_USERNAME || 'error, please check',
   encryptKeys: {
@@ -20,12 +21,11 @@ const userData = {
     randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
   },
 };
-/* istanbul ignore next */
+
 const userData2 = {
   username: 'workerjab2',
 };
 //data extended account
-/* istanbul ignore next */
 const dataUserExtended = {
   id: 1439151,
   name: 'workerjab1',
@@ -118,7 +118,7 @@ const dataUserExtended = {
   tags_usage: [],
   guest_bloggers: [],
 };
-/* istanbul ignore next */
+
 const cedricDataSample = {
   id: 734613,
   name: 'cedricguillas',
@@ -214,7 +214,7 @@ const cedricDataSample = {
   tags_usage: [],
   guest_bloggers: [],
 };
-/* istanbul ignore next */
+
 const dynamicPropertiesObj = {
   id: 1200,
   confidential_supply: '1.00',
@@ -268,7 +268,7 @@ const dynamicPropertiesObj = {
   min_recurrent_transfers_recurrence: 24,
   max_open_recurrent_transfers: 255,
 } as DynamicGlobalProperties;
-/* istanbul ignore next */
+
 const fakeQuentinAccResponseWithAuth = {
   id: 9455,
   name: 'quentin',
@@ -360,7 +360,7 @@ const fakeQuentinAccResponseWithAuth = {
   lifetime_bandwidth: '',
   last_active_proved: '',
 };
-/* istanbul ignore next */
+
 const fakeQuentinAccResponseWithNoAuth = {
   id: 9455,
   name: 'quentin',
@@ -449,9 +449,8 @@ const fakeQuentinAccResponseWithNoAuth = {
   last_active_proved: '',
 };
 //data for specific test files
-//to be used on: format.utils.tests.ts
+//To be used on: format.utils.tests.ts
 //for nFormatter
-/* istanbul ignore next */
 const iterationValuesNoDecimals = [
   { input: 1e3, expectedString: '1k' },
   { input: 10e3, expectedString: '10k' },
@@ -470,7 +469,7 @@ const iterationValuesNoDecimals = [
   { input: 100e15, expectedString: '100P' },
   { input: 1e18, expectedString: '1E' },
 ];
-/* istanbul ignore next */
+
 const iterationValuesWithDecimals1 = [
   { input: 0.0, expectedString: '0', decimals: 1 },
   { input: 0.0, expectedString: '0', decimals: 2 },
@@ -479,7 +478,7 @@ const iterationValuesWithDecimals1 = [
   { input: 0.1234, expectedString: '0.123', decimals: 3 },
   { input: 0.1234, expectedString: '0.1234', decimals: 4 },
 ];
-/* istanbul ignore next */
+
 const iterationValuesWithDecimals2 = [
   { input: 1000.0123, expectedString: '1k', decimals: 1 },
   { input: 100000.0123, expectedString: '100k', decimals: 2 },
@@ -655,7 +654,7 @@ const fakeResponseHavingTokenBalances = [
     pendingUndelegations: '0',
   },
 ];
-/* istanbul ignore next */
+
 const fakeIncommingDelegations = [
   {
     _id: 1454,
@@ -689,9 +688,103 @@ const fakeOutgoingDelegations = [
 ];
 //end for hive-engine.utils
 
+//To be used on: hive.utils
+//for getTimeBeforeFull
+const votingPowerArrayTest = [
+  { votingPower: 90.0, expectedMessageArray: ['full_in', ['12 hours']] },
+  { votingPower: 80.0, expectedMessageArray: ['full_in', ['1 day']] },
+  {
+    votingPower: 70.0,
+    expectedMessageArray: ['full_in', ['1 day and 12 hours']],
+  },
+  { votingPower: 60.0, expectedMessageArray: ['full_in', ['2 days']] },
+  {
+    votingPower: 50.0,
+    expectedMessageArray: ['full_in', ['2 days and 12 hours']],
+  },
+  { votingPower: 40.0, expectedMessageArray: ['full_in', ['3 days']] },
+  {
+    votingPower: 30.0,
+    expectedMessageArray: ['full_in', ['3 days and 12 hours']],
+  },
+  { votingPower: 20.0, expectedMessageArray: ['full_in', ['4 days']] },
+  {
+    votingPower: 10.0,
+    expectedMessageArray: ['full_in', ['4 days and 12 hours']],
+  },
+  { votingPower: 0.0, expectedMessageArray: ['full_in', ['5 days']] },
+];
+//for getConversionRequests
+const fakeHbdConversionsResponse = [
+  {
+    id: 275431,
+    owner: 'wesp05',
+    requestid: 1,
+    amount: '2.500 HBD',
+    conversion_date: '2022-05-15T11:02:09',
+  },
+];
+const fakeHiveConversionsResponse = [
+  {
+    id: 275431,
+    owner: 'wesp05',
+    requestid: 1,
+    collateral_amount: '22.500 HIVE',
+    conversion_date: '2022-05-10T11:02:09',
+  },
+];
+//for getDelegators
+const fakeGetDelegatorsResponse = [
+  {
+    delegation_date: '2017-08-09T15:30:36.000Z',
+    delegator: 'kriborin',
+    vesting_shares: 31692093.5887,
+  },
+  {
+    delegation_date: '2017-08-09T15:29:42.000Z',
+    delegator: 'kevtorin',
+    vesting_shares: 31691975.1647,
+  },
+  {
+    delegation_date: '2017-08-09T15:31:48.000Z',
+    delegator: 'lessys',
+    vesting_shares: 29188598.7866,
+  },
+];
+const fakeGetDelegateesResponse = [
+  {
+    id: 270663,
+    delegator: 'blocktrades',
+    delegatee: 'buildawhale',
+    vesting_shares: '100.000000 VESTS',
+    min_delegation_time: '2017-09-29T02:19:03',
+  },
+  {
+    id: 933999,
+    delegator: 'blocktrades',
+    delegatee: 'ocdb',
+    vesting_shares: '200.902605 VESTS',
+    min_delegation_time: '2018-05-25T22:14:30',
+  },
+  {
+    id: 1350016,
+    delegator: 'blocktrades',
+    delegatee: 'usainvote',
+    vesting_shares: '300.000000 VESTS',
+    min_delegation_time: '2020-08-16T05:34:33',
+  },
+  {
+    id: 1350016,
+    delegator: 'blocktrades',
+    delegatee: 'usainvote2',
+    vesting_shares: '0 VESTS',
+    min_delegation_time: '2020-08-16T05:34:33',
+  },
+];
+//End To be used on: hive.utils
+
 //end data for specific test files
-//end data for specific test files
-/* istanbul ignore next */
+
 const bittrexResultArray = [
   {
     Currency: 'BTC',
@@ -716,7 +809,7 @@ const bittrexResultArray = [
     Notice: '',
   },
 ];
-/* istanbul ignore next */
+
 const utilsT = {
   dataUserExtended,
   cedricDataSample,
@@ -732,6 +825,11 @@ const utilsT = {
   fakeResponseHavingTokenBalances,
   fakeIncommingDelegations,
   fakeOutgoingDelegations,
+  votingPowerArrayTest,
+  fakeHbdConversionsResponse,
+  fakeHiveConversionsResponse,
+  fakeGetDelegatorsResponse,
+  fakeGetDelegateesResponse,
 };
-/* istanbul ignore next */
+
 export default utilsT;
