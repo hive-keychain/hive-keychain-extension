@@ -24,26 +24,7 @@ const userData = {
 };
 
 const userData2 = {
-  username: process.env._TEST_USERNAME2 || 'error, please check',
-  encryptKeys: {
-    owner: process.env._TEST_OWNER_PUB2 || 'error, please check',
-    active: process.env._TEST_ACTIVE_PUB2 || 'error, please check',
-    posting: process.env._TEST_POSTING_PUB2 || 'error, please check',
-    memo: process.env._TEST_MEMO_PUB2 || 'error, please check',
-    randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
-  },
-  nonEncryptKeys: {
-    master: process.env._TEST_MASTER2 || 'error, please check',
-    owner: process.env._TEST_OWNER2 || 'error, please check',
-    active: process.env._TEST_ACTIVE2 || 'error, please check',
-    posting: process.env._TEST_POSTING2 || 'error, please check',
-    memo: process.env._TEST_MEMO2 || 'error, please check',
-    fakeKey: '5Jq1oDi61PWMq7DNeJWQUVZV3v85QVFMN9ro3Dnmi1DySjgU1v9',
-    randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
-  },
-};
-const userWMaster = {
-  username: process.env._TEST_USERNAME2 || 'error, please check',
+  username: 'workerjab2',
 };
 //data extended account
 const dataUserExtended = {
@@ -715,22 +696,22 @@ const votingPowerArrayTest = [
   { votingPower: 80.0, expectedMessageArray: ['full_in', ['1 day']] },
   {
     votingPower: 70.0,
-    expectedMessageArray: ['full_in', ['1 day and 12 hours']],
+    expectedMessageArray: ['full_in', ['1 day common_and 12 hours']],
   },
   { votingPower: 60.0, expectedMessageArray: ['full_in', ['2 days']] },
   {
     votingPower: 50.0,
-    expectedMessageArray: ['full_in', ['2 days and 12 hours']],
+    expectedMessageArray: ['full_in', ['2 days common_and 12 hours']],
   },
   { votingPower: 40.0, expectedMessageArray: ['full_in', ['3 days']] },
   {
     votingPower: 30.0,
-    expectedMessageArray: ['full_in', ['3 days and 12 hours']],
+    expectedMessageArray: ['full_in', ['3 days common_and 12 hours']],
   },
   { votingPower: 20.0, expectedMessageArray: ['full_in', ['4 days']] },
   {
     votingPower: 10.0,
-    expectedMessageArray: ['full_in', ['4 days and 12 hours']],
+    expectedMessageArray: ['full_in', ['4 days common_and 12 hours']],
   },
   { votingPower: 0.0, expectedMessageArray: ['full_in', ['5 days']] },
 ];
