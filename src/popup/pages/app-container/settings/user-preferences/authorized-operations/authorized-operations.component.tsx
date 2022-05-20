@@ -1,10 +1,12 @@
 import { NoConfirm, NoConfirmWebsite } from '@interfaces/no-confirm.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { Icons } from '@popup/icons.enum';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
 import './authorized-operations.component.scss';
@@ -76,13 +78,13 @@ const AuthorizedOperations = ({
                             .toLowerCase()}`,
                         )}
                       </div>
-                      <img
-                        className="operation-action"
-                        src="/assets/images/delete.png"
+                      <Icon
                         onClick={() =>
                           handleEraseButtonClick(website, operation)
                         }
-                      />
+                        name={Icons.DELETE}
+                        type={IconType.OUTLINED}
+                        additionalClassName="operation-action"></Icon>
                     </div>
                   )
                 );
