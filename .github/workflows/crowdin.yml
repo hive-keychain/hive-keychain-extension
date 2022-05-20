@@ -15,6 +15,6 @@ jobs:
       - name: crowdin action
         uses: crowdin/github-action@1.4.9
         with:
-          config: '../../crowdin.yml'
+          config: 'crowdin.yml'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
