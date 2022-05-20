@@ -70,7 +70,6 @@ const getAccountTransactions = async (
         limit,
         operationsBitmask,
       );
-
     const transactions = transactionsFromBlockchain
       .map((e) => {
         let specificTransaction = null;

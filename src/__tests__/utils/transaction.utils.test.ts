@@ -10,17 +10,17 @@ afterEach(() => {
 });
 describe('transaction.utils tests:\n', () => {
   describe('getAccountTransactions tests:\n', () => {
+    const callingData = {
+      accountName: utilsT.userData.username,
+      start: 1000,
+      memoKey: utilsT.userData.nonEncryptKeys.memo,
+    };
     test('Getting data from an account that has transfers, must return a new array with added fields', async () => {
       const showOutPutData = false;
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       HiveUtils.getClient().database.getAccountHistory = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryResponse);
-      const callingData = {
-        accountName: utilsT.userData.username,
-        start: 1000,
-        memoKey: utilsT.userData.nonEncryptKeys.memo,
-      };
       const spyGetAccountHistory = jest.spyOn(
         HiveUtils.getClient().database,
         'getAccountHistory',
@@ -49,11 +49,6 @@ describe('transaction.utils tests:\n', () => {
       HiveUtils.getClient().database.getAccountHistory = jest
         .fn()
         .mockResolvedValueOnce([]);
-      const callingData = {
-        accountName: utilsT.userData.username,
-        start: 1000,
-        memoKey: utilsT.userData.nonEncryptKeys.memo,
-      };
       expect(
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
@@ -62,9 +57,10 @@ describe('transaction.utils tests:\n', () => {
         ),
       ).toEqual([[], callingData.start]);
     });
-    test('if an error occurs(wrong transfers data received, missing proper format in .op), must call Logger(read notes bellow)', async () => {
+    test('if an error occurs(wrong transfers data received, missing proper format in .op), must call Logger', async () => {
       //Note: Right now the error is being catch but this do not prevent the recursion from being executed
-      //which may lead to an app crash or at least the test will crash if I remove the try/catch within the test.
+      //which may lead to an app crash or at least the test will crash if I remove the try/catch within the test,
+      //but let me know if maybe i am not executing the test properly.
       let errorCatched = new TypeError(
         "Cannot read properties of undefined (reading 'stack')",
       );
@@ -73,11 +69,6 @@ describe('transaction.utils tests:\n', () => {
       HiveUtils.getClient().database.getAccountHistory = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryWrongDataResponse);
-      const callingData = {
-        accountName: utilsT.userData.username,
-        start: 1000,
-        memoKey: utilsT.userData.nonEncryptKeys.memo,
-      };
       try {
         expect(
           await TransactionUtils.getAccountTransactions(
@@ -95,11 +86,6 @@ describe('transaction.utils tests:\n', () => {
       }
     });
     test('Getting one transaction with id(0x40), must return the expected output bellow', async () => {
-      const callingData = {
-        accountName: utilsT.userData.username,
-        start: 1000,
-        memoKey: utilsT.userData.nonEncryptKeys.memo,
-      };
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       HiveUtils.getClient().database.getAccountHistory = jest
         .fn()
@@ -112,9 +98,27 @@ describe('transaction.utils tests:\n', () => {
         ),
       ).toEqual([utilsT.expectedOutputId0, callingData.start]);
     });
-    //Missing to test and construct:
-    // recurrent_transfer, fill_recurrent_transfer, claim_reward_balance, delegate_vesting_shares, transfer_to_vesting
-    // withdraw_vesting, interest, transfer_to_savings, transfer_from_savings, claim_account, convert
-    // collateralized_convert, fill_convert_request, fill_collateralized_convert_request
+    test('Must return the expected results, for the rest of cases', async () => {
+      const showResults = false;
+      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
+      HiveUtils.getClient().database.getAccountHistory = jest
+        .fn()
+        .mockResolvedValueOnce(
+          utilsT.fakeGetAccountHistoryResponseAllOtherTypes,
+        );
+      const result = await TransactionUtils.getAccountTransactions(
+        callingData.accountName,
+        callingData.start,
+        callingData.memoKey,
+      );
+      if (showResults) {
+        console.log(result);
+      }
+
+      expect(result).toEqual([
+        utilsT.expectedResultRestOfCases,
+        callingData.start,
+      ]);
+    });
   });
 });
