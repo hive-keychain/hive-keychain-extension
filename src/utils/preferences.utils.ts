@@ -35,14 +35,14 @@ export const addToWhitelist = async (
   domain: string,
   type: string,
 ) => {
-  const no_confirm = await LocalStorageUtils.getValueFromLocalStorage(
+  const noConfirm = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.NO_CONFIRM,
   );
-  let keep = !no_confirm ? {} : no_confirm;
-  if (keep[username] == undefined) {
+  let keep = !noConfirm ? {} : noConfirm;
+  if (!keep[username]) {
     keep[username] = {};
   }
-  if (keep[username][domain] == undefined) {
+  if (!keep[username][domain]) {
     keep[username][domain] = {};
   }
   keep[username][domain][type] = true;
