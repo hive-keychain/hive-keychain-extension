@@ -1,7 +1,7 @@
 name: Crowdin Action
 
 on:
-  push:
+  pull_request:
     branches: [beta]
 
 jobs:
