@@ -72,7 +72,7 @@ const getVP = (account: ExtendedAccount) => {
   const estimated_pct = (estimated_mana / estimated_max) * 100;
   return estimated_pct;
 };
-
+/* istanbul ignore next */
 const getEffectiveVestingSharesPerAccount = (account: ExtendedAccount) => {
   const effective_vesting_shares =
     parseFloat((account.vesting_shares as string).replace(' VESTS', '')) +
@@ -95,10 +95,10 @@ const getVotingDollarsPerAccount = (
     return null;
   }
   const vp = getVP(account)! * 100;
-  const rewardBalance = getRewardBalance(properties);
-  const recentClaims = getRecentClaims(properties);
-  const hivePrice = getHivePrice(properties);
-  const votePowerReserveRate = getVotePowerReserveRate(properties);
+  const rewardBalance = HiveUtils.getRewardBalance(properties); //modified for testing
+  const recentClaims = HiveUtils.getRecentClaims(properties); //modified for testing
+  const hivePrice = HiveUtils.getHivePrice(properties); //modified for testing
+  const votePowerReserveRate = HiveUtils.getVotePowerReserveRate(properties); //modified for testing
 
   if (rewardBalance && recentClaims && hivePrice && votePowerReserveRate) {
     const effective_vesting_shares = Math.round(
@@ -121,27 +121,28 @@ const getVotingDollarsPerAccount = (
     return;
   }
 };
+/* istanbul ignore next */
 const getRC = async (accountName: string) => {
   const rcAcc = await getClient().rc.findRCAccounts([accountName]);
   const rc = await getClient().rc.calculateRCMana(rcAcc[0]);
   return rc;
 };
-
+/* istanbul ignore next */
 const getRewardBalance = (properties: GlobalProperties) => {
   return parseFloat(properties.rewardFund!.reward_balance);
 };
-
+/* istanbul ignore next */
 const getRecentClaims = (properties: GlobalProperties) => {
   return parseInt(properties.rewardFund!.recent_claims, 10);
 };
-
+/* istanbul ignore next */
 const getHivePrice = (properties: GlobalProperties) => {
   return (
     parseFloat(properties.price!.base + '') /
     parseFloat(properties.price!.quote + '')
   );
 };
-
+/* istanbul ignore next */
 const getVotePowerReserveRate = (properties: GlobalProperties) => {
   return properties.globals!.vote_power_reserve_rate;
 };
@@ -161,7 +162,6 @@ const getTimeBeforeFull = (votingPower: number) => {
     let fullInMinutes = parseInt(
       (minutesNeeded - fullInDays * 1440 - fullInHours * 60).toString(),
     );
-
     const fullIn = [];
 
     if (fullInDays) {
@@ -189,10 +189,13 @@ const getTimeBeforeFull = (votingPower: number) => {
       );
     }
 
-    let fullInString = fullIn.join(' and ');
+    let fullInString = fullIn.join(` ${chrome.i18n.getMessage('common_and')} `);
 
     if (fullIn.length === 3) {
-      fullInString = fullInString.replace(' and', ',');
+      fullInString = fullInString.replace(
+        ` ${chrome.i18n.getMessage('common_and')} `,
+        ', ',
+      );
     }
 
     return chrome.i18n.getMessage('full_in', [fullInString]);
@@ -246,8 +249,10 @@ const claimRewards = async (
   rewardVests: string | Asset,
 ): Promise<boolean> => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      //modified for testing
+      HiveUtils.getClient().broadcast.sendOperations(
+        //modified for testing
         [
           [
             'claim_reward_balance',
@@ -269,7 +274,6 @@ const claimRewards = async (
           store.getState().globalProperties.globals,
         ).toString(),
       ) + ' HP';
-
     let claimedResources = [rewardHBD, rewardHive, rewardHp].filter(
       (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
     );
@@ -289,8 +293,10 @@ const claimRewards = async (
 
 const powerUp = async (from: string, to: string, amount: string) => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      //modified for testing
+      HiveUtils.getClient().broadcast.sendOperations(
+        //modified for testing
         [
           [
             'transfer_to_vesting',
@@ -314,8 +320,10 @@ const powerUp = async (from: string, to: string, amount: string) => {
 
 const powerDown = async (username: string, amount: string) => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      //modified for testing
+      HiveUtils.getClient().broadcast.sendOperations(
+        //modified for testing
         [
           [
             'withdraw_vesting',
@@ -389,7 +397,7 @@ const transfer = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const convertOperation = async (
   activeAccount: ActiveAccount,
   conversions: Conversion[],
@@ -421,7 +429,7 @@ const convertOperation = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const encodeMemo = (
   memo: string,
   privateKey: string,
@@ -429,7 +437,7 @@ const encodeMemo = (
 ) => {
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
-
+/* istanbul ignore next */
 const decodeMemo = (memo: string, privateKey: string) => {
   return hive.memo.decode(privateKey, memo);
 };
@@ -460,7 +468,7 @@ const signMessage = (message: string, privateKey: string) => {
   }
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
-
+/* istanbul ignore next */
 const deposit = async (
   activeAccount: ActiveAccount,
   amount: string,
@@ -495,7 +503,12 @@ const deposit = async (
     return false;
   }
 };
-const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
+/* istanbul ignore next */
+const withdraw = async (
+  activeAccount: ActiveAccount,
+  amount: string,
+  to: string,
+) => {
   const savings = await hive.api.getSavingsWithdrawFromAsync(
     activeAccount.name,
   );
@@ -512,7 +525,7 @@ const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
               from: activeAccount.name,
               memo: '',
               request_id: requestId,
-              to: activeAccount.name,
+              to,
             },
           ] as TransferFromSavingsOperation,
         ],
@@ -526,7 +539,7 @@ const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
     return false;
   }
 };
-
+/* istanbul ignore next */
 const delegateVestingShares = async (
   activeAccount: ActiveAccount,
   delegatee: string,
@@ -552,7 +565,7 @@ const delegateVestingShares = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
@@ -568,7 +581,7 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
     ),
   );
 };
-
+/* istanbul ignore next */
 const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -581,7 +594,7 @@ const voteForProposal = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const unvoteProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -594,7 +607,7 @@ const unvoteProposal = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const updateProposalVote = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -626,7 +639,8 @@ const sendOperationWithConfirmation = async (
   const transactionConfirmation = await transactionConfirmationPromise;
   let transaction = null;
   do {
-    transaction = await getClient().transaction.findTransaction(
+    transaction = await HiveUtils.getClient().transaction.findTransaction(
+      // modified for testing
       transactionConfirmation.id,
     );
     await sleep(500);
@@ -639,7 +653,7 @@ const sendOperationWithConfirmation = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
     setTimeout(async function () {
@@ -647,7 +661,7 @@ const getDelayedTransactionInfo = (trxID: string) => {
     }, 500);
   });
 };
-
+/* istanbul ignore next */
 const getProposalDailyBudget = async () => {
   return parseFloat(
     (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
@@ -681,6 +695,10 @@ const HiveUtils = {
   sendOperationWithConfirmation,
   unvoteProposal,
   getProposalDailyBudget,
+  getRewardBalance, //exported for testing
+  getRecentClaims, //exported for testing
+  getHivePrice, //exported for testing
+  getVotePowerReserveRate, //exported for testing
 };
 
 export default HiveUtils;

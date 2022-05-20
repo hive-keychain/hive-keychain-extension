@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -101,6 +101,7 @@
     "eslint": "^8.13.0",
     "eslint-webpack-plugin": "^3.1.1",
     "fs": "^0.0.1-security",
+    "identity-obj-proxy": "^3.0.0",
     "jest": "^27.5.1",
     "node-sass": "^7.0.1",
     "react-hot-loader": "^4.13.0",

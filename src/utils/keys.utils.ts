@@ -76,9 +76,11 @@ const keysCount = (keys: Keys): number => {
 const hasActive = (keys: Keys): boolean => {
   return keys.active !== undefined;
 };
+
 const hasPosting = (keys: Keys): boolean => {
   return keys.posting !== undefined;
 };
+
 const hasMemo = (keys: Keys): boolean => {
   return keys.memo !== undefined;
 };

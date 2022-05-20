@@ -18,6 +18,7 @@ module.exports = {
     '^@interfaces(.*)$': '<rootDir>/src/interfaces/$1',
     '^@reference-data(.*)$': '<rootDir>/src/reference-data/$1',
     '^@api(.*)$': '<rootDir>/src/api/$1',
+    '\\.(css|less|scss)$': 'identity-obj-proxy',
   },
   modulePaths: ['<rootDir>'],
   collectCoverageFrom: ['<rootDir>/**/*.{ts, tsx}'],

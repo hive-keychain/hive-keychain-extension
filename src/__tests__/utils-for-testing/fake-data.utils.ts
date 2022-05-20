@@ -1,7 +1,9 @@
+/* istanbul ignore file */
 //data needed to be used on some tests.
 import { DynamicGlobalProperties } from '@hiveio/dhive';
+import moment from 'moment';
 require('dotenv').config();
-/* istanbul ignore next */
+
 const userData = {
   username: process.env._TEST_USERNAME || 'error, please check',
   encryptKeys: {
@@ -12,6 +14,7 @@ const userData = {
     randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
   },
   nonEncryptKeys: {
+    master: process.env._TEST_MASTER || 'error, please check',
     owner: process.env._TEST_OWNER || 'error, please check',
     active: process.env._TEST_ACTIVE || 'error, please check',
     posting: process.env._TEST_POSTING || 'error, please check',
@@ -20,12 +23,11 @@ const userData = {
     randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
   },
 };
-/* istanbul ignore next */
+
 const userData2 = {
   username: 'workerjab2',
 };
 //data extended account
-/* istanbul ignore next */
 const dataUserExtended = {
   id: 1439151,
   name: 'workerjab1',
@@ -118,7 +120,7 @@ const dataUserExtended = {
   tags_usage: [],
   guest_bloggers: [],
 };
-/* istanbul ignore next */
+
 const cedricDataSample = {
   id: 734613,
   name: 'cedricguillas',
@@ -214,7 +216,7 @@ const cedricDataSample = {
   tags_usage: [],
   guest_bloggers: [],
 };
-/* istanbul ignore next */
+
 const dynamicPropertiesObj = {
   id: 1200,
   confidential_supply: '1.00',
@@ -268,7 +270,7 @@ const dynamicPropertiesObj = {
   min_recurrent_transfers_recurrence: 24,
   max_open_recurrent_transfers: 255,
 } as DynamicGlobalProperties;
-/* istanbul ignore next */
+
 const fakeQuentinAccResponseWithAuth = {
   id: 9455,
   name: 'quentin',
@@ -360,7 +362,7 @@ const fakeQuentinAccResponseWithAuth = {
   lifetime_bandwidth: '',
   last_active_proved: '',
 };
-/* istanbul ignore next */
+
 const fakeQuentinAccResponseWithNoAuth = {
   id: 9455,
   name: 'quentin',
@@ -449,9 +451,8 @@ const fakeQuentinAccResponseWithNoAuth = {
   last_active_proved: '',
 };
 //data for specific test files
-//to be used on: format.utils.tests.ts
+//To be used on: format.utils.tests.ts
 //for nFormatter
-/* istanbul ignore next */
 const iterationValuesNoDecimals = [
   { input: 1e3, expectedString: '1k' },
   { input: 10e3, expectedString: '10k' },
@@ -470,7 +471,7 @@ const iterationValuesNoDecimals = [
   { input: 100e15, expectedString: '100P' },
   { input: 1e18, expectedString: '1E' },
 ];
-/* istanbul ignore next */
+
 const iterationValuesWithDecimals1 = [
   { input: 0.0, expectedString: '0', decimals: 1 },
   { input: 0.0, expectedString: '0', decimals: 2 },
@@ -479,7 +480,7 @@ const iterationValuesWithDecimals1 = [
   { input: 0.1234, expectedString: '0.123', decimals: 3 },
   { input: 0.1234, expectedString: '0.1234', decimals: 4 },
 ];
-/* istanbul ignore next */
+
 const iterationValuesWithDecimals2 = [
   { input: 1000.0123, expectedString: '1k', decimals: 1 },
   { input: 100000.0123, expectedString: '100k', decimals: 2 },
@@ -655,7 +656,7 @@ const fakeResponseHavingTokenBalances = [
     pendingUndelegations: '0',
   },
 ];
-/* istanbul ignore next */
+
 const fakeIncommingDelegations = [
   {
     _id: 1454,
@@ -689,9 +690,253 @@ const fakeOutgoingDelegations = [
 ];
 //end for hive-engine.utils
 
+//To be used on: hive.utils
+//for getTimeBeforeFull
+const votingPowerArrayTest = [
+  { votingPower: 90.0, expectedMessageArray: ['full_in', ['12 hours']] },
+  { votingPower: 80.0, expectedMessageArray: ['full_in', ['1 day']] },
+  {
+    votingPower: 70.0,
+    expectedMessageArray: ['full_in', ['1 day common_and 12 hours']],
+  },
+  { votingPower: 60.0, expectedMessageArray: ['full_in', ['2 days']] },
+  {
+    votingPower: 50.0,
+    expectedMessageArray: ['full_in', ['2 days common_and 12 hours']],
+  },
+  { votingPower: 40.0, expectedMessageArray: ['full_in', ['3 days']] },
+  {
+    votingPower: 30.0,
+    expectedMessageArray: ['full_in', ['3 days common_and 12 hours']],
+  },
+  { votingPower: 20.0, expectedMessageArray: ['full_in', ['4 days']] },
+  {
+    votingPower: 10.0,
+    expectedMessageArray: ['full_in', ['4 days common_and 12 hours']],
+  },
+  { votingPower: 0.0, expectedMessageArray: ['full_in', ['5 days']] },
+];
+//for getConversionRequests
+const fakeHbdConversionsResponse = [
+  {
+    id: 275431,
+    owner: 'wesp05',
+    requestid: 1,
+    amount: '2.500 HBD',
+    conversion_date: '2022-05-15T11:02:09',
+  },
+];
+const fakeHiveConversionsResponse = [
+  {
+    id: 275431,
+    owner: 'wesp05',
+    requestid: 1,
+    collateral_amount: '22.500 HIVE',
+    conversion_date: '2022-05-10T11:02:09',
+  },
+];
+//for getDelegators
+const fakeGetDelegatorsResponse = [
+  {
+    delegation_date: '2017-08-09T15:30:36.000Z',
+    delegator: 'kriborin',
+    vesting_shares: 31692093.5887,
+  },
+  {
+    delegation_date: '2017-08-09T15:29:42.000Z',
+    delegator: 'kevtorin',
+    vesting_shares: 31691975.1647,
+  },
+  {
+    delegation_date: '2017-08-09T15:31:48.000Z',
+    delegator: 'lessys',
+    vesting_shares: 29188598.7866,
+  },
+];
+const fakeGetDelegateesResponse = [
+  {
+    id: 270663,
+    delegator: 'blocktrades',
+    delegatee: 'buildawhale',
+    vesting_shares: '100.000000 VESTS',
+    min_delegation_time: '2017-09-29T02:19:03',
+  },
+  {
+    id: 933999,
+    delegator: 'blocktrades',
+    delegatee: 'ocdb',
+    vesting_shares: '200.902605 VESTS',
+    min_delegation_time: '2018-05-25T22:14:30',
+  },
+  {
+    id: 1350016,
+    delegator: 'blocktrades',
+    delegatee: 'usainvote',
+    vesting_shares: '300.000000 VESTS',
+    min_delegation_time: '2020-08-16T05:34:33',
+  },
+  {
+    id: 1350016,
+    delegator: 'blocktrades',
+    delegatee: 'usainvote2',
+    vesting_shares: '0 VESTS',
+    min_delegation_time: '2020-08-16T05:34:33',
+  },
+];
+//End To be used on: hive.utils
+
+//for proposal.utils
+const fakeVotedAccountResponse = [
+  {
+    id: 90661,
+    voter: 'theghost1980',
+    proposal: {
+      id: 216,
+      proposal_id: 216,
+      creator: 'keychain',
+      receiver: 'keychain',
+      start_date: '2022-05-15T00:00:00',
+      end_date: '2023-05-15T00:00:00',
+      daily_pay: [Object],
+      subject: 'Hive Keychain development',
+      permlink: 'hive-keychain-proposal-dhf-ran717',
+      total_votes: '61237185339413554',
+      status: 'active',
+    },
+  },
+];
+const fakeProposalListResponse = {
+  proposals: [
+    {
+      id: 214,
+      proposal_id: 214,
+      creator: 'howo',
+      receiver: 'howo',
+      start_date: '2022-04-27T00:00:00',
+      end_date: '2023-04-27T00:00:00',
+      daily_pay: { amount: '330000', precision: 3, nai: '@@000000013' },
+      subject: 'Core development of hive and communities year 3',
+      permlink: 'core-development-proposal-year-3',
+      total_votes: '84323179888178111',
+      status: 'active',
+    },
+    {
+      id: 185,
+      proposal_id: 185,
+      creator: 'hivewatchers',
+      receiver: 'hivewatchers',
+      start_date: '2021-08-01T00:00:00',
+      end_date: '2022-07-31T00:00:00',
+      daily_pay: { amount: '330000', precision: 3, nai: '@@000000013' },
+      subject: 'The Hivewatchers & Spaminator Operational Proposal',
+      permlink: 'the-hivewatchers-and-spaminator-operational-proposal',
+      total_votes: '74818760284017953',
+      status: 'active',
+    },
+    {
+      id: 201,
+      proposal_id: 201,
+      creator: 'brianoflondon',
+      receiver: 'v4vapp.dhf',
+      start_date: '2022-01-23T00:00:00',
+      end_date: '2022-05-23T00:00:00',
+      daily_pay: { amount: '330000', precision: 3, nai: '@@000000013' },
+      subject:
+        'Continuation: Hive to Value 4 Value - The Hive <> Bitcoin Lightning Bridge',
+      permlink:
+        'v4vapp-updates-ongoing-funding-proposal-for-the-btc-lightning-to-hive-bi-directional-bridge',
+      total_votes: '73774153416233168',
+      status: 'active',
+    },
+  ],
+};
+const fakeProposalKeyChain = {
+  id: 216,
+  proposal_id: 216,
+  creator: 'keychain',
+  receiver: 'keychain',
+  start_date: '2022-05-15T00:00:00',
+  end_date: '2023-05-15T00:00:00',
+  daily_pay: { amount: '390000', precision: 3, nai: '@@000000013' },
+  subject: 'Hive Keychain development',
+  permlink: 'hive-keychain-proposal-dhf-ran717',
+  total_votes: '61237185339413554',
+  status: 'active',
+};
+const fakeProposal2 = {
+  id: 140,
+  proposal_id: 140,
+  creator: 'keychain',
+  receiver: 'keychain',
+  start_date: '2020-11-15T00:00:00',
+  end_date: '2021-05-15T00:00:00',
+  daily_pay: { amount: '200000', precision: 3, nai: '@@000000013' },
+  subject: 'Hive Keychain Development #2',
+  permlink: 'hive-keychain-development-proposal-2',
+  total_votes: '50549679283763983',
+  status: 'expired',
+};
+const fakeListProposalVotesResponse = {
+  proposal_votes: [
+    { id: 90661, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    // { id: 92195, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    // { id: 56050, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    // { id: 59685, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    { id: 72478, voter: 'thefukel', proposal: fakeProposal2 },
+    { id: 80828, voter: 'theflamingwings', proposal: fakeProposal2 },
+    { id: 83430, voter: 'thefiery', proposal: fakeProposal2 },
+  ],
+};
+const fakeDailyBudgetResponse = 16259983.208;
+const expectedResultProposal = [
+  {
+    creator: 'howo',
+    dailyPay: '330 HBD',
+    endDate: moment('2023-04-27T00:00:00'),
+    startDate: moment('2022-04-27T00:00:00'),
+    funded: 'totally_funded',
+    id: 214,
+    link: 'https://peakd.com/proposals/214',
+    proposalId: 214,
+    receiver: 'howo',
+    subject: 'Core development of hive and communities year 3',
+    totalVotes: '0 HP',
+    voted: false,
+  },
+  {
+    creator: 'hivewatchers',
+    dailyPay: '330 HBD',
+    endDate: moment('2022-07-31T00:00:00'),
+    startDate: moment('2021-08-01T00:00:00'),
+    funded: 'totally_funded',
+    id: 185,
+    link: 'https://peakd.com/proposals/185',
+    proposalId: 185,
+    receiver: 'hivewatchers',
+    subject: 'The Hivewatchers & Spaminator Operational Proposal',
+    totalVotes: '0 HP',
+    voted: false,
+  },
+  {
+    creator: 'brianoflondon',
+    dailyPay: '330 HBD',
+    endDate: moment('2022-05-23T00:00:00'),
+    startDate: moment('2022-01-23T00:00:00'),
+    funded: 'totally_funded',
+    id: 201,
+    link: 'https://peakd.com/proposals/201',
+    proposalId: 201,
+    receiver: 'v4vapp.dhf',
+    subject:
+      'Continuation: Hive to Value 4 Value - The Hive <> Bitcoin Lightning Bridge',
+    totalVotes: '0 HP',
+    voted: false,
+  },
+];
+//end for proposal.utils
+
 //end data for specific test files
-//end data for specific test files
-/* istanbul ignore next */
+
 const bittrexResultArray = [
   {
     Currency: 'BTC',
@@ -716,7 +961,7 @@ const bittrexResultArray = [
     Notice: '',
   },
 ];
-/* istanbul ignore next */
+
 const utilsT = {
   dataUserExtended,
   cedricDataSample,
@@ -732,6 +977,17 @@ const utilsT = {
   fakeResponseHavingTokenBalances,
   fakeIncommingDelegations,
   fakeOutgoingDelegations,
+  votingPowerArrayTest,
+  fakeHbdConversionsResponse,
+  fakeHiveConversionsResponse,
+  fakeGetDelegatorsResponse,
+  fakeGetDelegateesResponse,
+  fakeVotedAccountResponse,
+  fakeProposalListResponse,
+  fakeListProposalVotesResponse,
+  fakeDailyBudgetResponse,
+  expectedResultProposal,
+  fakeProposalKeyChain,
 };
-/* istanbul ignore next */
+
 export default utilsT;

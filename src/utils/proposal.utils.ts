@@ -24,18 +24,18 @@ const hasVotedForProposal = async (
   );
   return listProposalVotes[0].voter === activeAccount.name;
 };
-
+/* istanbul ignore next */
 const voteForKeychainProposal = async (activeAccount: ActiveAccount) => {
   return await HiveUtils.voteForProposal(activeAccount, PROPOSAL_ID);
 };
-
+/* istanbul ignore next */
 const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
   return await HiveUtils.voteForProposal(activeAccount, proposalId);
 };
-
+/* istanbul ignore next */
 const unvoteProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -65,7 +65,6 @@ const getProposalList = async (accountName: string): Promise<Proposal[]> => {
     .map((item: any) => item.proposal);
 
   let dailyBudget = await HiveUtils.getProposalDailyBudget();
-
   return result.proposals.map((proposal: any) => {
     let fundedOption = FundedOption.NOT_FUNDED;
     if (dailyBudget > 0) {

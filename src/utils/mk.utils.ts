@@ -7,11 +7,11 @@ const login = async (password: string): Promise<boolean> => {
   let accounts = await AccountUtils.getAccountsFromLocalStorage(password);
   return accounts ? true : false;
 };
-
+/* istanbul ignore next */
 const getMkFromLocalStorage = () => {
   return LocalStorageUtils.getValueFromLocalStorage(LocalStorageKeyEnum.__MK);
 };
-
+/* istanbul ignore next */
 const saveMkInLocalStorage = (mk: string): void => {
   LocalStorageUtils.saveValueInLocalStorage(LocalStorageKeyEnum.__MK, mk);
 };
