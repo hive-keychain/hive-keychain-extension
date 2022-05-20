@@ -935,6 +935,174 @@ const expectedResultProposal = [
 ];
 //end for proposal.utils
 
+//For transaction.utils
+const fakeGetAccountHistoryResponse = [
+  [
+    1,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: 'keychain.tests',
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    4,
+    {
+      trx_id: '1307e3f32f3ba555d971400c99048e73edbb509d',
+      block: 64543878,
+      trx_in_block: 51,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:11:33',
+      op: [
+        'transfer',
+        {
+          from: 'theghost1980',
+          to: 'keychain.tests',
+          amount: '0.100 HIVE',
+          memo: 'Memo.test',
+        },
+      ],
+    },
+  ],
+  [
+    5,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'transfer',
+        {
+          from: 'keychain.tests',
+          to: 'workerjab1',
+          amount: '0.001 HIVE',
+          memo: '#AhTgoBkHRDnswPQt2sBq41FV7iC39CgnnvmS3ZoDBADJmZqyftpQxcrrwrTfxN33ZuyLoWMQ2f2fnG44LaFpvF1gpkRqfBPwMYcgg1FzE5Y6dCxbWKvpDYDQZdPsWMJHsBBSBC9UfJsSxqiqcACzqSH',
+        },
+      ],
+    },
+  ],
+];
+const expectedDataGetAccountHistory = [
+  [
+    {
+      from: 'keychain.tests',
+      to: 'workerjab1',
+      amount: '0.001 HIVE',
+      memo: ' Encrypted Memo Test',
+      type: 'transfer',
+      timestamp: '2022-05-20T16:17:48',
+      key: 'keychain.tests!5',
+      index: 5,
+      txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      blockNumber: 64544003,
+      url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      last: false,
+      lastFetched: false,
+    },
+    {
+      from: 'theghost1980',
+      to: 'keychain.tests',
+      amount: '0.100 HIVE',
+      memo: 'Memo.test',
+      type: 'transfer',
+      timestamp: '2022-05-20T16:11:33',
+      key: 'keychain.tests!4',
+      index: 4,
+      txId: '1307e3f32f3ba555d971400c99048e73edbb509d',
+      blockNumber: 64543878,
+      url: 'https://hiveblocks.com/tx/1307e3f32f3ba555d971400c99048e73edbb509d',
+      last: false,
+      lastFetched: false,
+    },
+    {
+      from: 'workerjab1',
+      to: 'keychain.tests',
+      amount: '0.001 HIVE',
+      memo: '',
+      type: 'transfer',
+      timestamp: '2022-05-18T00:36:36',
+      key: 'keychain.tests!1',
+      index: 1,
+      txId: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      blockNumber: 64467698,
+      url: 'https://hiveblocks.com/tx/976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      last: false,
+      lastFetched: false,
+    },
+  ],
+  1000,
+];
+const fakeGetAccountHistoryWrongDataResponse = [
+  [
+    1,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-18T00:36:36',
+      op: ['transfer', 'String_bad_data'],
+    },
+  ],
+];
+const fakeOneTransactionResponse = [
+  [
+    1,
+    {
+      trx_id: '0000000000000000000000000000000000000000',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: 'keychain.tests',
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+];
+const expectedOutputId0 = [
+  {
+    amount: '0.001 HIVE',
+    blockNumber: 64467698,
+    from: 'workerjab1',
+    index: 1,
+    key: 'keychain.tests!1',
+    last: false,
+    lastFetched: false,
+    memo: '',
+    timestamp: '2022-05-18T00:36:36',
+    to: 'keychain.tests',
+    txId: '0000000000000000000000000000000000000000',
+    type: 'transfer',
+    url: 'https://hiveblocks.com/b/64467698#0000000000000000000000000000000000000000',
+  },
+];
+//end for transaction.utils
+
 //end data for specific test files
 
 const bittrexResultArray = [
@@ -988,6 +1156,11 @@ const utilsT = {
   fakeDailyBudgetResponse,
   expectedResultProposal,
   fakeProposalKeyChain,
+  fakeGetAccountHistoryResponse,
+  expectedDataGetAccountHistory,
+  fakeGetAccountHistoryWrongDataResponse,
+  expectedOutputId0,
+  fakeOneTransactionResponse,
 };
 
 export default utilsT;
