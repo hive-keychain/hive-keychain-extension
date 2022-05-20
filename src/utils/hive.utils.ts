@@ -189,10 +189,13 @@ const getTimeBeforeFull = (votingPower: number) => {
       );
     }
 
-    let fullInString = fullIn.join(' and ');
+    let fullInString = fullIn.join(` ${chrome.i18n.getMessage('common_and')} `);
 
     if (fullIn.length === 3) {
-      fullInString = fullInString.replace(' and', ',');
+      fullInString = fullInString.replace(
+        ` ${chrome.i18n.getMessage('common_and')} `,
+        ', ',
+      );
     }
 
     return chrome.i18n.getMessage('full_in', [fullInString]);
@@ -501,7 +504,11 @@ const deposit = async (
   }
 };
 /* istanbul ignore next */
-const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
+const withdraw = async (
+  activeAccount: ActiveAccount,
+  amount: string,
+  to: string,
+) => {
   const savings = await hive.api.getSavingsWithdrawFromAsync(
     activeAccount.name,
   );
@@ -518,7 +525,7 @@ const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
               from: activeAccount.name,
               memo: '',
               request_id: requestId,
-              to: activeAccount.name,
+              to,
             },
           ] as TransferFromSavingsOperation,
         ],
