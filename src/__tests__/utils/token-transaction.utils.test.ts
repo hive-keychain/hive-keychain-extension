@@ -79,21 +79,21 @@ describe('token-transaction.utils tests:\n', () => {
   });
 
   describe('filterStake tests:\n', () => {
-    test('Passing a value not cointained in fields, must return false', () => {
+    test('Passing a value not contained in fields, must return false', () => {
       const stake = {
         to: 'theghost1980',
         from: 'quentin',
       } as StakeTokenTransaction;
       expect(TokenTransactionUtils.filterStake(stake, 'test')).toBe(false);
     });
-    test('Passing a value cointained in field(to), must return true', () => {
+    test('Passing a value contained in field(to), must return true', () => {
       const stake = {
         to: 'test.account',
         from: 'quentin',
       } as StakeTokenTransaction;
       expect(TokenTransactionUtils.filterStake(stake, 'test')).toBe(true);
     });
-    test('Passing a value cointained in field(from), must return true', () => {
+    test('Passing a value contained in field(from), must return true', () => {
       const stake = {
         to: 'test.account',
         from: 'quentin',
@@ -107,17 +107,17 @@ describe('token-transaction.utils tests:\n', () => {
       delegatee: 'theghost1980',
       delegator: 'quentin',
     } as DelegateTokenTransaction;
-    test('Passing a value not cointained in fields, must return false', () => {
+    test('Passing a value not contained in fields, must return false', () => {
       expect(TokenTransactionUtils.filterDelegation(delegation, 'test')).toBe(
         false,
       );
     });
-    test('Passing a value cointained in field(delegatee), must return true', () => {
+    test('Passing a value contained in field(delegatee), must return true', () => {
       expect(TokenTransactionUtils.filterDelegation(delegation, 'the')).toBe(
         true,
       );
     });
-    test('Passing a value cointained in field(delegator), must return true', () => {
+    test('Passing a value contained in field(delegator), must return true', () => {
       expect(
         TokenTransactionUtils.filterDelegation(delegation, 'quentin'),
       ).toBe(true);
