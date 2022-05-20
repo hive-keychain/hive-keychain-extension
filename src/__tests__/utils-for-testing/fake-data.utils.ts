@@ -697,22 +697,22 @@ const votingPowerArrayTest = [
   { votingPower: 80.0, expectedMessageArray: ['full_in', ['1 day']] },
   {
     votingPower: 70.0,
-    expectedMessageArray: ['full_in', ['1 day and 12 hours']],
+    expectedMessageArray: ['full_in', ['1 day common_and 12 hours']],
   },
   { votingPower: 60.0, expectedMessageArray: ['full_in', ['2 days']] },
   {
     votingPower: 50.0,
-    expectedMessageArray: ['full_in', ['2 days and 12 hours']],
+    expectedMessageArray: ['full_in', ['2 days common_and 12 hours']],
   },
   { votingPower: 40.0, expectedMessageArray: ['full_in', ['3 days']] },
   {
     votingPower: 30.0,
-    expectedMessageArray: ['full_in', ['3 days and 12 hours']],
+    expectedMessageArray: ['full_in', ['3 days common_and 12 hours']],
   },
   { votingPower: 20.0, expectedMessageArray: ['full_in', ['4 days']] },
   {
     votingPower: 10.0,
-    expectedMessageArray: ['full_in', ['4 days and 12 hours']],
+    expectedMessageArray: ['full_in', ['4 days common_and 12 hours']],
   },
   { votingPower: 0.0, expectedMessageArray: ['full_in', ['5 days']] },
 ];
