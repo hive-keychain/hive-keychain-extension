@@ -272,6 +272,10 @@ const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
   return transfer;
 };
 
-const TransactionUtils = { getAccountTransactions, getLastTransaction };
+const TransactionUtils = {
+  getAccountTransactions,
+  getLastTransaction,
+  decodeMemoIfNeeded,
+}; //modified for testing
 
 export default TransactionUtils;
