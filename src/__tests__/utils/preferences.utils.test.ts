@@ -5,8 +5,10 @@ import {
 } from '@interfaces/keychain.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import {
+  addToWhitelist,
   isWhitelisted,
   removeFromWhitelist,
 } from 'src/utils/preferences.utils';
@@ -19,6 +21,83 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 describe('preferences.utils tests:\n', () => {
+  describe('addToWhitelist tests:\n', () => {
+    const username = utilsT.userData.username;
+    const domain = 'domain';
+    const type = 'type';
+    let mockGetValueFromLocalStorage: jest.Mock;
+    let mockSaveValueInLocalStorage: jest.Mock;
+    afterEach(() => {
+      mockGetValueFromLocalStorage.mockReset();
+      mockGetValueFromLocalStorage.mockRestore();
+    });
+    test('Checking on an account without a stored value, must set [username][domain][type] to true and return undefined', async () => {
+      mockGetValueFromLocalStorage =
+        LocalStorageUtils.getValueFromLocalStorage = jest
+          .fn()
+          .mockResolvedValueOnce({});
+      mockSaveValueInLocalStorage = LocalStorageUtils.saveValueInLocalStorage =
+        jest.fn();
+      const result = await addToWhitelist(username, domain, type);
+      expect(result).toBe(undefined);
+      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+        LocalStorageKeyEnum.NO_CONFIRM,
+      );
+      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toBeCalledWith('no_confirm', {
+        'keychain.tests': { domain: { type: true } },
+      });
+    });
+    test('Checking on an account with a stored value(different username key), must set a new [username][domain][type] to true and return undefined', async () => {
+      mockGetValueFromLocalStorage =
+        LocalStorageUtils.getValueFromLocalStorage = jest
+          .fn()
+          .mockResolvedValueOnce({ quentin: { domain: {} } });
+      mockSaveValueInLocalStorage = LocalStorageUtils.saveValueInLocalStorage =
+        jest.fn();
+      const result = await addToWhitelist(username, domain, type);
+      expect(result).toBe(undefined);
+      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+        LocalStorageKeyEnum.NO_CONFIRM,
+      );
+      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toBeCalledWith('no_confirm', {
+        'keychain.tests': {
+          domain: {
+            type: true,
+          },
+        },
+        quentin: {
+          domain: {},
+        },
+      });
+    });
+    test('Checking on an account with a stored value(different domain key), must set a new [username][domain][type] to true and return undefined', async () => {
+      mockGetValueFromLocalStorage =
+        LocalStorageUtils.getValueFromLocalStorage = jest
+          .fn()
+          .mockResolvedValueOnce({ 'keychain.tests': { domain2: {} } });
+      mockSaveValueInLocalStorage = LocalStorageUtils.saveValueInLocalStorage =
+        jest.fn();
+      const result = await addToWhitelist(username, domain, type);
+      expect(result).toBe(undefined);
+      expect(mockGetValueFromLocalStorage).toBeCalledTimes(1);
+      expect(mockGetValueFromLocalStorage).toBeCalledWith(
+        LocalStorageKeyEnum.NO_CONFIRM,
+      );
+      expect(mockSaveValueInLocalStorage).toBeCalledTimes(1);
+      expect(mockSaveValueInLocalStorage).toBeCalledWith('no_confirm', {
+        'keychain.tests': {
+          domain: {
+            type: true,
+          },
+          domain2: {},
+        },
+      });
+    });
+  });
   describe('isWhitelisted tests:\n', () => {
     test('Passing empty values must return false', () => {
       const arr = {} as NoConfirm;
