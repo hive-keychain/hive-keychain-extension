@@ -166,7 +166,7 @@ const SavingsPage = ({
             break;
           case SavingOperationType.WITHDRAW:
             addToLoadingList('html_popup_withdraw_from_savings_operation');
-            success = await HiveUtils.withdraw(activeAccount, valueS);
+            success = await HiveUtils.withdraw(activeAccount, valueS, username);
             removeFromLoadingList('html_popup_withdraw_from_savings_operation');
             break;
         }
@@ -289,15 +289,15 @@ const SavingsPage = ({
 
       {text.length > 0 && <div className="text">{text}</div>}
 
-      {selectedSavingOperationType === SavingOperationType.DEPOSIT && (
+      {
         <InputComponent
           type={InputType.TEXT}
           logo={Icons.AT}
-          placeholder="popup_html_username"
+          placeholder="popup_html_transfer_to"
           value={username}
           onChange={setUsername}
         />
-      )}
+      }
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
