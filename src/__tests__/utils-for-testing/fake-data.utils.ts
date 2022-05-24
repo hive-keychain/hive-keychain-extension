@@ -1567,6 +1567,67 @@ const expectedResultRestOfCases = [
 ];
 //end for transaction.utils
 
+//for account.actions
+const initialEmptyStateStore = {
+  mk: '',
+  accounts: [],
+  activeAccount: { account: {}, keys: {}, rc: {} },
+  errorMessage: { key: '', type: 'SUCCESS' },
+  navigation: { stack: [] },
+  activeRpc: { uri: 'NULL', testnet: false },
+  currencyPrices: { bitcoin: {}, hive: {}, hive_dollar: {} },
+  globalProperties: {},
+  delegations: { incoming: [], outgoing: [] },
+  conversions: [],
+  phishing: [],
+  transactions: { loading: false, list: [], lastUsedStart: -1 },
+  userTokens: { loading: false, list: [] },
+  tokens: [],
+  tokenHistory: [],
+  tokenMarket: [],
+  loading: [],
+  titleContainer: { title: '' },
+} as any;
+const initialStateWAccountsWActiveAccountStore = {
+  mk: '',
+  accounts: [
+    {
+      name: userData.username,
+      keys: {
+        posting: userData.nonEncryptKeys.posting,
+        postingPubkey: userData.encryptKeys.posting,
+      },
+    },
+  ],
+  activeAccount: {
+    name: userData.username,
+    account: {
+      name: userData.username,
+    },
+    keys: {
+      posting: userData.nonEncryptKeys.posting,
+      postingPubkey: userData.encryptKeys.posting,
+    },
+    rc: {},
+  },
+  errorMessage: { key: '', type: 'SUCCESS' },
+  navigation: { stack: [] },
+  activeRpc: { uri: 'NULL', testnet: false },
+  currencyPrices: { bitcoin: {}, hive: {}, hive_dollar: {} },
+  globalProperties: {},
+  delegations: { incoming: [], outgoing: [] },
+  conversions: [],
+  phishing: [],
+  transactions: { loading: false, list: [], lastUsedStart: -1 },
+  userTokens: { loading: false, list: [] },
+  tokens: [],
+  tokenHistory: [],
+  tokenMarket: [],
+  loading: [],
+  titleContainer: { title: '' },
+} as any;
+//end for account.actions
+
 //end data for specific test files
 
 const bittrexResultArray = [
@@ -1627,6 +1688,8 @@ const utilsT = {
   fakeOneTransactionResponse,
   fakeGetAccountHistoryResponseAllOtherTypes,
   expectedResultRestOfCases,
+  initialEmptyStateStore,
+  initialStateWAccountsWActiveAccountStore,
 };
 
 export default utilsT;
