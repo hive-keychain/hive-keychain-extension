@@ -9,6 +9,7 @@ import {
   PrivateKey,
 } from '@hiveio/dhive';
 import { RequestId, RequestPost } from '@interfaces/keychain.interface';
+import Logger from 'src/utils/logger.utils';
 
 export const broadcastPost = async (
   requestHandler: RequestsHandler,
@@ -58,6 +59,7 @@ export const broadcastPost = async (
   } catch (e) {
     err = e;
   } finally {
+    Logger.log(err);
     const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
