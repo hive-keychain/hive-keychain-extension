@@ -63,6 +63,9 @@ const getAccountTransactions = async (
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
+
+    if (limit <= 0) return [[], 0];
+
     const transactionsFromBlockchain =
       await HiveUtils.getClient().database.getAccountHistory(
         accountName,
@@ -70,7 +73,6 @@ const getAccountTransactions = async (
         limit,
         operationsBitmask,
       );
-
     const transactions = transactionsFromBlockchain
       .map((e) => {
         let specificTransaction = null;
@@ -273,6 +275,10 @@ const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
   return transfer;
 };
 
-const TransactionUtils = { getAccountTransactions, getLastTransaction };
+const TransactionUtils = {
+  getAccountTransactions,
+  getLastTransaction,
+  decodeMemoIfNeeded,
+}; //modified for testing
 
 export default TransactionUtils;

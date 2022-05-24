@@ -68,7 +68,7 @@ const post = Joi.object({
   parent_username: Joi.alternatives().conditional('title', {
     is: Joi.valid(''),
     then: Joi.string().required(),
-    otherwise: null,
+    otherwise: '',
   }),
   parent_perm: Joi.string().required(),
   json_metadata: Joi.string().required(),
