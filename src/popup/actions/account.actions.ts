@@ -71,11 +71,13 @@ export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
     const { activeAccount, accounts } = getState();
+
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
 
     let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount);
+
     const finalAccounts = [];
     for (let i = 0; i < newAccounts.length; i++) {
       let tmp = newAccounts[i];

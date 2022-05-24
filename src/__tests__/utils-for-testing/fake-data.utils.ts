@@ -1588,26 +1588,36 @@ const initialEmptyStateStore = {
   loading: [],
   titleContainer: { title: '' },
 } as any;
+const keysUserData1 = {
+  active: userData.nonEncryptKeys.active,
+  activePubkey: `@${userData.username}`,
+  posting: userData.nonEncryptKeys.posting,
+  postingPubkey: `@${userData.username}`,
+  memo: userData.nonEncryptKeys.memo,
+  memoPubkey: `@${userData.username}`,
+};
+const secondAccountOnState = {
+  name: userData2.username,
+  keys: {
+    posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
+    postingPubkey: `@${userData2.username}`,
+  },
+};
 const initialStateWAccountsWActiveAccountStore = {
   mk: '',
   accounts: [
     {
       name: userData.username,
-      keys: {
-        posting: userData.nonEncryptKeys.posting,
-        postingPubkey: userData.encryptKeys.posting,
-      },
+      keys: keysUserData1,
     },
+    secondAccountOnState,
   ],
   activeAccount: {
     name: userData.username,
     account: {
       name: userData.username,
     },
-    keys: {
-      posting: userData.nonEncryptKeys.posting,
-      postingPubkey: userData.encryptKeys.posting,
-    },
+    keys: keysUserData1,
     rc: {},
   },
   errorMessage: { key: '', type: 'SUCCESS' },
@@ -1690,6 +1700,8 @@ const utilsT = {
   expectedResultRestOfCases,
   initialEmptyStateStore,
   initialStateWAccountsWActiveAccountStore,
+  keysUserData1,
+  secondAccountOnState,
 };
 
 export default utilsT;
