@@ -15,6 +15,10 @@
     "message": "Yes",
     "description": "Generic"
   },
+  "common_and": {
+    "message": "and",
+    "description": "Generic"
+  },
   "common_no": {
     "message": "No",
     "description": "Generic"

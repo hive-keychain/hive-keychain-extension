@@ -259,7 +259,6 @@ const Delegations = ({
             {currencyLabels.hp}
           </div>
         </div>
-        <div className="divider"></div>
         <div className="total-available">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_available')}
