@@ -11,7 +11,9 @@ const tryConfirmTransaction = (
   let result: any;
   return new Promise(async function (fulfill, reject) {
     for (let i = 0; i < 20; i++) {
-      result = await getDelayedTransactionInfo(trxId);
+      result = await BlockchainTransactionUtils.getDelayedTransactionInfo(
+        trxId,
+      ); //modified for testing
       if (result != null) break;
     }
 
@@ -33,7 +35,7 @@ const getDelayedTransactionInfo = (trxID: string) => {
     }, 1000);
   });
 };
-
+/* istanbul ignore next */
 const delayRefresh = async (): Promise<void> => {
   const TIME_REFERENCE = 1643236071000;
   const delay = Math.min(
@@ -47,6 +49,10 @@ const delayRefresh = async (): Promise<void> => {
   });
 };
 
-const BlockchainTransactionUtils = { tryConfirmTransaction, delayRefresh };
+const BlockchainTransactionUtils = {
+  tryConfirmTransaction,
+  delayRefresh,
+  getDelayedTransactionInfo, //modified for testing
+};
 
 export default BlockchainTransactionUtils;
