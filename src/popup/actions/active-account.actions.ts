@@ -11,12 +11,14 @@ export const refreshActiveAccount =
       ((Date.now() - TIME_REFERENCE) % 3) * 1000 + 100,
       3000,
     );
-
+    console.log('Hi from refresh: ', getState()); //To Remove Ojo
+    console.log('refresh delay: ', delay); //To Remove Ojo
     setTimeout(() => {
       const account = getState().accounts.find(
         (localAccount: LocalAccount) =>
           localAccount.name === getState().activeAccount.name,
       );
+      console.log('After delay'); //To Remove Ojo
       dispatch(loadActiveAccount(account));
     }, delay);
   };
@@ -33,6 +35,7 @@ export const refreshKeys = (localAccount: LocalAccount) => {
 export const loadActiveAccount =
   (account: LocalAccount): AppThunk =>
   async (dispatch, getState) => {
+    console.log('After delay, inside loadActiveAccount'); //To Remove Ojo
     if (account) {
       dispatch(refreshKeys(account));
       dispatch(getAccountRC(account.name));
