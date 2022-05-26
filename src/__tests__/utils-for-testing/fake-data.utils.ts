@@ -1929,6 +1929,103 @@ const expectedPayLoadloadTokenHistory = [
 ];
 //end for token.actions
 
+//for transactions.reducer
+const transactionList = [
+  {
+    from: 'keychain.tests',
+    to: 'workerjab1',
+    amount: '0.001 HIVE',
+    memo: ' Encrypted Memo Test',
+    type: 'transfer',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!5',
+    index: 5,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    from: 'theghost1980',
+    to: 'keychain.tests',
+    amount: '0.100 HIVE',
+    memo: 'Memo.test',
+    type: 'transfer',
+    timestamp: '2022-05-20T16:11:33',
+    key: 'keychain.tests!4',
+    index: 4,
+    txId: '1307e3f32f3ba555d971400c99048e73edbb509d',
+    blockNumber: 64543878,
+    url: 'https://hiveblocks.com/tx/1307e3f32f3ba555d971400c99048e73edbb509d',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    from: 'workerjab1',
+    to: 'keychain.tests',
+    amount: '0.001 HIVE',
+    memo: '',
+    type: 'transfer',
+    timestamp: '2022-05-18T00:36:36',
+    key: 'keychain.tests!1',
+    index: 1,
+    txId: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+    blockNumber: 64467698,
+    url: 'https://hiveblocks.com/tx/976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+    last: false,
+    lastFetched: false,
+  },
+];
+const expectedListResult = [
+  {
+    amount: '0.100 HIVE',
+    blockNumber: 64543878,
+    from: 'theghost1980',
+    index: 4,
+    key: 'keychain.tests!4',
+    last: false,
+    lastFetched: false,
+    memo: 'Memo.test',
+    timestamp: '2022-05-20T16:11:33',
+    to: 'keychain.tests',
+    txId: '1307e3f32f3ba555d971400c99048e73edbb509d',
+    type: 'transfer',
+    url: 'https://hiveblocks.com/tx/1307e3f32f3ba555d971400c99048e73edbb509d',
+  },
+  {
+    amount: '0.001 HIVE',
+    blockNumber: 64544003,
+    from: 'keychain.tests',
+    index: 5,
+    key: 'keychain.tests!5',
+    last: false,
+    lastFetched: false,
+    memo: ' Encrypted Memo Test',
+    timestamp: '2022-05-20T16:17:48',
+    to: 'workerjab1',
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    type: 'transfer',
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+  },
+  {
+    amount: '0.001 HIVE',
+    blockNumber: 64467698,
+    from: 'workerjab1',
+    index: 1,
+    key: 'keychain.tests!1',
+    last: false,
+    lastFetched: false,
+    memo: '',
+    timestamp: '2022-05-18T00:36:36',
+    to: 'keychain.tests',
+    txId: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+    type: 'transfer',
+    url: 'https://hiveblocks.com/tx/976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+  },
+];
+//end for transactions.reducer
+
 //end data for specific test files
 
 const bittrexResultArray = [
@@ -1998,6 +2095,8 @@ const utilsT = {
   fakeGetUserBalanceResponse,
   fakeTokensGetAccountHistoryResponse,
   expectedPayLoadloadTokenHistory,
+  transactionList,
+  expectedListResult,
 };
 
 export default utilsT;
