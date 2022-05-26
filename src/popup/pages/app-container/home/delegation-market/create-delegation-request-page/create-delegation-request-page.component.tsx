@@ -48,6 +48,7 @@ interface LeaseRequest {
 const CreateDelegationRequestPage = ({
   activeAccount,
   currencyLabels,
+  globalProperties,
   setTitleContainerProperties,
   navigateToWithParams,
   setErrorMessage,
@@ -115,6 +116,10 @@ const CreateDelegationRequestPage = ({
     const transferMemo = {
       key: LeaseKeys.REQUEST,
       ...leaseRequestForm,
+      delegationValue: FormatUtils.fromHP(
+        `${leaseRequestForm.delegationValue}`,
+        globalProperties.globals!,
+      ),
     };
     const totalAmount =
       parseFloat(leaseRequestForm.weeklyPay.toString()) *
@@ -124,7 +129,7 @@ const CreateDelegationRequestPage = ({
     }`;
 
     if (leaseRequestForm.weeklyPay < 1) {
-      setErrorMessage('popup_html_delegation_market_payout_too_low');
+      setErrorMessage('popup_html_delegation_market_weekly_payout_too_low');
       return;
     }
     if (leaseRequestForm.duration > 24) {
@@ -162,7 +167,7 @@ const CreateDelegationRequestPage = ({
           )} ${currencyLabels.hp}`,
         },
         {
-          label: 'popup_html_delegation_market_payout',
+          label: 'popup_html_delegation_market_weekly_payout',
           value: `${FormatUtils.formatCurrencyValue(
             leaseRequestForm.weeklyPay,
           )} ${currencyLabels[leaseRequestForm.weeklyPayCurrency]}`,
@@ -225,8 +230,8 @@ const CreateDelegationRequestPage = ({
         <InputComponent
           type={InputType.NUMBER}
           placeholder="0.000"
-          label="popup_html_delegation_market_payout"
-          hint="popup_html_delegation_market_payout_hint"
+          label="popup_html_delegation_market_weekly_payout"
+          hint="popup_html_delegation_market_weekly_payout_hint"
           skipPlaceholderTranslation
           value={leaseRequestForm.weeklyPay}
           min={1}
@@ -268,6 +273,7 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(
       state.activeRpc?.testnet!,
     ) as CurrencyLabels,
+    globalProperties: state.globalProperties,
   };
 };
 

@@ -2282,9 +2282,13 @@
     "message": "Request",
     "description": "Delegation request"
   },
-  "popup_html_delegation_market_payout": {
-    "message": "Daily payout",
-    "description": "Delegation daily payout"
+  "popup_html_delegation_market_weekly_payout": {
+    "message": "Weekly payout",
+    "description": "Delegation weekly payout"
+  },
+  "popup_html_delegation_market_daily_payout": {
+    "message": "Weekly payout",
+    "description": "Delegation weekly payout"
   },
   "popup_html_delegation_market_duration": {
     "message": "Duration",
@@ -2326,8 +2330,8 @@
     "message": "How many weeks do you want to lease the HP for? (maximum 24)",
     "description": "Delegation request"
   },
-  "popup_html_delegation_market_payout_hint": {
-    "message": "How much do you want to pay per day? (minimum 1 HIVE/HBD)",
+  "popup_html_delegation_market_weekly_payout_hint": {
+    "message": "How much do you want to pay per week? (minimum 1 HIVE/HBD)",
     "description": "Delegation request"
   },
   "popup_html_delegation_market_delegation_value_hint": {
@@ -2359,7 +2363,7 @@
     "description": "total cost of the operation for user"
   },
   "popup_html_delegation_market_unsuficient_funds": {
-    "message": "Balance are unsuficients",
+    "message": "Funds are unsuficients",
     "description": "total cost of the operation for user"
   },
   "weeks": {
@@ -2370,7 +2374,7 @@
     "message": "week",
     "description": "global word"
   },
-  "popup_html_delegation_market_payout_too_low": {
+  "popup_html_delegation_market_weekly_payout_too_low": {
     "message": "Payout is too low. Please set a minimum of one HIVE/HBD",
     "description": "global word"
   },
@@ -2417,5 +2421,53 @@
   "popup_html_undelegation_pending_until_message": {
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
+  },
+  "popup_html_lease_market_cancel_request": {
+    "message": "Canceling request",
+    "description": "cancel request loading message"
+  },
+  "popup_html_lease_market_delegate_to_user": {
+    "message": "Delegating",
+    "description": "delegate loading message"
+  },
+  "popup_html_lease_market_undelegate": {
+    "message": "Undelegating",
+    "description": "delegate loading message"
+  },
+  "popup_html_delegation_market_unsuficient_hp_balance": {
+    "message": "You don't have enough HP to delegate",
+    "description": "total cost of the operation for user"
+  },
+  "popup_html_confirm_delegation_lease_accept_title": {
+    "message": "Accept lease",
+    "description": "Accept lease confirmation page title"
+  },
+  "popup_html_confirm_delegation_lease_accept_message": {
+    "message": "You are about to accept a lease request, please confirm this operation",
+    "description": "Accept lease confirmation page description message"
+  },
+  "popup_html_confirm_undelegate_lease_title": {
+    "message": "Cancel lease",
+    "description": "Undelegate (cancel) lease confirmation page title (delegator side)"
+  },
+  "popup_html_confirm_undelegate_lease_message": {
+    "message": "You are about to cancel this lease, please confirm this operation",
+    "description": "Undelegate (cancel) lease confirmation page description message (delegator side)"
+  },
+  "popup_html_delegation_market_lease_creator": {
+    "message": "Creator",
+    "description": "Creator"
+  },
+  "popup_html_current_delegation": {
+    "message": "Current delegation",
+    "description": "General word"
+  },
+  "popup_html_new_delegation": {
+    "message": "New delegation",
+    "description": "General word"
+  },
+  "popup_html_lease_value": {
+    "message": "Lease value",
+    "description": "Lease value"
   }
 }

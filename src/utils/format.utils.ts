@@ -1,13 +1,16 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
 
-const withCommas = (nb: string, decimals = 3) => {
-  const currency = nb.split(' ')[1];
+const withCommas = (nb: string | number, decimals = 3) => {
+  let currency: string = '';
+  if (typeof nb === 'string') {
+    currency = nb.split(' ')[1];
+  }
 
-  const value = parseFloat(nb).toFixed(decimals);
+  const value = parseFloat(nb.toString()).toFixed(decimals);
   var parts = value.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   let finalNumber = parts.join('.');
-  if (currency) {
+  if (currency && currency.length > 0) {
     finalNumber = finalNumber + ' ' + currency;
   }
   return finalNumber;

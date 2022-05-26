@@ -1,12 +1,15 @@
+import { VestingDelegation } from '@hiveio/dhive';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { Lease } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
 import { LeaseItemComponent } from '@popup/pages/app-container/home/delegation-market/lease-item/lease-item.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import FormatUtils from 'src/utils/format.utils';
+import HiveUtils from 'src/utils/hive.utils';
 import './tab-container.component.scss';
 
 interface TabContainerProps {
@@ -19,9 +22,40 @@ const TabContainer = ({
   leases,
   hideDisplayChip,
   displayAddButton,
+  activeAccount,
+  globalProperties,
   navigateTo,
 }: PropsFromRedux) => {
-  useEffect(() => {}, []);
+  const [availableVestingShares, setAvailableVestingShares] = useState(0);
+  const [outgoingDelegations, setOutgoingDelegations] = useState<
+    VestingDelegation[]
+  >([]);
+
+  useEffect(() => {
+    init();
+  }, [activeAccount]);
+
+  const init = async () => {
+    setOutgoingDelegations(await HiveUtils.getDelegatees(activeAccount.name!));
+
+    const totalVestingShares = parseFloat(
+      activeAccount.account.vesting_shares.toString().replace(' VESTS', ''),
+    );
+    const outgoingVestingShares = parseFloat(
+      activeAccount.account.delegated_vesting_shares
+        .toString()
+        .replace(' VESTS', ''),
+    );
+
+    setAvailableVestingShares(
+      Math.max(
+        totalVestingShares -
+          outgoingVestingShares -
+          FormatUtils.fromHP('5', globalProperties!),
+        0,
+      ),
+    );
+  };
 
   return (
     <div className="tab-container">
@@ -31,6 +65,8 @@ const TabContainer = ({
             key={lease.id}
             lease={lease}
             hideDisplayChip={hideDisplayChip}
+            outgoingDelegations={outgoingDelegations}
+            canDelegate={lease.value <= availableVestingShares}
           />
         ))}
       {displayAddButton && (
@@ -45,7 +81,10 @@ const TabContainer = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    activeAccount: state.activeAccount,
+    globalProperties: state.globalProperties.globals,
+  };
 };
 
 const connector = connect(mapStateToProps, { navigateTo });

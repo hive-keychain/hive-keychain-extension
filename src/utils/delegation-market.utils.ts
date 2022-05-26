@@ -1,5 +1,12 @@
+import {
+  CustomJsonOperation,
+  DelegateVestingSharesOperation,
+  PrivateKey,
+  VestingDelegation,
+} from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Lease } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
+import { store } from '@popup/store';
 import HiveUtils from 'src/utils/hive.utils';
 
 export enum LeaseKeys {
@@ -7,6 +14,7 @@ export enum LeaseKeys {
   REQUEST = 'keychain_lease_request',
   ACCEPT_REQUEST = 'keychain_lease_accept_request',
   UNDELEGATE = 'keychain_lease_undelegate_request',
+  CANCEL_DELEGATION = 'keychain_lease_cancel_delegation',
 }
 
 const downloadAllLeases = async (): Promise<Lease[]> => {
@@ -31,16 +39,96 @@ const cancelLeaseRequest = async (
 const acceptLeaseRequest = async (
   lease: Lease,
   activeAccount: ActiveAccount,
+  delegationTotalAmount: number,
 ) => {
-  return HiveUtils.sendLeaseDelegation(activeAccount, lease);
+  return await HiveUtils.sendOperationWithConfirmation(
+    HiveUtils.getClient().broadcast.sendOperations(
+      [
+        [
+          'custom_json',
+          {
+            id: LeaseKeys.ACCEPT_REQUEST,
+            required_auths: [activeAccount.name!],
+            required_posting_auths: activeAccount.keys.active
+              ? []
+              : [activeAccount.name!],
+            json: JSON.stringify({
+              leaseId: lease.id,
+            }),
+          } as CustomJsonOperation[1],
+        ],
+        [
+          'delegate_vesting_shares',
+          {
+            delegator: activeAccount.name!,
+            delegatee: lease.creator,
+            vesting_shares: delegationTotalAmount + ' VESTS',
+          } as DelegateVestingSharesOperation[1],
+        ],
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    ),
+  );
 };
-const undelegateLease = async (lease: Lease, activeAccount: ActiveAccount) => {
-  return HiveUtils.sendCustomJson(
-    {
-      id: lease.id,
-    },
-    activeAccount,
-    LeaseKeys.ACCEPT_REQUEST,
+
+const getPreviousAndNewDelegationToUser = (
+  outgoingDelegations: VestingDelegation[],
+  lease: Lease,
+  cancelation?: boolean,
+): [number, number] => {
+  const existingDelegation = outgoingDelegations.find(
+    (delegation) => delegation.delegatee === lease.creator,
+  );
+
+  const oldDelegation = existingDelegation
+    ? parseFloat(
+        existingDelegation.vesting_shares.toString().replace(' VESTS', ''),
+      )
+    : 0;
+
+  if (cancelation) {
+    return [oldDelegation, oldDelegation - lease.value];
+  } else {
+    return [oldDelegation, lease.value + oldDelegation];
+  }
+};
+
+const undelegateLease = async (
+  lease: Lease,
+  activeAccount: ActiveAccount,
+  newDelegationAmount: number,
+) => {
+  return await HiveUtils.sendOperationWithConfirmation(
+    HiveUtils.getClient().broadcast.sendOperations(
+      [
+        [
+          'custom_json',
+          {
+            id: LeaseKeys.CANCEL_DELEGATION,
+            required_auths: [activeAccount.name!],
+            required_posting_auths: activeAccount.keys.active
+              ? []
+              : [activeAccount.name!],
+            json: JSON.stringify({
+              leaseId: lease.id,
+            }),
+          } as CustomJsonOperation[1],
+        ],
+        [
+          'delegate_vesting_shares',
+          {
+            delegator: activeAccount.name!,
+            delegatee: lease.creator,
+            vesting_shares: newDelegationAmount + ' VESTS',
+          } as DelegateVestingSharesOperation[1],
+        ],
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    ),
   );
 };
 
@@ -49,4 +137,5 @@ export const DelegationMarketUtils = {
   cancelLeaseRequest,
   acceptLeaseRequest,
   undelegateLease,
+  getPreviousAndNewDelegationToUser,
 };
