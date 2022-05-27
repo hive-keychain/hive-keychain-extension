@@ -4,11 +4,7 @@ import HiveUtils from 'src/utils/hive.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialStateWOneKey } from 'src/__tests__/utils-for-testing/initial-states';
-//
-const TIME_REFERENCE = 1643236071000;
-const delay = Math.min(((Date.now() - TIME_REFERENCE) % 3) * 1000 + 100, 3000);
-jest.setTimeout(delay + 1800);
-//
+
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -37,8 +33,14 @@ describe('active-account.actions tests:\n', () => {
       await fakeStore.dispatch<any>(
         activeAccountActions.refreshActiveAccount(),
       );
+      const delay = 3100;
       await sleep(delay);
-      expect(fakeStore.getState().activeAccount).toEqual({});
+      expect(fakeStore.getState().activeAccount).toEqual({
+        account: fakeExtendedAccountResponse[0],
+        keys: utilsT.secondAccountOnState.keys,
+        name: utilsT.secondAccountOnState.name,
+        rc: fakeManaBarResponse,
+      });
     });
     // test('If the activeAccount is not located in accounts within the state, will return an empty array', async () => {
     //   const mockedStore = mockStore({

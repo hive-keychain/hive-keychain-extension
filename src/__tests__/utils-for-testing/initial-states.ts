@@ -32,6 +32,23 @@ export const initialStateWOneKey = {
   },
 } as RootState;
 
+export const initialStateDifferentAccounts = {
+  accounts: [
+    {
+      name: utilsT.userData.username,
+      keys: utilsT.keysUserData1,
+    },
+  ],
+  activeAccount: {
+    name: utilsT.secondAccountOnState.name,
+    account: {
+      name: utilsT.secondAccountOnState.name,
+    },
+    keys: utilsT.secondAccountOnState.keys,
+    rc: {},
+  },
+} as RootState;
+
 export const ghostState = {
   accounts: [{ name: 'theghost1980', keys: { posting: 'noKEY' } }],
   activeAccount: {
