@@ -70,7 +70,7 @@ const hasKeys = (keys: Keys): boolean => {
 };
 
 const keysCount = (keys: Keys): number => {
-  return Object.keys(keys).length;
+  return keys ? Object.keys(keys).length : 0;
 };
 
 const hasActive = (keys: Keys): boolean => {
