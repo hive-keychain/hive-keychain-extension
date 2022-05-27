@@ -31,3 +31,15 @@ export const initialStateWOneKey = {
     rc: {},
   },
 } as RootState;
+
+export const ghostState = {
+  accounts: [{ name: 'theghost1980', keys: { posting: 'noKEY' } }],
+  activeAccount: {
+    name: 'theghost1980',
+    account: {
+      name: 'theghost1980',
+    },
+    keys: {},
+    rc: {},
+  },
+} as RootState;

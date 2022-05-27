@@ -11,6 +11,7 @@ export const refreshActiveAccount =
       ((Date.now() - TIME_REFERENCE) % 3) * 1000 + 100,
       3000,
     );
+
     setTimeout(() => {
       const account = getState().accounts.find(
         (localAccount: LocalAccount) =>
@@ -38,7 +39,6 @@ export const loadActiveAccount =
       const extendedAccount = (
         await HiveUtils.getClient().database.getAccounts([account.name])
       )[0];
-
       dispatch({
         type: ActionType.SET_ACTIVE_ACCOUNT,
         payload: {
