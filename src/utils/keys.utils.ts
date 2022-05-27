@@ -70,7 +70,7 @@ const hasKeys = (keys: Keys): boolean => {
 };
 
 const keysCount = (keys: Keys): number => {
-  return Object.keys(keys).length;
+  return keys ? Object.keys(keys).length : 0;
 };
 
 const hasActive = (keys: Keys): boolean => {
@@ -89,7 +89,7 @@ const isAuthorizedAccount = (key: Key): boolean => {
   return key!.toString().startsWith('@');
 };
 
-const KeysUtils = {
+export const KeysUtils = {
   isAuthorizedAccount,
   getPublicKeyFromPrivateKeyString,
   getPubkeyWeight,
@@ -100,5 +100,3 @@ const KeysUtils = {
   hasPosting,
   hasMemo,
 };
-
-export default KeysUtils;

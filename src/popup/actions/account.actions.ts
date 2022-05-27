@@ -53,17 +53,16 @@ export const addKey =
       keyType,
     );
 
-    const activeLocalAccount = accounts.find(
-      (account: LocalAccount) => account.name === activeAccount.name,
-    );
-
-    if (newAccounts) {
+    if (newAccounts && newAccounts?.length > 0) {
+      const activeLocalAccount = newAccounts.find(
+        (account: LocalAccount) => account.name === activeAccount.name,
+      );
       const action: ActionPayload<LocalAccount[]> = {
         type: ActionType.SET_ACCOUNTS,
         payload: newAccounts,
       };
       dispatch(action);
-      dispatch(refreshKeys(activeLocalAccount));
+      dispatch(refreshKeys(activeLocalAccount!));
     }
   };
 
@@ -71,11 +70,13 @@ export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
     const { activeAccount, accounts } = getState();
+
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
 
     let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount);
+
     const finalAccounts = [];
     for (let i = 0; i < newAccounts.length; i++) {
       let tmp = newAccounts[i];
@@ -112,6 +113,7 @@ export const removeKey =
       type: ActionType.SET_ACCOUNTS,
       payload: finalAccounts,
     };
+
     dispatch(action);
     if (finalAccounts) {
       if (
@@ -119,7 +121,10 @@ export const removeKey =
           .map((account: LocalAccount) => account.name)
           .includes(activeLocalAccount.name)
       ) {
-        dispatch(refreshKeys(activeLocalAccount));
+        const updated = finalAccounts.filter(
+          (account: LocalAccount) => account.name === activeLocalAccount.name,
+        );
+        dispatch(refreshKeys(updated[0]));
       } else {
         dispatch(loadActiveAccount(accounts[0]));
       }

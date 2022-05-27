@@ -7,7 +7,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { Keys } from 'src/interfaces/keys.interface';
-import KeysUtils from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import './select-keys.component.scss';
 
 const SelectKeys = ({
