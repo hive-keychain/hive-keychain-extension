@@ -89,7 +89,7 @@ const isAuthorizedAccount = (key: Key): boolean => {
   return key!.toString().startsWith('@');
 };
 
-const KeysUtils = {
+export const KeysUtils = {
   isAuthorizedAccount,
   getPublicKeyFromPrivateKeyString,
   getPubkeyWeight,
@@ -100,5 +100,3 @@ const KeysUtils = {
   hasPosting,
   hasMemo,
 };
-
-export default KeysUtils;

@@ -16,8 +16,9 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
 import HiveUtils from './hive.utils';
-import KeysUtils from './keys.utils';
 import LocalStorageUtils from './localStorage.utils';
 
 enum AccountErrorMessages {
@@ -281,6 +282,11 @@ const deleteKey = (
   const account = accounts.find(
     (account: LocalAccount) => account.name === activeAccount.name,
   );
+
+  if (KeysUtils.keysCount(account?.keys!) <= 2) {
+    Logger.error('Cannot delete the last key');
+    return accounts;
+  }
 
   switch (keyType) {
     case KeyType.ACTIVE:
