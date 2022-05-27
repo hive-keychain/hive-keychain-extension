@@ -105,9 +105,7 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
   );
 };
 /* istanbul ignore next */
-const getAccountsFromLocalStorage = async (
-  mk: string,
-): Promise<LocalAccount[]> => {
+const getAccountsFromLocalStorage = async (mk: string) => {
   const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
