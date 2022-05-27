@@ -126,26 +126,26 @@ describe('account.actions tests:\n', () => {
       name: utilsT.secondAccountOnState.name,
       keys: {},
     } as LocalAccount;
-    test('Must remove the posting key and load active account', async () => {
+    test('Must not remove the key since it is the last one', async () => {
+      let fakeStore = getFakeStore(initialStateWOneKey);
+
       const keyType = KeyType.POSTING;
       jest
         .spyOn(AccountUtils, 'deleteKey')
-        .mockReturnValueOnce([accountNoPostingKeys]);
+        .mockReturnValueOnce(initialStateWOneKey.accounts);
       HiveUtils.getClient().database.getAccounts = jest
         .fn()
         .mockResolvedValueOnce(fakeExtendedAccountResponse);
       HiveUtils.getClient().rc.getRCMana = jest
         .fn()
         .mockResolvedValueOnce(fakeManaBarResponse);
-      let fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));
-      expect(fakeStore.getState().accounts).toEqual([]);
-      expect(fakeStore.getState().activeAccount).toEqual({
-        account: { name: utilsT.secondAccountOnState.name },
-        keys: utilsT.secondAccountOnState.keys,
-        name: utilsT.secondAccountOnState.name,
-        rc: {},
-      });
+      expect(fakeStore.getState().accounts).toEqual(
+        initialStateWOneKey.accounts,
+      );
+      expect(fakeStore.getState().activeAccount).toEqual(
+        initialStateWOneKey.activeAccount,
+      );
     });
     test('Must remove the posting key and update active account keys', async () => {
       const deletedPostingKeyAccounts = [

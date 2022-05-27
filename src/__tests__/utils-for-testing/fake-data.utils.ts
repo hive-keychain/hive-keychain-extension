@@ -1580,7 +1580,7 @@ const secondAccountOnState = {
   name: userData2.username,
   keys: {
     posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
-    postingPubkey: `@${userData2.username}`,
+    postingPubkey: `STMfkdlskdjdsajdjslkdjalksdjlasdkjalksdlaj`,
   },
 };
 

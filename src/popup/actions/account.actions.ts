@@ -113,6 +113,7 @@ export const removeKey =
       type: ActionType.SET_ACCOUNTS,
       payload: finalAccounts,
     };
+
     dispatch(action);
     if (finalAccounts) {
       if (

@@ -16,8 +16,9 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
 import HiveUtils from './hive.utils';
-import KeysUtils from './keys.utils';
 import LocalStorageUtils from './localStorage.utils';
 
 enum AccountErrorMessages {
@@ -282,22 +283,27 @@ const deleteKey = (
     (account: LocalAccount) => account.name === activeAccount.name,
   );
 
-  switch (keyType) {
-    case KeyType.ACTIVE:
-      delete account?.keys.active;
-      delete account?.keys.activePubkey;
-      break;
-    case KeyType.POSTING:
-      delete account?.keys.posting;
-      delete account?.keys.postingPubkey;
-      break;
-    case KeyType.MEMO:
-      delete account?.keys.memo;
-      delete account?.keys.memoPubkey;
-      break;
+  if (KeysUtils.keysCount(account?.keys!) > 2) {
+    switch (keyType) {
+      case KeyType.ACTIVE:
+        delete account?.keys.active;
+        delete account?.keys.activePubkey;
+        break;
+      case KeyType.POSTING:
+        delete account?.keys.posting;
+        delete account?.keys.postingPubkey;
+        break;
+      case KeyType.MEMO:
+        delete account?.keys.memo;
+        delete account?.keys.memoPubkey;
+        break;
+    }
+    AccountUtils.saveAccounts(accounts, store.getState().mk);
+    return accounts;
+  } else {
+    Logger.error('Cannot delete the last key');
+    return accounts;
   }
-  AccountUtils.saveAccounts(accounts, store.getState().mk);
-  return accounts;
 };
 
 const deleteAccount = (

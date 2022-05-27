@@ -4,7 +4,7 @@ import { createMessage } from '@background/requests/operations/operations.utils'
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { Keys } from '@interfaces/keys.interface';
 import AccountUtils from 'src/utils/account.utils';
-import KeysUtils from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 
 export const addAccount = async (
   requestHandler: RequestsHandler,
