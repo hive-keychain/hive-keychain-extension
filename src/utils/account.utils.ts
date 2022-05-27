@@ -105,9 +105,7 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
   );
 };
 /* istanbul ignore next */
-const getAccountsFromLocalStorage = async (
-  mk: string,
-): Promise<LocalAccount[]> => {
+const getAccountsFromLocalStorage = async (mk: string) => {
   const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
@@ -242,7 +240,7 @@ const addKey = async (
           setErrorMessage('popup_html_wrong_key', [
             chrome.i18n.getMessage('active'),
           ]);
-          return;
+          return null;
         }
         account.keys.active = keys.active;
         account.keys.activePubkey = keys.activePubkey;
@@ -252,7 +250,7 @@ const addKey = async (
           setErrorMessage('popup_html_wrong_key', [
             chrome.i18n.getMessage('posting'),
           ]);
-          return;
+          return null;
         }
         account.keys.posting = keys.posting;
         account.keys.postingPubkey = keys.postingPubkey;
@@ -262,7 +260,7 @@ const addKey = async (
           setErrorMessage('popup_html_wrong_key', [
             chrome.i18n.getMessage('memo'),
           ]);
-          return;
+          return null;
         }
         account.keys.memo = keys.memo;
         account.keys.memoPubkey = keys.memoPubkey;
