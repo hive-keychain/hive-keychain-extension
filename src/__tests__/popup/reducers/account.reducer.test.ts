@@ -14,7 +14,7 @@ describe('account.reducer tests:\n', () => {
   const activeAuthority = {
     weight_threshold: 1,
     account_auths: [
-      ['STM8KKUZb1CzwRiaN2RQcGeJUpcHM5BmCMudxXW21xqktBe91RpD8', 1],
+      [utilsT.secondAccountOnState.keys.postingPubkey, 1], //'STM8KKUZb1CzwRiaN2RQcGeJUpcHM5BmCMudxXW21xqktBe91RpD8'
     ],
     key_auths: [[`@${username2}`, 1]],
   } as Authority;
