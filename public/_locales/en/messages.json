@@ -15,6 +15,10 @@
     "message": "Yes",
     "description": "Generic"
   },
+  "common_and": {
+    "message": "and",
+    "description": "Generic"
+  },
   "common_no": {
     "message": "No",
     "description": "Generic"
@@ -570,6 +574,10 @@
   "popup_missing_key": {
     "message": "Please add your $1 key to perform this operation!",
     "description": "When trying to perform an operation without a stored private $1 key"
+  },
+  "popup_missing_key_proposal": {
+    "message": "Please add your active key to vote for proposals.",
+    "description": "When voting for a proposal"
   },
   "popup_password_mismatch": {
     "message": "Your passwords do not match!",
@@ -1611,6 +1619,10 @@
   },
   "html_popup_witness_vote_error_proxy": {
     "message": "A proxy is currently set, please clear the proxy before voting for a witness",
+    "description": "Governance"
+  },
+  "html_popup_proposal_vote_error_proxy": {
+    "message": "A proxy is currently set, please clear the proxy before voting for a proposal",
     "description": "Governance"
   },
   "html_popup_currently_using_proxy": {

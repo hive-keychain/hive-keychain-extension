@@ -16,7 +16,6 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -193,15 +192,19 @@ const WitnessTab = ({
             'action ' +
             (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
             ' ' +
-            (usingProxy ? 'using-proxy' : '')
+            (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
           }
           name={Icons.ARROW_CIRCLE_UP}
           type={IconType.OUTLINED}
           onClick={() => handleVotedButtonClick(witness)}
-          tooltipMessage={
-            usingProxy ? 'html_popup_witness_vote_error_proxy' : undefined
-          }
           tooltipPosition="left"
+          tooltipMessage={
+            !activeAccount.keys.active
+              ? 'popup_witness_key'
+              : usingProxy
+              ? 'html_popup_witness_vote_error_proxy'
+              : undefined
+          }
         />
       </div>
     );
@@ -263,34 +266,28 @@ const WitnessTab = ({
                 }}></CheckboxComponent>
             </div>
           </div>
-          <CustomTooltip
-            message={
-              activeAccount.keys.active ? undefined : 'popup_witness_key'
-            }>
-            <div className="ranking">
-              <FlatList
-                list={filteredRanking}
-                renderItem={renderWitnessItem}
-                renderOnScroll
-                renderWhenEmpty={() => {
-                  return (
-                    hasError && (
-                      <div className="error-witness">
-                        <Icon
-                          name={Icons.ERROR}
-                          type={IconType.OUTLINED}></Icon>
-                        <span>
-                          {chrome.i18n.getMessage(
-                            'popup_html_error_retrieving_witness_ranking',
-                          )}
-                        </span>
-                      </div>
-                    )
-                  );
-                }}
-              />
-            </div>
-          </CustomTooltip>
+
+          <div className="ranking">
+            <FlatList
+              list={filteredRanking}
+              renderItem={renderWitnessItem}
+              renderOnScroll
+              renderWhenEmpty={() => {
+                return (
+                  hasError && (
+                    <div className="error-witness">
+                      <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+                      <span>
+                        {chrome.i18n.getMessage(
+                          'popup_html_error_retrieving_witness_ranking',
+                        )}
+                      </span>
+                    </div>
+                  )
+                );
+              }}
+            />
+          </div>
         </div>
       )}
 

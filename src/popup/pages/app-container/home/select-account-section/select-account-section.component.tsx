@@ -90,7 +90,6 @@ const SelectAccountSection = ({
             copyUsernameToClipboard($event, selectProps.item.label);
             selectProps.methods.dropDown('close');
           }}
-          tooltipMessage="popup_html_copy_username_tooltip_text"
         />
       </div>
     );

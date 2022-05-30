@@ -6,3 +6,5 @@ dist-*
 .DS_Store
 .env
 stats.json
+coverage
+*.code-workspace
