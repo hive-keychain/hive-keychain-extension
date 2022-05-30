@@ -11,6 +11,7 @@ export const refreshActiveAccount =
       ((Date.now() - TIME_REFERENCE) % 3) * 1000 + 100,
       3000,
     );
+
     setTimeout(() => {
       const account = getState().accounts.find(
         (localAccount: LocalAccount) =>
@@ -19,7 +20,7 @@ export const refreshActiveAccount =
       dispatch(loadActiveAccount(account));
     }, delay);
   };
-
+/* istanbul ignore next */
 export const refreshKeys = (localAccount: LocalAccount) => {
   return {
     type: ActionType.SET_ACTIVE_ACCOUNT,

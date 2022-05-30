@@ -1,6 +1,6 @@
 import { Account } from '@hiveio/dhive';
 import { Keys } from '@interfaces/keys.interface';
-import KeysUtils from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('keys.utils tests:\n', () => {

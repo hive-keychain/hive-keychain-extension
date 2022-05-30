@@ -1,94 +1,48 @@
 import KeychainApi from '@api/keychain';
-import { ActionType } from '@popup/actions/action-type.enum';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import * as delegationsActions from 'src/popup/actions/delegations.actions';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-//configuring
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-//end configuring
+import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
+import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 describe('delegations.actions tests:\n', () => {
   describe('loadDelegators tests:\n', () => {
-    test('If a valid response is obtained, must return a FETCH_DELEGATORS action and the data as payload.incoming', async () => {
-      const spyKeychainApiGet = jest
-        .spyOn(KeychainApi, 'get')
-        .mockResolvedValueOnce({
-          data: utilsT.fakeGetDelegatorsResponse,
-        });
-      const mockedStore = mockStore({});
-      return await mockedStore
-        .dispatch<any>(
-          delegationsActions.loadDelegators(utilsT.userData.username),
-        )
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual([
-            {
-              payload: {
-                incoming: utilsT.fakeGetDelegatorsResponse,
-              },
-              type: ActionType.FETCH_DELEGATORS,
-            },
-          ]);
-          expect(spyKeychainApiGet).toBeCalledTimes(1);
-          expect(
-            spyKeychainApiGet.mock.calls[0][0].includes(
-              utilsT.userData.username,
-            ),
-          ).toBe(true);
-          spyKeychainApiGet.mockReset();
-          spyKeychainApiGet.mockRestore();
-        });
+    test('Must fetch delegators', async () => {
+      jest.spyOn(KeychainApi, 'get').mockResolvedValueOnce({
+        data: utilsT.fakeGetDelegatorsResponse,
+      });
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(
+        delegationsActions.loadDelegators(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().delegations.incoming).toEqual(
+        utilsT.fakeGetDelegatorsResponse,
+      );
     });
-    test('If an errors occurs, must catch the error, call Logger.error and return 2 specific actions', async () => {
-      const customErrorMessage = 'Custom Error';
-      const promiseError = new Error(customErrorMessage);
-      const spyKeychainApiGet = jest
-        .spyOn(KeychainApi, 'get')
-        .mockRejectedValueOnce(promiseError);
-      const spyLoggerError = jest.spyOn(Logger, 'error');
-      const mockedStore = mockStore({});
-      return await mockedStore
-        .dispatch<any>(
-          delegationsActions.loadDelegators(utilsT.userData.username),
-        )
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual([
-            {
-              payload: {
-                incoming: null,
-              },
-              type: ActionType.FETCH_DELEGATORS,
-            },
-            {
-              payload: {
-                key: 'popup_html_error_retrieving_incoming_delegations',
-                params: [],
-                type: 'ERROR',
-              },
-              type: ActionType.SET_MESSAGE,
-            },
-          ]);
-          expect(spyLoggerError).toBeCalledTimes(1);
-          expect(spyLoggerError).toBeCalledWith(promiseError);
-          expect(spyKeychainApiGet).toBeCalledTimes(1);
-          expect(
-            spyKeychainApiGet.mock.calls[0][0].includes(
-              utilsT.userData.username,
-            ),
-          ).toBe(true);
-          spyKeychainApiGet.mockReset();
-          spyKeychainApiGet.mockRestore();
-          spyLoggerError.mockReset();
-          spyLoggerError.mockRestore();
-        });
+    test('If an errors occurs, must catch the error, set errorMessage and delgations to null', async () => {
+      const errorMessageExpected = {
+        key: 'popup_html_error_retrieving_incoming_delegations',
+        params: [],
+        type: 'ERROR',
+      };
+      const promiseError = new Error('Custom error message');
+      jest.spyOn(KeychainApi, 'get').mockRejectedValueOnce(promiseError);
+      jest.spyOn(Logger, 'error');
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(
+        delegationsActions.loadDelegators(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().delegations.incoming).toEqual(null);
+      expect(fakeStore.getState().errorMessage).toEqual(errorMessageExpected);
     });
   });
 
   describe('loadDelegatees tests:\n', () => {
-    const expectedArrayOrdered = [
+    const expectedOrderedDelegatees = [
       {
         id: 1350016,
         delegator: 'blocktrades',
@@ -113,59 +67,34 @@ describe('delegations.actions tests:\n', () => {
     ];
     const usernameUsed = utilsT.userData.username;
     const argumentsCallingApi = [usernameUsed, '', 1000];
-    test('If a valid response is obtained, must return a FETCH_DELEGATEES action and the data as payload.outgoing', async () => {
-      const mockedGetVestingDelegations =
-        (HiveUtils.getClient().database.getVestingDelegations = jest
-          .fn()
-          .mockResolvedValueOnce(utilsT.fakeGetDelegateesResponse));
-
-      const mockedStore = mockStore({});
-      return await mockedStore
-        .dispatch<any>(delegationsActions.loadDelegatees(usernameUsed))
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual([
-            {
-              payload: {
-                outgoing: expectedArrayOrdered,
-              },
-              type: ActionType.FETCH_DELEGATEES,
-            },
-          ]);
-          expect(mockedGetVestingDelegations).toBeCalledTimes(1);
-          expect(mockedGetVestingDelegations).toBeCalledWith(
-            ...argumentsCallingApi,
-          );
-          mockedGetVestingDelegations.mockReset();
-          mockedGetVestingDelegations.mockRestore();
-        });
+    test('Must fetch delegatees', async () => {
+      HiveUtils.getClient().database.getVestingDelegations = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeGetDelegateesResponse);
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(
+        delegationsActions.loadDelegatees(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().delegations.outgoing).toEqual(
+        expectedOrderedDelegatees,
+      );
     });
-    test('If an errors occurs, must catch the error, call Logger.error and return no actions', async () => {
+    test('If an errors occurs, must catch the error and call Logger.error', async () => {
       const customErrorMessage = 'Custom Error';
       const promiseError = new Error(customErrorMessage);
-      const mockedGetVestingDelegations =
-        (HiveUtils.getClient().database.getVestingDelegations = jest
-          .fn()
-          .mockRejectedValueOnce(promiseError));
-
+      HiveUtils.getClient().database.getVestingDelegations = jest
+        .fn()
+        .mockRejectedValueOnce(promiseError);
       const spyLoggerError = jest.spyOn(Logger, 'error');
-      const mockedStore = mockStore({});
-      return await mockedStore
-        .dispatch<any>(
-          delegationsActions.loadDelegatees(utilsT.userData.username),
-        )
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual([]);
-          expect(spyLoggerError).toBeCalledTimes(1);
-          expect(spyLoggerError).toBeCalledWith(promiseError);
-          expect(mockedGetVestingDelegations).toBeCalledTimes(1);
-          expect(mockedGetVestingDelegations).toBeCalledWith(
-            ...argumentsCallingApi,
-          );
-          mockedGetVestingDelegations.mockReset();
-          mockedGetVestingDelegations.mockRestore();
-          spyLoggerError.mockReset();
-          spyLoggerError.mockRestore();
-        });
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(
+        delegationsActions.loadDelegatees(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().delegations.outgoing).toEqual([]);
+      expect(spyLoggerError).toBeCalledTimes(1);
+      expect(spyLoggerError).toBeCalledWith(promiseError);
+      spyLoggerError.mockClear();
+      spyLoggerError.mockReset();
     });
   });
 });
