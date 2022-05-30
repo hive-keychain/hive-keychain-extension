@@ -1568,26 +1568,6 @@ const expectedResultRestOfCases = [
 //end for transaction.utils
 
 //for account.actions
-const initialEmptyStateStore = {
-  mk: '',
-  accounts: [],
-  activeAccount: { account: {}, keys: {}, rc: {} },
-  errorMessage: { key: '', type: 'SUCCESS' },
-  navigation: { stack: [] },
-  activeRpc: { uri: 'NULL', testnet: false },
-  currencyPrices: { bitcoin: {}, hive: {}, hive_dollar: {} },
-  globalProperties: {},
-  delegations: { incoming: [], outgoing: [] },
-  conversions: [],
-  phishing: [],
-  transactions: { loading: false, list: [], lastUsedStart: -1 },
-  userTokens: { loading: false, list: [] },
-  tokens: [],
-  tokenHistory: [],
-  tokenMarket: [],
-  loading: [],
-  titleContainer: { title: '' },
-} as any;
 const keysUserData1 = {
   active: userData.nonEncryptKeys.active,
   activePubkey: `@${userData.username}`,
@@ -1600,42 +1580,10 @@ const secondAccountOnState = {
   name: userData2.username,
   keys: {
     posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
-    postingPubkey: `@${userData2.username}`,
+    postingPubkey: `STMfkdlskdjdsajdjslkdjalksdjlasdkjalksdlaj`,
   },
 };
-const initialStateWAccountsWActiveAccountStore = {
-  mk: '',
-  accounts: [
-    {
-      name: userData.username,
-      keys: keysUserData1,
-    },
-    secondAccountOnState,
-  ],
-  activeAccount: {
-    name: userData.username,
-    account: {
-      name: userData.username,
-    },
-    keys: keysUserData1,
-    rc: {},
-  },
-  errorMessage: { key: '', type: 'SUCCESS' },
-  navigation: { stack: [] },
-  activeRpc: { uri: 'NULL', testnet: false },
-  currencyPrices: { bitcoin: {}, hive: {}, hive_dollar: {} },
-  globalProperties: {},
-  delegations: { incoming: [], outgoing: [] },
-  conversions: [],
-  phishing: [],
-  transactions: { loading: false, list: [], lastUsedStart: -1 },
-  userTokens: { loading: false, list: [] },
-  tokens: [],
-  tokenHistory: [],
-  tokenMarket: [],
-  loading: [],
-  titleContainer: { title: '' },
-} as any;
+
 //end for account.actions
 
 //end data for specific test files
@@ -1698,8 +1646,6 @@ const utilsT = {
   fakeOneTransactionResponse,
   fakeGetAccountHistoryResponseAllOtherTypes,
   expectedResultRestOfCases,
-  initialEmptyStateStore,
-  initialStateWAccountsWActiveAccountStore,
   keysUserData1,
   secondAccountOnState,
 };

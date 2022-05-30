@@ -13,7 +13,7 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { Key, LocalAccount } from 'src/interfaces/local-account.interface';
 import { Screen } from 'src/reference-data/screen.enum';
-import KeysUtils from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import './account-keys-list-item.component.scss';
 
 export interface KeyListItemProps {
@@ -21,6 +21,7 @@ export interface KeyListItemProps {
   publicKey?: Key;
   keyName: string;
   keyType: KeyType;
+  canDelete: boolean;
 }
 
 const AccountKeysListItem = ({
@@ -30,6 +31,7 @@ const AccountKeysListItem = ({
   keyType,
   activeAccount,
   accounts,
+  canDelete,
   setInfoMessage,
   navigateToWithParams,
   removeKey,
@@ -86,7 +88,7 @@ const AccountKeysListItem = ({
     <div className="account-keys-list-item">
       <div className="top-panel">
         <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
-        {publicKey && privateKey && (
+        {publicKey && privateKey && canDelete && (
           <Icon
             onClick={() => handleClickOnRemoveKey()}
             name={Icons.DELETE}
