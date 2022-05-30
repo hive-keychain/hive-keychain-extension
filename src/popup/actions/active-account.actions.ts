@@ -20,7 +20,7 @@ export const refreshActiveAccount =
       dispatch(loadActiveAccount(account));
     }, delay);
   };
-
+/* istanbul ignore next */
 export const refreshKeys = (localAccount: LocalAccount) => {
   return {
     type: ActionType.SET_ACTIVE_ACCOUNT,
