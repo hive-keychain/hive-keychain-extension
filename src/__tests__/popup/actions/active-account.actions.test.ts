@@ -1,3 +1,5 @@
+import { ExtendedAccount } from '@hiveio/dhive';
+import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import * as activeAccountActions from 'src/popup/actions/active-account.actions';
 import HiveUtils from 'src/utils/hive.utils';
@@ -89,34 +91,36 @@ describe('active-account.actions tests:\n', () => {
   });
 
   describe('getAccountRC tests:\n', () => {
-    // test('Passing an existing username must return the Manabar data in a SET_ACTIVE_ACCOUNT_RC action', async () => {
-    //   const expectedAction = {
-    //     type: ActionType.SET_ACTIVE_ACCOUNT_RC,
-    //     payload: fakeManaBarResponse,
-    //   };
-    //   const mockHiveUtilsGetClientRcGetRCMana =
-    //     (HiveUtils.getClient().rc.getRCMana = jest
-    //       .fn()
-    //       .mockResolvedValueOnce(fakeManaBarResponse));
-    //   const mockedStore = mockStore({});
-    //   return await mockedStore
-    //     .dispatch<any>(
-    //       activeAccountActions.getAccountRC(utilsT.userData.username),
-    //     )
-    //     .then(() => {
-    //       expect(mockedStore.getActions()).toEqual([expectedAction]);
-    //       expect(mockHiveUtilsGetClientRcGetRCMana).toBeCalledTimes(1);
-    //       mockHiveUtilsGetClientRcGetRCMana.mockReset();
-    //       mockHiveUtilsGetClientRcGetRCMana.mockRestore();
-    //     });
-    // });
+    test('Must set manabar of activeAccount', async () => {
+      HiveUtils.getClient().rc.getRCMana = jest
+        .fn()
+        .mockResolvedValueOnce(fakeManaBarResponse);
+
+      let fakeStore = getFakeStore(initialStateWOneKey);
+      await fakeStore.dispatch<any>(
+        activeAccountActions.getAccountRC(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().activeAccount).toEqual({
+        account: {
+          name: utilsT.secondAccountOnState.name,
+        },
+        keys: utilsT.secondAccountOnState.keys,
+        name: utilsT.secondAccountOnState.name,
+        rc: fakeManaBarResponse,
+      });
+    });
   });
 
   describe('resetActiveAccount tests:\n', () => {
-    // test('Calling resetActiveAccount must return a RESET_ACTIVE_ACCOUNT action', () => {
-    //   expect(activeAccountActions.resetActiveAccount()).toEqual({
-    //     type: ActionType.RESET_ACTIVE_ACCOUNT,
-    //   });
-    // });
+    const defaultResetValues = {
+      account: {} as ExtendedAccount,
+      keys: {},
+      rc: {} as Manabar,
+    };
+    test('Must reset activeAccount to default values', async () => {
+      const fakeStore = getFakeStore(initialStateWOneKey);
+      await fakeStore.dispatch<any>(activeAccountActions.resetActiveAccount());
+      expect(fakeStore.getState().activeAccount).toEqual(defaultResetValues);
+    });
   });
 });
