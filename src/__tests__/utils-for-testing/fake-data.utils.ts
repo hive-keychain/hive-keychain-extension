@@ -1567,6 +1567,25 @@ const expectedResultRestOfCases = [
 ];
 //end for transaction.utils
 
+//for account.actions
+const keysUserData1 = {
+  active: userData.nonEncryptKeys.active,
+  activePubkey: `@${userData.username}`,
+  posting: userData.nonEncryptKeys.posting,
+  postingPubkey: `@${userData.username}`,
+  memo: userData.nonEncryptKeys.memo,
+  memoPubkey: `@${userData.username}`,
+};
+const secondAccountOnState = {
+  name: userData2.username,
+  keys: {
+    posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
+    postingPubkey: `STMfkdlskdjdsajdjslkdjalksdjlasdkjalksdlaj`,
+  },
+};
+
+//end for account.actions
+
 //end data for specific test files
 
 const bittrexResultArray = [
@@ -1627,6 +1646,8 @@ const utilsT = {
   fakeOneTransactionResponse,
   fakeGetAccountHistoryResponseAllOtherTypes,
   expectedResultRestOfCases,
+  keysUserData1,
+  secondAccountOnState,
 };
 
 export default utilsT;

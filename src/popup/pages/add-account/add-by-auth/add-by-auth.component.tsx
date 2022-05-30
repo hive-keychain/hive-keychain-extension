@@ -12,7 +12,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
-import KeysUtils from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import './add-by-auth.component.scss';
 
 const AddByAuth = ({
