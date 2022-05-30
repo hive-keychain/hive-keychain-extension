@@ -1,19 +1,20 @@
-import { historyHiveEngineAPI } from '@api/hiveEngine';
+import { historyHiveEngineAPI, hsc } from '@api/hiveEngine';
 import { TokenBalance } from '@interfaces/tokens.interface';
-import { ActionType } from '@popup/actions/action-type.enum';
 import { AxiosResponse } from 'axios';
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import * as tokenActions from 'src/popup/actions/token.actions';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-//configuring
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
-//end configuring
+import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
+import {
+  initialEmptyStateStore,
+  initialStateJustTokens,
+} from 'src/__tests__/utils-for-testing/initial-states';
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
 describe('token.actions tests:\n', () => {
-  const account = utilsT.userData.username;
   const tokenObjZeroBalance = {
     _id: 119999,
     account: utilsT.userData.username,
@@ -25,103 +26,99 @@ describe('token.actions tests:\n', () => {
     delegationsOut: '0',
     pendingUndelegations: '0',
   };
-  const extraTokenObjWBalance = {
-    _id: 119998,
-    account: utilsT.userData.username,
-    symbol: 'FAKETOKEN2',
-    balance: '10',
-    stake: '10.000',
-    pendingUnstake: '0',
-    delegationsIn: '0',
-    delegationsOut: '0',
-    pendingUndelegations: '0',
-  };
+  describe('loadTokens tests:\n', () => {
+    test('Must load tokens', async () => {
+      hsc.find = jest.fn().mockResolvedValueOnce(utilsT.fakeTokensResponse);
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(tokenActions.loadTokens());
+      expect(fakeStore.getState().tokens).toEqual(utilsT.expectedTokensPayload);
+    });
+    test('If error on response, will throw an unhandled error', async () => {
+      hsc.find = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeTokensResponseNoMetadata);
+      const newError = new SyntaxError(
+        'Unexpected token u in JSON at position 0',
+      );
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      try {
+        await fakeStore.dispatch<any>(tokenActions.loadTokens());
+        expect(fakeStore.getState().tokens).toEqual(null);
+      } catch (error) {
+        expect(error).toEqual(newError);
+      }
+    });
+  });
+
+  describe('loadTokensMarket tests:\n', () => {
+    test('Must load tokens market', async () => {
+      hsc.find = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeMarketMetricsResponse);
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(tokenActions.loadTokensMarket());
+      expect(fakeStore.getState().tokenMarket).toEqual(
+        utilsT.fakeMarketMetricsResponse,
+      );
+    });
+  });
   describe('loadUserTokens tests:\n', () => {
-    test('Getting tokens with valid balances, must return 2 actions(CLEAR_USER_TOKENS, LOAD_USER_TOKENS) and a payload with an ordered array', async () => {
-      const mockGetUserBalance = (HiveEngineUtils.getUserBalance = jest
+    test('Must clear current userTokens and load user tokens', async () => {
+      const newUserTokenBalances = [
+        utilsT.fakeGetUserBalanceResponse[1],
+        utilsT.fakeGetUserBalanceResponse[2],
+      ] as TokenBalance[];
+      HiveEngineUtils.getUserBalance = jest
         .fn()
-        .mockResolvedValueOnce(
-          utilsT.fakeGetUserBalanceResponse as TokenBalance[],
-        ));
-      const expectedResponse = [
-        { type: ActionType.CLEAR_USER_TOKENS },
-        {
-          payload: [
-            utilsT.fakeGetUserBalanceResponse[2],
-            utilsT.fakeGetUserBalanceResponse[1],
-            utilsT.fakeGetUserBalanceResponse[0],
-          ],
-          type: ActionType.LOAD_USER_TOKENS,
-        },
-      ];
-      const mockedStore = mockStore({});
-      return await mockedStore
-        .dispatch<any>(tokenActions.loadUserTokens(account))
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual(expectedResponse);
-          expect(mockGetUserBalance).toBeCalledTimes(1);
-          expect(mockGetUserBalance).toBeCalledWith(account);
-          mockGetUserBalance.mockReset();
-          mockGetUserBalance.mockRestore();
-        });
+        .mockResolvedValueOnce(newUserTokenBalances);
+      const fakeStore = getFakeStore(initialStateJustTokens);
+      await fakeStore.dispatch<any>(
+        tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().userTokens).toEqual({
+        list: [newUserTokenBalances[1], newUserTokenBalances[0]],
+        loading: false,
+      });
     });
-    test('Getting tokens with 0 balances, must return 2 actions(CLEAR_USER_TOKENS, LOAD_USER_TOKENS) and a payload with an ordered array and remove those results', async () => {
-      const mockGetUserBalance = (HiveEngineUtils.getUserBalance = jest
+    test('Must clear current userTokens, load userTokens filtered', async () => {
+      const newUserTokenBalances = [
+        utilsT.fakeGetUserBalanceResponse[1],
+        utilsT.fakeGetUserBalanceResponse[2],
+        tokenObjZeroBalance,
+      ] as TokenBalance[];
+      HiveEngineUtils.getUserBalance = jest
         .fn()
-        .mockResolvedValueOnce([
-          ...utilsT.fakeGetUserBalanceResponse,
-          tokenObjZeroBalance,
-          extraTokenObjWBalance,
-        ] as TokenBalance[]));
-      const expectedResponse = [
-        { type: ActionType.CLEAR_USER_TOKENS },
-        {
-          payload: [
-            utilsT.fakeGetUserBalanceResponse[2],
-            utilsT.fakeGetUserBalanceResponse[1],
-            utilsT.fakeGetUserBalanceResponse[0],
-            extraTokenObjWBalance,
-          ],
-          type: ActionType.LOAD_USER_TOKENS,
-        },
-      ];
-      const mockedStore = mockStore({});
-      return await mockedStore
-        .dispatch<any>(tokenActions.loadUserTokens(account))
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual(expectedResponse);
-          expect(mockGetUserBalance).toBeCalledTimes(1);
-          expect(mockGetUserBalance).toBeCalledWith(account);
-          mockGetUserBalance.mockReset();
-          mockGetUserBalance.mockRestore();
-        });
+        .mockResolvedValueOnce(newUserTokenBalances);
+      const fakeStore = getFakeStore(initialStateJustTokens);
+      await fakeStore.dispatch<any>(
+        tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().userTokens).toEqual({
+        list: [newUserTokenBalances[1], newUserTokenBalances[0]],
+        loading: false,
+      });
     });
-    test('If a promise error occurs, must catch the error, call Logger and return just CLEAR_USER_TOKENS action', async () => {
+
+    test('If error, must catch and call Logger.error', async () => {
+      const userTokensReseted = { list: [], loading: true };
       const promiseError = new Error('Custom Message');
       const spyLoggerError = jest.spyOn(Logger, 'error');
-      const mockGetUserBalance = (HiveEngineUtils.getUserBalance = jest
+      HiveEngineUtils.getUserBalance = jest
         .fn()
-        .mockRejectedValueOnce(promiseError));
-      const expectedResponse: any = [{ type: ActionType.CLEAR_USER_TOKENS }];
-      const mockedStore = mockStore({});
-      return await mockedStore
-        .dispatch<any>(tokenActions.loadUserTokens(account))
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual(expectedResponse);
-          expect(spyLoggerError).toBeCalledTimes(1);
-          expect(spyLoggerError).toBeCalledWith(promiseError);
-          expect(mockGetUserBalance).toBeCalledTimes(1);
-          expect(mockGetUserBalance).toBeCalledWith(account);
-          mockGetUserBalance.mockReset();
-          mockGetUserBalance.mockRestore();
-          spyLoggerError.mockReset();
-          spyLoggerError.mockRestore();
-        });
+        .mockRejectedValueOnce(promiseError);
+      const fakeStore = getFakeStore(initialStateJustTokens);
+      await fakeStore.dispatch<any>(
+        tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().userTokens).toEqual(userTokensReseted);
+      expect(spyLoggerError).toBeCalledWith(promiseError);
+      spyLoggerError.mockReset();
+      spyLoggerError.mockRestore();
     });
   });
 
   describe('loadTokenHistory tests:\n', () => {
-    test('Passing an account with history transactions on a particular token, will return the history array with adapted fields as payload and LOAD_TOKEN_HISTORY action', async () => {
+    test('Must load tokenHistory', async () => {
       const currency = 'LEO';
       const axiosResponse1 = {
         data: utilsT.fakeTokensGetAccountHistoryResponse,
@@ -129,54 +126,41 @@ describe('token.actions tests:\n', () => {
       const axiosResponse2 = {
         data: [],
       } as AxiosResponse;
-      const mockhistoryHiveEngineAPIGet = (historyHiveEngineAPI.get = jest
+      historyHiveEngineAPI.get = jest
         .fn()
-        .mockResolvedValueOnce(
-          Promise.resolve(axiosResponse1),
-        )).mockResolvedValueOnce(Promise.resolve(axiosResponse2));
-      const expectedResults = [
-        {
-          payload: [...utilsT.expectedPayLoadloadTokenHistory],
-          type: ActionType.LOAD_TOKEN_HISTORY,
-        },
-      ];
-      const callingParams1 = [
-        'accountHistory',
-        {
-          params: {
-            account: account,
-            offset: 0,
-            symbol: currency,
-            type: 'user',
-          },
-        },
-      ];
-      const callingParams2 = [
-        'accountHistory',
-        {
-          params: {
-            account: account,
-            offset: 1000,
-            symbol: currency,
-            type: 'user',
-          },
-        },
-      ];
-      const mockedStore = mockStore({});
-      return mockedStore
-        .dispatch<any>(tokenActions.loadTokenHistory(account, currency))
-        .then(() => {
-          expect(mockedStore.getActions()).toEqual(expectedResults);
-          expect(mockhistoryHiveEngineAPIGet).toBeCalledTimes(2);
-          expect(mockhistoryHiveEngineAPIGet.mock.calls[0]).toEqual(
-            callingParams1,
-          );
-          expect(mockhistoryHiveEngineAPIGet.mock.calls[1]).toEqual(
-            callingParams2,
-          );
-          mockhistoryHiveEngineAPIGet.mockReset();
-          mockhistoryHiveEngineAPIGet.mockRestore();
-        });
+        .mockResolvedValueOnce(Promise.resolve(axiosResponse1))
+        .mockResolvedValueOnce(Promise.resolve(axiosResponse2));
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(
+        tokenActions.loadTokenHistory(
+          utilsT.secondAccountOnState.name,
+          currency,
+        ),
+      );
+      expect(fakeStore.getState().tokenHistory).toEqual([
+        ...utilsT.expectedPayLoadloadTokenHistory,
+      ]);
+    });
+    test('If error on response, will throw an unhandled error', async () => {
+      const currency = 'LEO';
+      const error = new Error('Custom Error');
+      historyHiveEngineAPI.get = jest
+        .fn()
+        .mockResolvedValueOnce(Promise.reject(error));
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      try {
+        await fakeStore.dispatch<any>(
+          tokenActions.loadTokenHistory(
+            utilsT.secondAccountOnState.name,
+            currency,
+          ),
+        );
+        expect(fakeStore.getState().tokenHistory).toEqual([
+          ...utilsT.expectedPayLoadloadTokenHistory,
+        ]);
+      } catch (error) {
+        expect(error).toEqual(error);
+      }
     });
   });
 });
