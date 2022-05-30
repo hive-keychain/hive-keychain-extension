@@ -63,6 +63,9 @@ const getAccountTransactions = async (
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
+
+    if (limit <= 0) return [[], 0];
+
     const transactionsFromBlockchain =
       await HiveUtils.getClient().database.getAccountHistory(
         accountName,

@@ -322,7 +322,8 @@ const WalletHistory = ({
     if (
       (filteredTransactions.length >= MINIMUM_FETCHED_TRANSACTIONS &&
         filteredTransactions.length >= previousTransactionLength + 1) ||
-      transactions.list.some((t) => t.last)
+      transactions.list.some((t) => t.last) ||
+      transactions.lastUsedStart === 0
     ) {
       finalizeDisplayedList(filteredTransactions);
     } else {
@@ -367,7 +368,11 @@ const WalletHistory = ({
   };
 
   const handleScroll = (event: any) => {
-    if (transactions.list[transactions.list.length - 1]?.last === true) return;
+    if (
+      transactions.list[transactions.list.length - 1]?.last === true ||
+      transactions.lastUsedStart === 0
+    )
+      return;
     setDisplayedScrollToTop(event.target.scrollTop !== 0);
 
     if (
@@ -477,6 +482,7 @@ const WalletHistory = ({
           }}
         />
         {transactions.list[transactions.list.length - 1]?.last === false &&
+          transactions.lastUsedStart !== 0 &&
           !loading && (
             <div className="load-more-panel" onClick={tryToLoadMore}>
               <span className="label">
