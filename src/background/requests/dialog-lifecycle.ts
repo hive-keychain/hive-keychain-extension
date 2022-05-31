@@ -27,9 +27,20 @@ export const createPopup = (
       },
       (win) => {
         if (!win) return;
-        requestHandler.setWindowId(win.id);
-        requestHandler.saveInLocalStorage();
-        waitUntilDialogIsReady(100, callback);
+        chrome.windows.update(
+          win.id!,
+          {
+            height: 566,
+            width: width,
+            top: w.top,
+            left: w.width! - width + w.left!,
+          },
+          () => {
+            requestHandler.setWindowId(win.id);
+            requestHandler.saveInLocalStorage();
+            waitUntilDialogIsReady(100, callback);
+          },
+        );
       },
     );
   });

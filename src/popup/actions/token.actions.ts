@@ -10,7 +10,7 @@ import {
 } from 'src/interfaces/tokens.interface';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
-/* istanbul ignore next */
+
 export const loadTokens = (): AppThunk => async (dispatch) => {
   const action: ActionPayload<Token[]> = {
     type: ActionType.LOAD_TOKENS,
@@ -25,7 +25,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
   };
   dispatch(action);
 };
-/* istanbul ignore next */
+
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
   const action: ActionPayload<TokenMarket[]> = {
     type: ActionType.LOAD_TOKENS_MARKET,

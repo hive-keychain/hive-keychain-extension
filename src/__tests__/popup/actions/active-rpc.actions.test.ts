@@ -1,23 +1,23 @@
 import KeychainApi from '@api/keychain';
 import { Rpc } from '@interfaces/rpc.interface';
-import { ActionType } from '@popup/actions/action-type.enum';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
+import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
+import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 describe('active-rpc.actions tests:\n', () => {
   describe('setActiveRpc tests:\n', () => {
-    test('Passing a rpc with custom uri, must set as new Client RPC, send a command to chrome.runtime and return a SET_ACTIVE_RPC action', () => {
+    test('Must sendMessage to runtime and set rpc', async () => {
       const rpc = {
         testnet: true,
         uri: 'https://apiBlog.users/',
       } as Rpc;
       const mockChromeRuntimeSendMessage = (chrome.runtime.sendMessage =
         jest.fn());
-      expect(setActiveRpc(rpc)).toEqual({
-        payload: rpc,
-        type: ActionType.SET_ACTIVE_RPC,
-      });
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(setActiveRpc(rpc));
+      expect(fakeStore.getState().activeRpc).toEqual(rpc);
       expect(mockChromeRuntimeSendMessage).toBeCalledTimes(1);
       expect(mockChromeRuntimeSendMessage).toBeCalledWith({
         command: BackgroundCommand.SAVE_RPC,
@@ -26,21 +26,23 @@ describe('active-rpc.actions tests:\n', () => {
       mockChromeRuntimeSendMessage.mockReset();
       mockChromeRuntimeSendMessage.mockRestore();
     });
-    test('Passing an rpc with "DEFAULT" uri, must set default from API(https://api.hive.blog) as new Client address, send a command to chrome.runtime and return a SET_ACTIVE_RPC action', () => {
+    test('With "DEFAULT" uri, must set default rpc and sendMessage to runtime', async () => {
       const rpc = {
         testnet: true,
         uri: 'DEFAULT',
       } as Rpc;
-      const mockKeychainApiget = (KeychainApi.get = jest
+      const defaultRpc = {
+        testnet: false,
+        uri: 'https://api.hive.blog',
+      };
+      KeychainApi.get = jest
         .fn()
-        .mockResolvedValueOnce({ data: { rpc: 'https://api.hive.blog' } }));
+        .mockResolvedValueOnce({ data: { rpc: defaultRpc } });
       const mockChromeRuntimeSendMessage = (chrome.runtime.sendMessage =
         jest.fn());
-      expect(setActiveRpc(rpc)).toEqual({
-        payload: rpc,
-        type: ActionType.SET_ACTIVE_RPC,
-      });
-      expect(mockKeychainApiget).toBeCalledTimes(1);
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(setActiveRpc(rpc));
+      expect(fakeStore.getState().activeRpc).toEqual(rpc);
       expect(mockChromeRuntimeSendMessage).toBeCalledTimes(1);
       expect(mockChromeRuntimeSendMessage).toBeCalledWith({
         command: BackgroundCommand.SAVE_RPC,
@@ -48,8 +50,7 @@ describe('active-rpc.actions tests:\n', () => {
       });
       mockChromeRuntimeSendMessage.mockReset();
       mockChromeRuntimeSendMessage.mockRestore();
-      mockKeychainApiget.mockReset();
-      mockKeychainApiget.mockRestore();
+      jest.clearAllMocks();
     });
   });
 });

@@ -1568,26 +1568,6 @@ const expectedResultRestOfCases = [
 //end for transaction.utils
 
 //for account.actions
-const initialEmptyStateStore = {
-  mk: '',
-  accounts: [],
-  activeAccount: { account: {}, keys: {}, rc: {} },
-  errorMessage: { key: '', type: 'SUCCESS' },
-  navigation: { stack: [] },
-  activeRpc: { uri: 'NULL', testnet: false },
-  currencyPrices: { bitcoin: {}, hive: {}, hive_dollar: {} },
-  globalProperties: {},
-  delegations: { incoming: [], outgoing: [] },
-  conversions: [],
-  phishing: [],
-  transactions: { loading: false, list: [], lastUsedStart: -1 },
-  userTokens: { loading: false, list: [] },
-  tokens: [],
-  tokenHistory: [],
-  tokenMarket: [],
-  loading: [],
-  titleContainer: { title: '' },
-} as any;
 const keysUserData1 = {
   active: userData.nonEncryptKeys.active,
   activePubkey: `@${userData.username}`,
@@ -1600,42 +1580,10 @@ const secondAccountOnState = {
   name: userData2.username,
   keys: {
     posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
-    postingPubkey: `@${userData2.username}`,
+    postingPubkey: `STMfkdlskdjdsajdjslkdjalksdjlasdkjalksdlaj`,
   },
 };
-const initialStateWAccountsWActiveAccountStore = {
-  mk: '',
-  accounts: [
-    {
-      name: userData.username,
-      keys: keysUserData1,
-    },
-    secondAccountOnState,
-  ],
-  activeAccount: {
-    name: userData.username,
-    account: {
-      name: userData.username,
-    },
-    keys: keysUserData1,
-    rc: {},
-  },
-  errorMessage: { key: '', type: 'SUCCESS' },
-  navigation: { stack: [] },
-  activeRpc: { uri: 'NULL', testnet: false },
-  currencyPrices: { bitcoin: {}, hive: {}, hive_dollar: {} },
-  globalProperties: {},
-  delegations: { incoming: [], outgoing: [] },
-  conversions: [],
-  phishing: [],
-  transactions: { loading: false, list: [], lastUsedStart: -1 },
-  userTokens: { loading: false, list: [] },
-  tokens: [],
-  tokenHistory: [],
-  tokenMarket: [],
-  loading: [],
-  titleContainer: { title: '' },
-} as any;
+
 //end for account.actions
 
 //for global-properties.actions
@@ -1658,6 +1606,178 @@ const fakePostRewardFundResponse = {
 //end for global-properties.actions
 
 //for token.actions
+const fakeTokensResponse = [
+  {
+    _id: 1,
+    issuer: 'null',
+    symbol: 'BEE',
+    name: 'Hive Engine Token',
+    metadata:
+      '{"url":"https://hive-engine.com","icon":"https://s3.amazonaws.com/steem-engine/images/icon_steem-engine_gradient.svg","desc":"BEE is the native token for the Hive Engine platform"}',
+    precision: 8,
+    maxSupply: '9007199254740991.00000000',
+    supply: '2574075.87974928',
+    circulatingSupply: '2119191.15545322',
+    stakingEnabled: true,
+    unstakingCooldown: 40,
+    delegationEnabled: true,
+    undelegationCooldown: 7,
+    numberTransactions: 4,
+    totalStaked: '300754.34540883',
+  },
+  {
+    _id: 2,
+    issuer: 'honey-swap',
+    symbol: 'SWAP.HIVE',
+    name: 'HIVE Pegged',
+    metadata:
+      '{"desc":"HIVE backed by the hive-engine team","url":"https://hive-engine.com","icon":"https://files.peakd.com/file/peakd-hive/aggroed/edUxk8GJ-logo_transparent1.png"}',
+    precision: 8,
+    maxSupply: '9007199254740991.00000000',
+    supply: '9007199254740991.00000000',
+    circulatingSupply: '9007199254740987.85453686',
+    stakingEnabled: false,
+    unstakingCooldown: 1,
+    delegationEnabled: false,
+    undelegationCooldown: 0,
+  },
+  {
+    _id: 3,
+    issuer: 'steemmonsters',
+    symbol: 'ORB',
+    name: 'Essence Orbs',
+    metadata:
+      '{"url":"https://splinterlands.com","icon":"https://s3.amazonaws.com/steemmonsters/website/ui_elements/open_packs/img_essence-orb.png","desc":"Each ORB token represents one, unopened, promotional Splinterlands Essence Orb booster pack."}',
+    precision: 0,
+    maxSupply: '200000',
+    supply: '200000',
+    circulatingSupply: '10185',
+    stakingEnabled: false,
+    unstakingCooldown: 1,
+    delegationEnabled: false,
+    undelegationCooldown: 0,
+  },
+];
+const expectedTokensPayload = [
+  {
+    _id: 1,
+    circulatingSupply: '2119191.15545322',
+    delegationEnabled: true,
+    issuer: 'null',
+    maxSupply: '9007199254740991.00000000',
+    metadata: {
+      desc: 'BEE is the native token for the Hive Engine platform',
+      icon: 'https://s3.amazonaws.com/steem-engine/images/icon_steem-engine_gradient.svg',
+      url: 'https://hive-engine.com',
+    },
+    name: 'Hive Engine Token',
+    numberTransactions: 4,
+    precision: 8,
+    stakingEnabled: true,
+    supply: '2574075.87974928',
+    symbol: 'BEE',
+    totalStaked: '300754.34540883',
+    undelegationCooldown: 7,
+    unstakingCooldown: 40,
+  },
+  {
+    _id: 2,
+    circulatingSupply: '9007199254740987.85453686',
+    delegationEnabled: false,
+    issuer: 'honey-swap',
+    maxSupply: '9007199254740991.00000000',
+    metadata: {
+      desc: 'HIVE backed by the hive-engine team',
+      icon: 'https://files.peakd.com/file/peakd-hive/aggroed/edUxk8GJ-logo_transparent1.png',
+      url: 'https://hive-engine.com',
+    },
+    name: 'HIVE Pegged',
+    precision: 8,
+    stakingEnabled: false,
+    supply: '9007199254740991.00000000',
+    symbol: 'SWAP.HIVE',
+    undelegationCooldown: 0,
+    unstakingCooldown: 1,
+  },
+  {
+    _id: 3,
+    circulatingSupply: '10185',
+    delegationEnabled: false,
+    issuer: 'steemmonsters',
+    maxSupply: '200000',
+    metadata: {
+      desc: 'Each ORB token represents one, unopened, promotional Splinterlands Essence Orb booster pack.',
+      icon: 'https://s3.amazonaws.com/steemmonsters/website/ui_elements/open_packs/img_essence-orb.png',
+      url: 'https://splinterlands.com',
+    },
+    name: 'Essence Orbs',
+    precision: 0,
+    stakingEnabled: false,
+    supply: '200000',
+    symbol: 'ORB',
+    undelegationCooldown: 0,
+    unstakingCooldown: 1,
+  },
+];
+const fakeTokensResponseNoMetadata = [
+  {
+    _id: 1,
+    issuer: 'null',
+    symbol: 'BEE',
+    name: 'Hive Engine Token',
+    precision: 8,
+    maxSupply: '9007199254740991.00000000',
+    supply: '2574075.87974928',
+    circulatingSupply: '2119191.15545322',
+    stakingEnabled: true,
+    unstakingCooldown: 40,
+    delegationEnabled: true,
+    undelegationCooldown: 7,
+    numberTransactions: 4,
+    totalStaked: '300754.34540883',
+  },
+];
+const fakeMarketMetricsResponse = [
+  {
+    _id: 1,
+    symbol: 'BEE',
+    volume: '162.17679932',
+    volumeExpiration: 1654031319,
+    lastPrice: '0.67800000',
+    lowestAsk: '0.64567933',
+    highestBid: '0.60000222',
+    lastDayPrice: '0.68029997',
+    lastDayPriceExpiration: 1654001169,
+    priceChangeHive: '-0.00229997',
+    priceChangePercent: '-0.34%',
+  },
+  {
+    _id: 2,
+    symbol: 'SWAP.BTC',
+    volume: '27228.07414160',
+    volumeExpiration: 1654028640,
+    lastPrice: '60187.07172012',
+    lowestAsk: '62898.93242394',
+    highestBid: '59906.05117597',
+    lastDayPrice: '61656.20181797',
+    lastDayPriceExpiration: 1653996678,
+    priceChangeHive: '-1469.13009785',
+    priceChangePercent: '-2.38%',
+  },
+  {
+    _id: 3,
+    symbol: 'ORB',
+    volume: '165.00000000',
+    volumeExpiration: 1654008909,
+    lastPrice: '165.00000000',
+    lowestAsk: '165.00000000',
+    highestBid: '100.00000000',
+    lastDayPrice: '165.00000000',
+    lastDayPriceExpiration: 1654008909,
+    priceChangeHive: '0',
+    priceChangePercent: '0%',
+  },
+];
 const fakeGetUserBalanceResponse = [
   {
     _id: 13429,
@@ -1989,8 +2109,6 @@ const utilsT = {
   fakeOneTransactionResponse,
   fakeGetAccountHistoryResponseAllOtherTypes,
   expectedResultRestOfCases,
-  initialEmptyStateStore,
-  initialStateWAccountsWActiveAccountStore,
   keysUserData1,
   secondAccountOnState,
   fakeCurrentMedianHistoryPrice,
@@ -1998,6 +2116,10 @@ const utilsT = {
   fakeGetUserBalanceResponse,
   fakeTokensGetAccountHistoryResponse,
   expectedPayLoadloadTokenHistory,
+  fakeTokensResponse,
+  expectedTokensPayload,
+  fakeTokensResponseNoMetadata,
+  fakeMarketMetricsResponse,
 };
 
 export default utilsT;
