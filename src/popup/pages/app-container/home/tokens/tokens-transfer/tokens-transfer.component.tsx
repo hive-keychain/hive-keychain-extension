@@ -181,13 +181,12 @@ const TokensTransfer = ({
           json,
           activeAccount,
         );
-
-        if (sendTokenResult.id) {
+        if (sendTokenResult) {
           addToLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList('html_popup_transfer_token_operation');
           let confirmationResult: any =
             await BlockchainTransactionUtils.tryConfirmTransaction(
-              sendTokenResult.id,
+              sendTokenResult,
             );
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           if (confirmationResult.confirmed) {
