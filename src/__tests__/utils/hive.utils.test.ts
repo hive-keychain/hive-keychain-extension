@@ -1008,7 +1008,7 @@ describe('hive.utils tests:\n', () => {
       const result = await HiveUtils.sendOperationWithConfirmation(
         Promise.resolve(transactionObj),
       );
-      expect(result).toBe(true);
+      expect(result).toBeTruthy();
       expect(spyLogger).toBeCalledTimes(1);
       expect(spyLogger).toBeCalledWith('Transaction confirmed');
     });
@@ -1022,7 +1022,7 @@ describe('hive.utils tests:\n', () => {
       const result = await HiveUtils.sendOperationWithConfirmation(
         Promise.resolve(transactionObj),
       );
-      expect(result).toBe(false);
+      expect(result).toBe(undefined);
       expect(spyLogger).toBeCalledTimes(1);
       expect(spyLogger).toBeCalledWith('Transaction failed with status: error');
     });
