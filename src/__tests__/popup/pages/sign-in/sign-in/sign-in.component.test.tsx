@@ -30,6 +30,10 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
+////Important NOTES
+/// - wrapper, app, then test the components.
+/////
+
 //to export to it own file
 let fakeStore = getFakeStore(initialEmptyStateStore);
 const wrapperStore = (component: JSX.Element): JSX.Element => {
