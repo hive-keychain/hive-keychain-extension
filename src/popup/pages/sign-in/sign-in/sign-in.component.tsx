@@ -56,6 +56,7 @@ const SignIn = ({
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}
+        ariaLabel={'password-input'} //modified for testing
       />
       <ButtonComponent
         label={'popup_html_signin'}

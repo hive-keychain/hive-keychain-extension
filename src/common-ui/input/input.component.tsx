@@ -23,6 +23,7 @@ interface InputProps {
   onSetToMaxClicked?(): any;
   required?: boolean;
   hasError?: boolean;
+  ariaLabel?: string;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -65,6 +66,7 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
+          aria-label={props.ariaLabel} //modified for testings
           className={`${props.hasError ? 'has-error' : ''}`}
           type={
             props.type === InputType.PASSWORD && isPasswordDisplay
