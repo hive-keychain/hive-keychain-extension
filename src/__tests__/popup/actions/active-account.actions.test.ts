@@ -29,7 +29,7 @@ describe('active-account.actions tests:\n', () => {
     percentage: 100,
   };
   describe('refreshActiveAccount tests:\n', () => {
-    test('Must refresh the activeAccount keys', async () => {
+    test('Must refresh the activeAccount', async () => {
       HiveUtils.getClient().database.getAccounts = jest
         .fn()
         .mockResolvedValueOnce(fakeExtendedAccountResponse);
