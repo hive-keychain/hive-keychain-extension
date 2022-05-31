@@ -11,6 +11,7 @@ import RpcUtils from 'src/utils/rpc.utils';
 //   realtime: true,
 //   port: 8000,
 // });
+
 const store = createStore(
   reducers,
   /* preloadedState, */ applyMiddleware(thunk),
