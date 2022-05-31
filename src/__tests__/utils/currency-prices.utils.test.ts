@@ -5,8 +5,7 @@ import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('currency-prices-utils tests', () => {
   describe('Not mocking', () => {
-    test('Not mocking getPrices', async () => {
-      //NOTE: in case of error, uncomment the console.logs so you can track the missing field or subField.
+    test.skip('Not mocking getPrices', async () => {
       const expectedDefinedFieldsAndSubFields = [
         { field: 'bitcoin', subFields: ['usd', 'usd_24h_change'] },
         { field: 'hive', subFields: ['usd', 'usd_24h_change'] },
