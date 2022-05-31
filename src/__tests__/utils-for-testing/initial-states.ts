@@ -49,6 +49,10 @@ export const initialStateDifferentAccounts = {
   },
 } as RootState;
 
+export const initialStateJustTokens = {
+  userTokens: { loading: false, list: [utilsT.fakeGetUserBalanceResponse[0]] },
+} as RootState;
+
 export const ghostState = {
   accounts: [{ name: 'theghost1980', keys: { posting: 'noKEY' } }],
   activeAccount: {
