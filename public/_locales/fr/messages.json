@@ -36,7 +36,7 @@
     "description": "type of key"
   },
   "unknown_error": {
-    "message": "Petit problème! Veuillez réessayer!",
+    "message": "Petit problème! Veuillez réessayer svp!",
     "description": "Generic error"
   },
   "wrong_password": {
