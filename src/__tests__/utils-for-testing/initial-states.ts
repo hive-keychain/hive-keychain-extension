@@ -53,15 +53,6 @@ export const initialStateJustTokens = {
   userTokens: { loading: false, list: [utilsT.fakeGetUserBalanceResponse[0]] },
 } as RootState;
 
-export const initialStateJustOneTransaction = {
-  ...initialStateWAccountsWActiveAccountStore,
-  transactions: {
-    loading: false,
-    list: [utilsT.fakeOneTransactionResponse[1]],
-    lastUsedStart: -1,
-  },
-} as RootState;
-
 export const ghostState = {
   accounts: [{ name: 'theghost1980', keys: { posting: 'noKEY' } }],
   activeAccount: {
