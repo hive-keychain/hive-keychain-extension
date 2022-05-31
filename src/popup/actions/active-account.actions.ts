@@ -20,7 +20,7 @@ export const refreshActiveAccount =
       dispatch(loadActiveAccount(account));
     }, delay);
   };
-
+/* istanbul ignore next */
 export const refreshKeys = (localAccount: LocalAccount) => {
   return {
     type: ActionType.SET_ACTIVE_ACCOUNT,
@@ -39,7 +39,6 @@ export const loadActiveAccount =
       const extendedAccount = (
         await HiveUtils.getClient().database.getAccounts([account.name])
       )[0];
-
       dispatch({
         type: ActionType.SET_ACTIVE_ACCOUNT,
         payload: {
