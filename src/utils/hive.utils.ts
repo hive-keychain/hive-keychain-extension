@@ -647,12 +647,13 @@ const sendOperationWithConfirmation = async (
   } while (transaction.status == 'within_mempool');
   if (transaction.status == 'within_reversible_block') {
     Logger.info('Transaction confirmed');
-    return true;
+    return transactionConfirmation.id || true;
   } else {
     Logger.info(`Transaction failed with status: ${transaction.status}`);
-    return false;
+    return;
   }
 };
+
 /* istanbul ignore next */
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
