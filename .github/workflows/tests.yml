@@ -4,10 +4,8 @@
 name: Check builds and run tests
 
 on:
-  push:
-    branches: [master, beta, dev]
   pull_request:
-    branches: [master, beta, dev]
+    branches: [master, beta]
 env:
   _TEST_USERNAME: ${{secrets._TEST_USERNAME}}
   _TEST_OWNER: ${{secrets._TEST_OWNER}}

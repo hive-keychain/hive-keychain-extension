@@ -243,6 +243,7 @@ const mapStateToProps = (state: RootState) => {
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
     displayProxySuggestion:
       state.activeAccount &&
+      state.activeAccount.account &&
       state.activeAccount.account.proxy === '' &&
       state.activeAccount.account.witnesses_voted_for === 0,
   };

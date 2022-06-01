@@ -11,7 +11,7 @@ const voteWitness = async (
   witness: Witness,
   activeAccount: ActiveAccount,
 ): Promise<boolean> => {
-  return await HiveUtils.sendOperationWithConfirmation(
+  return !!(await HiveUtils.sendOperationWithConfirmation(
     HiveUtils.getClient().broadcast.sendOperations(
       [
         [
@@ -25,7 +25,7 @@ const voteWitness = async (
       ],
       PrivateKey.fromString(activeAccount.keys.active as string),
     ),
-  );
+  ));
 };
 
 const unvoteWitness = async (

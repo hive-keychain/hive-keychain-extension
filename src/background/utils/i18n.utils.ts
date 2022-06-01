@@ -1,5 +1,7 @@
 const getMessage = async (name: string, options?: string[]) => {
-  const lang = chrome.i18n.getUILanguage().split('-')[0];
+  const lang = chrome.i18n.getUILanguage
+    ? chrome.i18n.getUILanguage().split('-')[0]
+    : 'en';
   let res;
   try {
     const url = chrome.runtime.getURL(`_locales/${lang}/messages.json`);
