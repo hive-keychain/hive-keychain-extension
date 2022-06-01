@@ -1,6 +1,7 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { sleep } from '@hiveio/dhive/lib/utils';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import * as activeAccountActions from 'src/popup/actions/active-account.actions';
 import HiveUtils from 'src/utils/hive.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -8,6 +9,7 @@ import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
   initialEmptyStateStore,
   initialStateDifferentAccounts,
+  initialStateNoKeys,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
 
@@ -68,6 +70,26 @@ describe('active-account.actions tests:\n', () => {
     });
   });
 
+  describe('refreshKeys tests:\n', () => {
+    test('Must set keys on activeAccount', async () => {
+      const localAccount = {
+        name: utilsT.secondAccountOnState.name,
+        keys: utilsT.secondAccountOnState.keys,
+      } as LocalAccount;
+      const fakeStore = getFakeStore(initialStateNoKeys);
+      await fakeStore.dispatch<any>(
+        activeAccountActions.refreshKeys(localAccount),
+      );
+      expect(fakeStore.getState().activeAccount).toEqual({
+        account: {
+          name: localAccount.name,
+        },
+        keys: localAccount.keys,
+        name: localAccount.name,
+        rc: {},
+      });
+    });
+  });
   describe('loadActiveAccount tests:\n', () => {
     test('must refreshKeys and set activeAccount', async () => {
       HiveUtils.getClient().database.getAccounts = jest
