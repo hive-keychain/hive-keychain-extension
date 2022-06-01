@@ -1,13 +1,20 @@
 import {
   CustomJsonOperation,
   DelegateVestingSharesOperation,
+  Operation,
   PrivateKey,
+  TransferOperation,
   VestingDelegation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Lease } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
+import {
+  Lease,
+  LeaseRequest,
+} from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
 import { store } from '@popup/store';
 import HiveUtils from 'src/utils/hive.utils';
+
+export const KEYCHAIN_DELEGATION_MARKET_ACCOUNT = 'cedric.tests';
 
 export enum LeaseKeys {
   CANCEL_REQUEST = 'keychain_lease_cancel_request',
@@ -132,10 +139,51 @@ const undelegateLease = async (
   );
 };
 
+const createLeaseRequest = async (
+  leaseRequest: LeaseRequest,
+  amount: string,
+  activeAccount: ActiveAccount,
+  delegationValueInHp: string,
+) => {
+  return await HiveUtils.sendOperationWithConfirmation(
+    HiveUtils.getClient().broadcast.sendOperations(
+      [
+        [
+          'custom_json',
+          {
+            id: LeaseKeys.REQUEST,
+            required_auths: [activeAccount.name!],
+            required_posting_auths: activeAccount.keys.active
+              ? []
+              : [activeAccount.name!],
+            json: JSON.stringify(leaseRequest),
+          } as CustomJsonOperation[1],
+        ] as Operation,
+        [
+          'transfer',
+          {
+            amount: amount,
+            from: activeAccount.name!,
+            to: KEYCHAIN_DELEGATION_MARKET_ACCOUNT,
+            memo: chrome.i18n.getMessage('popup_html_lease_request_memo', [
+              delegationValueInHp,
+              leaseRequest.duration.toString(),
+            ]),
+          } as TransferOperation[1],
+        ],
+      ],
+      PrivateKey.fromString(
+        store.getState().activeAccount.keys.active as string,
+      ),
+    ),
+  );
+};
+
 export const DelegationMarketUtils = {
   downloadAllLeases,
   cancelLeaseRequest,
   acceptLeaseRequest,
   undelegateLease,
   getPreviousAndNewDelegationToUser,
+  createLeaseRequest,
 };

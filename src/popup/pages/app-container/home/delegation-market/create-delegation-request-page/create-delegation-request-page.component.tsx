@@ -14,6 +14,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { LeaseRequest } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -29,21 +30,13 @@ import CurrencyUtils, {
   BaseCurrencies,
   CurrencyLabels,
 } from 'src/utils/currency.utils';
-import { LeaseKeys } from 'src/utils/delegation-market.utils';
+import {
+  DelegationMarketUtils,
+  LeaseKeys,
+} from 'src/utils/delegation-market.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import { v4 as uuidv4 } from 'uuid';
 import './create-delegation-request-page.component.scss';
-
-const KEYCHAIN_DELEGATION_MARKET_ACCOUNT = 'cedric.tests';
-
-interface LeaseRequest {
-  id: string;
-  weeklyPay: number;
-  weeklyPayCurrency: BaseCurrencies;
-  duration: number;
-  delegationValue: number;
-}
 
 const CreateDelegationRequestPage = ({
   activeAccount,
@@ -113,7 +106,7 @@ const CreateDelegationRequestPage = ({
   };
 
   const submit = async () => {
-    const transferMemo = {
+    const leaseRequest = {
       key: LeaseKeys.REQUEST,
       ...leaseRequestForm,
       delegationValue: FormatUtils.fromHP(
@@ -155,6 +148,11 @@ const CreateDelegationRequestPage = ({
         return;
       }
     }
+
+    const delegationValueInHp = `${FormatUtils.formatCurrencyValue(
+      leaseRequestForm.delegationValue,
+    )} ${currencyLabels.hp}`;
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_transfer_confirm_delegation_lease_request_message',
@@ -162,9 +160,7 @@ const CreateDelegationRequestPage = ({
       fields: [
         {
           label: 'popup_html_delegation_market_requested_delegation',
-          value: `${FormatUtils.formatCurrencyValue(
-            leaseRequestForm.delegationValue,
-          )} ${currencyLabels.hp}`,
+          value: delegationValueInHp,
         },
         {
           label: 'popup_html_delegation_market_weekly_payout',
@@ -187,14 +183,12 @@ const CreateDelegationRequestPage = ({
       formParams: leaseRequestForm,
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_lease_request_operation');
-        let success = false;
 
-        success = await HiveUtils.transfer(
-          activeAccount.name!,
-          KEYCHAIN_DELEGATION_MARKET_ACCOUNT,
+        let success = await DelegationMarketUtils.createLeaseRequest(
+          leaseRequest,
           formattedTotalAmount,
-          JSON.stringify(transferMemo),
-          false,
+          activeAccount,
+          delegationValueInHp,
         );
 
         removeFromLoadingList('html_popup_delegation_lease_request_operation');

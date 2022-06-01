@@ -1,3 +1,5 @@
+import { BaseCurrencies } from 'src/utils/currency.utils';
+
 export type LeaseCurrency = 'hive' | 'hbd';
 
 export enum LeaseStatus {
@@ -21,4 +23,12 @@ export interface Lease {
   duration: number; // days
   status: string;
   cancelationDate?: Date | string;
+}
+
+export interface LeaseRequest {
+  id: string;
+  weeklyPay: number;
+  weeklyPayCurrency: BaseCurrencies;
+  duration: number;
+  delegationValue: number;
 }

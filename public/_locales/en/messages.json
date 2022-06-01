@@ -2473,5 +2473,9 @@
   "popup_html_lease_value": {
     "message": "Lease value",
     "description": "Lease value"
+  },
+  "popup_html_lease_request_memo": {
+    "message": "[LEASE REQUEST] Created lease request of $1 for $2 week(s)",
+    "description": "lease request creation memo template"
   }
 }
