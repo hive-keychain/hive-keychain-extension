@@ -30,24 +30,26 @@ export const isWhitelisted = (
   }
 };
 
-export const addToWhitelist = (
+export const addToWhitelist = async (
   username: string,
   domain: string,
   type: string,
 ) => {
-  chrome.storage.local.get([LocalStorageKeyEnum.NO_CONFIRM], (items) => {
-    let keep = !items.no_confirm ? {} : items.no_confirm;
-    if (keep[username] == undefined) {
-      keep[username] = {};
-    }
-    if (keep[username][domain] == undefined) {
-      keep[username][domain] = {};
-    }
-    keep[username][domain][type] = true;
-    chrome.storage.local.set({
-      no_confirm: keep,
-    });
-  });
+  const noConfirm = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.NO_CONFIRM,
+  );
+  let keep = !noConfirm ? {} : noConfirm;
+  if (!keep[username]) {
+    keep[username] = {};
+  }
+  if (!keep[username][domain]) {
+    keep[username][domain] = {};
+  }
+  keep[username][domain][type] = true;
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.NO_CONFIRM,
+    keep,
+  );
 };
 
 export const removeFromWhitelist = (

@@ -1,7 +1,9 @@
+/* istanbul ignore file */
 //data needed to be used on some tests.
 import { DynamicGlobalProperties } from '@hiveio/dhive';
+import moment from 'moment';
 require('dotenv').config();
-/* istanbul ignore next */
+
 const userData = {
   username: process.env._TEST_USERNAME || 'error, please check',
   encryptKeys: {
@@ -12,6 +14,7 @@ const userData = {
     randomString53: 'Kzi5gocL1KZlnsryMRIbfdmXgz2lLmiaosQDELp3GM2jU9sFYguxv',
   },
   nonEncryptKeys: {
+    master: process.env._TEST_MASTER || 'error, please check',
     owner: process.env._TEST_OWNER || 'error, please check',
     active: process.env._TEST_ACTIVE || 'error, please check',
     posting: process.env._TEST_POSTING || 'error, please check',
@@ -20,12 +23,11 @@ const userData = {
     randomStringKey51: 'MknOPyeXr5CGsCgvDewdny55MREtDpAjhkT9OsPPLCujYD82Urk',
   },
 };
-/* istanbul ignore next */
+
 const userData2 = {
   username: 'workerjab2',
 };
 //data extended account
-/* istanbul ignore next */
 const dataUserExtended = {
   id: 1439151,
   name: 'workerjab1',
@@ -118,7 +120,7 @@ const dataUserExtended = {
   tags_usage: [],
   guest_bloggers: [],
 };
-/* istanbul ignore next */
+
 const cedricDataSample = {
   id: 734613,
   name: 'cedricguillas',
@@ -214,7 +216,7 @@ const cedricDataSample = {
   tags_usage: [],
   guest_bloggers: [],
 };
-/* istanbul ignore next */
+
 const dynamicPropertiesObj = {
   id: 1200,
   confidential_supply: '1.00',
@@ -268,7 +270,7 @@ const dynamicPropertiesObj = {
   min_recurrent_transfers_recurrence: 24,
   max_open_recurrent_transfers: 255,
 } as DynamicGlobalProperties;
-/* istanbul ignore next */
+
 const fakeQuentinAccResponseWithAuth = {
   id: 9455,
   name: 'quentin',
@@ -360,7 +362,7 @@ const fakeQuentinAccResponseWithAuth = {
   lifetime_bandwidth: '',
   last_active_proved: '',
 };
-/* istanbul ignore next */
+
 const fakeQuentinAccResponseWithNoAuth = {
   id: 9455,
   name: 'quentin',
@@ -449,9 +451,8 @@ const fakeQuentinAccResponseWithNoAuth = {
   last_active_proved: '',
 };
 //data for specific test files
-//to be used on: format.utils.tests.ts
+//To be used on: format.utils.tests.ts
 //for nFormatter
-/* istanbul ignore next */
 const iterationValuesNoDecimals = [
   { input: 1e3, expectedString: '1k' },
   { input: 10e3, expectedString: '10k' },
@@ -470,7 +471,7 @@ const iterationValuesNoDecimals = [
   { input: 100e15, expectedString: '100P' },
   { input: 1e18, expectedString: '1E' },
 ];
-/* istanbul ignore next */
+
 const iterationValuesWithDecimals1 = [
   { input: 0.0, expectedString: '0', decimals: 1 },
   { input: 0.0, expectedString: '0', decimals: 2 },
@@ -479,7 +480,7 @@ const iterationValuesWithDecimals1 = [
   { input: 0.1234, expectedString: '0.123', decimals: 3 },
   { input: 0.1234, expectedString: '0.1234', decimals: 4 },
 ];
-/* istanbul ignore next */
+
 const iterationValuesWithDecimals2 = [
   { input: 1000.0123, expectedString: '1k', decimals: 1 },
   { input: 100000.0123, expectedString: '100k', decimals: 2 },
@@ -655,7 +656,7 @@ const fakeResponseHavingTokenBalances = [
     pendingUndelegations: '0',
   },
 ];
-/* istanbul ignore next */
+
 const fakeIncommingDelegations = [
   {
     _id: 1454,
@@ -689,9 +690,1367 @@ const fakeOutgoingDelegations = [
 ];
 //end for hive-engine.utils
 
+//To be used on: hive.utils
+//for getTimeBeforeFull
+const votingPowerArrayTest = [
+  { votingPower: 90.0, expectedMessageArray: ['full_in', ['12 hours']] },
+  { votingPower: 80.0, expectedMessageArray: ['full_in', ['1 day']] },
+  {
+    votingPower: 70.0,
+    expectedMessageArray: ['full_in', ['1 day common_and 12 hours']],
+  },
+  { votingPower: 60.0, expectedMessageArray: ['full_in', ['2 days']] },
+  {
+    votingPower: 50.0,
+    expectedMessageArray: ['full_in', ['2 days common_and 12 hours']],
+  },
+  { votingPower: 40.0, expectedMessageArray: ['full_in', ['3 days']] },
+  {
+    votingPower: 30.0,
+    expectedMessageArray: ['full_in', ['3 days common_and 12 hours']],
+  },
+  { votingPower: 20.0, expectedMessageArray: ['full_in', ['4 days']] },
+  {
+    votingPower: 10.0,
+    expectedMessageArray: ['full_in', ['4 days common_and 12 hours']],
+  },
+  { votingPower: 0.0, expectedMessageArray: ['full_in', ['5 days']] },
+];
+//for getConversionRequests
+const fakeHbdConversionsResponse = [
+  {
+    id: 275431,
+    owner: 'wesp05',
+    requestid: 1,
+    amount: '2.500 HBD',
+    conversion_date: '2022-05-15T11:02:09',
+  },
+];
+const fakeHiveConversionsResponse = [
+  {
+    id: 275431,
+    owner: 'wesp05',
+    requestid: 1,
+    collateral_amount: '22.500 HIVE',
+    conversion_date: '2022-05-10T11:02:09',
+  },
+];
+//for getDelegators
+const fakeGetDelegatorsResponse = [
+  {
+    delegation_date: '2017-08-09T15:30:36.000Z',
+    delegator: 'kriborin',
+    vesting_shares: 31692093.5887,
+  },
+  {
+    delegation_date: '2017-08-09T15:29:42.000Z',
+    delegator: 'kevtorin',
+    vesting_shares: 31691975.1647,
+  },
+  {
+    delegation_date: '2017-08-09T15:31:48.000Z',
+    delegator: 'lessys',
+    vesting_shares: 29188598.7866,
+  },
+];
+const fakeGetDelegateesResponse = [
+  {
+    id: 270663,
+    delegator: 'blocktrades',
+    delegatee: 'buildawhale',
+    vesting_shares: '100.000000 VESTS',
+    min_delegation_time: '2017-09-29T02:19:03',
+  },
+  {
+    id: 933999,
+    delegator: 'blocktrades',
+    delegatee: 'ocdb',
+    vesting_shares: '200.902605 VESTS',
+    min_delegation_time: '2018-05-25T22:14:30',
+  },
+  {
+    id: 1350016,
+    delegator: 'blocktrades',
+    delegatee: 'usainvote',
+    vesting_shares: '300.000000 VESTS',
+    min_delegation_time: '2020-08-16T05:34:33',
+  },
+  {
+    id: 1350016,
+    delegator: 'blocktrades',
+    delegatee: 'usainvote2',
+    vesting_shares: '0 VESTS',
+    min_delegation_time: '2020-08-16T05:34:33',
+  },
+];
+//End To be used on: hive.utils
+
+//for proposal.utils
+const fakeVotedAccountResponse = [
+  {
+    id: 90661,
+    voter: 'theghost1980',
+    proposal: {
+      id: 216,
+      proposal_id: 216,
+      creator: 'keychain',
+      receiver: 'keychain',
+      start_date: '2022-05-15T00:00:00',
+      end_date: '2023-05-15T00:00:00',
+      daily_pay: [Object],
+      subject: 'Hive Keychain development',
+      permlink: 'hive-keychain-proposal-dhf-ran717',
+      total_votes: '61237185339413554',
+      status: 'active',
+    },
+  },
+];
+const fakeProposalListResponse = {
+  proposals: [
+    {
+      id: 214,
+      proposal_id: 214,
+      creator: 'howo',
+      receiver: 'howo',
+      start_date: '2022-04-27T00:00:00',
+      end_date: '2023-04-27T00:00:00',
+      daily_pay: { amount: '330000', precision: 3, nai: '@@000000013' },
+      subject: 'Core development of hive and communities year 3',
+      permlink: 'core-development-proposal-year-3',
+      total_votes: '84323179888178111',
+      status: 'active',
+    },
+    {
+      id: 185,
+      proposal_id: 185,
+      creator: 'hivewatchers',
+      receiver: 'hivewatchers',
+      start_date: '2021-08-01T00:00:00',
+      end_date: '2022-07-31T00:00:00',
+      daily_pay: { amount: '330000', precision: 3, nai: '@@000000013' },
+      subject: 'The Hivewatchers & Spaminator Operational Proposal',
+      permlink: 'the-hivewatchers-and-spaminator-operational-proposal',
+      total_votes: '74818760284017953',
+      status: 'active',
+    },
+    {
+      id: 201,
+      proposal_id: 201,
+      creator: 'brianoflondon',
+      receiver: 'v4vapp.dhf',
+      start_date: '2022-01-23T00:00:00',
+      end_date: '2022-05-23T00:00:00',
+      daily_pay: { amount: '330000', precision: 3, nai: '@@000000013' },
+      subject:
+        'Continuation: Hive to Value 4 Value - The Hive <> Bitcoin Lightning Bridge',
+      permlink:
+        'v4vapp-updates-ongoing-funding-proposal-for-the-btc-lightning-to-hive-bi-directional-bridge',
+      total_votes: '73774153416233168',
+      status: 'active',
+    },
+  ],
+};
+const fakeProposalKeyChain = {
+  id: 216,
+  proposal_id: 216,
+  creator: 'keychain',
+  receiver: 'keychain',
+  start_date: '2022-05-15T00:00:00',
+  end_date: '2023-05-15T00:00:00',
+  daily_pay: { amount: '390000', precision: 3, nai: '@@000000013' },
+  subject: 'Hive Keychain development',
+  permlink: 'hive-keychain-proposal-dhf-ran717',
+  total_votes: '61237185339413554',
+  status: 'active',
+};
+const fakeProposal2 = {
+  id: 140,
+  proposal_id: 140,
+  creator: 'keychain',
+  receiver: 'keychain',
+  start_date: '2020-11-15T00:00:00',
+  end_date: '2021-05-15T00:00:00',
+  daily_pay: { amount: '200000', precision: 3, nai: '@@000000013' },
+  subject: 'Hive Keychain Development #2',
+  permlink: 'hive-keychain-development-proposal-2',
+  total_votes: '50549679283763983',
+  status: 'expired',
+};
+const fakeListProposalVotesResponse = {
+  proposal_votes: [
+    { id: 90661, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    // { id: 92195, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    // { id: 56050, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    // { id: 59685, voter: 'theghost1980', proposal: fakeProposalKeyChain },
+    { id: 72478, voter: 'thefukel', proposal: fakeProposal2 },
+    { id: 80828, voter: 'theflamingwings', proposal: fakeProposal2 },
+    { id: 83430, voter: 'thefiery', proposal: fakeProposal2 },
+  ],
+};
+const fakeDailyBudgetResponse = 16259983.208;
+const expectedResultProposal = [
+  {
+    creator: 'howo',
+    dailyPay: '330 HBD',
+    endDate: moment('2023-04-27T00:00:00'),
+    startDate: moment('2022-04-27T00:00:00'),
+    funded: 'totally_funded',
+    id: 214,
+    link: 'https://peakd.com/proposals/214',
+    proposalId: 214,
+    receiver: 'howo',
+    subject: 'Core development of hive and communities year 3',
+    totalVotes: '0 HP',
+    voted: false,
+  },
+  {
+    creator: 'hivewatchers',
+    dailyPay: '330 HBD',
+    endDate: moment('2022-07-31T00:00:00'),
+    startDate: moment('2021-08-01T00:00:00'),
+    funded: 'totally_funded',
+    id: 185,
+    link: 'https://peakd.com/proposals/185',
+    proposalId: 185,
+    receiver: 'hivewatchers',
+    subject: 'The Hivewatchers & Spaminator Operational Proposal',
+    totalVotes: '0 HP',
+    voted: false,
+  },
+  {
+    creator: 'brianoflondon',
+    dailyPay: '330 HBD',
+    endDate: moment('2022-05-23T00:00:00'),
+    startDate: moment('2022-01-23T00:00:00'),
+    funded: 'totally_funded',
+    id: 201,
+    link: 'https://peakd.com/proposals/201',
+    proposalId: 201,
+    receiver: 'v4vapp.dhf',
+    subject:
+      'Continuation: Hive to Value 4 Value - The Hive <> Bitcoin Lightning Bridge',
+    totalVotes: '0 HP',
+    voted: false,
+  },
+];
+//end for proposal.utils
+
+//For transaction.utils
+const fakeGetAccountHistoryResponse = [
+  [
+    1,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: 'keychain.tests',
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+  [
+    4,
+    {
+      trx_id: '1307e3f32f3ba555d971400c99048e73edbb509d',
+      block: 64543878,
+      trx_in_block: 51,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:11:33',
+      op: [
+        'transfer',
+        {
+          from: 'theghost1980',
+          to: 'keychain.tests',
+          amount: '0.100 HIVE',
+          memo: 'Memo.test',
+        },
+      ],
+    },
+  ],
+  [
+    5,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'transfer',
+        {
+          from: 'keychain.tests',
+          to: 'workerjab1',
+          amount: '0.001 HIVE',
+          memo: '#AhTgoBkHRDnswPQt2sBq41FV7iC39CgnnvmS3ZoDBADJmZqyftpQxcrrwrTfxN33ZuyLoWMQ2f2fnG44LaFpvF1gpkRqfBPwMYcgg1FzE5Y6dCxbWKvpDYDQZdPsWMJHsBBSBC9UfJsSxqiqcACzqSH',
+        },
+      ],
+    },
+  ],
+];
+const expectedDataGetAccountHistory = [
+  [
+    {
+      from: 'keychain.tests',
+      to: 'workerjab1',
+      amount: '0.001 HIVE',
+      memo: ' Encrypted Memo Test',
+      type: 'transfer',
+      timestamp: '2022-05-20T16:17:48',
+      key: 'keychain.tests!5',
+      index: 5,
+      txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      blockNumber: 64544003,
+      url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      last: false,
+      lastFetched: false,
+    },
+    {
+      from: 'theghost1980',
+      to: 'keychain.tests',
+      amount: '0.100 HIVE',
+      memo: 'Memo.test',
+      type: 'transfer',
+      timestamp: '2022-05-20T16:11:33',
+      key: 'keychain.tests!4',
+      index: 4,
+      txId: '1307e3f32f3ba555d971400c99048e73edbb509d',
+      blockNumber: 64543878,
+      url: 'https://hiveblocks.com/tx/1307e3f32f3ba555d971400c99048e73edbb509d',
+      last: false,
+      lastFetched: false,
+    },
+    {
+      from: 'workerjab1',
+      to: 'keychain.tests',
+      amount: '0.001 HIVE',
+      memo: '',
+      type: 'transfer',
+      timestamp: '2022-05-18T00:36:36',
+      key: 'keychain.tests!1',
+      index: 1,
+      txId: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      blockNumber: 64467698,
+      url: 'https://hiveblocks.com/tx/976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      last: false,
+      lastFetched: false,
+    },
+  ],
+  1000,
+];
+const fakeGetAccountHistoryWrongDataResponse = [
+  [
+    1,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-18T00:36:36',
+      op: ['transfer', 'String_bad_data'],
+    },
+  ],
+];
+const fakeOneTransactionResponse = [
+  [
+    1,
+    {
+      trx_id: '0000000000000000000000000000000000000000',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'transfer',
+        {
+          from: 'workerjab1',
+          to: 'keychain.tests',
+          amount: '0.001 HIVE',
+          memo: '',
+        },
+      ],
+    },
+  ],
+];
+const expectedOutputId0 = [
+  {
+    amount: '0.001 HIVE',
+    blockNumber: 64467698,
+    from: 'workerjab1',
+    index: 1,
+    key: 'keychain.tests!1',
+    last: false,
+    lastFetched: false,
+    memo: '',
+    timestamp: '2022-05-18T00:36:36',
+    to: 'keychain.tests',
+    txId: '0000000000000000000000000000000000000000',
+    type: 'transfer',
+    url: 'https://hiveblocks.com/b/64467698#0000000000000000000000000000000000000000',
+  },
+];
+const fakeGetAccountHistoryResponseAllOtherTypes = [
+  [
+    1,
+    {
+      trx_id: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+      block: 64467698,
+      trx_in_block: 34,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-18T00:36:36',
+      op: [
+        'recurrent_transfer',
+        {
+          from: 'workerjab1',
+          to: 'keychain.tests',
+          amount: '0.001 HIVE',
+          memo: '',
+          executions: 1,
+          recurrence: 1,
+        },
+      ],
+    },
+  ],
+  [
+    2,
+    {
+      trx_id: '1307e3f32f3ba555d971400c99048e73edbb509d',
+      block: 64543878,
+      trx_in_block: 51,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:11:33',
+      op: [
+        'fill_recurrent_transfer',
+        {
+          from: 'theghost1980',
+          to: 'keychain.tests',
+          amount: '0.100 HIVE',
+          memo: 'Memo.test',
+          remainingExecutions: 3,
+        },
+      ],
+    },
+  ],
+  [
+    3,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'claim_reward_balance',
+        {
+          account: 'keychain.tests',
+          reward_hive: '10.000 HIVE',
+          reward_hbd: '10.000 HBD',
+          reward_vests: '3.660607 VESTS',
+        },
+      ],
+    },
+  ],
+  [
+    4,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'delegate_vesting_shares',
+        {
+          vesting_shares: '100000.000 VESTS',
+          delegator: 'theghost1980',
+          delegatee: 'aggroed',
+        },
+      ],
+    },
+  ],
+  [
+    5,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'transfer_to_vesting',
+        {
+          amount: '10000000.000 VESTS',
+          to: 'theghost1980',
+          from: 'theghost1980',
+        },
+      ],
+    },
+  ],
+  [
+    6,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'withdraw_vesting',
+        {
+          vesting_shares: '10000000.000 VESTS',
+        },
+      ],
+    },
+  ],
+  [
+    7,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'interest',
+        {
+          interest: '0.001 HBD',
+        },
+      ],
+    },
+  ],
+  [
+    8,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'transfer_to_savings',
+        {
+          amount: '100.000 HBD',
+          to: 'quentin',
+          from: 'quentin',
+        },
+      ],
+    },
+  ],
+  [
+    9,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'transfer_from_savings',
+        {
+          amount: '100.000 HBD',
+        },
+      ],
+    },
+  ],
+  [
+    10,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'claim_account',
+        {
+          creator: 'quentin',
+        },
+      ],
+    },
+  ],
+  [
+    11,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'convert',
+        {
+          amount: '10.000 HIVE',
+        },
+      ],
+    },
+  ],
+  [
+    12,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'collateralized_convert',
+        {
+          amount: '10000.000 HIVE',
+        },
+      ],
+    },
+  ],
+  [
+    13,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'fill_convert_request',
+        {
+          amount_in: '100.000 HIVE',
+          amount_out: '100.000 HDB',
+        },
+      ],
+    },
+  ],
+  [
+    14,
+    {
+      trx_id: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+      block: 64544003,
+      trx_in_block: 71,
+      op_in_trx: 0,
+      virtual_op: 0,
+      timestamp: '2022-05-20T16:17:48',
+      op: [
+        'fill_collateralized_convert_request',
+        {
+          amount_in: '1000.000 HIVE',
+          amount_out: '1000.000 HDB',
+        },
+      ],
+    },
+  ],
+];
+const expectedResultRestOfCases = [
+  {
+    account: 'keychain.tests',
+    reward_hive: '10.000 HIVE',
+    reward_hbd: '10.000 HBD',
+    reward_vests: '3.660607 VESTS',
+    hbd: '10.000 HBD',
+    hive: '10.000 HIVE',
+    hp: '0.002 HP',
+    type: 'claim_reward_balance',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!3',
+    index: 3,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    vesting_shares: '100000.000 VESTS',
+    delegator: 'theghost1980',
+    delegatee: 'aggroed',
+    amount: '54.586 HP',
+    type: 'delegate_vesting_shares',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!4',
+    index: 4,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    amount: '10000000.000 VESTS',
+    to: 'theghost1980',
+    from: 'theghost1980',
+    type: 'power_up_down',
+    subType: 'transfer_to_vesting',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!5',
+    index: 5,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    vesting_shares: '10000000.000 VESTS',
+    type: 'power_up_down',
+    subType: 'withdraw_vesting',
+    amount: '5458.634 HP',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!6',
+    index: 6,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    interest: '0.001 HBD',
+    type: 'savings',
+    subType: 'interest',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!7',
+    index: 7,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    amount: '100.000 HBD',
+    to: 'quentin',
+    from: 'quentin',
+    type: 'savings',
+    subType: 'transfer_to_savings',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!8',
+    index: 8,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    amount: '100.000 HBD',
+    type: 'savings',
+    subType: 'transfer_from_savings',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!9',
+    index: 9,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    creator: 'quentin',
+    type: 'claim_account',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!10',
+    index: 10,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    amount: '10.000 HIVE',
+    type: 'convert',
+    subType: 'convert',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!11',
+    index: 11,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    amount: '10000.000 HIVE',
+    type: 'convert',
+    subType: 'collateralized_convert',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!12',
+    index: 12,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    amount_in: '100.000 HIVE',
+    amount_out: '100.000 HDB',
+    type: 'convert',
+    subType: 'fill_convert_request',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!13',
+    index: 13,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    amount_in: '1000.000 HIVE',
+    amount_out: '1000.000 HDB',
+    type: 'convert',
+    subType: 'fill_collateralized_convert_request',
+    timestamp: '2022-05-20T16:17:48',
+    key: 'keychain.tests!14',
+    index: 14,
+    txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    blockNumber: 64544003,
+    url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    from: 'theghost1980',
+    to: 'keychain.tests',
+    amount: '0.1 HIVE',
+    memo: 'Memo.test',
+    remainingExecutions: undefined,
+    type: 'fill_recurrent_transfer',
+    timestamp: '2022-05-20T16:11:33',
+    key: 'keychain.tests!2',
+    index: 2,
+    txId: '1307e3f32f3ba555d971400c99048e73edbb509d',
+    blockNumber: 64543878,
+    url: 'https://hiveblocks.com/tx/1307e3f32f3ba555d971400c99048e73edbb509d',
+    last: false,
+    lastFetched: false,
+  },
+  {
+    from: 'workerjab1',
+    to: 'keychain.tests',
+    amount: '0.001 HIVE',
+    memo: '',
+    executions: 1,
+    recurrence: 1,
+    type: 'recurrent_transfer',
+    timestamp: '2022-05-18T00:36:36',
+    key: 'keychain.tests!1',
+    index: 1,
+    txId: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+    blockNumber: 64467698,
+    url: 'https://hiveblocks.com/tx/976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+    last: false,
+    lastFetched: false,
+  },
+];
+//end for transaction.utils
+
+//for account.actions
+const keysUserData1 = {
+  active: userData.nonEncryptKeys.active,
+  activePubkey: `@${userData.username}`,
+  posting: userData.nonEncryptKeys.posting,
+  postingPubkey: `@${userData.username}`,
+  memo: userData.nonEncryptKeys.memo,
+  memoPubkey: `@${userData.username}`,
+};
+const secondAccountOnState = {
+  name: userData2.username,
+  keys: {
+    posting: '5K2R76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM',
+    postingPubkey: `STMfkdlskdjdsajdjslkdjalksdjlasdkjalksdlaj`,
+  },
+};
+
+//end for account.actions
+
+//for global-properties.actions
+const fakeCurrentMedianHistoryPrice = {
+  base: { amount: 0.512, symbol: 'HBD' },
+  quote: { amount: 1, symbol: 'HIVE' },
+};
+const fakePostRewardFundResponse = {
+  id: 0,
+  name: 'post',
+  reward_balance: '812003.905 HIVE',
+  recent_claims: '621874018445293967',
+  last_update: '2022-05-25T16:01:36',
+  content_constant: '2000000000000',
+  percent_curation_rewards: 5000,
+  percent_content_rewards: 10000,
+  author_reward_curve: 'linear',
+  curation_reward_curve: 'linear',
+};
+//end for global-properties.actions
+
+//for token.actions
+const fakeTokensResponse = [
+  {
+    _id: 1,
+    issuer: 'null',
+    symbol: 'BEE',
+    name: 'Hive Engine Token',
+    metadata:
+      '{"url":"https://hive-engine.com","icon":"https://s3.amazonaws.com/steem-engine/images/icon_steem-engine_gradient.svg","desc":"BEE is the native token for the Hive Engine platform"}',
+    precision: 8,
+    maxSupply: '9007199254740991.00000000',
+    supply: '2574075.87974928',
+    circulatingSupply: '2119191.15545322',
+    stakingEnabled: true,
+    unstakingCooldown: 40,
+    delegationEnabled: true,
+    undelegationCooldown: 7,
+    numberTransactions: 4,
+    totalStaked: '300754.34540883',
+  },
+  {
+    _id: 2,
+    issuer: 'honey-swap',
+    symbol: 'SWAP.HIVE',
+    name: 'HIVE Pegged',
+    metadata:
+      '{"desc":"HIVE backed by the hive-engine team","url":"https://hive-engine.com","icon":"https://files.peakd.com/file/peakd-hive/aggroed/edUxk8GJ-logo_transparent1.png"}',
+    precision: 8,
+    maxSupply: '9007199254740991.00000000',
+    supply: '9007199254740991.00000000',
+    circulatingSupply: '9007199254740987.85453686',
+    stakingEnabled: false,
+    unstakingCooldown: 1,
+    delegationEnabled: false,
+    undelegationCooldown: 0,
+  },
+  {
+    _id: 3,
+    issuer: 'steemmonsters',
+    symbol: 'ORB',
+    name: 'Essence Orbs',
+    metadata:
+      '{"url":"https://splinterlands.com","icon":"https://s3.amazonaws.com/steemmonsters/website/ui_elements/open_packs/img_essence-orb.png","desc":"Each ORB token represents one, unopened, promotional Splinterlands Essence Orb booster pack."}',
+    precision: 0,
+    maxSupply: '200000',
+    supply: '200000',
+    circulatingSupply: '10185',
+    stakingEnabled: false,
+    unstakingCooldown: 1,
+    delegationEnabled: false,
+    undelegationCooldown: 0,
+  },
+];
+const expectedTokensPayload = [
+  {
+    _id: 1,
+    circulatingSupply: '2119191.15545322',
+    delegationEnabled: true,
+    issuer: 'null',
+    maxSupply: '9007199254740991.00000000',
+    metadata: {
+      desc: 'BEE is the native token for the Hive Engine platform',
+      icon: 'https://s3.amazonaws.com/steem-engine/images/icon_steem-engine_gradient.svg',
+      url: 'https://hive-engine.com',
+    },
+    name: 'Hive Engine Token',
+    numberTransactions: 4,
+    precision: 8,
+    stakingEnabled: true,
+    supply: '2574075.87974928',
+    symbol: 'BEE',
+    totalStaked: '300754.34540883',
+    undelegationCooldown: 7,
+    unstakingCooldown: 40,
+  },
+  {
+    _id: 2,
+    circulatingSupply: '9007199254740987.85453686',
+    delegationEnabled: false,
+    issuer: 'honey-swap',
+    maxSupply: '9007199254740991.00000000',
+    metadata: {
+      desc: 'HIVE backed by the hive-engine team',
+      icon: 'https://files.peakd.com/file/peakd-hive/aggroed/edUxk8GJ-logo_transparent1.png',
+      url: 'https://hive-engine.com',
+    },
+    name: 'HIVE Pegged',
+    precision: 8,
+    stakingEnabled: false,
+    supply: '9007199254740991.00000000',
+    symbol: 'SWAP.HIVE',
+    undelegationCooldown: 0,
+    unstakingCooldown: 1,
+  },
+  {
+    _id: 3,
+    circulatingSupply: '10185',
+    delegationEnabled: false,
+    issuer: 'steemmonsters',
+    maxSupply: '200000',
+    metadata: {
+      desc: 'Each ORB token represents one, unopened, promotional Splinterlands Essence Orb booster pack.',
+      icon: 'https://s3.amazonaws.com/steemmonsters/website/ui_elements/open_packs/img_essence-orb.png',
+      url: 'https://splinterlands.com',
+    },
+    name: 'Essence Orbs',
+    precision: 0,
+    stakingEnabled: false,
+    supply: '200000',
+    symbol: 'ORB',
+    undelegationCooldown: 0,
+    unstakingCooldown: 1,
+  },
+];
+const fakeTokensResponseNoMetadata = [
+  {
+    _id: 1,
+    issuer: 'null',
+    symbol: 'BEE',
+    name: 'Hive Engine Token',
+    precision: 8,
+    maxSupply: '9007199254740991.00000000',
+    supply: '2574075.87974928',
+    circulatingSupply: '2119191.15545322',
+    stakingEnabled: true,
+    unstakingCooldown: 40,
+    delegationEnabled: true,
+    undelegationCooldown: 7,
+    numberTransactions: 4,
+    totalStaked: '300754.34540883',
+  },
+];
+const fakeMarketMetricsResponse = [
+  {
+    _id: 1,
+    symbol: 'BEE',
+    volume: '162.17679932',
+    volumeExpiration: 1654031319,
+    lastPrice: '0.67800000',
+    lowestAsk: '0.64567933',
+    highestBid: '0.60000222',
+    lastDayPrice: '0.68029997',
+    lastDayPriceExpiration: 1654001169,
+    priceChangeHive: '-0.00229997',
+    priceChangePercent: '-0.34%',
+  },
+  {
+    _id: 2,
+    symbol: 'SWAP.BTC',
+    volume: '27228.07414160',
+    volumeExpiration: 1654028640,
+    lastPrice: '60187.07172012',
+    lowestAsk: '62898.93242394',
+    highestBid: '59906.05117597',
+    lastDayPrice: '61656.20181797',
+    lastDayPriceExpiration: 1653996678,
+    priceChangeHive: '-1469.13009785',
+    priceChangePercent: '-2.38%',
+  },
+  {
+    _id: 3,
+    symbol: 'ORB',
+    volume: '165.00000000',
+    volumeExpiration: 1654008909,
+    lastPrice: '165.00000000',
+    lowestAsk: '165.00000000',
+    highestBid: '100.00000000',
+    lastDayPrice: '165.00000000',
+    lastDayPriceExpiration: 1654008909,
+    priceChangeHive: '0',
+    priceChangePercent: '0%',
+  },
+];
+const fakeGetUserBalanceResponse = [
+  {
+    _id: 13429,
+    account: userData.username,
+    symbol: 'LEO',
+    balance: '38.861',
+    stake: '1.060',
+    pendingUnstake: '0',
+    delegationsIn: '0',
+    delegationsOut: '0',
+    pendingUndelegations: '0',
+  },
+  {
+    _id: 115171,
+    account: userData.username,
+    symbol: 'BUILDTEAM',
+    balance: '100',
+    stake: '38.87982783',
+    pendingUnstake: '0',
+    delegationsIn: '0',
+    delegationsOut: '0',
+    pendingUndelegations: '0',
+  },
+  {
+    _id: 71441,
+    account: userData.username,
+    symbol: 'PAL',
+    balance: '1189.573',
+    stake: '702.466',
+    pendingUnstake: '0',
+    delegationsIn: '0',
+    delegationsOut: '0',
+    pendingUndelegations: '0',
+  },
+];
+const fakeTokensGetAccountHistoryResponse = [
+  {
+    _id: '61674a248bae1252026e04ef',
+    blockNumber: 11274525,
+    transactionId: 'e3525c27349cd7b32903385d967b86273b987377',
+    timestamp: 1634159133,
+    operation: 'comments_curationReward',
+    authorperm: 're-theghost1980-20211215t195955670z',
+    from: 'fakeuser',
+    to: userData.username,
+    symbol: 'LEO',
+    quantity: '0.986',
+    memo: null,
+    account: userData.username,
+  },
+  {
+    _id: '61654d8f8bae125202648bbd',
+    blockNumber: 11231373,
+    transactionId: 'fcbd964d3b48a91ed749b0c67d4d57c4cd5a21d0',
+    timestamp: 1634028936,
+    operation: 'comments_authorReward',
+    authorperm: 're-theghost1980-20211215t195955670z',
+    from: userData.username,
+    to: 'theghost1980',
+    symbol: 'LEO',
+    quantity: '0.985',
+    memo: null,
+    account: userData.username,
+  },
+  {
+    _id: '615a3b378bae1252023114ba',
+    blockNumber: 10990073,
+    transactionId: 'ca9397cff3f270abeef4880de6570c3adec49134',
+    timestamp: 1633303344,
+    operation: 'mining_lottery',
+    from: 'contract_tokens',
+    to: userData.username,
+    poolId: '10099',
+    symbol: 'LEO',
+    quantity: '10000.985',
+    memo: 'Fake Memo mining_lottery',
+    account: userData.username,
+  },
+  {
+    _id: '6147d1928bae125202dd666e',
+    blockNumber: 10589513,
+    transactionId: '9e79e7a4b3d9cd057655870a7f16959f0674352e',
+    timestamp: 1632096651,
+    operation: 'tokens_transfer',
+    from: 'contract_tokens',
+    to: userData.username,
+    symbol: 'LEO',
+    quantity: '0.985',
+    memo: 'Fake Memo tokens_transfer',
+    account: userData.username,
+  },
+  {
+    _id: '613ef535780fd34f81d69aef',
+    blockNumber: 10335267,
+    transactionId: '5283ef02a869d85be961e963cd7aa75100b0a6b6',
+    timestamp: 1631331048,
+    operation: 'tokens_stake',
+    from: 'contract_tokens',
+    to: userData.username,
+    symbol: 'LEO',
+    quantity: '1000.986',
+    memo: null,
+    account: userData.username,
+  },
+  {
+    _id: '6135cb1c187544f7ef365d21',
+    blockNumber: 9747646,
+    transactionId: 'a463cc98b9912dd117856250087d2842b0ff5f4d',
+    timestamp: 1629562089,
+    operation: 'tokens_delegate',
+    from: userData.username,
+    to: 'theghost1980',
+    symbol: 'LEO',
+    quantity: '100000.985',
+    memo: null,
+    account: userData.username,
+  },
+  {
+    _id: '6135ca75187544f7ef2f3833',
+    blockNumber: 9709308,
+    transactionId: '39b772d44f0f6df07e43397078a53d06eda8e802',
+    timestamp: 1629446655,
+    operation: 'tokens_undelegateStart',
+    from: 'contract_tokens',
+    to: userData.username,
+    symbol: 'LEO',
+    quantity: '0.985',
+    memo: null,
+    account: userData.username,
+  },
+  {
+    _id: '6135999e187544f7efe79c78',
+    blockNumber: 6801163,
+    transactionId: '82f138ba16de2ce3bd7901ce5819fd0693e09aa0-3',
+    timestamp: 1620470055,
+    operation: 'tokens_undelegateDone',
+    from: 'contract_tokens',
+    to: userData.username,
+    symbol: 'LEO',
+    quantity: '0.985',
+    memo: null,
+    account: userData.username,
+  },
+];
+const expectedPayLoadloadTokenHistory = [
+  {
+    _id: '61674a248bae1252026e04ef',
+    account: userData.username,
+    amount: '0.986 LEO',
+    authorPerm: 're-theghost1980-20211215t195955670z',
+    authorperm: 're-theghost1980-20211215t195955670z',
+    blockNumber: 11274525,
+    from: 'fakeuser',
+    memo: null,
+    operation: 'comments_curationReward',
+    quantity: '0.986',
+    symbol: 'LEO',
+    timestamp: 1634159133,
+    to: userData.username,
+    transactionId: 'e3525c27349cd7b32903385d967b86273b987377',
+  },
+  {
+    _id: '61654d8f8bae125202648bbd',
+    account: userData.username,
+    amount: '0.985 LEO',
+    authorPerm: 're-theghost1980-20211215t195955670z',
+    authorperm: 're-theghost1980-20211215t195955670z',
+    blockNumber: 11231373,
+    from: userData.username,
+    memo: null,
+    operation: 'comments_authorReward',
+    quantity: '0.985',
+    symbol: 'LEO',
+    timestamp: 1634028936,
+    to: 'theghost1980',
+    transactionId: 'fcbd964d3b48a91ed749b0c67d4d57c4cd5a21d0',
+  },
+  {
+    _id: '615a3b378bae1252023114ba',
+    account: userData.username,
+    amount: '10000.985 LEO',
+    blockNumber: 10990073,
+    from: 'contract_tokens',
+    memo: 'Fake Memo mining_lottery',
+    operation: 'mining_lottery',
+    poolId: '10099',
+    quantity: '10000.985',
+    symbol: 'LEO',
+    timestamp: 1633303344,
+    to: userData.username,
+    transactionId: 'ca9397cff3f270abeef4880de6570c3adec49134',
+  },
+  {
+    _id: '6147d1928bae125202dd666e',
+    account: userData.username,
+    amount: '0.985 LEO',
+    blockNumber: 10589513,
+    from: 'contract_tokens',
+    memo: 'Fake Memo tokens_transfer',
+    operation: 'tokens_transfer',
+    quantity: '0.985',
+    symbol: 'LEO',
+    timestamp: 1632096651,
+    to: userData.username,
+    transactionId: '9e79e7a4b3d9cd057655870a7f16959f0674352e',
+  },
+  {
+    _id: '613ef535780fd34f81d69aef',
+    account: userData.username,
+    amount: '1000.986 LEO',
+    blockNumber: 10335267,
+    from: 'contract_tokens',
+    memo: null,
+    operation: 'tokens_stake',
+    quantity: '1000.986',
+    symbol: 'LEO',
+    timestamp: 1631331048,
+    to: userData.username,
+    transactionId: '5283ef02a869d85be961e963cd7aa75100b0a6b6',
+  },
+  {
+    _id: '6135cb1c187544f7ef365d21',
+    account: userData.username,
+    amount: '100000.985 LEO',
+    blockNumber: 9747646,
+    delegatee: 'theghost1980',
+    delegator: userData.username,
+    from: userData.username,
+    memo: null,
+    operation: 'tokens_delegate',
+    quantity: '100000.985',
+    symbol: 'LEO',
+    timestamp: 1629562089,
+    to: 'theghost1980',
+    transactionId: 'a463cc98b9912dd117856250087d2842b0ff5f4d',
+  },
+  {
+    _id: '6135ca75187544f7ef2f3833',
+    account: userData.username,
+    amount: '0.985 LEO',
+    blockNumber: 9709308,
+    delegatee: 'contract_tokens',
+    delegator: userData.username,
+    from: 'contract_tokens',
+    memo: null,
+    operation: 'tokens_undelegateStart',
+    quantity: '0.985',
+    symbol: 'LEO',
+    timestamp: 1629446655,
+    to: userData.username,
+    transactionId: '39b772d44f0f6df07e43397078a53d06eda8e802',
+  },
+  {
+    _id: '6135999e187544f7efe79c78',
+    account: userData.username,
+    amount: '0.985 LEO',
+    blockNumber: 6801163,
+    delegatee: 'contract_tokens',
+    delegator: userData.username,
+    from: 'contract_tokens',
+    memo: null,
+    operation: 'tokens_undelegateDone',
+    quantity: '0.985',
+    symbol: 'LEO',
+    timestamp: 1620470055,
+    to: userData.username,
+    transactionId: '82f138ba16de2ce3bd7901ce5819fd0693e09aa0-3',
+  },
+];
+//end for token.actions
+
 //end data for specific test files
-//end data for specific test files
-/* istanbul ignore next */
+
 const bittrexResultArray = [
   {
     Currency: 'BTC',
@@ -716,7 +2075,7 @@ const bittrexResultArray = [
     Notice: '',
   },
 ];
-/* istanbul ignore next */
+
 const utilsT = {
   dataUserExtended,
   cedricDataSample,
@@ -732,6 +2091,35 @@ const utilsT = {
   fakeResponseHavingTokenBalances,
   fakeIncommingDelegations,
   fakeOutgoingDelegations,
+  votingPowerArrayTest,
+  fakeHbdConversionsResponse,
+  fakeHiveConversionsResponse,
+  fakeGetDelegatorsResponse,
+  fakeGetDelegateesResponse,
+  fakeVotedAccountResponse,
+  fakeProposalListResponse,
+  fakeListProposalVotesResponse,
+  fakeDailyBudgetResponse,
+  expectedResultProposal,
+  fakeProposalKeyChain,
+  fakeGetAccountHistoryResponse,
+  expectedDataGetAccountHistory,
+  fakeGetAccountHistoryWrongDataResponse,
+  expectedOutputId0,
+  fakeOneTransactionResponse,
+  fakeGetAccountHistoryResponseAllOtherTypes,
+  expectedResultRestOfCases,
+  keysUserData1,
+  secondAccountOnState,
+  fakeCurrentMedianHistoryPrice,
+  fakePostRewardFundResponse,
+  fakeGetUserBalanceResponse,
+  fakeTokensGetAccountHistoryResponse,
+  expectedPayLoadloadTokenHistory,
+  fakeTokensResponse,
+  expectedTokensPayload,
+  fakeTokensResponseNoMetadata,
+  fakeMarketMetricsResponse,
 };
-/* istanbul ignore next */
+
 export default utilsT;

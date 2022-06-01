@@ -15,6 +15,10 @@
     "message": "Oui",
     "description": "Generic"
   },
+  "common_and": {
+    "message": "et",
+    "description": "Generic"
+  },
   "common_no": {
     "message": "Non",
     "description": "Generic"
@@ -32,7 +36,7 @@
     "description": "type of key"
   },
   "unknown_error": {
-    "message": "Petit problème! Veuillez réessayer!",
+    "message": "Petit problème! Veuillez réessayer svp!",
     "description": "Generic error"
   },
   "wrong_password": {
@@ -571,6 +575,10 @@
     "message": "Veuillez ajouter votre clé $1 pour effectuer cette opération !",
     "description": "When trying to perform an operation without a stored private $1 key"
   },
+  "popup_missing_key_proposal": {
+    "message": "Veuillez ajouter votre clé active pour pouvoir voter pour les proposals .",
+    "description": "When voting for a proposal"
+  },
   "popup_password_mismatch": {
     "message": "Vos mots de passe ne correspondent pas!",
     "description": "when registering a password on keychain"
@@ -1057,7 +1065,7 @@
     "message": "Une dApp essaie d'envoyer une demande de transfert à l'extension Hive Keychain pour le compte @$1 en utilisant la clé de mémo, qui n'a pas été ajoutée au portefeuille."
   },
   "bgd_ops_witness_voted": {
-    "message": "A voté avec succès @$1 pour témoin."
+    "message": "A voté pour @$1 en tant que witness."
   },
   "bgd_ops_witness_unvoted": {
     "message": "Retiré le vote pour @$1 en tant que témoin."
@@ -1609,6 +1617,10 @@
   },
   "html_popup_witness_vote_error_proxy": {
     "message": "Un proxy est actuellement défini, veuillez le retirer avant de voter pour un witness",
+    "description": "Governance"
+  },
+  "html_popup_proposal_vote_error_proxy": {
+    "message": "Un proxy est actuellement défini, veuillez le retirer afin de pouvoir voter pour un proposal",
     "description": "Governance"
   },
   "html_popup_currently_using_proxy": {
