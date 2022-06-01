@@ -28,6 +28,7 @@ const SignIn = ({
   }, []);
 
   const login = async () => {
+    console.log('login being called!, pass: ', password); //to remove ojo
     if (await MkUtils.login(password)) {
       setMk(password, true);
       retrieveAccounts(password);

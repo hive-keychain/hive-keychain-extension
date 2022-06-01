@@ -1,14 +1,16 @@
+import { ExtendedAccount } from '@hiveio/dhive';
+import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import App from '@popup/App';
 import { SignInComponent } from '@popup/pages/sign-in/sign-in/sign-in.component';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import React from 'react';
+import React, { FC } from 'react';
 import { Provider } from 'react-redux';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import CurrencyUtils from 'src/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -16,10 +18,7 @@ import PopupUtils from 'src/utils/popup.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-import {
-  getFakeStore,
-  RootState,
-} from 'src/__tests__/utils-for-testing/fake-store';
+import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 
 const messagesJsonFile = require('public/_locales/en/messages.json');
@@ -79,25 +78,17 @@ describe('sign-in.component.tsx tests:\n', () => {
     });
   });
 
-  test('jkljkl', async () => {
-    const initialStateWAccountsWActiveAccountStore = {
-      accounts: [
-        {
-          name: utilsT.userData.username,
-          keys: utilsT.keysUserData1,
-        },
-        utilsT.secondAccountOnState,
-      ],
-      activeAccount: {
+  test('constructing the app process to move into sign-in later', async () => {
+    /////////new from here//////////
+    //variables & consts
+    const rpc = { uri: 'https://hived.privex.io/', testnet: false } as Rpc;
+    const accounts = [
+      utilsT.secondAccountOnState,
+      {
         name: utilsT.userData.username,
-        account: {
-          name: utilsT.userData.username,
-          //reward_vesting_balance: '1000 VESTS',
-        },
         keys: utilsT.keysUserData1,
-        rc: {},
       },
-    } as RootState;
+    ] as LocalAccount[];
     const fakeExtendedAccountResponse = [
       {
         name: utilsT.userData.username,
@@ -109,81 +100,190 @@ describe('sign-in.component.tsx tests:\n', () => {
       max_mana: 10000,
       percentage: 100,
     };
-    //set state as initialStateWAccountsWActiveAccountStore
-    fakeStore = getFakeStore(initialEmptyStateStore);
-    //App settings
-    const rpc = { uri: 'https://hived.privex.io/', testnet: false } as Rpc;
-    const accounts = [
-      utilsT.secondAccountOnState,
-      {
-        name: utilsT.userData.username,
-        keys: utilsT.keysUserData1,
-      },
-    ] as LocalAccount[];
-
+    const autoLock = {
+      type: AutoLockType.DEFAULT,
+      mn: 1,
+    };
+    //needed mocks for app and others
     chrome.i18n.getMessage = jest.fn().mockImplementation((message) => {
       if (messagesJsonFile[message]) {
         return messagesJsonFile[message].message;
       }
       return message + ' check as not found on jsonFile.';
     });
-    PopupUtils.fixPopupOnMacOs = jest.fn(); //no implementation
-    LocalStorageUtils.getValueFromLocalStorage = jest.fn(); //no implementation
-    chrome.runtime.onMessage.addListener = jest.fn(); //no implementation
+    //chrome.runtime.onMessage.addListener = jest.fn(); //no implementation
+    //implementations
+    const getValuefromLSImplementation = (...args: any[]) => {
+      if (args[0] === LocalStorageKeyEnum.AUTOLOCK) {
+        return autoLock;
+      } else if (args[0] === LocalStorageKeyEnum.SWITCH_RPC_AUTO) {
+        return true;
+      }
+    };
+    //end implementations
+
+    //add emptyInitialState to see how its behave
+    fakeStore = getFakeStore({
+      ...initialEmptyStateStore,
+      accounts: accounts,
+      activeAccount: {
+        account: {
+          name: utilsT.userData.username,
+        } as ExtendedAccount,
+        keys: utilsT.keysUserData1,
+        rc: {} as Manabar,
+      },
+    });
+    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => (
+      <Provider store={fakeStore}>{children}</Provider>
+    );
+    // General App function calls & mocks for case 1: no mk but yes storedAccounts.
+    // 1. PopupUtils.fixPopupOnMacOs(); tobe mocked(no impl) no need for now.
+    const mockFixPopup = (PopupUtils.fixPopupOnMacOs = jest.fn()); //no implementation
+    // 2. initAutoLock():
+    //    - to mock: LocalStorageUtils.getValueFromLocalStorage => Autolock value
     LocalStorageUtils.getValueFromLocalStorage = jest
       .fn()
-      .mockResolvedValueOnce(rpc);
-    LocalStorageUtils.getValueFromLocalStorage = jest
+      .mockImplementation(getValuefromLSImplementation);
+    //    - if autolock(of Autolock type):
+    //      - will check on array
+    //      - will send runtime message
+    //    - else(autolock undefined):
+    //      - will skip.
+    // 3. initApplication():
+    //    - to mock: RpcUtils.getCurrentRpc() => rpc
+    const mGetCurrentRpc = (RpcUtils.getCurrentRpc = jest
       .fn()
-      .mockResolvedValueOnce(true); //switchAuto -> setActiveRpc
-    RpcUtils.checkRpcStatus = jest.fn().mockResolvedValueOnce(true); //rpcStatusOk
-    ActiveAccountUtils.getActiveAccountNameFromLocalStorage = jest
+      .mockResolvedValueOnce(rpc));
+    //    - will setInitialRpc
+    //    - this will trigger: onActiveRpcRefreshed()
+    //        - onActiveRpcRefreshed():
+    //          - if activeAccountUsername(comming from initialState):
+    //            - will call refreshActiveAccount()
+    //          - else
+    //            - to mock ActiveAccountUtils.getActiveAccountNameFromLocalStorage()
+    const mGetActiveAccount =
+      (ActiveAccountUtils.getActiveAccountNameFromLocalStorage = jest
+        .fn()
+        .mockResolvedValue(utilsT.userData.username));
+    //        - it will dispatch: refreshKeys(account) & getAccountRC(account.name)
+    //          - to mock HiveUtils.getClient().rc.getRCMana => fakeManaBar
+    const mGetRCMana = (HiveUtils.getClient().rc.getRCMana = jest
       .fn()
-      .mockResolvedValueOnce(utilsT.userData.username);
-    HiveUtils.getClient().database.getDynamicGlobalProperties = jest
-      .fn()
-      .mockResolvedValueOnce(utilsT.dynamicPropertiesObj);
-    HiveUtils.getClient().database.getCurrentMedianHistoryPrice = jest
-      .fn()
-      .mockResolvedValueOnce(utilsT.fakeCurrentMedianHistoryPrice);
-    HiveUtils.getClient().database.call = jest
-      .fn()
-      .mockResolvedValueOnce(utilsT.fakePostRewardFundResponse);
+      .mockResolvedValue(fakeManaBarResponse));
+    //          - to mock HiveUtils.getClient().database.getAccounts
     HiveUtils.getClient().database.getAccounts = jest
       .fn()
-      .mockResolvedValueOnce(fakeExtendedAccountResponse);
-    HiveUtils.getClient().rc.getRCMana = jest
+      .mockResolvedValue(fakeExtendedAccountResponse);
+    //        -  loadGlobalProperties();
+    HiveUtils.getClient().database.getDynamicGlobalProperties = jest
       .fn()
-      .mockResolvedValueOnce(fakeManaBarResponse);
-    ActiveAccountUtils.hasReward = jest.fn().mockReturnValueOnce(false);
-    CurrencyUtils.getCurrencyLabels = jest.fn().mockReturnValueOnce({
-      hive: 'HIVE',
-      hbd: 'HBD',
-      hp: 'HP',
-    });
-
-    //as case 1 false
-    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValueOnce(false);
-    MkUtils.getMkFromLocalStorage = jest
+      .mockResolvedValue(utilsT.dynamicPropertiesObj);
+    HiveUtils.getClient().database.getCurrentMedianHistoryPrice = jest
       .fn()
-      .mockResolvedValueOnce(utilsT.secondAccountOnState.name);
-    FormatUtils.toHP = jest.fn(); //no implementation
-    ProposalUtils.hasVotedForProposal = jest.fn().mockResolvedValueOnce(true);
+      .mockResolvedValue(utilsT.fakeCurrentMedianHistoryPrice);
+    HiveUtils.getClient().database.call = jest
+      .fn()
+      .mockResolvedValue(utilsT.fakePostRewardFundResponse);
+    //    - initActiveRpc:
+    //      - to mock LocalStorageUtils.getValueFromLocalStorage => true
+    LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockImplementation(getValuefromLSImplementation);
 
-    //as case 1 has accounts stored
+    //      - to mock RpcUtils.checkRpcStatus(rpc.uri) => true
+    RpcUtils.checkRpcStatus = jest.fn().mockResolvedValue(true);
+    //      - as is true, will setActiveRpc (dispatch)
+    //        - to mock HiveUtils.setRpc(rpc) no need impl.
+    HiveUtils.setRpc = jest.fn(); //no implementation for now as it will set the rpc
+    //        - to mock chrome.runtime.sendMessage (may also be a spy to check if needed)
+    chrome.runtime.sendMessage = jest.fn(); //no implementation
+    //    - to mock AccountUtils.hasStoredAccounts() => true
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    //    - to mock MkUtils.getMkFromLocalStorage() => ''
+    MkUtils.getMkFromLocalStorage = jest.fn().mockResolvedValue(''); //mk = ''
+    //      - will setMk on state as ''.
+    //    - to mock AccountUtils.getAccountsFromLocalStorage => [accounts]
     AccountUtils.getAccountsFromLocalStorage = jest
       .fn()
-      .mockResolvedValueOnce(accounts);
-    //End App settings
+      .mockResolvedValue(accounts);
+    //      - will setAccounts()
+    //    - setAppReady(true);
+    //    - will call selectComponent('', [accounts]);
+    //for proposals
+    ProposalUtils.hasVotedForProposal = jest.fn().mockResolvedValue(false);
+    ProposalUtils.voteForKeychainProposal = jest.fn();
+    // chrome.tabs.create => not imple.
+    chrome.tabs.create = jest.fn(); //not implemented
+    //
+    ////until here all the setUp of app, mocks.
 
-    // const { debug } = render(wrapperStore(<App />));
-    // await waitFor(() => debug());
+    //Notes for Cedric: onActiveRpcRefreshed is being called twice.
 
-    render(wrapperStore(<App />));
-    await waitFor(() => {
-      const buttons = screen.getAllByRole('div');
-      console.log(buttons);
-      console.log(fakeStore.getState());
+    //specific mocks & spies for this case
+    const spyLogin = jest.spyOn(MkUtils, 'login').mockResolvedValueOnce(false);
+    //end specific
+
+    // const { debug, rerender } = render(<App />, { wrapper: wrapperStore});
+
+    render(<App />, { wrapper: wrapperStore });
+    await waitFor(() => {});
+    const inputPasswordComponent = screen.getByLabelText(
+      inputPasswordAL,
+    ) as HTMLInputElement;
+    expect(inputPasswordComponent).toBeDefined();
+    fireEvent.change(inputPasswordComponent, {
+      target: { value: 'invalid_password' },
     });
+    expect(inputPasswordComponent.value).toBe('invalid_password');
+    fireEvent.keyPress(inputPasswordComponent, {
+      key: 'Enter',
+      code: 13,
+      charCode: 13,
+    });
+    await waitFor(async () => {
+      expect(spyLogin).toBeCalledTimes(1);
+      const errorMessage = await screen.findByText('Wrong password!');
+      //console.log(errorMessage);
+      expect(errorMessage).toBeDefined();
+    });
+
+    //debug();
+    // await waitFor(() => {
+    //   const inputPasswordComponent = screen.getByLabelText(
+    //     inputPasswordAL,
+    //   ) as HTMLInputElement;
+    //   fireEvent.change(inputPasswordComponent, {
+    //     target: { value: 'invalid_password' },
+    //   });
+    // });
+    //debug();
+    // await waitFor(async () => {
+    //   const inputPasswordComponent = screen.getByLabelText(
+    //     inputPasswordAL,
+    //   ) as HTMLInputElement;
+    //   fireEvent.keyPress(inputPasswordComponent, {
+    //     key: 'Enter',
+    //     code: 13,
+    //     charCode: 13,
+    //   });
+    //   await waitFor(() => {
+    //     expect(spyLogin).toBeCalledTimes(10);
+    //   });
+    //   //console.log(fakeStore.getState());
+    // });
+    // render(wrapperStore(<App />));
+    // await waitFor(() => {
+    //   const inputPasswordComponent = screen.getByLabelText(
+    //     inputPasswordAL,
+    //   ) as HTMLInputElement;
+    //   expect(inputPasswordComponent).toBeDefined();
+    //   //write password on input
+    //   fireEvent.change(inputPasswordComponent, {
+    //     target: { value: 'invalid_password' },
+    //   });
+    //   //check for value as set
+    //   expect(inputPasswordComponent.value).toBe('invalid_password');
+    // });
   });
 });

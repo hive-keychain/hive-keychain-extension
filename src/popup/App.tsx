@@ -166,8 +166,10 @@ const App = ({
     accounts: LocalAccount[],
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
+      console.log('case 1, valid mk & valid accounts'); //to remove Ojo
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk && mk.length > 0) {
+      console.log('case 2, just valid mk'); //to remove Ojo
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (
       mk &&
@@ -175,8 +177,10 @@ const App = ({
       accounts.length === 0 &&
       !hasStoredAccounts
     ) {
+      console.log('case 3, valid mk, valid accounts, hasStoredAccounts true'); //to remove Ojo
       navigateTo(Screen.SIGN_UP_PAGE, true);
     } else {
+      console.log('case 4, empty mk & valid accounts'); //to remove Ojo
       navigateTo(Screen.SIGN_IN_PAGE);
     }
   };
@@ -185,8 +189,10 @@ const App = ({
     if (isAppReady) {
       if (!mk || mk.length === 0) {
         if (accounts && accounts.length === 0 && !hasStoredAccounts) {
+          console.log('to SignUpComponent'); //to remove Ojo
           return <SignUpComponent />;
         } else {
+          console.log('to SignInRouterComponent'); //to remove Ojo
           return <SignInRouterComponent />;
         }
       } else {
