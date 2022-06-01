@@ -2,71 +2,12 @@ import KeychainApi from '@api/keychain';
 import axios from 'axios';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-
+afterEach(() => {
+  jest.clearAllMocks();
+});
 describe('currency-prices-utils tests', () => {
-  describe('Not mocking', () => {
-    test.skip('Not mocking getPrices', async () => {
-      const expectedDefinedFieldsAndSubFields = [
-        { field: 'bitcoin', subFields: ['usd', 'usd_24h_change'] },
-        { field: 'hive', subFields: ['usd', 'usd_24h_change'] },
-        { field: 'hive_dollar', subFields: ['usd', 'usd_24h_change'] },
-      ];
-      const showResultOnConsole = false;
-      const result = await CurrencyPricesUtils.getPrices();
-      if (showResultOnConsole) {
-        console.log(result);
-      }
-      expect(result).not.toBeUndefined();
-      expectedDefinedFieldsAndSubFields.map((keyObj) => {
-        //console.log(`Checking field: ${keyObj.field}`);
-        expect(result[keyObj.field]).toBeDefined();
-        if (keyObj.subFields.length > 0) {
-          keyObj.subFields.map((subField) => {
-            //console.log(`Checking subField: ${subField}`);
-            expect(result[keyObj.field][subField]).toBeDefined();
-          });
-        }
-      });
-    });
-
-    test('Not mocking getBittrexCurrency', async () => {
-      const expectedFieldsAndSubfields = [
-        { field: 'BaseAddress', subFields: [] },
-        { field: 'CoinType', subFields: [] },
-        { field: 'Currency', subFields: [] },
-        { field: 'CurrencyLong', subFields: [] },
-        { field: 'IsActive', subFields: [] },
-        { field: 'IsRestricted', subFields: [] },
-        { field: 'MinConfirmation', subFields: [] },
-        { field: 'Notice', subFields: [] },
-        { field: 'TxFee', subFields: [] },
-      ];
-      const showResultOnConsole = false;
-      const currencyToGet = 'BTC';
-      const result = await CurrencyPricesUtils.getBittrexCurrency(
-        currencyToGet,
-      );
-      if (showResultOnConsole) {
-        console.log(result);
-      }
-      expectedFieldsAndSubfields.map((keyObj) => {
-        //console.log(`Checking field: ${keyObj.field}`);
-        expect(result[keyObj.field]).toBeDefined();
-        if (keyObj.subFields.length > 0) {
-          keyObj.subFields.map((subField) => {
-            //console.log(`Checking subField: ${subField}`);
-            expect(result[keyObj.field][subField]).toBeDefined();
-          });
-        }
-      });
-    });
-  });
-
-  describe('Mocking the APIs', () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test('mocking expected getPrices data', async () => {
+  describe('getPrices tests:\n', () => {
+    test('Must get prices from Hive API', async () => {
       const mockedApiReply = {
         data: {
           bitcoin: { usd: 79999, usd_24h_change: -9.025204931469629 },
@@ -78,8 +19,19 @@ describe('currency-prices-utils tests', () => {
       const result = await CurrencyPricesUtils.getPrices();
       expect(result).toEqual(mockedApiReply.data);
     });
+    test('If error on request will throw an unhandled error', async () => {
+      const errorThrown = new Error('Network Failed');
+      KeychainApi.get = jest.fn().mockRejectedValueOnce(errorThrown);
+      try {
+        expect(await CurrencyPricesUtils.getPrices()).toBe(1);
+      } catch (error) {
+        expect(error).toEqual(errorThrown);
+      }
+    });
+  });
 
-    test('mocking expected getBittrexCurrency data must return currency data', async () => {
+  describe('getBittrexCurrency tests:\n', () => {
+    test('Must get BTC price from bittrex', async () => {
       const mockedBittrexApiReply = {
         data: {
           success: true,
@@ -98,7 +50,7 @@ describe('currency-prices-utils tests', () => {
       expect(result).toEqual(filteredResult);
     });
 
-    test('mocking getBittrexCurrency data but lacking the requested coin must return undefined', async () => {
+    test('Must return undefined as not found', async () => {
       const mockedBittrexApiReply = {
         data: {
           success: true,
@@ -114,7 +66,7 @@ describe('currency-prices-utils tests', () => {
       expect(result).toBeUndefined();
     });
 
-    test('mocking getBittrexCurrency data failure must return null', async () => {
+    test('Must return null if response not successful', async () => {
       const mockedBittrexApiReply = {
         data: {
           message: '',
@@ -127,6 +79,15 @@ describe('currency-prices-utils tests', () => {
         currencyToGet,
       );
       expect(result).toBeNull();
+    });
+    test('If error on request will throw an unhandled error', async () => {
+      const errorThrown = new Error('Network Failed');
+      axios.get = jest.fn().mockRejectedValueOnce(errorThrown);
+      try {
+        expect(await CurrencyPricesUtils.getBittrexCurrency('BTC')).toBe(1);
+      } catch (error) {
+        expect(error).toEqual(errorThrown);
+      }
     });
   });
 });
