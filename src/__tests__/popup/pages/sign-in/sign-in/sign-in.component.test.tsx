@@ -139,7 +139,7 @@ describe('sign-in.component.tsx tests:\n', () => {
     );
     // General App function calls & mocks for case 1: no mk but yes storedAccounts.
     // 1. PopupUtils.fixPopupOnMacOs(); tobe mocked(no impl) no need for now.
-    const mockFixPopup = (PopupUtils.fixPopupOnMacOs = jest.fn()); //no implementation
+    PopupUtils.fixPopupOnMacOs = jest.fn(); //no implementation
     // 2. initAutoLock():
     //    - to mock: LocalStorageUtils.getValueFromLocalStorage => Autolock value
     LocalStorageUtils.getValueFromLocalStorage = jest
@@ -226,7 +226,7 @@ describe('sign-in.component.tsx tests:\n', () => {
 
     // const { debug, rerender } = render(<App />, { wrapper: wrapperStore});
 
-    render(<App />, { wrapper: wrapperStore });
+    const { debug } = render(<App />, { wrapper: wrapperStore });
     await waitFor(() => {});
     const inputPasswordComponent = screen.getByLabelText(
       inputPasswordAL,
@@ -246,6 +246,7 @@ describe('sign-in.component.tsx tests:\n', () => {
       const errorMessage = await screen.findByText('Wrong password!');
       //console.log(errorMessage);
       expect(errorMessage).toBeDefined();
+      debug();
     });
 
     //debug();
