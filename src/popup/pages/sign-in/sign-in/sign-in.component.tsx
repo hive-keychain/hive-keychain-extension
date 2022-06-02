@@ -28,7 +28,6 @@ const SignIn = ({
   }, []);
 
   const login = async () => {
-    console.log('login being called!, pass: ', password); //to remove ojo
     if (await MkUtils.login(password)) {
       setMk(password, true);
       retrieveAccounts(password);
@@ -63,6 +62,7 @@ const SignIn = ({
         label={'popup_html_signin'}
         logo={Icons.LOGIN}
         onClick={login}
+        ariaLabel={'login-button'} //modified for testing
       />
       <div className="reset-password-link" onClick={goToForgetPassword}>
         {chrome.i18n.getMessage('popup_html_forgot')}

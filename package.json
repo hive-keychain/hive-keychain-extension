@@ -82,6 +82,7 @@
     "@hot-loader/react-dom": "^17.0.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.5",
+    "@testing-library/user-event": "^14.2.0",
     "@types/jest": "^27.5.0",
     "@types/md5": "^2.3.1",
     "@types/node": "^17.0.10",

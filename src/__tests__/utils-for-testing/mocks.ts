@@ -5,6 +5,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -55,7 +56,7 @@ const mocksApp = (
   LocalStorageUtils.getValueFromLocalStorage = jest
     .fn()
     .mockImplementation(getValuefromLSImplementation);
-  RpcUtils.getCurrentRpc = jest.fn().mockResolvedValueOnce(rpc);
+  RpcUtils.getCurrentRpc = jest.fn().mockResolvedValue(rpc);
   ActiveAccountUtils.getActiveAccountNameFromLocalStorage = jest
     .fn()
     .mockResolvedValue(activeAccountUsername);
@@ -94,6 +95,24 @@ const mocksApp = (
   chrome.i18n.getMessage = chromei18nGetMessageImplementation;
 };
 
+const mocksHome = (
+  getPricesResolvedValue: { data: {} },
+  getAccountValueReturnValue: string,
+) => {
+  CurrencyPricesUtils.getPrices = jest
+    .fn()
+    .mockResolvedValue(getPricesResolvedValue);
+  AccountUtils.getAccountValue = jest
+    .fn()
+    .mockReturnValue(getAccountValueReturnValue);
+};
+
+const mocksTopBar = (hasRewardReturnedValue: boolean) => {
+  ActiveAccountUtils.hasReward = jest
+    .fn()
+    .mockReturnValue(hasRewardReturnedValue);
+};
+
 const implementation = {
   getValuefromLS,
   i18nGetMessage,
@@ -101,6 +120,8 @@ const implementation = {
 
 const mocks = {
   mocksApp,
+  mocksHome,
+  mocksTopBar,
 };
 const customMocks = {
   implementation,
