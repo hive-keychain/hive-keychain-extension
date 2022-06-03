@@ -37,7 +37,7 @@ const cancelLeaseRequest = async (
 ) => {
   return HiveUtils.sendCustomJson(
     {
-      id: lease.id,
+      leaseId: lease.id,
     },
     activeAccount,
     LeaseKeys.CANCEL_REQUEST,
