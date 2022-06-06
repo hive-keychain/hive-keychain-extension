@@ -352,7 +352,7 @@ const getAccountValue = (
   { hive, hive_dollar }: CurrencyPrices,
   props: DynamicGlobalProperties,
 ) => {
-  if (!hive_dollar.usd || !hive.usd) return 0;
+  if (!hive_dollar?.usd || !hive?.usd) return 0;
   return FormatUtils.withCommas(
     (
       (parseFloat(hbd_balance as string) +
