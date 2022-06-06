@@ -18,7 +18,7 @@ const getActiveAccountNameFromLocalStorage = async () => {
   const account = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
   );
-  return account.length ? account : undefined;
+  return account && account.length ? account : undefined;
 };
 
 const hasReward = (
