@@ -735,6 +735,10 @@
     "message": "Proposal IDs",
     "description": "When website request a proposal vote"
   },
+  "dialog_id": {
+    "message": "ID",
+    "description": "When website request a custom json"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
