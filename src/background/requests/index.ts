@@ -112,7 +112,7 @@ export class RequestsHandler {
     return [
       this.data.accounts?.find((e) => e.name === username)?.keys[keyType],
       //@ts-ignore
-      this.accounts?.find((e) => e.name === username)?.keys[pubKey!],
+      this.data.accounts?.find((e) => e.name === username)?.keys[pubKey!],
     ];
   }
 
