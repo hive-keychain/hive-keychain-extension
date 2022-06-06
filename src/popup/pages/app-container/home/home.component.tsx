@@ -45,8 +45,10 @@ const Home = ({
       Object.keys(globalProperties).length > 0 &&
       !ActiveAccountUtils.isEmpty(activeAccount)
     ) {
+      console.log('2nd timer called'); //to remove ojo
       setTimeout(() => {
         setDisplayLoader(false);
+        console.log('2nd timer forwarded'); //to remove ojo
       }, 1000);
     } else {
       setDisplayLoader(true);
@@ -67,11 +69,11 @@ const Home = ({
     );
     loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
   };
-
+  //added aria-label for testing
   return (
     <div className="home-page">
       {!displayLoader && activeRpc && activeRpc.uri !== 'NULL' && (
-        <div>
+        <div aria-label="home-page-component">
           <TopBarComponent />
           <SelectAccountSectionComponent />
           <ResourcesSectionComponent />

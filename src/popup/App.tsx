@@ -68,6 +68,7 @@ const App = ({
 
   const onActiveRpcRefreshed = async () => {
     if (activeAccountUsername) {
+      console.log('1st timer about to be called'); //to remove ojo
       refreshActiveAccount();
     } else {
       const lastActiveAccountName =
