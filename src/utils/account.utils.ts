@@ -111,7 +111,7 @@ const getAccountsFromLocalStorage = async (mk: string) => {
     LocalStorageKeyEnum.ACCOUNTS,
   );
   const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
-  return accounts?.list;
+  return accounts?.list.filter((e: LocalAccount) => e.name.length);
 };
 
 const isAccountNameAlreadyExisting = (
