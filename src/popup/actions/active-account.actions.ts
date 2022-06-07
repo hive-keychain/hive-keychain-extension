@@ -18,7 +18,6 @@ export const refreshActiveAccount =
           localAccount.name === getState().activeAccount.name,
       );
       dispatch(loadActiveAccount(account));
-      console.log('1st timer forwarded'); //to remove ojo
     }, delay);
   };
 

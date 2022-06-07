@@ -33,6 +33,14 @@ const InputComponent = (props: InputProps) => {
 
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return function cleanup() {
+      setMounted(false);
+    };
+  });
 
   useEffect(() => {
     if (props.autocompleteValues) {
@@ -45,7 +53,9 @@ const InputComponent = (props: InputProps) => {
   }, [props.value, props.autocompleteValues]);
 
   const handleOnBlur = () => {
-    setTimeout(() => setIsFocused(false), 200);
+    if (mounted) {
+      setTimeout(() => setIsFocused(false), 200);
+    }
   };
   const handleOnFocus = () => {
     setIsFocused(true);

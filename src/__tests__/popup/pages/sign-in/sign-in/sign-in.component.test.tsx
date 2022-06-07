@@ -6,13 +6,11 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { FC } from 'react';
 import { Provider } from 'react-redux';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialStateWAccountsWActiveAccountStore } from 'src/__tests__/utils-for-testing/initial-states';
 import customMocks from 'src/__tests__/utils-for-testing/mocks';
-
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 jest.setTimeout(10000);
@@ -76,11 +74,10 @@ beforeEach(() => {
     jest.fn(),
     jest.fn(),
     customMocks.implementation.i18nGetMessage,
+    jest.fn(),
   );
   customMocks.mocks.mocksHome(fakeGetPricesResponse, '100000');
   fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
-  //console.log(fakeStore.getState());
-  //render(<App />, { wrapper: wrapperStore });
 });
 afterEach(() => {
   jest.clearAllMocks();
@@ -91,9 +88,9 @@ describe('sign-in.component.tsx tests:\n', () => {
   describe('Using fake timers:\n', () => {
     let spyMkUtilsLogin: jest.SpyInstance;
     beforeEach(() => {
-      jest.useFakeTimers('legacy'); //this way it handles native cleanUp of timers in code
+      jest.useFakeTimers('legacy');
       act(() => {
-        jest.advanceTimersByTime(4300); //initially working with 4300(3100 + 100 + 1000 + 100)
+        jest.advanceTimersByTime(4300);
       });
     });
     afterEach(() => {
@@ -104,7 +101,6 @@ describe('sign-in.component.tsx tests:\n', () => {
       cleanup();
     });
     it('Must show error message after pressing enter', async () => {
-      //duration test: 21, 20 seconds
       spyMkUtilsLogin = jest
         .spyOn(MkUtils, 'login')
         .mockResolvedValueOnce(false);
@@ -130,7 +126,6 @@ describe('sign-in.component.tsx tests:\n', () => {
     });
 
     it('Must show error message after clicking submit', async () => {
-      //duration test: 21, 20 seconds.
       spyMkUtilsLogin = jest
         .spyOn(MkUtils, 'login')
         .mockResolvedValueOnce(false);
@@ -158,7 +153,6 @@ describe('sign-in.component.tsx tests:\n', () => {
     });
 
     it('Must navigate to home page when pressing enter key', async () => {
-      //duration: 20 seconds.
       customMocks.mocks.mocksTopBar(false);
       spyMkUtilsLogin = jest
         .spyOn(MkUtils, 'login')
@@ -193,9 +187,7 @@ describe('sign-in.component.tsx tests:\n', () => {
     });
 
     it('Must navigate to home page when clicking submit button', async () => {
-      //duration: 20 seconds.
       customMocks.mocks.mocksTopBar(false);
-      LocalStorageUtils.saveValueInLocalStorage = jest.fn(); //no implentation
       spyMkUtilsLogin = jest
         .spyOn(MkUtils, 'login')
         .mockResolvedValueOnce(true);

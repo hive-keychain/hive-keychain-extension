@@ -51,6 +51,7 @@ const mocksApp = (
   voteForKeychainProposalImplementation: any,
   chromeTabsCreateImplementation: any,
   chromei18nGetMessageImplementation: any,
+  saveValueInLocalStorageImplementation: any,
 ) => {
   PopupUtils.fixPopupOnMacOs = fixPopupOnMacOsImplementation;
   LocalStorageUtils.getValueFromLocalStorage = jest
@@ -93,6 +94,8 @@ const mocksApp = (
   ProposalUtils.voteForKeychainProposal = voteForKeychainProposalImplementation;
   chrome.tabs.create = chromeTabsCreateImplementation; //not implementation
   chrome.i18n.getMessage = chromei18nGetMessageImplementation;
+  LocalStorageUtils.saveValueInLocalStorage =
+    saveValueInLocalStorageImplementation;
 };
 
 const mocksHome = (

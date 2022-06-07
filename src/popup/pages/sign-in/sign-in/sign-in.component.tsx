@@ -24,7 +24,6 @@ const SignIn = ({
   const [password, setPassword] = useState('');
 
   useEffect(() => {
-    console.log('1st useffect sign-in comp');
     resetTitleContainerProperties();
   }, []);
 
