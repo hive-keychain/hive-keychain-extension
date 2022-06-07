@@ -67,6 +67,7 @@ const App = ({
   }, [activeRpc]);
 
   const onActiveRpcRefreshed = async () => {
+    console.log('activeAccountUsername: ', activeAccountUsername); //to remove ojo
     if (activeAccountUsername) {
       refreshActiveAccount();
     } else {
@@ -166,8 +167,10 @@ const App = ({
     accounts: LocalAccount[],
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
+      console.log('case 1'); //to remove ojo
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk && mk.length > 0) {
+      console.log('case 2'); //to remove ojo
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (
       mk &&

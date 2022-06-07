@@ -103,6 +103,7 @@ const TopBar = ({
         additionalClassName="button lock-button"
         type={IconType.STROKED}></Icon>
       <Icon
+        ariaLabel="clickable-settings"
         name={Icons.MENU}
         onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
         additionalClassName="button settings-button"
