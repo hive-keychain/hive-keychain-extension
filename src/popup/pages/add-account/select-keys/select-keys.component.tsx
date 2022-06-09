@@ -54,7 +54,7 @@ const SelectKeys = ({
   };
 
   return (
-    <div className="select-keys-page">
+    <div className="select-keys-page" aria-label="select-keys-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{

@@ -20,6 +20,7 @@ const ResetPasswordPage = ({
   }, []);
 
   const reset = () => {
+    console.log('reset called!');
     AccountUtils.clearAllData();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
@@ -35,6 +36,7 @@ const ResetPasswordPage = ({
       </div>
 
       <ButtonComponent
+        ariaLabel="reset-password-confirm-button"
         label="popup_html_confirm"
         onClick={() => reset()}
         fixToBottom

@@ -9,28 +9,18 @@ interface Props {
 }
 
 const initialReducerState = initialEmptyStateStore;
-/**
- * TODO: adding a feature to return the fakeStore.getState(), deciding 'before/after/both'
- * this may be useful when need to console while testing or checking specific changes in the state.
- * @param {boolean} debugState - It will console.log the state passed before rendering.
- **/
+
 const render = (
   ui: ReactElement,
   {
     initialState = initialReducerState,
     fakeStore = getFakeStore(initialState),
-    debugState = false,
     ...renderOptions
   } = {},
 ) => {
-  if (debugState) {
-    console.log('++++++Debugging State+++++');
-    console.log(fakeStore.getState());
-    console.log('++++++END Debugging State+++++');
-  }
-  const Wrapper = ({ children }: Props) => (
-    <Provider store={fakeStore}>{children}</Provider>
-  );
+  const Wrapper = ({ children }: Props) => {
+    return <Provider store={fakeStore}>{children}</Provider>;
+  };
 
   return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
 };

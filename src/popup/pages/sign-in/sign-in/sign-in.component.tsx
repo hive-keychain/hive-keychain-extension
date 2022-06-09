@@ -24,6 +24,7 @@ const SignIn = ({
   const [password, setPassword] = useState('');
 
   useEffect(() => {
+    console.log('in sign-in-component');
     resetTitleContainerProperties();
   }, []);
 
@@ -64,7 +65,10 @@ const SignIn = ({
         onClick={login}
         ariaLabel={'login-button'} //modified for testing
       />
-      <div className="reset-password-link" onClick={goToForgetPassword}>
+      <div
+        className="reset-password-link"
+        onClick={goToForgetPassword}
+        aria-label="reset-password-link">
         {chrome.i18n.getMessage('popup_html_forgot')}
       </div>
     </div>

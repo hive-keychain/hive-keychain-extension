@@ -72,6 +72,7 @@ const AddAccountMain = ({
 
       <div className="button-container">
         <ButtonComponent
+          ariaLabel="add-by-keys-button"
           label={'popup_html_add_by_keys'}
           onClick={handleAddByKeys}
         />

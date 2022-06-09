@@ -60,7 +60,9 @@ const App = ({
 
   //for testing to remove ojo
   useEffect(() => {
-    console.log('updated State.mk: ', state.mk);
+    // console.log('updated State.mk: ', state.mk);
+    // console.log('updated State.activeAccount: ', state.activeAccount.name);
+    console.log(state.errorMessage);
   }, [state]);
   //END for testing to remove ojo
 
@@ -90,7 +92,6 @@ const App = ({
   };
 
   useEffect(() => {
-    console.log('useEffect to check initHasStoredAccounts'); //to remove
     initHasStoredAccounts();
     if (isAppReady) {
       selectComponent(mk, accounts);
@@ -196,9 +197,6 @@ const App = ({
 
   const renderMainLayoutNav = () => {
     if (isAppReady) {
-      console.log('renderMainLayoutNav'); //to remove ojo
-      console.log('mk: ', mk); //to remove ojo
-      //console.log('accounts: ', accounts); //to remove ojo
       if (!mk || mk.length === 0) {
         if (accounts && accounts.length === 0 && !hasStoredAccounts) {
           console.log('to SignUpComponent'); //to remove ojo

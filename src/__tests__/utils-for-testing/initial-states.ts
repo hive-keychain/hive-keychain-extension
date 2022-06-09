@@ -1,6 +1,8 @@
-import { Asset } from '@hiveio/dhive';
+import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
+import { Keys } from '@interfaces/keys.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
@@ -13,13 +15,13 @@ export const initialStateWAccountsWActiveAccountStore = {
       keys: utilsT.keysUserData1,
     },
     utilsT.secondAccountOnState,
-  ],
+  ] as LocalAccount[],
   activeAccount: {
     name: utilsT.userData.username,
     account: {
       name: utilsT.userData.username,
-    },
-    keys: utilsT.keysUserData1,
+    } as ExtendedAccount,
+    keys: utilsT.keysUserData1 as Keys,
     rc: {},
   },
 } as RootState;
@@ -44,8 +46,8 @@ export const initialStateForHome = {
       received_vesting_shares: new Asset(20000, 'VESTS'),
       balance: new Asset(1000, 'HIVE'),
       savings_balance: new Asset(10000, 'HBD'),
-    },
-    keys: utilsT.keysUserData1,
+    } as ExtendedAccount,
+    keys: utilsT.keysUserData1 as Keys,
     rc: {
       current_mana: 1000,
       max_mana: 10000,
@@ -130,7 +132,7 @@ export const initialStateFull = {
       keys: utilsT.keysUserData1,
     },
     utilsT.secondAccountOnState,
-  ],
+  ] as LocalAccount[],
   activeAccount: {
     name: utilsT.userData.username,
     account: {
@@ -145,8 +147,8 @@ export const initialStateFull = {
       savings_balance: new Asset(10000, 'HBD'),
       proxy: '',
       witness_votes: ['aggroed', 'blocktrades'],
-    },
-    keys: utilsT.keysUserData1,
+    } as ExtendedAccount,
+    keys: utilsT.keysUserData1 as Keys,
     rc: {
       current_mana: 1000,
       max_mana: 10000,

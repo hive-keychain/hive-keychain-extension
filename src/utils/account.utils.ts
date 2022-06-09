@@ -34,6 +34,7 @@ const getKeys = async (username: string, password: string) => {
     store.dispatch(
       setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
     );
+    console.log('is public key, dispatched');
     return null;
   }
   const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
@@ -87,6 +88,7 @@ const verifyAccount = async (
 ): Promise<Keys | null> => {
   if (username.length === 0 || password.length === 0) {
     store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
+    console.log('dispatched, username as:', username); //to remove ojo
     return null;
   }
   if (isAccountNameAlreadyExisting(existingAccounts, username)) {
@@ -94,7 +96,7 @@ const verifyAccount = async (
     return null;
   }
 
-  return getKeys(username, password);
+  return await getKeys(username, password);
 };
 /* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {

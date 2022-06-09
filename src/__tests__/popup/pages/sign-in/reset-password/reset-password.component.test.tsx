@@ -1,4 +1,4 @@
-import { Asset, ExtendedAccount } from '@hiveio/dhive';
+import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import App from '@popup/App';
@@ -7,7 +7,8 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import mocks from 'src/__tests__/utils-for-testing/end-to-end-mocks';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-import { initialStateFull } from 'src/__tests__/utils-for-testing/initial-states';
+import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
 
 const chrome = require('chrome-mock');
@@ -17,23 +18,6 @@ jest.setTimeout(10000);
 const userEventCustom = userEvent.setup({
   advanceTimers: () => jest.runOnlyPendingTimers(),
 });
-
-//TODO component: src/popup/pages/sign-in/reset-password/reset-password.component.tsx
-// keep the convention: add-account-component always for ALs
-// case 4 no password, yes accounts
-//steps:
-// - sign in page loads
-// - find the forgot password.
-// - click it
-// - wait for results.
-// after finishing that one
-// src/popup/pages/add-account/add-account-main/add-account-main.component.tsx
-//  - add-by-auth
-//  - add-by-keys
-//  - TRY if you can for about 1 hour top, import-keys
-//    - if not possible, write down every solution.
-//  - select-keys
-// after finishing those, move to homepage.
 
 //consts to move to componentName-data
 const mk = utilsT.userData.username;
@@ -61,6 +45,22 @@ const fakeExtendedAccountResponse = [
     savings_balance: new Asset(10000, 'HBD'),
     proxy: '',
     witness_votes: ['aggroed', 'blocktrades'],
+    posting: {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[utilsT.userData.encryptKeys.posting, 1]],
+    } as AuthorityType,
+    active: {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[utilsT.userData.encryptKeys.active, 1]],
+    } as AuthorityType,
+    owner: {
+      weight_threshold: 1,
+      account_auths: [],
+      key_auths: [[utilsT.userData.encryptKeys.owner, 1]],
+    } as AuthorityType,
+    memo_key: utilsT.userData.encryptKeys.memo,
   } as ExtendedAccount,
 ];
 const fakeManaBarResponse = {
@@ -78,7 +78,8 @@ const fakeGetPricesResponse = {
 //end //consts to move to componentName-data
 
 const cancelButtonAL = 'cancel-clear-button';
-const confirmButtonAL = 'confirm-clear-button';
+const confirmButtonAL = 'reset-password-confirm-button';
+const resetPasswordLinkAL = 'reset-password-link';
 
 describe('reset-password.component tests:\n', () => {
   // it('Must clear user data and navigate to sign up page', async () => {
@@ -150,11 +151,15 @@ describe('reset-password.component tests:\n', () => {
   //   cleanup();
   // });
 
-  it('aslkdjlaksd', () => {});
-  it('Must clear all user data and navigate to sign up page', async () => {
-    //question on src/popup/pages/app-container/home/top-bar/top-bar.component.tsx
-    //solution applied: pass an initial state will all data needed.
+  //pass: 1234567890qwertyu
 
+  it('Must clear all user data and navigate to sign up page', async () => {
+    //TODO same issue as it seems, for some reason
+    //the tests cannot get the action happening inside those files as
+    //store.dispatch(resetAccount());
+    //store.dispatch(forgetMk());
+    //store.dispatch(resetActiveAccount());
+    const mk = '';
     mocks.mocksApp({
       fixPopupOnMacOs: jest.fn(),
       getValueFromLocalStorage: jest
@@ -185,107 +190,302 @@ describe('reset-password.component tests:\n', () => {
     mocks.mocksTopBar({
       hasReward: false,
     });
+
     jest.useFakeTimers('legacy');
     act(() => {
       jest.advanceTimersByTime(4300);
     });
 
-    customRender(<App />, { initialState: initialStateFull });
-    expect(await screen.findByLabelText(/home-page-component/i)).toBeDefined();
-    const settingsButton = await screen.findByLabelText(/clickable-settings/i); //find menu icon
-    await act(async () => {
-      await userEventCustom.click(settingsButton); //fire click div
+    customRender(<App />, {
+      initialState: initialEmptyStateStore,
     });
-    let buttonSettings: HTMLElement; //find the div settings
+    const divResetPassword = (await screen.findByLabelText(
+      resetPasswordLinkAL,
+    )) as HTMLElement;
+    expect(divResetPassword).toBeDefined();
+    await act(async () => {
+      await userEventCustom.click(divResetPassword);
+    });
+    let confirmResetPasswordButton = screen.getByLabelText(
+      confirmButtonAL,
+    ) as HTMLElement;
+    await act(async () => {
+      await userEventCustom.click(confirmResetPasswordButton);
+    });
+
     await waitFor(() => {
-      buttonSettings = screen.getByLabelText(
-        /menu-settings-button-settings/i,
-      ) as HTMLElement;
-      expect(buttonSettings).toBeDefined();
+      expect(screen.getByText('yolo')).toBeDefined();
     });
-    await act(async () => {
-      await userEventCustom.click(buttonSettings); //click on it
-    });
-    let buttonClearAllData: HTMLElement; //find the menu-settings-button-clear
-    await waitFor(() => {
-      buttonClearAllData = screen.getByLabelText(/menu-settings-button-clear/i);
-    });
-    await act(async () => {
-      await userEventCustom.click(buttonClearAllData); //click on div
-    });
-    let confirmClearButton: HTMLButtonElement; //find the button
-    let cancelClearButton: HTMLButtonElement;
-    await waitFor(() => {
-      confirmClearButton = screen.getByLabelText(
-        confirmButtonAL,
-      ) as HTMLButtonElement;
-      cancelClearButton = screen.getByLabelText(
-        cancelButtonAL,
-      ) as HTMLButtonElement;
-    });
-    //click to confirm
-    await act(async () => {
-      //debug();
-      //await userEventCustom.click(cancelClearButton); //it works and should render the AL: "menu-settings-button-clear";
-      await userEventCustom.click(confirmClearButton); //it works and should render the AL: "menu-settings-button-clear";
-    });
-    await waitFor(async () => {
-      screen.debug();
-      //expect(screen.getByLabelText(/yolo/i)).toBeDefined();
-    });
+
+    // await waitFor(() => {
+    //   expect(screen.getByText('yolo')).toBeDefined();
+    // });
 
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
     cleanup();
   });
 
-  // it('asdasd', async () => {
-  //   mocks.mocksApp({
-  //     fixPopupOnMacOs: jest.fn(),
-  //     getValueFromLocalStorage: jest
-  //       .fn()
-  //       .mockImplementation(mocks.getValuefromLS),
-  //     getCurrentRpc: rpc,
-  //     activeAccountUsername: mk,
-  //     getRCMana: fakeManaBarResponse,
-  //     getAccounts: fakeExtendedAccountResponse,
-  //     rpcStatus: true,
-  //     setRpc: jest.fn(),
-  //     chromeSendMessage: jest.fn(),
-  //     hasStoredAccounts: true,
-  //     mkLocal: mk,
-  //     getAccountsFromLocalStorage: accounts,
-  //     hasVotedForProposal: false,
-  //     voteForKeychainProposal: jest.fn(),
-  //     chromeTabsCreate: jest.fn(),
-  //     i18nGetMessage: jest.fn().mockImplementation(mocks.i18nGetMessage),
-  //     saveValueInLocalStorage: jest.fn(),
-  //     clearLocalStorage: jest.fn(),
-  //     removeFromLocalStorage: jest.fn(),
-  //   });
-  //   mocks.mocksHome({
-  //     getPrices: fakeGetPricesResponse,
-  //     getAccountValue: '100000',
-  //   });
-  //   mocks.mocksTopBar({
-  //     hasReward: false,
-  //   });
-  //   jest.useFakeTimers('legacy');
-  //   act(() => {
-  //     jest.advanceTimersByTime(4300);
-  //   });
-  //   customRender(<App />, { initialState: initialStateFull });
-  //   const logOutButton = (await screen.findByText('logout')) as HTMLElement;
-  //   expect(logOutButton).toBeDefined();
-  //   userEvent.click(logOutButton);
-  //   jest.runOnlyPendingTimers();
-  //   expect(await screen.findByText('yolo')).toBeDefined();
-  //   // act(() => {
-  //   //   userEvent.click(logOutButton);
-  //   // });
-  //   // expect(screen.getByText('yolo')).toBeDefined();
-  //   // await waitFor(() => {
-  //   //   expect(screen.getByText('yolo')).toBeDefined();
-  //   // });
-  // });
+  describe.skip('add-account-main.component tests:\n', () => {
+    const mk = utilsT.userData.username;
+    //to add here same fake data as above.
+    beforeEach(() => {
+      mocks.mocksApp({
+        fixPopupOnMacOs: jest.fn(),
+        getValueFromLocalStorage: jest
+          .fn()
+          .mockImplementation(mocks.getValuefromLS),
+        getCurrentRpc: rpc,
+        activeAccountUsername: mk,
+        getRCMana: fakeManaBarResponse,
+        getAccounts: fakeExtendedAccountResponse,
+        rpcStatus: true,
+        setRpc: jest.fn(),
+        chromeSendMessage: jest.fn(),
+        hasStoredAccounts: false,
+        mkLocal: mk,
+        getAccountsFromLocalStorage: accounts,
+        hasVotedForProposal: false,
+        voteForKeychainProposal: jest.fn(),
+        chromeTabsCreate: jest.fn(),
+        i18nGetMessage: jest.fn().mockImplementation(mocks.i18nGetMessage),
+        saveValueInLocalStorage: jest.fn(),
+        clearLocalStorage: jest.fn(),
+        removeFromLocalStorage: jest.fn(),
+      });
+      mocks.mocksHome({
+        getPrices: fakeGetPricesResponse,
+        getAccountValue: '100000',
+      });
+      mocks.mocksTopBar({
+        hasReward: false,
+      });
+      jest.useFakeTimers('legacy');
+    });
+    afterEach(() => {
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+      cleanup();
+    });
+    it('Must add valid posting key and load homepage', async () => {
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: [], activeRpc: rpc } as RootState,
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      const addByKeysButton = await screen.findByLabelText(
+        'add-by-keys-button',
+      );
+      expect(addByKeysButton).toBeDefined();
+      await act(async () => {
+        await userEventCustom.click(addByKeysButton);
+      });
+      const inputUsername = screen.getByLabelText('input-username');
+      const inputPrivateKey = screen.getByLabelText('input-private-key');
+      const submitButton = screen.getByLabelText('submit-button');
+      await act(async () => {
+        await userEventCustom.type(inputUsername, mk);
+        await userEventCustom.type(
+          inputPrivateKey,
+          utilsT.userData.nonEncryptKeys.posting,
+        );
+        await userEventCustom.click(submitButton);
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      await waitFor(() => {
+        expect(screen.getByLabelText('home-page-component')).toBeDefined();
+        expect(screen.getByText(mk)).toBeDefined();
+      });
+    });
+    it('Must add valid memo key and load homepage', async () => {
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: [], activeRpc: rpc } as RootState,
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      const addByKeysButton = await screen.findByLabelText(
+        'add-by-keys-button',
+      );
+      expect(addByKeysButton).toBeDefined();
+      await act(async () => {
+        await userEventCustom.click(addByKeysButton);
+      });
+      const inputUsername = screen.getByLabelText('input-username');
+      const inputPrivateKey = screen.getByLabelText('input-private-key');
+      const submitButton = screen.getByLabelText('submit-button');
+      await act(async () => {
+        await userEventCustom.type(inputUsername, mk);
+        await userEventCustom.type(
+          inputPrivateKey,
+          utilsT.userData.nonEncryptKeys.memo,
+        );
+        await userEventCustom.click(submitButton);
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      await waitFor(() => {
+        expect(screen.getByLabelText('home-page-component')).toBeDefined();
+        expect(screen.getByText(mk)).toBeDefined();
+      });
+    });
+    it('Must add valid active key and load homepage', async () => {
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: [], activeRpc: rpc } as RootState,
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      const addByKeysButton = await screen.findByLabelText(
+        'add-by-keys-button',
+      );
+      expect(addByKeysButton).toBeDefined();
+      await act(async () => {
+        await userEventCustom.click(addByKeysButton);
+      });
+      const inputUsername = screen.getByLabelText('input-username');
+      const inputPrivateKey = screen.getByLabelText('input-private-key');
+      const submitButton = screen.getByLabelText('submit-button');
+      await act(async () => {
+        await userEventCustom.type(inputUsername, mk);
+        await userEventCustom.type(
+          inputPrivateKey,
+          utilsT.userData.nonEncryptKeys.active,
+        );
+        await userEventCustom.click(submitButton);
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      await waitFor(() => {
+        expect(screen.getByLabelText('home-page-component')).toBeDefined();
+        expect(screen.getByText(mk)).toBeDefined();
+      });
+    });
+    it('Must derivate all keys from master, and navigate to select keys page', async () => {
+      const selectPageComponentAL = 'select-keys-page';
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: [], activeRpc: rpc } as RootState,
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      const addByKeysButton = await screen.findByLabelText(
+        'add-by-keys-button',
+      );
+      expect(addByKeysButton).toBeDefined();
+      await act(async () => {
+        await userEventCustom.click(addByKeysButton);
+      });
+      const inputUsername = screen.getByLabelText('input-username');
+      const inputPrivateKey = screen.getByLabelText('input-private-key');
+      const submitButton = screen.getByLabelText('submit-button');
+      await act(async () => {
+        await userEventCustom.type(inputUsername, mk);
+        await userEventCustom.type(
+          inputPrivateKey,
+          utilsT.userData.nonEncryptKeys.master,
+        );
+        await userEventCustom.click(submitButton);
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      await waitFor(() => {
+        expect(screen.getByLabelText(selectPageComponentAL)).toBeDefined();
+        expect(screen.getByText('Posting Key')).toBeDefined();
+        expect(screen.getByText('Active Key')).toBeDefined();
+        expect(screen.getByText('Memo Key')).toBeDefined();
+      });
+    });
+    it.skip('Must show error if empty username', async () => {
+      //failling only works when having the dispatcher at the same "level"
+      //than the component renendering but no inside another call.
+      customRender(<App />, {
+        initialState: {
+          mk: mk,
+          accounts: [],
+        } as RootState,
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      const addByKeysButton = await screen.findByLabelText(
+        'add-by-keys-button',
+      );
+      expect(addByKeysButton).toBeDefined();
+      await act(async () => {
+        await userEventCustom.click(addByKeysButton);
+      });
+      const inputUsername = screen.getByLabelText('input-username');
+      const inputPrivateKey = screen.getByLabelText('input-private-key');
+      const submitButton = screen.getByLabelText('submit-button');
+      await act(async () => {
+        await userEventCustom.click(submitButton);
+      });
+      await waitFor(() => {}).finally(() =>
+        expect(screen.getByText('yolo')).toBeDefined(),
+      );
+    });
+    it.skip('Must show error if empty password', async () => {
+      //TODO when fixing previous.
+    });
+    it('Must show error if account exists', async () => {
+      //TODO the only way i see it is comming from home
+      customRender(<App />, {
+        initialState: {
+          mk: mk,
+          accounts: accounts,
+        } as RootState,
+      });
+      await act(async () => {
+        jest.runOnlyPendingTimers();
+      });
+      const menuButton = await screen.findByLabelText('clickable-settings');
+      expect(menuButton).toBeDefined();
+      await act(async () => {
+        await userEventCustom.click(menuButton);
+      });
+      const menuSettingButtonPeople = screen.getByLabelText(
+        'menu-settings-button-people',
+      );
+      await act(async () => {
+        await userEventCustom.click(menuSettingButtonPeople);
+      });
+      const menuSettingsButtonPersonAdd = screen.getByLabelText(
+        'menu-settings-button-person_add',
+      );
+      await act(async () => {
+        await userEventCustom.click(menuSettingsButtonPersonAdd);
+      });
+      const addByKeysButton = screen.getByLabelText('add-by-keys-button');
+      await act(async () => {
+        await userEventCustom.click(addByKeysButton);
+      });
+      const inputUsername = screen.getByLabelText('input-username');
+      const inputPrivateKey = screen.getByLabelText('input-private-key');
+      const submitButton = screen.getByLabelText('submit-button');
+      await act(async () => {
+        await userEventCustom.type(inputUsername, mk);
+        await userEventCustom.type(
+          inputPrivateKey,
+          utilsT.userData.nonEncryptKeys.active,
+        );
+        await userEventCustom.click(submitButton);
+      });
+      await waitFor(() => {
+        expect(screen.getByText('Account already existing')).toBeDefined();
+      });
+    });
+    it('public ket case PASSWORD_IS_PUBLIC_KEY', () => {
+      //same as the dispatcher is within another file.
+    });
+    it('INCORRECT_KEY using the random one', () => {
+      //same as is inside the utils function.
+    });
+  });
 });

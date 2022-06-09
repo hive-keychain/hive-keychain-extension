@@ -1575,6 +1575,8 @@ const keysUserData1 = {
   postingPubkey: `@${userData.username}`,
   memo: userData.nonEncryptKeys.memo,
   memoPubkey: `@${userData.username}`,
+  owner: userData.nonEncryptKeys.owner,
+  ownerPubkey: `@${userData.username}`,
 };
 const secondAccountOnState = {
   name: userData2.username,
