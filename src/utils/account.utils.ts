@@ -339,6 +339,7 @@ const clearAllData = () => {
   store.dispatch(resetAccount());
   store.dispatch(forgetMk());
   store.dispatch(resetActiveAccount());
+  console.log('it should dispatched already!'); //to remove ojo
 };
 
 const getAccountValue = (

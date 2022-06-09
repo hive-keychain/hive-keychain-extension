@@ -12,6 +12,10 @@ export const navigateTo =
       type: ActionType.NAVIGATE_TO,
       payload: { nextPage: screen, resetStack },
     });
+    console.log('navigateTo dispatched: ', {
+      type: ActionType.NAVIGATE_TO,
+      payload: { nextPage: screen, resetStack },
+    }); //to remove ojo
   };
 export const navigateToWithParams =
   (screen: Screen, params: any, resetStack: boolean = false): AppThunk =>

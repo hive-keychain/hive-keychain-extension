@@ -21,6 +21,7 @@ export const ActiveAccountReducer = (
     case ActionType.FORGET_ACCOUNT:
     case ActionType.FORGET_ACCOUNTS:
     case ActionType.RESET_ACTIVE_ACCOUNT:
+      console.log('account was reseted'); //to remove ojo
       return { account: {} as ExtendedAccount, keys: {}, rc: {} as Manabar };
     default:
       return state;

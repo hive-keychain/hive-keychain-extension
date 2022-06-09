@@ -48,6 +48,9 @@ const TopBar = ({
         ),
       );
     }
+    //question: is it globals already present on the initial state
+    //when loading an account always? because if not this hook will always try to read something that hasn't being set yet
+    //so it should wait for it
   }, [activeAccount]);
 
   const refresh = () => {

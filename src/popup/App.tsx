@@ -35,6 +35,7 @@ import { SignInRouterComponent } from './pages/sign-in/sign-in-router.component'
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
 const App = ({
+  state, //modified for testing to remove ojo
   setMk,
   mk,
   accounts,
@@ -56,6 +57,13 @@ const App = ({
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+
+  //for testing to remove ojo
+  useEffect(() => {
+    console.log('updated State.mk: ', state.mk);
+  }, [state]);
+  //END for testing to remove ojo
+
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
@@ -67,7 +75,6 @@ const App = ({
   }, [activeRpc]);
 
   const onActiveRpcRefreshed = async () => {
-    console.log('activeAccountUsername: ', activeAccountUsername); //to remove ojo
     if (activeAccountUsername) {
       refreshActiveAccount();
     } else {
@@ -83,6 +90,7 @@ const App = ({
   };
 
   useEffect(() => {
+    console.log('useEffect to check initHasStoredAccounts'); //to remove
     initHasStoredAccounts();
     if (isAppReady) {
       selectComponent(mk, accounts);
@@ -167,7 +175,7 @@ const App = ({
     accounts: LocalAccount[],
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
-      console.log('case 1'); //to remove ojo
+      console.log('case 1'); //TODO to remove ojo
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk && mk.length > 0) {
       console.log('case 2'); //to remove ojo
@@ -178,24 +186,33 @@ const App = ({
       accounts.length === 0 &&
       !hasStoredAccounts
     ) {
+      console.log('case 3'); //to remove ojo
       navigateTo(Screen.SIGN_UP_PAGE, true);
     } else {
+      console.log('case 4'); //to remove ojo
       navigateTo(Screen.SIGN_IN_PAGE);
     }
   };
 
   const renderMainLayoutNav = () => {
     if (isAppReady) {
+      console.log('renderMainLayoutNav'); //to remove ojo
+      console.log('mk: ', mk); //to remove ojo
+      //console.log('accounts: ', accounts); //to remove ojo
       if (!mk || mk.length === 0) {
         if (accounts && accounts.length === 0 && !hasStoredAccounts) {
+          console.log('to SignUpComponent'); //to remove ojo
           return <SignUpComponent />;
         } else {
+          console.log('to SignInRouterComponent'); //to remove ojo
           return <SignInRouterComponent />;
         }
       } else {
         if (accounts && accounts.length === 0) {
+          console.log('to AddAccountRouterComponent'); //to remove ojo
           return <AddAccountRouterComponent />;
         } else {
+          console.log('to AppRouterComponent'); //to remove ojo
           return <AppRouterComponent />;
         }
       }
@@ -236,6 +253,7 @@ const App = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
+    state, //modified for testing to remove ojo
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,

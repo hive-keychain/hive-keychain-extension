@@ -23,6 +23,7 @@ const SignUp = ({
   const [newPasswordConfirm, setNewPasswordConfirm] = useState('');
 
   useEffect(() => {
+    console.log('loading sign_up_page'); //to remove ojo
     resetTitleContainerProperties;
   }, []);
 

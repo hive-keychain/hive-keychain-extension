@@ -54,7 +54,7 @@ const mocksApp = (toUse: {
   getCurrentRpc: Rpc;
   activeAccountUsername: string;
   getRCMana: Manabar;
-  getAccounts: [ExtendedAccount];
+  getAccounts: ExtendedAccount[];
   rpcStatus: boolean;
   setRpc: jest.Mock;
   chromeSendMessage: jest.Mock;
@@ -66,6 +66,8 @@ const mocksApp = (toUse: {
   chromeTabsCreate: jest.Mock;
   i18nGetMessage: jest.Mock;
   saveValueInLocalStorage: jest.Mock;
+  clearLocalStorage: jest.Mock;
+  removeFromLocalStorage: jest.Mock;
 }) => {
   PopupUtils.fixPopupOnMacOs = toUse.fixPopupOnMacOs;
   LocalStorageUtils.getValueFromLocalStorage = toUse.getValueFromLocalStorage;
@@ -105,9 +107,11 @@ const mocksApp = (toUse: {
   chrome.tabs.create = toUse.chromeTabsCreate;
   chrome.i18n.getMessage = toUse.i18nGetMessage;
   LocalStorageUtils.saveValueInLocalStorage = toUse.saveValueInLocalStorage;
+  chrome.storage.local.clear = toUse.clearLocalStorage;
+  LocalStorageUtils.removeFromLocalStorage = toUse.removeFromLocalStorage;
 };
 
-const utilsResetPassword = {
+const mocks = {
   mocksApp,
   mocksHome,
   mocksTopBar,
@@ -115,4 +119,4 @@ const utilsResetPassword = {
   i18nGetMessage,
 };
 
-export default utilsResetPassword;
+export default mocks;
