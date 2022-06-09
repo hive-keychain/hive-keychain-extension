@@ -27,8 +27,8 @@ export const ActionButtonList: ActionButton[] = [
     nextScreen: Screen.GOVERNANCE_PAGE,
   },
   {
-    label: 'popup_html_delegation_market_short',
+    label: 'popup_html_lease_market_short',
     icon: Icons.MARKET,
-    nextScreen: Screen.DELEGATION_MARKET,
+    nextScreen: Screen.LEASE_MARKET,
   },
 ];

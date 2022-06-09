@@ -15,7 +15,7 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import Logger from 'src/utils/logger.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';

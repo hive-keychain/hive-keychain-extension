@@ -4,7 +4,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import './keychainify.component.scss';
 
 const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {

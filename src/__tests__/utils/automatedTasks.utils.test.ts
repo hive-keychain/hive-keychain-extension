@@ -1,5 +1,5 @@
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 //jest extra configurations
 jest.setTimeout(20000);
 

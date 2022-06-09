@@ -12,7 +12,7 @@ import {
   KeychainRequest,
   KeychainRequestWrapper,
 } from 'src/interfaces/keychain.interface';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 
 if (!process.env.IS_FIREFOX) {
   //@ts-ignore

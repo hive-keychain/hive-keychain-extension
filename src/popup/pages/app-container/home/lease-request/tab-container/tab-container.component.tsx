@@ -1,8 +1,8 @@
 import { VestingDelegation } from '@hiveio/dhive';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
-import { Lease } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
-import { LeaseItemComponent } from '@popup/pages/app-container/home/delegation-market/lease-item/lease-item.component';
+import { Lease } from '@popup/pages/app-container/home/lease-request/lease-market.interface';
+import { LeaseItemComponent } from '@popup/pages/app-container/home/lease-request/tab-container/lease-item/lease-item.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -72,7 +72,7 @@ const TabContainer = ({
       {displayAddButton && (
         <div
           className="add-button"
-          onClick={() => navigateTo(Screen.DELEGATION_MARKET_REQUEST_PAGE)}>
+          onClick={() => navigateTo(Screen.LEASE_MARKET_REQUEST_PAGE)}>
           <Icon type={IconType.OUTLINED} name={Icons.ADD_CIRCLE} />
         </div>
       )}

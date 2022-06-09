@@ -14,7 +14,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { LeaseRequest } from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
+import { LeaseRequest } from '@popup/pages/app-container/home/lease-request/lease-market.interface';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -30,15 +30,12 @@ import CurrencyUtils, {
   BaseCurrencies,
   CurrencyLabels,
 } from 'src/utils/currency.utils';
-import {
-  DelegationMarketUtils,
-  LeaseKeys,
-} from 'src/utils/delegation-market.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { LeaseKeys, LeaseMarketUtils } from 'src/utils/lease-market.utils';
 import { v4 as uuidv4 } from 'uuid';
-import './create-delegation-request-page.component.scss';
+import './create-lease-request-page.component.scss';
 
-const CreateDelegationRequestPage = ({
+const CreateLeaseRequestPage = ({
   activeAccount,
   currencyLabels,
   globalProperties,
@@ -66,7 +63,7 @@ const CreateDelegationRequestPage = ({
 
   useEffect(() => {
     setTitleContainerProperties({
-      title: 'popup_html_delegation_market',
+      title: 'popup_html_lease_market',
       isBackButtonEnabled: true,
     });
   }, []);
@@ -122,11 +119,11 @@ const CreateDelegationRequestPage = ({
     }`;
 
     if (leaseRequestForm.weeklyPay < 1) {
-      setErrorMessage('popup_html_delegation_market_weekly_payout_too_low');
+      setErrorMessage('popup_html_lease_market_weekly_payout_too_low');
       return;
     }
     if (leaseRequestForm.duration > 24) {
-      setErrorMessage('popup_html_delegation_market_duration_too_long');
+      setErrorMessage('popup_html_lease_market_duration_too_long');
       return;
     }
 
@@ -135,7 +132,7 @@ const CreateDelegationRequestPage = ({
         parseFloat(activeAccount.account.hbd_balance.toString().split(' ')[0]) <
         totalAmount
       ) {
-        setErrorMessage('popup_html_delegation_market_unsuficient_funds');
+        setErrorMessage('popup_html_lease_market_unsuficient_funds');
         return;
       }
     }
@@ -144,7 +141,7 @@ const CreateDelegationRequestPage = ({
         parseFloat(activeAccount.account.balance.toString().split(' ')[0]) <
         totalAmount
       ) {
-        setErrorMessage('popup_html_delegation_market_unsuficient_funds');
+        setErrorMessage('popup_html_lease_market_unsuficient_funds');
         return;
       }
     }
@@ -159,23 +156,23 @@ const CreateDelegationRequestPage = ({
       ),
       fields: [
         {
-          label: 'popup_html_delegation_market_requested_delegation',
+          label: 'popup_html_lease_market_requested_delegation',
           value: delegationValueInHp,
         },
         {
-          label: 'popup_html_delegation_market_weekly_payout',
+          label: 'popup_html_lease_market_weekly_payout',
           value: `${FormatUtils.formatCurrencyValue(
             leaseRequestForm.weeklyPay,
           )} ${currencyLabels[leaseRequestForm.weeklyPayCurrency]}`,
         },
         {
-          label: 'popup_html_delegation_market_duration',
+          label: 'popup_html_lease_market_duration',
           value: `${leaseRequestForm.duration} ${chrome.i18n.getMessage(
             leaseRequestForm.duration > 1 ? 'weeks' : 'week',
           )}`,
         },
         {
-          label: 'popup_html_delegation_market_total_cost',
+          label: 'popup_html_lease_market_total_cost',
           value: formattedTotalAmount,
         },
       ],
@@ -184,7 +181,7 @@ const CreateDelegationRequestPage = ({
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_lease_request_operation');
 
-        let success = await DelegationMarketUtils.createLeaseRequest(
+        let success = await LeaseMarketUtils.createLeaseRequest(
           leaseRequest,
           formattedTotalAmount,
           activeAccount,
@@ -195,7 +192,7 @@ const CreateDelegationRequestPage = ({
 
         if (success) {
           setSuccessMessage('html_popup_delegation_lease_request_success');
-          goBackTo(Screen.DELEGATION_MARKET);
+          goBackTo(Screen.LEASE_MARKET);
         } else {
           setErrorMessage('html_popup_delegation_lease_request_failed');
           goBack();
@@ -207,16 +204,14 @@ const CreateDelegationRequestPage = ({
   return (
     <div className="create-delegation-request-page">
       <div className="introduction">
-        {chrome.i18n.getMessage(
-          'popup_html_delegation_market_request_introduction',
-        )}
+        {chrome.i18n.getMessage('popup_html_lease_market_request_introduction')}
       </div>
       <div className="form">
         <InputComponent
           onChange={(newValue) => updateForm({ delegationValue: newValue })}
           value={leaseRequestForm.delegationValue}
-          label="popup_html_delegation_market_requested_delegation"
-          hint="popup_html_delegation_market_delegation_value_hint"
+          label="popup_html_lease_market_requested_delegation"
+          hint="popup_html_lease_market_delegation_value_hint"
           placeholder="0.000"
           skipPlaceholderTranslation
           type={InputType.NUMBER}
@@ -224,8 +219,8 @@ const CreateDelegationRequestPage = ({
         <InputComponent
           type={InputType.NUMBER}
           placeholder="0.000"
-          label="popup_html_delegation_market_weekly_payout"
-          hint="popup_html_delegation_market_weekly_payout_hint"
+          label="popup_html_lease_market_weekly_payout"
+          hint="popup_html_lease_market_weekly_payout_hint"
           skipPlaceholderTranslation
           value={leaseRequestForm.weeklyPay}
           min={1}
@@ -242,9 +237,9 @@ const CreateDelegationRequestPage = ({
         <InputComponent
           type={InputType.NUMBER}
           placeholder="0"
-          label="popup_html_delegation_market_duration"
+          label="popup_html_lease_market_duration"
           skipPlaceholderTranslation
-          hint="popup_html_delegation_market_duration_hint"
+          hint="popup_html_lease_market_duration_hint"
           onChange={(newValue) => updateForm({ duration: newValue })}
           max={24}
           value={leaseRequestForm.duration}
@@ -283,6 +278,6 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const CreateDelegationRequestPageComponent = connector(
-  CreateDelegationRequestPage,
+export const CreateLeaseRequestPageComponent = connector(
+  CreateLeaseRequestPage,
 );

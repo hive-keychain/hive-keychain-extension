@@ -1,7 +1,7 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import EncryptUtils from 'src/utils/encrypt.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 
 const getAccountsFromFileData = (
   fileContent: string,

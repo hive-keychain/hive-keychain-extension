@@ -29,7 +29,7 @@ import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './power-up-down.component.scss';
 

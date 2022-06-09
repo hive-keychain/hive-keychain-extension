@@ -5,7 +5,7 @@ import {
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import { getRequiredWifType } from 'src/utils/requests.utils';
 
 export const isWhitelisted = (

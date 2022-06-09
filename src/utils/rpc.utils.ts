@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { DefaultRpcs } from 'src/reference-data/default-rpc.list';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const getFullList = (): Rpc[] => {

@@ -7,7 +7,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
 import './authorized-operations.component.scss';
 

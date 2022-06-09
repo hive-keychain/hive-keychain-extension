@@ -9,7 +9,7 @@ import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.inte
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const start = async () => {

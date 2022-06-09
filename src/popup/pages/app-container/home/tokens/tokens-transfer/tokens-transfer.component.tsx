@@ -28,7 +28,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './tokens-transfer.component.scss';

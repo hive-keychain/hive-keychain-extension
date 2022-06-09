@@ -7,18 +7,21 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import {
   Lease,
   LeaseStatus,
-} from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
+} from '@popup/pages/app-container/home/lease-request/lease-market.interface';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import CurrencyUtils from 'src/utils/currency.utils';
-import { DelegationMarketUtils } from 'src/utils/delegation-market.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { LeaseMarketUtils } from 'src/utils/lease-market.utils';
 import './lease-item.component.scss';
 
 interface LeaseItemProps {
@@ -41,10 +44,11 @@ const LeaseItem = ({
   addToLoadingList,
   removeFromLoadingList,
   navigateToWithParams,
+  goBack,
 }: PropsFromRedux) => {
   const toggleSupport = async () => {
     const [oldDelegation, newDelegation] =
-      DelegationMarketUtils.getPreviousAndNewDelegationToUser(
+      LeaseMarketUtils.getPreviousAndNewDelegationToUser(
         outgoingDelegations,
         lease,
         lease.status === LeaseStatus.ACTIVE,
@@ -52,7 +56,7 @@ const LeaseItem = ({
 
     const fields = [
       {
-        label: 'popup_html_delegation_market_lease_creator',
+        label: 'popup_html_lease_market_lease_creator',
         value: `@${lease.creator}`,
       },
       {
@@ -86,7 +90,7 @@ const LeaseItem = ({
         title: 'popup_html_confirm_undelegate_lease_title',
         afterConfirmAction: async () => {
           addToLoadingList('popup_html_lease_market_undelegate');
-          const success = await DelegationMarketUtils.undelegateLease(
+          const success = await LeaseMarketUtils.undelegateLease(
             lease,
             activeAccount,
             newDelegation,
@@ -103,7 +107,7 @@ const LeaseItem = ({
       });
     } else if (lease.status === LeaseStatus.PENDING) {
       if (!canDelegate) {
-        setErrorMessage('popup_html_delegation_market_unsuficient_hp_balance');
+        setErrorMessage('popup_html_lease_market_unsuficient_hp_balance');
         return;
       }
 
@@ -111,14 +115,14 @@ const LeaseItem = ({
         1,
         0,
         {
-          label: 'popup_html_delegation_market_daily_payout',
+          label: 'popup_html_lease_market_daily_payout',
           value: `${FormatUtils.formatCurrencyValue(
             lease.dailyPay,
             3,
           )} ${lease.currency.toUpperCase()}`,
         },
         {
-          label: 'popup_html_delegation_market_duration',
+          label: 'popup_html_lease_market_duration',
           value: `${lease.duration / 7} ${chrome.i18n.getMessage(
             lease.duration / 7 > 1 ? 'weeks' : 'week',
           )}`,
@@ -133,7 +137,7 @@ const LeaseItem = ({
         title: 'popup_html_confirm_delegation_lease_accept_title',
         afterConfirmAction: async () => {
           addToLoadingList('popup_html_lease_market_delegate_to_user');
-          const success = await DelegationMarketUtils.acceptLeaseRequest(
+          const success = await LeaseMarketUtils.acceptLeaseRequest(
             lease,
             activeAccount,
             newDelegation,
@@ -144,6 +148,7 @@ const LeaseItem = ({
             setErrorMessage('popup_html_delegation_request_accept_failed');
           }
           removeFromLoadingList('popup_html_lease_market_delegate_to_user');
+          goBack();
         },
       });
     }
@@ -151,7 +156,7 @@ const LeaseItem = ({
 
   const cancelLease = async () => {
     addToLoadingList('popup_html_lease_market_cancel_request');
-    if (await DelegationMarketUtils.cancelLeaseRequest(lease, activeAccount)) {
+    if (await LeaseMarketUtils.cancelLeaseRequest(lease, activeAccount)) {
       setSuccessMessage('popup_html_delegation_request_cancel_success');
     } else {
       setErrorMessage('popup_html_delegation_request_cancel_failed');
@@ -164,7 +169,7 @@ const LeaseItem = ({
       <div className="left-panel">
         <div className="creator">@{lease.creator}</div>
         <div className="delegation-value">
-          {chrome.i18n.getMessage('popup_html_delegation_market_request')} :{' '}
+          {chrome.i18n.getMessage('popup_html_lease_market_request')} :{' '}
           {FormatUtils.withCommas(
             FormatUtils.toHP(
               lease.value.toString(),
@@ -175,12 +180,12 @@ const LeaseItem = ({
           {currencyLabels.hp}
         </div>
         <div className="delegation-payout">
-          {chrome.i18n.getMessage('popup_html_delegation_market_daily_payout')}{' '}
-          : {FormatUtils.withCommas(lease.dailyPay)}{' '}
+          {chrome.i18n.getMessage('popup_html_lease_market_daily_payout')} :{' '}
+          {FormatUtils.withCommas(lease.dailyPay)}{' '}
           {currencyLabels[lease.currency]}
         </div>
         <div className="delegation-nb-days">
-          {chrome.i18n.getMessage('popup_html_delegation_market_duration')} :{' '}
+          {chrome.i18n.getMessage('popup_html_lease_market_duration')} :{' '}
           {lease.duration / 7}{' '}
           {chrome.i18n.getMessage(lease.duration / 7 > 1 ? 'weeks' : 'week')}
         </div>
@@ -233,6 +238,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   navigateToWithParams,
+  goBack,
 });
 type PropsFromRedux = ConnectedProps<typeof connector> & LeaseItemProps;
 

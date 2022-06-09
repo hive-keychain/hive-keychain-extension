@@ -19,7 +19,7 @@ import FormatUtils from 'src/utils/format.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 import HiveUtils from './hive.utils';
-import LocalStorageUtils from './localStorage.utils';
+import LocalStorageUtils from './local-storage.utils';
 
 enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',

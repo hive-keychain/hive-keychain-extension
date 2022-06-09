@@ -29,7 +29,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './token-operation.component.scss';

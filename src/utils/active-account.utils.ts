@@ -1,7 +1,7 @@
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import FormatUtils from 'src/utils/format.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 
 const isEmpty = (activeAccount: ActiveAccount) => {
   return Object.keys(activeAccount.account).length === 0;

@@ -30,7 +30,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import ArrayUtils from 'src/utils/array.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import TransactionUtils, {
   HAS_IN_OUT_TRANSACTIONS,
   NB_TRANSACTION_FETCHED,

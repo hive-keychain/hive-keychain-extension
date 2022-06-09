@@ -23,7 +23,7 @@ import { BackgroundCommand } from 'src/reference-data/background-message-key.enu
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import RpcUtils from 'src/utils/rpc.utils';

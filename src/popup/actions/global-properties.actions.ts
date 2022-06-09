@@ -12,6 +12,7 @@ export const loadGlobalProperties = (): AppThunk => async (dispatch) => {
       HiveUtils.getClient().database.call('get_reward_fund', ['post']),
     ]);
     const props = { globals, price, rewardFund };
+    console.log(props);
     const action: ActionPayload<GlobalProperties> = {
       type: ActionType.LOAD_GLOBAL_PROPS,
       payload: props,

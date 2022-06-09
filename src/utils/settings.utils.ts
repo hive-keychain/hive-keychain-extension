@@ -1,7 +1,7 @@
 import { BackgroundMessage } from '@background/background-message.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 
 const exportSettings = async () => {
   const val = await LocalStorageUtils.getMultipleValueFromLocalStorage([

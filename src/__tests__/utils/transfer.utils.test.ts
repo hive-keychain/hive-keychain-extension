@@ -1,7 +1,7 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 const chrome = require('chrome-mock');

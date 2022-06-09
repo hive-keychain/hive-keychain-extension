@@ -1,4 +1,4 @@
-@import '../../../../../variable.scss';
+@import '../../../../../../variable.scss';
 
 .lease-item {
   display: flex;
@@ -13,11 +13,6 @@
     row-gap: 8px;
     .creator {
       font-size: 18px;
-    }
-    .delegation-created-at {
-      font-style: italic;
-      margin-top: -10px;
-      font-size: 14px;
     }
     .delegation-value {
     }

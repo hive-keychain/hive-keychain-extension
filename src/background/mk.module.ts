@@ -1,7 +1,7 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 
 function getMk() {
   return LocalStorageUtils.getValueFromLocalStorage(LocalStorageKeyEnum.__MK);

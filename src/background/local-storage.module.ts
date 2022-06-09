@@ -1,5 +1,5 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import Logger from 'src/utils/logger.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 

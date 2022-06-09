@@ -1,5 +1,5 @@
 import AutolockUtils from 'src/utils/autolock.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 //chrome
 const chrome = require('chrome-mock');
 global.chrome = chrome;

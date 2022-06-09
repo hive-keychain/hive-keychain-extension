@@ -10,7 +10,7 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   Lease,
   LeaseRequest,
-} from '@popup/pages/app-container/home/delegation-market/delegation-market.interface';
+} from '@popup/pages/app-container/home/lease-request/lease-market.interface';
 import { store } from '@popup/store';
 import HiveUtils from 'src/utils/hive.utils';
 
@@ -69,7 +69,7 @@ const acceptLeaseRequest = async (
           {
             delegator: activeAccount.name!,
             delegatee: lease.creator,
-            vesting_shares: delegationTotalAmount + ' VESTS',
+            vesting_shares: delegationTotalAmount.toFixed(6) + ' VESTS',
           } as DelegateVestingSharesOperation[1],
         ],
       ],
@@ -128,7 +128,7 @@ const undelegateLease = async (
           {
             delegator: activeAccount.name!,
             delegatee: lease.creator,
-            vesting_shares: newDelegationAmount + ' VESTS',
+            vesting_shares: newDelegationAmount.toFixed(6) + ' VESTS',
           } as DelegateVestingSharesOperation[1],
         ],
       ],
@@ -179,7 +179,7 @@ const createLeaseRequest = async (
   );
 };
 
-export const DelegationMarketUtils = {
+export const LeaseMarketUtils = {
   downloadAllLeases,
   cancelLeaseRequest,
   acceptLeaseRequest,

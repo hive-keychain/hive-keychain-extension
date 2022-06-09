@@ -1,7 +1,7 @@
 import { Client } from '@hiveio/dhive/lib/index-browser';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Rpc } from 'src/interfaces/rpc.interface';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 const setActiveRpc = async (rpc: Rpc) => {
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.CURRENT_RPC,
