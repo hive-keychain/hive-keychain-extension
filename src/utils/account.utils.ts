@@ -41,7 +41,6 @@ const getKeys = async (username: string, password: string) => {
     username,
   ]);
   if (hiveAccounts.length === 0) {
-    console.log('incorrect user!!!!');
     store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
     return null;
   }
@@ -153,7 +152,8 @@ const addAuthorizedAccount = async (
     showError('popup_accounts_fill', []);
     return null;
   }
-
+  console.log('username: ', username); //to remove ojo
+  console.log('existingAccounts: ', existingAccounts); //to remove ojo
   if (
     !existingAccounts
       .map((localAccount: LocalAccount) => localAccount.name)
@@ -179,7 +179,7 @@ const addAuthorizedAccount = async (
   const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
     username,
   ]);
-
+  console.log('extended: ', hiveAccounts);
   if (!hiveAccounts || hiveAccounts.length === 0) {
     showError('popup_accounts_incorrect_user', []);
     return null;

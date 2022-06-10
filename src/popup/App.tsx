@@ -59,11 +59,11 @@ const App = ({
   const [initialRpc, setInitialRpc] = useState<Rpc>();
 
   //for testing to remove ojo
-  useEffect(() => {
-    // console.log('updated State.mk: ', state.mk);
-    // console.log('updated State.activeAccount: ', state.activeAccount.name);
-    console.log(state.errorMessage);
-  }, [state]);
+  // useEffect(() => {
+  //   // console.log('updated State.mk: ', state.mk);
+  //   // console.log('updated State.activeAccount: ', state.activeAccount.name);
+  //   console.log(state.navigation);
+  // }, [state]);
   //END for testing to remove ojo
 
   useEffect(() => {

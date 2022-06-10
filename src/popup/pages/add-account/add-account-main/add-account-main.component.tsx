@@ -26,6 +26,7 @@ const AddAccountMain = ({
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_AUTH);
   };
   const handleImportKeys = (): void => {
+    console.log('firing handleImportKeys');
     chrome.windows.getCurrent(async (currentWindow) => {
       const win: chrome.windows.CreateData = {
         url: chrome.runtime.getURL('import-accounts.html'),
@@ -78,11 +79,13 @@ const AddAccountMain = ({
         />
         {accounts.length > 0 && (
           <ButtonComponent
+            ariaLabel="add-by-auth-button"
             label={'popup_html_add_by_auth'}
             onClick={handleAddByAuth}
           />
         )}
         <ButtonComponent
+          ariaLabel="import-keys-button"
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
         />

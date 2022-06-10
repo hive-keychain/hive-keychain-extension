@@ -1,14 +1,21 @@
 import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { navigateTo } from '@popup/actions/navigation.actions';
 import App from '@popup/App';
-import { act, cleanup, screen, waitFor } from '@testing-library/react';
+import { Screen } from '@reference-data/screen.enum';
+import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import React, { FC } from 'react';
+import { Provider } from 'react-redux';
+import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import mocks from 'src/__tests__/utils-for-testing/end-to-end-mocks';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import {
+  getFakeStore,
+  RootState,
+} from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
 
 const chrome = require('chrome-mock');
@@ -43,7 +50,7 @@ describe('add-account-main.component tests:\n', () => {
       witness_votes: ['aggroed', 'blocktrades'],
       posting: {
         weight_threshold: 1,
-        account_auths: [],
+        account_auths: [['theghost1980', 1]],
         key_auths: [[utilsT.userData.encryptKeys.posting, 1]],
       } as AuthorityType,
       active: {
@@ -57,6 +64,21 @@ describe('add-account-main.component tests:\n', () => {
         key_auths: [[utilsT.userData.encryptKeys.owner, 1]],
       } as AuthorityType,
       memo_key: utilsT.userData.encryptKeys.memo,
+    } as ExtendedAccount,
+  ];
+  const fakeExtendedAccountResponseWithAuth = [
+    {
+      name: 'theghost1980',
+      posting: {
+        weight_threshold: 1,
+        account_auths: [[utilsT.userData.username, 1]],
+        key_auths: [[utilsT.userData.encryptKeys.posting, 1]],
+      } as AuthorityType,
+      active: {
+        weight_threshold: 1,
+        account_auths: [],
+        key_auths: [[utilsT.userData.encryptKeys.active, 1]],
+      } as AuthorityType,
     } as ExtendedAccount,
   ];
   const fakeManaBarResponse = {
@@ -86,6 +108,13 @@ describe('add-account-main.component tests:\n', () => {
     'This is a public key! Please enter a private key or your master key.';
   const incorrectKeyMessage = 'Incorrect private key or password.';
   const incorrectUserMessage = 'Please check the username and try again.';
+  const addByAuthAL = 'add-by-auth-button';
+  const inputAuthorizedAccountAL = 'input-authorized-account';
+  const addAccountToAuthMessage =
+    'Please save @$1 in Hive Keychain to use it as an authorized account.';
+  const accountNoAuthMessage = '@$1 does not have authority over @$2.';
+  const settingsMainPageComponentAL = 'settings-main-page-component';
+  const importKeysButtonAL = 'import-keys-button';
 
   beforeEach(() => {
     mocks.mocksApp({
@@ -417,4 +446,255 @@ describe('add-account-main.component tests:\n', () => {
       expect(screen.getByText(incorrectUserMessage)).toBeDefined();
     });
   });
+  //add-by-auth tests
+  it('Must show error trying to add existing account', async () => {
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    // customRender(<App />, {
+    //   initialState: {
+    //     mk: mk,
+    //     accounts: accounts,
+    //   } as RootState,
+    // });
+    //NOTE i am using this method to access the dispatcher and move faster
+    //as on the previous method I don't know how to load this case.
+    //////testing block
+    const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
+    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
+      return <Provider store={fakeStore}>{children}</Provider>;
+    };
+    render(<App />, { wrapper: wrapperStore });
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    //dispatch a navigate action straight to add-account-main.component.tsx
+    await act(async () => {
+      await fakeStore.dispatch<any>(
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
+      );
+    });
+    ///////End testing block
+    const addByAuthButton = await screen.findByLabelText(addByAuthAL);
+    await act(async () => {
+      await userEventCustom.click(addByAuthButton);
+    });
+    const inputUsername = screen.getByLabelText(inputUsernameAL);
+    const inputAuthorizedAccount = screen.getByLabelText(
+      inputAuthorizedAccountAL,
+    );
+    const submitButton = screen.getByLabelText(submitButtonAL);
+    await act(async () => {
+      await userEventCustom.type(inputUsername, utilsT.userData.username);
+      await userEventCustom.type(inputAuthorizedAccount, 'theghost1980');
+      await userEventCustom.click(submitButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(accountExistsMessage)).toBeDefined();
+    });
+  });
+  it('Must show error with empty username and authorized account', async () => {
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    //NOTE i am using this method to access the dispatcher and move faster ans save code.
+    //as on the previous method I don't know how to load this case.
+    //////testing block
+    const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
+    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
+      return <Provider store={fakeStore}>{children}</Provider>;
+    };
+    render(<App />, { wrapper: wrapperStore });
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    //dispatch a navigate action straight to add-account-main.component.tsx
+    await act(async () => {
+      await fakeStore.dispatch<any>(
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
+      );
+    });
+    ///////End testing block
+    const addByAuthButton = await screen.findByLabelText(addByAuthAL);
+    await act(async () => {
+      await userEventCustom.click(addByAuthButton);
+    });
+    const submitButton = screen.getByLabelText(submitButtonAL);
+    await act(async () => {
+      await userEventCustom.click(submitButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(missingFieldsMessage)).toBeDefined();
+    });
+  });
+  it('Must show error if account not present in local accounts', async () => {
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
+    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
+      return <Provider store={fakeStore}>{children}</Provider>;
+    };
+    render(<App />, { wrapper: wrapperStore });
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    //dispatch a navigate action straight to add-account-main.component.tsx
+    await act(async () => {
+      await fakeStore.dispatch<any>(
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
+      );
+    });
+    const addByAuthButton = await screen.findByLabelText(addByAuthAL);
+    await act(async () => {
+      await userEventCustom.click(addByAuthButton);
+    });
+    const inputUsername = screen.getByLabelText(inputUsernameAL);
+    const inputAuthorizedAccount = screen.getByLabelText(
+      inputAuthorizedAccountAL,
+    );
+    const submitButton = screen.getByLabelText(submitButtonAL);
+    await act(async () => {
+      await userEventCustom.type(inputUsername, 'theghost1980');
+      await userEventCustom.type(inputAuthorizedAccount, 'no_auth_account');
+      await userEventCustom.click(submitButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(addAccountToAuthMessage)).toBeDefined();
+    });
+  });
+  it('Must show error if account not found on hive', async () => {
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
+    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
+      return <Provider store={fakeStore}>{children}</Provider>;
+    };
+    render(<App />, { wrapper: wrapperStore });
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    //dispatch a navigate action straight to add-account-main.component.tsx
+    await act(async () => {
+      await fakeStore.dispatch<any>(
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
+      );
+    });
+    HiveUtils.getClient().database.getAccounts = jest
+      .fn()
+      .mockResolvedValue([]);
+    const addByAuthButton = await screen.findByLabelText(addByAuthAL);
+    await act(async () => {
+      await userEventCustom.click(addByAuthButton);
+    });
+    const inputUsername = screen.getByLabelText(inputUsernameAL);
+    const inputAuthorizedAccount = screen.getByLabelText(
+      inputAuthorizedAccountAL,
+    );
+    const submitButton = screen.getByLabelText(submitButtonAL);
+    await act(async () => {
+      await userEventCustom.type(inputUsername, 'theghost1980');
+      await userEventCustom.type(
+        inputAuthorizedAccount,
+        utilsT.userData.username,
+      );
+      await userEventCustom.click(submitButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(incorrectUserMessage)).toBeDefined();
+    });
+  });
+  it('Must show error if account is not authorized', async () => {
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
+    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
+      return <Provider store={fakeStore}>{children}</Provider>;
+    };
+    render(<App />, { wrapper: wrapperStore });
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    //dispatch a navigate action straight to add-account-main.component.tsx
+    await act(async () => {
+      await fakeStore.dispatch<any>(
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
+      );
+    });
+    const addByAuthButton = await screen.findByLabelText(addByAuthAL);
+    await act(async () => {
+      await userEventCustom.click(addByAuthButton);
+    });
+    const inputUsername = screen.getByLabelText(inputUsernameAL);
+    const inputAuthorizedAccount = screen.getByLabelText(
+      inputAuthorizedAccountAL,
+    );
+    const submitButton = screen.getByLabelText(submitButtonAL);
+    await act(async () => {
+      await userEventCustom.type(inputUsername, 'theghost1980');
+      await userEventCustom.type(
+        inputAuthorizedAccount,
+        utilsT.userData.username,
+      );
+      await userEventCustom.click(submitButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByText(accountNoAuthMessage)).toBeDefined();
+    });
+  });
+  it('Must add account auth and navigate to settings main page', async () => {
+    AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
+    const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
+    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
+      return <Provider store={fakeStore}>{children}</Provider>;
+    };
+    render(<App />, { wrapper: wrapperStore });
+    await act(async () => {
+      jest.runOnlyPendingTimers();
+    });
+    //dispatch a navigate action straight to add-account-main.component.tsx
+    await act(async () => {
+      await fakeStore.dispatch<any>(
+        navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
+      );
+    });
+    const addByAuthButton = await screen.findByLabelText(addByAuthAL);
+    await act(async () => {
+      await userEventCustom.click(addByAuthButton);
+    });
+    HiveUtils.getClient().database.getAccounts = jest
+      .fn()
+      .mockResolvedValueOnce(fakeExtendedAccountResponseWithAuth)
+      .mockResolvedValue(fakeExtendedAccountResponse);
+    const inputUsername = screen.getByLabelText(inputUsernameAL);
+    const inputAuthorizedAccount = screen.getByLabelText(
+      inputAuthorizedAccountAL,
+    );
+    const submitButton = screen.getByLabelText(submitButtonAL);
+    await act(async () => {
+      await userEventCustom.type(inputUsername, 'theghost1980');
+      await userEventCustom.type(
+        inputAuthorizedAccount,
+        utilsT.userData.username,
+      );
+      await userEventCustom.click(submitButton);
+    });
+    await waitFor(() => {
+      expect(screen.getByLabelText(settingsMainPageComponentAL)).toBeDefined();
+    });
+  });
+  //   it('Must load imported valid keys', async () => {
+  //     const spyWindow = jest.spyOn(chrome.windows, 'getCurrent');
+  //     customRender(<App />, {
+  //       initialState: { mk: mk, accounts: [], activeRpc: rpc } as RootState,
+  //     });
+  //     await act(async () => {
+  //       jest.runOnlyPendingTimers();
+  //     });
+  //     const importKeysButton = await screen.findByLabelText(importKeysButtonAL);
+  //     await act(async () => {
+  //       await userEventCustom.click(importKeysButton);
+  //     });
+  //     await act(async () => {
+  //       jest.runOnlyPendingTimers();
+  //     });
+  //     await waitFor(() => {
+  //       expect(spyWindow).toBeCalledWith('');
+  //       expect(screen.getByText('yolo')).toBeDefined();
+  //     });
+  //     spyWindow.mockClear();
+  //     spyWindow.mockReset();
+  //   });
 });
