@@ -34,7 +34,6 @@ const getKeys = async (username: string, password: string) => {
     store.dispatch(
       setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
     );
-    console.log('is public key, dispatched');
     return null;
   }
   const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
@@ -88,7 +87,6 @@ const verifyAccount = async (
 ): Promise<Keys | null> => {
   if (username.length === 0 || password.length === 0) {
     store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
-    console.log('dispatched, username as:', username); //to remove ojo
     return null;
   }
   if (isAccountNameAlreadyExisting(existingAccounts, username)) {
@@ -152,8 +150,7 @@ const addAuthorizedAccount = async (
     showError('popup_accounts_fill', []);
     return null;
   }
-  console.log('username: ', username); //to remove ojo
-  console.log('existingAccounts: ', existingAccounts); //to remove ojo
+
   if (
     !existingAccounts
       .map((localAccount: LocalAccount) => localAccount.name)
@@ -179,7 +176,7 @@ const addAuthorizedAccount = async (
   const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
     username,
   ]);
-  console.log('extended: ', hiveAccounts);
+
   if (!hiveAccounts || hiveAccounts.length === 0) {
     showError('popup_accounts_incorrect_user', []);
     return null;
@@ -342,7 +339,6 @@ const clearAllData = () => {
   store.dispatch(resetAccount());
   store.dispatch(forgetMk());
   store.dispatch(resetActiveAccount());
-  console.log('it should dispatched already!'); //to remove ojo
 };
 
 const getAccountValue = (

@@ -58,14 +58,6 @@ const App = ({
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
 
-  //for testing to remove ojo
-  // useEffect(() => {
-  //   // console.log('updated State.mk: ', state.mk);
-  //   // console.log('updated State.activeAccount: ', state.activeAccount.name);
-  //   console.log(state.navigation);
-  // }, [state]);
-  //END for testing to remove ojo
-
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
@@ -176,10 +168,8 @@ const App = ({
     accounts: LocalAccount[],
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
-      console.log('case 1'); //TODO to remove ojo
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk && mk.length > 0) {
-      console.log('case 2'); //to remove ojo
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
     } else if (
       mk &&
@@ -187,10 +177,8 @@ const App = ({
       accounts.length === 0 &&
       !hasStoredAccounts
     ) {
-      console.log('case 3'); //to remove ojo
       navigateTo(Screen.SIGN_UP_PAGE, true);
     } else {
-      console.log('case 4'); //to remove ojo
       navigateTo(Screen.SIGN_IN_PAGE);
     }
   };
@@ -199,18 +187,14 @@ const App = ({
     if (isAppReady) {
       if (!mk || mk.length === 0) {
         if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-          console.log('to SignUpComponent'); //to remove ojo
           return <SignUpComponent />;
         } else {
-          console.log('to SignInRouterComponent'); //to remove ojo
           return <SignInRouterComponent />;
         }
       } else {
         if (accounts && accounts.length === 0) {
-          console.log('to AddAccountRouterComponent'); //to remove ojo
           return <AddAccountRouterComponent />;
         } else {
-          console.log('to AppRouterComponent'); //to remove ojo
           return <AppRouterComponent />;
         }
       }

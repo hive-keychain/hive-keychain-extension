@@ -26,7 +26,6 @@ const AddAccountMain = ({
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_AUTH);
   };
   const handleImportKeys = (): void => {
-    console.log('firing handleImportKeys');
     chrome.windows.getCurrent(async (currentWindow) => {
       const win: chrome.windows.CreateData = {
         url: chrome.runtime.getURL('import-accounts.html'),

@@ -114,7 +114,6 @@ describe('add-account-main.component tests:\n', () => {
     'Please save @$1 in Hive Keychain to use it as an authorized account.';
   const accountNoAuthMessage = '@$1 does not have authority over @$2.';
   const settingsMainPageComponentAL = 'settings-main-page-component';
-  const importKeysButtonAL = 'import-keys-button';
 
   beforeEach(() => {
     mocks.mocksApp({
@@ -449,15 +448,6 @@ describe('add-account-main.component tests:\n', () => {
   //add-by-auth tests
   it('Must show error trying to add existing account', async () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
-    // customRender(<App />, {
-    //   initialState: {
-    //     mk: mk,
-    //     accounts: accounts,
-    //   } as RootState,
-    // });
-    //NOTE i am using this method to access the dispatcher and move faster
-    //as on the previous method I don't know how to load this case.
-    //////testing block
     const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
     const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
       return <Provider store={fakeStore}>{children}</Provider>;
@@ -472,7 +462,6 @@ describe('add-account-main.component tests:\n', () => {
         navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
       );
     });
-    ///////End testing block
     const addByAuthButton = await screen.findByLabelText(addByAuthAL);
     await act(async () => {
       await userEventCustom.click(addByAuthButton);
@@ -493,9 +482,6 @@ describe('add-account-main.component tests:\n', () => {
   });
   it('Must show error with empty username and authorized account', async () => {
     AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
-    //NOTE i am using this method to access the dispatcher and move faster ans save code.
-    //as on the previous method I don't know how to load this case.
-    //////testing block
     const fakeStore = getFakeStore({ mk: mk, accounts: accounts } as RootState);
     const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
       return <Provider store={fakeStore}>{children}</Provider>;
@@ -510,7 +496,6 @@ describe('add-account-main.component tests:\n', () => {
         navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
       );
     });
-    ///////End testing block
     const addByAuthButton = await screen.findByLabelText(addByAuthAL);
     await act(async () => {
       await userEventCustom.click(addByAuthButton);
@@ -675,26 +660,4 @@ describe('add-account-main.component tests:\n', () => {
       expect(screen.getByLabelText(settingsMainPageComponentAL)).toBeDefined();
     });
   });
-  //   it('Must load imported valid keys', async () => {
-  //     const spyWindow = jest.spyOn(chrome.windows, 'getCurrent');
-  //     customRender(<App />, {
-  //       initialState: { mk: mk, accounts: [], activeRpc: rpc } as RootState,
-  //     });
-  //     await act(async () => {
-  //       jest.runOnlyPendingTimers();
-  //     });
-  //     const importKeysButton = await screen.findByLabelText(importKeysButtonAL);
-  //     await act(async () => {
-  //       await userEventCustom.click(importKeysButton);
-  //     });
-  //     await act(async () => {
-  //       jest.runOnlyPendingTimers();
-  //     });
-  //     await waitFor(() => {
-  //       expect(spyWindow).toBeCalledWith('');
-  //       expect(screen.getByText('yolo')).toBeDefined();
-  //     });
-  //     spyWindow.mockClear();
-  //     spyWindow.mockReset();
-  //   });
 });

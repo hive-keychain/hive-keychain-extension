@@ -48,7 +48,6 @@ const AppRouter = ({
   hasTitle,
 }: PropsFromRedux) => {
   const renderAccountPage = (page: Screen) => {
-    console.log('page: ', page); //to remove ojo
     switch (page) {
       case Screen.HOME_PAGE:
         return <HomeComponent />;

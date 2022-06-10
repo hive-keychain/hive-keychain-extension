@@ -7,7 +7,6 @@ export const MkReducer = (
 ): string => {
   switch (type) {
     case ActionType.SET_MK:
-      console.log('setting mk'); //to remove ojo
       return payload!;
     default:
       return state;

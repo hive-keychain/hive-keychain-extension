@@ -53,10 +53,8 @@ const AddByKeys = ({
     }
 
     if (KeysUtils.keysCount(keys) > 2) {
-      console.log('navigateToWithParams');
       navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, { keys, username });
     } else {
-      console.log('addAccount');
       addAccount({ name: username, keys: keys });
     }
   };

@@ -12,7 +12,6 @@ const DURATION = 5000;
 const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const [timeoutId, setTimeoutId] = useState<any>();
   useEffect(() => {
-    console.log('errorMessage: ', errorMessage);
     if (errorMessage.key) {
       switch (errorMessage.type) {
         case MessageType.ERROR:
