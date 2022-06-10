@@ -20,7 +20,6 @@ const ResetPasswordPage = ({
   }, []);
 
   const reset = () => {
-    console.log('reset called!');
     AccountUtils.clearAllData();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };

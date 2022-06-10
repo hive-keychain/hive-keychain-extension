@@ -41,6 +41,7 @@ const getKeys = async (username: string, password: string) => {
     username,
   ]);
   if (hiveAccounts.length === 0) {
+    console.log('incorrect user!!!!');
     store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
     return null;
   }

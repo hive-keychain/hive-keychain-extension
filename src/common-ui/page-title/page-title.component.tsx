@@ -44,6 +44,7 @@ const PageTitle = ({
     <div className="title-section">
       {isBackButtonEnabled && canGoBack && (
         <Icon
+          ariaLabel="arrow-back-icon"
           onClick={handleBackButtonClick}
           name={Icons.BACK}
           type={IconType.OUTLINED}
