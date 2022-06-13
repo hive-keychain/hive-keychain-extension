@@ -64,6 +64,7 @@ const WalletInfoSection = ({
     event: any,
     menuItems: DropdownMenuItemInterface[],
   ) => {
+    console.log('called dropdown!');
     event.stopPropagation();
     setDisplayDropdown(!displayDropdown);
     setDropdownPosition({
@@ -116,6 +117,7 @@ const WalletInfoSection = ({
           )}
         </div>
         <img
+          aria-label="dropdown-arrow-hive"
           className="dropdown-arrow"
           src="/assets/images/uparrow.png"
           onClick={(event) => toggleDropdown(event, HiveDropdownMenuItems)}
@@ -152,6 +154,7 @@ const WalletInfoSection = ({
           )}
         </div>
         <img
+          aria-label="dropdown-arrow-hbd"
           className="dropdown-arrow"
           src="/assets/images/uparrow.png"
           onClick={(event) => toggleDropdown(event, HBDDropdownMenuItems)}
@@ -183,6 +186,7 @@ const WalletInfoSection = ({
           )}
         </div>
         <img
+          aria-label="dropdown-arrow-hp"
           className="dropdown-arrow"
           src="/assets/images/uparrow.png"
           onClick={(event) => toggleDropdown(event, HpDropdownMenuItems)}

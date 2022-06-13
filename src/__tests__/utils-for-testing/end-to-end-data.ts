@@ -18,6 +18,19 @@ const accounts = {
       savings_balance: new Asset(10000, 'HBD'),
     } as ExtendedAccount,
   ],
+  extendedAccountMinVariant: [
+    {
+      name: utilsT.userData.username,
+      reputation: 80,
+      reward_hbd_balance: '80 HBD',
+      reward_hive_balance: '80 HIVE',
+      reward_vesting_balance: new Asset(8000, 'VESTS'),
+      delegated_vesting_shares: new Asset(8000, 'VESTS'),
+      received_vesting_shares: new Asset(80000, 'VESTS'),
+      balance: new Asset(8000, 'HIVE'),
+      savings_balance: new Asset(80000, 'HBD'),
+    } as ExtendedAccount,
+  ],
   extendedAccountFull: [
     {
       name: utilsT.userData.username,
@@ -79,6 +92,11 @@ const manabar = {
     current_mana: 1000,
     max_mana: 10000,
     percentage: 100,
+  } as Manabar,
+  manabarMinVariant: {
+    current_mana: 800,
+    max_mana: 800,
+    percentage: 80,
   } as Manabar,
   empty: {} as Manabar,
 };

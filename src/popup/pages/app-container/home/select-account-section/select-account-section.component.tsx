@@ -58,7 +58,11 @@ const SelectAccountSection = ({
             e.target.src = '/assets/images/accounts.png';
           }}
         />
-        <div className="selected-account-name">{selectedLocalAccount}</div>
+        <div
+          className="selected-account-name"
+          aria-label="selected-account-name">
+          {selectedLocalAccount}
+        </div>
       </div>
     );
   };

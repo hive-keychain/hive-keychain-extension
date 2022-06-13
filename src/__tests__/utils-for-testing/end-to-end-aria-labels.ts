@@ -12,6 +12,7 @@ const button = {
   menuSettingsPersonAdd: 'menu-settings-button-person_add',
   confirmResetPassword: 'reset-password-confirm-button',
   signUp: 'signup-button',
+  logOut: 'log-out-button',
 };
 const input = {
   password: 'password-input',
@@ -36,6 +37,20 @@ const link = {
 };
 const icon = {
   arrowBack: 'arrow-back-icon',
+  refreshHome: 'top-bar-refresh-icon',
+};
+const select = {
+  accountSelector: 'Dropdown select',
+};
+const div = {
+  selectedAccount: 'selected-account-name',
+};
+const dropdown = {
+  arrow: {
+    hive: 'dropdown-arrow-hive',
+    hbd: 'dropdown-arrow-hbd',
+    hp: 'dropdown-arrow-hp',
+  },
 };
 
 const al = {
@@ -45,6 +60,9 @@ const al = {
   logo,
   link,
   icon,
+  select,
+  div,
+  dropdown,
 };
 
 export default al;

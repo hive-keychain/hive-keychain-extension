@@ -23,7 +23,8 @@
     "postinstall": "sed -i '' 's/require(\"cross-fetch\")/require(\"node-fetch\")/g' node_modules/@hiveio/dhive/lib/utils.js; echo 'Update dhive so that keychain background can use it directly'",
     "test": "jest --verbose",
     "test:watch": "jest --verbose --watch",
-    "test:cov": "jest --verbose --coverage"
+    "test:cov": "jest --verbose --coverage",
+    "test:detect": "jest --verbose --detectOpenHandles"
   },
   "repository": {
     "type": "git",
