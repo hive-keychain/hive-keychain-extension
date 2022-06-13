@@ -18,13 +18,10 @@ const SignInRouter = ({
   }, []);
 
   const renderSignInPage = (page: Screen) => {
-    console.log('Sign-in-router, renderSignInPage: ', page);
     switch (page) {
       case Screen.SIGN_IN_PAGE:
-        console.log('to SIGN_IN_PAGE');
         return <SignInComponent />;
       case Screen.RESET_PASSWORD_PAGE:
-        console.log('to RESET_PASSWORD_PAGE');
         return <ResetPasswordPageComponent />;
     }
   };
