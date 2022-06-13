@@ -23,6 +23,7 @@ interface InputProps {
   onSetToMaxClicked?(): any;
   required?: boolean;
   hasError?: boolean;
+  ariaLabel?: string;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -32,6 +33,14 @@ const InputComponent = (props: InputProps) => {
 
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return function cleanup() {
+      setMounted(false);
+    };
+  });
 
   useEffect(() => {
     if (props.autocompleteValues) {
@@ -44,7 +53,9 @@ const InputComponent = (props: InputProps) => {
   }, [props.value, props.autocompleteValues]);
 
   const handleOnBlur = () => {
-    setTimeout(() => setIsFocused(false), 200);
+    if (mounted) {
+      setTimeout(() => setIsFocused(false), 200);
+    }
   };
   const handleOnFocus = () => {
     setIsFocused(true);
@@ -65,6 +76,7 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
+          aria-label={props.ariaLabel} //modified for testings
           className={`${props.hasError ? 'has-error' : ''}`}
           type={
             props.type === InputType.PASSWORD && isPasswordDisplay
