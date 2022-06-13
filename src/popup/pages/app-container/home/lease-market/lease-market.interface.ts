@@ -9,6 +9,13 @@ export enum LeaseStatus {
   CANCELED = 'canceled',
 }
 
+export const LeaseStatusOrder = {
+  [LeaseStatus.PENDING]: 0,
+  [LeaseStatus.ACTIVE]: 1,
+  [LeaseStatus.FINISHED]: 2,
+  [LeaseStatus.CANCELED]: 3,
+};
+
 export interface Lease {
   id: string;
   creator: string;
@@ -23,6 +30,7 @@ export interface Lease {
   duration: number; // days
   status: string;
   cancelationDate?: Date | string;
+  remainingPayments: number;
 }
 
 export interface LeaseRequest {

@@ -1,8 +1,10 @@
 import { VestingDelegation } from '@hiveio/dhive';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
-import { Lease } from '@popup/pages/app-container/home/lease-request/lease-market.interface';
-import { LeaseItemComponent } from '@popup/pages/app-container/home/lease-request/tab-container/lease-item/lease-item.component';
+import { Lease } from '@popup/pages/app-container/home/lease-market/lease-market.interface';
+import { LeaseMarketItemComponent } from '@popup/pages/app-container/home/lease-market/tab-container/lease-item/market-item/market-item.component';
+import { MyDelegationItemComponent } from '@popup/pages/app-container/home/lease-market/tab-container/lease-item/my-delegation-item/my-delegation-item.component';
+import { MyLeaseItemComponent } from '@popup/pages/app-container/home/lease-market/tab-container/lease-item/my-lease-item/my-lease-item.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
@@ -12,18 +14,25 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import './tab-container.component.scss';
 
+export enum TabContainerType {
+  MARKET = 'MARKET',
+  MY_LEASES = 'MY_LEASES',
+  MY_DELEGATIONS = 'MY_DELEGATIONS',
+}
+
 interface TabContainerProps {
   leases: Lease[] | undefined;
   hideDisplayChip?: boolean;
   displayAddButton?: boolean;
+  tabType: TabContainerType;
 }
 
 const TabContainer = ({
   leases,
-  hideDisplayChip,
   displayAddButton,
   activeAccount,
   globalProperties,
+  tabType,
   navigateTo,
 }: PropsFromRedux) => {
   const [availableVestingShares, setAvailableVestingShares] = useState(0);
@@ -60,15 +69,31 @@ const TabContainer = ({
   return (
     <div className="tab-container">
       {leases &&
-        leases.map((lease: Lease) => (
-          <LeaseItemComponent
-            key={lease.id}
-            lease={lease}
-            hideDisplayChip={hideDisplayChip}
-            outgoingDelegations={outgoingDelegations}
-            canDelegate={lease.value <= availableVestingShares}
-          />
-        ))}
+        leases.map((lease: Lease) => {
+          switch (tabType) {
+            case TabContainerType.MARKET:
+              return (
+                <LeaseMarketItemComponent
+                  key={lease.id}
+                  canDelegate={lease.value <= availableVestingShares}
+                  lease={lease}
+                  outgoingDelegations={outgoingDelegations}
+                />
+              );
+            case TabContainerType.MY_LEASES:
+              return <MyLeaseItemComponent key={lease.id} lease={lease} />;
+            case TabContainerType.MY_DELEGATIONS:
+              return (
+                <MyDelegationItemComponent
+                  key={lease.id}
+                  lease={lease}
+                  outgoingDelegations={outgoingDelegations}
+                />
+              );
+            default:
+              return <span key={lease.id}>FAILED {lease.id}</span>;
+          }
+        })}
       {displayAddButton && (
         <div
           className="add-button"

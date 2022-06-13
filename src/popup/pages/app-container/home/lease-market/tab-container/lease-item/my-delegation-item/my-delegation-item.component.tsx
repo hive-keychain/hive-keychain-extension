@@ -14,7 +14,7 @@ import {
 import {
   Lease,
   LeaseStatus,
-} from '@popup/pages/app-container/home/lease-request/lease-market.interface';
+} from '@popup/pages/app-container/home/lease-market/lease-market.interface';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
@@ -22,31 +22,27 @@ import { connect, ConnectedProps } from 'react-redux';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import { LeaseMarketUtils } from 'src/utils/lease-market.utils';
-import './lease-item.component.scss';
+import '../lease-item.component.scss';
 
-interface LeaseItemProps {
+interface MyDelegationItemProps {
   lease: Lease;
-  canDelegate: boolean;
   outgoingDelegations: VestingDelegation[];
-  hideDisplayChip?: boolean;
 }
 
-const LeaseItem = ({
+const MyDelegationItem = ({
   lease,
+  outgoingDelegations,
   currencyLabels,
   activeAccount,
-  hideDisplayChip,
   globalProperties,
-  canDelegate,
-  outgoingDelegations,
-  setSuccessMessage,
+  navigateToWithParams,
   setErrorMessage,
+  setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
-  navigateToWithParams,
   goBack,
 }: PropsFromRedux) => {
-  const toggleSupport = async () => {
+  const cancelLease = async () => {
     const [oldDelegation, newDelegation] =
       LeaseMarketUtils.getPreviousAndNewDelegationToUser(
         outgoingDelegations,
@@ -105,56 +101,10 @@ const LeaseItem = ({
           removeFromLoadingList('popup_html_lease_market_undelegate');
         },
       });
-    } else if (lease.status === LeaseStatus.PENDING) {
-      if (!canDelegate) {
-        setErrorMessage('popup_html_lease_market_unsuficient_hp_balance');
-        return;
-      }
-
-      fields.splice(
-        1,
-        0,
-        {
-          label: 'popup_html_lease_market_daily_payout',
-          value: `${FormatUtils.formatCurrencyValue(
-            lease.dailyPay,
-            3,
-          )} ${lease.currency.toUpperCase()}`,
-        },
-        {
-          label: 'popup_html_lease_market_duration',
-          value: `${lease.duration / 7} ${chrome.i18n.getMessage(
-            lease.duration / 7 > 1 ? 'weeks' : 'week',
-          )}`,
-        },
-      );
-
-      navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-        message: chrome.i18n.getMessage(
-          'popup_html_confirm_delegation_lease_accept_message',
-        ),
-        fields: fields,
-        title: 'popup_html_confirm_delegation_lease_accept_title',
-        afterConfirmAction: async () => {
-          addToLoadingList('popup_html_lease_market_delegate_to_user');
-          const success = await LeaseMarketUtils.acceptLeaseRequest(
-            lease,
-            activeAccount,
-            newDelegation,
-          );
-          if (success) {
-            setSuccessMessage('popup_html_delegation_request_accept_success');
-          } else {
-            setErrorMessage('popup_html_delegation_request_accept_failed');
-          }
-          removeFromLoadingList('popup_html_lease_market_delegate_to_user');
-          goBack();
-        },
-      });
     }
   };
 
-  const cancelLease = async () => {
+  const cancelLeaseRequest = async () => {
     addToLoadingList('popup_html_lease_market_cancel_request');
     if (await LeaseMarketUtils.cancelLeaseRequest(lease, activeAccount)) {
       setSuccessMessage('popup_html_delegation_request_cancel_success');
@@ -165,7 +115,7 @@ const LeaseItem = ({
   };
 
   return (
-    <div className={`lease-item ${lease.status}`}>
+    <div className="my-delegation-item lease-item">
       <div className="left-panel">
         <div className="creator">@{lease.creator}</div>
         <div className="delegation-value">
@@ -179,42 +129,34 @@ const LeaseItem = ({
           )}{' '}
           {currencyLabels.hp}
         </div>
-        <div className="delegation-payout">
-          {chrome.i18n.getMessage('popup_html_lease_market_daily_payout')} :{' '}
-          {FormatUtils.withCommas(lease.dailyPay)}{' '}
-          {currencyLabels[lease.currency]}
-        </div>
-        <div className="delegation-nb-days">
-          {chrome.i18n.getMessage('popup_html_lease_market_duration')} :{' '}
-          {lease.duration / 7}{' '}
-          {chrome.i18n.getMessage(lease.duration / 7 > 1 ? 'weeks' : 'week')}
+        <div className="remaining-days">
+          {chrome.i18n.getMessage('popup_html_lease_market_remaining_days', [
+            lease.remainingPayments.toString(),
+          ])}
         </div>
       </div>
       <div className="right-panel">
-        {!hideDisplayChip && (
+        {
           <div className={`status-chip ${lease.status}`}>
             {chrome.i18n.getMessage(
               `popup_html_delegation_request_status_${lease.status}`,
             )}
           </div>
-        )}
+        }
         <div className="button-panel">
-          {(!lease.delegator || lease.delegator === activeAccount.name!) &&
-            lease.creator !== activeAccount.name! &&
-            lease.status !== LeaseStatus.FINISHED && (
-              <div
-                className="delegate-undelegate-button"
-                onClick={toggleSupport}>
+          {lease.creator !== activeAccount.name! &&
+            lease.status === LeaseStatus.ACTIVE && (
+              <div className="delegate-undelegate-button" onClick={cancelLease}>
                 {chrome.i18n.getMessage(
-                  lease.delegator
-                    ? 'popup_html_delegation_request_undelegate'
-                    : 'popup_html_delegation_request_delegate',
+                  'popup_html_delegation_request_undelegate',
                 )}
               </div>
             )}
           {lease.status === LeaseStatus.PENDING &&
             lease.creator === activeAccount.name && (
-              <div className="delegate-undelegate-button" onClick={cancelLease}>
+              <div
+                className="delegate-undelegate-button"
+                onClick={cancelLeaseRequest}>
                 {chrome.i18n.getMessage('popup_html_delegation_request_cancel')}
               </div>
             )}
@@ -240,6 +182,6 @@ const connector = connect(mapStateToProps, {
   navigateToWithParams,
   goBack,
 });
-type PropsFromRedux = ConnectedProps<typeof connector> & LeaseItemProps;
+type PropsFromRedux = ConnectedProps<typeof connector> & MyDelegationItemProps;
 
-export const LeaseItemComponent = connector(LeaseItem);
+export const MyDelegationItemComponent = connector(MyDelegationItem);

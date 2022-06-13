@@ -9,8 +9,8 @@ import { DelegationsComponent } from '@popup/pages/app-container/home/delegation
 import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { GovernanceComponent } from '@popup/pages/app-container/home/governance/governance.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
-import { CreateLeaseRequestPageComponent } from '@popup/pages/app-container/home/lease-request/create-lease-request-page/create-lease-request-page.component';
-import { LeaseMarketComponent } from '@popup/pages/app-container/home/lease-request/lease-market.component';
+import { CreateLeaseRequestPageComponent } from '@popup/pages/app-container/home/lease-market/create-lease-request-page/create-lease-request-page.component';
+import { LeaseMarketComponent } from '@popup/pages/app-container/home/lease-market/lease-market.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';

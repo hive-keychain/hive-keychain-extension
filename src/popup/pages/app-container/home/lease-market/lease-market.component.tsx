@@ -2,8 +2,11 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import {
   Lease,
   LeaseStatus,
-} from '@popup/pages/app-container/home/lease-request/lease-market.interface';
-import { TabContainerComponent } from '@popup/pages/app-container/home/lease-request/tab-container/tab-container.component';
+} from '@popup/pages/app-container/home/lease-market/lease-market.interface';
+import {
+  TabContainerComponent,
+  TabContainerType,
+} from '@popup/pages/app-container/home/lease-market/tab-container/tab-container.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -36,12 +39,14 @@ const LeaseMarket = ({
       ),
     );
     setMyLeases(
-      allLeases.filter((lease: Lease) => lease.creator === activeAccount.name!),
+      allLeases
+        .filter((lease: Lease) => lease.creator === activeAccount.name!)
+        .sort(LeaseMarketUtils.sortLease),
     );
     setMyDelegations(
-      allLeases.filter(
-        (lease: Lease) => lease.delegator === activeAccount.name!,
-      ),
+      allLeases
+        .filter((lease: Lease) => lease.delegator === activeAccount.name!)
+        .sort(LeaseMarketUtils.sortLease),
     );
   };
 
@@ -67,13 +72,21 @@ const LeaseMarket = ({
             leases={leaseMarket}
             hideDisplayChip
             displayAddButton
+            tabType={TabContainerType.MARKET}
           />
         </TabPanel>
         <TabPanel>
-          <TabContainerComponent leases={myLeases} displayAddButton />
+          <TabContainerComponent
+            leases={myLeases}
+            displayAddButton
+            tabType={TabContainerType.MY_LEASES}
+          />
         </TabPanel>
         <TabPanel>
-          <TabContainerComponent leases={myDelegations} />
+          <TabContainerComponent
+            leases={myDelegations}
+            tabType={TabContainerType.MY_DELEGATIONS}
+          />
         </TabPanel>
       </Tabs>
     </div>

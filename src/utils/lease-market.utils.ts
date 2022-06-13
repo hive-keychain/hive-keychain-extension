@@ -10,7 +10,9 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   Lease,
   LeaseRequest,
-} from '@popup/pages/app-container/home/lease-request/lease-market.interface';
+  LeaseStatus,
+  LeaseStatusOrder,
+} from '@popup/pages/app-container/home/lease-market/lease-market.interface';
 import { store } from '@popup/store';
 import HiveUtils from 'src/utils/hive.utils';
 
@@ -179,6 +181,13 @@ const createLeaseRequest = async (
   );
 };
 
+const sortLease = (a: Lease, b: Lease) => {
+  return (
+    LeaseStatusOrder[a.status as LeaseStatus] -
+    LeaseStatusOrder[b.status as LeaseStatus]
+  );
+};
+
 export const LeaseMarketUtils = {
   downloadAllLeases,
   cancelLeaseRequest,
@@ -186,4 +195,5 @@ export const LeaseMarketUtils = {
   undelegateLease,
   getPreviousAndNewDelegationToUser,
   createLeaseRequest,
+  sortLease,
 };

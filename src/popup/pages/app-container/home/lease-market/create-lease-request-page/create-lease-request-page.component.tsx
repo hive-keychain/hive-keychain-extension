@@ -14,7 +14,7 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { LeaseRequest } from '@popup/pages/app-container/home/lease-request/lease-market.interface';
+import { LeaseRequest } from '@popup/pages/app-container/home/lease-market/lease-market.interface';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';

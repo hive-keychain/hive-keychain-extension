@@ -2291,8 +2291,8 @@
     "description": "Lease weekly payout"
   },
   "popup_html_lease_market_daily_payout": {
-    "message": "Weekly payout",
-    "description": "Lease weekly payout"
+    "message": "Daily payout",
+    "description": "Lease daily payout"
   },
   "popup_html_lease_market_duration": {
     "message": "Duration",
@@ -2477,5 +2477,17 @@
   "popup_html_lease_request_memo": {
     "message": "Created lease request of $1 for $2 week(s)",
     "description": "lease request creation memo template"
+  },
+  "popup_html_lease_market_remaining_days": {
+    "message": "$1 day(s) remaining",
+    "description": "my lease item days remaining"
+  },
+  "popup_html_lease_market_total_amount": {
+    "message": "Total amount",
+    "description": "my lease item total amount"
+  },
+  "popup_html_lease_market_delegation_from": {
+    "message": "From @$1",
+    "description": "my lease item delegation from"
   }
 }
