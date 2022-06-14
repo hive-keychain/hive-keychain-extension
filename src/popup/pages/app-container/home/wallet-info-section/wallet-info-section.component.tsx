@@ -64,7 +64,6 @@ const WalletInfoSection = ({
     event: any,
     menuItems: DropdownMenuItemInterface[],
   ) => {
-    console.log('called dropdown!');
     event.stopPropagation();
     setDisplayDropdown(!displayDropdown);
     setDropdownPosition({

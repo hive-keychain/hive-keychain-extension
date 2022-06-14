@@ -15,6 +15,11 @@ import ProposalUtils from 'src/utils/proposal.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
+//TODO is it possible to try the following:
+// add default values and parameters as parameter?
+// so they won't be needed all the time but rather use a default value
+// so the final call will be smaller, even with a predefined values.
+
 const getValuefromLS = (...args: any[]) => {
   if (args[0] === LocalStorageKeyEnum.AUTOLOCK) {
     return {

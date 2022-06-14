@@ -450,6 +450,7 @@ const WalletHistory = ({
       </div>
 
       <div
+        aria-label="wallet-item-list"
         ref={walletItemList}
         className="wallet-item-list"
         onScroll={handleScroll}>

@@ -1,9 +1,16 @@
+import { hsc } from '@api/hiveEngine';
+import KeychainApi from '@api/keychain';
 import App from '@popup/App';
 import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import React from 'react';
+import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
+import BlockchainTransactionUtils from 'src/utils/tokens.utils';
+import TransactionUtils from 'src/utils/transaction.utils';
+import WitnessUtils from 'src/utils/witness.utils';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
 import { userEventPendingTimers } from 'src/__tests__/utils-for-testing/end-to-end-events';
@@ -149,12 +156,16 @@ describe('home.component tests:\n', () => {
     });
   });
   describe('dropdown arrow menu on hive tests:\n', () => {
+    //TODO: skipped as I cannot handle that error.
+    // -> after finishing all of them, check if is possible to add just one render/state on the first before each.
     it.skip('Must open transfer funds page when clicking on send hive', async () => {
       customRender(<App />, {
         initialState: { mk: mk, accounts: accounts } as RootState,
       });
       expect(await screen.findByText(mk)).toBeDefined();
-      const dropDownMenu = screen.getByLabelText(al.dropdown.arrow.hive);
+      let dropDownMenu = screen.getByLabelText(
+        al.dropdown.arrow.hive,
+      ) as HTMLImageElement;
       await act(async () => {
         await userEventPendingTimers.click(dropDownMenu);
       });
@@ -165,26 +176,80 @@ describe('home.component tests:\n', () => {
     it.todo('Must show convert page when clicking convert');
     it.todo('Must show hive savings page when clicking on saving');
   });
-  describe('dropdown arrow menu on hbd tests:\n', () => {
+  describe.skip('dropdown arrow menu on hbd tests:\n', () => {
     it.todo('Must open transfer funds page when clicking on send hbd');
     it.todo('Must load buy HBD options when clicking on buy');
     it.todo('Must show convert page when clicking convert');
     it.todo('Must show hbd savings page when clicking savings');
   });
-  describe('dropdown arrow menu on hp tests:\n', () => {
+  describe.skip('dropdown arrow menu on hp tests:\n', () => {
     it.todo('Must show delegations page when clicking convert');
     it.todo('Must show power down page when clicking power down');
   });
   describe('action buttons menu tests:\n', () => {
-    it.todo('Must open transfer funds page when clicking on send');
-    it.todo('Must show wallet history when clicking on history');
-    it.todo('Must show tokens page when clicking on tokens');
-    it.todo('Must show governance page when clicking on governance');
+    beforeEach(async () => {
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: accounts } as RootState,
+      });
+      expect(await screen.findByText(mk)).toBeDefined();
+    });
+    it('Must open transfer funds page when clicking on send', async () => {
+      let actionButtonSend = screen.getByLabelText(al.button.actionBtn.send);
+      await act(async () => {
+        await userEventPendingTimers.click(actionButtonSend);
+      });
+      expect(
+        screen.getByLabelText(al.component.transfersFundsPage),
+      ).toBeDefined();
+    });
+    it('Must show wallet history when clicking on history', async () => {
+      let actionButtonHistory = screen.getByLabelText(
+        al.button.actionBtn.history,
+      );
+      TransactionUtils.getAccountTransactions = jest
+        .fn()
+        .mockResolvedValue(utilsT.expectedDataGetAccountHistory);
+      await act(async () => {
+        await userEventPendingTimers.click(actionButtonHistory);
+        jest.runAllTimers();
+      });
+      expect(
+        await screen.findByLabelText(al.component.walletItemList),
+      ).toBeDefined();
+    });
+    it('Must show tokens page when clicking on tokens', async () => {
+      let actionButtonTokens = screen.getByLabelText(
+        al.button.actionBtn.tokens,
+      );
+      hsc.find = jest.fn().mockResolvedValue(utilsT.fakeTokensResponse);
+      HiveEngineUtils.getUserBalance = jest
+        .fn()
+        .mockResolvedValue(utilsT.fakeGetUserBalanceResponse);
+      await act(async () => {
+        await userEventPendingTimers.click(actionButtonTokens);
+        jest.runAllTimers();
+      });
+      expect(
+        await screen.findByLabelText(al.component.userTokens),
+      ).toBeDefined();
+    });
+    it('Must show governance page when clicking on governance', async () => {
+      let actionButtonGovernance = screen.getByLabelText(
+        al.button.actionBtn.governance,
+      );
+      KeychainApi.get = jest
+        .fn()
+        .mockResolvedValue(utilsT.fakeWitnessesRankingResponse);
+      ProxyUtils.findUserProxy = jest.fn();
+      WitnessUtils.unvoteWitness = jest.fn();
+      BlockchainTransactionUtils.delayRefresh = jest.fn();
+      await act(async () => {
+        await userEventPendingTimers.click(actionButtonGovernance);
+        jest.runAllTimers();
+      });
+      expect(
+        await screen.findByLabelText(al.component.governancePage),
+      ).toBeDefined();
+    });
   });
 });
-
-//TODO after finishing home component.
-// go by alphabetic order to each inner component, considering all the cases, mocking all the necessary data + functions.
-// the ones no need to test:
-// - action-section
-// - select-account-section

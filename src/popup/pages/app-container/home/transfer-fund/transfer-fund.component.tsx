@@ -301,7 +301,7 @@ const TransferFunds = ({
 
   return (
     <>
-      <div className="transfer-funds-page">
+      <div className="transfer-funds-page" aria-label="transfer-funds-page">
         <AvailableCurrentPanelComponent
           available={balance}
           availableCurrency={currencyLabels[selectedCurrency]}

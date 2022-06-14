@@ -1,7 +1,3 @@
-//TODO:
-//change them within the files they are being used,
-//short the names removing 'button, comp, etc + AL'.
-
 const button = {
   login: 'login-button',
   submit: 'submit-button',
@@ -13,6 +9,12 @@ const button = {
   confirmResetPassword: 'reset-password-confirm-button',
   signUp: 'signup-button',
   logOut: 'log-out-button',
+  actionBtn: {
+    send: 'action-button-send',
+    history: 'action-button-history',
+    tokens: 'action-button-tokens',
+    governance: 'action-button-gov.',
+  },
 };
 const input = {
   password: 'password-input',
@@ -28,6 +30,10 @@ const component = {
   input: 'password-input',
   inputConfirmation: 'password-input-confirmation',
   addAccountMain: 'add-account-page',
+  transfersFundsPage: 'transfer-funds-page',
+  walletItemList: 'wallet-item-list',
+  userTokens: 'my-tokens',
+  governancePage: 'governance-page',
 };
 const logo = {
   loading: 'loading-logo',

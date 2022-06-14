@@ -41,6 +41,7 @@ const accounts = {
       delegated_vesting_shares: new Asset(100, 'VESTS'),
       received_vesting_shares: new Asset(20000, 'VESTS'),
       balance: new Asset(1000, 'HIVE'),
+      hbd_balance: new Asset(1000, 'HBD'),
       savings_balance: new Asset(10000, 'HBD'),
       proxy: '',
       witness_votes: ['aggroed', 'blocktrades'],
@@ -60,6 +61,7 @@ const accounts = {
         key_auths: [[utilsT.userData.encryptKeys.owner, 1]],
       } as AuthorityType,
       memo_key: utilsT.userData.encryptKeys.memo,
+      witnesses_voted_for: 2,
     } as ExtendedAccount,
   ],
   extendedAccountJustAuth: [
