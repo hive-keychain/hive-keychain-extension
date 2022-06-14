@@ -1,7 +1,7 @@
 import { Token } from '@interfaces/tokens.interface';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { loadTokens, loadTokensMarket } from '@popup/actions/token.actions';
+import { loadTokens } from '@popup/actions/token.actions';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -14,9 +14,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens-settings.component.scss';
 
 const TokensSettings = ({
-  activeAccount,
   tokens,
-  navigateToWithParams,
   loadTokens,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
@@ -128,7 +126,6 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   navigateToWithParams,
-  loadTokensMarket,
   loadTokens,
   setTitleContainerProperties,
 });
