@@ -15,6 +15,11 @@ const button = {
     tokens: 'action-button-tokens',
     governance: 'action-button-gov.',
   },
+  dropdownMenu: {
+    item: {
+      shoppingCart: 'dropdown-menu-item-shopping_cart',
+    },
+  },
 };
 const input = {
   password: 'password-input',

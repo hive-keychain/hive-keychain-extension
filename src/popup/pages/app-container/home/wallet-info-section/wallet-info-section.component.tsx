@@ -64,12 +64,21 @@ const WalletInfoSection = ({
     event: any,
     menuItems: DropdownMenuItemInterface[],
   ) => {
+    console.log('fired toggleDropdown!');
     event.stopPropagation();
     setDisplayDropdown(!displayDropdown);
-    setDropdownPosition({
-      x: event.target.offsetLeft + 10,
-      y: event.target.offsetParent.offsetTop + 32,
-    });
+    //workaround
+    if (event.target.offsetLeft && event.target.offsetParent) {
+      setDropdownPosition({
+        x: event.target.offsetLeft + 10,
+        y: event.target.offsetParent.offsetTop + 32,
+      });
+    } else {
+      setDropdownPosition({
+        x: 0 + 10,
+        y: 0 + 32,
+      });
+    }
 
     setDropdownItems(menuItems);
   };
