@@ -182,3 +182,9 @@ describe('home.component tests:\n', () => {
     it.todo('Must show governance page when clicking on governance');
   });
 });
+
+//TODO after finishing home component.
+// go by alphabetic order to each inner component, considering all the cases, mocking all the necessary data + functions.
+// the ones no need to test:
+// - action-section
+// - select-account-section

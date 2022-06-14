@@ -1,9 +1,6 @@
-import { navigateTo } from '@popup/actions/navigation.actions';
 import App from '@popup/App';
-import { Screen } from '@reference-data/screen.enum';
-import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
-import React, { FC } from 'react';
-import { Provider } from 'react-redux';
+import { act, cleanup, screen, waitFor } from '@testing-library/react';
+import React from 'react';
 import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
@@ -11,10 +8,7 @@ import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
 import { userEventPendingTimers } from 'src/__tests__/utils-for-testing/end-to-end-events';
 import mocks from 'src/__tests__/utils-for-testing/end-to-end-mocks';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-import {
-  getFakeStore,
-  RootState,
-} from 'src/__tests__/utils-for-testing/fake-store';
+import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
 
 const chrome = require('chrome-mock');
@@ -368,28 +362,33 @@ describe('add-account-main.component tests:\n', () => {
   });
 
   describe('add-by-auth tests:\n', () => {
-    const fakeStore = getFakeStore({
-      mk: mk,
-      accounts: accounts,
-    } as RootState);
-    const wrapperStore: FC<{ children: React.ReactNode }> = ({ children }) => {
-      return <Provider store={fakeStore}>{children}</Provider>;
-    };
-    beforeEach(() => {
+    let menuSettings: HTMLElement;
+    let accountsMenu: HTMLElement;
+    let addPersonMenu: HTMLElement;
+    let addByAuthButton: HTMLElement;
+    beforeEach(async () => {
       AccountUtils.hasStoredAccounts = jest.fn().mockResolvedValue(true);
-    });
-    it('Must show error trying to add existing account', async () => {
-      render(<App />, { wrapper: wrapperStore });
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: accounts } as RootState,
+      });
       await act(async () => {
         jest.runOnlyPendingTimers();
       });
-      //dispatch a navigate action straight to add-account-main.component.tsx
+      menuSettings = await screen.findByLabelText(al.button.menu);
       await act(async () => {
-        await fakeStore.dispatch<any>(
-          navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
-        );
+        await userEventPendingTimers.click(menuSettings);
       });
-      const addByAuthButton = await screen.findByLabelText(al.button.addByAuth);
+      accountsMenu = screen.getByLabelText(al.button.menuSettingsPeople);
+      await act(async () => {
+        await userEventPendingTimers.click(accountsMenu);
+      });
+      addPersonMenu = screen.getByLabelText(al.button.menuSettingsPersonAdd);
+      await act(async () => {
+        await userEventPendingTimers.click(addPersonMenu);
+      });
+    });
+    it('Must show error trying to add existing account', async () => {
+      addByAuthButton = screen.getByLabelText(al.button.addByAuth);
       await act(async () => {
         await userEventPendingTimers.click(addByAuthButton);
       });
@@ -416,17 +415,7 @@ describe('add-account-main.component tests:\n', () => {
       });
     });
     it('Must show error with empty username and authorized account', async () => {
-      render(<App />, { wrapper: wrapperStore });
-      await act(async () => {
-        jest.runOnlyPendingTimers();
-      });
-      //dispatch a navigate action straight to add-account-main.component.tsx
-      await act(async () => {
-        await fakeStore.dispatch<any>(
-          navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
-        );
-      });
-      const addByAuthButton = await screen.findByLabelText(al.button.addByAuth);
+      addByAuthButton = screen.getByLabelText(al.button.addByAuth);
       await act(async () => {
         await userEventPendingTimers.click(addByAuthButton);
       });
@@ -439,17 +428,7 @@ describe('add-account-main.component tests:\n', () => {
       });
     });
     it('Must show error if account not present in local accounts', async () => {
-      render(<App />, { wrapper: wrapperStore });
-      await act(async () => {
-        jest.runOnlyPendingTimers();
-      });
-      //dispatch a navigate action straight to add-account-main.component.tsx
-      await act(async () => {
-        await fakeStore.dispatch<any>(
-          navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
-        );
-      });
-      const addByAuthButton = await screen.findByLabelText(al.button.addByAuth);
+      addByAuthButton = screen.getByLabelText(al.button.addByAuth);
       await act(async () => {
         await userEventPendingTimers.click(addByAuthButton);
       });
@@ -471,20 +450,10 @@ describe('add-account-main.component tests:\n', () => {
       });
     });
     it('Must show error if account not found on hive', async () => {
-      render(<App />, { wrapper: wrapperStore });
-      await act(async () => {
-        jest.runOnlyPendingTimers();
-      });
-      //dispatch a navigate action straight to add-account-main.component.tsx
-      await act(async () => {
-        await fakeStore.dispatch<any>(
-          navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
-        );
-      });
       HiveUtils.getClient().database.getAccounts = jest
         .fn()
         .mockResolvedValue([]);
-      const addByAuthButton = await screen.findByLabelText(al.button.addByAuth);
+      addByAuthButton = screen.getByLabelText(al.button.addByAuth);
       await act(async () => {
         await userEventPendingTimers.click(addByAuthButton);
       });
@@ -508,17 +477,7 @@ describe('add-account-main.component tests:\n', () => {
       });
     });
     it('Must show error if account is not authorized', async () => {
-      render(<App />, { wrapper: wrapperStore });
-      await act(async () => {
-        jest.runOnlyPendingTimers();
-      });
-      //dispatch a navigate action straight to add-account-main.component.tsx
-      await act(async () => {
-        await fakeStore.dispatch<any>(
-          navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
-        );
-      });
-      const addByAuthButton = await screen.findByLabelText(al.button.addByAuth);
+      addByAuthButton = screen.getByLabelText(al.button.addByAuth);
       await act(async () => {
         await userEventPendingTimers.click(addByAuthButton);
       });
@@ -540,17 +499,7 @@ describe('add-account-main.component tests:\n', () => {
       });
     });
     it('Must add account auth and navigate to settings main page', async () => {
-      render(<App />, { wrapper: wrapperStore });
-      await act(async () => {
-        jest.runOnlyPendingTimers();
-      });
-      //dispatch a navigate action straight to add-account-main.component.tsx
-      await act(async () => {
-        await fakeStore.dispatch<any>(
-          navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, false),
-        );
-      });
-      const addByAuthButton = await screen.findByLabelText(al.button.addByAuth);
+      addByAuthButton = screen.getByLabelText(al.button.addByAuth);
       await act(async () => {
         await userEventPendingTimers.click(addByAuthButton);
       });
