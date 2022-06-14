@@ -104,16 +104,6 @@ const MyDelegationItem = ({
     }
   };
 
-  const cancelLeaseRequest = async () => {
-    addToLoadingList('popup_html_lease_market_cancel_request');
-    if (await LeaseMarketUtils.cancelLeaseRequest(lease, activeAccount)) {
-      setSuccessMessage('popup_html_delegation_request_cancel_success');
-    } else {
-      setErrorMessage('popup_html_delegation_request_cancel_failed');
-    }
-    removeFromLoadingList('popup_html_lease_market_cancel_request');
-  };
-
   return (
     <div className="my-delegation-item lease-item">
       <div className="left-panel">
@@ -129,6 +119,11 @@ const MyDelegationItem = ({
           )}{' '}
           {currencyLabels.hp}
         </div>
+        <div className="delegation-payout">
+          {chrome.i18n.getMessage('popup_html_lease_market_daily_payout')} :{' '}
+          {FormatUtils.withCommas(lease.dailyPay)}{' '}
+          {currencyLabels[lease.currency]}
+        </div>
         <div className="remaining-days">
           {chrome.i18n.getMessage('popup_html_lease_market_remaining_days', [
             lease.remainingPayments.toString(),
@@ -136,13 +131,11 @@ const MyDelegationItem = ({
         </div>
       </div>
       <div className="right-panel">
-        {
-          <div className={`status-chip ${lease.status}`}>
-            {chrome.i18n.getMessage(
-              `popup_html_delegation_request_status_${lease.status}`,
-            )}
-          </div>
-        }
+        <div className={`status-chip ${lease.status}`}>
+          {chrome.i18n.getMessage(
+            `popup_html_delegation_request_status_${lease.status}`,
+          )}
+        </div>
         <div className="button-panel">
           {lease.creator !== activeAccount.name! &&
             lease.status === LeaseStatus.ACTIVE && (
@@ -150,14 +143,6 @@ const MyDelegationItem = ({
                 {chrome.i18n.getMessage(
                   'popup_html_delegation_request_undelegate',
                 )}
-              </div>
-            )}
-          {lease.status === LeaseStatus.PENDING &&
-            lease.creator === activeAccount.name && (
-              <div
-                className="delegate-undelegate-button"
-                onClick={cancelLeaseRequest}>
-                {chrome.i18n.getMessage('popup_html_delegation_request_cancel')}
               </div>
             )}
         </div>

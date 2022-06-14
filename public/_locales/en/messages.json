@@ -2489,5 +2489,9 @@
   "popup_html_lease_market_delegation_from": {
     "message": "From @$1",
     "description": "my lease item delegation from"
+  },
+  "popup_html_refresh_in": {
+    "message": "Refresh in $1 seconds",
+    "description": "my lease item delegation from"
   }
 }

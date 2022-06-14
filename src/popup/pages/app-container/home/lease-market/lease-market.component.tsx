@@ -14,6 +14,8 @@ import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import { LeaseMarketUtils } from 'src/utils/lease-market.utils';
 import './lease-market.component.scss';
 
+const REFRESH_INTERVAL = 15;
+
 const LeaseMarket = ({
   activeAccount,
   setTitleContainerProperties,
@@ -21,6 +23,7 @@ const LeaseMarket = ({
   const [myDelegations, setMyDelegations] = useState<Lease[]>();
   const [myLeases, setMyLeases] = useState<Lease[]>();
   const [leaseMarket, setLeaseMarket] = useState<Lease[]>();
+  const [refreshCountdown, setRefreshCountdown] = useState<number>(0);
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_lease_market',
@@ -28,6 +31,22 @@ const LeaseMarket = ({
     });
     initLeaseMarket();
   }, []);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      let newCountdown = refreshCountdown + 1;
+
+      setRefreshCountdown(newCountdown);
+      if (newCountdown === REFRESH_INTERVAL) {
+        initLeaseMarket();
+        setRefreshCountdown(0);
+      }
+    }, 1000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [refreshCountdown]);
 
   const initLeaseMarket = async () => {
     const allLeases = await LeaseMarketUtils.downloadAllLeases();
@@ -55,6 +74,19 @@ const LeaseMarket = ({
       <div className="introduction">
         {chrome.i18n.getMessage('popup_html_lease_market_introduction')}
       </div>
+      {/* <ProgressBar
+        completed={refreshCountdown}
+        maxCompleted={REFRESH_INTERVAL}
+        customLabel={chrome.i18n.getMessage('popup_html_refresh_in', [
+          (REFRESH_INTERVAL - refreshCountdown).toString(),
+        ])}
+        labelAlignment={'outside'}
+        transitionTimingFunction="linear"
+        height="4px"
+        bgColor="#a3112a"
+        className="progress-bar-container"
+        labelClassName="label"
+      /> */}
       <Tabs>
         <TabList>
           <Tab>
