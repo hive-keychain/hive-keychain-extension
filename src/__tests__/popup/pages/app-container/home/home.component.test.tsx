@@ -3,7 +3,8 @@ import KeychainApi from '@api/keychain';
 import App from '@popup/App';
 import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { createEvent } from '@testing-library/user-event/dist/types/event/createEvent';
 import React from 'react';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -158,7 +159,7 @@ describe('home.component tests:\n', () => {
   describe('dropdown arrow menu on hive tests:\n', () => {
     //TODO: skipped as I cannot handle that error.
     // -> after finishing all of them, check if is possible to add just one render/state on the first before each.
-    it.skip('Must open transfer funds page when clicking on send hive', async () => {
+    it('Must open transfer funds page when clicking on send hive', async () => {
       customRender(<App />, {
         initialState: { mk: mk, accounts: accounts } as RootState,
       });
@@ -166,9 +167,21 @@ describe('home.component tests:\n', () => {
       let dropDownMenu = screen.getByLabelText(
         al.dropdown.arrow.hive,
       ) as HTMLImageElement;
-      await act(async () => {
-        await userEventPendingTimers.click(dropDownMenu);
+      //alternative method
+      const initObject = {};
+      Object.defineProperty(initObject, 'offsetParent', {
+        value: { offsetTop: 10 },
+        writable: false,
       });
+      const customEvent = createEvent('click', dropDownMenu, initObject);
+      act(() => {
+        fireEvent(dropDownMenu, customEvent);
+      });
+      //end alternative method
+      // await act(async () => {
+      //   await userEventPendingTimers.click(dropDownMenu);
+      // });
+
       expect(screen.getByText('yolo')).toBeDefined();
     });
     it.todo('Must open power up page when clicking on power up');

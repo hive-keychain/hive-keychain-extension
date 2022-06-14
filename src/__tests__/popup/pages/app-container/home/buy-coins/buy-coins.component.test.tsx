@@ -3,7 +3,7 @@ import { BuyCoinType } from '@popup/pages/app-container/home/buy-coins/buy-coin-
 import { BuyCoinsListItem } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { RootState } from '@popup/store';
 import '@testing-library/jest-dom';
-import { act, cleanup, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
@@ -77,6 +77,17 @@ describe('buy-coins.component tests:\n', () => {
     await act(async () => {
       await userEventPendingTimers.click(buyHiveButton);
     });
+    //alternative method
+    act(() => {
+      fireEvent(
+        buyHiveButton,
+        new MouseEvent('click', {
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+    });
+    //end alternative method
     const linksFound = screen.getAllByRole('link');
     let index = 0;
     BuyCoinsListItem(BuyCoinType.BUY_HIVE).map((category) => {
