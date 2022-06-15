@@ -3,8 +3,8 @@ import KeychainApi from '@api/keychain';
 import App from '@popup/App';
 import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, screen } from '@testing-library/react';
-import { createEvent } from '@testing-library/user-event/dist/types/event/createEvent';
+import { act, cleanup, screen } from '@testing-library/react';
+//import { createEvent } from '@testing-library/user-event/dist/types/event/createEvent';
 import React from 'react';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -157,8 +157,8 @@ describe('home.component tests:\n', () => {
     });
   });
   describe('dropdown arrow menu on hive tests:\n', () => {
-    //TODO: skipped as I cannot handle that error.
-    // -> after finishing all of them, check if is possible to add just one render/state on the first before each.
+    //TODO: maybe is a good idea to keep the conditional or just evaluate if that's really needed
+    // as the position of the dropdown menu will always be set by its parent(span clickeable)
     it('Must open transfer funds page when clicking on send hive', async () => {
       customRender(<App />, {
         initialState: { mk: mk, accounts: accounts } as RootState,
@@ -167,25 +167,54 @@ describe('home.component tests:\n', () => {
       let dropDownMenu = screen.getByLabelText(
         al.dropdown.arrow.hive,
       ) as HTMLImageElement;
-      //alternative method
-      const initObject = {};
-      Object.defineProperty(initObject, 'offsetParent', {
-        value: { offsetTop: 10 },
-        writable: false,
+      await act(async () => {
+        await userEventPendingTimers.click(dropDownMenu);
       });
-      const customEvent = createEvent('click', dropDownMenu, initObject);
-      act(() => {
-        fireEvent(dropDownMenu, customEvent);
+      let sendButton = screen.getByLabelText(al.dropdown.span.send);
+      await act(async () => {
+        await userEventPendingTimers.click(sendButton);
       });
-      //end alternative method
-      // await act(async () => {
-      //   await userEventPendingTimers.click(dropDownMenu);
-      // });
-
-      expect(screen.getByText('yolo')).toBeDefined();
+      expect(
+        screen.getByLabelText(al.component.transfersFundsPage),
+      ).toBeDefined();
     });
-    it.todo('Must open power up page when clicking on power up');
-    it.todo('Must load buy HIVE options when clicking on buy');
+    it('Must open power up page when clicking on power up', async () => {
+      HiveUtils.getClient().database.getVestingDelegations = jest
+        .fn()
+        .mockResolvedValue(utilsT.fakeGetDelegateesResponse);
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: accounts } as RootState,
+      });
+      expect(await screen.findByText(mk)).toBeDefined();
+      let dropDownMenu = screen.getByLabelText(
+        al.dropdown.arrow.hive,
+      ) as HTMLImageElement;
+      await act(async () => {
+        await userEventPendingTimers.click(dropDownMenu);
+      });
+      let powerUpButton = screen.getByLabelText(al.dropdown.span.powerUp);
+      await act(async () => {
+        await userEventPendingTimers.click(powerUpButton);
+      });
+      expect(screen.getByLabelText(al.component.powerUpDownPage)).toBeDefined();
+    });
+    it('Must load buy HIVE options when clicking on buy', async () => {
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: accounts } as RootState,
+      });
+      expect(await screen.findByText(mk)).toBeDefined();
+      let dropDownMenu = screen.getByLabelText(
+        al.dropdown.arrow.hive,
+      ) as HTMLImageElement;
+      await act(async () => {
+        await userEventPendingTimers.click(dropDownMenu);
+      });
+      let buyButton = screen.getByLabelText(al.dropdown.span.buy);
+      await act(async () => {
+        await userEventPendingTimers.click(buyButton);
+      });
+      expect(screen.getByLabelText(al.component.buyCoinsPage)).toBeDefined();
+    });
     it.todo('Must show convert page when clicking convert');
     it.todo('Must show hive savings page when clicking on saving');
   });

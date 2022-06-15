@@ -62,6 +62,7 @@ const accounts = {
       } as AuthorityType,
       memo_key: utilsT.userData.encryptKeys.memo,
       witnesses_voted_for: 2,
+      vesting_shares: new Asset(10000, 'VESTS'),
     } as ExtendedAccount,
   ],
   extendedAccountJustAuth: [

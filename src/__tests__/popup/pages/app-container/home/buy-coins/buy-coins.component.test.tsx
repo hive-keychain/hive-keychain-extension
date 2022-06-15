@@ -64,6 +64,7 @@ afterEach(() => {
   cleanup();
 });
 describe('buy-coins.component tests:\n', () => {
+  //TODO: finish all of this.
   it('Must show the list of exchanges', async () => {
     const arrowMenu = screen.getByLabelText(
       al.dropdown.arrow.hive,

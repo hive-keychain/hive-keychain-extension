@@ -39,6 +39,8 @@ const component = {
   walletItemList: 'wallet-item-list',
   userTokens: 'my-tokens',
   governancePage: 'governance-page',
+  powerUpDownPage: 'power-up-page',
+  buyCoinsPage: 'buy-coins-page',
 };
 const logo = {
   loading: 'loading-logo',
@@ -61,6 +63,11 @@ const dropdown = {
     hive: 'dropdown-arrow-hive',
     hbd: 'dropdown-arrow-hbd',
     hp: 'dropdown-arrow-hp',
+  },
+  span: {
+    send: 'dropdown-menu-item-send',
+    powerUp: 'dropdown-menu-item-arrow_upward',
+    buy: 'dropdown-menu-item-shopping_cart',
   },
 };
 
