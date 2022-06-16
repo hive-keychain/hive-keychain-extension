@@ -223,7 +223,7 @@ const Delegations = ({
   };
 
   return (
-    <div className="delegations-page">
+    <div className="delegations-page" aria-label="delegations-page">
       <div className="text">
         {chrome.i18n.getMessage('popup_html_delegations_text')}
       </div>

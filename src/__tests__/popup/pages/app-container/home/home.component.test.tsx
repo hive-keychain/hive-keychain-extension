@@ -1,16 +1,12 @@
-import { hsc } from '@api/hiveEngine';
 import KeychainApi from '@api/keychain';
 import App from '@popup/App';
 import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
-//import { createEvent } from '@testing-library/user-event/dist/types/event/createEvent';
 import React from 'react';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
-import TransactionUtils from 'src/utils/transaction.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
@@ -62,6 +58,27 @@ beforeEach(() => {
   mocks.mocksTopBar({
     hasReward: false,
   });
+  mocks.mocksPowerUp({
+    getVestingDelegations: jest
+      .fn()
+      .mockResolvedValue(utilsT.fakeGetDelegateesResponse),
+  });
+  mocks.mocksDelegations({
+    getDelegators: jest.fn().mockResolvedValue({
+      data: utilsT.fakeGetDelegatorsResponse,
+    }),
+  });
+  mocks.mocksWalletHistory({
+    getAccountTransactions: jest
+      .fn()
+      .mockResolvedValue(utilsT.expectedDataGetAccountHistory),
+  });
+  mocks.mocksTokens({
+    getAllTokens: jest.fn().mockResolvedValue(utilsT.fakeTokensResponse),
+    getUserBalance: jest
+      .fn()
+      .mockResolvedValue(utilsT.fakeGetUserBalanceResponse),
+  });
 });
 afterEach(() => {
   jest.runOnlyPendingTimers();
@@ -69,18 +86,16 @@ afterEach(() => {
   cleanup();
 });
 describe('home.component tests:\n', () => {
-  it('Must load the homepage and display active username', async () => {
+  beforeEach(async () => {
     customRender(<App />, {
       initialState: { mk: mk, accounts: accounts } as RootState,
     });
     expect(await screen.findByText(mk)).toBeDefined();
+  });
+  it('Must load the homepage and display active username', async () => {
     expect(screen.getByLabelText(al.component.homePage));
   });
   it('Must change active account to the selected one', async () => {
-    customRender(<App />, {
-      initialState: { mk: mk, accounts: accounts } as RootState,
-    });
-    expect(await screen.findByText(mk)).toBeDefined();
     const dropdownSelect = screen.getByLabelText(al.select.accountSelector);
     await act(async () => {
       await userEventPendingTimers.click(dropdownSelect);
@@ -95,11 +110,8 @@ describe('home.component tests:\n', () => {
     expect(screen.getByText(utilsT.userData2.username)).toBeDefined();
   });
   it('Must refresh data when click on logo', async () => {
-    customRender(<App />, {
-      initialState: { mk: mk, accounts: accounts } as RootState,
-    });
     const imageRefresh = await screen.findByLabelText(al.icon.refreshHome);
-    //reMocks
+    //reMocking
     HiveUtils.getClient().database.getAccounts = jest
       .fn()
       .mockResolvedValue(fakeData.accounts.extendedAccountMinVariant);
@@ -111,7 +123,7 @@ describe('home.component tests:\n', () => {
       getPrices: fakeData.prices,
       getAccountValue: updatedAccountValue,
     });
-    //end reMocks
+    //end reMocking
     await act(async () => {
       await userEventPendingTimers.click(imageRefresh);
       jest.advanceTimersByTime(4300);
@@ -122,9 +134,6 @@ describe('home.component tests:\n', () => {
     ).toBeDefined();
   });
   it('Must log out user when clicking on log out', async () => {
-    customRender(<App />, {
-      initialState: { mk: mk, accounts: accounts } as RootState,
-    });
     const selectedAccountDiv = await screen.findByLabelText(
       al.div.selectedAccount,
     );
@@ -137,11 +146,7 @@ describe('home.component tests:\n', () => {
     expect(screen.getByLabelText(al.button.login)).toBeDefined();
   });
   it('Must show menu settings', async () => {
-    customRender(<App />, {
-      initialState: { mk: mk, accounts: accounts } as RootState,
-    });
-    expect(await screen.findByText(mk)).toBeDefined();
-    const menuSettings = screen.getByLabelText('clickable-settings');
+    const menuSettings = screen.getByLabelText(al.button.menu);
     await act(async () => {
       await userEventPendingTimers.click(menuSettings);
     });
@@ -157,19 +162,15 @@ describe('home.component tests:\n', () => {
     });
   });
   describe('dropdown arrow menu on hive tests:\n', () => {
-    //TODO: maybe is a good idea to keep the conditional or just evaluate if that's really needed
-    // as the position of the dropdown menu will always be set by its parent(span clickeable)
-    it('Must open transfer funds page when clicking on send hive', async () => {
-      customRender(<App />, {
-        initialState: { mk: mk, accounts: accounts } as RootState,
-      });
-      expect(await screen.findByText(mk)).toBeDefined();
+    beforeEach(async () => {
       let dropDownMenu = screen.getByLabelText(
         al.dropdown.arrow.hive,
       ) as HTMLImageElement;
       await act(async () => {
         await userEventPendingTimers.click(dropDownMenu);
       });
+    });
+    it('Must open transfer funds page when clicking on send hive', async () => {
       let sendButton = screen.getByLabelText(al.dropdown.span.send);
       await act(async () => {
         await userEventPendingTimers.click(sendButton);
@@ -179,19 +180,6 @@ describe('home.component tests:\n', () => {
       ).toBeDefined();
     });
     it('Must open power up page when clicking on power up', async () => {
-      HiveUtils.getClient().database.getVestingDelegations = jest
-        .fn()
-        .mockResolvedValue(utilsT.fakeGetDelegateesResponse);
-      customRender(<App />, {
-        initialState: { mk: mk, accounts: accounts } as RootState,
-      });
-      expect(await screen.findByText(mk)).toBeDefined();
-      let dropDownMenu = screen.getByLabelText(
-        al.dropdown.arrow.hive,
-      ) as HTMLImageElement;
-      await act(async () => {
-        await userEventPendingTimers.click(dropDownMenu);
-      });
       let powerUpButton = screen.getByLabelText(al.dropdown.span.powerUp);
       await act(async () => {
         await userEventPendingTimers.click(powerUpButton);
@@ -199,42 +187,94 @@ describe('home.component tests:\n', () => {
       expect(screen.getByLabelText(al.component.powerUpDownPage)).toBeDefined();
     });
     it('Must load buy HIVE options when clicking on buy', async () => {
-      customRender(<App />, {
-        initialState: { mk: mk, accounts: accounts } as RootState,
-      });
-      expect(await screen.findByText(mk)).toBeDefined();
-      let dropDownMenu = screen.getByLabelText(
-        al.dropdown.arrow.hive,
-      ) as HTMLImageElement;
-      await act(async () => {
-        await userEventPendingTimers.click(dropDownMenu);
-      });
       let buyButton = screen.getByLabelText(al.dropdown.span.buy);
       await act(async () => {
         await userEventPendingTimers.click(buyButton);
       });
       expect(screen.getByLabelText(al.component.buyCoinsPage)).toBeDefined();
     });
-    it.todo('Must show convert page when clicking convert');
-    it.todo('Must show hive savings page when clicking on saving');
+    it('Must show convert page when clicking convert', async () => {
+      let buyButton = screen.getByLabelText(al.dropdown.span.convert);
+      await act(async () => {
+        await userEventPendingTimers.click(buyButton);
+      });
+      expect(screen.getByLabelText(al.component.conversionPage)).toBeDefined();
+    });
+    it('Must show hive savings page when clicking on savings', async () => {
+      let buyButton = screen.getByLabelText(al.dropdown.span.savings);
+      await act(async () => {
+        await userEventPendingTimers.click(buyButton);
+      });
+      expect(screen.getByLabelText(al.component.savingsPage)).toBeDefined();
+    });
   });
-  describe.skip('dropdown arrow menu on hbd tests:\n', () => {
-    it.todo('Must open transfer funds page when clicking on send hbd');
-    it.todo('Must load buy HBD options when clicking on buy');
-    it.todo('Must show convert page when clicking convert');
-    it.todo('Must show hbd savings page when clicking savings');
+  describe('dropdown arrow menu on hbd tests:\n', () => {
+    beforeEach(async () => {
+      let dropDownMenu = screen.getByLabelText(
+        al.dropdown.arrow.hbd,
+      ) as HTMLImageElement;
+      await act(async () => {
+        await userEventPendingTimers.click(dropDownMenu);
+      });
+    });
+    it('Must open transfer funds page when clicking on send hbd', async () => {
+      let sendButton = screen.getByLabelText(al.dropdown.span.send);
+      await act(async () => {
+        await userEventPendingTimers.click(sendButton);
+      });
+      expect(
+        screen.getByLabelText(al.component.transfersFundsPage),
+      ).toBeDefined();
+    });
+    it('Must load buy HBD options when clicking on buy', async () => {
+      let buyButton = screen.getByLabelText(al.dropdown.span.buy);
+      await act(async () => {
+        await userEventPendingTimers.click(buyButton);
+      });
+      expect(screen.getByLabelText(al.component.buyCoinsPage)).toBeDefined();
+    });
+    it('Must show convert page when clicking convert', async () => {
+      let buyButton = screen.getByLabelText(al.dropdown.span.convert);
+      await act(async () => {
+        await userEventPendingTimers.click(buyButton);
+      });
+      expect(screen.getByLabelText(al.component.conversionPage)).toBeDefined();
+    });
+    it('Must show hbd savings page when clicking savings', async () => {
+      let buyButton = screen.getByLabelText(al.dropdown.span.savings);
+      await act(async () => {
+        await userEventPendingTimers.click(buyButton);
+      });
+      expect(screen.getByLabelText(al.component.savingsPage)).toBeDefined();
+    });
   });
-  describe.skip('dropdown arrow menu on hp tests:\n', () => {
-    it.todo('Must show delegations page when clicking convert');
-    it.todo('Must show power down page when clicking power down');
+  describe('dropdown arrow menu on hp tests:\n', () => {
+    beforeEach(async () => {
+      let dropDownMenu = screen.getByLabelText(
+        al.dropdown.arrow.hp,
+      ) as HTMLImageElement;
+      await act(async () => {
+        await userEventPendingTimers.click(dropDownMenu);
+      });
+    });
+    it('Must show delegations page when clicking delegations', async () => {
+      let delegationButton = screen.getByLabelText(
+        al.dropdown.span.delegations,
+      );
+      await act(async () => {
+        await userEventPendingTimers.click(delegationButton);
+      });
+      expect(screen.getByLabelText(al.component.delegationsPage)).toBeDefined();
+    });
+    it('Must show power down page when clicking power down', async () => {
+      let powerDownButton = screen.getByLabelText(al.dropdown.span.powerDown);
+      await act(async () => {
+        await userEventPendingTimers.click(powerDownButton);
+      });
+      expect(screen.getByLabelText(al.component.powerUpDownPage)).toBeDefined();
+    });
   });
   describe('action buttons menu tests:\n', () => {
-    beforeEach(async () => {
-      customRender(<App />, {
-        initialState: { mk: mk, accounts: accounts } as RootState,
-      });
-      expect(await screen.findByText(mk)).toBeDefined();
-    });
     it('Must open transfer funds page when clicking on send', async () => {
       let actionButtonSend = screen.getByLabelText(al.button.actionBtn.send);
       await act(async () => {
@@ -248,9 +288,6 @@ describe('home.component tests:\n', () => {
       let actionButtonHistory = screen.getByLabelText(
         al.button.actionBtn.history,
       );
-      TransactionUtils.getAccountTransactions = jest
-        .fn()
-        .mockResolvedValue(utilsT.expectedDataGetAccountHistory);
       await act(async () => {
         await userEventPendingTimers.click(actionButtonHistory);
         jest.runAllTimers();
@@ -263,10 +300,6 @@ describe('home.component tests:\n', () => {
       let actionButtonTokens = screen.getByLabelText(
         al.button.actionBtn.tokens,
       );
-      hsc.find = jest.fn().mockResolvedValue(utilsT.fakeTokensResponse);
-      HiveEngineUtils.getUserBalance = jest
-        .fn()
-        .mockResolvedValue(utilsT.fakeGetUserBalanceResponse);
       await act(async () => {
         await userEventPendingTimers.click(actionButtonTokens);
         jest.runAllTimers();

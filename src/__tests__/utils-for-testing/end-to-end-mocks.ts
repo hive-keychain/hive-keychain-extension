@@ -1,3 +1,5 @@
+import { hsc } from '@api/hiveEngine';
+import KeychainApi from '@api/keychain';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { AutoLockType } from '@interfaces/autolock.interface';
@@ -7,18 +9,21 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
+import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import RpcUtils from 'src/utils/rpc.utils';
+import TransactionUtils from 'src/utils/transaction.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 //TODO is it possible to try the following:
 // add default values and parameters as parameter?
 // so they won't be needed all the time but rather use a default value
 // so the final call will be smaller, even with a predefined values.
+//REMOVE the mocks doubled names :S
 
 const getValuefromLS = (...args: any[]) => {
   if (args[0] === LocalStorageKeyEnum.AUTOLOCK) {
@@ -37,6 +42,27 @@ const i18nGetMessage = (message: string) => {
     return messagesJsonFile[message].message;
   }
   return message + ' check as not found on jsonFile.';
+};
+
+const mocksTokens = (toUse: {
+  getAllTokens: jest.Mock;
+  getUserBalance: jest.Mock;
+}) => {
+  hsc.find = toUse.getAllTokens;
+  HiveEngineUtils.getUserBalance = toUse.getUserBalance;
+};
+
+const mocksWalletHistory = (toUse: { getAccountTransactions: jest.Mock }) => {
+  TransactionUtils.getAccountTransactions = toUse.getAccountTransactions;
+};
+
+const mocksDelegations = (toUse: { getDelegators: jest.Mock }) => {
+  KeychainApi.get = toUse.getDelegators;
+};
+
+const mocksPowerUp = (toUse: { getVestingDelegations: jest.Mock }) => {
+  HiveUtils.getClient().database.getVestingDelegations =
+    toUse.getVestingDelegations;
 };
 
 const mocksTopBar = (toUse: { hasReward: boolean }) => {
@@ -120,6 +146,10 @@ const mocks = {
   mocksApp,
   mocksHome,
   mocksTopBar,
+  mocksPowerUp,
+  mocksDelegations,
+  mocksWalletHistory,
+  mocksTokens,
   getValuefromLS,
   i18nGetMessage,
 };

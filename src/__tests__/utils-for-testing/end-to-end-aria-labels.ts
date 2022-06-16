@@ -41,6 +41,9 @@ const component = {
   governancePage: 'governance-page',
   powerUpDownPage: 'power-up-page',
   buyCoinsPage: 'buy-coins-page',
+  conversionPage: 'conversion-page',
+  savingsPage: 'savings-page',
+  delegationsPage: 'delegations-page',
 };
 const logo = {
   loading: 'loading-logo',
@@ -68,6 +71,10 @@ const dropdown = {
     send: 'dropdown-menu-item-send',
     powerUp: 'dropdown-menu-item-arrow_upward',
     buy: 'dropdown-menu-item-shopping_cart',
+    convert: 'dropdown-menu-item-currency_exchange',
+    savings: 'dropdown-menu-item-savings',
+    delegations: 'dropdown-menu-item-swap_horiz',
+    powerDown: 'dropdown-menu-item-arrow_downward',
   },
 };
 

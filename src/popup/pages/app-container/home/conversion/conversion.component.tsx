@@ -133,7 +133,7 @@ const Conversion = ({
   };
 
   return (
-    <div className="conversion-page">
+    <div className="conversion-page" aria-label="conversion-page">
       <AvailableCurrentPanelComponent
         available={available}
         availableCurrency={currency}
