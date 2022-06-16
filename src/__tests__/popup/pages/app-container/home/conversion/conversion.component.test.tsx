@@ -2,6 +2,7 @@ import App from '@popup/App';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen } from '@testing-library/react';
 import React from 'react';
+import HiveUtils from 'src/utils/hive.utils';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
 import { userEventPendingTimers } from 'src/__tests__/utils-for-testing/end-to-end-events';
@@ -16,7 +17,7 @@ jest.setTimeout(10000);
 const mk = fakeData.mk.userData1;
 const accounts = fakeData.accounts.twoAccounts;
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.useFakeTimers('legacy');
   act(() => {
     jest.advanceTimersByTime(4300);
@@ -72,6 +73,10 @@ beforeEach(() => {
       .fn()
       .mockResolvedValue(utilsT.fakeGetUserBalanceResponse),
   });
+  customRender(<App />, {
+    initialState: { mk: mk, accounts: accounts } as RootState,
+  });
+  expect(await screen.findByText(mk)).toBeDefined();
 });
 afterEach(() => {
   jest.runOnlyPendingTimers();
@@ -81,11 +86,7 @@ afterEach(() => {
 
 describe('conversion.component tests:\n', () => {
   describe('HIVE to HBD:\n', () => {
-    it('Must show error if wrong requested value', async () => {
-      customRender(<App />, {
-        initialState: { mk: mk, accounts: accounts } as RootState,
-      });
-      expect(await screen.findByText(mk)).toBeDefined();
+    beforeEach(async () => {
       await act(async () => {
         await userEventPendingTimers.click(
           screen.getByLabelText(al.dropdown.arrow.hive),
@@ -96,6 +97,8 @@ describe('conversion.component tests:\n', () => {
           screen.getByLabelText(al.dropdown.span.convert),
         );
       });
+    });
+    it('Must show error if wrong requested value', async () => {
       await act(async () => {
         await userEventPendingTimers.type(
           screen.getByLabelText(al.input.amount),
@@ -112,26 +115,227 @@ describe('conversion.component tests:\n', () => {
         screen.getByText(fakeData.messages.error.greaterThan),
       ).toBeInTheDocument();
     });
+    it('Must show confirmation page and after cancel go back', async () => {
+      await act(async () => {
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.amount),
+          '500',
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.submit),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByLabelText(al.component.confirmationPage),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.dialog.cancel),
+        );
+      });
+      expect(
+        screen.getByLabelText(al.component.conversionPage),
+      ).toBeInTheDocument();
+    });
+    it('Must navigate to home page after successful conversion and show message', async () => {
+      //TODO: question to cedric, do we need to test also that the amount has decreased/increased??
+      await act(async () => {
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.amount),
+          '500',
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.submit),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByLabelText(al.component.confirmationPage),
+      ).toBeInTheDocument();
+      HiveUtils.convertOperation = jest.fn().mockResolvedValue(true);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.dialog.confirm),
+        );
+        jest.runAllTimers();
+      });
+      expect(screen.getByLabelText(al.component.homePage)).toBeInTheDocument();
+      expect(
+        screen.getByText(fakeData.messages.success.convertion.hive),
+      ).toBeInTheDocument();
+    });
+    it('Must set convertion value to max when pressing to max button', async () => {
+      const amountInputDefault = screen.getByLabelText(
+        al.input.amount,
+      ) as HTMLInputElement;
+      expect(amountInputDefault.value).toBe('0');
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.setToMax),
+        );
+      });
+      const amountInput = (await screen.findByLabelText(
+        al.input.amount,
+      )) as HTMLInputElement;
+      expect(amountInput.value).toBe('1000');
+    });
+    it('Must show error if convertion fails', async () => {
+      await act(async () => {
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.amount),
+          '500',
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.submit),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByLabelText(al.component.confirmationPage),
+      ).toBeInTheDocument();
+      HiveUtils.convertOperation = jest.fn().mockResolvedValue(false);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.dialog.confirm),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByText(fakeData.messages.error.conversion.hive),
+      ).toBeInTheDocument();
+    });
+  });
+  describe('HBD to HIVE:\n', () => {
+    beforeEach(async () => {
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.dropdown.arrow.hbd),
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.dropdown.span.convert),
+        );
+      });
+    });
+    it('Must show error if wrong requested value', async () => {
+      await act(async () => {
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.amount),
+          '2000',
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.submit),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByText(fakeData.messages.error.greaterThan),
+      ).toBeInTheDocument();
+    });
+    it('Must show confirmation page and after cancel go back', async () => {
+      await act(async () => {
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.amount),
+          '500',
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.submit),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByLabelText(al.component.confirmationPage),
+      ).toBeInTheDocument();
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.dialog.cancel),
+        );
+      });
+      expect(
+        screen.getByLabelText(al.component.conversionPage),
+      ).toBeInTheDocument();
+    });
+    it('Must navigate to home page after successful conversion and show message', async () => {
+      await act(async () => {
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.amount),
+          '500',
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.submit),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByLabelText(al.component.confirmationPage),
+      ).toBeInTheDocument();
+      HiveUtils.convertOperation = jest.fn().mockResolvedValue(true);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.dialog.confirm),
+        );
+        jest.runAllTimers();
+      });
+      expect(screen.getByLabelText(al.component.homePage)).toBeInTheDocument();
+      expect(
+        screen.getByText(fakeData.messages.success.convertion.hbd),
+      ).toBeInTheDocument();
+    });
+    it('Must set convertion value to max when pressing to max button', async () => {
+      const amountInputDefault = screen.getByLabelText(
+        al.input.amount,
+      ) as HTMLInputElement;
+      expect(amountInputDefault.value).toBe('0');
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.setToMax),
+        );
+      });
+      const amountInput = (await screen.findByLabelText(
+        al.input.amount,
+      )) as HTMLInputElement;
+      expect(amountInput.value).toBe('1000');
+    });
+    it('Must show error if convertion fails', async () => {
+      await act(async () => {
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.amount),
+          '500',
+        );
+      });
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.submit),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByLabelText(al.component.confirmationPage),
+      ).toBeInTheDocument();
+      HiveUtils.convertOperation = jest.fn().mockResolvedValue(false);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.dialog.confirm),
+        );
+        jest.runAllTimers();
+      });
+      expect(
+        screen.getByText(fakeData.messages.error.conversion.hbd),
+      ).toBeInTheDocument();
+    });
   });
 });
-
-//handleButtonClick
-// Types of convertions:
-// 1. CONVERT_HBD_TO_HIVE
-// cases:
-// - asked value is greater than available:
-//      Must show error if not enough HBD (popup_html_power_up_down_error)
-// - Succesful case as onSetToMaxClicked={setToMax}
-// - Successful HBD2HIVE convertion case 1, adding the amount:
-//      - Load confirmation page with the data.
-//      - mock HiveUtils.convertOperation as succesfull => true.
-//      - after success will navigate to HOME_PAGE
-//      - setSuccessMessage as (popup_html_hbd_to_hive_conversion_success)
-// - Failed HBD2HIVE convertion:
-//      - Load confirmation page with the data.
-//      - mock HiveUtils.convertOperation as failed => false.
-//      - after failing will stay on actual page, i think
-//      - setErrorMessage as (popup_html_hbd_to_hive_conversion_fail)
-// 2. CONVERT_HIVE_TO_HBD
-// cases:
-//  - ideam as previous but using hive2hbd.

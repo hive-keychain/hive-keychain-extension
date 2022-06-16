@@ -20,6 +20,11 @@ const button = {
       shoppingCart: 'dropdown-menu-item-shopping_cart',
     },
   },
+  dialog: {
+    cancel: 'dialog_cancel-button',
+    confirm: 'dialog_confirm-button',
+  },
+  setToMax: 'set-to-max-button',
 };
 const input = {
   password: 'password-input',
@@ -45,6 +50,7 @@ const component = {
   conversionPage: 'conversion-page',
   savingsPage: 'savings-page',
   delegationsPage: 'delegations-page',
+  confirmationPage: 'confirmation-page',
 };
 const logo = {
   loading: 'loading-logo',

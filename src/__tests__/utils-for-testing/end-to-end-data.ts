@@ -131,6 +131,16 @@ const messages = {
     incorrectKeyOrPassword: 'Incorrect private key or password.',
     incorrectUser: 'Please check the username and try again.',
     greaterThan: "Value is greater than what's available",
+    conversion: {
+      hive: 'Conversion from HIVE to HBD failed!',
+      hbd: 'Conversion from HBD to HIVE failed!',
+    },
+  },
+  success: {
+    convertion: {
+      hive: 'Conversion from HIVE to HBD successful!',
+      hbd: 'Conversion from HBD to HIVE successful!',
+    },
   },
   introductionText:
     'If you forgot your password, you can clear your data but will have to enter all your keys again.',

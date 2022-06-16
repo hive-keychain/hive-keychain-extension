@@ -150,7 +150,10 @@ const InputComponent = (props: InputProps) => {
             additionalClassName="input-img"></Icon>
         )}
         {props.onSetToMaxClicked && (
-          <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>
+          <span
+            aria-label="set-to-max-button"
+            className="set-to-max-button"
+            onClick={props.onSetToMaxClicked}>
             {chrome.i18n.getMessage('popup_html_send_max')}
           </span>
         )}
