@@ -77,31 +77,28 @@ const MyDelegationItem = ({
       });
     }
 
-    if (lease.status === LeaseStatus.ACTIVE) {
-      navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-        message: chrome.i18n.getMessage(
-          'popup_html_confirm_undelegate_lease_message',
-        ),
-        fields: fields,
-        title: 'popup_html_confirm_undelegate_lease_title',
-        afterConfirmAction: async () => {
-          addToLoadingList('popup_html_lease_market_undelegate');
-          const success = await LeaseMarketUtils.undelegateLease(
-            lease,
-            activeAccount,
-            newDelegation,
-          );
-          if (success) {
-            setSuccessMessage(
-              'popup_html_delegation_request_undelegate_success',
-            );
-          } else {
-            setErrorMessage('popup_html_delegation_request_undelegate_failed');
-          }
-          removeFromLoadingList('popup_html_lease_market_undelegate');
-        },
-      });
-    }
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage(
+        'popup_html_confirm_undelegate_lease_message',
+      ),
+      fields: fields,
+      title: 'popup_html_confirm_undelegate_lease_title',
+      afterConfirmAction: async () => {
+        addToLoadingList('popup_html_lease_market_undelegate');
+        const success = await LeaseMarketUtils.undelegateLease(
+          lease,
+          activeAccount,
+          newDelegation,
+        );
+        if (success) {
+          setSuccessMessage('popup_html_delegation_request_undelegate_success');
+        } else {
+          setErrorMessage('popup_html_delegation_request_undelegate_failed');
+        }
+        removeFromLoadingList('popup_html_lease_market_undelegate');
+        goBack();
+      },
+    });
   };
 
   return (
@@ -124,11 +121,15 @@ const MyDelegationItem = ({
           {FormatUtils.withCommas(lease.dailyPay)}{' '}
           {currencyLabels[lease.currency]}
         </div>
-        <div className="remaining-days">
-          {chrome.i18n.getMessage('popup_html_lease_market_remaining_days', [
-            lease.remainingPayments.toString(),
-          ])}
-        </div>
+        {lease.status === LeaseStatus.ACTIVE &&
+          lease.remainingPayments !== 0 && (
+            <div className="remaining-days">
+              {chrome.i18n.getMessage(
+                'popup_html_lease_market_remaining_days',
+                [lease.remainingPayments.toString()],
+              )}
+            </div>
+          )}
       </div>
       <div className="right-panel">
         <div className={`status-chip ${lease.status}`}>
