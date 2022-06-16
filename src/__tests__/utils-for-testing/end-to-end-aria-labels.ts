@@ -26,6 +26,7 @@ const input = {
   username: 'input-username',
   privateKey: 'input-private-key',
   authorizedAccount: 'input-authorized-account',
+  amount: 'amount-input',
 };
 const component = {
   settingsMainPage: 'settings-main-page-component',

@@ -130,6 +130,7 @@ const messages = {
       'This is a public key! Please enter a private key or your master key.',
     incorrectKeyOrPassword: 'Incorrect private key or password.',
     incorrectUser: 'Please check the username and try again.',
+    greaterThan: "Value is greater than what's available",
   },
   introductionText:
     'If you forgot your password, you can clear your data but will have to enter all your keys again.',
