@@ -664,10 +664,12 @@ const getDelayedTransactionInfo = (trxID: string) => {
 };
 /* istanbul ignore next */
 const getProposalDailyBudget = async () => {
-  return parseFloat(
-    (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
-      .toString()
-      .split(' ')[0],
+  return (
+    parseFloat(
+      (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
+        .toString()
+        .split(' ')[0],
+    ) / 100
   );
 };
 
