@@ -83,7 +83,7 @@ const TokensTransfer = ({
   };
 
   const setAmountToMaxValue = () => {
-    setAmount(parseFloat(balance.toString()));
+    setAmount(balance.toString());
   };
 
   const getFormParams = () => {

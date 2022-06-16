@@ -37,6 +37,7 @@ const CustomJson = (props: Props) => {
       canWhitelist={data.method.toLowerCase() !== KeychainKeyTypesLC.active}>
       {renderUsername()}
       <RequestItem title="dialog_key" content={data.method} />
+      <RequestItem title="dialog_id" content={data.id} />
       <CollaspsibleItem
         title="dialog_data_toggle"
         preContent={data.id}

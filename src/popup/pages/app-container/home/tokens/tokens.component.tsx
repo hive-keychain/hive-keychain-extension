@@ -8,7 +8,11 @@ import {
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { loadTokens, loadUserTokens } from '@popup/actions/token.actions';
+import {
+  loadTokens,
+  loadTokensMarket,
+  loadUserTokens,
+} from '@popup/actions/token.actions';
 import { Icons } from '@popup/icons.enum';
 import { TokenItemComponent } from '@popup/pages/app-container/home/tokens/token-item/token-item.component';
 import { RootState } from '@popup/store';
@@ -18,6 +22,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import { getHiveEngineTokenValue } from 'src/utils/hive-engine.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './tokens.component.scss';
 
@@ -30,7 +35,9 @@ const Tokens = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadTokensMarket,
   loadTokens,
+  market,
 }: PropsFromRedux) => {
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
@@ -46,6 +53,7 @@ const Tokens = ({
   useEffect(() => {
     loadTokens();
     loadHiddenTokens();
+    loadTokensMarket();
     loadUserTokens(activeAccount.name!);
     setTitleContainerProperties({
       title: 'popup_html_tokens',
@@ -56,15 +64,19 @@ const Tokens = ({
   useEffect(() => {
     if (userTokens.loading) {
       addToLoadingList('html_popup_loading_tokens_operation');
-    } else {
-    }
-    removeFromLoadingList('html_popup_loading_tokens_operation');
-    if (userTokens.list) {
+    } else if (userTokens.list && market.length) {
+      removeFromLoadingList('html_popup_loading_tokens_operation');
       setFilteredTokenList(
-        userTokens.list.filter((token) => !hiddenTokens.includes(token.symbol)),
+        userTokens.list
+          .filter((token) => !hiddenTokens.includes(token.symbol))
+          .sort(
+            (a, b) =>
+              getHiveEngineTokenValue(b, market) -
+              getHiveEngineTokenValue(a, market),
+          ),
       );
     }
-  }, [userTokens]);
+  }, [userTokens, market]);
 
   return (
     <div className="tokens-page">
@@ -112,6 +124,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     userTokens: state.userTokens,
     allTokens: state.tokens,
+    market: state.tokenMarket,
   };
 };
 
@@ -123,6 +136,7 @@ const connector = connect(mapStateToProps, {
   removeFromLoadingList,
   setTitleContainerProperties,
   loadTokens,
+  loadTokensMarket,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
