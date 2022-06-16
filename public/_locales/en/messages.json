@@ -1653,6 +1653,10 @@
     "message": "Clear proxy",
     "description": "Governance"
   },
+  "html_popup_set_as_proxy_error": {
+    "message": "Error while setting user as proxy",
+    "description": "Proxy"
+  },
   "html_popup_clear_proxy_error": {
     "message": "Error while removing proxy",
     "description": "Clear proxy error"
