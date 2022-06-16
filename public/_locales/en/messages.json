@@ -1421,15 +1421,15 @@
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_unvote_successful": {
-    "message": "Unvote successful!",
+    "message": "You successfully removed your vote!",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_fail": {
-    "message": "There was an error while voting for proposal. Try again later",
+    "message": "There was an error while voting for a proposal!",
     "description": "Error while voting for proposal"
   },
   "popup_html_proposal_unvote_fail": {
-    "message": "There was an error while unvoting the proposal. Try again later",
+    "message": "There was an error while removing a proposal vote!",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
