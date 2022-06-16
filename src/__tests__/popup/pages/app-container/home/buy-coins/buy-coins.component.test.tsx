@@ -3,7 +3,7 @@ import { BuyCoinType } from '@popup/pages/app-container/home/buy-coins/buy-coin-
 import { BuyCoinsListItem } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { RootState } from '@popup/store';
 import '@testing-library/jest-dom';
-import { act, cleanup, fireEvent, screen } from '@testing-library/react';
+import { act, cleanup, screen } from '@testing-library/react';
 import React from 'react';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
@@ -17,6 +17,10 @@ jest.setTimeout(10000);
 
 const mk = fakeData.mk.userData1;
 const accounts = fakeData.accounts.twoAccounts;
+
+afterAll(() => {
+  jest.clearAllMocks();
+});
 
 beforeEach(async () => {
   jest.useFakeTimers('legacy');
@@ -64,8 +68,7 @@ afterEach(() => {
   cleanup();
 });
 describe('buy-coins.component tests:\n', () => {
-  //TODO: finish all of this.
-  it('Must show the list of exchanges', async () => {
+  it('Must show the list of exchanges for hive', async () => {
     const arrowMenu = screen.getByLabelText(
       al.dropdown.arrow.hive,
     ) as HTMLImageElement;
@@ -78,17 +81,6 @@ describe('buy-coins.component tests:\n', () => {
     await act(async () => {
       await userEventPendingTimers.click(buyHiveButton);
     });
-    //alternative method
-    act(() => {
-      fireEvent(
-        buyHiveButton,
-        new MouseEvent('click', {
-          bubbles: true,
-          cancelable: true,
-        }),
-      );
-    });
-    //end alternative method
     const linksFound = screen.getAllByRole('link');
     let index = 0;
     BuyCoinsListItem(BuyCoinType.BUY_HIVE).map((category) => {
@@ -98,6 +90,26 @@ describe('buy-coins.component tests:\n', () => {
       });
     });
   });
-  it.todo('Clicking on a exchange option must open a new window');
-  it.todo('If error on request, must show error message');
+  it('Must show the list of exchanges for hbd', async () => {
+    const arrowMenu = screen.getByLabelText(
+      al.dropdown.arrow.hbd,
+    ) as HTMLImageElement;
+    await act(async () => {
+      await userEventPendingTimers.click(arrowMenu);
+    });
+    const buyHiveButton = screen.getByLabelText(
+      al.button.dropdownMenu.item.shoppingCart,
+    );
+    await act(async () => {
+      await userEventPendingTimers.click(buyHiveButton);
+    });
+    const linksFound = screen.getAllByRole('link');
+    let index = 0;
+    BuyCoinsListItem(BuyCoinType.BUY_HDB).map((category) => {
+      category.items.map((currElement) => {
+        expect(linksFound[index]).toHaveAttribute('href', currElement.link);
+        index += 1;
+      });
+    });
+  });
 });
