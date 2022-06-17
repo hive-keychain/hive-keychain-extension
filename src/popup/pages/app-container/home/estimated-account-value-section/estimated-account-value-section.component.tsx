@@ -26,6 +26,7 @@ const EstimatedAccountValueSection = ({
       <div className="estimated-account-value-section">
         <div className="label-panel">
           <CustomTooltip
+            ariaLabel="custom-tool-tip"
             message="popup_html_estimation_info_text"
             delayShow={500}
             position="bottom">
@@ -34,7 +35,7 @@ const EstimatedAccountValueSection = ({
             </div>
           </CustomTooltip>
         </div>
-        <div className="value">
+        <div aria-label="estimated-account-div-value" className="value">
           {accountValue ? `$ ${accountValue} USD` : '...'}
         </div>
       </div>

@@ -79,6 +79,7 @@ const select = {
 };
 const div = {
   selectedAccount: 'selected-account-name',
+  estimatedAccountValue: 'estimated-account-div-value',
 };
 const dropdown = {
   arrow: {
@@ -97,6 +98,11 @@ const dropdown = {
   },
 };
 
+const toolTip = {
+  custom: 'custom-tool-tip',
+  content: 'tooltip-content',
+};
+
 const al = {
   button,
   input,
@@ -107,6 +113,7 @@ const al = {
   select,
   div,
   dropdown,
+  toolTip,
 };
 
 export default al;
