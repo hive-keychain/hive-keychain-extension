@@ -20,6 +20,10 @@ import Logger from 'src/utils/logger.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
 
+chrome.runtime.onStartup.addListener(() => {
+  LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
+});
+
 (async () => {
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();

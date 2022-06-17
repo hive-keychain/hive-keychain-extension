@@ -71,7 +71,7 @@ const Home = ({
   return (
     <div className="home-page">
       {!displayLoader && activeRpc && activeRpc.uri !== 'NULL' && (
-        <div>
+        <div aria-label="home-page-component">
           <TopBarComponent />
           <SelectAccountSectionComponent />
           <ResourcesSectionComponent />

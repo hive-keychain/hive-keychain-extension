@@ -735,6 +735,10 @@
     "message": "Proposal IDs",
     "description": "When website request a proposal vote"
   },
+  "dialog_id": {
+    "message": "ID",
+    "description": "When website request a custom json"
+  },
   "dialog_approve": {
     "message": "Approve",
     "description": "When website request a witness vote"
@@ -1248,7 +1252,7 @@
     "message": "You succesfully imported your keys!"
   },
   "import_html_error": {
-    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same password than when you exported the file."
   },
   "import_permissions_html_title": {
     "message": "Import settings"
@@ -1674,7 +1678,7 @@
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
-    "message": "For more information, click here to access witness database",
+    "message": "For more information, click here to access the witness database",
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {

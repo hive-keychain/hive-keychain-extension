@@ -2,7 +2,7 @@
 module.exports = {
   setupFiles: ['dotenv/config'],
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom', //initial was testEnvironment: 'node',
   rootDir: '.',
   testMatch: [
     '**/__tests__/**/*.+(ts|tsx|js)',

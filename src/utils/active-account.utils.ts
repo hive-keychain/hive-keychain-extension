@@ -15,9 +15,10 @@ const saveActiveAccountNameInLocalStorage = (activeAccountName: string) => {
 };
 /* istanbul ignore next */
 const getActiveAccountNameFromLocalStorage = async () => {
-  return await LocalStorageUtils.getValueFromLocalStorage(
+  const account = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
   );
+  return account && account.length ? account : undefined;
 };
 
 const hasReward = (

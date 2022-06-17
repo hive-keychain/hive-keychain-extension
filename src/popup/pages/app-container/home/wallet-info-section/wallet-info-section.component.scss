@@ -4,6 +4,7 @@
   .wallet-info-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 0px;
     align-items: center;
     height: 50px;
     column-gap: 16px;

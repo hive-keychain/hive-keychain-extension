@@ -14,7 +14,7 @@ const RequestTokenBalance = ({ username, amount, currency }: Props) => {
   useEffect(() => {
     hsc
       .find('tokens', 'balances', {
-        username,
+        account: username,
       })
       .then((tokens: any) => {
         const token = tokens.find((e: any) => e.symbol === currency);

@@ -63,7 +63,7 @@ const AddAccountMain = ({
   });
 
   return (
-    <div className="add-account-page">
+    <div className="add-account-page" aria-label="addaccount-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{

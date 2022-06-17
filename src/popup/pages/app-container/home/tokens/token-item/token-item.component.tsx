@@ -128,6 +128,10 @@ const TokenItem = ({
                 src={
                   tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg'
                 }
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null;
+                  currentTarget.src = '/assets/images/hive-engine.svg';
+                }}
               />
               <div className="token-name-issuer">
                 <span className="token-name">{tokenInfo.name}</span>
