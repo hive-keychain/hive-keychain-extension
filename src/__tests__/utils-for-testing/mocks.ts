@@ -7,7 +7,7 @@ import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import ProposalUtils from 'src/utils/proposal.utils';

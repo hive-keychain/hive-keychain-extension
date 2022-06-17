@@ -1,6 +1,6 @@
 import * as mkActions from '@popup/actions/mk.actions';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
