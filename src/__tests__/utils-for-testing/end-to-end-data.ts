@@ -135,12 +135,20 @@ const messages = {
       hive: 'Conversion from HIVE to HBD failed!',
       hbd: 'Conversion from HBD to HIVE failed!',
     },
+    delegations: {
+      incoming:
+        'An error occured while retrieving the incoming delegations. Please try again later.',
+      failed: 'Delegation has failed',
+      failedCancelation: 'Failed to cancel a delegation',
+    },
   },
   success: {
     convertion: {
       hive: 'Conversion from HIVE to HBD successful!',
       hbd: 'Conversion from HBD to HIVE successful!',
     },
+    delegation: 'Delegation successful',
+    delegationCanceled: 'Successfully canceled a delegation',
   },
   introductionText:
     'If you forgot your password, you can clear your data but will have to enter all your keys again.',

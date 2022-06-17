@@ -229,7 +229,10 @@ const Delegations = ({
       </div>
 
       <div className="delegations-summary">
-        <div className="total-incoming" onClick={goToIncomings}>
+        <div
+          aria-label="total-incoming"
+          className="total-incoming"
+          onClick={goToIncomings}>
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
@@ -250,7 +253,10 @@ const Delegations = ({
             </span>
           </div>
         </div>
-        <div className="total-outgoing" onClick={goToOutgoing}>
+        <div
+          aria-label="total-outgoing"
+          className="total-outgoing"
+          onClick={goToOutgoing}>
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_outgoing')}
           </div>
@@ -270,6 +276,7 @@ const Delegations = ({
       </div>
 
       <InputComponent
+        ariaLabel="input-username"
         value={username}
         onChange={setUsername}
         logo={Icons.AT}
@@ -281,6 +288,7 @@ const Delegations = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -293,6 +301,7 @@ const Delegations = ({
       </div>
 
       <OperationButtonComponent
+        ariaLabel="delegate-operation-submit-button"
         label={'popup_html_delegate_to_user'}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}

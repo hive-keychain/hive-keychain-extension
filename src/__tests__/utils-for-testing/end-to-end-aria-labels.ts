@@ -25,6 +25,17 @@ const button = {
     confirm: 'dialog_confirm-button',
   },
   setToMax: 'set-to-max-button',
+  delegations: {
+    total: {
+      incoming: 'total-incoming',
+      outgoing: 'total-outgoing',
+    },
+  },
+  operation: {
+    delegate: {
+      submit: 'delegate-operation-submit-button',
+    },
+  },
 };
 const input = {
   password: 'password-input',
@@ -51,6 +62,7 @@ const component = {
   savingsPage: 'savings-page',
   delegationsPage: 'delegations-page',
   confirmationPage: 'confirmation-page',
+  incomingOutgoingPage: 'incoming-outgoing-page',
 };
 const logo = {
   loading: 'loading-logo',
