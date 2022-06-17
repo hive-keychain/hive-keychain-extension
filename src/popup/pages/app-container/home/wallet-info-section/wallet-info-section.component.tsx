@@ -1,15 +1,12 @@
 import {
   HBDDropdownMenuItems,
   HiveDropdownMenuItems,
-  HpDropdownMenuItems,
+  HpDropdownMenuItems
 } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
+import { WalletInfoSectionItemComponent } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
-import DropdownMenu, {
-  DropdownPosition,
-} from 'src/common-ui/dropdown-menu/dropdown-menu.component';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -20,14 +17,7 @@ const WalletInfoSection = ({
   currencyLabels,
   globalProperties,
 }: PropsFromRedux) => {
-  const [displayDropdown, setDisplayDropdown] = useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState<DropdownPosition>();
-  const [dropdownItems, setDropdownItems] = useState<
-    DropdownMenuItemInterface[]
-  >([]);
-
   const [delegationAmount, setDelegationAmount] = useState('...');
-  const [hasDelegation, setHasDelegations] = useState(false);
 
   useEffect(() => {
     if (activeAccount && !ActiveAccountUtils.isEmpty(activeAccount)) {
@@ -50,50 +40,44 @@ const WalletInfoSection = ({
         globalProperties.globals,
       );
 
-      setHasDelegations(delegation !== 0);
-
-      setDelegationAmount(
-        `${delegation > 0 ? '+' : '-'} ${FormatUtils.withCommas(
-          Math.abs(delegation).toFixed(3),
-        )}`,
-      );
+      setDelegationAmount(`${delegation}`);
     }
   }, [activeAccount]);
 
-  const toggleDropdown = (
-    event: any,
-    menuItems: DropdownMenuItemInterface[],
-  ) => {
-    event.stopPropagation();
-    setDisplayDropdown(!displayDropdown);
-    //workaround
-    if (event.target.offsetLeft && event.target.offsetParent) {
-      setDropdownPosition({
-        x: event.target.offsetLeft + 10,
-        y: event.target.offsetParent.offsetTop + 32,
-      });
-    } else {
-      setDropdownPosition({
-        x: 0 + 10,
-        y: 0 + 32,
-      });
-    }
-
-    setDropdownItems(menuItems);
-  };
-
   return (
-    <div
-      className="wallet-info-section"
-      onClick={() => setDisplayDropdown(false)}>
-      {displayDropdown && dropdownPosition && (
-        <DropdownMenu
-          dropdownMenuItems={dropdownItems}
-          position={dropdownPosition}
-        />
-      )}
+    <div className="wallet-info-section">
+      <WalletInfoSectionItemComponent
+        mainValue={activeAccount.account.balance}
+        mainValueLabel={currencyLabels.hive}
+        subValue={activeAccount.account.savings_balance}
+        subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+        menuItems={HiveDropdownMenuItems}
+      />
+      <WalletInfoSectionItemComponent
+        mainValue={activeAccount.account.hbd_balance}
+        mainValueLabel={currencyLabels.hbd}
+        subValue={activeAccount.account.savings_hbd_balance}
+        subValueLabel={chrome.i18n.getMessage('popup_html_wallet_savings')}
+        menuItems={HBDDropdownMenuItems}
+      />
+      <WalletInfoSectionItemComponent
+        mainValue={FormatUtils.withCommas(
+          FormatUtils.toHP(
+            activeAccount.account.vesting_shares as string,
+            globalProperties.globals,
+          ).toString(),
+        )}
+        mainValueLabel={currencyLabels.hp}
+        subValue={delegationAmount}
+        subValueLabel={
+          chrome.i18n.getMessage('popup_html_delegations').length <= 5
+            ? chrome.i18n.getMessage('popup_html_delegations')
+            : chrome.i18n.getMessage('popup_html_delegations').slice(0, 5) + '.'
+        }
+        menuItems={HpDropdownMenuItems}
+      />
 
-      <div className="wallet-info-row wallet-info-hive">
+      {/* <div className="wallet-info-row wallet-info-hive">
         <div className="value">
           <div className="balance">
             {FormatUtils.formatCurrencyValue(activeAccount.account.balance)}
@@ -198,7 +182,7 @@ const WalletInfoSection = ({
           src="/assets/images/uparrow.png"
           onClick={(event) => toggleDropdown(event, HpDropdownMenuItems)}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

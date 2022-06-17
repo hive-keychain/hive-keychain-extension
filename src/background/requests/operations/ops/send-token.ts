@@ -24,7 +24,7 @@ export const broadcastSendToken = async (
         memo: data.memo,
       },
     });
-    return client.broadcast.json(
+    result = await client.broadcast.json(
       { required_posting_auths: [], required_auths: [data.username], id, json },
       PrivateKey.from(key!),
     );

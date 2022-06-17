@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+VERSION=${1?Error: no version given}
+echo `jq --arg version "$VERSION" '.version=$version' package.json` > package.json
+echo `jq --arg version "$VERSION" '.version=$version' manifests/chromium/manifest.json` > manifests/chromium/manifest.json
+echo `jq --arg version "$VERSION" '.version=$version' manifests/chromium-beta/manifest.json` > manifests/chromium-beta/manifest.json
+echo `jq --arg version "$VERSION" '.version=$version' manifests/firefox/manifest.json` > manifests/firefox/manifest.json
+npx prettier -w package.json manifests/*    
+echo "Bumped to version $VERSION"
+

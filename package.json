@@ -1,20 +1,20 @@
 {
   "name": "hive-keychain",
-  "version": "2.0.4",
+  "version": "2.0.9",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "dev": "npm outdated; concurrently  \"npm:dev:*\"",
+    "dev": "npm outdated; concurrently \"npm:dev:*\"",
     "dev:chromium": "webpack --config webpack/chromium/webpack.dev.js -w",
     "dev:firefox": "webpack --config webpack/firefox/webpack.dev.js -w",
-    "build": "npm outdated; concurrently  \"npm:build:*\"",
+    "build": "npm outdated; concurrently \"npm:build:*\"",
     "build:chromium": "rm -rf ./dist-prod & webpack --config webpack/chromium/webpack.prod.js",
     "build:firefox": "rm -rf ./dist-prod-firefox & webpack --config webpack/firefox/webpack.prod.js",
     "build:beta": "rm -rf ./dist-beta & webpack --config webpack/chromium/webpack.beta.js ; cp dist-beta/assets/images/iconhive-beta.png dist-beta/assets/images/iconhive.png",
-    "analyze": "concurrently  \"npm:analyze:*\"",
+    "analyze": "concurrently \"npm:analyze:*\"",
     "analyze:chromium": "npx webpack --profile --json > stats.json --config webpack/chromium/webpack.prod.js",
     "analyze:firefox": "npx webpack --profile --json > stats.json --config webpack/firefox/webpack.prod.js",
     "crowdin:pull": "crowdin download",
@@ -24,7 +24,7 @@
     "test": "jest --verbose",
     "test:watch": "jest --verbose --watch",
     "test:cov": "jest --verbose --coverage",
-    "test:detect": "jest --verbose --detectOpenHandles"
+    "bump": "scripts/bump-version"
   },
   "repository": {
     "type": "git",
