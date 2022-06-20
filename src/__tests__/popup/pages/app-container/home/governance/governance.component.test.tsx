@@ -224,12 +224,13 @@ describe('governance.component tests:\n', () => {
           await userEventPendingTimers.click(votingIcons[0]);
           //jest.advanceTimersByTime(4300);
         });
-        act(() => {
-          jest.runOnlyPendingTimers();
-        });
-        await waitFor(() => {
-          expect(screen.getByText('yolo')).toBeInTheDocument();
-        });
+        expect(screen.getByText('yolo')).toBeInTheDocument();
+        // act(() => {
+        //   jest.runOnlyPendingTimers();
+        // });
+        // await waitFor(() => {
+        //   expect(screen.getByText('yolo')).toBeInTheDocument();
+        // });
 
         //expect(await screen.findByText('yolo')).toBeInTheDocument();
         // await waitFor(() => {
@@ -266,7 +267,10 @@ describe('governance.component tests:\n', () => {
           al.div.error.witness.tab,
         )) as HTMLDivElement;
         expect(divEl).toBeInTheDocument();
-        expect((await screen.findAllByText(errorMessage)).length).toBe(2);
+        await waitFor(() => {
+          expect(screen.getAllByText(errorMessage).length).toBe(2);
+        });
+        //expect((await screen.findAllByText(errorMessage)).length).toBe(2);
       });
     });
 
