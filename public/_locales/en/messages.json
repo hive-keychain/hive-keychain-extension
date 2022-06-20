@@ -676,7 +676,7 @@
     "description": "on tokens page when trying to send tokens to a non existing user"
   },
   "popup_token_timeout": {
-    "message": "Transaction timed out without response. Please double check your token balance before trying to send again.",
+    "message": "We could not verify this transaction on Hive Engine. This might mean that Hive Engine is behind blocks, wait for the operation to appear in your history, or contact the Hive Engine team on Discord.",
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
