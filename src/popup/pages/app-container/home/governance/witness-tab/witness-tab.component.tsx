@@ -51,6 +51,7 @@ const WitnessTab = ({
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log('init()');
     init();
   }, []);
 
@@ -60,12 +61,14 @@ const WitnessTab = ({
     );
 
     let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
-
+    console.log('proxy as: ', proxy);
     setUsingProxy(proxy !== null);
     initWitnessRanking();
     if (proxy) {
+      console.log('goto initProxyVotes');
       initProxyVotes(proxy);
     } else {
+      console.log('setVotedWitnesses');
       setVotedWitnesses(activeAccount.account.witness_votes);
     }
   };
@@ -92,6 +95,7 @@ const WitnessTab = ({
         );
       }),
     );
+    console.log('passed setFilteredRanking');
   }, [ranking, filterValue, displayVotedOnly, votedWitnesses, hideNonActive]);
 
   const initProxyVotes = async (proxy: string) => {
@@ -102,24 +106,30 @@ const WitnessTab = ({
   };
 
   const initWitnessRanking = async () => {
+    console.log('in initWitnessRanking');
     setLoading(true);
     const requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
+    console.log('requestResult: ', requestResult);
     if (requestResult.data !== '') {
       const ranking = requestResult.data;
       setRanking(ranking);
       setFilteredRanking(ranking);
+      console.log('set Ranking & FilteredRanking');
     } else {
       setErrorMessage('popup_html_error_retrieving_witness_ranking');
       setHasError(true);
+      console.log('Error!!');
     }
     setLoading(false);
   };
 
   const handleVotedButtonClick = async (witness: Witness) => {
+    console.log('handleVoted with: ', witness);
     if (usingProxy) {
       return;
     }
     if (activeAccount.account.witness_votes.includes(witness.name)) {
+      console.log('trying to unvote');
       try {
         addToLoadingList('html_popup_unvote_witness_operation');
         await WitnessUtils.unvoteWitness(witness, activeAccount);
@@ -128,7 +138,9 @@ const WitnessTab = ({
         await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();
+        console.log('passed refreshActiveAccount');
         setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
+        console.log('passed setSuccessMessage with: ', witness.name);
       } catch (err) {
         setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
         Logger.error(err);
@@ -137,6 +149,7 @@ const WitnessTab = ({
         removeFromLoadingList('html_popup_confirm_transaction_operation');
       }
     } else {
+      console.log('trying to vote');
       try {
         addToLoadingList('html_popup_vote_witness_operation');
         await WitnessUtils.voteWitness(witness, activeAccount);
@@ -160,7 +173,10 @@ const WitnessTab = ({
 
   const renderWitnessItem = (witness: Witness) => {
     return (
-      <div className="ranking-item" key={witness.name}>
+      <div
+        aria-label="ranking-item"
+        className="ranking-item"
+        key={witness.name}>
         <div className="rank">
           <div className="active-rank">
             {witness.active_rank ? witness.active_rank : '-'}{' '}
@@ -181,6 +197,7 @@ const WitnessTab = ({
           <div className="witness-name">@{witness.name}</div>
           {witness.url && ValidUrl.isWebUri(witness.url) && (
             <Icon
+              ariaLabel={'link-to-witness-page'}
               onClick={() => chrome.tabs.create({ url: witness.url })}
               name={Icons.OPEN_IN_NEW}
               type={IconType.OUTLINED}
@@ -188,6 +205,7 @@ const WitnessTab = ({
           )}
         </div>
         <Icon
+          ariaLabel="witness-voting-icon"
           additionalClassName={
             'action ' +
             (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
@@ -228,6 +246,7 @@ const WitnessTab = ({
       )}
 
       <div
+        aria-label="link-to-arcange"
         onClick={() =>
           chrome.tabs.create({ url: 'https://hive.arcange.eu/witnesses/' })
         }
@@ -246,6 +265,7 @@ const WitnessTab = ({
         <div className="ranking-container">
           <div className="ranking-filter">
             <InputComponent
+              ariaLabel="input-ranking-filter"
               type={InputType.TEXT}
               placeholder="popup_html_search"
               value={filterValue}
@@ -253,12 +273,14 @@ const WitnessTab = ({
             />
             <div className="switches-panel">
               <CheckboxComponent
+                ariaLabel="switches-panel-witness-voted_only"
                 title="html_popup_witness_display_voted_only"
                 checked={displayVotedOnly}
                 onChange={() => {
                   setDisplayVotedOnly(!displayVotedOnly);
                 }}></CheckboxComponent>
               <CheckboxComponent
+                ariaLabel="switches-panel-witness-hide_inactive"
                 title="html_popup_witness_hide_inactive"
                 checked={hideNonActive}
                 onChange={() => {
@@ -267,7 +289,7 @@ const WitnessTab = ({
             </div>
           </div>
 
-          <div className="ranking">
+          <div aria-label="ranking" className="ranking">
             <FlatList
               list={filteredRanking}
               renderItem={renderWitnessItem}
@@ -275,7 +297,7 @@ const WitnessTab = ({
               renderWhenEmpty={() => {
                 return (
                   hasError && (
-                    <div className="error-witness">
+                    <div aria-label="error-witness" className="error-witness">
                       <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
                       <span>
                         {chrome.i18n.getMessage(

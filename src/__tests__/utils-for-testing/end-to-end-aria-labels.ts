@@ -43,6 +43,9 @@ const input = {
   privateKey: 'input-private-key',
   authorizedAccount: 'input-authorized-account',
   amount: 'amount-input',
+  filter: {
+    ranking: 'input-ranking-filter',
+  },
 };
 const component = {
   settingsMainPage: 'settings-main-page-component',
@@ -69,10 +72,15 @@ const logo = {
 };
 const link = {
   resetPassword: 'reset-password-link',
+  linkToArcange: 'link-to-arcange',
 };
 const icon = {
   arrowBack: 'arrow-back-icon',
   refreshHome: 'top-bar-refresh-icon',
+  witness: {
+    linkToPage: 'link-to-witness-page',
+    voting: 'witness-voting-icon',
+  },
 };
 const select = {
   accountSelector: 'Dropdown select',
@@ -80,6 +88,13 @@ const select = {
 const div = {
   selectedAccount: 'selected-account-name',
   estimatedAccountValue: 'estimated-account-div-value',
+  error: {
+    witness: {
+      tab: 'error-witness',
+    },
+  },
+  ranking: 'ranking',
+  rankingItem: 'ranking-item',
 };
 const dropdown = {
   arrow: {
@@ -97,10 +112,15 @@ const dropdown = {
     powerDown: 'dropdown-menu-item-arrow_downward',
   },
 };
-
 const toolTip = {
   custom: 'custom-tool-tip',
   content: 'tooltip-content',
+};
+const switchesPanel = {
+  witness: {
+    hideInactive: 'switches-panel-witness-hide_inactive',
+    votedOnly: 'switches-panel-witness-voted_only',
+  },
 };
 
 const al = {
@@ -114,6 +134,7 @@ const al = {
   div,
   dropdown,
   toolTip,
+  switchesPanel,
 };
 
 export default al;
