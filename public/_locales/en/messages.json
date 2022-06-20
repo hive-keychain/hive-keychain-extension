@@ -1421,15 +1421,15 @@
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_unvote_successful": {
-    "message": "Unvote successful!",
+    "message": "You successfully removed your vote!",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_fail": {
-    "message": "There was an error while voting for proposal. Try again later",
+    "message": "There was an error while voting for a proposal!",
     "description": "Error while voting for proposal"
   },
   "popup_html_proposal_unvote_fail": {
-    "message": "There was an error while unvoting the proposal. Try again later",
+    "message": "There was an error while removing a proposal vote!",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
@@ -1652,6 +1652,10 @@
   "html_popup_clear_proxy": {
     "message": "Clear proxy",
     "description": "Governance"
+  },
+  "html_popup_set_as_proxy_error": {
+    "message": "Error while setting user as proxy",
+    "description": "Proxy"
   },
   "html_popup_clear_proxy_error": {
     "message": "Error while removing proxy",

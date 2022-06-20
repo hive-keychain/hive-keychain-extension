@@ -73,7 +73,7 @@ const ProposalItem = ({
         setSuccessMessage('popup_html_proposal_vote_successful');
         onVoteUnvoteSuccessful();
       } else {
-        setErrorMessage('popup_html_proposal_vote_successful');
+        setErrorMessage('popup_html_proposal_vote_fail');
       }
       removeFromLoadingList('popup_html_voting_for_proposal');
     }
