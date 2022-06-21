@@ -4,8 +4,8 @@ import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import HiveUtils from 'src/utils/hive.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
@@ -24,7 +24,7 @@ jest.setTimeout(10000);
 const mk = fakeData.mk.userData1;
 const accounts = fakeData.accounts.twoAccounts;
 const arcangeLink = 'https://hive.arcange.eu/witnesses/';
-const initState = { mk: mk, accounts: accounts } as RootState;
+//const initState = { mk: mk, accounts: accounts } as RootState;
 const inactiveKey = 'STM1111111111111111111111111111111114T1Anm';
 const fakeWitnessesRankingWInactive = {
   data: [
@@ -39,6 +39,14 @@ const fakeWitnessesRankingWInactive = {
     },
   ],
 };
+const extendedAccountFullNoProxy = [
+  {
+    ...fakeData.accounts.extendedAccountFull[0],
+    proxy: '',
+    // witness_votes: [],
+    witnesses_voted_for: 0,
+  },
+];
 const onlyActiveWitnesses = fakeWitnessesRankingWInactive.data.filter(
   (item) => item.signing_key !== inactiveKey,
 );
@@ -46,13 +54,14 @@ const onlyActiveWitnesses = fakeWitnessesRankingWInactive.data.filter(
 let customRerender: (
   ui: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
 ) => void;
+let containerRender: HTMLElement;
 let spyChromeTabs: jest.SpyInstance;
-beforeEach(() => {
-  jest.useFakeTimers('legacy');
-  act(() => {
-    jest.advanceTimersByTime(4300);
-  });
-});
+// beforeEach(() => {
+//   // jest.useFakeTimers('legacy');
+//   // act(() => {
+//   //   jest.advanceTimersByTime(4300);
+//   // });
+// });
 afterEach(() => {
   jest.runOnlyPendingTimers();
   jest.useRealTimers();
@@ -66,6 +75,10 @@ describe('governance.component tests:\n', () => {
     describe('No errors at load:\n', () => {
       //Mock all default
       beforeEach(async () => {
+        jest.useFakeTimers('legacy');
+        act(() => {
+          jest.advanceTimersByTime(4300);
+        });
         mockPreset.load(MockPreset.HOMEDEFAULT, mk, accounts).preset;
         //just overwrited for now
         chrome.i18n.getMessage = jest
@@ -77,9 +90,10 @@ describe('governance.component tests:\n', () => {
         ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
         //end overwrited
         spyChromeTabs = jest.spyOn(chrome.tabs, 'create');
-        const { rerender } = customRender(<App />, { initialState: initState });
+        customRender(<App />, {
+          initialState: { mk: mk, accounts: accounts } as RootState,
+        });
         expect(await screen.findByText(mk)).toBeDefined();
-        //customRerender = rerender;
         await act(async () => {
           await userEventPendingTimers.click(
             screen.getByLabelText(al.button.actionBtn.governance),
@@ -87,14 +101,13 @@ describe('governance.component tests:\n', () => {
         });
       });
       it('Must load the governance component, displaying the correct data', async () => {
-        //   await act(async () => {
-        //     await userEventPendingTimers.click(
-        //       screen.getByLabelText(al.button.actionBtn.governance),
-        //     );
-        //   });
-        expect(
-          screen.getByLabelText(al.component.governancePage),
-        ).toBeInTheDocument();
+        act(() => {
+          jest.runOnlyPendingTimers();
+        });
+        const governancePage = await screen.findByLabelText(
+          al.component.governancePage,
+        );
+        expect(governancePage).toBeInTheDocument();
         expect(screen.getAllByRole('tablist').length).toBe(1);
         tabNames.map((tabName) => {
           expect(screen.getByText(tabName)).toBeInTheDocument();
@@ -198,50 +211,74 @@ describe('governance.component tests:\n', () => {
           url: fakeWitnessesRankingWInactive.data[0].url,
         });
       });
-      it('Must unvote for witness, display remaining-votes and show success message', async () => {
-        //  without using proxy
-        let votingIcons: HTMLElement[];
-        await waitFor(() => {
-          votingIcons = screen.getAllByLabelText(al.icon.witness.voting);
+      it.skip('Must show error when unvoting fails', async () => {
+        //TODO why the message gets closed before i can see it??
+        const errorMessage = mocks.i18nGetMessage('popup_error_unvote_wit');
+        WitnessUtils.unvoteWitness = jest.fn().mockImplementation(() => {
+          throw new Error('error_api_witness');
         });
-        //re-mocking
-        //  => popup_success_unvote_wit
+        userEventPendingTimers.click(
+          (await screen.findAllByLabelText(al.icon.witness.voting))[0],
+        );
+      });
+      it.skip('Must show success message unvoting', async () => {
+        //TODO why the message gets closed before i can see it??
+        const sucessMessage = mocks.i18nGetMessage('popup_success_unvote_wit');
         WitnessUtils.unvoteWitness = jest.fn().mockResolvedValue(true);
-        //BlockchainTransactionUtils.delayRefresh = jest.fn();
-        const newFakeExtendedResponse = [
-          {
-            ...fakeData.accounts.extendedAccountFull[0],
-            witness_votes: ['aggroed'],
-            witnesses_voted_for: 1,
-          },
-        ];
-        HiveUtils.getClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(newFakeExtendedResponse);
-        BlockchainTransactionUtils.delayRefresh = jest.fn();
-        //
-        await act(async () => {
-          await userEventPendingTimers.click(votingIcons[0]);
-          //jest.advanceTimersByTime(4300);
+        userEventPendingTimers.click(
+          (await screen.findAllByLabelText(al.icon.witness.voting))[0],
+        );
+        expect(screen.getByLabelText('yolo')).toBeInTheDocument();
+      });
+      it.skip('Must show error when voting fails', async () => {
+        //TODO why the message gets closed before i can see it??
+        const errorMessage = mocks.i18nGetMessage('popup_error_wit');
+        WitnessUtils.voteWitness = jest.fn().mockImplementation(() => {
+          throw new Error('error_api_witness');
         });
-        expect(screen.getByText('yolo')).toBeInTheDocument();
-        // act(() => {
-        //   jest.runOnlyPendingTimers();
-        // });
-        // await waitFor(() => {
-        //   expect(screen.getByText('yolo')).toBeInTheDocument();
-        // });
+        userEventPendingTimers.click(
+          (await screen.findAllByLabelText(al.icon.witness.voting))[4],
+        );
+      });
+      it.skip('Must show sucess message when voting', async () => {
+        //TODO why the message gets closed before i can see it??
+        const errorMessage = mocks.i18nGetMessage('popup_error_wit');
+        WitnessUtils.voteWitness = jest.fn().mockResolvedValue(true);
+        ///
+        act(() => {
+          jest.runOnlyPendingTimers();
+        });
+        expect(screen.getAllByLabelText(al.icon.witness.voting)).toBeDefined();
+        await act(async () => {
+          await userEventPendingTimers.click(
+            screen.getAllByLabelText(al.icon.witness.voting)[4],
+          );
+        });
+        act(() => {
+          jest.runOnlyPendingTimers();
+        });
+        act(() => {
+          jest.runAllTimers();
+        });
+        expect(await screen.findByText(errorMessage)).toBeDefined();
+        ///
 
-        //expect(await screen.findByText('yolo')).toBeInTheDocument();
-        // await waitFor(() => {
-        //   expect(screen.getByText('yolo')).toBeInTheDocument();
+        // const icons = await screen.findAllByLabelText(al.icon.witness.voting);
+        // expect(icons.length).toBe(6);
+        // await act(async () => {
+        //   await userEventPendingTimers.click(icons[4]);
         // });
+        // expect(screen.getByText(errorMessage)).toBeDefined();
       });
     });
 
     describe('With errors on load:\n', () => {
       //Mock all default + overwrite KeychainApi.get to cause error
       beforeEach(async () => {
+        jest.useFakeTimers('legacy');
+        act(() => {
+          jest.advanceTimersByTime(4300);
+        });
         mockPreset.load(MockPreset.HOMEDEFAULT, mk, accounts).preset;
         //just overwrited for now
         chrome.i18n.getMessage = jest
@@ -249,8 +286,10 @@ describe('governance.component tests:\n', () => {
           .mockImplementation(mocks.i18nGetMessageCustom);
         KeychainApi.get = jest.fn().mockResolvedValue({ data: '' });
         //end overwrited
-        spyChromeTabs = jest.spyOn(chrome.tabs, 'create');
-        const { rerender } = customRender(<App />, { initialState: initState });
+        //spyChromeTabs = jest.spyOn(chrome.tabs, 'create');
+        const { rerender } = customRender(<App />, {
+          initialState: { mk: mk, accounts: accounts } as RootState,
+        });
         expect(await screen.findByText(mk)).toBeDefined();
         //customRerender = rerender;
         await act(async () => {
@@ -270,22 +309,85 @@ describe('governance.component tests:\n', () => {
         await waitFor(() => {
           expect(screen.getAllByText(errorMessage).length).toBe(2);
         });
-        //expect((await screen.findAllByText(errorMessage)).length).toBe(2);
       });
     });
 
     //for a new vote
-
-    it.todo('Must show error when unsuccessful vote operation');
-    //  => popup_error_unvote_wit
-    it.todo('Must unvote a witness and show success message');
-    //  => html_popup_unvote_witness_operation
-    it.todo('Must show error when unsuccessful unvote operation');
   });
   describe('Proxy tab:\n', () => {
-    //ProxyUtils.findUserProxy
-    //Just for the homepage initial proxy message
-    it.todo('Must show proxy suggestion after homepage loads');
+    beforeEach(async () => {
+      jest.useFakeTimers('legacy');
+      act(() => {
+        jest.advanceTimersByTime(4300);
+      });
+      mockPreset.load(MockPreset.HOMEDEFAULT, mk, accounts).preset;
+      //just overwrited for now
+      chrome.i18n.getMessage = jest
+        .fn()
+        .mockImplementation(mocks.i18nGetMessageCustom);
+      KeychainApi.get = jest
+        .fn()
+        .mockResolvedValue(fakeWitnessesRankingWInactive);
+      ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
+      HiveUtils.getClient().database.getAccounts = jest
+        .fn()
+        .mockResolvedValue(extendedAccountFullNoProxy);
+      LocalStorageUtils.getValueFromLocalStorage = jest
+        .fn()
+        .mockResolvedValue(null);
+      //ActiveAccountUtils.isEmpty = jest.fn().mockReturnValue(true);
+      //end overwrited
+      spyChromeTabs = jest.spyOn(chrome.tabs, 'create');
+      const { rerender, container } = customRender(<App />, {
+        initialState: { mk: mk, accounts: accounts } as RootState,
+      });
+      //customRerender = rerender;
+      containerRender = container;
+      expect(await screen.findByText(mk)).toBeDefined();
+    });
+    //for proxy-suggestion
+    it('Must show proxy suggestion after homepage loads', async () => {
+      expect(
+        screen.getByLabelText(al.component.proxySuggestion),
+      ).toBeInTheDocument();
+    });
+    it('Must set @keychain as proxy', async () => {
+      WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(true);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.operation.proxySuggestion.ok),
+        );
+      });
+      expect(
+        screen.getByText(
+          mocks.i18nGetMessageCustom('popup_success_proxy', ['keychain']),
+        ),
+      ).toBeInTheDocument();
+    });
+    it('Must close suggestion after clicking close', async () => {
+      //TODO is this kind of cases necessaries?
+      LocalStorageUtils.getValueFromLocalStorage = jest
+        .fn()
+        .mockResolvedValue({ 'keychain.tests': true });
+      LocalStorageUtils.saveValueInLocalStorage = jest.fn();
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.panel.close),
+        );
+      });
+      await waitFor(() => {
+        expect(
+          containerRender.getElementsByClassName('proxy-suggestion hide')
+            .length,
+        ).toBe(1);
+      });
+      // expect(
+      //   screen.queryByLabelText(al.component.proxySuggestion),
+      // ).not.toBeInTheDocument();
+    });
+    it.todo('Must show error if suggestion operations fails by HIVE');
+    it.todo('Must show error if suggestion operations fails by no active key');
+    //END for proxy-suggestion
     it.todo('Must set user proxy as keychain and show message');
     it.todo('Must show error when trying to set keychain as proxy');
     it.todo('Must close suggestion message clicking cancel');

@@ -51,7 +51,6 @@ const WitnessTab = ({
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    console.log('init()');
     init();
   }, []);
 
@@ -61,14 +60,12 @@ const WitnessTab = ({
     );
 
     let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
-    console.log('proxy as: ', proxy);
+
     setUsingProxy(proxy !== null);
     initWitnessRanking();
     if (proxy) {
-      console.log('goto initProxyVotes');
       initProxyVotes(proxy);
     } else {
-      console.log('setVotedWitnesses');
       setVotedWitnesses(activeAccount.account.witness_votes);
     }
   };
@@ -95,7 +92,6 @@ const WitnessTab = ({
         );
       }),
     );
-    console.log('passed setFilteredRanking');
   }, [ranking, filterValue, displayVotedOnly, votedWitnesses, hideNonActive]);
 
   const initProxyVotes = async (proxy: string) => {
@@ -106,30 +102,24 @@ const WitnessTab = ({
   };
 
   const initWitnessRanking = async () => {
-    console.log('in initWitnessRanking');
     setLoading(true);
     const requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
-    console.log('requestResult: ', requestResult);
     if (requestResult.data !== '') {
       const ranking = requestResult.data;
       setRanking(ranking);
       setFilteredRanking(ranking);
-      console.log('set Ranking & FilteredRanking');
     } else {
       setErrorMessage('popup_html_error_retrieving_witness_ranking');
       setHasError(true);
-      console.log('Error!!');
     }
     setLoading(false);
   };
 
   const handleVotedButtonClick = async (witness: Witness) => {
-    console.log('handleVoted with: ', witness);
     if (usingProxy) {
       return;
     }
     if (activeAccount.account.witness_votes.includes(witness.name)) {
-      console.log('trying to unvote');
       try {
         addToLoadingList('html_popup_unvote_witness_operation');
         await WitnessUtils.unvoteWitness(witness, activeAccount);
@@ -138,9 +128,7 @@ const WitnessTab = ({
         await BlockchainTransactionUtils.delayRefresh();
         removeFromLoadingList('html_popup_confirm_transaction_operation');
         refreshActiveAccount();
-        console.log('passed refreshActiveAccount');
         setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
-        console.log('passed setSuccessMessage with: ', witness.name);
       } catch (err) {
         setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
         Logger.error(err);
@@ -149,7 +137,6 @@ const WitnessTab = ({
         removeFromLoadingList('html_popup_confirm_transaction_operation');
       }
     } else {
-      console.log('trying to vote');
       try {
         addToLoadingList('html_popup_vote_witness_operation');
         await WitnessUtils.voteWitness(witness, activeAccount);

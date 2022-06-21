@@ -38,7 +38,6 @@ export const loadActiveAccount =
       const extendedAccount = (
         await HiveUtils.getClient().database.getAccounts([account.name])
       )[0];
-      console.log('extendedAccount: ', extendedAccount);
       dispatch({
         type: ActionType.SET_ACTIVE_ACCOUNT,
         payload: {

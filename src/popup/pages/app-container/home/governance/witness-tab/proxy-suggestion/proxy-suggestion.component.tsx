@@ -66,6 +66,7 @@ const ProxySuggestion = ({
   };
   return (
     <div
+      aria-label="proxy-suggestion"
       className={`proxy-suggestion ${
         isMessageContainerDisplayed || forceClosed ? 'hide' : ''
       }`}>
@@ -74,9 +75,11 @@ const ProxySuggestion = ({
       </div>
       <div className="button-panel">
         <ButtonComponent
+          ariaLabel="button-panel-close"
           label="popup_html_close"
           onClick={handleClose}></ButtonComponent>
         <OperationButtonComponent
+          ariaLabel="operation-ok-button"
           requiredKey={KeychainKeyTypesLC.active}
           onClick={handleSetProxy}
           label={'html_popup_ok'}

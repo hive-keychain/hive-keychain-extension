@@ -35,6 +35,12 @@ const button = {
     delegate: {
       submit: 'delegate-operation-submit-button',
     },
+    proxySuggestion: {
+      ok: 'operation-ok-button',
+    },
+  },
+  panel: {
+    close: 'button-panel-close',
   },
 };
 const input = {
@@ -66,6 +72,7 @@ const component = {
   delegationsPage: 'delegations-page',
   confirmationPage: 'confirmation-page',
   incomingOutgoingPage: 'incoming-outgoing-page',
+  proxySuggestion: 'proxy-suggestion',
 };
 const logo = {
   loading: 'loading-logo',

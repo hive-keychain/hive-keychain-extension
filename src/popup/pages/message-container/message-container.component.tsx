@@ -13,6 +13,7 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const [timeoutId, setTimeoutId] = useState<any>();
   useEffect(() => {
     if (errorMessage.key) {
+      console.log(errorMessage);
       switch (errorMessage.type) {
         case MessageType.ERROR:
           toast.error(
@@ -46,6 +47,7 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const close = () => {
     resetMessage();
     clearTimeout(timeoutId);
+    console.log('toaster closed!');
   };
 
   return (
@@ -54,7 +56,9 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       autoClose={DURATION}
       pauseOnHover
       theme="dark"
-      onClick={() => close()}
+      onClick={() => {
+        close();
+      }}
       closeOnClick={true}
       draggable={false}
       bodyStyle={{ fontSize: '16px', fontFamily: 'Futura', fontWeight: '400' }}
