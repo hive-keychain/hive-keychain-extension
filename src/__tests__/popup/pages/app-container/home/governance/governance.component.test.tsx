@@ -72,7 +72,7 @@ afterEach(() => {
 describe('governance.component tests:\n', () => {
   describe('Witness tab:\n', () => {
     const tabNames = ['Witness', 'Proxy', 'Proposal'];
-    describe('No errors at load:\n', () => {
+    describe('No errors at loading:\n', () => {
       //Mock all default
       beforeEach(async () => {
         jest.useFakeTimers('legacy');
@@ -211,15 +211,24 @@ describe('governance.component tests:\n', () => {
           url: fakeWitnessesRankingWInactive.data[0].url,
         });
       });
-      it.skip('Must show error when unvoting fails', async () => {
+      it('Must show error when unvoting fails', async () => {
         //TODO why the message gets closed before i can see it??
-        const errorMessage = mocks.i18nGetMessage('popup_error_unvote_wit');
+        const errorMessage = mocks.i18nGetMessageCustom(
+          'popup_error_unvote_wit',
+          ['blocktrades'],
+        );
+        console.log(errorMessage);
         WitnessUtils.unvoteWitness = jest.fn().mockImplementation(() => {
           throw new Error('error_api_witness');
         });
         userEventPendingTimers.click(
           (await screen.findAllByLabelText(al.icon.witness.voting))[0],
         );
+
+        await waitFor(() => {
+          console.log('expecting toast to be here');
+          expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        });
       });
       it.skip('Must show success message unvoting', async () => {
         //TODO why the message gets closed before i can see it??

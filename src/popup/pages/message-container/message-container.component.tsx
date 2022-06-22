@@ -16,6 +16,7 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       console.log(errorMessage);
       switch (errorMessage.type) {
         case MessageType.ERROR:
+          console.log('toast opening');
           toast.error(
             chrome.i18n.getMessage(errorMessage.key, errorMessage.params),
           );

@@ -19,7 +19,6 @@ interface CheckboxProps {
 }
 
 const CheckboxComponent = (props: CheckboxProps) => {
-  console.log('props: ', props);
   return (
     <div
       className={`checkbox-container ${
