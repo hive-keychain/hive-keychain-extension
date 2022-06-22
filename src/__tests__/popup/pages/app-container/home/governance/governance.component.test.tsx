@@ -6,6 +6,7 @@ import React from 'react';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
+import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
@@ -212,21 +213,21 @@ describe('governance.component tests:\n', () => {
         });
       });
       it('Must show error when unvoting fails', async () => {
-        //TODO why the message gets closed before i can see it??
         const errorMessage = mocks.i18nGetMessageCustom(
           'popup_error_unvote_wit',
           ['blocktrades'],
         );
-        console.log(errorMessage);
-        WitnessUtils.unvoteWitness = jest.fn().mockImplementation(() => {
-          throw new Error('error_api_witness');
+        BlockchainTransactionUtils.delayRefresh = jest.fn();
+        WitnessUtils.unvoteWitness = jest.fn().mockResolvedValueOnce(false);
+        await act(async () => {
+          await userEventPendingTimers.click(
+            (
+              await screen.findAllByLabelText(al.icon.witness.voting)
+            )[0],
+          );
         });
-        userEventPendingTimers.click(
-          (await screen.findAllByLabelText(al.icon.witness.voting))[0],
-        );
 
         await waitFor(() => {
-          console.log('expecting toast to be here');
           expect(screen.getByText(errorMessage)).toBeInTheDocument();
         });
       });
