@@ -39,4 +39,5 @@ export interface LeaseRequest {
   weeklyPayCurrency: BaseCurrencies;
   duration: number;
   delegationValue: number;
+  totalCost: number;
 }

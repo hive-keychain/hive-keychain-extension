@@ -54,6 +54,7 @@ const CreateLeaseRequestPage = ({
     weeklyPay: 0,
     weeklyPayCurrency: BaseCurrencies.HIVE,
     duration: 0,
+    totalCost: 0,
   });
 
   const options = [
@@ -118,6 +119,8 @@ const CreateLeaseRequestPage = ({
       currencyLabels[leaseRequestForm.weeklyPayCurrency]
     }`;
 
+    leaseRequest.totalCost = totalAmount;
+
     if (leaseRequestForm.weeklyPay < 1) {
       setErrorMessage('popup_html_lease_market_weekly_payout_too_low');
       return;
@@ -126,6 +129,8 @@ const CreateLeaseRequestPage = ({
       setErrorMessage('popup_html_lease_market_duration_too_long');
       return;
     }
+
+    console.log(totalAmount);
 
     if (leaseRequestForm.weeklyPayCurrency === BaseCurrencies.HBD) {
       if (
