@@ -118,7 +118,7 @@ const rpc = {
 const mk = {
   empty: '',
   userData1: utilsT.userData.username,
-  userData2: utilsT.userData.username,
+  userData2: utilsT.userData2.username,
 };
 const messages = {
   wrongPassword: 'Wrong password!',

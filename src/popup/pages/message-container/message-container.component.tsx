@@ -13,10 +13,8 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const [timeoutId, setTimeoutId] = useState<any>();
   useEffect(() => {
     if (errorMessage.key) {
-      console.log(errorMessage);
       switch (errorMessage.type) {
         case MessageType.ERROR:
-          console.log('toast opening');
           toast.error(
             chrome.i18n.getMessage(errorMessage.key, errorMessage.params),
           );
@@ -48,7 +46,6 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
   const close = () => {
     resetMessage();
     clearTimeout(timeoutId);
-    console.log('toaster closed!');
   };
 
   return (
