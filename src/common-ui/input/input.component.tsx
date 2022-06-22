@@ -76,7 +76,7 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
-          aria-label={props.ariaLabel} //modified for testings
+          aria-label={props.ariaLabel}
           className={`${props.hasError ? 'has-error' : ''}`}
           type={
             props.type === InputType.PASSWORD && isPasswordDisplay
@@ -119,6 +119,7 @@ const InputComponent = (props: InputProps) => {
           !props.onSetToMaxClicked &&
           props.value.length > 0 && (
             <Icon
+              ariaLabel="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
               type={IconType.OUTLINED}

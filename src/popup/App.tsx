@@ -35,7 +35,6 @@ import { SignInRouterComponent } from './pages/sign-in/sign-in-router.component'
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
 const App = ({
-  state, //modified for testing to remove ojo
   setMk,
   mk,
   accounts,
@@ -235,7 +234,6 @@ const App = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    state, //modified for testing to remove ojo
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,

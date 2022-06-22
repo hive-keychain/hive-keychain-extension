@@ -279,6 +279,6 @@ const TransactionUtils = {
   getAccountTransactions,
   getLastTransaction,
   decodeMemoIfNeeded,
-}; //modified for testing
+};
 
 export default TransactionUtils;

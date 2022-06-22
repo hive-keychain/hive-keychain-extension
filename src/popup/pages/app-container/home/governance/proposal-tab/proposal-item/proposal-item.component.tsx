@@ -73,7 +73,7 @@ const ProposalItem = ({
         setSuccessMessage('popup_html_proposal_vote_successful');
         onVoteUnvoteSuccessful();
       } else {
-        setErrorMessage('popup_html_proposal_vote_successful');
+        setErrorMessage('popup_html_proposal_vote_fail');
       }
       removeFromLoadingList('popup_html_voting_for_proposal');
     }
@@ -81,16 +81,20 @@ const ProposalItem = ({
 
   return (
     <div
+      aria-label="proposal-item-expandable"
       className={`proposal-item`}
       key={proposal.proposalId}
       onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}>
       <div className="title">
         <div>
-          <span onClick={() => goTo(proposal.link)}>
+          <span
+            aria-label="proposal-item-span-go-to-link"
+            onClick={() => goTo(proposal.link)}>
             #{proposal.id} - {proposal.subject}
           </span>
         </div>
         <Icon
+          ariaLabel="proposal-item-icon-expandable"
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
           additionalClassName={`more ${
@@ -102,6 +106,7 @@ const ProposalItem = ({
         <div className="left-panel">
           <div className="creator">
             <img
+              aria-label="proposal-item-image-go-to-creator"
               onClick={() => goToCreator(proposal.creator)}
               src={`https://images.hive.blog/u/${proposal.creator}/avatar`}
               onError={(e: any) => {
@@ -109,7 +114,9 @@ const ProposalItem = ({
                 e.target.src = '/assets/images/accounts.png';
               }}
             />
-            <span onClick={() => goToCreator(proposal.creator)}>
+            <span
+              aria-label="proposal-item-span-go-to-creator"
+              onClick={() => goToCreator(proposal.creator)}>
               {chrome.i18n.getMessage('popup_html_proposal_by', [
                 proposal.creator,
               ])}
@@ -118,6 +125,7 @@ const ProposalItem = ({
         </div>
         <div className="nb-votes">
           <Icon
+            ariaLabel="proposal-item-icon-vote-unvote"
             onClick={() => toggleSupport(proposal)}
             additionalClassName={
               (proposal.voted ? 'voted' : 'not-voted') +
@@ -152,7 +160,9 @@ const ProposalItem = ({
             <div className="extra-info">
               <div className="value">
                 <Icon name={Icons.ARROW_CIRCLE_UP} type={IconType.OUTLINED} />
-                <div>{proposal.totalVotes}</div>
+                <div aria-label="proposal-item-extra-info-value">
+                  {proposal.totalVotes}
+                </div>
               </div>
               <div>
                 <Icon name={Icons.TIMELAPSE} type={IconType.OUTLINED} />
@@ -176,7 +186,9 @@ const ProposalItem = ({
               </div>
             </div>
           </CustomTooltip>
-          <div className={`funded-chip ${proposal.funded}`}>
+          <div
+            aria-label="proposal-item-extra-info-funded"
+            className={`funded-chip ${proposal.funded}`}>
             {chrome.i18n.getMessage(
               `popup_html_proposal_funded_option_${proposal.funded}`,
             )}

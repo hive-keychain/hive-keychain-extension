@@ -1,11 +1,13 @@
 import KeychainApi from '@api/keychain';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import App from '@popup/App';
+import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
@@ -26,7 +28,6 @@ jest.setTimeout(10000);
 const mk = fakeData.mk.userData1;
 const accounts = fakeData.accounts.twoAccounts;
 const arcangeLink = 'https://hive.arcange.eu/witnesses/';
-//const initState = { mk: mk, accounts: accounts } as RootState;
 const inactiveKey = 'STM1111111111111111111111111111111114T1Anm';
 const fakeWitnessesRankingWInactive = {
   data: [
@@ -45,13 +46,24 @@ const extendedAccountFullNoProxy = [
   {
     ...fakeData.accounts.extendedAccountFull[0],
     proxy: '',
-    // witness_votes: [],
     witnesses_voted_for: 0,
+  },
+];
+const extendedAccountFullWProxy = [
+  {
+    ...fakeData.accounts.extendedAccountFull[0],
+    proxy: 'keychain',
   },
 ];
 const onlyActiveWitnesses = fakeWitnessesRankingWInactive.data.filter(
   (item) => item.signing_key !== inactiveKey,
 );
+
+enum Tab {
+  WITNESS = 0,
+  PROXY = 1,
+  GOVERNANCE = 2,
+}
 
 let customRerender: (
   ui: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
@@ -72,6 +84,12 @@ afterEach(() => {
   spyChromeTabs.mockReset();
 });
 describe('governance.component tests:\n', () => {
+  const gotoTab = async (tab: Tab) => {
+    await userEventPendingTimers.click(
+      screen.getByLabelText(al.button.actionBtn.governance),
+    );
+    await userEventPendingTimers.click(screen.getAllByRole('tab')[tab]);
+  };
   describe('Witness tab:\n', () => {
     const tabNames = ['Witness', 'Proxy', 'Proposal'];
     describe('No errors at loading:\n', () => {
@@ -324,15 +342,9 @@ describe('governance.component tests:\n', () => {
         });
       });
     });
-
-    //for a new vote
   });
-  describe('Proxy tab:\n', () => {
-    beforeEach(async () => {
-      jest.useFakeTimers('legacy');
-      act(() => {
-        jest.advanceTimersByTime(4300);
-      });
+  describe('Proxy section:\n', () => {
+    const mocksDefault = () => {
       mockPreset.load(MockPreset.HOMEDEFAULT, mk, accounts).preset;
       //just overwrited for now
       chrome.i18n.getMessage = jest
@@ -341,87 +353,230 @@ describe('governance.component tests:\n', () => {
       KeychainApi.get = jest
         .fn()
         .mockResolvedValue(fakeWitnessesRankingWInactive);
-      ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
       HiveUtils.getClient().database.getAccounts = jest
         .fn()
         .mockResolvedValue(extendedAccountFullNoProxy);
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(null);
-      //ActiveAccountUtils.isEmpty = jest.fn().mockReturnValue(true);
       //end overwrited
       spyChromeTabs = jest.spyOn(chrome.tabs, 'create');
-      const { rerender, container } = customRender(<App />, {
-        initialState: { mk: mk, accounts: accounts } as RootState,
+    };
+    describe('Empty proxy', () => {
+      beforeEach(async () => {
+        jest.useFakeTimers('legacy');
+        act(() => {
+          jest.advanceTimersByTime(4300);
+        });
+        mocksDefault();
+        ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
+        const { rerender, container } = customRender(<App />, {
+          initialState: { mk: mk, accounts: accounts } as RootState,
+        });
+        //customRerender = rerender;
+        containerRender = container;
+        expect(await screen.findByText(mk)).toBeDefined();
       });
-      //customRerender = rerender;
-      containerRender = container;
-      expect(await screen.findByText(mk)).toBeDefined();
+      describe('Proxy suggestion tests:\n', () => {
+        it('Must show proxy suggestion after homepage loads', async () => {
+          expect(
+            screen.getByLabelText(al.component.proxySuggestion),
+          ).toBeInTheDocument();
+        });
+        it('Must set @keychain as proxy', async () => {
+          const successMessage = mocks.i18nGetMessageCustom(
+            'popup_success_proxy',
+            ['keychain'],
+          );
+          WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(true);
+          await act(async () => {
+            await userEventPendingTimers.click(
+              screen.getByLabelText(al.button.operation.proxySuggestion.ok),
+            );
+          });
+          await waitFor(() => {
+            expect(screen.getByText(successMessage)).toBeInTheDocument();
+          });
+        });
+        it('Must close suggestion after clicking close', async () => {
+          LocalStorageUtils.getValueFromLocalStorage = jest
+            .fn()
+            .mockResolvedValue({ 'keychain.tests': true });
+          LocalStorageUtils.saveValueInLocalStorage = jest.fn();
+          await act(async () => {
+            await userEventPendingTimers.click(
+              screen.getByLabelText(al.button.panel.close),
+            );
+          });
+          await waitFor(() => {
+            expect(
+              containerRender.getElementsByClassName('proxy-suggestion hide')
+                .length,
+            ).toBe(1);
+          });
+        });
+        it('Must show error if suggestion operations fails by HIVE', async () => {
+          const errorMessage = mocks.i18nGetMessageCustom('popup_error_proxy', [
+            'keychain',
+          ]);
+          WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(false);
+          await act(async () => {
+            await userEventPendingTimers.click(
+              screen.getByLabelText(al.button.operation.proxySuggestion.ok),
+            );
+          });
+          await waitFor(() => {
+            expect(screen.getByText(errorMessage)).toBeInTheDocument();
+          });
+        });
+      });
+      describe('Proxy tab tests:\n', () => {
+        beforeEach(async () => {
+          // await act(async () => {
+          //   await userEventPendingTimers.click(
+          //     screen.getByLabelText(al.button.actionBtn.governance),
+          //   );
+          //   await userEventPendingTimers.click(screen.getAllByRole('tab')[1]);
+          // });
+          await gotoTab(Tab.PROXY);
+        });
+        it('Must show intro message', () => {
+          const introMessage = mocks.i18nGetMessageCustom(
+            'html_popup_witness_proxy_definition',
+          );
+          expect(screen.getByText(introMessage.trim())).toBeInTheDocument();
+        });
+        it('Must change the input username when typying', async () => {
+          const usernameInput = screen.getByLabelText(
+            al.input.username,
+          ) as HTMLInputElement;
+          expect(usernameInput.value).toBe('');
+          await act(async () => {
+            await userEventPendingTimers.type(
+              screen.getByLabelText(al.input.username),
+              'keychain',
+            );
+          });
+          expect(usernameInput.value).toBe('keychain');
+        });
+        it('Must clear the input when clicking clear icon', async () => {
+          const usernameInput = screen.getByLabelText(
+            al.input.username,
+          ) as HTMLInputElement;
+          await act(async () => {
+            await userEventPendingTimers.type(
+              screen.getByLabelText(al.input.username),
+              'keychain',
+            );
+          });
+          expect(usernameInput.value).toBe('keychain');
+          await act(async () => {
+            await userEventPendingTimers.click(
+              screen.getByLabelText(al.icon.input.clear),
+            );
+          });
+          expect(usernameInput.value).toBe('');
+        });
+        it('Must set proxy and show message', async () => {
+          const successMessage = mocks.i18nGetMessageCustom(
+            'popup_success_proxy',
+            ['keychain'],
+          );
+          WitnessUtils.setAsProxy = jest.fn().mockResolvedValueOnce(true);
+          await act(async () => {
+            await userEventPendingTimers.type(
+              screen.getByLabelText(al.input.username),
+              'keychain',
+            );
+            await userEventPendingTimers.click(
+              screen.getByLabelText(al.button.operation.proxy.tab.setAsProxy),
+            );
+          });
+          await waitFor(() => {
+            expect(screen.getByText(successMessage)).toBeInTheDocument();
+          });
+        });
+        it('Must show error when set proxy fails', async () => {
+          const errorMessage = mocks.i18nGetMessageCustom(
+            'html_popup_clear_proxy_error',
+          );
+          WitnessUtils.setAsProxy = jest.fn().mockResolvedValueOnce(false);
+          await act(async () => {
+            await userEventPendingTimers.type(
+              screen.getByLabelText(al.input.username),
+              'keychain',
+            );
+            await userEventPendingTimers.click(
+              screen.getByLabelText(al.button.operation.proxy.tab.setAsProxy),
+            );
+          });
+          await waitFor(() => {
+            expect(screen.getByText(errorMessage)).toBeInTheDocument();
+          });
+        });
+      });
     });
-    //for proxy-suggestion
-    it('Must show proxy suggestion after homepage loads', async () => {
-      expect(
-        screen.getByLabelText(al.component.proxySuggestion),
-      ).toBeInTheDocument();
-    });
-    it('Must set @keychain as proxy', async () => {
-      WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(true);
-      await act(async () => {
-        await userEventPendingTimers.click(
-          screen.getByLabelText(al.button.operation.proxySuggestion.ok),
+    describe('Initial proxy', () => {
+      const accountProxy = 'keychain';
+      beforeEach(async () => {
+        jest.useFakeTimers('legacy');
+        act(() => {
+          jest.advanceTimersByTime(4300);
+        });
+        mocksDefault();
+        ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(accountProxy);
+        HiveUtils.getClient().database.getAccounts = jest
+          .fn()
+          .mockResolvedValue(extendedAccountFullWProxy);
+        const { rerender, container } = customRender(<App />, {
+          initialState: { mk: mk, accounts: accounts } as RootState,
+        });
+        //customRerender = rerender;
+        containerRender = container;
+        expect(await screen.findByText(mk)).toBeDefined();
+        await gotoTab(Tab.PROXY);
+      });
+      it('Must show intro message and current proxy account', () => {
+        const introMessage = mocks.i18nGetMessageCustom(
+          'html_popup_witness_has_proxy',
         );
+        expect(screen.getByText(introMessage.trim())).toBeInTheDocument();
+        const divProxyName = screen.getByLabelText(
+          al.div.proxy.name,
+        ) as HTMLDivElement;
+        expect(divProxyName).toHaveTextContent(accountProxy);
       });
-      expect(
-        screen.getByText(
-          mocks.i18nGetMessageCustom('popup_success_proxy', ['keychain']),
-        ),
-      ).toBeInTheDocument();
-    });
-    it('Must close suggestion after clicking close', async () => {
-      LocalStorageUtils.getValueFromLocalStorage = jest
-        .fn()
-        .mockResolvedValue({ 'keychain.tests': true });
-      LocalStorageUtils.saveValueInLocalStorage = jest.fn();
-      await act(async () => {
-        await userEventPendingTimers.click(
-          screen.getByLabelText(al.button.panel.close),
+      it('Must remove proxy and show message', async () => {
+        const successMessage = mocks.i18nGetMessageCustom('bgd_ops_unproxy', [
+          `@${accountProxy}`,
+        ]);
+        WitnessUtils.removeProxy = jest.fn().mockResolvedValueOnce(true);
+        await act(async () => {
+          await userEventPendingTimers.click(
+            screen.getByLabelText(al.button.operation.proxy.tab.clear),
+          );
+        });
+        await waitFor(() => {
+          expect(screen.getByText(successMessage)).toBeInTheDocument();
+        });
+      });
+      it('Must show error trying to clear the proxy', async () => {
+        const errorMessage = mocks.i18nGetMessageCustom(
+          'html_popup_clear_proxy_error',
         );
-      });
-      await waitFor(() => {
-        expect(
-          containerRender.getElementsByClassName('proxy-suggestion hide')
-            .length,
-        ).toBe(1);
-      });
-    });
-    it('Must show error if suggestion operations fails by HIVE', async () => {
-      const errorMessage = mocks.i18nGetMessageCustom('popup_error_proxy', [
-        'keychain',
-      ]);
-      WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(false);
-      await act(async () => {
-        await userEventPendingTimers.click(
-          screen.getByLabelText(al.button.operation.proxySuggestion.ok),
-        );
-      });
-      await waitFor(() => {
-        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        WitnessUtils.removeProxy = jest.fn().mockResolvedValueOnce(false);
+        await act(async () => {
+          await userEventPendingTimers.click(
+            screen.getByLabelText(al.button.operation.proxy.tab.clear),
+          );
+        });
+        await waitFor(() => {
+          expect(screen.getByText(errorMessage)).toBeInTheDocument();
+        });
       });
     });
-    //END for proxy-suggestion
-    it.todo('Must set user proxy as keychain and show message');
-    it.todo('Must show error when trying to set keychain as proxy');
-    it.todo('Must close suggestion message clicking cancel');
-    //END just for the homepage initial proxy message
-    it.todo("Must show actual user's proxy");
-    it.todo('Must remove proxy when clicking on clear proxy');
-    it.todo('Must show error trying to clear the proxy');
-    it.todo('Must show empty as proxy');
-    it.todo('Must set proxy when entering a valid account and show message');
-    it.todo('Must show error if account not valid');
-    it.todo('Must show error if unsuccessful operation');
   });
-  describe('Proxy suggestion error case', () => {
+  describe('No active key cases:\n', () => {
     beforeEach(async () => {
       jest.useFakeTimers('legacy');
       act(() => {
@@ -454,7 +609,13 @@ describe('governance.component tests:\n', () => {
       containerRender = container;
       expect(await screen.findByText(mk)).toBeDefined();
     });
-    it('Must show error if suggestion operations fails by no active key', async () => {
+    // const gotoProxyTab = async () => {
+    //   await userEventPendingTimers.click(
+    //     screen.getByLabelText(al.button.actionBtn.governance),
+    //   );
+    //   await userEventPendingTimers.click(screen.getAllByRole('tab')[1]);
+    // };
+    it('Must show error trying to set keychain as proxy', async () => {
       const errorMessage = mocks.i18nGetMessageCustom('popup_missing_key', [
         KeychainKeyTypesLC.active,
       ]);
@@ -467,17 +628,184 @@ describe('governance.component tests:\n', () => {
         expect(screen.getByText(errorMessage)).toBeInTheDocument();
       });
     });
+    it('Must show error trying to set proxy', async () => {
+      const errorMessage = mocks.i18nGetMessageCustom('popup_missing_key', [
+        KeychainKeyTypesLC.active,
+      ]);
+      await act(async () => {
+        await gotoTab(Tab.PROXY);
+        await userEventPendingTimers.type(
+          screen.getByLabelText(al.input.username),
+          'keychain',
+        );
+        await userEventPendingTimers.click(
+          screen.getByLabelText(al.button.operation.proxy.tab.setAsProxy),
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+      });
+    });
   });
   describe('Proposal tab:\n', () => {
-    it.todo('Must show actual proposals when clicking on tab');
-    it.todo('Must show proposal details when clicking on dropdown icon');
-    it.todo('Must show tooltip as funded when proposal is funded');
-    it.todo(
-      'Must opens a new windows tab when clicking on proposal item title',
-    );
-    //  => calling chrome.tabs.create
-    //voting proposal
-    it.todo('Must vote for proposal and show message');
-    it.todo('Must show error if voting operation unsuccessful');
+    let proposalResponse: Proposal[];
+    let selectedProposal: Proposal;
+    beforeEach(async () => {
+      jest.useFakeTimers('legacy');
+      act(() => {
+        jest.advanceTimersByTime(4300);
+      });
+      proposalResponse = utilsT.expectedResultProposal as Proposal[];
+      proposalResponse[0].voted = true;
+      selectedProposal = proposalResponse[0];
+      mockPreset.load(MockPreset.HOMEDEFAULT, mk, accounts).preset;
+      //just overwrited for now
+      chrome.i18n.getMessage = jest
+        .fn()
+        .mockImplementation(mocks.i18nGetMessageCustom);
+      KeychainApi.get = jest
+        .fn()
+        .mockResolvedValue(fakeWitnessesRankingWInactive);
+      ProxyUtils.findUserProxy = jest.fn().mockResolvedValue('');
+      ProposalUtils.getProposalList = jest
+        .fn()
+        .mockResolvedValue(proposalResponse);
+      //end overwrited
+      spyChromeTabs = jest.spyOn(chrome.tabs, 'create');
+      customRender(<App />, {
+        initialState: { mk: mk, accounts: accounts } as RootState,
+      });
+      expect(await screen.findByText(mk)).toBeDefined();
+      await gotoTab(Tab.GOVERNANCE);
+    });
+    afterEach(() => {
+      cleanup();
+    });
+    //TODO maybe we must mock this as well:
+    // https://images.hive.blog/u/${proposal.creator}/avatar
+    it('Must show actual proposals when clicking on tab', async () => {
+      expect(
+        screen.getAllByLabelText(al.div.proposal.item.expandable).length,
+      ).toBe(utilsT.expectedResultProposal.length);
+    });
+    it('Must show proposal details when clicking on dropdown icon', async () => {
+      expect(
+        screen.queryAllByLabelText(al.div.proposal.extraInfo.value).length,
+      ).toBe(0);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[0],
+        );
+      });
+      const divExtraInfo = screen.queryByLabelText(
+        al.div.proposal.extraInfo.value,
+      ) as HTMLDivElement;
+      expect(divExtraInfo).toHaveTextContent(selectedProposal.totalVotes);
+    });
+    it('Must show tooltip as funded when proposal is funded', async () => {
+      const expectedValue = mocks.i18nGetMessageCustom(
+        `popup_html_proposal_funded_option_${selectedProposal.funded}`,
+      );
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[0],
+        );
+      });
+      const divExtraInfoFunded = screen.queryByLabelText(
+        al.div.proposal.extraInfo.totallyFunded,
+      ) as HTMLDivElement;
+      expect(divExtraInfoFunded).toHaveTextContent(expectedValue);
+    });
+    it('Must open a new window when clicking on image', async () => {
+      const url = { url: `https://peakd.com/@${selectedProposal.creator}` };
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[0],
+        );
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.imageGoToCreator)[0],
+        );
+      });
+      expect(spyChromeTabs).toBeCalledWith(url);
+    });
+    it('Must opens a new windows tab when clicking on proposal item title', async () => {
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[0],
+        );
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.spanGoToLink)[0],
+        );
+      });
+      expect(spyChromeTabs).toBeCalledWith({ url: selectedProposal.link });
+    });
+    it('Must vote for proposal and show message', async () => {
+      const voteMessage = mocks.i18nGetMessageCustom(
+        'popup_html_proposal_vote_successful',
+      );
+      ProposalUtils.voteForProposal = jest.fn().mockResolvedValueOnce(true);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[1],
+        );
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.iconVoteUnvote)[1],
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByText(voteMessage)).toBeInTheDocument();
+      });
+    });
+    it('Must unvote proposal and show message', async () => {
+      const unvoteMessage = mocks.i18nGetMessageCustom(
+        'popup_html_proposal_unvote_successful',
+      );
+      ProposalUtils.unvoteProposal = jest.fn().mockResolvedValueOnce(true);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[0],
+        );
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.iconVoteUnvote)[0],
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByText(unvoteMessage)).toBeInTheDocument();
+      });
+    });
+    it('Must show message if unvote proposal fails', async () => {
+      const errorMessage = mocks.i18nGetMessageCustom(
+        'popup_html_proposal_unvote_fail',
+      );
+      ProposalUtils.unvoteProposal = jest.fn().mockResolvedValueOnce(false);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[0],
+        );
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.iconVoteUnvote)[0],
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+      });
+    });
+    it('Must show error if voting fails', async () => {
+      const errorMessage = mocks.i18nGetMessageCustom(
+        'popup_html_proposal_vote_fail',
+      );
+      ProposalUtils.voteForProposal = jest.fn().mockResolvedValueOnce(false);
+      await act(async () => {
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.expandable)[2],
+        );
+        await userEventPendingTimers.click(
+          screen.getAllByLabelText(al.div.proposal.item.iconVoteUnvote)[2],
+        );
+      });
+      await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+      });
+    });
   });
 });

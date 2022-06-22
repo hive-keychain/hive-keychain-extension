@@ -13,7 +13,6 @@ import './clear-all-data.component.scss';
 const ClearAllData = ({
   setTitleContainerProperties,
   navigateTo,
-  navigation, //modified for testing te remove ojo
   goBack,
 }: PropsFromRedux) => {
   useEffect(() => {
@@ -24,11 +23,8 @@ const ClearAllData = ({
   }, []);
 
   const reset = () => {
-    console.log('about to call clearAllData'); //toremove ojo
     AccountUtils.clearAllData();
     navigateTo(Screen.SIGN_UP_PAGE, true);
-    console.log('it should be on SIGN_UP_PAGE'); //toremove ojo
-    console.log('state.navigation: ', navigation);
   };
 
   return (
@@ -55,10 +51,7 @@ const ClearAllData = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  //modified for testing to remove ojo initially empty {}
-  return {
-    navigation: state.navigation,
-  };
+  return {};
 };
 
 const connector = connect(mapStateToProps, {

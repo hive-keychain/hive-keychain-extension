@@ -95,10 +95,10 @@ const getVotingDollarsPerAccount = (
     return null;
   }
   const vp = getVP(account)! * 100;
-  const rewardBalance = HiveUtils.getRewardBalance(properties); //modified for testing
-  const recentClaims = HiveUtils.getRecentClaims(properties); //modified for testing
-  const hivePrice = HiveUtils.getHivePrice(properties); //modified for testing
-  const votePowerReserveRate = HiveUtils.getVotePowerReserveRate(properties); //modified for testing
+  const rewardBalance = HiveUtils.getRewardBalance(properties);
+  const recentClaims = HiveUtils.getRecentClaims(properties);
+  const hivePrice = HiveUtils.getHivePrice(properties);
+  const votePowerReserveRate = HiveUtils.getVotePowerReserveRate(properties);
 
   if (rewardBalance && recentClaims && hivePrice && votePowerReserveRate) {
     const effective_vesting_shares = Math.round(
@@ -250,9 +250,7 @@ const claimRewards = async (
 ): Promise<boolean> => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
-      //modified for testing
       HiveUtils.getClient().broadcast.sendOperations(
-        //modified for testing
         [
           [
             'claim_reward_balance',
@@ -294,9 +292,7 @@ const claimRewards = async (
 const powerUp = async (from: string, to: string, amount: string) => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
-      //modified for testing
       HiveUtils.getClient().broadcast.sendOperations(
-        //modified for testing
         [
           [
             'transfer_to_vesting',
@@ -321,9 +317,7 @@ const powerUp = async (from: string, to: string, amount: string) => {
 const powerDown = async (username: string, amount: string) => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
-      //modified for testing
       HiveUtils.getClient().broadcast.sendOperations(
-        //modified for testing
         [
           [
             'withdraw_vesting',
