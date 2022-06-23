@@ -1,8 +1,19 @@
-import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
+import {
+  Asset,
+  AuthorityType,
+  ExtendedAccount,
+  VestingDelegation,
+} from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { Delegator } from '@interfaces/delegations.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { TokenBalance } from '@interfaces/tokens.interface';
+import { Transfer } from '@interfaces/transaction.interface';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+
+//TODO find a way to make use of data constructors
+//  and organise this to make it work for previous tests and future tests
 
 const accounts = {
   extendedAccountMin: [
@@ -158,6 +169,200 @@ const messages = {
     'Please save @$1 in Hive Keychain to use it as an authorized account.',
   accountNoAuth: '@$1 does not have authority over @$2.',
 };
+const delegations = {
+  delegatees: [
+    {
+      id: 270663,
+      delegator: 'blocktrades',
+      delegatee: 'buildawhale',
+      vesting_shares: '100.000000 VESTS',
+      min_delegation_time: '2017-09-29T02:19:03',
+    },
+    {
+      id: 933999,
+      delegator: 'blocktrades',
+      delegatee: 'ocdb',
+      vesting_shares: '200.902605 VESTS',
+      min_delegation_time: '2018-05-25T22:14:30',
+    },
+    {
+      id: 1350016,
+      delegator: 'blocktrades',
+      delegatee: 'usainvote',
+      vesting_shares: '300.000000 VESTS',
+      min_delegation_time: '2020-08-16T05:34:33',
+    },
+    {
+      id: 1350016,
+      delegator: 'blocktrades',
+      delegatee: 'usainvote2',
+      vesting_shares: '0 VESTS',
+      min_delegation_time: '2020-08-16T05:34:33',
+    },
+  ] as VestingDelegation[],
+  delegators: [
+    {
+      delegation_date: '2017-08-09T15:30:36.000Z',
+      delegator: 'kriborin',
+      vesting_shares: 31692093.5887,
+    },
+    {
+      delegation_date: '2017-08-09T15:29:42.000Z',
+      delegator: 'kevtorin',
+      vesting_shares: 31691975.1647,
+    },
+    {
+      delegation_date: '2017-08-09T15:31:48.000Z',
+      delegator: 'lessys',
+      vesting_shares: 29188598.7866,
+    },
+  ] as Delegator[],
+};
+const history = {
+  account: {
+    transactions: {
+      transfers: [
+        {
+          from: 'keychain.tests',
+          to: 'workerjab1',
+          amount: '0.001 HIVE',
+          memo: ' Encrypted Memo Test',
+          type: 'transfer',
+          timestamp: '2022-05-20T16:17:48',
+          key: 'keychain.tests!5',
+          index: 5,
+          txId: '990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+          blockNumber: 64544003,
+          url: 'https://hiveblocks.com/tx/990068dbcea15a45b4a0ca6281647d00c6c13c8f',
+          last: false,
+          lastFetched: false,
+        },
+        {
+          from: 'theghost1980',
+          to: 'keychain.tests',
+          amount: '0.100 HIVE',
+          memo: 'Memo.test',
+          type: 'transfer',
+          timestamp: '2022-05-20T16:11:33',
+          key: 'keychain.tests!4',
+          index: 4,
+          txId: '1307e3f32f3ba555d971400c99048e73edbb509d',
+          blockNumber: 64543878,
+          url: 'https://hiveblocks.com/tx/1307e3f32f3ba555d971400c99048e73edbb509d',
+          last: false,
+          lastFetched: false,
+        },
+        {
+          from: 'workerjab1',
+          to: 'keychain.tests',
+          amount: '0.001 HIVE',
+          memo: '',
+          type: 'transfer',
+          timestamp: '2022-05-18T00:36:36',
+          key: 'keychain.tests!1',
+          index: 1,
+          txId: '976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+          blockNumber: 64467698,
+          url: 'https://hiveblocks.com/tx/976a6efa8148d21dee5e120be920d3c3b1ce29ac',
+          last: false,
+          lastFetched: false,
+        },
+      ] as Transfer[],
+    },
+  },
+};
+const tokens = {
+  alltokens: [
+    {
+      _id: 1,
+      issuer: 'null',
+      symbol: 'BEE',
+      name: 'Hive Engine Token',
+      metadata:
+        '{"url":"https://hive-engine.com","icon":"https://s3.amazonaws.com/steem-engine/images/icon_steem-engine_gradient.svg","desc":"BEE is the native token for the Hive Engine platform"}',
+      precision: 8,
+      maxSupply: '9007199254740991.00000000',
+      supply: '2574075.87974928',
+      circulatingSupply: '2119191.15545322',
+      stakingEnabled: true,
+      unstakingCooldown: 40,
+      delegationEnabled: true,
+      undelegationCooldown: 7,
+      numberTransactions: 4,
+      totalStaked: '300754.34540883',
+    },
+    {
+      _id: 2,
+      issuer: 'honey-swap',
+      symbol: 'SWAP.HIVE',
+      name: 'HIVE Pegged',
+      metadata:
+        '{"desc":"HIVE backed by the hive-engine team","url":"https://hive-engine.com","icon":"https://files.peakd.com/file/peakd-hive/aggroed/edUxk8GJ-logo_transparent1.png"}',
+      precision: 8,
+      maxSupply: '9007199254740991.00000000',
+      supply: '9007199254740991.00000000',
+      circulatingSupply: '9007199254740987.85453686',
+      stakingEnabled: false,
+      unstakingCooldown: 1,
+      delegationEnabled: false,
+      undelegationCooldown: 0,
+    },
+    {
+      _id: 3,
+      issuer: 'steemmonsters',
+      symbol: 'ORB',
+      name: 'Essence Orbs',
+      metadata:
+        '{"url":"https://splinterlands.com","icon":"https://s3.amazonaws.com/steemmonsters/website/ui_elements/open_packs/img_essence-orb.png","desc":"Each ORB token represents one, unopened, promotional Splinterlands Essence Orb booster pack."}',
+      precision: 0,
+      maxSupply: '200000',
+      supply: '200000',
+      circulatingSupply: '10185',
+      stakingEnabled: false,
+      unstakingCooldown: 1,
+      delegationEnabled: false,
+      undelegationCooldown: 0,
+    },
+  ] as any[],
+  //TODO; ask quentin what should be the type??
+  user: {
+    balances: [
+      {
+        _id: 13429,
+        account: mk.userData1,
+        symbol: 'LEO',
+        balance: '38.861',
+        stake: '1.060',
+        pendingUnstake: '0',
+        delegationsIn: '0',
+        delegationsOut: '0',
+        pendingUndelegations: '0',
+      },
+      {
+        _id: 115171,
+        account: mk.userData1,
+        symbol: 'BUILDTEAM',
+        balance: '100',
+        stake: '38.87982783',
+        pendingUnstake: '0',
+        delegationsIn: '0',
+        delegationsOut: '0',
+        pendingUndelegations: '0',
+      },
+      {
+        _id: 71441,
+        account: mk.userData1,
+        symbol: 'PAL',
+        balance: '1189.573',
+        stake: '702.466',
+        pendingUnstake: '0',
+        delegationsIn: '0',
+        delegationsOut: '0',
+        pendingUndelegations: '0',
+      },
+    ] as TokenBalance[],
+  },
+};
 
 const fakeData = {
   accounts,
@@ -166,6 +371,9 @@ const fakeData = {
   rpc,
   mk,
   messages,
+  delegations,
+  history,
+  tokens,
 };
 
 export default fakeData;
