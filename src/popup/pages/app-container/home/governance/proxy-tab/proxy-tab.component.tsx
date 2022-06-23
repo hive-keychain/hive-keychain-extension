@@ -38,7 +38,7 @@ const ProxyTab = ({
       setSuccessMessage('popup_success_proxy', [proxyUsername]);
       refreshActiveAccount();
     } else {
-      setErrorMessage('html_popup_clear_proxy_error');
+      setErrorMessage('html_popup_set_as_proxy_error');
     }
     removeFromLoadingList('popup_html_setting_proxy');
   };
