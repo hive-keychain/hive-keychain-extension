@@ -634,12 +634,11 @@ const sendOperationWithConfirmation = async (
   let transaction = null;
   do {
     transaction = await HiveUtils.getClient().transaction.findTransaction(
-      // modified for testing
       transactionConfirmation.id,
     );
-    await sleep(500);
-  } while (transaction.status == 'within_mempool');
-  if (transaction.status == 'within_reversible_block') {
+    await sleep(100);
+  } while (transaction.status === 'within_mempool');
+  if (transaction.status === 'within_reversible_block') {
     Logger.info('Transaction confirmed');
     return transactionConfirmation.id || true;
   } else {
@@ -658,10 +657,12 @@ const getDelayedTransactionInfo = (trxID: string) => {
 };
 /* istanbul ignore next */
 const getProposalDailyBudget = async () => {
-  return parseFloat(
-    (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
-      .toString()
-      .split(' ')[0],
+  return (
+    parseFloat(
+      (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
+        .toString()
+        .split(' ')[0],
+    ) / 100
   );
 };
 
