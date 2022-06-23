@@ -3,15 +3,15 @@ import App from '@popup/App';
 import '@testing-library/jest-dom';
 import { act, cleanup, screen, waitFor } from '@testing-library/react';
 import React from 'react';
+import { overWriteMocks } from 'src/__tests__/utils-for-testing/defaults/overwrite';
 import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
 import { userEventPendingTimers } from 'src/__tests__/utils-for-testing/end-to-end-events';
-import mockPreset, {
-  OverwriteMock,
-} from 'src/__tests__/utils-for-testing/end-to-end-mocks-presets';
+import mockPreset from 'src/__tests__/utils-for-testing/end-to-end-mocks-presets';
+import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
-
+//TODO remove this file or leave it if you need to have a test for the mockings
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 jest.setTimeout(10000);
@@ -66,7 +66,7 @@ it('Must load delegations page, and show error', async () => {
   });
   mockPreset.setOrDefault({});
   //overwrite
-  mockPreset.overWrite({
+  overWriteMocks({
     powerUp: { getVestingDelegations: OW },
     delegations: { getDelegators: OW },
   });

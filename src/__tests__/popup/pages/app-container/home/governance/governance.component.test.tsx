@@ -19,6 +19,7 @@ import mocks from 'src/__tests__/utils-for-testing/end-to-end-mocks';
 import mockPreset, {
   MockPreset,
 } from 'src/__tests__/utils-for-testing/end-to-end-mocks-presets';
+import { Tab } from 'src/__tests__/utils-for-testing/enums/enums';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
@@ -33,7 +34,10 @@ import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
 //    -> separate each section to its own file,
 //      -> subfolder
 //    -> then load that into the place it should be, making the code smaller + more readable.
-//work on the loader preset to add a way to remock or change specific values.
+//TODO add inside /data a new structure for all fake data.
+//    i.e: one file per each:
+//      -> accounts (ideally having only one type of account and a way to construct on the run)
+//            or just use it and spreading as you need.
 //work on e2e data to use one file of each and then spread + change in each test file.
 //change the i18n on all previous tests to use the mocks.i18nGetMessageCustom
 
@@ -73,12 +77,6 @@ const extendedAccountFullWProxy = [
 const onlyActiveWitnesses = fakeWitnessesRankingWInactive.data.filter(
   (item) => item.signing_key !== inactiveKey,
 );
-
-enum Tab {
-  WITNESS = 0,
-  PROXY = 1,
-  GOVERNANCE = 2,
-}
 
 let customRerender: (
   ui: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
