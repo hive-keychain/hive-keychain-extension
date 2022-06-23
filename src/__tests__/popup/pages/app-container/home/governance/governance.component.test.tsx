@@ -1,4 +1,5 @@
 import KeychainApi from '@api/keychain';
+import { ExtendedAccount } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import App from '@popup/App';
 import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
@@ -21,6 +22,20 @@ import mockPreset, {
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
+
+//TODO
+//add the casting on each const and variables used when using the spread to create new oens
+//    -> const varName = {} as Type <-
+//separate into each file for each.
+//  try to separate the main cases, in example:
+//    - load with errors
+//    - load no errors
+//    -> separate each section to its own file,
+//      -> subfolder
+//    -> then load that into the place it should be, making the code smaller + more readable.
+//work on the loader preset to add a way to remock or change specific values.
+//work on e2e data to use one file of each and then spread + change in each test file.
+//change the i18n on all previous tests to use the mocks.i18nGetMessageCustom
 
 const chrome = require('chrome-mock');
 global.chrome = chrome;
@@ -47,7 +62,7 @@ const extendedAccountFullNoProxy = [
     ...fakeData.accounts.extendedAccountFull[0],
     proxy: '',
     witnesses_voted_for: 0,
-  },
+  } as ExtendedAccount,
 ];
 const extendedAccountFullWProxy = [
   {
@@ -90,6 +105,7 @@ describe('governance.component tests:\n', () => {
     );
     await userEventPendingTimers.click(screen.getAllByRole('tab')[tab]);
   };
+
   describe('Witness tab:\n', () => {
     const tabNames = ['Witness', 'Proxy', 'Proposal'];
     describe('No errors at loading:\n', () => {
