@@ -74,6 +74,7 @@ it('Must load delegations page, and show error', async () => {
     initialState: { mk: mk, accounts: accounts } as RootState,
   });
   expect(await screen.findByText(mk)).toBeDefined();
+  //mockPreset.setOrDefault({ app: { getCurrentRpc: { uri: '', testnet: false } }});
   await act(async () => {
     await userEventPendingTimers.click(
       screen.getByLabelText(al.dropdown.arrow.hp),

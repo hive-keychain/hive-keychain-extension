@@ -25,6 +25,8 @@ import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
 
 //TODO
+// TODO: create an arrow function as await userClicks([al1, al2, ...]) so you can reduce this kind of calls
+//            -> place this on e2e-events.
 //add the casting on each const and variables used when using the spread to create new oens
 //    -> const varName = {} as Type <-
 //separate into each file for each.
