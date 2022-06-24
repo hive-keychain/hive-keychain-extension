@@ -141,7 +141,6 @@ describe('conversion.component tests:\n', () => {
       ).toBeInTheDocument();
     });
     it('Must navigate to home page after successful conversion and show message', async () => {
-      //TODO: question to cedric, do we need to test also that the amount has decreased/increased??
       await act(async () => {
         await userEventPendingTimers.type(
           screen.getByLabelText(al.input.amount),

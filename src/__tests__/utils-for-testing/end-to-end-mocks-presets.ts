@@ -24,7 +24,6 @@ export enum MockPreset {
   HOMEDEFAULT = 'home-default',
   ERRORDELEGATIONS = 'error-delegation',
 }
-//TODO: refactor on each components tests.
 
 const setOrDefault = (toUse: MocksToUse) => {
   const {
@@ -37,7 +36,6 @@ const setOrDefault = (toUse: MocksToUse) => {
     tokens,
     proposal,
   } = toUse;
-  //default values
   const {
     _app,
     _home,

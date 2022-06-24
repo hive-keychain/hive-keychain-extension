@@ -1,4 +1,12 @@
-import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import currencies from 'src/__tests__/utils-for-testing/data/currencies';
+import delegations from 'src/__tests__/utils-for-testing/data/delegations';
+import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
+import manabar from 'src/__tests__/utils-for-testing/data/manabar';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import {
   MocksApp,
@@ -11,46 +19,45 @@ import {
   MocksWalletHistory,
 } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
+const defaultAccountValue = '100000';
+
 const _defaults = {
   _app: {
     getValueFromLocalStorage: jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom),
-    getCurrentRpc: fakeData.rpc.privex,
-    getActiveAccountNameFromLocalStorage: fakeData.mk.userData1,
-    getRCMana: fakeData.manabar.manabarMin,
-    getAccounts: fakeData.accounts.extendedAccountFull,
+    getCurrentRpc: rpc.fake,
+    getActiveAccountNameFromLocalStorage: mk.user.one,
+    getRCMana: manabar,
+    getAccounts: accounts.asArray.extended,
     checkRpcStatus: true,
-    setRpc: fakeData.rpc.privex,
+    setRpc: rpc.fake,
     hasStoredAccounts: true,
-    getMkFromLocalStorage: fakeData.mk.userData1,
-    getAccountsFromLocalStorage: fakeData.accounts.twoAccounts,
+    getMkFromLocalStorage: mk.user.one,
+    getAccountsFromLocalStorage: accounts.twoAccounts,
     findUserProxy: '',
   } as MocksApp,
   _home: {
-    getPrices: fakeData.prices,
-    getAccountValue: '100000',
+    getPrices: currencies.prices,
+    getAccountValue: defaultAccountValue,
   } as MocksHome,
   _topBar: {
     hasReward: true,
   } as MocksTopBar,
   _powerUp: {
-    getVestingDelegations: fakeData.delegations.delegatees,
+    getVestingDelegations: delegations.delegatees,
   } as MocksPowerUp,
   _delegations: {
     getDelegators: {
-      data: fakeData.delegations.delegators,
+      data: delegations.delegators,
     },
   } as MocksDelegations,
   _walletHistory: {
-    getAccountTransactions: [
-      fakeData.history.account.transactions.transfers,
-      1000,
-    ],
+    getAccountTransactions: [historyCurrency.transfers, 1000],
   } as MocksWalletHistory,
   _tokens: {
-    getTokens: fakeData.tokens.alltokens,
-    getUserBalance: fakeData.tokens.user.balances,
+    getTokens: tokensList.alltokens,
+    getUserBalance: tokensUser.balances,
   } as MocksTokens,
   _proposal: {
     hasVotedForProposal: true,

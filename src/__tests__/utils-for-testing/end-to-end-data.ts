@@ -12,9 +12,6 @@ import { TokenBalance } from '@interfaces/tokens.interface';
 import { Transfer } from '@interfaces/transaction.interface';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
-//TODO find a way to make use of data constructors
-//  and organise this to make it work for previous tests and future tests
-
 const accounts = {
   extendedAccountMin: [
     {

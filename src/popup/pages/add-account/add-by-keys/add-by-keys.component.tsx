@@ -42,12 +42,12 @@ const AddByKeys = ({
       setErrorMessage('popup_html_account_already_existing');
       return;
     }
-
     const keys = await AccountUtils.verifyAccount(
       username.trim(),
       privateKey.trim(),
       localAccounts,
     );
+
     if (!keys) {
       return;
     }
@@ -60,7 +60,7 @@ const AddByKeys = ({
   };
 
   return (
-    <div className="add-by-keys-page">
+    <div aria-label="add-by-keys-page" className="add-by-keys-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
