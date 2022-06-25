@@ -19,4 +19,5 @@ export default {
   incomingOutgoingPage: 'incoming-outgoing-page',
   proxySuggestion: 'proxy-suggestion',
   addByKeysPage: 'add-by-keys-page',
+  addByAuthPage: 'add-by-auth-page',
 };

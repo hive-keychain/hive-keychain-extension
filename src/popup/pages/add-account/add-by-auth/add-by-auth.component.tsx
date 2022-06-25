@@ -55,7 +55,7 @@ const AddByAuth = ({
   };
 
   return (
-    <div className="add-by-auth-page">
+    <div aria-label="add-by-auth-page" className="add-by-auth-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
