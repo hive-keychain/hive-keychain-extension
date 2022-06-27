@@ -3,6 +3,7 @@ export default {
   submit: 'submit-button',
   addByKeys: 'add-by-keys-button',
   addByAuth: 'add-by-auth-button',
+  importKeys: 'import-keys-button',
   menu: 'clickable-settings',
   menuSettingsPeople: 'menu-settings-button-people',
   menuSettingsPersonAdd: 'menu-settings-button-person_add',

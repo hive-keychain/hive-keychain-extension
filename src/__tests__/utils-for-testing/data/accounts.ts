@@ -1,6 +1,6 @@
 import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import userData from 'src/__tests__/utils-for-testing/data/userData';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
 const extended = {
   name: userData.one.username,

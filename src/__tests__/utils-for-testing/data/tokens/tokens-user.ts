@@ -1,5 +1,5 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
-import userData from 'src/__tests__/utils-for-testing/data/userData';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
 const balances = [
   {

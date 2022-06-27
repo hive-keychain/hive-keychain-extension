@@ -5,17 +5,16 @@ import React from 'react';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import rpc from 'src/__tests__/utils-for-testing/data/rpc';
-import mockPreset from 'src/__tests__/utils-for-testing/end-to-end-mocks-presets';
-import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import {
   actAdvanceTime,
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
-import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
+import renders from 'src/__tests__/utils-for-testing/setups/renders';
 
 config.useChrome();
 jest.setTimeout(10000);
@@ -33,13 +32,7 @@ describe('add-account-main.component tests:\n', () => {
   });
 
   it('Must navigate to add-by-keys', async () => {
-    customRender(<App />, {
-      initialState: {
-        mk: mk.user.one,
-        accounts: [],
-        activeRpc: rpc.fake,
-      } as RootState,
-    });
+    renders.wInitialState(<App />, initialStates.iniState);
     await act(async () => {
       await userEventPendingTimers.click(
         await screen.findByLabelText(alButton.addByKeys),
@@ -55,12 +48,9 @@ describe('add-account-main.component tests:\n', () => {
     mockPreset.setOrDefault({
       app: { hasStoredAccounts: true },
     });
-    customRender(<App />, {
-      initialState: {
-        mk: mk.user.one,
-        accounts: accounts.twoAccounts,
-        activeRpc: rpc.fake,
-      } as RootState,
+    renders.wInitialState(<App />, {
+      ...initialStates.iniState,
+      accounts: accounts.twoAccounts,
     });
     expect(await screen.findByText(mk.user.one)).toBeInTheDocument();
     await act(async () => {
@@ -80,5 +70,15 @@ describe('add-account-main.component tests:\n', () => {
         screen.getByLabelText(alComponent.addByAuthPage),
       ).toBeInTheDocument();
     });
+  });
+  it('Must call handleImportKeys when clicked', async () => {
+    const spyGetCurrent = jest.spyOn(chrome.windows, 'getCurrent');
+    renders.wInitialState(<App />, initialStates.iniState);
+    await act(async () => {
+      await userEventPendingTimers.click(
+        await screen.findByLabelText(alButton.importKeys),
+      );
+    });
+    expect(spyGetCurrent).toBeCalledTimes(1);
   });
 });

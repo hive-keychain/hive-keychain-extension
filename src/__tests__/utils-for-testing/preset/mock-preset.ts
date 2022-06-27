@@ -1,6 +1,5 @@
 import { hsc } from '@api/hiveEngine';
 import KeychainApi from '@api/keychain';
-import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
@@ -15,9 +14,6 @@ import TransactionUtils from 'src/utils/transaction.utils';
 import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
 import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentationNeeded';
-import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
-import mocks from 'src/__tests__/utils-for-testing/end-to-end-mocks';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
 export enum MockPreset {
@@ -142,87 +138,7 @@ const setOrDefault = (toUse: MocksToUse) => {
   withFixedValues();
 };
 
-const load = (preset: MockPreset, mk: string, accounts: LocalAccount[]) => {
-  const defaultPresets = {
-    app: mocks.mocksApp({
-      fixPopupOnMacOs: jest.fn(),
-      getValueFromLocalStorage: jest
-        .fn()
-        .mockImplementation(mocks.getValuefromLS),
-      getCurrentRpc: fakeData.rpc.fake,
-      activeAccountUsername: mk,
-      getRCMana: fakeData.manabar.manabarMin,
-      getAccounts: fakeData.accounts.extendedAccountFull,
-      rpcStatus: true,
-      setRpc: jest.fn(),
-      chromeSendMessage: jest.fn(),
-      hasStoredAccounts: true,
-      mkLocal: mk,
-      getAccountsFromLocalStorage: accounts,
-      hasVotedForProposal: true,
-      voteForKeychainProposal: jest.fn(),
-      chromeTabsCreate: jest.fn(),
-      i18nGetMessage: jest.fn().mockImplementation(mocks.i18nGetMessage),
-      saveValueInLocalStorage: jest.fn(),
-      clearLocalStorage: jest.fn(),
-      removeFromLocalStorage: jest.fn(),
-    }),
-    home: mocks.mocksHome({
-      getPrices: fakeData.prices,
-      getAccountValue: '100000',
-    }),
-    topBar: mocks.mocksTopBar({
-      hasReward: false,
-    }),
-    powerUp: mocks.mocksPowerUp({
-      getVestingDelegations: jest
-        .fn()
-        .mockResolvedValue(utilsT.fakeGetDelegateesResponse),
-    }),
-    delegations: mocks.mocksDelegations({
-      getDelegators: jest.fn().mockResolvedValue({
-        data: utilsT.fakeGetDelegatorsResponse,
-      }),
-    }),
-    walletHistory: mocks.mocksWalletHistory({
-      getAccountTransactions: jest
-        .fn()
-        .mockResolvedValue(utilsT.expectedDataGetAccountHistory),
-    }),
-    tokens: mocks.mocksTokens({
-      getAllTokens: jest.fn().mockResolvedValue(utilsT.fakeTokensResponse),
-      getUserBalance: jest
-        .fn()
-        .mockResolvedValue(utilsT.fakeGetUserBalanceResponse),
-    }),
-  };
-  let presetObj = {
-    preset: defaultPresets,
-    description: 'This preset will load all needed to load home page',
-  };
-  switch (preset) {
-    case MockPreset.ERRORDELEGATIONS:
-      presetObj = {
-        preset: {
-          ...defaultPresets,
-          powerUp: mocks.mocksPowerUp({
-            getVestingDelegations: jest.fn(),
-          }),
-          delegations: mocks.mocksDelegations({
-            getDelegators: jest.fn(),
-          }),
-        },
-        description: 'This presets load home but no delegations response',
-      };
-      break;
-    case MockPreset.HOMEDEFAULT:
-      break;
-  }
-  return presetObj;
-};
-
 const mockPreset = {
-  load,
   setOrDefault,
 };
 
