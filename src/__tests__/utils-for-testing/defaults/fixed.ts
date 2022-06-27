@@ -1,6 +1,6 @@
 import HiveUtils from 'src/utils/hive.utils';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
-import mocks from 'src/__tests__/utils-for-testing/end-to-end-mocks';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const withFixedValues = () => {
   HiveUtils.getClient().database.getDynamicGlobalProperties = jest
@@ -14,7 +14,7 @@ const withFixedValues = () => {
     .mockResolvedValue(dynamic.rewardFund);
   chrome.i18n.getMessage = jest
     .fn()
-    .mockImplementation(mocks.i18nGetMessageCustom);
+    .mockImplementation(mocksImplementation.i18nGetMessageCustom);
 };
 
 export default withFixedValues;

@@ -138,8 +138,4 @@ const setOrDefault = (toUse: MocksToUse) => {
   withFixedValues();
 };
 
-const mockPreset = {
-  setOrDefault,
-};
-
-export default mockPreset;
+export default { setOrDefault };
