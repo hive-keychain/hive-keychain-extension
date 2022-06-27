@@ -10,7 +10,7 @@ const awaitMk = async (mk: string) => {
 };
 /**
  * Await for assertion. using waitFor under the hood.
- * Can select bewteen getByLabelText or
+ * Can select bewteen getByLabelText or getByText
  */
 const awaitFor = async (ariaLabel: string, query: QueryDOM) => {
   await waitFor(() => {

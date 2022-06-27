@@ -23,7 +23,11 @@ module.exports = {
   modulePaths: ['<rootDir>'],
   collectCoverageFrom: ['<rootDir>/**/*.{ts, tsx}'],
   collectCoverage: false,
-  modulePathIgnorePatterns: ['<rootDir>/src/__tests__/utils-for-testing/'],
+  modulePathIgnorePatterns: [
+    '<rootDir>/src/__tests__/utils-for-testing/',
+    'mocks',
+    'othercases',
+  ],
   //until here
   //working configuration until here
 };

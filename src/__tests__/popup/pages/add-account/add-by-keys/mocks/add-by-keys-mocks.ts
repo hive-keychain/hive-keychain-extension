@@ -9,7 +9,9 @@ import {
   actPendingTimers,
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
-
+/**
+ * Using userdata one username as default
+ */
 const typeAndSubmit = async (privateKey: string) => {
   await clickTypeAwait([
     { ariaLabel: alButton.addByKeys, event: EventType.CLICK },
