@@ -12,3 +12,20 @@ export enum QueryDOM {
   BYLABEL = 'getByLabelText',
   BYTEXT = 'getByText',
 }
+
+export enum EventType {
+  CLICK = 'click',
+  TYPE = 'type',
+}
+
+export enum KeyToUse {
+  MEMO = 'memo',
+  ACTIVE = 'active',
+  POSTING = 'posting',
+  MASTER = 'master',
+}
+
+export enum InputField {
+  PRIVATEKEY = 'private_key',
+  USERNAME = 'username',
+}

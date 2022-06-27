@@ -1,7 +1,11 @@
 import '@testing-library/jest-dom';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { TypeAwait } from 'src/__tests__/utils-for-testing/interfaces/events';
+import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
+import {
+  ClickOrType,
+  TypeAwait,
+} from 'src/__tests__/utils-for-testing/interfaces/events';
 
 const advanceTimers = () => jest.runOnlyPendingTimers();
 
@@ -31,7 +35,7 @@ export const actAdvanceTime = (time: number) => {
   });
 };
 /**
- * Handling click + getByLabelText only.
+ * Handling clicks + getByLabelText only.
  */
 export const clickAwait = async (ariaLabels: string[]) => {
   await act(async () => {
@@ -39,6 +43,27 @@ export const clickAwait = async (ariaLabels: string[]) => {
       await userEventPendingTimers.click(
         screen.getByLabelText(ariaLabels[ariaLabel]),
       );
+    }
+  });
+};
+/**
+ * Handling click & type + getByLabelText only.
+ */
+export const clickTypeAwait = async (domEl: ClickOrType[]) => {
+  await act(async () => {
+    for (let index in domEl) {
+      switch (domEl[index].event!) {
+        case EventType.CLICK:
+          await userEventPendingTimers.click(
+            screen.getByLabelText(domEl[index].ariaLabel!),
+          );
+          break;
+        case EventType.TYPE:
+          await userEventPendingTimers.type(
+            screen.getByLabelText(domEl[index].ariaLabel!),
+            domEl[index].text!,
+          );
+      }
     }
   });
 };
