@@ -7,3 +7,8 @@ export enum Tab {
   PROXY = 1,
   GOVERNANCE = 2,
 }
+
+export enum QueryDOM {
+  BYLABEL = 'getByLabelText',
+  BYTEXT = 'getByText',
+}
