@@ -26,7 +26,7 @@ const EstimatedAccountValueSection = ({
       <div className="estimated-account-value-section">
         <div className="label-panel">
           <CustomTooltip
-            ariaLabel="custom-tool-tip"
+            ariaLabel="custom-tool-tip-estimated-value-section"
             message="popup_html_estimation_info_text"
             delayShow={500}
             position="bottom">

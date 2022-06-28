@@ -41,7 +41,7 @@ const SignIn = ({
   };
 
   return (
-    <div className="sign-in-page">
+    <div aria-label="sign-in-page" className="sign-in-page">
       <img src="/assets/images/keychain_logo.png" className="logo-white" />
       <p
         className="introduction"

@@ -23,7 +23,7 @@ const ResourceItem = ({
 }: PropsType) => {
   return (
     <CustomTooltip
-      ariaLabel="custom-tool-tip"
+      ariaLabel={`custom-tool-tip-${label}`}
       message={tooltipText}
       skipTranslation>
       <div className="resource-item">

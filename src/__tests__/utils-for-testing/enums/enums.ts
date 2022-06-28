@@ -16,6 +16,7 @@ export enum QueryDOM {
 export enum EventType {
   CLICK = 'click',
   TYPE = 'type',
+  HOVER = 'hover',
 }
 
 export enum KeyToUse {

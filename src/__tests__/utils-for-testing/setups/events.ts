@@ -48,7 +48,7 @@ export const clickAwait = async (ariaLabels: string[]) => {
   });
 };
 /**
- * Handling click & type + getByLabelText only.
+ * Handling click/type.hover but using getByLabelText only.
  */
 export const clickTypeAwait = async (domEl: ClickOrType[]) => {
   await act(async () => {
@@ -64,6 +64,12 @@ export const clickTypeAwait = async (domEl: ClickOrType[]) => {
             screen.getByLabelText(domEl[index].ariaLabel!),
             domEl[index].text!,
           );
+          break;
+        case EventType.HOVER:
+          await userEventPendingTimers.hover(
+            screen.getByLabelText(domEl[index].ariaLabel!),
+          );
+          break;
       }
     }
   });

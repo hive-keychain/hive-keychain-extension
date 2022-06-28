@@ -3,6 +3,7 @@ export default {
   homePage: 'home-page-component',
   selectPage: 'select-keys-page',
   signUp: 'signup-page',
+  signIn: 'sign-in-page',
   input: 'password-input',
   inputConfirmation: 'password-input-confirmation',
   addAccountMain: 'add-account-page',

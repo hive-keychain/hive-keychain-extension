@@ -71,6 +71,7 @@ const SelectAccountSection = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.value}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}

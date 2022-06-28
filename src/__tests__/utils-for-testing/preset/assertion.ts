@@ -16,6 +16,18 @@ const awaitFind = async (arialabel: string) => {
   expect(await screen.findByLabelText(arialabel)).toBeInTheDocument();
 };
 /**
+ * Await for assertion. findByText
+ */
+const awaitFindText = async (arialabel: string) => {
+  expect(await screen.findByText(arialabel)).toBeInTheDocument();
+};
+/**
+ * findByText
+ */
+const getByLabelText = (ariaLabel: string) => {
+  expect(screen.getByLabelText(ariaLabel)).toBeInTheDocument();
+};
+/**
  * Await for assertion. using waitFor under the hood.
  * Can select bewteen getByLabelText or getByText
  */
@@ -48,4 +60,11 @@ const getByText = (domEl: ElementQuery[]) => {
   }
 };
 
-export default { awaitMk, awaitFor, awaitFind, getByText };
+export default {
+  awaitMk,
+  awaitFor,
+  awaitFind,
+  getByText,
+  awaitFindText,
+  getByLabelText,
+};

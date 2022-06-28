@@ -5,6 +5,7 @@ export default {
   addByAuth: 'add-by-auth-button',
   importKeys: 'import-keys-button',
   menu: 'clickable-settings',
+  menuPreFix: 'menu-settings-button-',
   menuSettingsPeople: 'menu-settings-button-people',
   menuSettingsPersonAdd: 'menu-settings-button-person_add',
   confirmResetPassword: 'reset-password-confirm-button',

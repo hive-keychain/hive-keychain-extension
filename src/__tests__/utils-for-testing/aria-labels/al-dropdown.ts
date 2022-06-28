@@ -13,4 +13,5 @@ export default {
     delegations: 'dropdown-menu-item-swap_horiz',
     powerDown: 'dropdown-menu-item-arrow_downward',
   },
+  itemPreFix: 'dropdown-menu-item-',
 };
