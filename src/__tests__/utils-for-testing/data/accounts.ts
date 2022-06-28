@@ -34,6 +34,9 @@ const extended = {
   } as AuthorityType,
   memo_key: userData.one.encryptKeys.memo,
   witnesses_voted_for: 2,
+  voting_manabar: {
+    current_mana: 1000000,
+  },
 } as ExtendedAccount;
 
 const asArray = {

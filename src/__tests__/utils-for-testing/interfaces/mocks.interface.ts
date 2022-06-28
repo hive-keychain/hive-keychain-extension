@@ -19,6 +19,8 @@ export interface MocksApp {
   getMkFromLocalStorage?: string;
   getAccountsFromLocalStorage?: LocalAccount[];
   findUserProxy?: string;
+  getVP?: number;
+  getVotingDollarsPerAccount?: number;
 }
 
 export interface MocksHome {
@@ -75,6 +77,8 @@ export interface MocksOverwrite {
     getMkFromLocalStorage?: OverwriteMock;
     getAccountsFromLocalStorage?: OverwriteMock;
     findUserProxy?: OverwriteMock;
+    getVP?: OverwriteMock;
+    getVotingDollarsPerAccount?: OverwriteMock;
   };
   home?: {
     getPrices?: OverwriteMock;

@@ -22,7 +22,10 @@ const ResourceItem = ({
   secondaryValue,
 }: PropsType) => {
   return (
-    <CustomTooltip message={tooltipText} skipTranslation>
+    <CustomTooltip
+      ariaLabel="custom-tool-tip"
+      message={tooltipText}
+      skipTranslation>
       <div className="resource-item">
         <Icon
           name={icon}

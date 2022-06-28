@@ -36,6 +36,8 @@ const _defaults = {
     getMkFromLocalStorage: mk.user.one,
     getAccountsFromLocalStorage: accounts.twoAccounts,
     findUserProxy: '',
+    getVP: 1,
+    getVotingDollarsPerAccount: 1,
   } as MocksApp,
   _home: {
     getPrices: currencies.prices,

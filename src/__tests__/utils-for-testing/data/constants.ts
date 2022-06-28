@@ -40,4 +40,7 @@ export const toOverWriteFuntions: any = {
   hasVotedForProposal: () => (ProposalUtils.hasVotedForProposal = jest.fn()),
   voteForKeychainProposal: () =>
     (ProposalUtils.voteForKeychainProposal = jest.fn()),
+  getVP: () => (HiveUtils.getVP = jest.fn()),
+  getVotingDollarsPerAccount: () =>
+    (HiveUtils.getVotingDollarsPerAccount = jest.fn()),
 };
