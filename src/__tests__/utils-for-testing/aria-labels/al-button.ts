@@ -49,4 +49,5 @@ export default {
   panel: {
     close: 'button-panel-close',
   },
+  save: 'button-save',
 };

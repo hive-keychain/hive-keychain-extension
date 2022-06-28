@@ -8,6 +8,9 @@ import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 const awaitMk = async (mk: string) => {
   expect(await screen.findByText(mk)).toBeInTheDocument();
 };
+const awaitFind = async (arialabel: string) => {
+  expect(await screen.findByLabelText(arialabel)).toBeInTheDocument();
+};
 /**
  * Await for assertion. using waitFor under the hood.
  * Can select bewteen getByLabelText or getByText
@@ -24,4 +27,4 @@ const awaitFor = async (ariaLabel: string, query: QueryDOM) => {
   });
 };
 
-export default { awaitMk, awaitFor };
+export default { awaitMk, awaitFor, awaitFind };

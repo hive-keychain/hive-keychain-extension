@@ -36,6 +36,7 @@ export const actAdvanceTime = (time: number) => {
 };
 /**
  * Handling clicks + getByLabelText only.
+ * Using act under the hood.
  */
 export const clickAwait = async (ariaLabels: string[]) => {
   await act(async () => {
