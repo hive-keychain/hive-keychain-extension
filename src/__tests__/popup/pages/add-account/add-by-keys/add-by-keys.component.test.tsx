@@ -5,10 +5,10 @@ import addByKeysBeforeEach from 'src/__tests__/popup/pages/add-account/add-by-ke
 import addByKeysMocks from 'src/__tests__/popup/pages/add-account/add-by-keys/mocks/add-by-keys-mocks';
 import addByKeysExtraCases from 'src/__tests__/popup/pages/add-account/add-by-keys/othercases/add-by-keys-extra-cases';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
 import {
   EventType,
   InputField,
@@ -38,28 +38,28 @@ describe('add-by-keys:\n', () => {
     it('Must add valid posting key and load homepage', async () => {
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.posting);
       await waitFor(() => {
-        expect(screen.getByLabelText(al.component.homePage)).toBeDefined();
+        expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
         expect(screen.getByText(mk.user.one)).toBeDefined();
       });
     });
     it('Must add valid memo key and load homepage', async () => {
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.memo);
       await waitFor(() => {
-        expect(screen.getByLabelText(al.component.homePage)).toBeDefined();
+        expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
         expect(screen.getByText(mk.user.one)).toBeDefined();
       });
     });
     it('Must add valid active key and load homepage', async () => {
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.active);
       await waitFor(() => {
-        expect(screen.getByLabelText(al.component.homePage)).toBeDefined();
+        expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
         expect(screen.getByText(mk.user.one)).toBeDefined();
       });
     });
     it('Must derivate all keys from master, and navigate to select keys page', async () => {
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
       await waitFor(() => {
-        expect(screen.getByLabelText(al.component.selectPage)).toBeDefined();
+        expect(screen.getByLabelText(alComponent.selectPage)).toBeDefined();
         expect(
           ['Posting Key', 'Active Key', 'Memo Key'].forEach((userKey) => {
             expect(screen.getByText(userKey)).toBeInTheDocument();

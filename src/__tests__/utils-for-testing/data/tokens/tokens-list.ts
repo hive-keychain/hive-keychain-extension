@@ -1,4 +1,3 @@
-//TODO question: what this type should be?
 const alltokens = [
   {
     _id: 1,

@@ -3,13 +3,16 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
 const messagesJsonFile = require('public/_locales/en/messages.json');
 const getValuefromLS = (...args: any[]) => {
-  if (args[0] === LocalStorageKeyEnum.AUTOLOCK) {
-    return {
-      type: AutoLockType.DEFAULT,
-      mn: 1,
-    };
-  } else if (args[0] === LocalStorageKeyEnum.SWITCH_RPC_AUTO) {
-    return true;
+  switch (args[0]) {
+    case LocalStorageKeyEnum.AUTOLOCK:
+      return {
+        type: AutoLockType.DEFAULT,
+        mn: 1,
+      };
+    case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
+      return true;
+    case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
+      return null;
   }
 };
 

@@ -1,8 +1,7 @@
 import App from '@popup/App';
 import '@testing-library/jest-dom';
-import { act, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import React from 'react';
-import TransactionUtils from 'src/utils/transaction.utils';
 import home from 'src/__tests__/popup/pages/app-container/home/mocks/home/home';
 import actionButtons from 'src/__tests__/popup/pages/app-container/othercases/home/action-buttons';
 import dropdownHbd from 'src/__tests__/popup/pages/app-container/othercases/home/dropdown-hbd';
@@ -26,8 +25,7 @@ import {
   clickAwait,
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
-config.useChrome();
-jest.setTimeout(10000);
+config.byDefault();
 describe('home.component tests:\n', () => {
   beforeEach(async () => {
     await home.beforeEach(<App />, accounts.twoAccounts);
@@ -99,20 +97,6 @@ describe('home.component tests:\n', () => {
   describe('dropdown hp menu:\n', () => {
     dropdownHp.run();
   });
-  //fixing
-  it('Must show wallet history when clicking on history', async () => {
-    TransactionUtils.getLastTransaction = jest.fn().mockResolvedValue(0);
-    await act(async () => {
-      await userEventPendingTimers.click(
-        screen.getByLabelText(alButton.actionBtn.history),
-      );
-      jest.advanceTimersByTime(1000);
-    });
-    expect(
-      await screen.findByLabelText(alComponent.walletItemList),
-    ).toBeDefined();
-  });
-  //end fixing
   describe('action-buttons:\n', () => {
     actionButtons.run();
   });

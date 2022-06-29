@@ -25,7 +25,7 @@ const _defaults = {
   _app: {
     getValueFromLocalStorage: jest
       .fn()
-      .mockImplementation(mocksImplementation.i18nGetMessageCustom),
+      .mockImplementation(mocksImplementation.getValuefromLS),
     getCurrentRpc: rpc.fake,
     getActiveAccountNameFromLocalStorage: mk.user.one,
     getRCMana: manabar,

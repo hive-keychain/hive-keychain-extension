@@ -9,6 +9,7 @@ import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main
 import { ReactElement } from 'react';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import TransactionUtils from 'src/utils/transaction.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alHomeInformation from 'src/__tests__/utils-for-testing/aria-labels/al-home-information';
@@ -17,10 +18,25 @@ import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
+import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import { actAdvanceTime } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
+
+const constants = {
+  vpValue: mocksDefault._defaults._app.getVP!.toFixed(2).toString(),
+  resourceCredits: mocksDefault._defaults._app.getVotingDollarsPerAccount
+    ?.toFixed(2)
+    .toString(),
+  estimatedValue: '69999',
+  iconsMenuSettings: fromArrayToAssert(SettingsMenuItems, alButton.menuPreFix),
+  menuItems: {
+    hive: fromArrayToAssert(HiveDropdownMenuItems, alDropdown.itemPreFix),
+    hbd: fromArrayToAssert(HBDDropdownMenuItems, alDropdown.itemPreFix),
+    hp: fromArrayToAssert(HpDropdownMenuItems, alDropdown.itemPreFix),
+  },
+};
 
 const beforeEach = async (
   component: ReactElement,
@@ -35,10 +51,10 @@ const beforeEach = async (
   });
 };
 
-const vpValue = mocksDefault._defaults._app.getVP!.toFixed(2).toString();
-const resourceCredits = mocksDefault._defaults._app.getVotingDollarsPerAccount
-  ?.toFixed(2)
-  .toString();
+// const vpValue = mocksDefault._defaults._app.getVP!.toFixed(2).toString();
+// const resourceCredits = mocksDefault._defaults._app.getVotingDollarsPerAccount
+//   ?.toFixed(2)
+//   .toString();
 
 const methods = {
   manaReadyIn: () => HiveUtils.getTimeBeforeFull(manabar.percentage / 100),
@@ -58,14 +74,8 @@ function fromArrayToAssert(
   });
 }
 
-const constants = {
-  estimatedValue: '69999',
-  iconsMenuSettings: fromArrayToAssert(SettingsMenuItems, alButton.menuPreFix),
-  menuItems: {
-    hive: fromArrayToAssert(HiveDropdownMenuItems, alDropdown.itemPreFix),
-    hbd: fromArrayToAssert(HBDDropdownMenuItems, alDropdown.itemPreFix),
-    hp: fromArrayToAssert(HpDropdownMenuItems, alDropdown.itemPreFix),
-  },
+const extraMocks = () => {
+  TransactionUtils.getLastTransaction = jest.fn().mockResolvedValue(1);
 };
 
 /**
@@ -95,7 +105,7 @@ const userInformation = () => {
       query: QueryDOM.BYTEXT,
     },
     {
-      arialabelOrText: `${vpValue} % (${vpValue} $)`,
+      arialabelOrText: `${constants.vpValue} % (${constants.vpValue} $)`,
       query: QueryDOM.BYTEXT,
     },
     {
@@ -103,15 +113,18 @@ const userInformation = () => {
       query: QueryDOM.BYTEXT,
     },
     {
-      arialabelOrText: `${resourceCredits} %`,
+      arialabelOrText: `${constants.resourceCredits} %`,
       query: QueryDOM.BYTEXT,
     },
   ]);
 };
+
+mocks.helper();
 
 export default {
   beforeEach,
   userInformation,
   methods,
   constants,
+  extraMocks,
 };
