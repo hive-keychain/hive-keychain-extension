@@ -1,22 +1,26 @@
-import { MenuItem } from '@interfaces/menu-item.interface';
 import { screen } from '@testing-library/react';
 import { ReactElement } from 'react';
-import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import HiveUtils from 'src/utils/hive.utils';
+import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
+import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
+import {
+  EventType,
+  QueryDOM,
+} from 'src/__tests__/utils-for-testing/enums/enums';
 import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { ClickOrType } from 'src/__tests__/utils-for-testing/interfaces/events';
+import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import {
   actAdvanceTime,
   clickAwait,
+  clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
-
-const constants = {};
 
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
@@ -29,36 +33,38 @@ const beforeEach = async (component: ReactElement) => {
 const methods = {
   clickAwaitDrop: async (ariaLabel: string) =>
     await clickAwait([ariaLabel, alDropdown.span.convert]),
+  typeNClick: async (amount: string, confirm: boolean) => {
+    let events: ClickOrType[] = [
+      { ariaLabel: alInput.amount, event: EventType.TYPE, text: amount },
+      { ariaLabel: alButton.submit, event: EventType.CLICK },
+    ];
+    if (confirm) {
+      events.push({
+        ariaLabel: alButton.dialog.confirm,
+        event: EventType.CLICK,
+      });
+    }
+    await clickTypeAwait(events);
+  },
+  tobeInTheDoc: (keyMessage: string) => {
+    assertion.getByText([
+      {
+        arialabelOrText: methods.message(keyMessage),
+        query: QueryDOM.BYTEXT,
+      },
+    ]);
+  },
   message: (key: string) => mocksImplementation.i18nGetMessageCustom(key),
 };
-
-function fromArrayToAssert(
-  arrayItems: MenuItem[] | DropdownMenuItemInterface[],
-  preFix: string,
-) {
-  return arrayItems.map((item) => {
-    return {
-      arialabelOrText: `${preFix}${item.icon}`,
-      query: QueryDOM.BYLABEL,
-    };
-  });
-}
 
 const extraMocks = (convertOperation: boolean) => {
   HiveUtils.convertOperation = jest.fn().mockResolvedValue(convertOperation);
 };
 
-/**
- * Conveniently to add data to be checked on home page, as text or aria labels.
- */
-const userInformation = () => {};
-
 mocks.helper();
 
 export default {
   beforeEach,
-  userInformation,
   methods,
-  constants,
   extraMocks,
 };
