@@ -2265,5 +2265,13 @@
   "popup_html_token_unstake_cooldown_disclaimer": {
     "message": "Unstaking this token will take $1 day(s).",
     "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_enable_autoclaim_savings": {
+    "message": "Claim savings",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_savings_info": {
+    "message": "Regularly claiming your savings can increase your gains.",
+    "description": "When on automated tasks page"
   }
 }
