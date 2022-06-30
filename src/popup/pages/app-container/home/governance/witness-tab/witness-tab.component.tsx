@@ -209,7 +209,7 @@ const WitnessTab = ({
   };
 
   return (
-    <div className="witness-tab">
+    <div aria-label="witness-tab" className="witness-tab">
       {!usingProxy && (
         <div className="remaining-votes">
           {chrome.i18n.getMessage('popup_html_witness_remaining', [
