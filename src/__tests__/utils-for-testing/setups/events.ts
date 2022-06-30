@@ -70,6 +70,11 @@ export const clickTypeAwait = async (domEl: ClickOrType[]) => {
             screen.getByLabelText(domEl[index].ariaLabel!),
           );
           break;
+        case EventType.UNHOVER:
+          await userEventPendingTimers.unhover(
+            screen.getByLabelText(domEl[index].ariaLabel!),
+          );
+          break;
       }
     }
   });
