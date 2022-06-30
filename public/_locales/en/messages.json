@@ -2271,7 +2271,7 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_savings_info": {
-    "message": "Regularly claiming your savings can increase your gains.",
+    "message": "To claim your saving interests, Keychain will deposit or withdraw 0.001 HBD to/from your savings every 30 days",
     "description": "When on automated tasks page"
   }
 }

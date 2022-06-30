@@ -72,6 +72,9 @@ const claimSavings = async (activeAccount: ActiveAccount) => {
   const hasHbd =
     Asset.fromString(activeAccount.account.hbd_balance as string).amount >=
     0.001;
+  const hasSavings =
+    Asset.fromString(activeAccount?.account.savings_hbd_balance as string)
+      .amount > 0.001;
   if (hasHbd) {
     try {
       const client = await RPCModule.getClient();
@@ -98,7 +101,7 @@ const claimSavings = async (activeAccount: ActiveAccount) => {
       );
       return false;
     }
-  } else {
+  } else if (hasSavings) {
     try {
       const client = await RPCModule.getClient();
       await client.broadcast.sendOperations(
@@ -124,6 +127,10 @@ const claimSavings = async (activeAccount: ActiveAccount) => {
       );
       return false;
     }
+  } else {
+    Logger.error(
+      `@${activeAccount.name} has no HBD to deposit or savings to withdraw`,
+    );
   }
 };
 
