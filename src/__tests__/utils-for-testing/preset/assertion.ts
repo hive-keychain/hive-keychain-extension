@@ -28,7 +28,7 @@ const getByLabelText = (ariaLabel: string) => {
   expect(screen.getByLabelText(ariaLabel)).toBeInTheDocument();
 };
 /**
- * getByDisplayValue
+ * Using getByDisplayValue, to try to find a value as shown on screen
  */
 const getByDisplay = (value: string) => {
   expect(screen.getByDisplayValue(value)).toBeInTheDocument();
@@ -57,7 +57,12 @@ const awaitFor = async (ariaLabel: string, query: QueryDOM) => {
     }
   });
 };
-
+const getOneByText = (text: string) => {
+  expect(screen.getByText(text)).toBeInTheDocument();
+};
+/**
+ * Can select bewteen getByLabelText or getByText
+ */
 const getByText = (domEl: ElementQuery[]) => {
   for (let index in domEl) {
     switch (domEl[index].query) {
@@ -84,4 +89,5 @@ export default {
   getByLabelText,
   queryByLabel,
   getByDisplay,
+  getOneByText,
 };
