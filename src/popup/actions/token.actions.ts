@@ -44,9 +44,9 @@ export const loadUserTokens =
       let tokensBalance: TokenBalance[] = await HiveEngineUtils.getUserBalance(
         account,
       );
-      tokensBalance = tokensBalance
-        .filter((t) => parseFloat(t.balance) !== 0)
-        .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
+      tokensBalance = tokensBalance.sort(
+        (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
+      );
       const action: ActionPayload<TokenBalance[]> = {
         type: ActionType.LOAD_USER_TOKENS,
         payload: tokensBalance,
