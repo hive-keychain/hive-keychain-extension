@@ -59,4 +59,6 @@ const ranking = {
 
 const inactiveKey = 'STM1111111111111111111111111111111114T1Anm';
 
-export default { ranking, inactiveKey };
+const arcangeLink = 'https://hive.arcange.eu/witnesses/';
+
+export default { ranking, inactiveKey, arcangeLink };
