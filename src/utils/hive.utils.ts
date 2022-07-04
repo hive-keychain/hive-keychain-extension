@@ -570,7 +570,7 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
       {
-        id: Config.hiveEngine.MAINNET,
+        id: Config.hiveEngine.mainnet,
         required_auths: [activeAccount.name!],
         required_posting_auths: activeAccount.keys.active
           ? []

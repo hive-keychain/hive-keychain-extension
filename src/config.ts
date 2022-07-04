@@ -1,7 +1,11 @@
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+
 const Config = {
   hiveEngine: {
-    MAINNET: 'ssc-mainnet-hive',
-  },
+    mainnet: 'ssc-mainnet-hive',
+    accountHistoryApi: 'https://history.hive-engine.com/',
+    rpc: 'https://accounts.hive-engine.com/',
+  } as HiveEngineConfig,
   claims: {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
     freeAccount: {

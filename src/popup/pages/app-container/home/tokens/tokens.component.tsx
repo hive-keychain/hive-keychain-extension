@@ -99,6 +99,11 @@ const Tokens = ({
           onChange={setFilterValue}
         />
         <Icon
+          onClick={() => navigateTo(Screen.TOKENS_FILTER)}
+          name={Icons.FILTER}
+          type={IconType.OUTLINED}
+          additionalClassName="filter"></Icon>
+        <Icon
           onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
           name={Icons.SETTINGS}
           type={IconType.OUTLINED}

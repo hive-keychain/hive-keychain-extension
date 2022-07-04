@@ -1,15 +1,39 @@
-import { hsc } from '@api/hiveEngine';
 import { PrivateKey } from '@hiveio/dhive';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import axios from 'axios';
 import Config from 'src/config';
 import HiveUtils from 'src/utils/hive.utils';
+import SSC from 'sscjs';
+
 type SendTokenProps = {
   username: string;
   currency: string;
   to: string;
   amount: string;
   memo: string;
+};
+
+let hiveEngineAPI = new SSC('https://api.hive-engine.com/rpc');
+
+let historyHiveEngineAPI = axios.create({
+  baseURL: 'https://history.hive-engine.com/',
+});
+
+const getApi = () => {
+  return hiveEngineAPI;
+};
+const setActiveApi = (api: string) => {
+  hiveEngineAPI = new SSC(api);
+};
+
+const getAccountHistoryApi = () => {
+  return historyHiveEngineAPI;
+};
+const setActiveAccountHistoryApi = (api: string) => {
+  hiveEngineAPI = axios.create({
+    baseURL: api,
+  });
 };
 
 const stakeToken = (
@@ -19,7 +43,7 @@ const stakeToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'stake',
@@ -42,7 +66,7 @@ const unstakeToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'unstake',
@@ -66,7 +90,7 @@ const delegateToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'delegate',
@@ -90,7 +114,7 @@ const cancelDelegationToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'undelegate',
@@ -108,7 +132,7 @@ const cancelDelegationToken = (
 };
 
 const getUserBalance = (account: string) => {
-  return hsc.find('tokens', 'balances', {
+  return HiveEngineUtils.getApi().find('tokens', 'balances', {
     account,
   });
 };
@@ -117,18 +141,24 @@ const getIncomingDelegations = async (
   symbol: string,
   username: string,
 ): Promise<TokenDelegation[]> => {
-  return hsc.find('tokens', 'delegations', { to: username, symbol: symbol });
+  return HiveEngineUtils.getApi().find('tokens', 'delegations', {
+    to: username,
+    symbol: symbol,
+  });
 };
 
 const getOutgoingDelegations = async (
   symbol: string,
   username: string,
 ): Promise<TokenDelegation[]> => {
-  return hsc.find('tokens', 'delegations', { from: username, symbol: symbol });
+  return HiveEngineUtils.getApi().find('tokens', 'delegations', {
+    from: username,
+    symbol: symbol,
+  });
 };
 
 const sendToken = (data: SendTokenProps, key: PrivateKey) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'transfer',
@@ -167,6 +197,10 @@ const HiveEngineUtils = {
   cancelDelegationToken,
   getIncomingDelegations,
   getOutgoingDelegations,
+  getApi,
+  getAccountHistoryApi,
+  setActiveAccountHistoryApi,
+  setActiveApi,
 };
 
 export default HiveEngineUtils;
