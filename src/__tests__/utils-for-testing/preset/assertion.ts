@@ -88,6 +88,12 @@ const getByText = (domEl: ElementQuery[]) => {
 const toHaveClass = async (ariaLabel: string, _class: string) => {
   expect(await screen.findByLabelText(ariaLabel)).toHaveClass(_class);
 };
+/**
+ * getByLabelText to toHaveValue
+ */
+const toHaveValue = (arialabel: string, value: string) => {
+  expect(screen.getByLabelText(arialabel)).toHaveValue(value);
+};
 
 export default {
   awaitMk,
@@ -101,4 +107,5 @@ export default {
   getOneByText,
   awaitOneByLabel,
   toHaveClass,
+  toHaveValue,
 };
