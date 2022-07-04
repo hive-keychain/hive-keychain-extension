@@ -2289,5 +2289,13 @@
   "html_popup_new_account_history_save_success": {
     "message": "New account history API was saved successfully",
     "description": "Tokens setting page =>  add rpc node"
+  },
+  "popup_html_transfer_recurrent_exchange_warning": {
+    "message": "Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.",
+    "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
+  },
+  "popup_html_transfer_recurrent_missing_field": {
+    "message": "Iteration and frequency are mandatory",
+    "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
   }
 }
