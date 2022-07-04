@@ -8,9 +8,13 @@ import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
+import {
+  EventType,
+  QueryDOM,
+} from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { ElementQuery } from 'src/__tests__/utils-for-testing/interfaces/elements';
 import { ClickOrType } from 'src/__tests__/utils-for-testing/interfaces/events';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
@@ -45,9 +49,11 @@ const constants = {
   error: {
     form: i18n.get('popup_html_fill_form_error').trim(),
     greaterThan: i18n.get('popup_html_power_up_down_error').trim(),
+    cancellation: i18n.get('popup_html_cancel_power_down_fail').trim(),
   },
   success: {
     confirmation: i18n.get('popup_html_confirm_power_up_down_message').trim(),
+    cancellation: i18n.get('popup_html_cancel_power_down_success').trim(),
   },
   extendedWPowerDown: {
     ...accounts.extended,
@@ -67,6 +73,7 @@ const beforeEach = async (component: ReactElement) => {
   mockPreset.setOrDefault({
     app: { getAccounts: [constants.extendedWPowerDown] },
   });
+  TransferUtils.saveTransferRecipient = jest.fn();
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(mk.user.one);
 };
@@ -103,11 +110,49 @@ const methods = {
     }
     await clickTypeAwait(events);
   },
+  assertInfo: (powerType: PowerType) => {
+    let events: ElementQuery[] = [
+      { arialabelOrText: constants.label.current, query: QueryDOM.BYTEXT },
+      { arialabelOrText: constants.label.available, query: QueryDOM.BYTEXT },
+      { arialabelOrText: constants.value.current, query: QueryDOM.BYTEXT },
+    ];
+    switch (powerType) {
+      case PowerType.POWER_UP:
+        events.push(
+          {
+            arialabelOrText: constants.value.available.up,
+            query: QueryDOM.BYTEXT,
+          },
+          {
+            arialabelOrText: constants.text.poweringUp,
+            query: QueryDOM.BYTEXT,
+          },
+        );
+        break;
+      case PowerType.POWER_DOWN:
+        events.push(
+          {
+            arialabelOrText: constants.value.available.down,
+            query: QueryDOM.BYTEXT,
+          },
+          {
+            arialabelOrText: constants.text.poweringDown,
+            query: QueryDOM.BYTEXT,
+          },
+        );
+        break;
+    }
+    assertion.getByText(events);
+  },
 };
 
-const extraMocks = (powerUp: boolean) => {
-  HiveUtils.powerUp = jest.fn().mockResolvedValue(powerUp);
-  TransferUtils.saveTransferRecipient = jest.fn();
+const extraMocks = {
+  powerUp: (powerUp: boolean) => {
+    HiveUtils.powerUp = jest.fn().mockResolvedValue(powerUp);
+  },
+  powerDown: (powerDown: boolean) => {
+    HiveUtils.powerDown = jest.fn().mockResolvedValue(powerDown);
+  },
 };
 
 export default {
