@@ -202,8 +202,6 @@ const TransferFunds = ({
       isRecurrent,
     );
 
-    console.log(warningMessage);
-
     if (phishing.includes(receiverUsername)) {
       warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
         receiverUsername,
