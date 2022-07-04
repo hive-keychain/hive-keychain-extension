@@ -1,0 +1,70 @@
+import { ReactElement } from 'react';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import { overWriteMocks } from 'src/__tests__/utils-for-testing/defaults/overwrite';
+import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
+import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
+import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
+import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
+import { actAdvanceTime } from 'src/__tests__/utils-for-testing/setups/events';
+import renders from 'src/__tests__/utils-for-testing/setups/renders';
+
+const i18n = {
+  get: (key: string, extra?: any) =>
+    mocksImplementation.i18nGetMessageCustom(key, [extra]),
+};
+
+const constants = {
+  stateAs: initialStates.iniStateAs.defaultExistent as RootState,
+  username: mk.user.one,
+  noMana: '--',
+  noRc: '--',
+  wMana: '1.00 % (1.00 $)',
+  wRc: '1.00 %',
+  toolTip: {
+    fullIn: 'Full in 4 days, 22 hours and 48 minutes',
+    noHp: i18n.get('html_popup_voting_no_hp'),
+  },
+};
+
+const beforeEach = async (
+  component: ReactElement,
+  overWriteRcManaBar: boolean = false,
+) => {
+  jest.useFakeTimers('legacy');
+  actAdvanceTime(4300);
+  mockPreset.setOrDefault({});
+  if (overWriteRcManaBar) {
+    overWriteMocks({
+      app: { getRCMana: OverwriteMock.SET_AS_NOT_IMPLEMENTED },
+    });
+  }
+  renders.wInitialState(component, constants.stateAs);
+  await assertion.awaitMk(mk.user.one);
+};
+
+const methods = {
+  afterEach: afterEach(() => {
+    afterTests.clean();
+  }),
+};
+
+const extraMocks = () => {};
+
+/**
+ * Conveniently to add data to be checked on home page, as text or aria labels.
+ */
+const userInformation = () => {};
+
+mocks.helper();
+
+export default {
+  beforeEach,
+  userInformation,
+  methods,
+  constants,
+  extraMocks,
+};

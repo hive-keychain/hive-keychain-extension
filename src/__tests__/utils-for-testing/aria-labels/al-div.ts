@@ -25,4 +25,8 @@ export default {
       totallyFunded: 'proposal-item-extra-info-funded',
     },
   },
+  resources: {
+    vm: 'resource-item-voting-mana',
+    rc: 'resource-item-resource-credits',
+  },
 };
