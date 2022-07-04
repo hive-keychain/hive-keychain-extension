@@ -1,10 +1,9 @@
 import { PrivateKey } from '@hiveio/dhive';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import axios from 'axios';
 import Config from 'src/config';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import SSC from 'sscjs';
 
 type SendTokenProps = {
   username: string;
@@ -12,28 +11,6 @@ type SendTokenProps = {
   to: string;
   amount: string;
   memo: string;
-};
-
-let hiveEngineAPI = new SSC('https://api.hive-engine.com/rpc');
-
-let historyHiveEngineAPI = axios.create({
-  baseURL: 'https://history.hive-engine.com/',
-});
-
-const getApi = () => {
-  return hiveEngineAPI;
-};
-const setActiveApi = (api: string) => {
-  hiveEngineAPI = new SSC(api);
-};
-
-const getAccountHistoryApi = () => {
-  return historyHiveEngineAPI;
-};
-const setActiveAccountHistoryApi = (api: string) => {
-  hiveEngineAPI = axios.create({
-    baseURL: api,
-  });
 };
 
 const stakeToken = (
@@ -132,7 +109,7 @@ const cancelDelegationToken = (
 };
 
 const getUserBalance = (account: string) => {
-  return HiveEngineUtils.getApi().find('tokens', 'balances', {
+  return HiveEngineConfigUtils.getApi().find('tokens', 'balances', {
     account,
   });
 };
@@ -141,7 +118,7 @@ const getIncomingDelegations = async (
   symbol: string,
   username: string,
 ): Promise<TokenDelegation[]> => {
-  return HiveEngineUtils.getApi().find('tokens', 'delegations', {
+  return HiveEngineConfigUtils.getApi().find('tokens', 'delegations', {
     to: username,
     symbol: symbol,
   });
@@ -151,7 +128,7 @@ const getOutgoingDelegations = async (
   symbol: string,
   username: string,
 ): Promise<TokenDelegation[]> => {
-  return HiveEngineUtils.getApi().find('tokens', 'delegations', {
+  return HiveEngineConfigUtils.getApi().find('tokens', 'delegations', {
     from: username,
     symbol: symbol,
   });
@@ -197,10 +174,6 @@ const HiveEngineUtils = {
   cancelDelegationToken,
   getIncomingDelegations,
   getOutgoingDelegations,
-  getApi,
-  getAccountHistoryApi,
-  setActiveAccountHistoryApi,
-  setActiveApi,
 };
 
 export default HiveEngineUtils;

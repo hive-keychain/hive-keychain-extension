@@ -21,6 +21,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import ArrayUtils from 'src/utils/array.utils';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import * as ValidUrl from 'valid-url';
 import './tokens-settings.component.scss';
 
@@ -28,8 +30,8 @@ interface SelectOption {
   label: string;
   value: string;
   isDefault: boolean;
-  setAsActive: (itemIndex: number) => void;
-  deleteElement: (itemIndex: number, event: any) => void;
+  setAsActive: (option: SelectOption) => void;
+  deleteElement: (option: SelectOption, event: any) => void;
 }
 
 const TokensSettings = ({
@@ -47,48 +49,83 @@ const TokensSettings = ({
   const [isNewRpcPanelOpened, setIsNewRpcPanelOpened] = useState(false);
   const [newRpc, setNewRpc] = useState('');
 
+  const [rpcOptions, setRpcOptions] = useState<SelectOption[]>([]);
+  const [accountHistoryApiOptions, setAccountHistoryApiOptions] = useState<
+    SelectOption[]
+  >([]);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  useEffect(() => {
+    console.log(rpcOptions, accountHistoryApiOptions);
+  }, [rpcOptions, accountHistoryApiOptions]);
+
+  const init = async () => {
+    const customRpcs = await HiveEngineConfigUtils.getCustomRpcs();
+
+    const rpcOpts = ArrayUtils.mergeWithoutDuplicate(
+      customRpcs,
+      DefaultHiveEngineRpcs,
+    ).map((rpc) => {
+      return {
+        label: rpc.replace('https://', '').split('/')[0],
+        value: rpc,
+        isDefault: HiveEngineConfigUtils.isRpcDefault(rpc),
+        setAsActive: setRpcAsActive,
+        deleteElement: deleteRpc,
+      };
+    });
+    setRpcOptions(rpcOpts);
+
+    const customAccountHistoryApi =
+      await HiveEngineConfigUtils.getCustomAccountHistoryApi();
+    const accountHistoryApiOpts = ArrayUtils.mergeWithoutDuplicate(
+      customAccountHistoryApi,
+      DefaultAccountHistoryApis,
+    ).map((api) => {
+      return {
+        label: api.replace('https://', '').split('/')[0],
+        value: api,
+        isDefault: HiveEngineConfigUtils.isAccountHistoryApiDefault(api),
+        setAsActive: setAccountHistoryApiAsActive,
+        deleteElement: deleteAccountHistoryApi,
+      };
+    });
+
+    setAccountHistoryApiOptions(accountHistoryApiOpts);
+  };
+
   const createActiveValue = (str: string) => {
     return {
       label: str.replace('https://', '').split('/')[0],
       value: str,
       isDefault: false,
-      setAsActive: (itemIndex: number) => {},
-      deleteElement: (itemIndex: number, event: any) => {},
+      setAsActive: (option: SelectOption) => {},
+      deleteElement: (option: SelectOption, event: any) => {},
     };
   };
 
-  const deleteAccountHistoryApi = (elem: any, event: any) => {
-    console.log(`deleting history`, elem, event);
+  const deleteAccountHistoryApi = async (option: SelectOption, event: any) => {
+    event.preventDefault();
+    event.stopPropagation();
+    await HiveEngineConfigUtils.deleteCustomAccountHistoryApi(option.value);
+    init();
   };
-  const deleteRpc = (elem: any, event: any) => {
-    console.log(`deleting rpc `, elem, event);
+  const deleteRpc = async (option: SelectOption, event: any) => {
+    event.preventDefault();
+    event.stopPropagation();
+    await HiveEngineConfigUtils.deleteCustomRpc(option.value);
+    init();
   };
 
-  const setRpcAsActive = (elem: any) => {
-    setSelectedRpc(rpcOptions[elem].value);
+  const setRpcAsActive = (option: SelectOption) => {
+    setSelectedRpc(option.value);
   };
-  const setAccountHistoryApiAsActive = (elem: any) => {
-    setSelectedAccountHistoryApi(accountHistoryApiOptions[elem].value);
+  const setAccountHistoryApiAsActive = (option: SelectOption) => {
+    setSelectedAccountHistoryApi(option.value);
   };
-
-  const rpcOptions = DefaultHiveEngineRpcs.map((rpc) => {
-    return {
-      label: rpc.replace('https://', '').split('/')[0],
-      value: rpc,
-      isDefault: true,
-      setAsActive: setRpcAsActive,
-      deleteElement: deleteRpc,
-    };
-  });
-  const accountHistoryApiOptions = DefaultAccountHistoryApis.map((api) => {
-    return {
-      label: api.replace('https://', '').split('/')[0],
-      value: api,
-      isDefault: true,
-      setAsActive: setAccountHistoryApiAsActive,
-      deleteElement: deleteAccountHistoryApi,
-    };
-  });
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -117,7 +154,7 @@ const TokensSettings = ({
             : ''
         }`}
         onClick={() => {
-          selectProps.item.setAsActive(selectProps.itemIndex!);
+          selectProps.item.setAsActive(selectProps.item);
           selectProps.methods.dropDown('close');
         }}>
         <div className="rpc-name">{selectProps.item.label}</div>
@@ -126,7 +163,7 @@ const TokensSettings = ({
             src="/assets/images/clear.png"
             className="erase-button"
             onClick={($event) => {
-              selectProps.item.deleteElement(selectProps.itemIndex!, $event);
+              selectProps.item.deleteElement(selectProps.item, $event);
               selectProps.methods.dropDown('close');
             }}
           />
@@ -138,8 +175,7 @@ const TokensSettings = ({
   const saveAccountHistory = async () => {
     if (ValidUrl.isWebUri(newAccountHistory)) {
       setSuccessMessage('html_popup_new_account_history_save_success');
-      // save
-
+      await HiveEngineConfigUtils.addCustomAccountHistoryApi(newAccountHistory);
       setNewAccountHistory('');
       setIsNewAccountHistoryPanelOpened(false);
     } else {
@@ -149,8 +185,7 @@ const TokensSettings = ({
   const saveRpc = async () => {
     if (ValidUrl.isWebUri(newRpc)) {
       setSuccessMessage('html_popup_new_rpc_save_success');
-      // save
-
+      await HiveEngineConfigUtils.addCustomRpc(newRpc);
       setNewRpc('');
       setIsNewRpcPanelOpened(false);
     } else {
