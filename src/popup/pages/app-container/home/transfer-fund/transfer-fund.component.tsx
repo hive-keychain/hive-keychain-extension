@@ -171,6 +171,17 @@ const TransferFunds = ({
 
     const isCancelRecurrent = parseFloat(amount) === 0 && isRecurrent;
 
+    if (
+      isRecurrent &&
+      (!frequency ||
+        frequency.length === 0 ||
+        !iteration ||
+        iteration.length === 0)
+    ) {
+      setErrorMessage('popup_html_transfer_recurrent_missing_field');
+      return;
+    }
+
     if (isRecurrent && !isCancelRecurrent) {
       fields.push({
         label: 'popup_html_transfer_recurrence',
@@ -188,7 +199,10 @@ const TransferFunds = ({
       receiverUsername,
       currencyLabels[selectedCurrency],
       memo.length > 0,
+      isRecurrent,
     );
+
+    console.log(warningMessage);
 
     if (phishing.includes(receiverUsername)) {
       warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
@@ -204,6 +218,7 @@ const TransferFunds = ({
       ),
       fields: fields,
       warningMessage: warningMessage,
+      skipWarningTranslation: true,
       title: isCancelRecurrent
         ? 'popup_html_cancel_recurrent_transfer'
         : 'popup_html_transfer_funds',
