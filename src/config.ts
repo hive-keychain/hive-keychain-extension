@@ -4,7 +4,7 @@ const Config = {
   hiveEngine: {
     mainnet: 'ssc-mainnet-hive',
     accountHistoryApi: 'https://history.hive-engine.com/',
-    rpc: 'https://accounts.hive-engine.com/',
+    rpc: 'https://api.hive-engine.com/rpc',
   } as HiveEngineConfig,
   claims: {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),

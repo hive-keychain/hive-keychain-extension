@@ -2,7 +2,10 @@ import {
   DefaultAccountHistoryApis,
   DefaultHiveEngineRpcs,
 } from '@interfaces/hive-engine-rpc.interface';
-import { Token } from '@interfaces/tokens.interface';
+import {
+  setHEActiveAccountHistoryApi,
+  setHEActiveRpc,
+} from '@popup/actions/hive-engine-config.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
@@ -35,14 +38,14 @@ interface SelectOption {
 }
 
 const TokensSettings = ({
+  activeAccountHistoryApi,
+  activeHERpc,
   setTitleContainerProperties,
   setErrorMessage,
   setSuccessMessage,
+  setHEActiveAccountHistoryApi,
+  setHEActiveRpc,
 }: PropsFromRedux) => {
-  const [selectedRpc, setSelectedRpc] = useState(DefaultHiveEngineRpcs[0]);
-  const [selectedAccountHistoryApi, setSelectedAccountHistoryApi] = useState(
-    DefaultAccountHistoryApis[0],
-  );
   const [isNewAccountHistoryPanelOpened, setIsNewAccountHistoryPanelOpened] =
     useState(false);
   const [newAccountHistory, setNewAccountHistory] = useState('');
@@ -57,10 +60,6 @@ const TokensSettings = ({
   useEffect(() => {
     init();
   }, []);
-
-  useEffect(() => {
-    console.log(rpcOptions, accountHistoryApiOptions);
-  }, [rpcOptions, accountHistoryApiOptions]);
 
   const init = async () => {
     const customRpcs = await HiveEngineConfigUtils.getCustomRpcs();
@@ -121,10 +120,10 @@ const TokensSettings = ({
   };
 
   const setRpcAsActive = (option: SelectOption) => {
-    setSelectedRpc(option.value);
+    setHEActiveRpc(option.value);
   };
   const setAccountHistoryApiAsActive = (option: SelectOption) => {
-    setSelectedAccountHistoryApi(option.value);
+    setHEActiveAccountHistoryApi(option.value);
   };
 
   useEffect(() => {
@@ -199,7 +198,7 @@ const TokensSettings = ({
         <div className="select-title">Hive-Engine RPC node</div>
         <div className="select-panel">
           <Select
-            values={[createActiveValue(selectedRpc)]}
+            values={[createActiveValue(activeHERpc)]}
             options={rpcOptions}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
@@ -234,7 +233,7 @@ const TokensSettings = ({
         <div className="select-panel">
           <Select
             values={[
-              createActiveValue(selectedAccountHistoryApi) as SelectOption,
+              createActiveValue(activeAccountHistoryApi) as SelectOption,
             ]}
             options={accountHistoryApiOptions}
             onChange={() => undefined}
@@ -271,8 +270,8 @@ const TokensSettings = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    activeAccount: state.activeAccount,
-    tokens: state.tokens as Token[],
+    activeHERpc: state.hiveEngineConfig.rpc,
+    activeAccountHistoryApi: state.hiveEngineConfig.accountHistoryApi,
   };
 };
 
@@ -282,6 +281,8 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
   setSuccessMessage,
+  setHEActiveAccountHistoryApi,
+  setHEActiveRpc,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

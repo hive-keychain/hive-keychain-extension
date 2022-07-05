@@ -1,4 +1,4 @@
-import { hsc } from '@api/hiveEngine';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 
 export interface TransactionConfirmationResult {
   confirmed: boolean;
@@ -31,7 +31,7 @@ const tryConfirmTransaction = (
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
     setTimeout(async function () {
-      fulfill(hsc.getTransactionInfo(trxID));
+      fulfill(HiveEngineConfigUtils.getApi().getTransactionInfo(trxID));
     }, 1000);
   });
 };

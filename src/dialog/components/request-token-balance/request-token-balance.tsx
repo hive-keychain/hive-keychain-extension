@@ -1,6 +1,6 @@
-import { hsc } from '@api/hiveEngine';
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 
 type Props = {
   amount: number;
@@ -12,7 +12,7 @@ const RequestTokenBalance = ({ username, amount, currency }: Props) => {
   const [balance, setBalance] = useState('');
   const [newBalance, setNewBalance] = useState('');
   useEffect(() => {
-    hsc
+    HiveEngineConfigUtils.getApi()
       .find('tokens', 'balances', {
         account: username,
       })

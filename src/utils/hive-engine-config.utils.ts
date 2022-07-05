@@ -1,30 +1,31 @@
 import {
   DefaultAccountHistoryApis,
   DefaultHiveEngineRpcs,
+  HiveEngineConfig,
 } from '@interfaces/hive-engine-rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import axios from 'axios';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import SSC from 'sscjs';
 
-let hiveEngineAPI = new SSC('https://api.hive-engine.com/rpc');
+let rpc = new SSC('https://api.hive-engine.com/rpc');
 
-let historyHiveEngineAPI = axios.create({
+let accountHistoryApi = axios.create({
   baseURL: 'https://history.hive-engine.com/',
 });
 
 const getApi = () => {
-  return hiveEngineAPI;
+  return rpc;
 };
 const setActiveApi = (api: string) => {
-  hiveEngineAPI = new SSC(api);
+  rpc = new SSC(api);
 };
 
 const getAccountHistoryApi = () => {
-  return historyHiveEngineAPI;
+  return accountHistoryApi;
 };
 const setActiveAccountHistoryApi = (api: string) => {
-  hiveEngineAPI = axios.create({
+  accountHistoryApi = axios.create({
     baseURL: api,
   });
 };
@@ -86,6 +87,13 @@ const isAccountHistoryApiDefault = (api: string) => {
   return DefaultAccountHistoryApis.includes(api);
 };
 
+const saveConfigInStorage = async (config: HiveEngineConfig) => {
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
+    config,
+  );
+};
+
 export const HiveEngineConfigUtils = {
   getApi,
   setActiveAccountHistoryApi,
@@ -99,4 +107,5 @@ export const HiveEngineConfigUtils = {
   getCustomAccountHistoryApi,
   isRpcDefault,
   isAccountHistoryApiDefault,
+  saveConfigInStorage,
 };

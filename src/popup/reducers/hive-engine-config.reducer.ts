@@ -16,6 +16,12 @@ const HiveEngineConfigReducer = (
       return { ...state, accountHistoryApi: payload?.accountHistoryApi! };
     case ActionType.HE_SET_ACTIVE_RPC:
       return { ...state, rpc: payload?.rpc! };
+    case ActionType.HE_LOAD_CONFIG:
+      return {
+        ...state,
+        rpc: payload?.rpc!,
+        accountHistoryApi: payload?.accountHistoryApi!,
+      };
     default:
       return state;
   }
