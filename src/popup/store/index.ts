@@ -27,6 +27,7 @@ let previousHiveEngineConfig = store.getState().hiveEngineConfig;
 store.subscribe(() => {
   const { accounts, mk, activeRpc, activeAccount, hiveEngineConfig } =
     store.getState();
+  console.log(hiveEngineConfig);
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
     previousAccounts = accounts;
     AccountUtils.saveAccounts(accounts, mk);

@@ -64,10 +64,11 @@ const TokensSettings = ({
   const init = async () => {
     const customRpcs = await HiveEngineConfigUtils.getCustomRpcs();
 
-    const rpcOpts = ArrayUtils.mergeWithoutDuplicate(
+    const rpcFullList = ArrayUtils.mergeWithoutDuplicate(
       customRpcs,
       DefaultHiveEngineRpcs,
-    ).map((rpc) => {
+    );
+    const rpcOpts = rpcFullList.map((rpc) => {
       return {
         label: rpc.replace('https://', '').split('/')[0],
         value: rpc,
@@ -80,10 +81,11 @@ const TokensSettings = ({
 
     const customAccountHistoryApi =
       await HiveEngineConfigUtils.getCustomAccountHistoryApi();
-    const accountHistoryApiOpts = ArrayUtils.mergeWithoutDuplicate(
+    const accountHistoryApiFullList = ArrayUtils.mergeWithoutDuplicate(
       customAccountHistoryApi,
       DefaultAccountHistoryApis,
-    ).map((api) => {
+    );
+    const accountHistoryApiOpts = accountHistoryApiFullList.map((api) => {
       return {
         label: api.replace('https://', '').split('/')[0],
         value: api,
@@ -109,6 +111,7 @@ const TokensSettings = ({
   const deleteAccountHistoryApi = async (option: SelectOption, event: any) => {
     event.preventDefault();
     event.stopPropagation();
+
     await HiveEngineConfigUtils.deleteCustomAccountHistoryApi(option.value);
     init();
   };
@@ -157,16 +160,17 @@ const TokensSettings = ({
           selectProps.methods.dropDown('close');
         }}>
         <div className="rpc-name">{selectProps.item.label}</div>
-        {!selectProps.item.isDefault && (
-          <img
-            src="/assets/images/clear.png"
-            className="erase-button"
-            onClick={($event) => {
-              selectProps.item.deleteElement(selectProps.item, $event);
-              selectProps.methods.dropDown('close');
-            }}
-          />
-        )}
+        {!selectProps.item.isDefault &&
+          selectProps.item.label !== selectProps.props.values[0]?.label && (
+            <img
+              src="/assets/images/clear.png"
+              className="erase-button"
+              onClick={($event) => {
+                selectProps.item.deleteElement(selectProps.item, $event);
+                selectProps.methods.dropDown('close');
+              }}
+            />
+          )}
       </div>
     );
   };
@@ -177,6 +181,7 @@ const TokensSettings = ({
       await HiveEngineConfigUtils.addCustomAccountHistoryApi(newAccountHistory);
       setNewAccountHistory('');
       setIsNewAccountHistoryPanelOpened(false);
+      init();
     } else {
       setErrorMessage('html_popup_url_not_valid');
     }
@@ -187,6 +192,7 @@ const TokensSettings = ({
       await HiveEngineConfigUtils.addCustomRpc(newRpc);
       setNewRpc('');
       setIsNewRpcPanelOpened(false);
+      init();
     } else {
       setErrorMessage('html_popup_url_not_valid');
     }
