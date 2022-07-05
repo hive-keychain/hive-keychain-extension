@@ -47,6 +47,7 @@ type RequestMessage = {
 };
 
 const RequestConfirmation = ({ data }: Props) => {
+  console.log(data);
   switch (data.data.type) {
     case KeychainRequestTypes.addAccount:
       return <AddAccount {...data} data={data.data} />;

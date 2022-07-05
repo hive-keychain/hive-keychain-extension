@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 
 type Props = {
   amount: number;
@@ -12,17 +11,17 @@ const RequestTokenBalance = ({ username, amount, currency }: Props) => {
   const [balance, setBalance] = useState('');
   const [newBalance, setNewBalance] = useState('');
   useEffect(() => {
-    HiveEngineConfigUtils.getApi()
-      .find('tokens', 'balances', {
-        account: username,
-      })
-      .then((tokens: any) => {
-        const token = tokens.find((e: any) => e.symbol === currency);
-        const bal = token ? token.balance : '0';
-        const newBal = (parseFloat(bal) - amount).toFixed(3);
-        setBalance(`${bal} ${currency}`);
-        setNewBalance(`${newBal} ${currency}`);
-      });
+    // HiveEngineConfigUtils.getApi()
+    //   .find('tokens', 'balances', {
+    //     account: username,
+    //   })
+    //   .then((tokens: any) => {
+    //     const token = tokens.find((e: any) => e.symbol === currency);
+    //     const bal = token ? token.balance : '0';
+    //     const newBal = (parseFloat(bal) - amount).toFixed(3);
+    //     setBalance(`${bal} ${currency}`);
+    //     setNewBalance(`${newBal} ${currency}`);
+    //   });
   }, [username]);
   return (
     <RequestItem
