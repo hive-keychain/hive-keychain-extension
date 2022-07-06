@@ -2265,5 +2265,13 @@
   "popup_html_token_unstake_cooldown_disclaimer": {
     "message": "Unstaking this token will take $1 day(s).",
     "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_transfer_recurrent_exchange_warning": {
+    "message": "Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.",
+    "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
+  },
+  "popup_html_transfer_recurrent_missing_field": {
+    "message": "Iteration and frequency are mandatory",
+    "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
   }
 }
