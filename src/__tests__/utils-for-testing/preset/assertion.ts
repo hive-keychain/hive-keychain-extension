@@ -22,7 +22,7 @@ const awaitFindText = async (arialabel: string) => {
   expect(await screen.findByText(arialabel)).toBeInTheDocument();
 };
 /**
- * findByText
+ * getByLabelText
  */
 const getByLabelText = (ariaLabel: string) => {
   expect(screen.getByLabelText(ariaLabel)).toBeInTheDocument();
