@@ -2297,5 +2297,9 @@
   "popup_html_transfer_recurrent_missing_field": {
     "message": "Iteration and frequency are mandatory",
     "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
+  },
+  "html_popup_tokens_timeout": {
+    "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
+    "description": "Token timeout error"
   }
 }

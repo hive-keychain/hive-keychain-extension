@@ -1,5 +1,6 @@
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
+import { MessageType } from '@reference-data/message-type.enum';
 import {
   OperationsHiveEngine,
   Token,
@@ -12,9 +13,9 @@ import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
-  const action: ActionPayload<Token[]> = {
-    type: ActionType.LOAD_TOKENS,
-    payload: (
+  let tokens;
+  try {
+    tokens = (
       await HiveEngineConfigUtils.getApi().find(
         'tokens',
         'tokens',
@@ -28,7 +29,19 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
         ...t,
         metadata: JSON.parse(t.metadata),
       };
-    }),
+    });
+  } catch (err: any) {
+    if (err.message.includes('timeout')) {
+      dispatch({
+        type: ActionType.SET_MESSAGE,
+        payload: { key: 'html_popup_tokens_timeout', type: MessageType.ERROR },
+      });
+    }
+  }
+
+  const action: ActionPayload<Token[]> = {
+    type: ActionType.LOAD_TOKENS,
+    payload: tokens,
   };
   dispatch(action);
 };

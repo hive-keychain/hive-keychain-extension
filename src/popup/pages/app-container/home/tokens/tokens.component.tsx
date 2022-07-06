@@ -66,9 +66,9 @@ const Tokens = ({
 
   useEffect(() => {
     if (userTokens.loading) {
-      addToLoadingList('html_popup_loading_tokens_operation');
+      // addToLoadingList('html_popup_loading_tokens_operation');
     } else if (userTokens.list && market.length) {
-      removeFromLoadingList('html_popup_loading_tokens_operation');
+      // removeFromLoadingList('html_popup_loading_tokens_operation');
       setFilteredTokenList(
         userTokens.list
           .filter((token) => !hiddenTokens.includes(token.symbol))
@@ -92,17 +92,23 @@ const Tokens = ({
           __html: chrome.i18n.getMessage('popup_view_tokens_balance'),
         }}></div>
       <div className="top-bar-container">
-        <InputComponent
-          type={InputType.TEXT}
-          placeholder="popup_html_search"
-          value={filterValue}
-          onChange={setFilterValue}
-        />
-        <Icon
-          onClick={() => navigateTo(Screen.TOKENS_FILTER)}
-          name={Icons.FILTER}
-          type={IconType.OUTLINED}
-          additionalClassName="filter"></Icon>
+        {userTokens.loading && <div></div>}
+        {!userTokens.loading && (
+          <>
+            <InputComponent
+              type={InputType.TEXT}
+              placeholder="popup_html_search"
+              value={filterValue}
+              onChange={setFilterValue}
+            />
+
+            <Icon
+              onClick={() => navigateTo(Screen.TOKENS_FILTER)}
+              name={Icons.FILTER}
+              type={IconType.OUTLINED}
+              additionalClassName="filter"></Icon>
+          </>
+        )}
         <Icon
           onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
           name={Icons.SETTINGS}
