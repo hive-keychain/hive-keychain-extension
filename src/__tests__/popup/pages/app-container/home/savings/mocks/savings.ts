@@ -2,6 +2,7 @@ import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { ReactElement } from 'react';
 import HiveUtils from 'src/utils/hive.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -10,6 +11,7 @@ import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { ArrowDrop } from 'src/__tests__/utils-for-testing/interfaces/elements';
 import { ClickOrType } from 'src/__tests__/utils-for-testing/interfaces/events';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
@@ -42,7 +44,12 @@ const constants = {
       labels.savings.current,
       '1,000.000 HIVE',
     ],
-    HBD: 'TODO',
+    HBD: [
+      labels.savings.available,
+      '10,000.000 HBD',
+      labels.savings.current,
+      '1,000.000 HBD',
+    ],
   },
   texts: {
     withdraw: i18n.get('popup_html_withdraw_text'),
@@ -50,9 +57,10 @@ const constants = {
       Number(dynamic.globalProperties.hbd_interest_rate) / 100 + '',
     ]),
   },
-  transferTo: {
-    sameUser: mk.user.one,
-  },
+  //   transferTo: {
+  //     sameUser: mk.user.one,
+  //   },
+  username: mk.user.one,
   missingKey: i18n.get('popup_missing_key', [KeychainKeyTypesLC.active]),
   greaterThan: i18n.get('popup_html_power_up_down_error'),
   success: {
@@ -67,12 +75,11 @@ const constants = {
     deposit: (currency: string) =>
       i18n.get('popup_html_deposit_fail', [currency]),
   },
+  buttonDeposit: (currency: string) =>
+    i18n.get('popup_html_deposit_param', [currency]),
+  buttonWithdraw: (currency: string) =>
+    i18n.get('popup_html_withdraw_param', [currency]),
 };
-
-interface ArrowDrop {
-  arrow: string;
-  dropMenu: string;
-}
 
 const beforeEach = async (
   component: ReactElement,
@@ -98,27 +105,40 @@ const methods = {
   clickOnArialabel: async (clickOnAl: ArrowDrop) => {
     await clickAwait([clickOnAl.arrow, clickOnAl.dropMenu]);
   },
-  typeNClick: async (
-    transferTo: string,
-    amount: string,
-    confirmButton: boolean = false,
-  ) => {
-    let events: ClickOrType[] = [
-      {
+  typeNClick: async (toUse: {
+    amount?: string;
+    transferTo?: string;
+    confirmButton?: boolean;
+  }) => {
+    let events: ClickOrType[] = [];
+    if (toUse.amount) {
+      events.push({
+        ariaLabel: alInput.amount,
+        event: EventType.TYPE,
+        text: toUse.amount,
+      });
+    }
+    if (toUse.transferTo) {
+      events.push({
         ariaLabel: alInput.username,
         event: EventType.TYPE,
-        text: transferTo,
-      },
-      { ariaLabel: alInput.amount, event: EventType.TYPE, text: amount },
-      { ariaLabel: alButton.operation.savings.submit, event: EventType.CLICK },
-    ];
-    if (confirmButton) {
+        text: toUse.transferTo,
+      });
+    }
+    events.push({
+      ariaLabel: alButton.operation.savings.submit,
+      event: EventType.CLICK,
+    });
+    if (toUse.confirmButton) {
       events.push({
         ariaLabel: alButton.dialog.confirm,
         event: EventType.CLICK,
       });
     }
     await clickTypeAwait(events);
+  },
+  label: (currency: string) => {
+    return alDropdown.select.preFix.accountItem + currency.toUpperCase();
   },
 };
 

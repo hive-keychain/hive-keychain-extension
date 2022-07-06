@@ -213,6 +213,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label="select-currency-savings"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -224,6 +225,7 @@ const SavingsPage = ({
   const customOperationTypeLabelRender = (selectProps: SelectRenderer<any>) => {
     return (
       <div
+        aria-label="select-operation-type"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -237,6 +239,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label={`select-operation-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedSavingOperationType === selectProps.item.value
             ? 'selected'
@@ -255,6 +258,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedCurrency === selectProps.item.value ? 'selected' : ''
         }`}

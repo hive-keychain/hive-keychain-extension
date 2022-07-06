@@ -4,3 +4,8 @@ export interface ElementQuery {
   arialabelOrText: string;
   query: QueryDOM;
 }
+
+export interface ArrowDrop {
+  arrow: string;
+  dropMenu: string;
+}

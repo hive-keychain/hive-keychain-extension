@@ -98,7 +98,10 @@ const toHaveClass = async (ariaLabel: string, _class: string) => {
 /**
  * getByLabelText to toHaveValue
  */
-const toHaveValue = (arialabel: string, value: string) => {
+const toHaveValue = (
+  arialabel: string,
+  value: string | number | string[] | null | undefined,
+) => {
   expect(screen.getByLabelText(arialabel)).toHaveValue(value);
 };
 /**

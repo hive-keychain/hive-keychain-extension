@@ -1,11 +1,14 @@
 import App from '@popup/App';
 import React from 'react';
 import savings from 'src/__tests__/popup/pages/app-container/home/savings/mocks/savings';
+import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
+import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
+import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 //TODO refactor and split in files if needed.
 describe('savings.component tests:\n', () => {
@@ -27,16 +30,16 @@ describe('savings.component tests:\n', () => {
         assertion.getOneByText(constants.texts.withdraw);
       });
       it('Must show confirmation page', async () => {
-        await methods.typeNClick(constants.transferTo.sameUser, '100');
+        await methods.typeNClick({ amount: '100' });
         assertion.getByLabelText(alComponent.confirmationPage);
       });
       it('Must show error if not enough balance', async () => {
-        await methods.typeNClick(constants.transferTo.sameUser, '1000000');
+        await methods.typeNClick({ amount: '10000000' });
         await assertion.awaitFor(constants.greaterThan, QueryDOM.BYTEXT);
       });
       it('Must show error if operation fails', async () => {
         extraMocks.withdraw(false);
-        await methods.typeNClick(constants.transferTo.sameUser, '100', true);
+        await methods.typeNClick({ amount: '100', confirmButton: true });
         await assertion.awaitFor(
           constants.failed.withdraw(currency),
           QueryDOM.BYTEXT,
@@ -44,23 +47,51 @@ describe('savings.component tests:\n', () => {
       });
       it('Must show success message', async () => {
         extraMocks.withdraw(true);
-        await methods.typeNClick(constants.transferTo.sameUser, '100', true);
+        await methods.typeNClick({ amount: '100', confirmButton: true });
         await assertion.awaitFor(
           constants.success.withdraw(currency, '100'),
           QueryDOM.BYTEXT,
         );
       });
-      it.todo('Must set input to max');
-      it.todo('Must load HBD withdraw when click');
+      it('Must set input to max', async () => {
+        await clickAwait([alButton.setToMax]);
+        assertion.toHaveValue(alInput.amount, 10000);
+      });
+      it('Must load HBD withdraw page when selected', async () => {
+        await clickAwait([
+          alDropdown.select.savings.currency,
+          methods.label('hbd'),
+        ]);
+        assertion.getManyByText(constants.balances.HBD);
+      });
     });
     describe('deposit:\n', () => {
-      it.todo('Must show deposit message');
-      it.todo('Must show confirmation page');
+      beforeEach(async () => {
+        await clickAwait([
+          alDropdown.select.savings.operation.selector,
+          alDropdown.select.savings.operation.deposit,
+        ]);
+      });
+      it('Must display deposit button', () => {
+        assertion.toHaveTextContent([
+          {
+            arialabel: alButton.operation.savings.submit,
+            text: constants.buttonDeposit(currency),
+          },
+        ]);
+      });
+      it('Must show confirmation page', async () => {
+        await methods.typeNClick({
+          transferTo: constants.username,
+          amount: '100',
+        });
+        assertion.getByLabelText(alComponent.confirmationPage);
+      });
       it.todo('Must show error if not enough balance');
       it.todo('Must show error if operation fails');
       it.todo('Must show success message');
       it.todo('Must set input to max');
-      it.todo('Must load HBD withdraw when click');
+      it.todo('Must load HBD deposit page when selected');
     });
   });
   describe('HBD:\n', () => {
@@ -96,7 +127,7 @@ describe('savings.component tests:\n', () => {
       );
     });
     it('Must show error if no active password', async () => {
-      await methods.typeNClick(constants.transferTo.sameUser, '100');
+      await methods.typeNClick({ amount: '100' });
       await assertion.awaitFor(constants.missingKey, QueryDOM.BYTEXT);
     });
   });
