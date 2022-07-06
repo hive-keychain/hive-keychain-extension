@@ -9,7 +9,6 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
-import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { ArrowDrop } from 'src/__tests__/utils-for-testing/interfaces/elements';
 import { ClickOrType } from 'src/__tests__/utils-for-testing/interfaces/events';
@@ -57,9 +56,6 @@ const constants = {
       Number(dynamic.globalProperties.hbd_interest_rate) / 100 + '',
     ]),
   },
-  //   transferTo: {
-  //     sameUser: mk.user.one,
-  //   },
   username: mk.user.one,
   missingKey: i18n.get('popup_missing_key', [KeychainKeyTypesLC.active]),
   greaterThan: i18n.get('popup_html_power_up_down_error'),
@@ -79,6 +75,14 @@ const constants = {
     i18n.get('popup_html_deposit_param', [currency]),
   buttonWithdraw: (currency: string) =>
     i18n.get('popup_html_withdraw_param', [currency]),
+  toHiveSavings: {
+    arrow: alDropdown.arrow.hive,
+    dropMenu: alDropdown.span.savings,
+  } as ArrowDrop,
+  toHbdSavings: {
+    arrow: alDropdown.arrow.hbd,
+    dropMenu: alDropdown.span.savings,
+  } as ArrowDrop,
 };
 
 const beforeEach = async (
@@ -140,6 +144,19 @@ const methods = {
   label: (currency: string) => {
     return alDropdown.select.preFix.accountItem + currency.toUpperCase();
   },
+  dropOpAssert: async (currency: string, constants: string[]) => {
+    await clickAwait([
+      alDropdown.select.savings.currency,
+      methods.label(currency),
+    ]);
+    assertion.getManyByText(constants);
+  },
+  clickToDeposit: async () => {
+    await clickAwait([
+      alDropdown.select.savings.operation.selector,
+      alDropdown.select.savings.operation.deposit,
+    ]);
+  },
 };
 
 const extraMocks = {
@@ -151,16 +168,8 @@ const extraMocks = {
   },
 };
 
-/**
- * Conveniently to add data to be checked on home page, as text or aria labels.
- */
-const userInformation = () => {};
-
-mocks.helper();
-
 export default {
   beforeEach,
-  userInformation,
   methods,
   constants,
   extraMocks,

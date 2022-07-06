@@ -1,26 +1,22 @@
 import App from '@popup/App';
 import React from 'react';
 import savings from 'src/__tests__/popup/pages/app-container/home/savings/mocks/savings';
+import commonCasesDeposits from 'src/__tests__/popup/pages/app-container/home/savings/othercases/common-cases-deposits';
+import commonCasesWithdraws from 'src/__tests__/popup/pages/app-container/home/savings/othercases/common-cases-withdraws';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
-import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-//TODO refactor and split in files if needed.
 describe('savings.component tests:\n', () => {
-  const { methods, constants, extraMocks } = savings;
+  const { methods, constants } = savings;
   methods.afterEach;
   describe('HIVE:\n', () => {
     const currency = 'HIVE';
     beforeEach(async () => {
-      await savings.beforeEach(<App />, {
-        arrow: alDropdown.arrow.hive,
-        dropMenu: alDropdown.span.savings,
-      });
+      await savings.beforeEach(<App />, constants.toHiveSavings);
     });
     it('Must show saving and liquid balances', () => {
       assertion.getManyByText(constants.balances.HIVE);
@@ -29,48 +25,24 @@ describe('savings.component tests:\n', () => {
       it('Must show withdraw message', () => {
         assertion.getOneByText(constants.texts.withdraw);
       });
-      it('Must show confirmation page', async () => {
-        await methods.typeNClick({ amount: '100' });
-        assertion.getByLabelText(alComponent.confirmationPage);
-      });
-      it('Must show error if not enough balance', async () => {
-        await methods.typeNClick({ amount: '10000000' });
-        await assertion.awaitFor(constants.greaterThan, QueryDOM.BYTEXT);
-      });
-      it('Must show error if operation fails', async () => {
-        extraMocks.withdraw(false);
-        await methods.typeNClick({ amount: '100', confirmButton: true });
-        await assertion.awaitFor(
-          constants.failed.withdraw(currency),
-          QueryDOM.BYTEXT,
-        );
-      });
-      it('Must show success message', async () => {
-        extraMocks.withdraw(true);
-        await methods.typeNClick({ amount: '100', confirmButton: true });
-        await assertion.awaitFor(
-          constants.success.withdraw(currency, '100'),
-          QueryDOM.BYTEXT,
-        );
-      });
       it('Must set input to max', async () => {
         await clickAwait([alButton.setToMax]);
         assertion.toHaveValue(alInput.amount, 10000);
       });
       it('Must load HBD withdraw page when selected', async () => {
-        await clickAwait([
-          alDropdown.select.savings.currency,
-          methods.label('hbd'),
-        ]);
-        assertion.getManyByText(constants.balances.HBD);
+        await methods.dropOpAssert('hbd', constants.balances.HBD);
       });
+      commonCasesWithdraws.showConfirmation();
+      commonCasesWithdraws.notEnoughBalance();
+      commonCasesWithdraws.fail(currency);
+      commonCasesWithdraws.success(currency);
     });
     describe('deposit:\n', () => {
       beforeEach(async () => {
-        await clickAwait([
-          alDropdown.select.savings.operation.selector,
-          alDropdown.select.savings.operation.deposit,
-        ]);
+        await methods.clickToDeposit();
+      });
+      it('Must load HIVE deposit page when selected', async () => {
+        await methods.dropOpAssert('hive', constants.balances.HIVE);
       });
       it('Must display deposit button', () => {
         assertion.toHaveTextContent([
@@ -80,51 +52,45 @@ describe('savings.component tests:\n', () => {
           },
         ]);
       });
-      it('Must show confirmation page', async () => {
-        await methods.typeNClick({
-          transferTo: constants.username,
-          amount: '100',
-        });
-        assertion.getByLabelText(alComponent.confirmationPage);
-      });
-      it.todo('Must show error if not enough balance');
-      it.todo('Must show error if operation fails');
-      it.todo('Must show success message');
-      it.todo('Must set input to max');
-      it.todo('Must load HBD deposit page when selected');
+      commonCasesDeposits.showConfirmation();
+      commonCasesDeposits.notEnoughBalance();
+      commonCasesDeposits.fail(currency);
+      commonCasesDeposits.success(currency);
     });
   });
   describe('HBD:\n', () => {
-    it.todo('Must load saving and liquid');
+    const currency = 'HBD';
+    beforeEach(async () => {
+      await savings.beforeEach(<App />, constants.toHbdSavings);
+    });
+    it('Must load saving and liquid', () => {
+      assertion.getManyByText(constants.balances.HBD);
+    });
     describe('withdraw:\n', () => {
-      it.todo('Must show withdraw message');
-      it.todo('Must show confirmation page');
-      it.todo('Must show error if not enough balance');
-      it.todo('Must show error if operation fails');
-      it.todo('Must show success message');
-      it.todo('Must set input to max');
-      it.todo('Must load HBD withdraw when click');
+      it('Must show withdraw message', () => {
+        assertion.getOneByText(constants.texts.withdraw);
+      });
+      commonCasesWithdraws.showConfirmation();
+      commonCasesWithdraws.notEnoughBalance();
+      commonCasesWithdraws.fail(currency);
+      commonCasesWithdraws.success(currency);
     });
     describe('deposit:\n', () => {
-      it.todo('Must show deposit message');
-      it.todo('Must show confirmation page');
-      it.todo('Must show error if not enough balance');
-      it.todo('Must show error if operation fails');
-      it.todo('Must show success message');
-      it.todo('Must set input to max');
-      it.todo('Must load HBD withdraw when click');
+      beforeEach(async () => {
+        await methods.clickToDeposit();
+      });
+      it('Must show deposit message', () => {
+        assertion.getOneByText(constants.texts.depositHBD);
+      });
+      commonCasesDeposits.showConfirmation();
+      commonCasesDeposits.notEnoughBalance();
+      commonCasesDeposits.fail(currency);
+      commonCasesDeposits.success(currency);
     });
   });
   describe('Handling no active key\n:', () => {
     beforeEach(async () => {
-      await savings.beforeEach(
-        <App />,
-        {
-          arrow: alDropdown.arrow.hive,
-          dropMenu: alDropdown.span.savings,
-        },
-        true,
-      );
+      await savings.beforeEach(<App />, constants.toHiveSavings, true);
     });
     it('Must show error if no active password', async () => {
       await methods.typeNClick({ amount: '100' });
