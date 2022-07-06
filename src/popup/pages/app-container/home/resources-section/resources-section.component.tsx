@@ -19,7 +19,7 @@ const ResourcesSection = ({
   useEffect(() => {
     if (
       activeAccount?.account?.voting_manabar?.current_mana !== undefined &&
-      activeAccount.rc?.percentage
+      activeAccount.rc?.percentage !== undefined
     ) {
       const hasMana =
         activeAccount?.account?.voting_manabar?.current_mana !== 0;

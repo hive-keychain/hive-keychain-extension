@@ -1,10 +1,10 @@
+import { ExtendedAccount } from '@hiveio/dhive';
+import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { ReactElement } from 'react';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import { overWriteMocks } from 'src/__tests__/utils-for-testing/defaults/overwrite';
-import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
-import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
@@ -21,26 +21,37 @@ const constants = {
   stateAs: initialStates.iniStateAs.defaultExistent as RootState,
   username: mk.user.one,
   noMana: '--',
-  noRc: '--',
+  zeroRc: 'speedResource Credits0.00 %',
   wMana: '1.00 % (1.00 $)',
   wRc: '1.00 %',
   toolTip: {
     fullIn: 'Full in 4 days, 22 hours and 48 minutes',
     noHp: i18n.get('html_popup_voting_no_hp'),
   },
+  manabarZero: { current_mana: 0, percentage: 0 } as Manabar,
+  extendedZeroVotingMana: {
+    ...accounts.extended,
+    voting_manabar: {
+      current_mana: 0,
+    },
+  } as ExtendedAccount,
 };
 
 const beforeEach = async (
   component: ReactElement,
-  overWriteRcManaBar: boolean = false,
+  manabarRcZero: boolean = false,
 ) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
-  if (overWriteRcManaBar) {
-    overWriteMocks({
-      app: { getRCMana: OverwriteMock.SET_AS_NOT_IMPLEMENTED },
+  if (manabarRcZero) {
+    mockPreset.setOrDefault({
+      app: {
+        getAccounts: [constants.extendedZeroVotingMana],
+        getRCMana: constants.manabarZero,
+      },
     });
+  } else {
+    mockPreset.setOrDefault({});
   }
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(mk.user.one);
@@ -52,19 +63,8 @@ const methods = {
   }),
 };
 
-const extraMocks = () => {};
-
-/**
- * Conveniently to add data to be checked on home page, as text or aria labels.
- */
-const userInformation = () => {};
-
-mocks.helper();
-
 export default {
   beforeEach,
-  userInformation,
   methods,
   constants,
-  extraMocks,
 };
