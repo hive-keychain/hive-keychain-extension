@@ -76,7 +76,7 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
-          aria-label={props.ariaLabel} //modified for testings
+          aria-label={props.ariaLabel}
           className={`${props.hasError ? 'has-error' : ''}`}
           type={
             props.type === InputType.PASSWORD && isPasswordDisplay
@@ -119,6 +119,7 @@ const InputComponent = (props: InputProps) => {
           !props.onSetToMaxClicked &&
           props.value.length > 0 && (
             <Icon
+              ariaLabel="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
               type={IconType.OUTLINED}
@@ -150,7 +151,10 @@ const InputComponent = (props: InputProps) => {
             additionalClassName="input-img"></Icon>
         )}
         {props.onSetToMaxClicked && (
-          <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>
+          <span
+            aria-label="set-to-max-button"
+            className="set-to-max-button"
+            onClick={props.onSetToMaxClicked}>
             {chrome.i18n.getMessage('popup_html_send_max')}
           </span>
         )}

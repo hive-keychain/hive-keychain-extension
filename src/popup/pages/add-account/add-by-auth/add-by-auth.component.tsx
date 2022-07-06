@@ -48,7 +48,6 @@ const AddByAuth = ({
       localAccounts,
       setErrorMessage,
     );
-
     if (keys && KeysUtils.keysCount(keys) >= 2) {
       addAccount({ name: username, keys: keys });
       navigateTo(Screen.SETTINGS_MAIN_PAGE);
@@ -56,13 +55,14 @@ const AddByAuth = ({
   };
 
   return (
-    <div className="add-by-auth-page">
+    <div aria-label="add-by-auth-page" className="add-by-auth-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_auth_text'),
         }}></div>
       <InputComponent
+        ariaLabel="input-username"
         value={username}
         onChange={setUsername}
         logo={Icons.AT}
@@ -71,6 +71,7 @@ const AddByAuth = ({
         onEnterPress={submitForm}
       />
       <InputComponent
+        ariaLabel="input-authorized-account"
         value={authorizedAccount}
         onChange={setAuthorizedAccount}
         logo={Icons.AT}
@@ -79,6 +80,7 @@ const AddByAuth = ({
         onEnterPress={submitForm}
       />
       <ButtonComponent
+        ariaLabel="submit-button"
         label={'popup_html_submit'}
         onClick={submitForm}
         fixToBottom
