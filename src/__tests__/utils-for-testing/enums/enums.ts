@@ -17,6 +17,7 @@ export enum EventType {
   CLICK = 'click',
   TYPE = 'type',
   HOVER = 'hover',
+  UNHOVER = 'unhover',
 }
 
 export enum KeyToUse {

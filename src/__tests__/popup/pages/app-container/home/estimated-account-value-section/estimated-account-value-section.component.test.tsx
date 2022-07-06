@@ -1,102 +1,57 @@
-//TODO: fix and finish
-// import App from '@popup/App';
-// import '@testing-library/jest-dom';
-// import { act, cleanup, screen } from '@testing-library/react';
-// import React from 'react';
-// import AccountUtils from 'src/utils/account.utils';
-// import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
-// import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
-// import { userEventPendingTimers } from 'src/__tests__/utils-for-testing/end-to-end-events';
-// import mockPreset, {
-//   MockPreset,
-// } from 'src/__tests__/utils-for-testing/preset/mock-preset';
-// import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
-// import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
+import App from '@popup/App';
+import '@testing-library/jest-dom';
+import { screen } from '@testing-library/react';
+import React from 'react';
+import estimatedAccountValue from 'src/__tests__/popup/pages/app-container/home/estimated-account-value-section/mocks/estimated-account-value';
+import alToolTip from 'src/__tests__/utils-for-testing/aria-labels/al-toolTip';
+import {
+  EventType,
+  QueryDOM,
+} from 'src/__tests__/utils-for-testing/enums/enums';
+import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
+import config from 'src/__tests__/utils-for-testing/setups/config';
+config.byDefault();
+const { constants, methods } = estimatedAccountValue;
+describe('estimated-account-value-section.component tests:\n', () => {
+  estimatedAccountValue.methods.after;
+  describe('with valid response from hive', () => {
+    beforeEach(async () => {
+      await estimatedAccountValue.beforeEach(<App />, false);
+    });
+    it('Must display the estimated account value', () => {
+      assertion.getByText([
+        { arialabelOrText: constants.label, query: QueryDOM.BYTEXT },
+        { arialabelOrText: constants.amountString, query: QueryDOM.BYTEXT },
+      ]);
+    });
+    it('Must display custom tooltip on mouse enter', async () => {
+      await methods.actOnSection(EventType.HOVER);
+      expect(screen.getByLabelText(alToolTip.content)).toHaveTextContent(
+        constants.estimationText,
+      );
+    });
+    it('Must remove custom tooltip on mouse leave', async () => {
+      await methods.actOnSection(EventType.HOVER);
+      expect(screen.getByLabelText(alToolTip.content)).toHaveTextContent(
+        constants.estimationText,
+      );
+      await methods.actOnSection(EventType.UNHOVER);
+      assertion.queryByLabel(alToolTip.content, false);
+    });
+  });
 
-// const chrome = require('chrome-mock');
-// global.chrome = chrome;
-// jest.setTimeout(10000);
-// const mk = fakeData.mk.userData1;
-// const accounts = fakeData.accounts.twoAccounts;
-
-// describe('estimated-account-value-section.component tests:\n', () => {
-//   let customRerender: (
-//     ui: React.ReactElement<any, string | React.JSXElementConstructor<any>>,
-//   ) => void;
-//   beforeEach(async () => {
-//     jest.useFakeTimers('legacy');
-//     act(() => {
-//       jest.advanceTimersByTime(4300);
-//     });
-//     mockPreset.load(MockPreset.HOMEDEFAULT, mk, accounts).preset;
-//     const { rerender } = customRender(<App />, {
-//       initialState: { mk: mk, accounts: accounts } as RootState,
-//     });
-//     expect(await screen.findByText(mk)).toBeDefined();
-//     customRerender = rerender;
-//   });
-//   afterEach(() => {
-//     jest.runOnlyPendingTimers();
-//     jest.useRealTimers();
-//     cleanup();
-//   });
-//   const labelEstimatedAccountValue = 'Estimated Account Value';
-//   it('Must display the estimated account value', () => {
-//     expect(screen.getByText(labelEstimatedAccountValue)).toBeInTheDocument();
-//     expect(screen.getByText('$ 100000 USD')).toBeInTheDocument();
-//   });
-//   it('Must display custom tooltip on mouse enter', async () => {
-//     await act(async () => {
-//       await userEventPendingTimers.hover(
-//         screen.getByLabelText(al.toolTip.custom),
-//       );
-//     });
-//     expect(screen.getByLabelText(al.toolTip.content)).toBeInTheDocument();
-//     expect(
-//       screen.getByText(
-//         /The estimated account value is a ballpark idea of what your funds are worth in USD./i,
-//       ),
-//     ).toBeInTheDocument();
-//   });
-//   it('Must remove custom tooltip on mouse leave', async () => {
-//     await act(async () => {
-//       await userEventPendingTimers.hover(
-//         screen.getByLabelText(al.toolTip.custom),
-//       );
-//     });
-//     expect(screen.getByLabelText(al.toolTip.content)).toBeInTheDocument();
-//     expect(
-//       screen.getByText(
-//         /The estimated account value is a ballpark idea of what your funds are worth in USD./i,
-//       ),
-//     ).toBeInTheDocument();
-//     await act(async () => {
-//       await userEventPendingTimers.unhover(
-//         screen.getByLabelText(al.toolTip.custom),
-//       );
-//     });
-//     expect(
-//       screen.queryByText(
-//         /The estimated account value is a ballpark idea of what your funds are worth in USD./i,
-//       ),
-//     ).not.toBeInTheDocument();
-//   });
-//   it('Must display ... when account value not received', async () => {
-//     AccountUtils.getAccountValue = jest.fn().mockReturnValue(undefined);
-//     customRerender(<App />);
-//     act(() => {
-//       jest.advanceTimersByTime(4300);
-//     });
-//     expect(await screen.findByText(mk)).toBeDefined();
-//     const divValue = screen.getByLabelText(
-//       al.div.estimatedAccountValue,
-//     ) as HTMLDivElement;
-//     expect(divValue.textContent).toBe('...');
-//   });
-// });
-
-describe('To remove after fixing this file', () => {
-  it('Must be removed after fixing', () => {});
+  describe('with no response from hive', () => {
+    beforeEach(async () => {
+      await estimatedAccountValue.beforeEach(<App />, true);
+    });
+    it('Must display ... when account value not received', async () => {
+      assertion.getByText([
+        { arialabelOrText: constants.label, query: QueryDOM.BYTEXT },
+        {
+          arialabelOrText: constants.amountNotReceived,
+          query: QueryDOM.BYTEXT,
+        },
+      ]);
+    });
+  });
 });
-
-export {};

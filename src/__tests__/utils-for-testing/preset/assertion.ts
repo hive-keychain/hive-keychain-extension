@@ -35,10 +35,10 @@ const getByDisplay = (value: string) => {
 };
 /**
  * queryByLabelText. More flexible to test appearance/dissapearance of DOM elements.
- * @param {boolean} tobe true: toBe in the doc. Default as true.
+ * @param {boolean} tobeInDoc Default as true.
  */
-const queryByLabel = (ariaLabel: string, tobe: boolean = true) => {
-  tobe === true
+const queryByLabel = (ariaLabel: string, tobeInDoc: boolean = true) => {
+  tobeInDoc === true
     ? expect(screen.queryByLabelText(ariaLabel)).toBeInTheDocument()
     : expect(screen.queryByLabelText(ariaLabel)).not.toBeInTheDocument();
 };

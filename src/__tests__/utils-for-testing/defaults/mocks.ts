@@ -69,6 +69,7 @@ const _defaults = {
 
 const mocksDefault = {
   _defaults,
+  defaultAccountValue,
 };
 
 export default mocksDefault;
