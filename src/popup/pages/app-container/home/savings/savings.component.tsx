@@ -291,6 +291,7 @@ const SavingsPage = ({
 
       {
         <InputComponent
+          ariaLabel="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_transfer_to"
@@ -301,6 +302,7 @@ const SavingsPage = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -320,6 +322,7 @@ const SavingsPage = ({
       </div>
 
       <OperationButtonComponent
+        ariaLabel="submit-savings"
         requiredKey={KeychainKeyTypesLC.active}
         label={
           selectedSavingOperationType === SavingOperationType.WITHDRAW

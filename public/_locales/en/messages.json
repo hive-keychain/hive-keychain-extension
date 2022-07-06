@@ -1329,7 +1329,7 @@
     "description": "On savings menu"
   },
   "popup_html_withdraw_success": {
-    "message": "Successfully started a $1  withdrawal from savings",
+    "message": "Successfully started a $1 withdrawal from savings",
     "description": "On savings menu"
   },
   "popup_html_withdraw_fail": {
