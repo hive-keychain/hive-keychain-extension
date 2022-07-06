@@ -28,6 +28,15 @@ const getByLabelText = (ariaLabel: string) => {
   expect(screen.getByLabelText(ariaLabel)).toBeInTheDocument();
 };
 /**
+ * queryByLabelText. More flexible to test appearance/dissapearance of DOM elements.
+ * @param {boolean} tobe true: toBe in the doc. Default as true.
+ */
+const queryByLabel = (ariaLabel: string, tobe: boolean = true) => {
+  tobe === true
+    ? expect(screen.queryByLabelText(ariaLabel)).toBeInTheDocument()
+    : expect(screen.queryByLabelText(ariaLabel)).not.toBeInTheDocument();
+};
+/**
  * Await for assertion. using waitFor under the hood.
  * Can select bewteen getByLabelText or getByText
  */
@@ -67,4 +76,5 @@ export default {
   getByText,
   awaitFindText,
   getByLabelText,
+  queryByLabel,
 };
