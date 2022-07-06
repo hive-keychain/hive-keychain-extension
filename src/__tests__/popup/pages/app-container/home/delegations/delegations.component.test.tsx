@@ -1,291 +1,89 @@
-//TODO fix and finish.
-// import App from '@popup/App';
-// import '@testing-library/jest-dom';
-// import { act, cleanup, screen } from '@testing-library/react';
-// import React from 'react';
-// import HiveUtils from 'src/utils/hive.utils';
-// import al from 'src/__tests__/utils-for-testing/end-to-end-aria-labels';
-// import fakeData from 'src/__tests__/utils-for-testing/end-to-end-data';
-// import { userEventPendingTimers } from 'src/__tests__/utils-for-testing/end-to-end-events';
-// import mockPreset, {
-//   MockPreset,
-// } from 'src/__tests__/utils-for-testing/end-to-end-mocks-presets';
-// import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
-// import { customRender } from 'src/__tests__/utils-for-testing/renderSetUp';
-
-// const chrome = require('chrome-mock');
-// global.chrome = chrome;
-// jest.setTimeout(10000);
-// const mk = fakeData.mk.userData1;
-// const accounts = fakeData.accounts.twoAccounts;
-
-// describe('delegations.component tests:\n', () => {
-//   afterEach(() => {
-//     jest.runOnlyPendingTimers();
-//     jest.useRealTimers();
-//     cleanup();
-//   });
-//   describe('handling errors on load:\n', () => {
-//     beforeEach(async () => {
-//       jest.useFakeTimers('legacy');
-//       act(() => {
-//         jest.advanceTimersByTime(4300);
-//       });
-//       mockPreset.load(MockPreset.ERRORDELEGATIONS, mk, accounts).preset;
-//       customRender(<App />, {
-//         initialState: { mk: mk, accounts: accounts } as RootState,
-//       });
-//       expect(await screen.findByText(mk)).toBeDefined();
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.dropdown.arrow.hp),
-//         );
-//       });
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.dropdown.span.delegations),
-//         );
-//       });
-
-//       const state = {
-//         mk: '',
-//         accounts: [],
-//         activeAccount: {},
-//         activeRpc: {},
-//       } as RootState;
-//     });
-//     it('Must load delegations page, and show error', async () => {
-//       expect(
-//         await screen.findByLabelText(al.component.delegationsPage),
-//       ).toBeInTheDocument();
-//       expect(
-//         await screen.findByText(fakeData.messages.error.delegations.incoming),
-//       ).toBeInTheDocument();
-//     });
-//   });
-//   describe('no errors on load:\n', () => {
-//     beforeEach(async () => {
-//       jest.useFakeTimers('legacy');
-//       act(() => {
-//         jest.advanceTimersByTime(4300);
-//       });
-//       mockPreset.load(MockPreset.HOMEDEFAULT, mk, accounts).preset;
-//       customRender(<App />, {
-//         initialState: { mk: mk, accounts: accounts } as RootState,
-//       });
-//       expect(await screen.findByText(mk)).toBeDefined();
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.dropdown.arrow.hp),
-//         );
-//       });
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.dropdown.span.delegations),
-//         );
-//       });
-//     });
-//     it('Must navigate to delegations page', () => {
-//       expect(
-//         screen.getByLabelText(al.component.delegationsPage),
-//       ).toBeInTheDocument();
-//     });
-//     it('Must navigate to INCOMING_OUTGOING_PAGE when clicking incomming', async () => {
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.delegations.total.incoming),
-//         );
-//       });
-//       expect(
-//         screen.getByLabelText(al.component.incomingOutgoingPage),
-//       ).toBeInTheDocument();
-//       expect(screen.getByText('Total Incoming')).toBeInTheDocument();
-//     });
-//     it('Must navigate to INCOMING_OUTGOING_PAGE when clicking outcomming', async () => {
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.delegations.total.outgoing),
-//         );
-//       });
-//       expect(
-//         screen.getByLabelText(al.component.incomingOutgoingPage),
-//       ).toBeInTheDocument();
-//       expect(screen.getByText('Total Outgoing')).toBeInTheDocument();
-//     });
-//     it('Must navigate to INCOMING_OUTGOING_PAGE, and go back when clicking on back icon', async () => {
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.delegations.total.incoming),
-//         );
-//       });
-//       expect(
-//         screen.getByLabelText(al.component.incomingOutgoingPage),
-//       ).toBeInTheDocument();
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.icon.arrowBack),
-//         );
-//       });
-//       expect(
-//         screen.getByLabelText(al.component.delegationsPage),
-//       ).toBeInTheDocument();
-//     });
-//     it('Must set delegation amount to max when pressing max button', async () => {
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.setToMax),
-//         );
-//       });
-//       const inputAmount = screen.getByLabelText(
-//         al.input.amount,
-//       ) as HTMLInputElement;
-//       expect(inputAmount.value).toBe('0.459');
-//     });
-//     it('Must show error if wrong requested value', async () => {
-//       await act(async () => {
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.username),
-//           'theghost1980',
-//         );
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.amount),
-//           '1000',
-//         );
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.operation.delegate.submit),
-//         );
-//       });
-//       expect(
-//         await screen.findByText(fakeData.messages.error.greaterThan),
-//       ).toBeInTheDocument();
-//     });
-//     it('Must show error when delegation fails', async () => {
-//       HiveUtils.delegateVestingShares = jest.fn().mockResolvedValue(false);
-//       await act(async () => {
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.username),
-//           'theghost1980',
-//         );
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.amount),
-//           '0.1',
-//         );
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.operation.delegate.submit),
-//         );
-//       });
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.dialog.confirm),
-//         );
-//       });
-//       expect(
-//         await screen.findByText(fakeData.messages.error.delegations.failed),
-//       ).toBeInTheDocument();
-//     });
-//     it('Must navigate to confirmation page and go back when pressing cancel', async () => {
-//       await act(async () => {
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.username),
-//           'theghost1980',
-//         );
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.amount),
-//           '0.1',
-//         );
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.operation.delegate.submit),
-//         );
-//       });
-//       expect(
-//         screen.getByLabelText(al.component.confirmationPage),
-//       ).toBeInTheDocument();
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.dialog.cancel),
-//         );
-//       });
-//       expect(
-//         screen.getByLabelText(al.component.delegationsPage),
-//       ).toBeInTheDocument();
-//     });
-//     it('Must navigate to home page after successful delegation and show message', async () => {
-//       HiveUtils.delegateVestingShares = jest.fn().mockResolvedValue(true);
-//       await act(async () => {
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.username),
-//           'theghost1980',
-//         );
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.amount),
-//           '0.1',
-//         );
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.operation.delegate.submit),
-//         );
-//       });
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.dialog.confirm),
-//         );
-//       });
-//       expect(
-//         await screen.findByText(fakeData.messages.success.delegation),
-//       ).toBeInTheDocument();
-//       expect(
-//         await screen.findByLabelText(al.component.homePage),
-//       ).toBeInTheDocument();
-//     });
-//     it('Must cancel a delegation when submitting with 0 HP value, show message and navigate to home', async () => {
-//       HiveUtils.delegateVestingShares = jest.fn().mockResolvedValue(true);
-//       await act(async () => {
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.username),
-//           'theghost1980',
-//         );
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.operation.delegate.submit),
-//         );
-//       });
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.dialog.confirm),
-//         );
-//       });
-//       expect(
-//         await screen.findByText(fakeData.messages.success.delegationCanceled),
-//       ).toBeInTheDocument();
-//       expect(
-//         await screen.findByLabelText(al.component.homePage),
-//       ).toBeInTheDocument();
-//     });
-//     it('Must show message if cancellation fails', async () => {
-//       HiveUtils.delegateVestingShares = jest.fn().mockResolvedValue(false);
-//       await act(async () => {
-//         await userEventPendingTimers.type(
-//           screen.getByLabelText(al.input.username),
-//           'theghost1980',
-//         );
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.operation.delegate.submit),
-//         );
-//       });
-//       await act(async () => {
-//         await userEventPendingTimers.click(
-//           screen.getByLabelText(al.button.dialog.confirm),
-//         );
-//       });
-//       expect(
-//         await screen.findByText(
-//           fakeData.messages.error.delegations.failedCancelation,
-//         ),
-//       ).toBeInTheDocument();
-//     });
-//   });
-// });
-
-describe('To remove after fixing this file', () => {
-  it('Must be removed after fixing', () => {});
+import App from '@popup/App';
+import '@testing-library/jest-dom';
+import React from 'react';
+import delegations from 'src/__tests__/popup/pages/app-container/home/delegations/mocks/delegations';
+import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
+import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
+import config from 'src/__tests__/utils-for-testing/setups/config';
+import {
+  actPendingTimers,
+  clickAwait,
+} from 'src/__tests__/utils-for-testing/setups/events';
+config.byDefault();
+describe('delegations.component tests:\n', () => {
+  const { message } = delegations.constants;
+  const { onScreen } = delegations.userInformation;
+  delegations.methods.after;
+  describe('handling errors on load:\n', () => {
+    beforeEach(async () => {
+      await delegations.beforeEach(<App />, true);
+    });
+    it('Must load delegations page, and show error', async () => {
+      await assertion.awaitFor(message.error.incomming, QueryDOM.BYTEXT);
+    });
+  });
+  describe('no errors on load:\n', () => {
+    beforeEach(async () => {
+      await delegations.beforeEach(<App />, false);
+    });
+    it('Must navigate to delegations page', () => {
+      assertion.getByLabelText(alComponent.delegationsPage);
+    });
+    it('Must navigate to INCOMING_PAGE when clicking incoming', async () => {
+      await clickAwait([alButton.delegations.total.incoming]);
+      delegations.methods.assertPageAnd(onScreen.total.incoming);
+    });
+    it('Must navigate to INCOMING_OUTGOING_PAGE when clicking outcomming', async () => {
+      await clickAwait([alButton.delegations.total.outgoing]);
+      delegations.methods.assertPageAnd(onScreen.total.outgoing);
+    });
+    it('Must navigate to INCOMING_OUTGOING_PAGE, and go back when clicking on back icon', async () => {
+      await clickAwait([alButton.delegations.total.outgoing]);
+      assertion.getByLabelText(alComponent.incomingOutgoingPage);
+      await clickAwait([alIcon.arrowBack]);
+      assertion.getByLabelText(alComponent.delegationsPage);
+    });
+    it('Must set delegation amount to max when pressing max button', async () => {
+      await clickAwait([alButton.setToMax]);
+      assertion.getByDisplay(delegations.userInformation.delegation.maxAmount);
+    });
+    it('Must show error if wrong requested value', async () => {
+      await delegations.methods.typeNClick('theghost1980', '1000', false);
+      await assertion.awaitFor(message.error.powerUpDown, QueryDOM.BYTEXT);
+    });
+    it('Must show error when delegation fails', async () => {
+      delegations.extraMocks(false);
+      await delegations.methods.typeNClick('theghost1980', '0.1', true);
+      await assertion.awaitFor(message.error.delegation, QueryDOM.BYTEXT);
+    });
+    it('Must navigate to confirmation page and go back when pressing cancel', async () => {
+      await delegations.methods.typeNClick('theghost1980', '0.1', false);
+      assertion.getByLabelText(alComponent.confirmationPage);
+      await clickAwait([alButton.dialog.cancel]);
+      assertion.getByLabelText(alComponent.delegationsPage);
+    });
+    it('Must make a delegation, show message and go home page', async () => {
+      delegations.extraMocks(true);
+      await delegations.methods.typeNClick('theghost1980', '0.1', true);
+      await actPendingTimers();
+      await assertion.awaitFor(message.success.delegation, QueryDOM.BYTEXT);
+      assertion.getByLabelText(alComponent.homePage);
+    });
+    it('Must cancel a delegation, show message and navigate to home', async () => {
+      delegations.extraMocks(true);
+      await delegations.methods.typeNClick('theghost1980', '', true, true);
+      await actPendingTimers();
+      await assertion.awaitFor(message.success.cancelation, QueryDOM.BYTEXT);
+      assertion.getByLabelText(alComponent.homePage);
+    });
+    it('Must show error message if cancellation fails', async () => {
+      delegations.extraMocks(false);
+      await delegations.methods.typeNClick('theghost1980', '', true, true);
+      await actPendingTimers();
+      await assertion.awaitFor(message.error.cancellation, QueryDOM.BYTEXT);
+    });
+  });
 });
-
-export {};
