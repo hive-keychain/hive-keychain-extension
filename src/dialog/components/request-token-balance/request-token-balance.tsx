@@ -1,28 +1,39 @@
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import React, { useEffect, useState } from 'react';
+import Config from 'src/config';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import SSC from 'sscjs';
 
 type Props = {
   amount: number;
   currency: string;
   username: string;
+  hiveEngineConfig: HiveEngineConfig;
 };
 
-const RequestTokenBalance = ({ username, amount, currency }: Props) => {
+const RequestTokenBalance = ({
+  username,
+  amount,
+  currency,
+  hiveEngineConfig,
+}: Props) => {
   const [balance, setBalance] = useState('');
   const [newBalance, setNewBalance] = useState('');
+  const config = hiveEngineConfig ? hiveEngineConfig : Config.hiveEngine;
   useEffect(() => {
-    // HiveEngineConfigUtils.getApi()
-    //   .find('tokens', 'balances', {
-    //     account: username,
-    //   })
-    //   .then((tokens: any) => {
-    //     const token = tokens.find((e: any) => e.symbol === currency);
-    //     const bal = token ? token.balance : '0';
-    //     const newBal = (parseFloat(bal) - amount).toFixed(3);
-    //     setBalance(`${bal} ${currency}`);
-    //     setNewBalance(`${newBal} ${currency}`);
-    //   });
+    new SSC(config.rpc)
+      .find('tokens', 'balances', {
+        account: username,
+      })
+      .then((tokens: any) => {
+        const token = tokens.find((e: any) => e.symbol === currency);
+        const bal = token ? token.balance : '0';
+        const newBal = (parseFloat(bal) - amount).toFixed(3);
+        setBalance(`${bal} ${currency}`);
+        setNewBalance(`${newBal} ${currency}`);
+      });
   }, [username]);
+
   return (
     <RequestItem
       title="dialog_balance"

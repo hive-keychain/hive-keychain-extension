@@ -27,7 +27,6 @@ export const initHiveEngineConfigFromStorage =
       LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
     )) as HiveEngineConfig;
     if (config) {
-      console.log(config);
       HiveEngineConfigUtils.setActiveAccountHistoryApi(
         config.accountHistoryApi,
       );

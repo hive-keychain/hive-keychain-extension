@@ -27,7 +27,6 @@ const getValuefromLS = (...args: any[]) => {
 };
 
 const i18nGetMessage = (message: string) => {
-  //console.log('message input: ', message);
   if (messagesJsonFile[message]) {
     return messagesJsonFile[message].message;
   }

@@ -1,10 +1,11 @@
 import reducers from '@popup/reducers';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
 // import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
@@ -53,7 +54,10 @@ store.subscribe(() => {
       previousHiveEngineConfig.rpc !== hiveEngineConfig.rpc)
   ) {
     previousHiveEngineConfig = hiveEngineConfig;
-    HiveEngineConfigUtils.saveConfigInStorage(hiveEngineConfig);
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.HIVE_ENGINE_ACTIVE_CONFIG,
+      hiveEngineConfig,
+    );
   }
 });
 
