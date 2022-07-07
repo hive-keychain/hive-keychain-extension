@@ -177,7 +177,7 @@ const TokensSettings = ({
 
   const saveAccountHistory = async () => {
     if (accountHistoryApiOptions.find((e) => e.value === newAccountHistory)) {
-      setErrorMessage('html_popup_url_not_valid');
+      setErrorMessage('html_popup_rpc_already_exist');
       return;
     }
     if (ValidUrl.isWebUri(newAccountHistory)) {
@@ -193,7 +193,7 @@ const TokensSettings = ({
 
   const saveRpc = async () => {
     if (rpcOptions.find((e) => e.value === newRpc)) {
-      setErrorMessage('html_popup_url_not_valid');
+      setErrorMessage('html_popup_rpc_already_exist');
       return;
     }
     if (ValidUrl.isWebUri(newRpc)) {

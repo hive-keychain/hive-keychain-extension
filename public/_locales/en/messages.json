@@ -2290,6 +2290,10 @@
     "message": "New account history API was saved successfully",
     "description": "Tokens setting page =>  add rpc node"
   },
+  "html_popup_rpc_already_exist": {
+    "message": "This RPC is already in your list",
+    "description": "Tokens setting page =>  add rpc node"
+  },
   "popup_html_transfer_recurrent_exchange_warning": {
     "message": "Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.",
     "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
