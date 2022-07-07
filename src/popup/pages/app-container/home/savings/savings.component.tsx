@@ -288,7 +288,7 @@ const SavingsPage = ({
   };
 
   return (
-    <div className="savings-page">
+    <div className="savings-page" aria-label="savings-page">
       <AvailableCurrentPanelComponent
         available={liquid}
         availableCurrency={currency}

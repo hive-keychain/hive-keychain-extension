@@ -59,7 +59,7 @@ const IncomingOutgoingPage = ({
   }, []);
 
   return (
-    <div className="incoming-outgoing-page">
+    <div aria-label="incoming-outgoing-page" className="incoming-outgoing-page">
       <div className="total">
         <div className="label">{chrome.i18n.getMessage(header)}</div>
         <div className="value">

@@ -1,7 +1,7 @@
 import {
   HBDDropdownMenuItems,
   HiveDropdownMenuItems,
-  HpDropdownMenuItems,
+  HpDropdownMenuItems
 } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
 import { WalletInfoSectionItemComponent } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-section-item/wallet-info-section-item.component';
 import { RootState } from '@popup/store';
@@ -108,6 +108,7 @@ const WalletInfoSection = ({
           )}
         </div>
         <img
+          aria-label="dropdown-arrow-hive"
           className="dropdown-arrow"
           src="/assets/images/uparrow.png"
           onClick={(event) => toggleDropdown(event, HiveDropdownMenuItems)}
@@ -144,6 +145,7 @@ const WalletInfoSection = ({
           )}
         </div>
         <img
+          aria-label="dropdown-arrow-hbd"
           className="dropdown-arrow"
           src="/assets/images/uparrow.png"
           onClick={(event) => toggleDropdown(event, HBDDropdownMenuItems)}
@@ -175,6 +177,7 @@ const WalletInfoSection = ({
           )}
         </div>
         <img
+          aria-label="dropdown-arrow-hp"
           className="dropdown-arrow"
           src="/assets/images/uparrow.png"
           onClick={(event) => toggleDropdown(event, HpDropdownMenuItems)}

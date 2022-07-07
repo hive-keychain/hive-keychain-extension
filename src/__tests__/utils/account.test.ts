@@ -11,7 +11,6 @@ import { setErrorMessage } from '../../popup/actions/message.actions';
 import { store } from '../../popup/store';
 import AccountUtils from '../../utils/account.utils';
 
-//testing data
 const userData = { ...utilsT.userData };
 const userDataKeys: Keys = {
   active: userData.nonEncryptKeys.active,
@@ -34,7 +33,7 @@ const activeAccountData: ActiveAccount = {
     average_market_bandwidth: '',
     lifetime_bandwidth: '',
     last_active_proved: '',
-  },
+  } as unknown as ExtendedAccount,
   keys: {},
   rc: {
     current_mana: 1000,

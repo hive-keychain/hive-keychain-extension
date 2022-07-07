@@ -6,6 +6,7 @@ const getExchangeValidationWarning = async (
   account: string,
   currency: string,
   hasMemo: any,
+  isRecurrent?: boolean,
 ) => {
   const exchanges = [
     { account: 'bittrex', tokens: ['HIVE', 'HBD'] },
@@ -28,6 +29,10 @@ const getExchangeValidationWarning = async (
     return chrome.i18n.getMessage('popup_warning_exchange_deposit', [currency]);
   }
   if (!hasMemo) return chrome.i18n.getMessage('popup_warning_exchange_memo');
+  if (isRecurrent)
+    return chrome.i18n.getMessage(
+      'popup_html_transfer_recurrent_exchange_warning',
+    );
   // if (exchange.account === 'bittrex') {
   //   const info = await CurrencyPricesUtils.getBittrexCurrency(currency);
   //   if (info && !info.IsActive) {

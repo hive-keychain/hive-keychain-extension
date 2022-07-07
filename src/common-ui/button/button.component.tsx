@@ -24,7 +24,7 @@ export interface ButtonProps {
 const ButtonComponent = (props: ButtonProps) => {
   return (
     <button
-      aria-label={props.ariaLabel} //modified for testings
+      aria-label={props.ariaLabel}
       className={`submit-button ${
         props.type ? props.type : ButtonType.DEFAULT
       } ${props.fixToBottom ? 'fix-to-bottom' : ''}`}

@@ -37,9 +37,11 @@ const ClearAllData = ({
 
       <div className="bottom-panel">
         <ButtonComponent
+          ariaLabel="cancel-clear-button"
           label={'dialog_cancel'}
           onClick={goBack}></ButtonComponent>
         <ButtonComponent
+          ariaLabel="confirm-clear-button"
           label={'popup_html_confirm'}
           onClick={() => reset()}
           type={ButtonType.RAISED}></ButtonComponent>
