@@ -14,5 +14,5 @@ export const DefaultHiveEngineRpcs: HiveEngineConfig['rpc'][] = [
 export const DefaultAccountHistoryApis: HiveEngineConfig['accountHistoryApi'][] =
   [
     'https://accounts.hive-engine.com/accountHistory',
-    'https://enginehistory.rishipanthee.com/accountHistory',
+    'https://enginehistory.rishipanthee.com',
   ];
