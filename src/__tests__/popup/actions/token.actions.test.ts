@@ -66,10 +66,8 @@ describe('token.actions tests:\n', () => {
   });
   describe('loadUserTokens tests:\n', () => {
     test('Must clear current userTokens and load user tokens', async () => {
-      const newUserTokenBalances = [
-        utilsT.fakeGetUserBalanceResponse[1],
-        utilsT.fakeGetUserBalanceResponse[2],
-      ] as TokenBalance[];
+      const newUserTokenBalances =
+        utilsT.fakeGetUserBalanceResponse as TokenBalance[];
       HiveEngineUtils.getUserBalance = jest
         .fn()
         .mockResolvedValueOnce(newUserTokenBalances);
@@ -78,7 +76,7 @@ describe('token.actions tests:\n', () => {
         tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
       );
       expect(fakeStore.getState().userTokens).toEqual({
-        list: [newUserTokenBalances[1], newUserTokenBalances[0]],
+        list: newUserTokenBalances,
         loading: false,
       });
     });
@@ -96,7 +94,7 @@ describe('token.actions tests:\n', () => {
         tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
       );
       expect(fakeStore.getState().userTokens).toEqual({
-        list: [newUserTokenBalances[1], newUserTokenBalances[0]],
+        list: newUserTokenBalances,
         loading: false,
       });
     });

@@ -37,6 +37,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
         payload: { key: 'html_popup_tokens_timeout', type: MessageType.ERROR },
       });
     }
+    throw err;
   }
 
   const action: ActionPayload<Token[]> = {
