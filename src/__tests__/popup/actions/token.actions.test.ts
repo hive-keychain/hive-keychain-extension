@@ -1,7 +1,7 @@
-import { historyHiveEngineAPI, hsc } from '@api/hiveEngine';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { AxiosResponse } from 'axios';
 import * as tokenActions from 'src/popup/actions/token.actions';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -28,13 +28,15 @@ describe('token.actions tests:\n', () => {
   };
   describe('loadTokens tests:\n', () => {
     test('Must load tokens', async () => {
-      hsc.find = jest.fn().mockResolvedValueOnce(utilsT.fakeTokensResponse);
+      HiveEngineConfigUtils.getApi().find = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeTokensResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(tokenActions.loadTokens());
       expect(fakeStore.getState().tokens).toEqual(utilsT.expectedTokensPayload);
     });
     test('If error on response, will throw an unhandled error', async () => {
-      hsc.find = jest
+      HiveEngineConfigUtils.getApi().find = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeTokensResponseNoMetadata);
       const newError = new SyntaxError(
@@ -52,7 +54,7 @@ describe('token.actions tests:\n', () => {
 
   describe('loadTokensMarket tests:\n', () => {
     test('Must load tokens market', async () => {
-      hsc.find = jest
+      HiveEngineConfigUtils.getApi().find = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeMarketMetricsResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
@@ -64,10 +66,8 @@ describe('token.actions tests:\n', () => {
   });
   describe('loadUserTokens tests:\n', () => {
     test('Must clear current userTokens and load user tokens', async () => {
-      const newUserTokenBalances = [
-        utilsT.fakeGetUserBalanceResponse[1],
-        utilsT.fakeGetUserBalanceResponse[2],
-      ] as TokenBalance[];
+      const newUserTokenBalances =
+        utilsT.fakeGetUserBalanceResponse as TokenBalance[];
       HiveEngineUtils.getUserBalance = jest
         .fn()
         .mockResolvedValueOnce(newUserTokenBalances);
@@ -76,7 +76,7 @@ describe('token.actions tests:\n', () => {
         tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
       );
       expect(fakeStore.getState().userTokens).toEqual({
-        list: [newUserTokenBalances[1], newUserTokenBalances[0]],
+        list: newUserTokenBalances,
         loading: false,
       });
     });
@@ -94,7 +94,7 @@ describe('token.actions tests:\n', () => {
         tokenActions.loadUserTokens(utilsT.secondAccountOnState.name),
       );
       expect(fakeStore.getState().userTokens).toEqual({
-        list: [newUserTokenBalances[1], newUserTokenBalances[0]],
+        list: newUserTokenBalances,
         loading: false,
       });
     });
@@ -126,7 +126,7 @@ describe('token.actions tests:\n', () => {
       const axiosResponse2 = {
         data: [],
       } as AxiosResponse;
-      historyHiveEngineAPI.get = jest
+      HiveEngineConfigUtils.getAccountHistoryApi().get = jest
         .fn()
         .mockResolvedValueOnce(Promise.resolve(axiosResponse1))
         .mockResolvedValueOnce(Promise.resolve(axiosResponse2));
@@ -144,7 +144,7 @@ describe('token.actions tests:\n', () => {
     test('If error on response, will throw an unhandled error', async () => {
       const currency = 'LEO';
       const error = new Error('Custom Error');
-      historyHiveEngineAPI.get = jest
+      HiveEngineConfigUtils.getAccountHistoryApi().get = jest
         .fn()
         .mockResolvedValueOnce(Promise.reject(error));
       const fakeStore = getFakeStore(initialEmptyStateStore);
