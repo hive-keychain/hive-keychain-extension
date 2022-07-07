@@ -61,15 +61,15 @@ const getCustomAccountHistoryApi = async () => {
 };
 const addCustomAccountHistoryApi = async (api: string) => {
   const savedCustomAccountHistoryApis =
-    await HiveEngineConfigUtils.getCustomRpcs();
+    await HiveEngineConfigUtils.getCustomAccountHistoryApi();
   savedCustomAccountHistoryApis.push(api);
   LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST,
+    LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API,
     savedCustomAccountHistoryApis,
   );
 };
 const deleteCustomAccountHistoryApi = async (api: string) => {
-  let customHistoryAccountsApi = (await getCustomRpcs()).filter(
+  let customHistoryAccountsApi = (await getCustomAccountHistoryApi()).filter(
     (rpc) => rpc !== api,
   );
   await LocalStorageUtils.saveValueInLocalStorage(

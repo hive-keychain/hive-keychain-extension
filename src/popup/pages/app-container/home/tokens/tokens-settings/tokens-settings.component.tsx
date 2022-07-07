@@ -176,6 +176,10 @@ const TokensSettings = ({
   };
 
   const saveAccountHistory = async () => {
+    if (accountHistoryApiOptions.find((e) => e.value === newAccountHistory)) {
+      setErrorMessage('html_popup_url_not_valid');
+      return;
+    }
     if (ValidUrl.isWebUri(newAccountHistory)) {
       setSuccessMessage('html_popup_new_account_history_save_success');
       await HiveEngineConfigUtils.addCustomAccountHistoryApi(newAccountHistory);
@@ -186,7 +190,12 @@ const TokensSettings = ({
       setErrorMessage('html_popup_url_not_valid');
     }
   };
+
   const saveRpc = async () => {
+    if (rpcOptions.find((e) => e.value === newRpc)) {
+      setErrorMessage('html_popup_url_not_valid');
+      return;
+    }
     if (ValidUrl.isWebUri(newRpc)) {
       setSuccessMessage('html_popup_new_rpc_save_success');
       await HiveEngineConfigUtils.addCustomRpc(newRpc);
