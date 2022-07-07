@@ -471,6 +471,10 @@
     "message": "Tokens Available",
     "description": "On tokens page"
   },
+  "popup_html_tokens_settings": {
+    "message": "Tokens settings",
+    "description": "On tokens page"
+  },
   "popup_html_tokens_settings_text": {
     "message": "View token information and chose which tokens to display. Learn more about custom tokens on the Hive blockchain at <a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>.",
     "description": "On tokens page"
@@ -2266,6 +2270,30 @@
     "message": "Unstaking this token will take $1 day(s).",
     "description": "Token wallet information start canceling delegation out"
   },
+  "html_popup_new_account_history": {
+    "message": "New account history API",
+    "description": "Tokens setting page =>  add account history api"
+  },
+  "html_popup_new_rpc": {
+    "message": "New RPC node",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_new_rpc_save_success": {
+    "message": "New RPC node was saved successfully",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_url_not_valid": {
+    "message": "Url not valid",
+    "description": "Tokens setting page"
+  },
+  "html_popup_new_account_history_save_success": {
+    "message": "New account history API was saved successfully",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_rpc_already_exist": {
+    "message": "This RPC is already in your list",
+    "description": "Tokens setting page =>  add rpc node"
+  },
   "popup_html_transfer_recurrent_exchange_warning": {
     "message": "Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.",
     "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
@@ -2273,5 +2301,9 @@
   "popup_html_transfer_recurrent_missing_field": {
     "message": "Iteration and frequency are mandatory",
     "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
+  },
+  "html_popup_tokens_timeout": {
+    "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
+    "description": "Token timeout error"
   }
 }
