@@ -8,4 +8,5 @@ export default {
   input: {
     clear: 'input-clear',
   },
+  reward: 'reward-claim-icon',
 };
