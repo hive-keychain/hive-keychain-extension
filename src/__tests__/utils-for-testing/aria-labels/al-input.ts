@@ -9,4 +9,9 @@ export default {
   },
   receiver: 'input-receiver',
   clear: 'input-clear',
+  recurrent: {
+    frecuency: 'input-recurrent-frecuency',
+    iterations: 'input-recurrent-iterations',
+  },
+  memoOptional: 'input-memo-optional',
 };
