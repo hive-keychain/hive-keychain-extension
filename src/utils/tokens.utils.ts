@@ -13,7 +13,7 @@ const tryConfirmTransaction = (
     for (let i = 0; i < 20; i++) {
       result = await BlockchainTransactionUtils.getDelayedTransactionInfo(
         trxId,
-      ); //modified for testing
+      );
       if (result != null) break;
     }
 
@@ -52,7 +52,7 @@ const delayRefresh = async (): Promise<void> => {
 const BlockchainTransactionUtils = {
   tryConfirmTransaction,
   delayRefresh,
-  getDelayedTransactionInfo, //modified for testing
+  getDelayedTransactionInfo,
 };
 
 export default BlockchainTransactionUtils;

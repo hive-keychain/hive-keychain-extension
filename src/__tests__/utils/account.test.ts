@@ -11,7 +11,6 @@ import { setErrorMessage } from '../../popup/actions/message.actions';
 import { store } from '../../popup/store';
 import AccountUtils from '../../utils/account.utils';
 
-//testing data
 const userData = { ...utilsT.userData };
 const userDataKeys: Keys = {
   active: userData.nonEncryptKeys.active,

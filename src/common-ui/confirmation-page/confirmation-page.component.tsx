@@ -30,7 +30,7 @@ const ConfirmationPage = ({
   });
   const hasField = fields && fields.length !== 0;
   return (
-    <div className="confirmation-page">
+    <div className="confirmation-page" aria-label="confirmation-page">
       <div className="confirmation-top">
         <div
           className="introduction"
@@ -61,9 +61,11 @@ const ConfirmationPage = ({
 
       <div className="bottom-panel">
         <ButtonComponent
+          ariaLabel="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={goBack}></ButtonComponent>
         <ButtonComponent
+          ariaLabel="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={afterConfirmAction}
           type={ButtonType.RAISED}></ButtonComponent>

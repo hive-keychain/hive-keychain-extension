@@ -118,7 +118,7 @@ const Tokens = ({
       {allTokens.length > 0 &&
         filteredTokenList &&
         filteredTokenList.length > 0 && (
-          <div className="my-tokens">
+          <div className="my-tokens" aria-label="my-tokens">
             {filteredTokenList.map((token) => (
               <TokenItemComponent
                 key={token.symbol}

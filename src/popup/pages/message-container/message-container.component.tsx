@@ -54,7 +54,9 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       autoClose={DURATION}
       pauseOnHover
       theme="dark"
-      onClick={() => close()}
+      onClick={() => {
+        close();
+      }}
       closeOnClick={true}
       draggable={false}
       bodyStyle={{ fontSize: '16px', fontFamily: 'Futura', fontWeight: '400' }}

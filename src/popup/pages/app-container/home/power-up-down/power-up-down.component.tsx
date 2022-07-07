@@ -239,7 +239,7 @@ const PowerUpDown = ({
   };
 
   return (
-    <div className="power-up-page">
+    <div className="power-up-page" aria-label="power-up-page">
       <AvailableCurrentPanelComponent
         available={available}
         availableCurrency={

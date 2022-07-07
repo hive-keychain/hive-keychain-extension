@@ -41,7 +41,7 @@ const SignIn = ({
   };
 
   return (
-    <div className="sign-in-page">
+    <div aria-label="sign-in-page" className="sign-in-page">
       <img src="/assets/images/keychain_logo.png" className="logo-white" />
       <p
         className="introduction"
@@ -56,15 +56,18 @@ const SignIn = ({
         placeholder="popup_html_password"
         type={InputType.PASSWORD}
         onEnterPress={login}
-        ariaLabel={'password-input'} //modified for testing
+        ariaLabel={'password-input'}
       />
       <ButtonComponent
         label={'popup_html_signin'}
         logo={Icons.LOGIN}
         onClick={login}
-        ariaLabel={'login-button'} //modified for testing
+        ariaLabel={'login-button'}
       />
-      <div className="reset-password-link" onClick={goToForgetPassword}>
+      <div
+        className="reset-password-link"
+        onClick={goToForgetPassword}
+        aria-label="reset-password-link">
         {chrome.i18n.getMessage('popup_html_forgot')}
       </div>
     </div>
