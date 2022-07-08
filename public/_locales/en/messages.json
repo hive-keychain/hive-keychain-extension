@@ -2273,5 +2273,21 @@
   "popup_html_transfer_recurrent_missing_field": {
     "message": "Iteration and frequency are mandatory",
     "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
+  },
+  "popup_html_whats_new": {
+    "message": "What's new in v$1",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_next": {
+    "message": "Next",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_previous": {
+    "message": "Previous",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_got_it": {
+    "message": "Got it!",
+    "description": "What's new popup button"
   }
 }
