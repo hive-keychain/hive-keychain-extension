@@ -5,6 +5,7 @@ const clean = () => {
   jest.clearAllTimers();
   jest.useRealTimers();
   cleanup();
+  jest.clearAllMocks();
 };
 
 export default { clean };

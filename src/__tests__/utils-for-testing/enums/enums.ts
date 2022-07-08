@@ -47,4 +47,11 @@ export enum KeyMessage {
   EXCHANGE_WARNING = 'popup_warning_exchange_deposit',
   EXCHANGE_MEMO = 'popup_warning_exchange_memo',
   EXCHANGE_WARNING_RECURRENT = 'popup_html_transfer_recurrent_exchange_warning',
+  MISSING_KEY = 'popup_missing_key',
+  MEMO_MISSING = 'popup_html_memo_key_missing',
+}
+
+export enum CurrencyToUse {
+  HIVE = 'hive',
+  HBD = 'hbd',
 }

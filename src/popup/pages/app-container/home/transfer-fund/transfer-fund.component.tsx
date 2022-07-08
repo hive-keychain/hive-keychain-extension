@@ -131,12 +131,7 @@ const TransferFunds = ({
   };
 
   const handleClickOnSend = async () => {
-    if (
-      !amount ||
-      !receiverUsername ||
-      receiverUsername.length === 0 ||
-      (receiverUsername as String).trim().length === 0
-    ) {
+    if (!amount || !receiverUsername || receiverUsername.trim().length === 0) {
       setErrorMessage('popup_html_fill_form_error');
       return;
     }
