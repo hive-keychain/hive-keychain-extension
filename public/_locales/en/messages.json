@@ -2271,11 +2271,11 @@
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_enable_autoclaim_savings": {
-    "message": "Claim savings",
+    "message": "Claim savings interest",
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_savings_info": {
-    "message": "To claim your saving interests, Keychain will deposit or withdraw 0.001 HBD to/from your savings every 30 days",
+    "message": "To claim your savings interest, Keychain will deposit or withdraw 0.001 HBD to/from your savings every 30 days",
     "description": "When on automated tasks page"
   },
   "html_popup_new_account_history": {
