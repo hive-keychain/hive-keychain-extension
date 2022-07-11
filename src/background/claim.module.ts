@@ -1,7 +1,7 @@
 import RPCModule from '@background/rpc.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import BgdHiveUtils from '@background/utils/hive.utils';
-import { ExtendedAccount } from '@hiveio/dhive/lib/index-browser';
+import { Asset, ExtendedAccount } from '@hiveio/dhive/lib/index-browser';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
@@ -114,8 +114,11 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
       ).getUTCFullYear() === 1970
         ? activeAccount?.account.savings_hbd_seconds_last_update
         : activeAccount?.account.savings_hbd_last_interest_payment;
+
     const hasSavingsToClaim =
-      Number(activeAccount?.account.savings_hbd_seconds) > 0;
+      Number(activeAccount?.account.savings_hbd_seconds) > 0 ||
+      Asset.from(activeAccount?.account.savings_hbd_balance!).amount > 0;
+
     if (!hasSavingsToClaim) {
       Logger.info(
         `@${activeAccount?.name} doesn't have any savings interests to claim`,
