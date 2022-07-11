@@ -37,6 +37,22 @@ const WhatsNew = ({ onOverlayClick, url }: Props) => {
     onOverlayClick();
   };
 
+  const renderCustomIndicator = (
+    clickHandler: (e: React.MouseEvent | React.KeyboardEvent) => void,
+    isSelected: boolean,
+    index: number,
+    label: string,
+  ) => {
+    return (
+      <li
+        className={`dot ${isSelected ? 'selected' : ''}`}
+        onClick={(e) => {
+          clickHandler(e);
+          setPageIndex(index);
+        }}></li>
+    );
+  };
+
   return (
     <div className="whats-new">
       <div className="overlay"></div>
@@ -46,9 +62,11 @@ const WhatsNew = ({ onOverlayClick, url }: Props) => {
         </div>
         <Carousel
           showArrows={false}
-          showIndicators={true}
+          showIndicators={WhatNew.features.length > 1}
           selectedItem={pageIndex}
-          showStatus={false}>
+          showThumbs={false}
+          showStatus={false}
+          renderIndicator={renderCustomIndicator}>
           {WhatNew.features.map((feature, index) => (
             <div className="carousel-item" key={`feature-${index}`}>
               <div className="image">

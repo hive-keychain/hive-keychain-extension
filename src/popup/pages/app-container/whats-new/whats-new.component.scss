@@ -82,7 +82,7 @@
             img {
               border-radius: 8px;
               border: 1px solid white;
-              height: 80px;
+              height: auto;
               width: 240px;
             }
           }
@@ -98,9 +98,10 @@
 
     .button-panel {
       display: flex;
-      justify-content: space-around;
       margin: 24px;
       padding: 0px 16px;
+      column-gap: 16px;
+      justify-content: center;
 
       .submit-button {
         height: 32px;

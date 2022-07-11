@@ -8,7 +8,7 @@ export const WhatNew: WhatsNewContent = {
       description: {
         en: 'Claim automatically your savings interests when they are available',
       },
-      image: 'feature1.png',
+      image: 'hive-engine-custom-rpc.png',
       anchor: 'auto-claim-savings',
       extraInformation: {
         en: 'Try it from "Settings", "User preferences" and then "Automated tasks"',
@@ -19,7 +19,7 @@ export const WhatNew: WhatsNewContent = {
       description: {
         en: 'Select your favorite Hive Engine RPC configuration or create custom ones.',
       },
-      image: 'hive-engine-rpc.png',
+      image: 'hive-engine-custom-rpc.png',
       anchor: 'hive-engine-custom-rpc',
       extraInformation: { en: 'Try it from "Tokens" and then "Settings' },
     },
