@@ -11,9 +11,10 @@ import './whats-new.component.scss';
 
 interface Props {
   onOverlayClick: () => void;
+  url: string;
 }
 
-const WhatsNew = ({ onOverlayClick }: Props) => {
+const WhatsNew = ({ onOverlayClick, url }: Props) => {
   const [pageIndex, setPageIndex] = useState(0);
   const locale = 'en'; // later use getUILanguage()
 
@@ -22,6 +23,10 @@ const WhatsNew = ({ onOverlayClick }: Props) => {
   };
   const previous = () => {
     setPageIndex(pageIndex - 1);
+  };
+
+  const navigateToArticle = (url: string) => {
+    chrome.tabs.create({ url: url });
   };
 
   const finish = () => {
@@ -41,8 +46,9 @@ const WhatsNew = ({ onOverlayClick }: Props) => {
         </div>
         <Carousel
           showArrows={false}
-          showIndicators={false}
-          selectedItem={pageIndex}>
+          showIndicators={true}
+          selectedItem={pageIndex}
+          showStatus={false}>
           {WhatNew.features.map((feature, index) => (
             <div className="carousel-item" key={`feature-${index}`}>
               <div className="image">
@@ -50,6 +56,14 @@ const WhatsNew = ({ onOverlayClick }: Props) => {
               </div>
               <div className="title">{feature.title[locale]}</div>
               <div className="description">{feature.description[locale]}</div>
+              <div className="extra-information">
+                {feature.extraInformation[locale]}
+              </div>
+              <a
+                className="read-more-link"
+                onClick={() => navigateToArticle(`${url}#${feature.anchor}`)}>
+                {chrome.i18n.getMessage('html_popup_read_more')}
+              </a>
             </div>
           ))}
         </Carousel>

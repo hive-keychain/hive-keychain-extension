@@ -20,6 +20,7 @@ import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.com
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatNew } from 'src/whats-new';
 import './home.component.scss';
 
@@ -36,6 +37,7 @@ const Home = ({
 }: PropsFromRedux) => {
   const [displayLoader, setDisplayLoader] = useState(false);
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
+  const [lastVersionUrl, setLastVersionUrl] = useState('');
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();
@@ -69,7 +71,12 @@ const Home = ({
     const lastVersionSeen = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.LAST_VERSION_UPDATE,
     );
-    if (WhatNew.version !== lastVersionSeen) {
+    const versionLog = await VersionLogUtils.getLastVersion();
+    if (
+      WhatNew.version !== lastVersionSeen &&
+      versionLog.version === WhatNew.version
+    ) {
+      setLastVersionUrl(versionLog.url);
       setDisplayWhatsNew(true);
     }
   };
@@ -104,7 +111,10 @@ const Home = ({
       )}
 
       {!displayLoader && displayWhatsNew && (
-        <WhatsNewComponent onOverlayClick={() => setDisplayWhatsNew(false)} />
+        <WhatsNewComponent
+          onOverlayClick={() => setDisplayWhatsNew(false)}
+          url={lastVersionUrl}
+        />
       )}
     </div>
   );

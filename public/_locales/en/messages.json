@@ -2321,5 +2321,9 @@
   "html_popup_tokens_timeout": {
     "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
     "description": "Token timeout error"
+  },
+  "html_popup_read_more": {
+    "message": "Read more",
+    "description": "read more"
   }
 }

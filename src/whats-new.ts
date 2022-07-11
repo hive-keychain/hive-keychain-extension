@@ -1,26 +1,27 @@
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 
 export const WhatNew: WhatsNewContent = {
-  version: '2.0.10',
+  version: '2.1.0',
   features: [
     {
-      title: { en: 'Toto' },
-      description: { en: 'Description of the new feature' },
-      image: 'feature1.png',
-    },
-    {
-      title: { en: 'Feature 2' },
+      title: { en: 'Savings Auto Claim' },
       description: {
-        en: 'Description of the new feature. Description of the new feature. Description of the new feature. Description of the new feature. Description of the new feature. Description of the new feature.',
+        en: 'Claim automatically your savings interests when they are available',
       },
       image: 'feature1.png',
+      anchor: 'auto-claim-savings',
+      extraInformation: {
+        en: 'Try it from "Settings", "User preferences" and then "Automated tasks"',
+      },
     },
     {
-      title: { en: 'Feature 3' },
+      title: { en: 'Hive Engine custom RPC' },
       description: {
-        en: 'Description of the new feature. Description of the new feature. Description of the new featureDescription of the new feature',
+        en: 'Select your favorite Hive Engine RPC configuration or create custom ones.',
       },
-      image: 'feature1.png',
+      image: 'hive-engine-rpc.png',
+      anchor: 'hive-engine-custom-rpc',
+      extraInformation: { en: 'Try it from "Tokens" and then "Settings' },
     },
   ],
 };

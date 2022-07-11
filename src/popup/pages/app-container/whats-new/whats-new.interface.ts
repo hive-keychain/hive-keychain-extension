@@ -3,9 +3,11 @@ export interface Translation {
 }
 
 export interface Feature {
+  anchor: string;
   image: string;
   title: Translation;
   description: Translation;
+  extraInformation: Translation;
 }
 
 export interface WhatsNewContent {

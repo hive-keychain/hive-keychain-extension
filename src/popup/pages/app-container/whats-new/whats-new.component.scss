@@ -20,7 +20,6 @@
   }
 
   .whats-new-container {
-    // height: calc(100% - 72px);
     height: auto;
     width: calc(100% - 72px);
     background: $black;
@@ -29,7 +28,6 @@
     position: fixed;
     display: flex;
     flex-direction: column;
-    row-gap: 24px;
 
     .carousel-root {
       flex: 1;
@@ -39,8 +37,13 @@
       }
       .carousel-slider {
         height: 100%;
+        .control-dots {
+          top: 0px;
+          bottom: unset;
+        }
         .slider-wrapper {
           height: 100%;
+          margin-top: 36px;
         }
         .carousel-item {
           display: flex;
@@ -59,17 +62,28 @@
             text-align: center;
           }
 
+          .read-more-link {
+            font-size: 14px;
+            color: $red-dark;
+            text-decoration: none;
+            user-select: none;
+            cursor: pointer;
+          }
+
+          .extra-information {
+            font-size: 14px;
+            padding: 0px 16px;
+          }
+
           .image {
             display: flex;
             align-items: center;
             justify-content: center;
             img {
-              // height: calc(100% - 64px);
-              // width: calc(100% - 64px);
               border-radius: 8px;
               border: 1px solid white;
-              height: 200px;
-              width: 180px;
+              height: 80px;
+              width: 240px;
             }
           }
         }
@@ -85,7 +99,7 @@
     .button-panel {
       display: flex;
       justify-content: space-around;
-      margin-bottom: 16px;
+      margin: 24px;
       padding: 0px 16px;
 
       .submit-button {
