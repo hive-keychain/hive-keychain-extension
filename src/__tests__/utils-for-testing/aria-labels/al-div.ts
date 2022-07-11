@@ -33,4 +33,16 @@ export default {
     message: 'warning-message',
   },
   proposalVotingSection: 'proposal-voting-section',
+  wallet: {
+    history: {
+      item: 'wallet-history-item',
+      filterPanel: 'wallet-history-filter-panel',
+      clearFilters: 'clear-filters',
+      filterSelector: {
+        preFix: 'filter-selector-',
+      },
+      byIn: 'filter-by-incoming',
+      byOut: 'filter-by-outgoing',
+    },
+  },
 };

@@ -1,6 +1,21 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 
+const default_filters_wallet_history = {
+  filterValue: '',
+  inSelected: false,
+  outSelected: false,
+  selectedTransactionTypes: {
+    transfer: false, //testing by default
+    claim_reward_balance: false,
+    delegate_vesting_shares: false,
+    claim_account: false,
+    savings: false,
+    power_up_down: false,
+    convert: false,
+  },
+};
+
 const messagesJsonFile = require('public/_locales/en/messages.json');
 const getValuefromLS = (...args: any[]) => {
   switch (args[0]) {
@@ -12,7 +27,7 @@ const getValuefromLS = (...args: any[]) => {
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
       return true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
-      return null;
+      return default_filters_wallet_history;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
       return { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
