@@ -114,6 +114,15 @@ const toHaveTextContent = (assertion: AriaLabelText[]) => {
     );
   });
 };
+/**
+ * getAllByLabelText, to get multiple elements and check the results length.
+ * Using waitFor under the hood.
+ */
+const allToHaveLength = async (ariaLabel: string, length: number) => {
+  await waitFor(() => {
+    expect(screen.getAllByLabelText(ariaLabel).length).toBe(length);
+  });
+};
 
 export default {
   awaitMk,
@@ -130,4 +139,5 @@ export default {
   toHaveValue,
   toHaveTextContent,
   getManyByText,
+  allToHaveLength,
 };

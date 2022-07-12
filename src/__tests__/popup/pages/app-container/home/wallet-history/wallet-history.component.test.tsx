@@ -2,6 +2,8 @@ import App from '@popup/App';
 import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import walletHistory from 'src/__tests__/popup/pages/app-container/home/wallet-history/mocks/wallet-history';
+import noDelegationsInOut from 'src/__tests__/popup/pages/app-container/home/wallet-history/othercases/no-delegations-in-out';
+import noTransfersInData from 'src/__tests__/popup/pages/app-container/home/wallet-history/othercases/no-transfers-in-data';
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import alToolTip from 'src/__tests__/utils-for-testing/aria-labels/al-toolTip';
@@ -18,16 +20,16 @@ import {
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-const { methods, constants, extraMocks, filters, prefix } = walletHistory;
+const { methods, constants, filters, prefix } = walletHistory;
 const { transactions, filter, typeValue } = constants;
 describe('wallet-history.component tests:\n', () => {
   methods.afterEach;
   describe('With Transactions', () => {
     beforeEach(async () => {
       await walletHistory.beforeEach(<App />);
+      await actPendingTimers();
     });
     it('Must show transaction list', async () => {
-      await actPendingTimers();
       await waitFor(() => {
         expect(screen.getAllByLabelText(alDiv.wallet.history.item).length).toBe(
           transactions.length,
@@ -35,7 +37,6 @@ describe('wallet-history.component tests:\n', () => {
       });
     });
     it('Must show available filters', async () => {
-      await actPendingTimers();
       await clickAwait([alDiv.wallet.history.filterPanel]);
       assertion.getByText(
         filter.ariaLabelsToFind.map((al) => {
@@ -44,28 +45,12 @@ describe('wallet-history.component tests:\n', () => {
       );
     });
     it('Must set search box filter value', async () => {
-      await actPendingTimers();
-      extraMocks.scrollToNotImpl();
-      await clickTypeAwait([
-        {
-          ariaLabel: alInput.filter.walletHistory,
-          event: EventType.TYPE,
-          text: typeValue.random,
-        },
-      ]);
+      await methods.typeInput(alInput.filter.walletHistory, typeValue.random);
       await actPendingTimers();
       assertion.toHaveValue(alInput.filter.walletHistory, typeValue.random);
     });
     it('Must clear search box filter value', async () => {
-      await actPendingTimers();
-      extraMocks.scrollToNotImpl();
-      await clickTypeAwait([
-        {
-          ariaLabel: alInput.filter.walletHistory,
-          event: EventType.TYPE,
-          text: typeValue.random,
-        },
-      ]);
+      await methods.typeInput(alInput.filter.walletHistory, typeValue.random);
       await actPendingTimers();
       assertion.toHaveValue(alInput.filter.walletHistory, typeValue.random);
       await clickAwait([alDiv.wallet.history.clearFilters]);
@@ -73,23 +58,16 @@ describe('wallet-history.component tests:\n', () => {
       assertion.toHaveValue(alInput.filter.walletHistory, typeValue.empty);
     });
     it('Must filter by an specific value and display 1 transaction', async () => {
-      await actPendingTimers();
-      extraMocks.scrollToNotImpl();
-      await clickTypeAwait([
-        {
-          ariaLabel: alInput.filter.walletHistory,
-          event: EventType.TYPE,
-          text: typeValue.uniqueValue,
-        },
-      ]);
+      await methods.typeInput(
+        alInput.filter.walletHistory,
+        typeValue.uniqueValue,
+      );
       actAdvanceTime(200);
       assertion.getByLabelText(alDiv.wallet.history.item);
       assertion.getByDisplay(typeValue.uniqueValue);
     });
     filters.forEach((filter) => {
       it(`Must show specific number of transaction(s) when clicking filter: ${filter}`, async () => {
-        await actPendingTimers();
-        extraMocks.scrollToNotImpl();
         await clickAwait([alDiv.wallet.history.filterPanel, prefix + filter]);
         actAdvanceTime(200);
         expect(screen.getAllByLabelText(alDiv.wallet.history.item).length).toBe(
@@ -97,56 +75,31 @@ describe('wallet-history.component tests:\n', () => {
         );
       });
     });
-    const noDelegations = filters.filter(
-      (filter) => filter !== 'delegate_vesting_shares',
-    );
-    noDelegations.forEach((filter) => {
-      it(`Must show IN transactions when applied filter ${filter}`, async () => {
-        await actPendingTimers();
-        extraMocks.scrollToNotImpl();
-        await clickAwait([
-          alDiv.wallet.history.filterPanel,
-          prefix + filter,
-          alDiv.wallet.history.byIn,
-        ]);
-        actAdvanceTime(200);
-        expect(screen.getAllByLabelText(alDiv.wallet.history.item).length).toBe(
-          constants.results.in[filter],
-        );
-      });
-      it(`Must show OUT transactions when applied filter ${filter}`, async () => {
-        await actPendingTimers();
-        extraMocks.scrollToNotImpl();
-        await clickAwait([
-          alDiv.wallet.history.filterPanel,
-          prefix + filter,
-          alDiv.wallet.history.byOut,
-        ]);
-        actAdvanceTime(200);
-        expect(
-          screen.queryAllByLabelText(alDiv.wallet.history.item).length,
-        ).toBe(constants.results.out[filter]);
-      });
+    describe('No delegations In/Out Filters', () => {
+      noDelegationsInOut.run();
     });
     it('Must show details when clicked', async () => {
-      await actPendingTimers();
-      extraMocks.scrollToNotImpl();
       await clickAwait([alDiv.wallet.history.filterPanel, prefix + filters[0]]);
       actAdvanceTime(200);
       await clickAwait([alDiv.transactions.expandableArea]);
-      assertion.getOneByText(constants.typeValue.transferExpanded.memo);
+      assertion.getOneByText(constants.transfer.data.memo);
     });
-    it('Must show tool tip with date time when hovered', async () => {
-      await actPendingTimers();
-      extraMocks.scrollToNotImpl();
+    it('Must show tool tip with date/time when hovered', async () => {
       await clickAwait([alDiv.wallet.history.filterPanel, prefix + filters[0]]);
       actAdvanceTime(200);
       await clickAwait([alDiv.transactions.expandableArea]);
       await clickTypeAwait([
         { ariaLabel: alToolTip.custom.toolTip, event: EventType.HOVER },
       ]);
-      assertion.getOneByText(constants.typeValue.transfer.toolTip);
+      assertion.getOneByText(constants.transfer.toolTip);
     });
+  });
+  describe('No tranfers in data', () => {
+    beforeEach(async () => {
+      await walletHistory.beforeEach(<App />, { noTransfersOnData: true });
+      await actPendingTimers();
+    });
+    noTransfersInData.run();
   });
   describe('Default filters from storage:\n', () => {
     filters.forEach((filter) => {
@@ -163,26 +116,15 @@ describe('wallet-history.component tests:\n', () => {
       });
     });
   });
-  describe.skip('No Transactions', () => {
-    //TODO: let's check the whole process of this case as
-    //  i don't know but it seems it is not taken into account, when
-    //  a user has no transactions as it looks to stay hanged. I.e: New account.
+  describe('No Transactions', () => {
     beforeEach(async () => {
       await walletHistory.beforeEach(<App />, { emptyTransactions: true });
     });
-    it('Must show empty if no transactions', async () => {
-      //popup_html_transaction_list_is_empty
-      await actPendingTimers();
-      await waitFor(() => {
-        expect(screen.getAllByLabelText(alDiv.wallet.history.item).length).toBe(
-          transactions.length,
-        );
-      });
+    it('Must show messages if no transactions', async () => {
+      assertion.getManyByText([
+        constants.error.emptyList,
+        constants.error.tryClearFilter,
+      ]);
     });
   });
-
-  //what if we code instead of no data, a case where applied filters brings no results
-  //so we can check on the data message ??
-  //will need:
-  // change the wallet.history.getTrasnactions.
 });
