@@ -57,7 +57,7 @@ const ProxyTab = ({
   };
 
   return (
-    <div className="proxy-tab">
+    <div aria-label="proxy-tab" className="proxy-tab">
       <div className="introduction">
         {chrome.i18n.getMessage(
           activeAccount.account.proxy.length > 0
