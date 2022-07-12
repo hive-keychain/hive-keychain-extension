@@ -8,7 +8,7 @@ export const WhatNew: WhatsNewContent = {
       description: {
         en: 'Claim automatically your savings interests when they are available',
       },
-      image: 'hive-engine-custom-rpc.png',
+      image: 'auto-claim-savings.png',
       anchor: 'auto-claim-savings',
       extraInformation: {
         en: 'Try it from "Settings", "User preferences" and then "Automated tasks"',
