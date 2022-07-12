@@ -23,7 +23,6 @@ const GenericTransaction = ({
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
 
   const toggleExpandableContent = () => {
-    console.log('called toogleExpandable!');
     if (expandableContent) {
       setExpandablePanelOpened(!isExpandablePanelOpened);
     }
