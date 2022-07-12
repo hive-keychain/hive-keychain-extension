@@ -13,7 +13,7 @@ export const broadcastSendToken = async (
   const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
   try {
-    const id = Config.hiveEngine.MAINNET;
+    const id = Config.hiveEngine.mainnet;
     const json = JSON.stringify({
       contractName: 'tokens',
       contractAction: 'transfer',
