@@ -101,7 +101,6 @@ const WalletHistory = ({
       ...filter?.selectedTransactionTypes,
       [transactionName]: !filter?.selectedTransactionTypes![transactionName],
     };
-    //console.log('newFilter', newFilter);
     updateFilter({
       ...filter,
       selectedTransactionTypes: newFilter,
@@ -148,7 +147,6 @@ const WalletHistory = ({
   }, []);
 
   const finalizeDisplayedList = (list: Transaction[]) => {
-    //console.log('list:::', list);
     setDisplayedTransactions(list);
     setLoading(false);
   };
@@ -161,14 +159,12 @@ const WalletHistory = ({
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
-    //console.log('lastOperationFetched', lastOperationFetched);
     setLoading(true);
     fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
   };
 
   useEffect(() => {
-    //console.log('transactions', transactions);
     if (transactions.lastUsedStart !== -1) {
       if (
         transactions.list.length < MINIMUM_FETCHED_TRANSACTIONS &&
@@ -198,13 +194,11 @@ const WalletHistory = ({
     if (filter) {
       setFilter(filter);
     }
-    //console.log('setFilterReady here!');
     setFilterReady(true);
   };
 
   useEffect(() => {
     setPreviousTransactionLength(0);
-    //console.log('filterReady: ', filterReady);
     if (filterReady) {
       filterTransactions();
       saveFilterInLocalStorage();
@@ -331,10 +325,8 @@ const WalletHistory = ({
       transactions.list.some((t) => t.last) ||
       transactions.lastUsedStart === 0
     ) {
-      //console.log('Must finalizeDisplayedList!');
       finalizeDisplayedList(filteredTransactions);
     } else {
-      //console.log('Keep fecthing!');
       setLoading(true);
       fetchAccountTransactions(
         activeAccountName!,
@@ -377,7 +369,6 @@ const WalletHistory = ({
   };
 
   const handleScroll = (event: any) => {
-    console.log('event::', event);
     if (
       transactions.list[transactions.list.length - 1]?.last === true ||
       transactions.lastUsedStart === 0

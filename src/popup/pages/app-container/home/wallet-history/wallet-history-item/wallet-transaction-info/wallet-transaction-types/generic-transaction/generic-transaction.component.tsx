@@ -23,6 +23,7 @@ const GenericTransaction = ({
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
 
   const toggleExpandableContent = () => {
+    console.log('called toogleExpandable!');
     if (expandableContent) {
       setExpandablePanelOpened(!isExpandablePanelOpened);
     }
@@ -66,6 +67,7 @@ const GenericTransaction = ({
 
   return (
     <div
+      aria-label="transaction-expandable-area"
       className={`transaction ${
         expandableContent ? 'has-expandable-content' : ''
       }`}
@@ -74,10 +76,12 @@ const GenericTransaction = ({
       <div className="information-panel">
         <div className="top-row">
           <Icon
+            ariaLabel="icon-open-new-window"
             name={getIcon()}
             type={IconType.OUTLINED}
             onClick={openTransactionOnHiveblocks}></Icon>
           <CustomTooltip
+            ariaLabel="custom-tool-tip"
             message={moment(transaction.timestamp).format(
               'YYYY/MM/DD , hh:mm:ss a',
             )}

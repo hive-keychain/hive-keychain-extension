@@ -6,7 +6,7 @@ const default_filters_wallet_history = {
   inSelected: false,
   outSelected: false,
   selectedTransactionTypes: {
-    transfer: false, //testing by default
+    transfer: false,
     claim_reward_balance: false,
     delegate_vesting_shares: false,
     claim_account: false,
@@ -65,6 +65,7 @@ const mocksImplementation = {
   getValuefromLS,
   i18nGetMessage,
   i18nGetMessageCustom,
+  default_filters_wallet_history,
 };
 
 export default mocksImplementation;

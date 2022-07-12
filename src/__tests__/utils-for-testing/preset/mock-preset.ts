@@ -20,7 +20,9 @@ export enum MockPreset {
   HOMEDEFAULT = 'home-default',
   ERRORDELEGATIONS = 'error-delegation',
 }
-
+/**
+ * localStorage.saveValueInLocalStorage must be always an implementation. By default will be jest.fn().
+ */
 const setOrDefault = (toUse: MocksToUse) => {
   const {
     app,

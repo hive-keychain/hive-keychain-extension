@@ -45,4 +45,7 @@ export default {
       byOut: 'filter-by-outgoing',
     },
   },
+  transactions: {
+    expandableArea: 'transaction-expandable-area',
+  },
 };
