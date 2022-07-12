@@ -97,7 +97,6 @@ const beforeEach = async (component: ReactElement, toUse?: ToUse) => {
       getAccountTransactions: [constants.transfer.allDataNoTransfer, 1000],
     };
   }
-  //TODO ask cedric???
   if (toUse?.emptyTransactions) {
     walletHistory = { getAccountTransactions: [[], 0] };
     extraMocks.getLastTransaction(-1);
