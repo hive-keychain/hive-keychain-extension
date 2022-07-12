@@ -46,6 +46,9 @@ export default {
         clear: 'operation-clear-proxy',
       },
     },
+    powerUpDown: {
+      submit: 'submit-power-up-down',
+    },
   },
   panel: {
     close: 'button-panel-close',
