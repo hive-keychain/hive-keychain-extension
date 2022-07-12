@@ -33,7 +33,7 @@ const activeAccountData: ActiveAccount = {
     average_market_bandwidth: '',
     lifetime_bandwidth: '',
     last_active_proved: '',
-  },
+  } as unknown as ExtendedAccount,
   keys: {},
   rc: {
     current_mana: 1000,

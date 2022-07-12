@@ -1,3 +1,4 @@
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import React from 'react';
@@ -11,10 +12,11 @@ type Props = {
   domain: string;
   tab: number;
   rpc: Rpc;
+  hiveEngineConfig: HiveEngineConfig;
 };
 
 const SendToken = (props: Props) => {
-  const { data, rpc } = props;
+  const { data, rpc, hiveEngineConfig } = props;
   const { memo } = data;
   const header = useTransferCheck(data, rpc);
   let memoField = memo;
@@ -42,6 +44,7 @@ const SendToken = (props: Props) => {
         username={data.username}
         amount={parseFloat(data.amount)}
         currency={data.currency}
+        hiveEngineConfig={hiveEngineConfig}
       />
       {data.memo && data.memo.length ? (
         <RequestItem title="dialog_memo" content={`${memoField}`} />
