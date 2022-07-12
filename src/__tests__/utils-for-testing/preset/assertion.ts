@@ -46,14 +46,14 @@ const queryByLabel = (ariaLabel: string, tobeInDoc: boolean = true) => {
  * Await for assertion. using waitFor under the hood.
  * Can select bewteen getByLabelText or getByText
  */
-const awaitFor = async (ariaLabel: string, query: QueryDOM) => {
+const awaitFor = async (ariaLabelOrText: string, query: QueryDOM) => {
   await waitFor(() => {
     switch (query) {
       case QueryDOM.BYLABEL:
-        expect(screen.getByLabelText(ariaLabel)).toBeInTheDocument();
+        expect(screen.getByLabelText(ariaLabelOrText)).toBeInTheDocument();
         break;
       case QueryDOM.BYTEXT:
-        expect(screen.getByText(ariaLabel)).toBeInTheDocument();
+        expect(screen.getByText(ariaLabelOrText)).toBeInTheDocument();
     }
   });
 };

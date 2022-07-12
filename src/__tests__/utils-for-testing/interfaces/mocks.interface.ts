@@ -69,6 +69,12 @@ export interface MockVotingProposal {
   unvoteForProposal?: boolean;
 }
 
+export interface MockProxy {
+  findUserProxy?: string | null;
+  setAsProxy?: string | boolean | undefined;
+  removeProxy?: boolean;
+}
+
 export interface MocksOverwrite {
   app?: {
     getValueFromLocalStorage?: OverwriteMock;
