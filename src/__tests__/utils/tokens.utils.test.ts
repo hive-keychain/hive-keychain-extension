@@ -1,4 +1,4 @@
-import { hsc } from '@api/hiveEngine';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 jest.setTimeout(50000);
 afterEach(() => {
@@ -84,7 +84,7 @@ describe('tokens.utils tests:\n', () => {
 
   describe('getDelayedTransactionInfo tests"\n', () => {
     test('If the transaction is found must return the transaction data', async () => {
-      hsc.getTransactionInfo = jest
+      HiveEngineConfigUtils.getApi().getTransactionInfo = jest
         .fn()
         .mockImplementation(() => Promise.resolve(fakeTransactionResponse));
       const result = await BlockchainTransactionUtils.getDelayedTransactionInfo(
@@ -93,7 +93,7 @@ describe('tokens.utils tests:\n', () => {
       expect(result).toEqual(fakeTransactionResponse);
     });
     test('If the transaction is not found must return null', async () => {
-      hsc.getTransactionInfo = jest
+      HiveEngineConfigUtils.getApi().getTransactionInfo = jest
         .fn()
         .mockImplementation(() => Promise.resolve(null));
       const result = await BlockchainTransactionUtils.getDelayedTransactionInfo(

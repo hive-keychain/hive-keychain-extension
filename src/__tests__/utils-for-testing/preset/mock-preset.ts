@@ -1,8 +1,8 @@
-import { hsc } from '@api/hiveEngine';
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -121,7 +121,7 @@ const setOrDefault = (toUse: MocksToUse) => {
       (walletHistory && walletHistory.getAccountTransactions) ??
         _walletHistory.getAccountTransactions,
     );
-  hsc.find = jest
+  HiveEngineConfigUtils.getApi().find = jest
     .fn()
     .mockResolvedValue((tokens && tokens.getTokens) ?? _tokens.getTokens);
   HiveEngineUtils.getUserBalance = jest
