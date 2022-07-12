@@ -54,6 +54,7 @@ const ProxySuggestion = ({
     let hideSuggestionProxy = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY,
     );
+
     if (!hideSuggestionProxy) {
       hideSuggestionProxy = {};
     }

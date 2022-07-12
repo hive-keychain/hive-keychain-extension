@@ -60,6 +60,9 @@ const awaitFor = async (ariaLabelOrText: string, query: QueryDOM) => {
 const getOneByText = (text: string) => {
   expect(screen.getByText(text)).toBeInTheDocument();
 };
+const awaitOneByLabel = async (ariaLabel: string) => {
+  expect(await screen.findByLabelText(ariaLabel)).toBeInTheDocument();
+};
 /**
  * Can select bewteen getByLabelText or getByText
  */
@@ -79,6 +82,12 @@ const getByText = (domEl: ElementQuery[]) => {
     }
   }
 };
+/**
+ * Await using findByLabelText, check for class on found element.
+ */
+const toHaveClass = async (ariaLabel: string, _class: string) => {
+  expect(await screen.findByLabelText(ariaLabel)).toHaveClass(_class);
+};
 
 export default {
   awaitMk,
@@ -90,4 +99,6 @@ export default {
   queryByLabel,
   getByDisplay,
   getOneByText,
+  awaitOneByLabel,
+  toHaveClass,
 };
