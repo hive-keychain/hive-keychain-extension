@@ -81,7 +81,7 @@ const ProposalItem = ({
 
   return (
     <div
-      aria-label="proposal-item-expandable"
+      aria-label={`proposal-item-expandable-${proposal.id}`}
       className={`proposal-item`}
       key={proposal.proposalId}
       onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}>

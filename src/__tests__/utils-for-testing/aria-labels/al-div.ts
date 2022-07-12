@@ -13,7 +13,7 @@ export default {
   },
   proposal: {
     item: {
-      expandable: 'proposal-item-expandable',
+      prefix: 'proposal-item-expandable-',
       spanGoToLink: 'proposal-item-span-go-to-link',
       icon: 'proposal-item-icon-expandable',
       imageGoToCreator: 'proposal-item-image-go-to-creator',
