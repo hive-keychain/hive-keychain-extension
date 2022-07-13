@@ -228,7 +228,6 @@ const getAccountTransactions = async (
     ) {
       transactions[transactions.length - 1].lastFetched = true;
     }
-    console.log(transactions, start);
     return [transactions, start];
   } catch (e) {
     Logger.error(e, e);
