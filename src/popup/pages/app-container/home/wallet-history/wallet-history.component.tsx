@@ -160,6 +160,7 @@ const WalletHistory = ({
     lastOperationFetched = await TransactionUtils.getLastTransaction(
       activeAccountName!,
     );
+    console.log(lastOperationFetched);
     setLoading(true);
     fetchAccountTransactions(activeAccountName!, lastOperationFetched);
     initFilters();
@@ -171,6 +172,10 @@ const WalletHistory = ({
         transactions.list.length < MINIMUM_FETCHED_TRANSACTIONS &&
         !transactions.list.some((t) => t.last)
       ) {
+        if (transactions.lastUsedStart === 1) {
+          setLoading(false);
+          return;
+        }
         setLoading(true);
         fetchAccountTransactions(
           activeAccountName!,
