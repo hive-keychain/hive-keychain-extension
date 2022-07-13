@@ -93,4 +93,17 @@ export const typeAwait = async (typeItem: TypeAwait[]) => {
   });
 };
 
+/**
+ * Using getAllByLabelText, to get multiple elements by ariaLabel.
+ * So you can choose on which on found to click.
+ * Using act under the hood.
+ */
+export const clickAwaitOnFound = async (ariaLabel: string, index: number) => {
+  await act(async () => {
+    await userEventPendingTimers.click(
+      screen.getAllByLabelText(ariaLabel)[index],
+    );
+  });
+};
+
 export const userEventDefault = userEvent;

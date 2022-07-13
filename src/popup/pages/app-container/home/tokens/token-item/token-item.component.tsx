@@ -109,6 +109,7 @@ const TokenItem = ({
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>
         <Icon
+          ariaLabel="icon-expand-more"
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
           additionalClassName={`more ${
@@ -166,6 +167,7 @@ const TokenItem = ({
               )}
             {token.delegationEnabled && (
               <div
+                aria-label="button-go-to-incoming-delegations"
                 className="delegation-line"
                 onClick={goToIncomingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
@@ -177,6 +179,7 @@ const TokenItem = ({
             )}
             {token.delegationEnabled && (
               <div
+                aria-label="button-go-to-outgoing-delegations"
                 className="delegation-line"
                 onClick={goToOutgoingDelegations}>
                 <div>
@@ -201,12 +204,16 @@ const TokenItem = ({
           {token && (token.delegationEnabled || token.stakingEnabled) && (
             <div className="button-panel">
               {token.stakingEnabled && (
-                <div className="action-button stake" onClick={() => stake()}>
+                <div
+                  aria-label="button-token-stake"
+                  className="action-button stake"
+                  onClick={() => stake()}>
                   {chrome.i18n.getMessage('popup_html_token_stake')}
                 </div>
               )}
               {token.stakingEnabled && (
                 <div
+                  aria-label="button-token-unstake"
                   className="action-button unstake"
                   onClick={() => unstake()}>
                   {chrome.i18n.getMessage('popup_html_token_unstake')}
@@ -214,6 +221,7 @@ const TokenItem = ({
               )}
               {token.delegationEnabled && (
                 <div
+                  aria-label="button-token-delegate"
                   className="action-button delegate"
                   onClick={() => delegate()}>
                   {chrome.i18n.getMessage('popup_html_token_delegate')}

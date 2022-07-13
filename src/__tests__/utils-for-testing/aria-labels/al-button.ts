@@ -63,4 +63,17 @@ export default {
   },
   save: 'button-save',
   readProposal: 'button-read-proposal',
+  token: {
+    action: {
+      stake: 'button-token-stake',
+      unstake: 'button-token-unstake',
+      delegate: 'button-token-delegate',
+    },
+    delegations: {
+      goto: {
+        incoming: 'button-go-to-incoming-delegations',
+        outgoing: 'button-go-to-outgoing-delegations',
+      },
+    },
+  },
 };

@@ -15,4 +15,5 @@ export default {
   tokens: {
     settings: 'tokens-settings-icon',
   },
+  expandMore: 'icon-expand-more',
 };
