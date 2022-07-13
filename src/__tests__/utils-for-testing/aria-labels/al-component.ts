@@ -21,4 +21,5 @@ export default {
   proxySuggestion: 'proxy-suggestion',
   addByKeysPage: 'add-by-keys-page',
   addByAuthPage: 'add-by-auth-page',
+  tokensSettings: 'tokens-settings',
 };

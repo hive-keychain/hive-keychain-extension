@@ -48,4 +48,9 @@ export default {
   transactions: {
     expandableArea: 'transaction-expandable-area',
   },
+  token: {
+    user: {
+      item: 'token-user-item',
+    },
+  },
 };

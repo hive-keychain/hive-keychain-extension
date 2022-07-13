@@ -7,6 +7,7 @@ export default {
   filter: {
     ranking: 'input-ranking-filter',
     walletHistory: 'input-filter-box',
+    token: 'input-filter-box',
   },
   receiver: 'input-receiver',
   clear: 'input-clear',

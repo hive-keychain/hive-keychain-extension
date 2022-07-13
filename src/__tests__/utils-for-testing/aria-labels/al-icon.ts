@@ -12,4 +12,7 @@ export default {
   open: {
     newWindow: 'icon-open-new-window',
   },
+  tokens: {
+    settings: 'tokens-settings-icon',
+  },
 };

@@ -15,12 +15,14 @@ import './token-item.component.scss';
 interface TokenItemProps {
   tokenBalance: TokenBalance;
   tokenInfo: Token;
+  ariaLabel?: string;
 }
 
 const TokenItem = ({
   tokenBalance,
   tokens,
   tokenInfo,
+  ariaLabel,
   navigateToWithParams,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpen, setExpandablePanelOpen] = useState(false);
@@ -77,7 +79,7 @@ const TokenItem = ({
   };
 
   return (
-    <div className="token-item">
+    <div aria-label={ariaLabel} className="token-item">
       <div
         className="token"
         onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}>

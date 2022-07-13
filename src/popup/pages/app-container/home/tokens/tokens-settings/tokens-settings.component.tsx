@@ -208,7 +208,7 @@ const TokensSettings = ({
   };
 
   return (
-    <div className="tokens-settings">
+    <div aria-label="tokens-settings" className="tokens-settings">
       <div className="hive-engine-rpc-panel">
         <div className="select-title">Hive-Engine RPC node</div>
         <div className="select-panel">
