@@ -98,7 +98,7 @@ const beforeEach = async (component: ReactElement, toUse?: ToUse) => {
     };
   }
   if (toUse?.emptyTransactions) {
-    walletHistory = { getAccountTransactions: [[], 0] };
+    walletHistory = { getAccountTransactions: [[], 1] };
     extraMocks.getLastTransaction(-1);
   } else {
     extraMocks.getLastTransaction(-1);
@@ -142,11 +142,6 @@ const extraMocks = {
     (TransactionUtils.getLastTransaction = jest
       .fn()
       .mockResolvedValue(lastTransaction)),
-  getAccountTransactions: () => {
-    TransactionUtils.getAccountTransactions = jest
-      .fn()
-      .mockResolvedValue([[], 1000]);
-  },
   scrollToNotImpl: () => {
     Element.prototype.scrollTo = jest.fn();
   },
