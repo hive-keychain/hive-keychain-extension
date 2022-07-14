@@ -212,7 +212,7 @@ const TokensTransfer = ({
   };
 
   return (
-    <div className="transfer-tokens-page">
+    <div aria-label="transfer-tokens-page" className="transfer-tokens-page">
       <AvailableCurrentPanelComponent
         available={balance}
         availableCurrency={symbol}

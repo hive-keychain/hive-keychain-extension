@@ -1,12 +1,14 @@
 import { ReactElement } from 'react';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
-import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -17,10 +19,12 @@ import {
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
 import { PreFixTokens } from 'src/__tests__/utils-for-testing/types/tokens-types';
 
-const i18n = {
-  get: (key: string, options?: string[] | undefined) =>
-    mocksImplementation.i18nGetMessageCustom(key, options),
-};
+const leoTokenRaw = tokensList.alltokens.filter(
+  (token) => token.symbol === 'LEO',
+)[0] as any;
+
+const selectPreFix = (symbol: string, preFix: PreFixTokens) =>
+  alIcon.tokens.prefix[preFix] + symbol;
 
 const constants = {
   username: mk.user.one,
@@ -29,6 +33,7 @@ const constants = {
     data: {
       length: tokensUser.balances.length,
       tokens: tokensUser.balances,
+      leoUrl: JSON.parse(leoTokenRaw.metadata).url,
     },
     screenInfo: {
       leoToken: [
@@ -48,18 +53,23 @@ const constants = {
         alButton.token.action.stake,
         alButton.token.action.unstake,
       ],
+      pages: [alComponent.tokensHistory, alComponent.tokensTransfer],
+    },
+    cssClasses: {
+      expandablePanel: {
+        opened: 'expandable-panel opened',
+        closed: 'expandable-panel closed',
+      },
     },
   },
-  message: {},
-  values: {},
+  buttonsIcons: [selectPreFix('LEO', 'history'), selectPreFix('LEO', 'send')],
 };
 
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   mockPreset.setOrDefault({});
-  extraMocks.getIncomingDelegations();
-  extraMocks.getOutgoingDelegations();
+  extraMocks();
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(constants.username);
   await clickAwait([alButton.actionBtn.tokens]);
@@ -69,19 +79,20 @@ const methods = {
   afterEach: afterEach(() => {
     afterTests.clean();
   }),
-  selectPreFix: (symbol: string, preFix: PreFixTokens) =>
-    alIcon.tokens.prefix[preFix] + symbol,
+  selectPreFix: selectPreFix,
+  spyOnTabs: () => jest.spyOn(chrome.tabs, 'create'),
 };
 
-const extraMocks = {
-  getIncomingDelegations: () =>
-    (HiveEngineUtils.getIncomingDelegations = jest
-      .fn()
-      .mockResolvedValue(tokensUser.incomingDelegations)),
-  getOutgoingDelegations: () =>
-    (HiveEngineUtils.getOutgoingDelegations = jest
-      .fn()
-      .mockResolvedValue(tokensUser.outcomingDelegations)),
+const extraMocks = () => {
+  HiveEngineUtils.getIncomingDelegations = jest
+    .fn()
+    .mockResolvedValue(tokensUser.incomingDelegations);
+  HiveEngineUtils.getOutgoingDelegations = jest
+    .fn()
+    .mockResolvedValue(tokensUser.outcomingDelegations);
+  HiveEngineConfigUtils.getAccountHistoryApi().get = jest
+    .fn()
+    .mockResolvedValue({ data: [] });
 };
 
 export default {

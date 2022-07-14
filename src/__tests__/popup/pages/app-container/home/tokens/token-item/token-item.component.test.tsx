@@ -1,15 +1,17 @@
 import App from '@popup/App';
+import { screen } from '@testing-library/react';
 import React from 'react';
 import FormatUtils from 'src/utils/format.utils';
 import tokenItem from 'src/__tests__/popup/pages/app-container/home/tokens/token-item/mocks/token-item';
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 const { methods, constants } = tokenItem;
-const { userToken } = constants;
+const { userToken, toFind, buttonsIcons } = constants;
 const { data, screenInfo } = userToken;
 describe('token-item.component tests:\n', () => {
   methods.afterEach;
@@ -45,11 +47,43 @@ describe('token-item.component tests:\n', () => {
       ]);
     });
   });
-  it.skip('Must show expanded information', async () => {
+  it('Must show expanded information', async () => {
     await clickAwait([methods.selectPreFix('LEO', 'expandMore')]);
-    assertion.getManyByText(screenInfo.leoToken);
+    screenInfo.leoToken.forEach((info) => {
+      expect(screen.queryByText(info)).toBeDefined();
+    });
+    toFind.ariaLabels.leoToken.forEach((ariaLabel) => {
+      expect(screen.getByLabelText(ariaLabel)).toBeDefined();
+    });
   });
-  it.todo('Must open a new window to visit token url'); //click on expand.
-  it.todo('Must close expanded information'); //click expand, assertion, click, assert info not to be present.
-  it.todo('Must navigate to each page'); //loop?
+  it('Must open a new window to visit token url', async () => {
+    await clickAwait([
+      methods.selectPreFix('LEO', 'expandMore'),
+      alDiv.token.user.tokenInfo.gotoWebSite,
+    ]);
+    expect(methods.spyOnTabs()).toBeCalledWith({ url: data.leoUrl });
+  });
+  it('Must close expanded information', async () => {
+    await assertion.toHaveClass(
+      alDiv.token.user.tokenInfo.expandablePanel,
+      toFind.cssClasses.expandablePanel.closed,
+    );
+    await clickAwait([methods.selectPreFix('LEO', 'expandMore')]);
+    await assertion.toHaveClass(
+      alDiv.token.user.tokenInfo.expandablePanel,
+      toFind.cssClasses.expandablePanel.opened,
+    );
+    await clickAwait([methods.selectPreFix('LEO', 'expandMore')]);
+    await assertion.toHaveClass(
+      alDiv.token.user.tokenInfo.expandablePanel,
+      toFind.cssClasses.expandablePanel.closed,
+    );
+  });
+  it('Must navigate to each page', async () => {
+    for (let i = 0; i < buttonsIcons.length; i++) {
+      await clickAwait([buttonsIcons[i]]);
+      assertion.getByLabelText(toFind.ariaLabels.pages[i]);
+      await clickAwait([alIcon.arrowBack]);
+    }
+  });
 });

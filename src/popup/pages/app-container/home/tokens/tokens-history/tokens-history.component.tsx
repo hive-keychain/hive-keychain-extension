@@ -84,7 +84,7 @@ const TokensHistory = ({
   }, [tokenHistory, filterValue]);
 
   return (
-    <div className="tokens-history">
+    <div aria-label="tokens-history" className="tokens-history">
       <InputComponent
         type={InputType.TEXT}
         placeholder="popup_html_search"

@@ -52,6 +52,10 @@ export default {
     user: {
       item: 'token-user-item',
       symbolPreFix: 'token-user-symbol-',
+      tokenInfo: {
+        gotoWebSite: 'token-info-go-to-website',
+        expandablePanel: 'token-info-expandable-panel',
+      },
     },
   },
 };

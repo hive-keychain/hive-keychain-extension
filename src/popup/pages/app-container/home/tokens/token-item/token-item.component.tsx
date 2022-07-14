@@ -122,13 +122,17 @@ const TokenItem = ({
       </div>
       {token && (
         <div
+          aria-label="token-info-expandable-panel"
           className={
             isExpandablePanelOpen
               ? 'expandable-panel opened'
               : 'expandable-panel closed'
           }>
           <div className="token-info">
-            <div className="token-description" onClick={goToTokenWebsite}>
+            <div
+              aria-label="token-info-go-to-website"
+              className="token-description"
+              onClick={goToTokenWebsite}>
               <img
                 className="token-icon"
                 src={
