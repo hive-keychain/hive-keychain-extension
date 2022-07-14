@@ -10,6 +10,11 @@ const AccountSubMenuItems: MenuItem[] = [
     nextScreen: Screen.SETTINGS_ADD_ACCOUNT,
   },
   {
+    label: 'popup_html_create_account',
+    icon: Icons.CREATE_ACCOUNT,
+    nextScreen: Screen.CREATE_ACCOUNT_PAGE_STEP_ONE,
+  },
+  {
     label: 'popup_html_manage_accounts',
     icon: Icons.MANAGE_ACCOUNTS,
     nextScreen: Screen.SETTINGS_MANAGE_ACCOUNTS,

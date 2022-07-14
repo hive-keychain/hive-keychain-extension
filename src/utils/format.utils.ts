@@ -89,6 +89,10 @@ const getSymbol = (nai: string) => {
   if (nai === '@@000000037') return 'HP';
 };
 
+const removeHtmlTags = (str: string) => {
+  return str.replace(/<(?:.|\n)*?>/gm, '');
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -98,6 +102,7 @@ const FormatUtils = {
   hasMoreThanXDecimal,
   toNumber,
   getSymbol,
+  removeHtmlTags,
 };
 
 export default FormatUtils;
