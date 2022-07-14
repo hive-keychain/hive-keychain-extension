@@ -57,6 +57,9 @@ export default {
     },
     voteProposal: 'vote-key-chain-proposal',
     voteStoodkevWitness: 'vote-for-stoodkev-witness',
+    tokens: {
+      preFix: 'token-button-operation-',
+    },
   },
   panel: {
     close: 'button-panel-close',

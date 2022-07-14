@@ -24,4 +24,5 @@ export default {
   tokensSettings: 'tokens-settings',
   tokensHistory: 'tokens-history',
   tokensTransfer: 'transfer-tokens-page',
+  tokensOperationPage: 'tokens-operation-page',
 };

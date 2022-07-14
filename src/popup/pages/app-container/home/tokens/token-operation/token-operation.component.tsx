@@ -228,7 +228,7 @@ const TokensOperation = ({
   };
 
   return (
-    <div className="transfer-tokens-page">
+    <div aria-label="tokens-operation-page" className="transfer-tokens-page">
       <AvailableCurrentPanelComponent
         available={balance}
         availableCurrency={symbol}
@@ -247,6 +247,7 @@ const TokensOperation = ({
         )}
       {operationType === TokenOperationType.DELEGATE && (
         <InputComponent
+          ariaLabel="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_username"
@@ -258,6 +259,7 @@ const TokensOperation = ({
       <div className="value-panel">
         <div className="value-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -269,6 +271,7 @@ const TokensOperation = ({
         <div className="symbol">{symbol}</div>
       </div>
       <OperationButtonComponent
+        ariaLabel={`token-button-operation-${operationType}`}
         requiredKey={KeychainKeyTypesLC.active}
         label={getSubmitButtonLabel()}
         onClick={handleClickOnSend}
