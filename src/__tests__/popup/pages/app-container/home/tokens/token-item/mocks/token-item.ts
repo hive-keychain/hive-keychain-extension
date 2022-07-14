@@ -15,6 +15,7 @@ import {
   clickAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
+import { PreFixTokens } from 'src/__tests__/utils-for-testing/types/tokens-types';
 
 const i18n = {
   get: (key: string, options?: string[] | undefined) =>
@@ -24,22 +25,33 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  message: {
-    cooldown: i18n.get('popup_html_token_undelegation_cooldown_disclaimer', [
-      'LEO',
-      '40',
-    ]),
-    header: {
-      incoming: i18n.get('popup_html_total_incoming'),
-      outgoing: i18n.get('popup_html_total_outgoing'),
+  userToken: {
+    data: {
+      length: tokensUser.balances.length,
+      tokens: tokensUser.balances,
+    },
+    screenInfo: {
+      leoToken: [
+        'LEO tokens',
+        '@leofinance',
+        'Balance: 38.861',
+        'Staking: 1.060',
+        'Delegation in: 1',
+        'Delegation out: 1',
+      ],
     },
   },
-  values: {
-    totalValue: {
-      incoming: ['1.000 LEO', '@theghost1980', '100 LEO'],
-      outgoing: ['1.000 LEO', '@cedricguillas', '200 LEO'],
+  toFind: {
+    ariaLabels: {
+      leoToken: [
+        alButton.token.action.delegate,
+        alButton.token.action.stake,
+        alButton.token.action.unstake,
+      ],
     },
   },
+  message: {},
+  values: {},
 };
 
 const beforeEach = async (component: ReactElement) => {
@@ -57,7 +69,8 @@ const methods = {
   afterEach: afterEach(() => {
     afterTests.clean();
   }),
-  preFixExpandMore: (on: string) => alIcon.tokens.prefix.expandMore + on,
+  selectPreFix: (symbol: string, preFix: PreFixTokens) =>
+    alIcon.tokens.prefix[preFix] + symbol,
 };
 
 const extraMocks = {

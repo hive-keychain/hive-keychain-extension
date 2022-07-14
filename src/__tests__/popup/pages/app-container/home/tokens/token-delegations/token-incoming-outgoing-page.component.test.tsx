@@ -14,7 +14,7 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
   methods.afterEach;
   beforeEach(async () => {
     await tokenDelegations.beforeEach(<App />);
-    await clickAwait([methods.preFixToken('PAL')]);
+    await clickAwait([methods.preFixExpandMore('PAL')]);
   });
   it('Must load incoming delegation page and show header', async () => {
     await clickAwait([alButton.token.delegations.goto.incoming]);

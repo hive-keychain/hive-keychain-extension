@@ -14,6 +14,11 @@ export default {
   },
   tokens: {
     settings: 'tokens-settings-icon',
+    prefix: {
+      history: 'icon-token-history-',
+      send: 'icon-send-history-',
+      expandMore: 'icon-expand-more-',
+    },
   },
   expandMore: 'icon-expand-more',
 };

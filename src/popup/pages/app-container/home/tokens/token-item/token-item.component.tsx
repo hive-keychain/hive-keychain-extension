@@ -96,6 +96,7 @@ const TokenItem = ({
         </CustomTooltip>
         <div className="symbol">{tokenBalance.symbol}</div>
         <Icon
+          ariaLabel={`icon-token-history-${tokenBalance.symbol}`}
           name={Icons.HISTORY}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance })
@@ -103,6 +104,7 @@ const TokenItem = ({
           additionalClassName="history"
           type={IconType.OUTLINED}></Icon>
         <Icon
+          ariaLabel={`icon-send-history-${tokenBalance.symbol}`}
           name={Icons.SEND}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_TRANSFER, { tokenBalance })
@@ -110,7 +112,7 @@ const TokenItem = ({
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>
         <Icon
-          ariaLabel="icon-expand-more"
+          ariaLabel={`icon-expand-more-${tokenBalance.symbol}`}
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
           additionalClassName={`more ${
