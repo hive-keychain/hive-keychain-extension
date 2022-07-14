@@ -46,19 +46,22 @@ const queryByLabel = (ariaLabel: string, tobeInDoc: boolean = true) => {
  * Await for assertion. using waitFor under the hood.
  * Can select bewteen getByLabelText or getByText
  */
-const awaitFor = async (ariaLabel: string, query: QueryDOM) => {
+const awaitFor = async (ariaLabelOrText: string, query: QueryDOM) => {
   await waitFor(() => {
     switch (query) {
       case QueryDOM.BYLABEL:
-        expect(screen.getByLabelText(ariaLabel)).toBeInTheDocument();
+        expect(screen.getByLabelText(ariaLabelOrText)).toBeInTheDocument();
         break;
       case QueryDOM.BYTEXT:
-        expect(screen.getByText(ariaLabel)).toBeInTheDocument();
+        expect(screen.getByText(ariaLabelOrText)).toBeInTheDocument();
     }
   });
 };
 const getOneByText = (text: string) => {
   expect(screen.getByText(text)).toBeInTheDocument();
+};
+const awaitOneByLabel = async (ariaLabel: string) => {
+  expect(await screen.findByLabelText(ariaLabel)).toBeInTheDocument();
 };
 /**
  * Can select bewteen getByLabelText or getByText
@@ -79,6 +82,18 @@ const getByText = (domEl: ElementQuery[]) => {
     }
   }
 };
+/**
+ * Await using findByLabelText, check for class on found element.
+ */
+const toHaveClass = async (ariaLabel: string, _class: string) => {
+  expect(await screen.findByLabelText(ariaLabel)).toHaveClass(_class);
+};
+/**
+ * getByLabelText to toHaveValue
+ */
+const toHaveValue = (arialabel: string, value: string) => {
+  expect(screen.getByLabelText(arialabel)).toHaveValue(value);
+};
 
 export default {
   awaitMk,
@@ -90,4 +105,7 @@ export default {
   queryByLabel,
   getByDisplay,
   getOneByText,
+  awaitOneByLabel,
+  toHaveClass,
+  toHaveValue,
 };
