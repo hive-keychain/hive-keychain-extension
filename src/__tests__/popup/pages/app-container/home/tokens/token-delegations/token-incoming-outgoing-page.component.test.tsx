@@ -29,7 +29,9 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     assertion.getOneByText(constants.message.cooldown);
     assertion.getOneByText(constants.message.header.outgoing);
   });
-  it.todo('Must show total for incoming');
+  it('Must show total for incoming', async () => {
+    await clickAwait([alButton.token.delegations.goto.incoming]);
+  });
   it.todo('Must show total for outgoing');
   it.todo(
     'Must show info related in here src/popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-item.component/token-incoming-outgoing-item.component.tsx',

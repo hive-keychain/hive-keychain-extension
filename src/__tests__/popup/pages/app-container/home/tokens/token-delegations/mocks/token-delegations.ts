@@ -24,8 +24,12 @@ const constants = {
       ['LEO', '40'],
     ),
     header: {
-      incoming: mocksImplementation.i18nGetMessage('popup_html_total_incoming'),
-      outgoing: mocksImplementation.i18nGetMessage('popup_html_total_outgoing'),
+      incoming: mocksImplementation.i18nGetMessageCustom(
+        'popup_html_total_incoming',
+      ),
+      outgoing: mocksImplementation.i18nGetMessageCustom(
+        'popup_html_total_outgoing',
+      ),
     },
   },
 };
