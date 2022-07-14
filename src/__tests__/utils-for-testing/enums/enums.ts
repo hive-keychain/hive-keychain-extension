@@ -5,7 +5,7 @@ export enum OverwriteMock {
 export enum Tab {
   WITNESS = 0,
   PROXY = 1,
-  GOVERNANCE = 2,
+  PROPOSAL = 2,
 }
 
 export enum QueryDOM {

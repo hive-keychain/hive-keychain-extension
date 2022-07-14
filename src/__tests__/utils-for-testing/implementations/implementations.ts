@@ -13,6 +13,10 @@ const getValuefromLS = (...args: any[]) => {
       return true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
       return null;
+    case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
+      return { 'keychain.tests': true };
+    case LocalStorageKeyEnum.FAVORITE_USERS:
+      return { 'keychain.tests': ['one1', 'two2', 'three3'] };
   }
 };
 

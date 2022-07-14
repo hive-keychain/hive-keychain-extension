@@ -1,12 +1,12 @@
 import RPCModule from '@background/rpc.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import BgdHiveUtils from '@background/utils/hive.utils';
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
-import { ExtendedAccount, PrivateKey } from '@hiveio/dhive/lib/index-browser';
+import { Asset, ExtendedAccount } from '@hiveio/dhive/lib/index-browser';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import moment from 'moment';
 import Config from 'src/config';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -24,18 +24,23 @@ const alarmHandler = async () => {
       LocalStorageKeyEnum.__MK,
       LocalStorageKeyEnum.CLAIM_ACCOUNTS,
       LocalStorageKeyEnum.CLAIM_REWARDS,
+      LocalStorageKeyEnum.CLAIM_SAVINGS,
     ],
   );
 
   const mk = localStorage[LocalStorageKeyEnum.__MK];
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
+  const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];
   if (!mk) return;
   if (claimAccounts) {
     initClaimAccounts(claimAccounts, mk);
   }
   if (claimRewards) {
     initClaimRewards(claimRewards, mk);
+  }
+  if (claimSavings) {
+    initClaimSavings(claimSavings, mk);
   }
 };
 
@@ -80,6 +85,58 @@ const iterateClaimRewards = async (users: string[], mk: string) => {
   }
 };
 
+const initClaimSavings = (
+  claimSavings: { [username: string]: boolean },
+  mk: string,
+) => {
+  if (claimSavings) {
+    const users = Object.keys(claimSavings).filter(
+      (username) => claimSavings[username] === true,
+    );
+    iterateClaimSavings(users, mk);
+  } else {
+    Logger.error('startClaimSavings: claimSavings not defined');
+  }
+};
+
+const iterateClaimSavings = async (users: string[], mk: string) => {
+  const userExtendedAccounts = await (
+    await RPCModule.getClient()
+  ).database.getAccounts(users);
+  const localAccounts: LocalAccount[] =
+    await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+
+  for (const userAccount of userExtendedAccounts) {
+    const activeAccount = await createActiveAccount(userAccount, localAccounts);
+    const baseDate =
+      new Date(
+        activeAccount?.account.savings_hbd_last_interest_payment!,
+      ).getUTCFullYear() === 1970
+        ? activeAccount?.account.savings_hbd_seconds_last_update
+        : activeAccount?.account.savings_hbd_last_interest_payment;
+
+    const hasSavingsToClaim =
+      Number(activeAccount?.account.savings_hbd_seconds) > 0 ||
+      Asset.from(activeAccount?.account.savings_hbd_balance!).amount > 0;
+
+    if (!hasSavingsToClaim) {
+      Logger.info(
+        `@${activeAccount?.name} doesn't have any savings interests to claim`,
+      );
+    } else {
+      const canClaimSavings =
+        moment(moment().utc()).diff(baseDate, 'days') >=
+        Config.claims.savings.delay;
+      if (canClaimSavings) {
+        if (await BgdHiveUtils.claimSavings(activeAccount!))
+          Logger.info(`Claim savings for @${activeAccount?.name} successful`);
+      } else {
+        Logger.info(`Not time to claim yet for @${activeAccount?.name}`);
+      }
+    }
+  }
+};
+
 const initClaimAccounts = (
   claimAccounts: { [x: string]: boolean },
   mk: string,
@@ -106,7 +163,7 @@ const iterateClaimAccounts = async (users: string[], mk: string) => {
       activeAccount &&
       activeAccount.rc.percentage > Config.claims.freeAccount.MIN_RC_PCT
     ) {
-      await claimAccounts(activeAccount.rc, activeAccount);
+      await BgdHiveUtils.claimAccounts(activeAccount.rc, activeAccount);
     }
   }
 };
@@ -142,34 +199,6 @@ const getRC = async (accountName: string) => {
   ).rc.findRCAccounts([accountName]);
   const rc = await (await RPCModule.getClient()).rc.calculateRCMana(rcAcc[0]);
   return rc;
-};
-
-const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
-  try {
-    const freeAccountConfig = Config.claims.freeAccount;
-    if (
-      rc.percentage / 100 > freeAccountConfig.MIN_RC_PCT &&
-      rc.max_mana > freeAccountConfig.MIN_RC
-    ) {
-      const client = await RPCModule.getClient();
-      await client.broadcast.sendOperations(
-        [
-          [
-            'claim_account',
-            {
-              creator: activeAccount.name,
-              extensions: [],
-              fee: '0.000 HIVE',
-            },
-          ],
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      );
-      Logger.info(`Claiming free account for @${activeAccount.name}`);
-    } else Logger.info('Not enough RC% to claim account');
-  } catch (err) {
-    Logger.error(err);
-  }
 };
 
 const ClaimModule = {

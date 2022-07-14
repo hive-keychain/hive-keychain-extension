@@ -7,4 +7,6 @@ export default {
   filter: {
     ranking: 'input-ranking-filter',
   },
+  receiver: 'input-receiver',
+  clear: 'input-clear',
 };

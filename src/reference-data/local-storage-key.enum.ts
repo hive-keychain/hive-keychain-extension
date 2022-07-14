@@ -7,6 +7,7 @@ export enum LocalStorageKeyEnum {
   KEYCHAINIFY_ENABLED = 'keychainify_enabled',
   CLAIM_REWARDS = 'claimRewards',
   CLAIM_ACCOUNTS = 'claimAccounts',
+  CLAIM_SAVINGS = 'claimSavings',
   AUTOLOCK = 'autolock',
   NO_CONFIRM = 'no_confirm',
   WALLET_HISTORY_FILTERS = 'walletHistoryFilters',
