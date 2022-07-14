@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
@@ -15,21 +16,28 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
 
+const i18n = {
+  get: (key: string, options?: string[] | undefined) =>
+    mocksImplementation.i18nGetMessageCustom(key, options),
+};
+
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
   message: {
-    cooldown: mocksImplementation.i18nGetMessageCustom(
-      'popup_html_token_undelegation_cooldown_disclaimer',
-      ['LEO', '40'],
-    ),
+    cooldown: i18n.get('popup_html_token_undelegation_cooldown_disclaimer', [
+      'LEO',
+      '40',
+    ]),
     header: {
-      incoming: mocksImplementation.i18nGetMessageCustom(
-        'popup_html_total_incoming',
-      ),
-      outgoing: mocksImplementation.i18nGetMessageCustom(
-        'popup_html_total_outgoing',
-      ),
+      incoming: i18n.get('popup_html_total_incoming'),
+      outgoing: i18n.get('popup_html_total_outgoing'),
+    },
+  },
+  values: {
+    totalValue: {
+      incoming: ['1.000 LEO', '@theghost1980', '100 LEO'],
+      outgoing: ['1.000 LEO', '@cedricguillas', '200 LEO'],
     },
   },
 };
@@ -49,6 +57,7 @@ const methods = {
   afterEach: afterEach(() => {
     afterTests.clean();
   }),
+  preFixToken: (on: string) => alDiv.token.user.symbolPreFix + on,
 };
 
 const extraMocks = {
@@ -59,7 +68,7 @@ const extraMocks = {
   getOutgoingDelegations: () =>
     (HiveEngineUtils.getOutgoingDelegations = jest
       .fn()
-      .mockResolvedValue(tokensUser.incomingDelegations)),
+      .mockResolvedValue(tokensUser.outcomingDelegations)),
 };
 
 export default {

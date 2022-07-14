@@ -6,17 +6,15 @@ import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-componen
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  clickAwait,
-  clickAwaitOnFound,
-} from 'src/__tests__/utils-for-testing/setups/events';
+import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 const { methods, constants } = tokenDelegations;
+const { values } = constants;
 describe('token-incoming-outgoing-page.component tests:\n', () => {
   methods.afterEach;
   beforeEach(async () => {
     await tokenDelegations.beforeEach(<App />);
-    await clickAwaitOnFound(alIcon.expandMore, 2);
+    await clickAwait([methods.preFixToken('PAL')]);
   });
   it('Must load incoming delegation page and show header', async () => {
     await clickAwait([alButton.token.delegations.goto.incoming]);
@@ -29,11 +27,18 @@ describe('token-incoming-outgoing-page.component tests:\n', () => {
     assertion.getOneByText(constants.message.cooldown);
     assertion.getOneByText(constants.message.header.outgoing);
   });
-  it('Must show total for incoming', async () => {
+  it('Must show values for incoming', async () => {
     await clickAwait([alButton.token.delegations.goto.incoming]);
+    assertion.getManyByText(values.totalValue.incoming);
   });
-  it.todo('Must show total for outgoing');
-  it.todo(
-    'Must show info related in here src/popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-item.component/token-incoming-outgoing-item.component.tsx',
-  );
+  it('Must show values for outgoing', async () => {
+    await clickAwait([alButton.token.delegations.goto.outgoing]);
+    assertion.getManyByText(values.totalValue.outgoing);
+  });
+  it('Must go back when clicking arrow', async () => {
+    await clickAwait([alButton.token.delegations.goto.incoming]);
+    assertion.getByLabelText(alComponent.incomingOutgoingPage);
+    await clickAwait([alIcon.arrowBack]);
+    assertion.getByLabelText(alComponent.userTokens);
+  });
 });

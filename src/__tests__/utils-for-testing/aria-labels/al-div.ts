@@ -51,6 +51,7 @@ export default {
   token: {
     user: {
       item: 'token-user-item',
+      symbolPreFix: 'token-user-symbol-',
     },
   },
 };

@@ -53,9 +53,9 @@ const incomingDelegations = [
 const outcomingDelegations = [
   {
     from: mk.user.one,
-    quantity: '100',
+    quantity: '200',
     symbol: 'LEO',
-    to: 'theghost1980',
+    to: 'cedricguillas',
     created: 1657742138,
     updated: 1657742138,
   },

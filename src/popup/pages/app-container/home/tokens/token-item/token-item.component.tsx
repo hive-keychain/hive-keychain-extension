@@ -81,6 +81,7 @@ const TokenItem = ({
   return (
     <div aria-label={ariaLabel} className="token-item">
       <div
+        aria-label={`token-user-symbol-${tokenBalance.symbol}`}
         className="token"
         onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}>
         <CustomTooltip
