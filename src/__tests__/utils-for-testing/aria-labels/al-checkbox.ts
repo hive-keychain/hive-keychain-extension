@@ -11,4 +11,10 @@ const transfer = {
   cancelRecurrent: 'checkbox-cancel-recurrent',
 };
 
-export default { selectKeys, transfer };
+const tokensFilter = {
+  selectToken: {
+    preFix: 'checkbox-select-token-',
+  },
+};
+
+export default { selectKeys, transfer, tokensFilter };

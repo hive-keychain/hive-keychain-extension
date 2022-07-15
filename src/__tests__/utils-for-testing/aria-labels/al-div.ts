@@ -57,5 +57,11 @@ export default {
         expandablePanel: 'token-info-expandable-panel',
       },
     },
+    list: {
+      preFix: 'token-list-item-',
+      item: {
+        description: 'token-list-item-description',
+      },
+    },
   },
 };

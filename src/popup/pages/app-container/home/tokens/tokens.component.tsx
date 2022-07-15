@@ -104,6 +104,7 @@ const Tokens = ({
             />
 
             <Icon
+              ariaLabel="open-tokens-filter"
               onClick={() => navigateTo(Screen.TOKENS_FILTER)}
               name={Icons.FILTER}
               type={IconType.OUTLINED}

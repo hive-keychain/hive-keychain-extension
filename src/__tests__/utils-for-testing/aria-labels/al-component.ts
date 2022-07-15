@@ -25,4 +25,5 @@ export default {
   tokensHistory: 'tokens-history',
   tokensTransfer: 'transfer-tokens-page',
   tokensOperationPage: 'tokens-operation-page',
+  tokensFilter: 'tokens-filter',
 };

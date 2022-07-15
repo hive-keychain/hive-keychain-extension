@@ -19,6 +19,7 @@ export default {
       send: 'icon-send-history-',
       expandMore: 'icon-expand-more-',
     },
+    openFilter: 'open-tokens-filter',
   },
   expandMore: 'icon-expand-more',
 };

@@ -16,4 +16,5 @@ export default {
     iterations: 'input-recurrent-iterations',
   },
   memoOptional: 'input-memo-optional',
+  filterBox: 'input-filter-box',
 };

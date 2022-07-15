@@ -45,7 +45,7 @@ const queryByLabel = (ariaLabel: string, tobeInDoc: boolean = true) => {
     : expect(screen.queryByLabelText(ariaLabel)).not.toBeInTheDocument();
 };
 /**
- * queryByLabelText. More flexible to test appearance/dissapearance of DOM elements.
+ * queryByText. More flexible to test appearance/dissapearance of DOM elements.
  * @param {boolean} tobeInDoc Default as true.
  */
 const queryByText = (text: string, tobeInDoc: boolean = true) => {

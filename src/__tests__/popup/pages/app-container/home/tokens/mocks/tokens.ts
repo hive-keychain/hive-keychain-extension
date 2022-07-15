@@ -1,9 +1,13 @@
 import { ReactElement } from 'react';
+import FormatUtils from 'src/utils/format.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import tokensImplementations from 'src/__tests__/popup/pages/app-container/home/tokens/mocks/implementations';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import { overWriteMocks } from 'src/__tests__/utils-for-testing/defaults/overwrite';
 import {
@@ -36,6 +40,9 @@ const constants = {
       disclaimer: i18n.get('popup_view_tokens_balance'),
       noTokens: i18n.get('popup_html_tokens_no_tokens'),
     },
+    tokenFilter: {
+      disclaimer: i18n.get('popup_html_tokens_settings_text'),
+    },
   },
   data: {
     userTokens: {
@@ -47,10 +54,33 @@ const constants = {
         (token) => token.symbol === 'PAL',
       )[0],
     },
+    tokensFilter: {
+      list: {
+        asDisplayed: tokensList.alltokens.map((token) => {
+          return {
+            name: token.name,
+            issuedBy:
+              token.symbol +
+              ' ' +
+              i18n.get('popup_token_issued_by', [token.issuer]),
+            supply:
+              i18n.get('popup_token_supply') +
+              ' : ' +
+              FormatUtils.nFormatter(parseFloat(token.supply), 3) +
+              '/' +
+              FormatUtils.nFormatter(parseFloat(token.maxSupply), 3),
+          };
+        }),
+      },
+    },
   },
   typeValue: {
     token: {
       keyChain: 'keyChainToken',
+    },
+    tokenFilter: {
+      toFind: 'LEO',
+      nonExistent: 'keyChain Token',
     },
   },
 };
@@ -105,6 +135,9 @@ const methods = {
       },
     ]);
   },
+  clickOnFilter: async () => await clickAwait([alIcon.tokens.openFilter]),
+  spyLocalStorage: () =>
+    jest.spyOn(LocalStorageUtils, 'saveValueInLocalStorage'),
 };
 
 export default {
