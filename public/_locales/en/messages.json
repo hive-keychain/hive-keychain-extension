@@ -2377,5 +2377,13 @@
   "html_popup_create_account_need_accept_terms_condition": {
     "message": "You need to accept the terms and condition before creating account",
     "description": "Create account payment message"
+  },
+  "html_popup_create_account_successful": {
+    "message": "Your account has been successfully created and added to your Keychain",
+    "description": "Create account successful message"
+  },
+  "html_popup_create_account_failed": {
+    "message": "Your account creation has failed. Please try again later",
+    "description": "Create account failed message"
   }
 }

@@ -18,7 +18,10 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { AccountCreationUtils } from 'src/utils/account-creation.utils';
+import {
+  AccountCreationType,
+  AccountCreationUtils,
+} from 'src/utils/account-creation.utils';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -28,11 +31,6 @@ import './create-account-step-one.component.scss';
 interface SelectOption {
   label: string;
   value: string;
-}
-
-export enum CreationType {
-  USING_TOKEN = 'USING_TOKEN',
-  BUYING = 'BUYING',
 }
 
 const CreateAccountStepOne = ({
@@ -47,7 +45,7 @@ const CreateAccountStepOne = ({
   const [selectedAccount, setSelectedAccount] = useState<SelectOption>();
   const [accountName, setAccountName] = useState('');
   const [price, setPrice] = useState(3);
-  const [creationType, setCreationType] = useState<CreationType>();
+  const [creationType, setCreationType] = useState<AccountCreationType>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -95,10 +93,10 @@ const CreateAccountStepOne = ({
 
     if (account.pending_claimed_accounts > 0) {
       setPrice(0);
-      setCreationType(CreationType.USING_TOKEN);
+      setCreationType(AccountCreationType.USING_TICKET);
     } else {
       setPrice(3);
-      setCreationType(CreationType.BUYING);
+      setCreationType(AccountCreationType.BUYING);
     }
   };
 
@@ -168,9 +166,9 @@ const CreateAccountStepOne = ({
 
   const getPriceLabel = () => {
     switch (creationType) {
-      case CreationType.BUYING:
+      case AccountCreationType.BUYING:
         return `${price} ${currencyLabels.hive}`;
-      case CreationType.USING_TOKEN:
+      case AccountCreationType.USING_TICKET:
         return chrome.i18n.getMessage('html_popup_ticket', ['1']);
     }
   };
@@ -182,11 +180,14 @@ const CreateAccountStepOne = ({
       );
       const balance = Asset.fromString(account.balance.toString());
       if (
-        creationType === CreationType.USING_TOKEN ||
-        (creationType === CreationType.BUYING && balance.amount >= 3)
+        creationType === AccountCreationType.USING_TICKET ||
+        (creationType === AccountCreationType.BUYING && balance.amount >= 3)
       ) {
         navigateToWithParams(Screen.CREATE_ACCOUNT_PAGE_STEP_TWO, {
-          usedAccount: selectedAccount?.value,
+          usedAccount: accounts.find(
+            (localAccount: LocalAccount) =>
+              localAccount.name === selectedAccount?.value,
+          ),
           newUsername: accountName,
           creationType: creationType,
           price: price,

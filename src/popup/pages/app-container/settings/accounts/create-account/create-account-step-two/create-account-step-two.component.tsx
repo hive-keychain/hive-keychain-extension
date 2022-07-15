@@ -1,48 +1,33 @@
 import { PrivateKey } from '@hiveio/dhive';
+import { LocalAccount } from '@interfaces/local-account.interface';
+import { addAccount } from '@popup/actions/account.actions';
 import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import { AccountCreationUtils } from 'src/utils/account-creation.utils';
-import CurrencyUtils from 'src/utils/currency.utils';
+import {
+  AccountCreationType,
+  AccountCreationUtils,
+  GeneratedKeys,
+} from 'src/utils/account-creation.utils';
 import FormatUtils from 'src/utils/format.utils';
 
 import './create-account-step-two.component.scss';
 
-interface GeneratedKey {
-  public: string;
-  private: string;
-}
-
-interface GeneratedKeys {
-  owner: GeneratedKey;
-  active: GeneratedKey;
-  posting: GeneratedKey;
-  memo: GeneratedKey;
-}
-
-interface SelectOption {
-  label: string;
-  value: string;
-}
-
-enum CreationType {
-  USING_TOKEN = 'USING_TOKEN',
-  BUYING = 'BUYING',
-}
-
 const CreateAccountStepTwo = ({
-  currencyLabels,
   navParams,
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
+  addAccount,
 }: PropsFromRedux) => {
   const emptyKeys = {
     owner: { public: '', private: '' },
@@ -58,7 +43,7 @@ const CreateAccountStepTwo = ({
   const accountName = navParams?.newUsername;
   const price = navParams?.price;
   const creationType = navParams?.creationType;
-  const selectedAccount = navParams?.usedAccount;
+  const selectedAccount = navParams?.usedAccount as LocalAccount;
 
   const [paymentUnderstanding, setPaymentUnderstanding] = useState(false);
   const [safelyCopied, setSafelyCopied] = useState(false);
@@ -112,8 +97,6 @@ const CreateAccountStepTwo = ({
     setNotPrimaryStorageUnderstanding(false);
     setSafelyCopied(false);
   }, [keys]);
-
-  useEffect;
 
   const generateMasterKey = async () => {
     if (accountName.length < 3) {
@@ -172,12 +155,26 @@ const CreateAccountStepTwo = ({
     ${keys.memo.public}`;
   };
 
-  const createAccount = () => {
+  const createAccount = async () => {
     if (
       paymentUnderstanding &&
       safelyCopied &&
       notPrimaryStorageUnderstanding
     ) {
+      const result = await AccountCreationUtils.createAccount(
+        creationType,
+        price,
+        accountName,
+        selectedAccount,
+        keys,
+      );
+      if (result) {
+        setSuccessMessage('html_popup_create_account_successful');
+        addAccount(result as LocalAccount);
+        navigateTo(Screen.HOME_PAGE, true);
+      } else {
+        setErrorMessage('html_popup_create_account_failed');
+      }
     } else {
       setErrorMessage('html_popup_create_account_need_accept_terms_condition');
       return;
@@ -186,15 +183,15 @@ const CreateAccountStepTwo = ({
 
   const getPaymentCheckboxLabel = () => {
     switch (creationType) {
-      case CreationType.BUYING:
+      case AccountCreationType.BUYING:
         return chrome.i18n.getMessage(
           'html_popup_create_account_buy_method_message',
           [price.toString(), selectedAccount],
         );
-      case CreationType.USING_TOKEN:
+      case AccountCreationType.USING_TICKET:
         return chrome.i18n.getMessage(
           'html_popup_create_account_claim_account_method_message',
-          [selectedAccount],
+          [selectedAccount.name],
         );
     }
   };
@@ -250,7 +247,6 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     accounts: state.accounts,
-    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     navParams: state.navigation.params,
   };
 };
@@ -259,6 +255,8 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   setTitleContainerProperties,
+  addAccount,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
