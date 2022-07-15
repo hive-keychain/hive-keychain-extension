@@ -181,15 +181,16 @@ const TokensOperation = ({
             break;
         }
 
-        if (tokenOperationResult.id) {
+        if (tokenOperationResult && tokenOperationResult.id) {
           addToLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList(`popup_html_${operationType}_tokens`);
           let confirmationResult: any =
             await BlockchainTransactionUtils.tryConfirmTransaction(
               tokenOperationResult.id,
             );
+
           removeFromLoadingList('html_popup_confirm_transaction_operation');
-          if (confirmationResult.confirmed) {
+          if (confirmationResult && confirmationResult.confirmed) {
             if (confirmationResult.error) {
               setErrorMessage('popup_html_hive_engine_error', [
                 confirmationResult.error,

@@ -75,6 +75,8 @@ export const clickTypeAwait = async (domEl: ClickOrType[]) => {
             screen.getByLabelText(domEl[index].ariaLabel!),
           );
           break;
+        case 'none':
+          break;
       }
     }
   });

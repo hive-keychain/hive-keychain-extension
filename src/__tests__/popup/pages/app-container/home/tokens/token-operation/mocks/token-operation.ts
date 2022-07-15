@@ -1,24 +1,30 @@
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { ReactElement } from 'react';
-import AccountUtils from 'src/utils/account.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import tokenOperationConstants from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/constants';
+import tokenOperationExtraMocks from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation-extra-mocks';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
-import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
+import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
-import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
-import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import {
   actAdvanceTime,
   clickAwait,
+  clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
 import { PreFixTokens } from 'src/__tests__/utils-for-testing/types/tokens-types';
+
+const operationResult = {
+  confirmed: { confirmed: true, error: null },
+  error: { confirmed: true, error: 'error_token_transaction' },
+  timeOut: undefined,
+};
 
 const leoTokenData = tokensUser.balances.filter(
   (token) => token.symbol === 'LEO',
@@ -27,49 +33,23 @@ const leoTokenData = tokensUser.balances.filter(
 const selectPreFix = (symbol: string, preFix: PreFixTokens) =>
   alIcon.tokens.prefix[preFix] + symbol;
 
-const i18n = {
-  get: (key: string, options?: string[] | undefined) =>
-    mocksImplementation.i18nGetMessageCustom(key, options),
-};
+const constants = tokenOperationConstants.constants;
 
-const constants = {
-  username: mk.user.one,
-  stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  message: {
-    disclaimer: i18n.get('popup_html_tokens_operation_text'),
-    confirmation: {
-      stake: i18n.get(
-        `popup_html_${TokenOperationType.STAKE}_tokens_confirm_text`,
-      ),
-    },
-    error: {
-      noSuchAccount: i18n.get('popup_no_such_account'),
-    },
-  },
-  title: {
-    stake: i18n.get(`popup_html_${TokenOperationType.STAKE}_tokens`),
-    unstake: i18n.get(`popup_html_${TokenOperationType.UNSTAKE}_tokens`),
-    delegate: i18n.get(`popup_html_${TokenOperationType.DELEGATE}_tokens`),
-  },
-  leoToken: {
-    screenInfo: {
-      stake: [
-        `${leoTokenData.balance} LEO`,
-        i18n.get('popup_html_balance'),
-        i18n.get('popup_html_token_stake'),
-      ],
-      unstake: '', //TODO
-      delegate: '', //TODO
-    },
-  },
-};
-
-const beforeEach = async (component: ReactElement) => {
+const beforeEach = async (
+  component: ReactElement,
+  removeActiveKey: boolean = false,
+) => {
+  const initialState = constants.stateAs;
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   mockPreset.setOrDefault({});
   extraMocks.incomingOutcoming();
-  renders.wInitialState(component, constants.stateAs);
+  extraMocks.saveTransferRecipient();
+  if (removeActiveKey) {
+    delete initialState.accounts[0].keys.active;
+    delete initialState.accounts[0].keys.activePubKey;
+  }
+  renders.wInitialState(component, initialState);
   await assertion.awaitMk(constants.username);
   await clickAwait([
     alButton.actionBtn.tokens,
@@ -85,24 +65,39 @@ const methods = {
   afterEach: afterEach(() => {
     afterTests.clean();
   }),
+  userInteraction: async (
+    inputAmount: string,
+    buttonOperation: TokenOperationType,
+    confirmTransaction: boolean = false,
+    addDelegateTo: boolean = false,
+  ) => {
+    await clickTypeAwait([
+      addDelegateTo
+        ? {
+            ariaLabel: alInput.username,
+            event: EventType.TYPE,
+            text: mk.user.two,
+          }
+        : { ariaLabel: 'none', event: 'none' },
+      { ariaLabel: alInput.amount, event: EventType.TYPE, text: inputAmount },
+      {
+        ariaLabel: alButton.operation.tokens.preFix + buttonOperation,
+        event: EventType.CLICK,
+      },
+      confirmTransaction
+        ? { ariaLabel: alButton.dialog.confirm, event: EventType.CLICK }
+        : { ariaLabel: 'none', event: 'none' },
+    ]);
+  },
 };
 
-const extraMocks = {
-  incomingOutcoming: () => {
-    HiveEngineUtils.getIncomingDelegations = jest
-      .fn()
-      .mockResolvedValue(tokensUser.incomingDelegations);
-    HiveEngineUtils.getOutgoingDelegations = jest
-      .fn()
-      .mockResolvedValue(tokensUser.outcomingDelegations);
-  },
-  doesAccountExist: (exist: boolean) =>
-    (AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(exist)),
-};
+const extraMocks = tokenOperationExtraMocks.mocks;
 
 export default {
   beforeEach,
   methods,
   constants,
   extraMocks,
+  leoTokenData,
+  operationResult,
 };
