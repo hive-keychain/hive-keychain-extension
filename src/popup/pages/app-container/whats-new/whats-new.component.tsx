@@ -1,3 +1,4 @@
+import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
@@ -6,15 +7,14 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import { WhatNew } from 'src/whats-new';
 import './whats-new.component.scss';
 
 interface Props {
   onOverlayClick: () => void;
-  url: string;
+  content: WhatsNewContent;
 }
 
-const WhatsNew = ({ onOverlayClick, url }: Props) => {
+const WhatsNew = ({ onOverlayClick, content }: Props) => {
   const [pageIndex, setPageIndex] = useState(0);
   const locale = 'en'; // later use getUILanguage()
 
@@ -32,7 +32,7 @@ const WhatsNew = ({ onOverlayClick, url }: Props) => {
   const finish = () => {
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.LAST_VERSION_UPDATE,
-      WhatNew.version,
+      content.version,
     );
     onOverlayClick();
   };
@@ -58,28 +58,30 @@ const WhatsNew = ({ onOverlayClick, url }: Props) => {
       <div className="overlay"></div>
       <div className="whats-new-container">
         <div className="whats-new-title">
-          {chrome.i18n.getMessage('popup_html_whats_new', [WhatNew.version])}
+          {chrome.i18n.getMessage('popup_html_whats_new', [content.version])}
         </div>
         <Carousel
           showArrows={false}
-          showIndicators={WhatNew.features.length > 1}
+          showIndicators={content.features[locale].length > 1}
           selectedItem={pageIndex}
           showThumbs={false}
           showStatus={false}
           renderIndicator={renderCustomIndicator}>
-          {WhatNew.features.map((feature, index) => (
+          {content.features[locale].map((feature, index) => (
             <div className="carousel-item" key={`feature-${index}`}>
               <div className="image">
-                <img src={`assets/images/whats-new/${feature.image}`} />
+                <img src={feature.image} />
               </div>
-              <div className="title">{feature.title[locale]}</div>
-              <div className="description">{feature.description[locale]}</div>
+              <div className="title">{feature.title}</div>
+              <div className="description">{feature.description}</div>
               <div className="extra-information">
-                {feature.extraInformation[locale]}
+                {feature.extraInformation}
               </div>
               <a
                 className="read-more-link"
-                onClick={() => navigateToArticle(`${url}#${feature.anchor}`)}>
+                onClick={() =>
+                  navigateToArticle(`${content.url}#${feature.anchor}`)
+                }>
                 {chrome.i18n.getMessage('html_popup_read_more')}
               </a>
             </div>
@@ -94,14 +96,14 @@ const WhatsNew = ({ onOverlayClick, url }: Props) => {
               onClick={() => previous()}
             />
           )}
-          {pageIndex === WhatNew.features.length - 1 && (
+          {pageIndex === content.features[locale].length - 1 && (
             <ButtonComponent
               type={ButtonType.STROKED}
               label="popup_html_whats_new_got_it"
               onClick={() => finish()}
             />
           )}
-          {pageIndex < WhatNew.features.length - 1 && (
+          {pageIndex < content.features[locale].length - 1 && (
             <ButtonComponent
               type={ButtonType.STROKED}
               label="popup_html_whats_new_next"

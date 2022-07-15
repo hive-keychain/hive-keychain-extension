@@ -12,6 +12,7 @@ import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/s
 import { TopBarComponent } from '@popup/pages/app-container/home/top-bar/top-bar.component';
 import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-section.component';
 import { WhatsNewComponent } from '@popup/pages/app-container/whats-new/whats-new.component';
+import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -21,7 +22,6 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
-import { WhatNew } from 'src/whats-new';
 import './home.component.scss';
 
 const Home = ({
@@ -37,7 +37,7 @@ const Home = ({
 }: PropsFromRedux) => {
   const [displayLoader, setDisplayLoader] = useState(false);
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
-  const [lastVersionUrl, setLastVersionUrl] = useState('');
+  const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();
@@ -72,11 +72,16 @@ const Home = ({
       LocalStorageKeyEnum.LAST_VERSION_UPDATE,
     );
     const versionLog = await VersionLogUtils.getLastVersion();
+    const extensionVersion = chrome.runtime
+      .getManifest()
+      .version.split('.')
+      .splice(0, 2)
+      .join('.');
     if (
-      WhatNew.version !== lastVersionSeen &&
-      versionLog.version === WhatNew.version
+      extensionVersion !== lastVersionSeen &&
+      versionLog.version === extensionVersion
     ) {
-      setLastVersionUrl(versionLog.url);
+      setWhatsNewContent(versionLog);
       setDisplayWhatsNew(true);
     }
   };
@@ -113,7 +118,7 @@ const Home = ({
       {!displayLoader && displayWhatsNew && (
         <WhatsNewComponent
           onOverlayClick={() => setDisplayWhatsNew(false)}
-          url={lastVersionUrl}
+          content={whatsNewContent!}
         />
       )}
     </div>
