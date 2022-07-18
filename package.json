@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.0.10",
+  "version": "2.1.0",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -64,6 +64,7 @@
     "react-dropdown-select": "^4.7.4",
     "react-qr-code": "^2.0.1",
     "react-redux": "^7.2.4",
+    "react-responsive-carousel": "^3.2.23",
     "react-tabs": "^3.2.3",
     "react-toastify": "^8.1.0",
     "react-tooltip": "^4.2.21",
