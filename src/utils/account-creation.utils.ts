@@ -2,6 +2,7 @@ import { ChangeRecoveryAccountOperation, PrivateKey } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 export enum AccountCreationType {
   USING_TICKET = 'USING_TICKET',
@@ -45,36 +46,43 @@ const createAccount = async (
   keys: GeneratedKeys,
 ) => {
   let transactionConfirmation = null;
-  switch (creationType) {
-    case AccountCreationType.BUYING: {
-      transactionConfirmation = await createPayingAccount(
-        keys,
-        newUsername,
-        parentAccount,
-        price,
-      );
+  try {
+    switch (creationType) {
+      case AccountCreationType.BUYING: {
+        transactionConfirmation = await createPayingAccount(
+          keys,
+          newUsername,
+          parentAccount,
+          price,
+        );
+        break;
+      }
+      case AccountCreationType.USING_TICKET: {
+        transactionConfirmation = await createAccountUsingTicket(
+          keys,
+          newUsername,
+          parentAccount,
+        );
+        break;
+      }
     }
-    case AccountCreationType.USING_TICKET: {
-      transactionConfirmation = await createAccountUsingTicket(
-        keys,
-        newUsername,
-        parentAccount,
-      );
+    if (transactionConfirmation !== undefined) {
+      return {
+        name: newUsername,
+        keys: {
+          active: keys.active.private,
+          activePubkey: keys.active.public,
+          posting: keys.posting.private,
+          postingPubkey: keys.posting.public,
+          memo: keys.memo.private,
+          memoPubkey: keys.memo.public,
+        },
+      } as LocalAccount;
+    } else {
+      return false;
     }
-  }
-  if (transactionConfirmation !== undefined) {
-    return {
-      name: newUsername,
-      keys: {
-        active: keys.active.private,
-        activePubkey: keys.active.public,
-        posting: keys.posting.private,
-        postingPubkey: keys.posting.public,
-        memo: keys.memo.private,
-        memoPubkey: keys.memo.public,
-      },
-    } as LocalAccount;
-  } else {
+  } catch (err: any) {
+    Logger.error('Error while creating account', err);
     return false;
   }
 };
@@ -97,7 +105,6 @@ const createAccountUsingTicket = (
             ...generateKeyObject(keys),
           },
         ],
-        generateSetRecoveryAccountOperation(newUsername, parentAccount.name!),
       ],
       PrivateKey.fromString(parentAccount.keys.active as string),
     );
@@ -123,7 +130,6 @@ const createPayingAccount = (
             ...generateKeyObject(keys),
           },
         ],
-        generateSetRecoveryAccountOperation(newUsername, parentAccount.name!),
       ],
       PrivateKey.fromString(parentAccount.keys.active as string),
     );
@@ -151,18 +157,26 @@ const generateKeyObject = (keys: GeneratedKeys) => {
   };
 };
 
-const generateSetRecoveryAccountOperation = (
+const setRecoveryAccountOperation = (
   accountName: string,
   newRecoveryAccount: string,
+  ownerKey: string,
 ) => {
-  return [
-    'change_recovery_account',
-    {
-      account_to_recover: accountName,
-      new_recovery_account: newRecoveryAccount,
-      extensions: [],
-    },
-  ] as ChangeRecoveryAccountOperation;
+  const transactionConfirmation =
+    HiveUtils.getClient().broadcast.sendOperations(
+      [
+        [
+          'change_recovery_account',
+          {
+            account_to_recover: accountName,
+            new_recovery_account: newRecoveryAccount,
+            extensions: [],
+          },
+        ] as ChangeRecoveryAccountOperation,
+      ],
+      PrivateKey.fromString(ownerKey as string),
+    );
+  return HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
 };
 
 export const AccountCreationUtils = {
@@ -170,5 +184,5 @@ export const AccountCreationUtils = {
   generateMasterKey,
   validateUsername,
   createAccount,
-  generateSetRecoveryAccountOperation,
+  setRecoveryAccountOperation,
 };

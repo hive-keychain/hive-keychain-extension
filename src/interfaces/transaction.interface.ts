@@ -86,3 +86,14 @@ export interface FillCollateralizedConvert extends Transaction {
   amount_in: string;
   amount_out: string;
 }
+
+export interface CreateClaimedAccount extends Transaction {
+  creator: string;
+  new_account_name: string;
+}
+
+export interface CreateAccount extends Transaction {
+  creator: string;
+  new_account_name: string;
+  fee: string;
+}

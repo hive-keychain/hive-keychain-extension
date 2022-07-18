@@ -2,6 +2,10 @@ import { PrivateKey } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { addAccount } from '@popup/actions/account.actions';
 import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
+import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
@@ -28,6 +32,8 @@ const CreateAccountStepTwo = ({
   setSuccessMessage,
   setTitleContainerProperties,
   addAccount,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const emptyKeys = {
     owner: { public: '', private: '' },
@@ -161,6 +167,7 @@ const CreateAccountStepTwo = ({
       safelyCopied &&
       notPrimaryStorageUnderstanding
     ) {
+      addToLoadingList('html_popup_creating_account');
       const result = await AccountCreationUtils.createAccount(
         creationType,
         price,
@@ -168,6 +175,7 @@ const CreateAccountStepTwo = ({
         selectedAccount,
         keys,
       );
+      removeFromLoadingList('html_popup_creating_account');
       if (result) {
         setSuccessMessage('html_popup_create_account_successful');
         addAccount(result as LocalAccount);
@@ -186,7 +194,7 @@ const CreateAccountStepTwo = ({
       case AccountCreationType.BUYING:
         return chrome.i18n.getMessage(
           'html_popup_create_account_buy_method_message',
-          [price.toString(), selectedAccount],
+          [price.toString(), selectedAccount.name],
         );
       case AccountCreationType.USING_TICKET:
         return chrome.i18n.getMessage(
@@ -257,6 +265,8 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   addAccount,
   navigateTo,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -1973,6 +1973,15 @@
     "message": "Filled conversion: $1 => $2",
     "description": "Wallet information receive conversion"
   },
+  "popup_html_wallet_info_create_claimed_account": {
+    "message": "Created @$1 using ticket",
+    "description": "Wallet information created claimed account"
+  },
+
+  "popup_html_wallet_info_account_create": {
+    "message": "Paid $1 to create @$2",
+    "description": "Wallet information create account"
+  },
 
   "popup_html_filter_in": {
     "message": "In",
@@ -2381,6 +2390,10 @@
   "html_popup_create_account_successful": {
     "message": "Your account has been successfully created and added to your Keychain",
     "description": "Create account successful message"
+  },
+  "html_popup_creating_account": {
+    "message": "Creating account",
+    "description": "Creating account message"
   },
   "html_popup_create_account_failed": {
     "message": "Your account creation has failed. Please try again later",

@@ -4,6 +4,8 @@ import {
   ClaimReward,
   CollateralizedConvert,
   Convert,
+  CreateAccount,
+  CreateClaimedAccount,
   Delegation,
   DepositSavings,
   FillCollateralizedConvert,
@@ -60,6 +62,8 @@ const getAccountTransactions = async (
       op.fill_convert_request,
       op.collateralized_convert,
       op.fill_collateralized_convert_request,
+      op.account_create,
+      op.create_claimed_account,
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
@@ -193,6 +197,14 @@ const getAccountTransactions = async (
             specificTransaction = e[1].op[1] as FillCollateralizedConvert;
             specificTransaction.type = 'convert';
             specificTransaction.subType = 'fill_collateralized_convert_request';
+            break;
+          }
+          case 'create_claimed_account': {
+            specificTransaction = e[1].op[1] as CreateClaimedAccount;
+            break;
+          }
+          case 'account_create': {
+            specificTransaction = e[1].op[1] as CreateAccount;
             break;
           }
         }
