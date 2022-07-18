@@ -108,13 +108,14 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
 
   for (const userAccount of userExtendedAccounts) {
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
-    const baseDate =
+    let baseDate: any =
       new Date(
         activeAccount?.account.savings_hbd_last_interest_payment!,
       ).getUTCFullYear() === 1970
         ? activeAccount?.account.savings_hbd_seconds_last_update
         : activeAccount?.account.savings_hbd_last_interest_payment;
 
+    baseDate = moment(baseDate).utcOffset('+0000', true);
     const hasSavingsToClaim =
       Number(activeAccount?.account.savings_hbd_seconds) > 0 ||
       Asset.from(activeAccount?.account.savings_hbd_balance!).amount > 0;
