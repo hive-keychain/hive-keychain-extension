@@ -65,6 +65,7 @@ const beforeEach = async (
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   mockPreset.setOrDefault({});
+  //TODO modify as the new way = implementing
   KeychainApi.get = jest.fn().mockResolvedValue(constants.witnessData);
   if (errorWitnessData === true) {
     KeychainApi.get = jest.fn().mockResolvedValue({ data: '' });

@@ -1,7 +1,6 @@
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -14,6 +13,7 @@ import TransactionUtils from 'src/utils/transaction.utils';
 import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
 import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentationNeeded';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
 export enum MockPreset {
@@ -27,20 +27,21 @@ const setOrDefault = (toUse: MocksToUse) => {
     home,
     topBar,
     powerUp,
-    delegations,
     walletHistory,
     tokens,
     proposal,
+    chromeRunTime,
+    keyChainApiGet,
   } = toUse;
   const {
     _app,
     _home,
     _walletHistory,
-    _delegations,
     _powerUp,
     _proposal,
     _tokens,
     _topBar,
+    _chromeRunTime,
   } = mocksDefault._defaults;
   LocalStorageUtils.getValueFromLocalStorage = jest
     .fn()
@@ -65,9 +66,6 @@ const setOrDefault = (toUse: MocksToUse) => {
   RpcUtils.checkRpcStatus = jest
     .fn()
     .mockResolvedValue((app && app.checkRpcStatus) ?? _app.checkRpcStatus);
-  HiveUtils.setRpc = jest
-    .fn()
-    .mockResolvedValue((app && app.setRpc) ?? _app.setRpc);
   AccountUtils.hasStoredAccounts = jest
     .fn()
     .mockResolvedValue(
@@ -95,12 +93,30 @@ const setOrDefault = (toUse: MocksToUse) => {
         _app.getVotingDollarsPerAccount,
     );
 
-  CurrencyPricesUtils.getPrices = jest
-    .fn()
-    .mockResolvedValue((home && home.getPrices) ?? _home.getPrices);
   AccountUtils.getAccountValue = jest
     .fn()
     .mockReturnValue((home && home.getAccountValue) ?? _home.getAccountValue);
+
+  //TODO add the new mocks into overwrite.
+  //TODO remove comments.
+  //added new mocks
+  chrome.runtime.getManifest = jest
+    .fn()
+    .mockReturnValue(
+      (chromeRunTime && chromeRunTime.getManifest) ??
+        _chromeRunTime.getManifest,
+    );
+  chrome.runtime.sendMessage =
+    (chromeRunTime && chromeRunTime.sendMessage) ?? _chromeRunTime.sendMessage;
+  //New implementation
+  KeychainApi.get = jest
+    .fn()
+    .mockImplementation((...args: any[]) =>
+      mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
+    );
+  //END New implementation
+  //end added mocks / implementations
+
   ActiveAccountUtils.hasReward = jest
     .fn()
     .mockReturnValue((topBar && topBar.hasReward) ?? _topBar.hasReward);
@@ -110,11 +126,7 @@ const setOrDefault = (toUse: MocksToUse) => {
       (powerUp && powerUp.getVestingDelegations) ??
         _powerUp.getVestingDelegations,
     );
-  KeychainApi.get = jest
-    .fn()
-    .mockResolvedValue(
-      (delegations && delegations.getDelegators) ?? _delegations.getDelegators,
-    );
+
   TransactionUtils.getAccountTransactions = jest
     .fn()
     .mockResolvedValue(

@@ -16,17 +16,19 @@ const run = () => {
     assertion.getByLabelText(alComponent.transfersFundsPage);
   });
   it('Must show wallet history when clicking on history', async () => {
-    home.extraMocks();
+    home.extraMocks.getLastTransaction();
     await clickAwait([alButton.actionBtn.history]);
     actRunAllTimers();
     await assertion.awaitFor(alComponent.walletItemList, QueryDOM.BYLABEL);
   });
   it('Must show tokens page when clicking on tokens', async () => {
     await clickAwait([alButton.actionBtn.tokens]);
+    actRunAllTimers();
     await assertion.awaitFor(alComponent.userTokens, QueryDOM.BYLABEL);
   });
   it('Must show governance page when clicking on governance', async () => {
     await clickAwait([alButton.actionBtn.governance]);
+    actRunAllTimers();
     assertion.getByLabelText(alComponent.governancePage);
   });
 };

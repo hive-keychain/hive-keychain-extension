@@ -42,7 +42,12 @@ const Home = ({
     resetTitleContainerProperties();
     loadBittrexPrices();
     loadGlobalProperties();
+    console.log(
+      'ActiveAccountUtils.isEmpty(activeAccount): ,',
+      ActiveAccountUtils.isEmpty(activeAccount),
+    );
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
+      console.log('Not empty lets refresh');
       refreshActiveAccount();
     }
     initWhatsNew();
@@ -81,6 +86,15 @@ const Home = ({
       extensionVersion !== lastVersionSeen &&
       versionLog.version === extensionVersion
     ) {
+      console.log('loading whats new');
+      console.log(
+        'extensionVersion',
+        extensionVersion,
+        'lastVersionSeen',
+        lastVersionSeen,
+        'versionLog.version',
+        versionLog.version,
+      );
       setWhatsNewContent(versionLog);
       setDisplayWhatsNew(true);
     }

@@ -26,6 +26,7 @@ import {
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
+const { extraMocks } = home;
 describe('home.component tests:\n', () => {
   beforeEach(async () => {
     await home.beforeEach(<App />, accounts.twoAccounts);
@@ -52,6 +53,7 @@ describe('home.component tests:\n', () => {
     expect(screen.getByText(home.methods.rcReadyIn())).toBeInTheDocument();
   });
   it('Must change active account to the selected one', async () => {
+    extraMocks.remockGetAccounts();
     await clickAwait([
       alSelect.accountSelector,
       alSelect.itemSelectorPreFix + mk.user.two,

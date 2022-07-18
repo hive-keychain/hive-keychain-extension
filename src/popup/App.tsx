@@ -149,6 +149,7 @@ const App = ({
     setHasStoredAccounts(storedAccounts);
 
     const mkFromStorage = await MkUtils.getMkFromLocalStorage();
+    console.log('mkFromStorage', mkFromStorage);
     if (mkFromStorage) {
       setMk(mkFromStorage, false);
     }
