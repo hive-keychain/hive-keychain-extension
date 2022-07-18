@@ -133,7 +133,7 @@ const Conversion = ({
   };
 
   return (
-    <div className="conversion-page">
+    <div className="conversion-page" aria-label="conversion-page">
       <AvailableCurrentPanelComponent
         available={available}
         availableCurrency={currency}
@@ -144,6 +144,7 @@ const Conversion = ({
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -156,6 +157,7 @@ const Conversion = ({
       </div>
 
       <OperationButtonComponent
+        ariaLabel="submit-button"
         label={title}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}

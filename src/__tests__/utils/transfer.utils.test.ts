@@ -7,6 +7,18 @@ const chrome = require('chrome-mock');
 global.chrome = chrome;
 describe('transfer.utils tests:\n', () => {
   describe('getExchangeValidationWarning tests:\n', () => {
+    test('Trying to transfer to exchange account with recurrent transfer should return warning', async () => {
+      const messageFromI18n = `Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.`;
+      chrome.i18n.getMessage = jest.fn().mockReturnValueOnce(messageFromI18n);
+      expect(
+        await TransferUtils.getExchangeValidationWarning(
+          'bittrex',
+          'HIVE',
+          true,
+          true,
+        ),
+      ).toBe(messageFromI18n);
+    });
     test('Trying to get a non existent exchange account must return null', async () => {
       expect(
         await TransferUtils.getExchangeValidationWarning(

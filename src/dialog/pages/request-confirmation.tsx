@@ -1,3 +1,4 @@
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   KeychainRequest,
   KeychainRequestTypes,
@@ -44,6 +45,7 @@ type RequestMessage = {
   tab: number;
   domain: string;
   accounts?: string[];
+  hiveEngineConfig: HiveEngineConfig;
 };
 
 const RequestConfirmation = ({ data }: Props) => {

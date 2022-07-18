@@ -7,6 +7,7 @@ import {
 } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
+import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
@@ -50,12 +51,14 @@ const App = ({
   setAccounts,
   loadGlobalProperties,
   displayProxySuggestion,
+  initHiveEngineConfigFromStorage,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
@@ -140,6 +143,7 @@ const App = ({
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
     initActiveRpc(rpc);
+    initHiveEngineConfigFromStorage();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
@@ -258,6 +262,7 @@ const connector = connect(mapStateToProps, {
   setAccounts,
   loadActiveAccount,
   loadGlobalProperties,
+  initHiveEngineConfigFromStorage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

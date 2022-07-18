@@ -21,6 +21,8 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { getHiveEngineTokenValue } from 'src/utils/hive-engine.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -41,6 +43,7 @@ const Tokens = ({
 }: PropsFromRedux) => {
   const [filteredTokenList, setFilteredTokenList] = useState<TokenBalance[]>();
   const [hiddenTokens, setHiddenTokens] = useState<string[]>([]);
+  const [filterValue, setFilterValue] = useState<string>('');
 
   const loadHiddenTokens = async () => {
     setHiddenTokens(
@@ -63,12 +66,15 @@ const Tokens = ({
 
   useEffect(() => {
     if (userTokens.loading) {
-      addToLoadingList('html_popup_loading_tokens_operation');
+      // addToLoadingList('html_popup_loading_tokens_operation');
     } else if (userTokens.list && market.length) {
-      removeFromLoadingList('html_popup_loading_tokens_operation');
+      // removeFromLoadingList('html_popup_loading_tokens_operation');
       setFilteredTokenList(
         userTokens.list
           .filter((token) => !hiddenTokens.includes(token.symbol))
+          .filter((token) =>
+            token.symbol.toLowerCase().includes(filterValue.toLowerCase()),
+          )
           .sort(
             (a, b) =>
               getHiveEngineTokenValue(b, market) -
@@ -76,7 +82,7 @@ const Tokens = ({
           ),
       );
     }
-  }, [userTokens, market]);
+  }, [userTokens, market, filterValue]);
 
   return (
     <div className="tokens-page">
@@ -85,15 +91,34 @@ const Tokens = ({
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_view_tokens_balance'),
         }}></div>
-      <Icon
-        onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
-        name={Icons.SETTINGS}
-        type={IconType.OUTLINED}
-        additionalClassName="settings"></Icon>
+      <div className="top-bar-container">
+        {userTokens.loading && <div></div>}
+        {!userTokens.loading && (
+          <>
+            <InputComponent
+              type={InputType.TEXT}
+              placeholder="popup_html_search"
+              value={filterValue}
+              onChange={setFilterValue}
+            />
+
+            <Icon
+              onClick={() => navigateTo(Screen.TOKENS_FILTER)}
+              name={Icons.FILTER}
+              type={IconType.OUTLINED}
+              additionalClassName="filter"></Icon>
+          </>
+        )}
+        <Icon
+          onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
+          name={Icons.SETTINGS}
+          type={IconType.OUTLINED}
+          additionalClassName="settings"></Icon>
+      </div>
       {allTokens.length > 0 &&
         filteredTokenList &&
         filteredTokenList.length > 0 && (
-          <div className="my-tokens">
+          <div className="my-tokens" aria-label="my-tokens">
             {filteredTokenList.map((token) => (
               <TokenItemComponent
                 key={token.symbol}

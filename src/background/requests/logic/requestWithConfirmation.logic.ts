@@ -18,6 +18,7 @@ export const requestWithConfirmation = (
       domain,
       tab,
       rpc: current_rpc,
+      hiveEngineConfig: requestHandler.hiveEngineConfig,
     });
   };
   createPopup(callback, requestHandler);

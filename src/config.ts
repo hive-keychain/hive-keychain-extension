@@ -1,12 +1,19 @@
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+
 const Config = {
   hiveEngine: {
-    MAINNET: 'ssc-mainnet-hive',
-  },
+    mainnet: 'ssc-mainnet-hive',
+    accountHistoryApi: 'https://history.hive-engine.com/',
+    rpc: 'https://api.hive-engine.com/rpc',
+  } as HiveEngineConfig,
   claims: {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
     freeAccount: {
       MIN_RC_PCT: +(process.env.DEV_CLAIM_ACCOUNT_RC_PCT || 85),
       MIN_RC: +(process.env.DEV_CLAIM_ACCOUNT_MIN_RC || 1.2 * 10 * 10 ** 12), // 20% more than 10^13 (current creation cost)
+    },
+    savings: {
+      delay: +(process.env.DEV_CLAIM_SAVINGS_DELAY || 30),
     },
   },
   PROPOSAL: 216,
