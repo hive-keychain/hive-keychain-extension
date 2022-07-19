@@ -14,7 +14,6 @@ import {
   clickAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-const { extraMocks } = home;
 describe('home.component action-buttons tests:\n', () => {
   beforeEach(async () => {
     await home.beforeEach(<App />, accounts.twoAccounts);
