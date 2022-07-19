@@ -90,9 +90,12 @@ const keychainApiGet = async (
         }
       );
     case urlToGet.includes('/hive/delegators/'):
-      console.log('must be passing data as: ', {
-        data: delegations.delegators,
-      });
+      console.log(
+        'must be passing data as: ',
+        customData ?? {
+          data: delegations.delegators,
+        },
+      );
       return customData?.delegators ?? { data: delegations.delegators };
     default:
       console.log('WARNING GETTING INTO DEFAULT!');

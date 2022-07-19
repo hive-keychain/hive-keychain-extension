@@ -47,7 +47,7 @@ export interface MocksProposal {
   voteForKeychainProposal?: boolean;
 }
 
-interface MocksKeyChainApi {
+export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
 }
 

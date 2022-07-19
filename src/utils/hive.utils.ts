@@ -226,10 +226,6 @@ export const getConversionRequests = async (name: string) => {
 };
 
 export const getDelegators = async (name: string) => {
-  //to remove
-  const response = (await KeychainApi.get(`/hive/delegators/${name}`)).data;
-  console.log(response);
-  //END to remove
   return (
     (await KeychainApi.get(`/hive/delegators/${name}`)).data as Delegator[]
   )

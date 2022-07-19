@@ -12,7 +12,6 @@ export const retrieveAccounts =
   (mk: string): AppThunk =>
   async (dispatch, getState) => {
     let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
-    console.log('accounts', accounts);
     const action: ActionPayload<LocalAccount[]> = {
       type: ActionType.SET_ACCOUNTS,
       payload: accounts,
