@@ -73,7 +73,7 @@ const beforeEach = async (component: ReactElement) => {
   mockPreset.setOrDefault({
     app: { getAccounts: [constants.extendedWPowerDown] },
   });
-  TransferUtils.saveTransferRecipient = jest.fn();
+  TransferUtils.saveTransferRecipient = jest.fn().mockResolvedValue(undefined);
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(mk.user.one);
 };
