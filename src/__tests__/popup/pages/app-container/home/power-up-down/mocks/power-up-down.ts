@@ -39,8 +39,8 @@ const constants = {
   value: {
     current: '1,000.000 HIVE',
     available: {
-      down: '0.131 HP',
-      up: '5.131 HP',
+      down: '0.459 HP',
+      up: '5.459 HP',
     },
     max: '1000',
     poweringDown: 'Powering Down 55 / 5 HP',
