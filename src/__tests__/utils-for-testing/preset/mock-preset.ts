@@ -16,11 +16,6 @@ import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentatio
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
-export enum MockPreset {
-  HOMEDEFAULT = 'home-default',
-  ERRORDELEGATIONS = 'error-delegation',
-}
-
 const setOrDefault = (toUse: MocksToUse) => {
   const {
     app,
@@ -97,9 +92,6 @@ const setOrDefault = (toUse: MocksToUse) => {
     .fn()
     .mockReturnValue((home && home.getAccountValue) ?? _home.getAccountValue);
 
-  //TODO add the new mocks into overwrite.
-  //TODO remove comments.
-  //added new mocks
   chrome.runtime.getManifest = jest
     .fn()
     .mockReturnValue(
@@ -108,14 +100,12 @@ const setOrDefault = (toUse: MocksToUse) => {
     );
   chrome.runtime.sendMessage =
     (chromeRunTime && chromeRunTime.sendMessage) ?? _chromeRunTime.sendMessage;
-  //New implementation
+
   KeychainApi.get = jest
     .fn()
     .mockImplementation((...args: any[]) =>
       mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
     );
-  //END New implementation
-  //end added mocks / implementations
 
   ActiveAccountUtils.hasReward = jest
     .fn()
