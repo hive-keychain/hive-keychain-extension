@@ -3,10 +3,6 @@ import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import home from 'src/__tests__/popup/pages/app-container/home/mocks/home/home';
-import actionButtons from 'src/__tests__/popup/pages/app-container/othercases/home/action-buttons';
-import dropdownHbd from 'src/__tests__/popup/pages/app-container/othercases/home/dropdown-hbd';
-import dropdownHive from 'src/__tests__/popup/pages/app-container/othercases/home/dropdown-hive';
-import dropdownHp from 'src/__tests__/popup/pages/app-container/othercases/home/dropdown-hp';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
@@ -30,7 +26,6 @@ const { extraMocks } = home;
 describe('home.component tests:\n', () => {
   beforeEach(async () => {
     await home.beforeEach(<App />, accounts.twoAccounts);
-    await assertion.awaitFind(alComponent.homePage);
   });
   afterEach(() => {
     afterTests.clean();
@@ -89,17 +84,5 @@ describe('home.component tests:\n', () => {
   it('Must show dropdown menu on HP balance', async () => {
     await clickAwait([alDropdown.arrow.hp]);
     assertion.getByText(home.constants.menuItems.hp);
-  });
-  describe('dropdown hive menu:\n', () => {
-    dropdownHive.run();
-  });
-  describe('dropdown hbd menu:\n', () => {
-    dropdownHbd.run();
-  });
-  describe('dropdown hp menu:\n', () => {
-    dropdownHp.run();
-  });
-  describe('action-buttons:\n', () => {
-    actionButtons.run();
   });
 });

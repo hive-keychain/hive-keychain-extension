@@ -12,6 +12,7 @@ import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-
 import HiveUtils from 'src/utils/hive.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alHomeInformation from 'src/__tests__/utils-for-testing/aria-labels/al-home-information';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -56,6 +57,7 @@ const beforeEach = async (
     ...initialStates.iniState,
     accounts: accounts,
   });
+  await assertion.awaitFind(alComponent.homePage);
 };
 
 const methods = {

@@ -67,20 +67,20 @@ const i18nGetMessageCustom = (message: string, options?: string[]) => {
  * delegators: HiveUtils.getDelegators.
  */
 const keychainApiGet = async (
-  urlToGet: string | boolean,
+  urlToGet: string,
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
-  console.log('being called with: ', urlToGet);
-  switch (urlToGet) {
-    case '/hive/v2/witnesses-ranks':
+  console.log('being called with: ', urlToGet, ' customData as: ', customData);
+  switch (true) {
+    case urlToGet === '/hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
-    case '/hive/v2/price':
+    case urlToGet === '/hive/v2/price':
       return customData?.currenciesPrices ?? currencies.prices;
-    case '/hive/rpc':
+    case urlToGet === '/hive/rpc':
       return customData?.rpc ?? { data: { rpc: rpc.defaultRpc } };
-    case '/hive/phishingAccounts':
+    case urlToGet === '/hive/phishingAccounts':
       return customData?.phishingAccounts ?? phishingAccounts.defaults;
-    case '/hive/last-extension-version':
+    case urlToGet === '/hive/last-extension-version':
       return (
         customData?.extensionVersion ?? {
           data: {
@@ -89,10 +89,14 @@ const keychainApiGet = async (
           } as GetManifest,
         }
       );
-    case typeof urlToGet === 'string' &&
-      String(urlToGet).includes('/hive/delegators/'):
+    case urlToGet.includes('/hive/delegators/'):
+      console.log('must be passing data as: ', {
+        data: delegations.delegators,
+      });
       return customData?.delegators ?? { data: delegations.delegators };
     default:
+      console.log('WARNING GETTING INTO DEFAULT!');
+      console.log('WARNING GETTING INTO DEFAULT!');
       return 'Please check on default cases as not found condition ->/implementations/...';
     // }
   }
