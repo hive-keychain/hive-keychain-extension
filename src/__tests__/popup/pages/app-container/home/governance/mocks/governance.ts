@@ -49,7 +49,6 @@ const methods = {
 };
 
 const extraMocks = () => {
-  //KeychainApi.get = jest.fn().mockResolvedValue(fakeWitnessesRankingWInactive);
   ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
   ProposalUtils.getProposalList = jest
     .fn()
