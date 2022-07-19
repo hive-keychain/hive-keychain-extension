@@ -69,7 +69,6 @@ const keychainApiGet = async (
   urlToGet: string,
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
-  console.log('being called with: ', urlToGet, ' customData as: ', customData);
   switch (true) {
     case urlToGet === '/hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
@@ -91,10 +90,7 @@ const keychainApiGet = async (
     case urlToGet.includes('/hive/delegators/'):
       return customData?.delegators ?? { data: delegations.delegators };
     default:
-      console.log('WARNING GETTING INTO DEFAULT!');
-      console.log('WARNING GETTING INTO DEFAULT!');
       return 'Please check on default cases as not found condition ->/implementations/...';
-    // }
   }
 };
 

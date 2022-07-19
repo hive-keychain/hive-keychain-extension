@@ -42,12 +42,7 @@ const Home = ({
     resetTitleContainerProperties();
     loadBittrexPrices();
     loadGlobalProperties();
-    console.log(
-      'ActiveAccountUtils.isEmpty(activeAccount): ,',
-      ActiveAccountUtils.isEmpty(activeAccount),
-    );
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
-      console.log('Not empty lets refresh');
       refreshActiveAccount();
     }
     initWhatsNew();
@@ -68,9 +63,7 @@ const Home = ({
 
   useEffect(() => {
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
-      console.log('starting initActiveAccount');
       initActiveAccount();
-      console.log('after initActiveAccount');
     }
   }, []);
 
@@ -88,22 +81,12 @@ const Home = ({
       extensionVersion !== lastVersionSeen &&
       versionLog.version === extensionVersion
     ) {
-      console.log('loading whats new');
-      console.log(
-        'extensionVersion',
-        extensionVersion,
-        'lastVersionSeen',
-        lastVersionSeen,
-        'versionLog.version',
-        versionLog.version,
-      );
       setWhatsNewContent(versionLog);
       setDisplayWhatsNew(true);
     }
   };
 
   const initActiveAccount = async () => {
-    console.log('inside initActiveAccount');
     const lastActiveAccountName =
       await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
     const lastActiveAccount = accounts.find(
