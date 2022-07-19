@@ -68,7 +68,9 @@ const Home = ({
 
   useEffect(() => {
     if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
+      console.log('starting initActiveAccount');
       initActiveAccount();
+      console.log('after initActiveAccount');
     }
   }, []);
 
@@ -101,6 +103,7 @@ const Home = ({
   };
 
   const initActiveAccount = async () => {
+    console.log('inside initActiveAccount');
     const lastActiveAccountName =
       await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
     const lastActiveAccount = accounts.find(

@@ -67,7 +67,7 @@ const i18nGetMessageCustom = (message: string, options?: string[]) => {
  * delegators: HiveUtils.getDelegators.
  */
 const keychainApiGet = async (
-  urlToGet: string,
+  urlToGet: string | boolean,
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
   console.log('being called with: ', urlToGet);
@@ -89,13 +89,12 @@ const keychainApiGet = async (
           } as GetManifest,
         }
       );
+    case typeof urlToGet === 'string' &&
+      String(urlToGet).includes('/hive/delegators/'):
+      return customData?.delegators ?? { data: delegations.delegators };
     default:
-      console.log('Not found so go default on urlToGet: ', urlToGet);
-      if (urlToGet.includes('/hive/delegators/')) {
-        return customData?.delegators ?? { data: delegations.delegators };
-      } else {
-        return 'Please check on default cases as not found condition!';
-      }
+      return 'Please check on default cases as not found condition ->/implementations/...';
+    // }
   }
 };
 
