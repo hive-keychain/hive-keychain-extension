@@ -12,7 +12,6 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-jest.setTimeout(10000);
 describe('witness tab:\n', () => {
   const { constants, methods, extraMocks } = witness;
   witness.methods.afterEach;
@@ -21,7 +20,9 @@ describe('witness tab:\n', () => {
       await witness.beforeEach(<App />, false, null);
     });
     it('Must display active witnesses', () => {
-      expect(screen.getAllByLabelText(alDiv.rankingItem)).toHaveLength(6);
+      expect(screen.getAllByLabelText(alDiv.rankingItem)).toHaveLength(
+        constants.witnessData.data.length - 1,
+      );
     });
     it('Must display more information message', () => {
       assertion.getOneByText(constants.infoMessage);
