@@ -22,6 +22,7 @@
     "doc": "documentation build public/hive_keychain.js -f md -c documentation/build/documentation.yml -o documentation/README.md",
     "postinstall": "sed -i '' 's/require(\"cross-fetch\")/require(\"node-fetch\")/g' node_modules/@hiveio/dhive/lib/utils.js; echo 'Update dhive so that keychain background can use it directly'",
     "test": "jest --verbose",
+    "test:detect": "jest --verbose --detectOpenHandles",
     "test:watch": "jest --verbose --watch",
     "test:cov": "jest --verbose --coverage",
     "bump": "scripts/bump-version"
