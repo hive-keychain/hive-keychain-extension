@@ -31,7 +31,7 @@ const _defaults = {
       .mockImplementation((...args: any[]) =>
         mocksImplementation.getValuefromLS(args),
       ),
-    getCurrentRpc: rpc.fake,
+    getCurrentRpc: rpc.defaultRpc,
     getActiveAccountNameFromLocalStorage: mk.user.one,
     getRCMana: manabar,
     getAccounts: accounts.asArray.extended,

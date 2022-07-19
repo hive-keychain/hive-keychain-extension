@@ -3,7 +3,6 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import phishingAccounts from 'src/__tests__/utils-for-testing/data/phishing-accounts';
-import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 import { GetManifest } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
@@ -77,7 +76,7 @@ const keychainApiGet = async (
     case urlToGet === '/hive/v2/price':
       return customData?.currenciesPrices ?? currencies.prices;
     case urlToGet === '/hive/rpc':
-      return customData?.rpc ?? { data: { rpc: rpc.defaultRpc } };
+      return customData?.rpc ?? { data: { rpc: 'https://api.hive.blog' } };
     case urlToGet === '/hive/phishingAccounts':
       return customData?.phishingAccounts ?? phishingAccounts.defaults;
     case urlToGet === '/hive/last-extension-version':
@@ -90,12 +89,6 @@ const keychainApiGet = async (
         }
       );
     case urlToGet.includes('/hive/delegators/'):
-      console.log(
-        'must be passing data as: ',
-        customData ?? {
-          data: delegations.delegators,
-        },
-      );
       return customData?.delegators ?? { data: delegations.delegators };
     default:
       console.log('WARNING GETTING INTO DEFAULT!');

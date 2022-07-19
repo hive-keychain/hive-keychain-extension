@@ -141,6 +141,7 @@ const App = ({
 
   const initApplication = async () => {
     const rpc = await RpcUtils.getCurrentRpc();
+    console.log('current rpc: ', rpc);
     setInitialRpc(rpc);
     initActiveRpc(rpc);
     initHiveEngineConfigFromStorage();

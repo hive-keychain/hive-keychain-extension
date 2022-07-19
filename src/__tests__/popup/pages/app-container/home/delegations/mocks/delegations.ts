@@ -48,7 +48,9 @@ const beforeEach = async (component: ReactElement, passErrorData: boolean) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   if (passErrorData) {
-    remock = { keyChainApiGet: { customData: { delegators: { data: '' } } } };
+    remock = {
+      keyChainApiGet: { customData: { delegators: { data: '' } } },
+    };
   }
   mockPreset.setOrDefault(remock);
   renders.wInitialState(component, initialStates.iniStateAs.defaultExistent);

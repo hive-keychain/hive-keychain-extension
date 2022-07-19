@@ -61,4 +61,18 @@ const inactiveKey = 'STM1111111111111111111111111111111114T1Anm';
 
 const arcangeLink = 'https://hive.arcange.eu/witnesses/';
 
-export default { ranking, inactiveKey, arcangeLink };
+const rankingWInactive = {
+  data: [
+    ...ranking.data,
+    {
+      name: 'theghost1980',
+      rank: '200',
+      votes: '1000',
+      votes_count: 1000,
+      signing_key: inactiveKey,
+      url: 'https://saturnoman.com',
+    },
+  ],
+};
+
+export default { ranking, inactiveKey, arcangeLink, rankingWInactive };
