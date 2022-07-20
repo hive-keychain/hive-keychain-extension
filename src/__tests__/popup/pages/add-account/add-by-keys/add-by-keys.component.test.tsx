@@ -20,10 +20,11 @@ import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickTypeAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.useChrome();
-jest.setTimeout(10000);
-
+config.byDefault();
 describe('add-by-keys:\n', () => {
+  afterEach(() => {
+    afterTests.clean();
+  });
   describe('add-by-keys tests(no accounts):\n', () => {
     beforeEach(async () => {
       await addByKeysBeforeEach.beforeEach(<App />, [], false);
@@ -31,11 +32,8 @@ describe('add-by-keys:\n', () => {
         await screen.findByLabelText(alButton.addByKeys),
       ).toBeInTheDocument();
     });
-    afterEach(() => {
-      afterTests.clean();
-    });
-
     it('Must add valid posting key and load homepage', async () => {
+      addByKeysMocks.extraMocks.getAccounts();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.posting);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -43,6 +41,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must add valid memo key and load homepage', async () => {
+      addByKeysMocks.extraMocks.getAccounts();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.memo);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -50,6 +49,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must add valid active key and load homepage', async () => {
+      addByKeysMocks.extraMocks.getAccounts();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.active);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -57,6 +57,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must derivate all keys from master, and navigate to select keys page', async () => {
+      addByKeysMocks.extraMocks.getAccounts();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.selectPage)).toBeDefined();
@@ -133,9 +134,6 @@ describe('add-by-keys:\n', () => {
     beforeEach(async () => {
       await addByKeysBeforeEach.beforeEach(<App />, accounts.twoAccounts, true);
       await assertion.awaitMk(mk.user.one);
-    });
-    afterEach(() => {
-      afterTests.clean();
     });
     addByKeysExtraCases.wAccounts();
   });

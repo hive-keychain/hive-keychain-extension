@@ -1,5 +1,4 @@
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
 import manabar from 'src/__tests__/utils-for-testing/data/manabar';
@@ -10,7 +9,7 @@ import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user'
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import {
   MocksApp,
-  MocksDelegations,
+  MocksChromeRunTime,
   MocksHome,
   MocksPowerUp,
   MocksProposal,
@@ -18,6 +17,10 @@ import {
   MocksTopBar,
   MocksWalletHistory,
 } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+//TODO remove comments when all works
+const manifestFile = {
+  chromium: require('../../../../manifests/chromium/manifest.json'),
+};
 
 const defaultAccountValue = '100000';
 
@@ -25,13 +28,14 @@ const _defaults = {
   _app: {
     getValueFromLocalStorage: jest
       .fn()
-      .mockImplementation(mocksImplementation.getValuefromLS),
-    getCurrentRpc: rpc.fake,
+      .mockImplementation((...args: any[]) =>
+        mocksImplementation.getValuefromLS(args),
+      ),
+    getCurrentRpc: rpc.defaultRpc,
     getActiveAccountNameFromLocalStorage: mk.user.one,
     getRCMana: manabar,
     getAccounts: accounts.asArray.extended,
     checkRpcStatus: true,
-    setRpc: rpc.fake,
     hasStoredAccounts: true,
     getMkFromLocalStorage: mk.user.one,
     getAccountsFromLocalStorage: accounts.twoAccounts,
@@ -40,7 +44,6 @@ const _defaults = {
     getVotingDollarsPerAccount: 1,
   } as MocksApp,
   _home: {
-    getPrices: currencies.prices,
     getAccountValue: defaultAccountValue,
   } as MocksHome,
   _topBar: {
@@ -49,11 +52,6 @@ const _defaults = {
   _powerUp: {
     getVestingDelegations: delegations.delegatees,
   } as MocksPowerUp,
-  _delegations: {
-    getDelegators: {
-      data: delegations.delegators,
-    },
-  } as MocksDelegations,
   _walletHistory: {
     getAccountTransactions: [historyCurrency.transfers, 1000],
   } as MocksWalletHistory,
@@ -65,11 +63,19 @@ const _defaults = {
     hasVotedForProposal: true,
     voteForKeychainProposal: true,
   } as MocksProposal,
+  _chromeRunTime: {
+    getManifest: {
+      name: manifestFile.chromium.name,
+      version: manifestFile.chromium.version,
+    },
+    sendMessage: jest.fn(),
+  } as MocksChromeRunTime,
 };
 
 const mocksDefault = {
   _defaults,
   defaultAccountValue,
+  manifestFile,
 };
 
 export default mocksDefault;

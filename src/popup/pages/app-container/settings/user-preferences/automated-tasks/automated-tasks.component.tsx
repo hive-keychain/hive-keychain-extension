@@ -25,6 +25,7 @@ const AutomatedTasks = ({
   const [options, setOptions] = useState(defaultOptions);
   const [claimRewards, setClaimRewards] = useState(false);
   const [claimAccounts, setClaimAccounts] = useState(false);
+  const [claimSavings, setClaimSavings] = useState(false);
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
     accounts[0].name,
   );
@@ -47,21 +48,28 @@ const AutomatedTasks = ({
     setSelectedLocalAccount(activeAccount.name);
   }, [accounts, activeAccount]);
 
-  const saveClaims = async (claimRewards: boolean, claimAccounts: boolean) => {
+  const saveClaims = async (
+    claimRewards: boolean,
+    claimAccounts: boolean,
+    claimSavings: boolean,
+  ) => {
     setClaimAccounts(claimAccounts);
     setClaimRewards(claimRewards);
+    setClaimSavings(claimSavings);
 
     await AutomatedTasksUtils.saveClaims(
       claimRewards,
       claimAccounts,
+      claimSavings,
       activeAccount.name!,
     );
   };
 
   const init = async () => {
     const values = await AutomatedTasksUtils.getClaims(activeAccount.name!);
-    setClaimRewards(values[LocalStorageKeyEnum.CLAIM_REWARDS]);
-    setClaimAccounts(values[LocalStorageKeyEnum.CLAIM_ACCOUNTS]);
+    setClaimRewards(values[LocalStorageKeyEnum.CLAIM_REWARDS] ?? false);
+    setClaimAccounts(values[LocalStorageKeyEnum.CLAIM_ACCOUNTS] ?? false);
+    setClaimSavings(values[LocalStorageKeyEnum.CLAIM_SAVINGS] ?? false);
   };
 
   const handleItemClicked = (accountName: string) => {
@@ -135,14 +143,14 @@ const AutomatedTasks = ({
       <CheckboxComponent
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
-        onChange={(value) => saveClaims(value, claimAccounts)}
+        onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
         hint="popup_html_enable_autoclaim_rewards_info"
       />
       {activeAccount.rc.max_mana > Config.claims.freeAccount.MIN_RC && (
         <CheckboxComponent
           title="popup_html_enable_autoclaim_accounts"
           checked={claimAccounts}
-          onChange={(value) => saveClaims(claimRewards, value)}
+          onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
           skipHintTranslation
           hint={chrome.i18n.getMessage(
             'popup_html_enable_autoclaim_accounts_info',
@@ -150,6 +158,12 @@ const AutomatedTasks = ({
           )}
         />
       )}
+      <CheckboxComponent
+        title="popup_html_enable_autoclaim_savings"
+        checked={claimSavings}
+        onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}
+        hint="popup_html_enable_autoclaim_savings_info"
+      />
     </div>
   );
 };

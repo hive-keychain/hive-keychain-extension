@@ -4,6 +4,7 @@ const clean = () => {
   jest.runOnlyPendingTimers();
   jest.clearAllTimers();
   jest.useRealTimers();
+  jest.clearAllMocks();
   cleanup();
 };
 
