@@ -1,8 +1,8 @@
-import { hsc } from '@api/hiveEngine';
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -11,7 +11,8 @@ import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
-
+//TODO see if this whole module is needed at all
+// check which mocks must be deleted, using interfaces as support.
 export const toOverWriteFuntions: any = {
   getValueFromLocalStorage: () =>
     (LocalStorageUtils.getValueFromLocalStorage = jest.fn()),
@@ -35,7 +36,7 @@ export const toOverWriteFuntions: any = {
   getDelegators: () => (KeychainApi.get = jest.fn()),
   getAccountTransactions: () =>
     (TransactionUtils.getAccountTransactions = jest.fn()),
-  getTokens: () => (hsc.find = jest.fn()),
+  getTokens: () => (HiveEngineConfigUtils.getApi().find = jest.fn()),
   getUserBalance: () => (HiveEngineUtils.getUserBalance = jest.fn()),
   hasVotedForProposal: () => (ProposalUtils.hasVotedForProposal = jest.fn()),
   voteForKeychainProposal: () =>
