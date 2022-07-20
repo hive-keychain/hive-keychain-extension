@@ -2,17 +2,22 @@ import { ReactElement } from 'react';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
-import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
+import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
+import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import {
   actAdvanceTime,
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
+
+const constants = {
+  stateAs: { ...initialStates.iniStateAs.emptyState } as RootState,
+};
 
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
@@ -25,7 +30,8 @@ const beforeEach = async (component: ReactElement) => {
       getMkFromLocalStorage: mk.empty,
     },
   });
-  renders.wInitialState(component, initialEmptyStateStore);
+  renders.wInitialState(component, constants.stateAs);
+  await assertion.awaitFind(alComponent.signUp);
 };
 
 const methods = {
@@ -52,8 +58,6 @@ const methods = {
     ]);
   },
 };
-
-mocks.helper();
 
 export default {
   beforeEach,

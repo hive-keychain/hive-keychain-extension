@@ -636,8 +636,8 @@ const sendOperationWithConfirmation = async (
     transaction = await HiveUtils.getClient().transaction.findTransaction(
       transactionConfirmation.id,
     );
-    await sleep(100);
-  } while (transaction.status === 'within_mempool');
+    await sleep(500);
+  } while (['within_mempool', 'unknown'].includes(transaction.status));
   if (transaction.status === 'within_reversible_block') {
     Logger.info('Transaction confirmed');
     return transactionConfirmation.id || true;
