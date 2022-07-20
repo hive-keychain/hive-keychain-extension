@@ -10,7 +10,6 @@ config.byDefault();
 describe('sign-up.component tests:\n', () => {
   beforeEach(async () => {
     await signUp.beforeEach(<App />);
-    await assertion.awaitFind(alComponent.signUp);
   });
   afterEach(() => {
     afterTests.clean();

@@ -15,7 +15,6 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickTypeAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-jest.setTimeout(10000);
 describe('proxy-tab.component tests:\n', () => {
   const { methods, extraMocks, constants } = proxy;
   methods.afterEach;

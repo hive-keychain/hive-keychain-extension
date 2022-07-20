@@ -23,14 +23,18 @@ import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 jest.setTimeout(50000);
-async function resetClient() {
-  await HiveUtils.setRpc({ uri: 'https://api.hive.blog' } as Rpc);
-}
-afterEach(async () => {
+afterAll(() => {
   jest.clearAllMocks();
-  await resetClient(); //reset client if needed as default later on
+  jest.restoreAllMocks();
 });
 describe('hive.utils tests:\n', () => {
+  async function resetClient() {
+    await HiveUtils.setRpc({ uri: 'https://api.hive.blog' } as Rpc);
+  }
+  afterEach(async () => {
+    jest.clearAllMocks();
+    await resetClient(); //reset client if needed as default later on
+  });
   describe('getClient tests:\n', () => {
     test('calling getclient must return an instance of Client', () => {
       const getClientObj = HiveUtils.getClient();

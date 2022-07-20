@@ -1,5 +1,7 @@
+import HiveUtils from 'src/utils/hive.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import {
   EventType,
@@ -9,6 +11,14 @@ import {
   actPendingTimers,
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
+
+const extraMocks = {
+  getAccounts: () => {
+    HiveUtils.getClient().database.getAccounts = jest
+      .fn()
+      .mockResolvedValue([accounts.extended]);
+  },
+};
 /**
  * Using userdata one username as default
  */
@@ -59,4 +69,4 @@ const typeAndSubmitWEmpty = async (
   await actPendingTimers();
 };
 
-export default { typeAndSubmit, typeAndSubmitWEmpty };
+export default { typeAndSubmit, typeAndSubmitWEmpty, extraMocks };
