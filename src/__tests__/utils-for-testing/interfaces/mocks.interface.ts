@@ -5,7 +5,10 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
-import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
+import {
+  FindSmartContractsHive,
+  KeyChainApiGetCustomData,
+} from 'src/__tests__/utils-for-testing/interfaces/implementations';
 
 export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;
@@ -51,6 +54,10 @@ export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
 }
 
+export interface MocksTokensSC {
+  customData?: FindSmartContractsHive;
+}
+
 export interface GetManifest {
   version: string;
   name: string;
@@ -70,10 +77,11 @@ export interface MocksToUse {
   topBar?: MocksTopBar;
   powerUp?: MocksPowerUp;
   walletHistory?: MocksWalletHistory;
-  tokens?: MocksTokens;
+  //tokens?: MocksTokens;
   proposal?: MocksProposal;
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
+  tokens?: MocksTokensSC;
 }
 
 export interface MockVotingProposal {

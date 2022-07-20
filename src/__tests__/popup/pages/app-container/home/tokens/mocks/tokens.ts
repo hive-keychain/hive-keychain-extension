@@ -98,7 +98,7 @@ const beforeEach = async (
   actAdvanceTime(4300);
   if (toUse?.noUserTokens) {
     remock = {
-      tokens: { getUserBalance: [] },
+      tokens: { customData: { getUserBalance: 'hi' } },
     };
   }
   if (toUse?.reImplementGetLS) {

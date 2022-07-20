@@ -28,6 +28,8 @@ const getValuefromLS = (...args: any[]): any => {
       return { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
       return manifestFile.chromium.version;
+    case LocalStorageKeyEnum.HIDDEN_TOKENS:
+      return [];
   }
 };
 

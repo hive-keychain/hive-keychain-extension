@@ -12,7 +12,7 @@ const { methods, constants, extraMocks } = tokenOperation;
 const { message, leoToken } = constants;
 const { typeValues } = leoToken;
 const { balance } = typeValues;
-describe('token-operation No Active key tests:\n', () => {
+describe.skip('token-operation No Active key tests:\n', () => {
   methods.afterEach;
   beforeEach(async () => {
     await tokenOperation.beforeEach(<App />, true);

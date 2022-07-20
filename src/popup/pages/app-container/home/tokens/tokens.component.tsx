@@ -65,6 +65,9 @@ const Tokens = ({
   }, []);
 
   useEffect(() => {
+    console.log('userTokens.loading: ', userTokens.loading);
+    console.log('userTokens.list.length: ', userTokens.list.length);
+    console.log('market.length: ', market.length);
     if (userTokens.loading) {
       // addToLoadingList('html_popup_loading_tokens_operation');
     } else if (userTokens.list && market.length) {
@@ -83,6 +86,12 @@ const Tokens = ({
       );
     }
   }, [userTokens, market, filterValue]);
+
+  //To remove testings
+  useEffect(() => {
+    console.log('filteredTokenList: ', filteredTokenList);
+  }, [filteredTokenList]);
+  //END To remove testings
 
   return (
     <div className="tokens-page">

@@ -13,6 +13,8 @@ import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 const { methods, constants } = tokens;
 const { messages, data, typeValue } = constants;
+//Todo keep testing the new implementations + fix all token section + finish it.
+// probably an error on passing the data, try to follow the same pattern as in keychainApiGet.
 describe('tokens.component tests:\n', () => {
   methods.afterEach;
   describe('User has tokens:\n', () => {
