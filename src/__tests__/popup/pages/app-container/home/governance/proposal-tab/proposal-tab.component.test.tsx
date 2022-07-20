@@ -12,7 +12,6 @@ import {
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-jest.setTimeout(10000);
 describe('Proposal tab:\n', () => {
   const { constants, methods, spy, extraMocks } = proposal;
   beforeEach(async () => {

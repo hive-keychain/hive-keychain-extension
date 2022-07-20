@@ -217,14 +217,14 @@ const getAccountTransactions = async (
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
-    if (start - NB_TRANSACTION_FETCHED < 0) {
+    if (start - NB_TRANSACTION_FETCHED < 0 && transactions.length > 1) {
       transactions[transactions.length - 1].last = true;
     }
 
     if (
       start &&
       Math.min(NB_TRANSACTION_FETCHED, start) !== NB_TRANSACTION_FETCHED &&
-      transactions.length
+      transactions.length > 1
     ) {
       transactions[transactions.length - 1].lastFetched = true;
     }

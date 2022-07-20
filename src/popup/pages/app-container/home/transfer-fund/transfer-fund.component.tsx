@@ -105,12 +105,12 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: FavoriteUserItems =
+    const favoriteUsers: FavoriteUserItems =
       await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.FAVORITE_USERS,
       );
     setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
     );
   };
 
