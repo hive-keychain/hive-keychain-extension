@@ -1,8 +1,17 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import currencies from 'src/__tests__/utils-for-testing/data/currencies';
+import delegations from 'src/__tests__/utils-for-testing/data/delegations';
+import phishingAccounts from 'src/__tests__/utils-for-testing/data/phishing-accounts';
+import witness from 'src/__tests__/utils-for-testing/data/witness';
+import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
+import { GetManifest } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
+const manifestFile = {
+  chromium: require('../../../../manifests/chromium/manifest.json'),
+};
 const messagesJsonFile = require('public/_locales/en/messages.json');
-const getValuefromLS = (...args: any[]) => {
+const getValuefromLS = (...args: any[]): any => {
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
       return {
@@ -17,6 +26,8 @@ const getValuefromLS = (...args: any[]) => {
       return { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
       return { 'keychain.tests': ['one1', 'two2', 'three3'] };
+    case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
+      return manifestFile.chromium.version;
   }
 };
 
@@ -45,11 +56,49 @@ const i18nGetMessageCustom = (message: string, options?: string[]) => {
   }
   return message + ' check as not found on jsonFile.';
 };
+/**
+ * Note:
+ *  witnessRanking: witness Ranking.
+ * currenciesPrices: CurrencyPricesUtils.getPrices.
+ * rpc: HiveUtils.setRpc.
+ * phishingAccounts: getPhishingAccounts.
+ * extensionVersion: VersionLogUtils.getLastVersion.
+ * delegators: HiveUtils.getDelegators.
+ */
+const keychainApiGet = async (
+  urlToGet: string,
+  customData?: KeyChainApiGetCustomData,
+): Promise<any> => {
+  switch (true) {
+    case urlToGet === '/hive/v2/witnesses-ranks':
+      return customData?.witnessRanking ?? witness.ranking;
+    case urlToGet === '/hive/v2/price':
+      return customData?.currenciesPrices ?? currencies.prices;
+    case urlToGet === '/hive/rpc':
+      return customData?.rpc ?? { data: { rpc: 'https://api.hive.blog' } };
+    case urlToGet === '/hive/phishingAccounts':
+      return customData?.phishingAccounts ?? phishingAccounts.defaults;
+    case urlToGet === '/hive/last-extension-version':
+      return (
+        customData?.extensionVersion ?? {
+          data: {
+            version: manifestFile.chromium.version,
+            name: manifestFile.chromium.name,
+          } as GetManifest,
+        }
+      );
+    case urlToGet.includes('/hive/delegators/'):
+      return customData?.delegators ?? { data: delegations.delegators };
+    default:
+      return 'Please check on default cases as not found condition ->/implementations/...';
+  }
+};
 
 const mocksImplementation = {
   getValuefromLS,
   i18nGetMessage,
   i18nGetMessageCustom,
+  keychainApiGet,
 };
 
 export default mocksImplementation;

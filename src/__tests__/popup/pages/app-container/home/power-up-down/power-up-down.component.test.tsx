@@ -19,7 +19,6 @@ import {
   clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-jest.setTimeout(10000);
 describe('power-up-down.component tests:\n', () => {
   const { methods, constants, extraMocks } = powerUpDown;
   beforeEach(async () => {

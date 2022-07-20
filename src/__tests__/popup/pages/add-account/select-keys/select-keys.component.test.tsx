@@ -16,26 +16,25 @@ import {
   actPendingTimers,
   clickAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
-
-config.useChrome();
-jest.setTimeout(10000);
+config.byDefault();
+const deselectAll = async () => {
+  await clickAwait([
+    alCheckbox.selectKeys.import.activeKey,
+    alCheckbox.selectKeys.import.postingkey,
+    alCheckbox.selectKeys.import.memoKey,
+  ]);
+};
 describe('select-keys.component tests:\n', () => {
   beforeEach(async () => {
     await addByKeysBeforeEach.beforeEach(<App />, [], false);
     await assertion.awaitFind(alButton.addByKeys);
+    addByKeysMocks.extraMocks.getAccounts();
     await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
     await deselectAll();
   });
   afterEach(() => {
     afterTests.clean();
   });
-  const deselectAll = async () => {
-    await clickAwait([
-      alCheckbox.selectKeys.import.activeKey,
-      alCheckbox.selectKeys.import.postingkey,
-      alCheckbox.selectKeys.import.memoKey,
-    ]);
-  };
   it('Must load the import keys page', async () => {
     await waitFor(() => {
       expect(screen.getByLabelText(alComponent.selectPage)).toBeDefined();

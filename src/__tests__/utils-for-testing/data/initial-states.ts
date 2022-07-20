@@ -11,6 +11,7 @@ const iniStateAs = {
     mk: mk.user.one,
     accounts: accounts.twoAccounts,
   } as RootState,
+  emptyState: {} as RootState,
 };
 
 export default { iniState, iniStateAs };
