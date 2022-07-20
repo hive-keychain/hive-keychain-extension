@@ -32,7 +32,7 @@ const unvoteWitness = async (
   witness: Witness,
   activeAccount: ActiveAccount,
 ) => {
-  return await HiveUtils.sendOperationWithConfirmation(
+  return !!(await HiveUtils.sendOperationWithConfirmation(
     HiveUtils.getClient().broadcast.sendOperations(
       [
         [
@@ -46,7 +46,7 @@ const unvoteWitness = async (
       ],
       PrivateKey.fromString(activeAccount.keys.active as string),
     ),
-  );
+  ));
 };
 
 const setAsProxy = async (proxyName: string, activeAccount: ActiveAccount) => {

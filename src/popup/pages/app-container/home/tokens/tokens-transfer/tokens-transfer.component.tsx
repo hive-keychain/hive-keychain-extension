@@ -181,7 +181,7 @@ const TokensTransfer = ({
           json,
           activeAccount,
         );
-        if (sendTokenResult) {
+        if (!!sendTokenResult) {
           addToLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList('html_popup_transfer_token_operation');
           let confirmationResult: any =

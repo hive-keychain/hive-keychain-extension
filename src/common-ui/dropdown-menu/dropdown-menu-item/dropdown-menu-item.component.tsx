@@ -27,6 +27,7 @@ const DropdownMenuItem = ({
       {importedIcon && <img className="icon" src={`/assets/images/${icon}`} />}
       {!importedIcon && (
         <Icon
+          ariaLabel={`dropdown-menu-item-${icon}`}
           name={icon}
           type={IconType.STROKED}
           additionalClassName="icon"></Icon>

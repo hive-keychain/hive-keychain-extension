@@ -2,7 +2,7 @@
 module.exports = {
   setupFiles: ['dotenv/config'],
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom', //initial was testEnvironment: 'node',
   rootDir: '.',
   testMatch: [
     '**/__tests__/**/*.+(ts|tsx|js)',
@@ -23,7 +23,11 @@ module.exports = {
   modulePaths: ['<rootDir>'],
   collectCoverageFrom: ['<rootDir>/**/*.{ts, tsx}'],
   collectCoverage: false,
-  modulePathIgnorePatterns: ['<rootDir>/src/__tests__/utils-for-testing/'],
+  modulePathIgnorePatterns: [
+    '<rootDir>/src/__tests__/utils-for-testing/',
+    'mocks',
+    'othercases',
+  ],
   //until here
   //working configuration until here
 };
