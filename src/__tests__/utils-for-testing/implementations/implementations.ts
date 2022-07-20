@@ -2,7 +2,7 @@ import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
-import phishingAccounts from 'src/__tests__/utils-for-testing/data/phishing-accounts';
+import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 import { GetManifest } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
@@ -77,7 +77,7 @@ const keychainApiGet = async (
     case urlToGet === '/hive/rpc':
       return customData?.rpc ?? { data: { rpc: 'https://api.hive.blog' } };
     case urlToGet === '/hive/phishingAccounts':
-      return customData?.phishingAccounts ?? phishingAccounts.defaults;
+      return customData?.phishingAccounts ?? phishing.accounts;
     case urlToGet === '/hive/last-extension-version':
       return (
         customData?.extensionVersion ?? {

@@ -1,8 +1,10 @@
-import KeychainApi from '@api/keychain';
 import { ReactElement } from 'react';
+import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import keyMessage from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/keyMessages/keyMessage';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import phishing from 'src/__tests__/utils-for-testing/data/phishing';
@@ -60,7 +62,6 @@ const beforeEach = async (
   if (remove?.memoKey) {
     methods.removeKey(remove.memoKey);
   }
-  extraMocks.getPhishingAccounts();
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(constants.username);
   await methods.clickArrowTo(dropDownTo);
@@ -96,11 +97,15 @@ const methods = {
 };
 
 const extraMocks = {
-  getPhishingAccounts: () => {
-    KeychainApi.get = jest.fn().mockResolvedValue(phishing.accounts);
+  transfer: (transfer: boolean) => {
+    HiveUtils.transfer = jest.fn().mockResolvedValue(transfer);
+    TransferUtils.saveTransferRecipient = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    AccountUtils.getPublicMemo = jest
+      .fn()
+      .mockResolvedValue(accounts.extended.memo_key);
   },
-  transfer: (transfer: boolean) =>
-    (HiveUtils.transfer = jest.fn().mockResolvedValueOnce(transfer)),
 };
 
 export default {
