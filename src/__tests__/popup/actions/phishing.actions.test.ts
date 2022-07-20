@@ -2,8 +2,9 @@ import KeychainApi from '@api/keychain';
 import * as phishinActions from '@popup/actions/phishing.actions';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-afterEach(() => {
+afterAll(() => {
   jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 describe('phishing.actions tests:\n', () => {
   test('Must set phising accounts', async () => {

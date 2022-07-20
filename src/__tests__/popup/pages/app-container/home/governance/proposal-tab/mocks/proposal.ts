@@ -1,4 +1,3 @@
-import KeychainApi from '@api/keychain';
 import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { screen } from '@testing-library/react';
 import { ReactElement } from 'react';
@@ -9,9 +8,7 @@ import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
-import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { Tab } from 'src/__tests__/utils-for-testing/enums/enums';
-import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MockVotingProposal } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
@@ -92,7 +89,6 @@ const methods = {
 
 const extraMocks = (toUse: MockVotingProposal) => {
   ProxyUtils.findUserProxy = jest.fn().mockResolvedValue('');
-  KeychainApi.get = jest.fn().mockResolvedValue(witness.ranking);
   ProposalUtils.getProposalList = jest
     .fn()
     .mockResolvedValue(proposal.expectedResponse);
@@ -103,8 +99,6 @@ const extraMocks = (toUse: MockVotingProposal) => {
     .fn()
     .mockResolvedValueOnce(toUse.unvoteForProposal ?? false);
 };
-
-mocks.helper();
 
 export default {
   beforeEach,

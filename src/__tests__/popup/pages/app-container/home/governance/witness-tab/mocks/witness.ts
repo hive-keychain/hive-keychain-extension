@@ -1,4 +1,3 @@
-import KeychainApi from '@api/keychain';
 import { act, screen } from '@testing-library/react';
 import { ReactElement } from 'react';
 import ProxyUtils from 'src/utils/proxy.utils';
@@ -12,6 +11,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -62,13 +62,17 @@ const beforeEach = async (
   errorWitnessData: boolean = false,
   findUserProxy: string | null,
 ) => {
+  let remock: MocksToUse = {
+    keyChainApiGet: { customData: { witnessRanking: constants.witnessData } },
+  };
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
-  KeychainApi.get = jest.fn().mockResolvedValue(constants.witnessData);
   if (errorWitnessData === true) {
-    KeychainApi.get = jest.fn().mockResolvedValue({ data: '' });
+    remock = {
+      keyChainApiGet: { customData: { witnessRanking: { data: '' } } },
+    };
   }
+  mockPreset.setOrDefault(remock);
   extraMocks({ findUserProxy: findUserProxy });
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(mk.user.one);
