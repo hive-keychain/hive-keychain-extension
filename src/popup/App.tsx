@@ -141,6 +141,7 @@ const App = ({
 
   const initApplication = async () => {
     const rpc = await RpcUtils.getCurrentRpc();
+    //console.log('current rpc: ', rpc);
     setInitialRpc(rpc);
     initActiveRpc(rpc);
     initHiveEngineConfigFromStorage();
@@ -149,6 +150,7 @@ const App = ({
     setHasStoredAccounts(storedAccounts);
 
     const mkFromStorage = await MkUtils.getMkFromLocalStorage();
+    //console.log('mkFromStorage', mkFromStorage);
     if (mkFromStorage) {
       setMk(mkFromStorage, false);
     }

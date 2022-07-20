@@ -1,3 +1,5 @@
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
+
 interface BittrexObj {
   Currency: string;
   CurrencyLong: string;
@@ -14,7 +16,7 @@ const prices = {
     bitcoin: { usd: 79999, usd_24h_change: -9.025 },
     hive: { usd: 0.638871, usd_24h_change: -13.1 },
     hive_dollar: { usd: 0.972868, usd_24h_change: -0.69 },
-  },
+  } as CurrencyPrices,
 };
 
 const bittrex = [

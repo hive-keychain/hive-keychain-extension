@@ -7,15 +7,13 @@ import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown'
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import { overWriteMocks } from 'src/__tests__/utils-for-testing/defaults/overwrite';
 import {
   EventType,
-  OverwriteMock,
   QueryDOM,
 } from 'src/__tests__/utils-for-testing/enums/enums';
-import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { ClickOrType } from 'src/__tests__/utils-for-testing/interfaces/events';
+import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -45,19 +43,16 @@ const constants = {
   },
 };
 
-const beforeEach = async (
-  component: ReactElement,
-  overwriteDelegationMethods: boolean,
-) => {
+const beforeEach = async (component: ReactElement, passErrorData: boolean) => {
+  let remock: MocksToUse = {};
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
-  if (overwriteDelegationMethods) {
-    overWriteMocks({
-      powerUp: { getVestingDelegations: OverwriteMock.SET_AS_NOT_IMPLEMENTED },
-      delegations: { getDelegators: OverwriteMock.SET_AS_NOT_IMPLEMENTED },
-    });
+  if (passErrorData) {
+    remock = {
+      keyChainApiGet: { customData: { delegators: { data: '' } } },
+    };
   }
+  mockPreset.setOrDefault(remock);
   renders.wInitialState(component, initialStates.iniStateAs.defaultExistent);
   await assertion.awaitMk(mk.user.one);
   await methods.clickToDelegations();
@@ -122,8 +117,6 @@ const userInformation = {
   },
   delegation: { maxAmount: '0.459' },
 };
-
-mocks.helper();
 
 export default {
   beforeEach,
