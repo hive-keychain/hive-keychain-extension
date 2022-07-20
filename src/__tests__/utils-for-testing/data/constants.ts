@@ -11,7 +11,8 @@ import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
-
+//TODO see if this whole module is needed at all
+// check which mocks must be deleted, using interfaces as support.
 export const toOverWriteFuntions: any = {
   getValueFromLocalStorage: () =>
     (LocalStorageUtils.getValueFromLocalStorage = jest.fn()),

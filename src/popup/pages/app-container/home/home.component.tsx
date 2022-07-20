@@ -11,12 +11,17 @@ import { ResourcesSectionComponent } from '@popup/pages/app-container/home/resou
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { TopBarComponent } from '@popup/pages/app-container/home/top-bar/top-bar.component';
 import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-section.component';
+import { WhatsNewComponent } from '@popup/pages/app-container/whats-new/whats-new.component';
+import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { VersionLogUtils } from 'src/utils/version-log.utils';
 import './home.component.scss';
 
 const Home = ({
@@ -31,6 +36,8 @@ const Home = ({
   resetTitleContainerProperties,
 }: PropsFromRedux) => {
   const [displayLoader, setDisplayLoader] = useState(false);
+  const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
+  const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();
@@ -38,6 +45,7 @@ const Home = ({
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       refreshActiveAccount();
     }
+    initWhatsNew();
   }, []);
 
   useEffect(() => {
@@ -58,6 +66,25 @@ const Home = ({
       initActiveAccount();
     }
   }, []);
+
+  const initWhatsNew = async () => {
+    const lastVersionSeen = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.LAST_VERSION_UPDATE,
+    );
+    const versionLog = await VersionLogUtils.getLastVersion();
+    const extensionVersion = chrome.runtime
+      .getManifest()
+      .version.split('.')
+      .splice(0, 2)
+      .join('.');
+    if (
+      extensionVersion !== lastVersionSeen &&
+      versionLog.version === extensionVersion
+    ) {
+      setWhatsNewContent(versionLog);
+      setDisplayWhatsNew(true);
+    }
+  };
 
   const initActiveAccount = async () => {
     const lastActiveAccountName =
@@ -86,6 +113,13 @@ const Home = ({
           <RotatingLogoComponent></RotatingLogoComponent>
           <div className="caption">HIVE KEYCHAIN</div>
         </div>
+      )}
+
+      {!displayLoader && displayWhatsNew && (
+        <WhatsNewComponent
+          onOverlayClick={() => setDisplayWhatsNew(false)}
+          content={whatsNewContent!}
+        />
       )}
     </div>
   );
