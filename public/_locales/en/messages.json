@@ -2333,5 +2333,17 @@
   "html_popup_read_more": {
     "message": "Read more",
     "description": "read more"
+  },
+  "popup_html_total_pending_undelegate": {
+    "message": "Pending undelegations",
+    "description": "Total pending undelegate"
+  },
+  "popup_html_pending_undelegation": {
+    "message": "Pending outgoing undelegations",
+    "description": "Pending undelegate"
+  },
+  "popup_html_undelegation_pending_until_message": {
+    "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
+    "description": "Delegation list item pending until date"
   }
 }
