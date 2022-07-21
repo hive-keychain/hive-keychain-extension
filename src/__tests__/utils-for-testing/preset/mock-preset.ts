@@ -60,12 +60,15 @@ const setOrDefault = (toUse: MocksToUse) => {
       (app && app.getActiveAccountNameFromLocalStorage) ??
         _app.getActiveAccountNameFromLocalStorage,
     );
-  HiveUtils.getClient().rc.getRCMana = jest
+
+  //TODO to change by new ones.
+  HiveUtils.getClient().rc.getRCMana = jest //TODO to change by new ones.
     .fn()
     .mockResolvedValue((app && app.getRCMana) ?? _app.getRCMana);
   HiveUtils.getClient().database.getAccounts = jest
     .fn()
-    .mockResolvedValue((app && app.getAccounts) ?? _app.getAccounts);
+    .mockResolvedValue((app && app.getAccounts) ?? _app.getAccounts); //TODO to change by new ones.
+
   RpcUtils.checkRpcStatus = jest
     .fn()
     .mockResolvedValue((app && app.checkRpcStatus) ?? _app.checkRpcStatus);
@@ -119,7 +122,8 @@ const setOrDefault = (toUse: MocksToUse) => {
     .fn()
     .mockReturnValue((topBar && topBar.hasReward) ?? _topBar.hasReward);
 
-  HiveUtils.getClient().database.getVestingDelegations = jest
+  //TODO to change by a new one. ?? how to mock it from where it is {getDelegatees}
+  HiveUtils.getClient().database.getVestingDelegations = jest //TODO to change by new ones.
     .fn()
     .mockResolvedValue(
       (powerUp && powerUp.getVestingDelegations) ??

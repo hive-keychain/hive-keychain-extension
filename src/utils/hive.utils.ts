@@ -686,8 +686,6 @@ const getCurrentMedianHistoryPrice = async () => {
 const getRewardFund = async () => {
   return getClient().database.call('get_reward_fund', ['post']);
 };
-//TODO find each direct call and try to refactor them and place them here, so you can mock them and use them from here
-// nor directly from the app.
 
 const HiveUtils = {
   getClient,

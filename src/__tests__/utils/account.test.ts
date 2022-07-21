@@ -12,7 +12,17 @@ import { ActiveAccount } from '../../interfaces/active-account.interface';
 import { setErrorMessage } from '../../popup/actions/message.actions';
 import { store } from '../../popup/store';
 import AccountUtils from '../../utils/account.utils';
-
+//TODO change all use of calling the Client object directly.
+//  -> to change HiveUtils.getClient().database.getAccounts 7 others.
+//    -> easiest way to do it: without internet and having the console.logs on: node_modules/cross-fetch/node_modules/node-fetch/lib/index.js
+//      -> check if there is any direct calls and change them by the respective util.function
+//    ->>>>Very important, in order to allow mocking leave the call as Module.functionName, i.e:
+//      -> await AccountUtils.getAccount, even if you are on the same module. Otherwise it won't work for mocking.
+//TODO create a method to call on each suite:
+//    - to restore, clean mocks.
+// TODO TO EXPLAIN CEDRIC:
+//  - the importance of this, evene when it is more work for me if being sure there is no tries to connect to the RPC unless we need or want to.
+//  - this is why i am having this errors. I want to guarantee the tests work locally no matter what.
 describe('account.utils tests:\n', () => {
   const userData = { ...utilsT.userData };
   const userDataKeys: Keys = {
