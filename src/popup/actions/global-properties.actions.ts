@@ -7,9 +7,9 @@ import Logger from 'src/utils/logger.utils';
 export const loadGlobalProperties = (): AppThunk => async (dispatch) => {
   try {
     const [globals, price, rewardFund] = await Promise.all([
-      HiveUtils.getClient().database.getDynamicGlobalProperties(),
-      HiveUtils.getClient().database.getCurrentMedianHistoryPrice(),
-      HiveUtils.getClient().database.call('get_reward_fund', ['post']),
+      HiveUtils.getDynamicGlobalProperties(),
+      HiveUtils.getCurrentMedianHistoryPrice(),
+      HiveUtils.getRewardFund(),
     ]);
     const props = { globals, price, rewardFund };
     const action: ActionPayload<GlobalProperties> = {

@@ -43,11 +43,13 @@ const getClient = (): Client => {
   return client;
 };
 const setRpc = async (rpc: Rpc) => {
+  console.log('Is the error before this line?');
   client = new Client(
     rpc.uri === 'DEFAULT'
       ? (await KeychainApi.get('/hive/rpc')).data.rpc
       : rpc.uri,
   );
+  console.log('And after this line?');
 };
 
 const getVP = (account: ExtendedAccount) => {
@@ -665,6 +667,27 @@ const getProposalDailyBudget = async () => {
     ) / 100
   );
 };
+/**
+ * getClient().database.getDynamicGlobalProperties()
+ */
+const getDynamicGlobalProperties = async () => {
+  return getClient().database.getDynamicGlobalProperties();
+};
+/**
+ * getClient().database.getCurrentMedianHistoryPrice()
+ */
+const getCurrentMedianHistoryPrice = async () => {
+  return getClient().database.getCurrentMedianHistoryPrice();
+};
+/**
+ * getClient().database.call(method, params).
+ * Fixed params: method 'get_reward_fund', params ['post]
+ */
+const getRewardFund = async () => {
+  return getClient().database.call('get_reward_fund', ['post']);
+};
+//TODO find each direct call and try to refactor them and place them here, so you can mock them and use them from here
+// nor directly from the app.
 
 const HiveUtils = {
   getClient,
@@ -691,10 +714,13 @@ const HiveUtils = {
   sendOperationWithConfirmation,
   unvoteProposal,
   getProposalDailyBudget,
-  getRewardBalance, //exported for testing
-  getRecentClaims, //exported for testing
-  getHivePrice, //exported for testing
-  getVotePowerReserveRate, //exported for testing
+  getRewardBalance,
+  getRecentClaims,
+  getHivePrice,
+  getVotePowerReserveRate,
+  getDynamicGlobalProperties,
+  getCurrentMedianHistoryPrice,
+  getRewardFund,
 };
 
 export default HiveUtils;

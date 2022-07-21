@@ -37,6 +37,15 @@ const setOrDefault = (toUse: MocksToUse) => {
     _topBar,
     _chromeRunTime,
   } = mocksDefault._defaults;
+  //fixed & not implemented for now
+  //TODO decide if:
+  //  - leave them as async or
+  //  - mock the entire module: HiveUtils.getClient()
+  //    - which imply to mock each part of the module:
+  //      -> database, etc....
+  initialMocks.noImplentationNeeded();
+  withFixedValues();
+  //
   LocalStorageUtils.getValueFromLocalStorage = jest
     .fn()
     .mockImplementation(
@@ -163,8 +172,6 @@ const setOrDefault = (toUse: MocksToUse) => {
       (proposal && proposal.voteForKeychainProposal) ??
         _proposal.voteForKeychainProposal,
     );
-  initialMocks.noImplentationNeeded();
-  withFixedValues();
 };
 
 export default { setOrDefault };
