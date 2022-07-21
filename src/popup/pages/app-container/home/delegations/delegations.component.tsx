@@ -259,13 +259,16 @@ const Delegations = ({
   };
 
   return (
-    <div className="delegations-page">
+    <div className="delegations-page" aria-label="delegations-page">
       <div className="text">
         {chrome.i18n.getMessage('popup_html_delegations_text')}
       </div>
 
-      <div className="delegations-summary">
-        <div className="total-incoming" onClick={goToIncomings}>
+      <div className="delegations-summary" aria-label="delegations-summary">
+        <div
+          className="total-incoming"
+          onClick={goToIncomings}
+          aria-label="total-incoming">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
@@ -286,7 +289,10 @@ const Delegations = ({
             </span>
           </div>
         </div>
-        <div className="total-outgoing" onClick={goToOutgoing}>
+        <div
+          className="total-outgoing"
+          onClick={goToOutgoing}
+          aria-label="total-outgoing">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_outgoing')}
           </div>
@@ -295,6 +301,7 @@ const Delegations = ({
             {currencyLabels.hp}
           </div>
         </div>
+        <div className="divider"></div>
         <div className="total-available">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_available')}
@@ -307,6 +314,7 @@ const Delegations = ({
 
       <div className="form-container">
         <InputComponent
+          ariaLabel="input-username"
           value={username}
           onChange={setUsername}
           logo={Icons.AT}
@@ -318,6 +326,7 @@ const Delegations = ({
         <div className="amount-panel">
           <div className="amount-input-panel">
             <InputComponent
+              ariaLabel="amount-input"
               type={InputType.NUMBER}
               placeholder="0.000"
               skipPlaceholderTranslation={true}
@@ -331,6 +340,7 @@ const Delegations = ({
       </div>
 
       <OperationButtonComponent
+        ariaLabel="delegate-operation-submit-button"
         label={'popup_html_delegate_to_user'}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}

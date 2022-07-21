@@ -58,7 +58,11 @@ const SelectAccountSection = ({
             e.target.src = '/assets/images/accounts.png';
           }}
         />
-        <div className="selected-account-name">{selectedLocalAccount}</div>
+        <div
+          className="selected-account-name"
+          aria-label="selected-account-name">
+          {selectedLocalAccount}
+        </div>
       </div>
     );
   };
@@ -67,6 +71,7 @@ const SelectAccountSection = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.value}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}

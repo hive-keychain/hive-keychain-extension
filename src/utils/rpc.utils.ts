@@ -57,7 +57,7 @@ const saveCurrentRpc = (rpc: Rpc) => {
 };
 
 const findRpc = async (uri: string) => {
-  const list = [...getFullList(), ...(await RpcUtils.getCustomRpcs())]; //modified for testing
+  const list = [...getFullList(), ...(await RpcUtils.getCustomRpcs())];
   return list.find(
     (e) => e.uri === uri || e.uri === uri + '/' || e.uri + '/' === uri,
   );

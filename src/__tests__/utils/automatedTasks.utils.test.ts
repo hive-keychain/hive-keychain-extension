@@ -22,7 +22,11 @@ describe('getClaims tests', () => {
       .fn()
       .mockResolvedValue({});
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: false, claimRewards: false };
+    const expectedResults = {
+      claimAccounts: false,
+      claimRewards: false,
+      claimSavings: false,
+    };
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, and claims and rewards undefined(see bellow) found, must return {claimAccounts: false, claimRewards: false}', async () => {
@@ -32,9 +36,14 @@ describe('getClaims tests', () => {
       .mockResolvedValue({
         claimAccounts: undefined,
         claimRewards: undefined,
+        claimSavings: undefined,
       });
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: false, claimRewards: false };
+    const expectedResults = {
+      claimAccounts: false,
+      claimRewards: false,
+      claimSavings: false,
+    };
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, and claims and rewards null(see bellow) found, must return {claimAccounts: false, claimRewards: false}', async () => {
@@ -44,13 +53,17 @@ describe('getClaims tests', () => {
       .mockResolvedValue({
         claimAccounts: null,
         claimRewards: null,
+        claimSavings: null,
       });
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: false, claimRewards: false };
+    const expectedResults = {
+      claimAccounts: false,
+      claimRewards: false,
+      claimSavings: false,
+    };
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, and claims present, must return valid object as { claimAccounts: false, claimRewards: true }', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -60,13 +73,19 @@ describe('getClaims tests', () => {
         claimRewards: {
           theghost1980: true,
         },
+        claimSavings: {
+          theghost1980: true,
+        },
       });
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: false, claimRewards: true };
+    const expectedResults = {
+      claimAccounts: false,
+      claimRewards: true,
+      claimSavings: true,
+    };
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, rewards null and claims found, must return valid object as { claimAccounts: true, claimRewards: false }', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -74,9 +93,16 @@ describe('getClaims tests', () => {
           theghost1980: true,
         },
         claimRewards: null,
+        claimSavings: {
+          theghost1980: true,
+        },
       });
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: true, claimRewards: false };
+    const expectedResults = {
+      claimAccounts: true,
+      claimRewards: false,
+      claimSavings: true,
+    };
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, rewards undefined and claims found, must return valid object as { claimAccounts: true, claimRewards: false }', async () => {
@@ -88,9 +114,14 @@ describe('getClaims tests', () => {
           theghost1980: true,
         },
         claimRewards: undefined,
+        claimSavings: undefined,
       });
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: true, claimRewards: false };
+    const expectedResults = {
+      claimAccounts: true,
+      claimRewards: false,
+      claimSavings: false,
+    };
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, reward found and claim as null, must return valid object as { claimAccounts: false, claimRewards: true }', async () => {
@@ -102,9 +133,14 @@ describe('getClaims tests', () => {
         claimRewards: {
           theghost1980: true,
         },
+        claimSavings: null,
       });
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: false, claimRewards: true };
+    const expectedResults = {
+      claimAccounts: false,
+      claimRewards: true,
+      claimSavings: false,
+    };
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, reward found and claim as undefined, must return valid object as { claimAccounts: false, claimRewards: true }', async () => {
@@ -116,9 +152,14 @@ describe('getClaims tests', () => {
         claimRewards: {
           theghost1980: true,
         },
+        claimSavings: false,
       });
     const result = await AutomatedTasksUtils.getClaims(username);
-    const expectedResults = { claimAccounts: false, claimRewards: true };
+    const expectedResults = {
+      claimAccounts: false,
+      claimRewards: true,
+      claimSavings: false,
+    };
     expect(result).toEqual(expectedResults);
   });
 });
@@ -127,12 +168,10 @@ describe('saveClaims tests', () => {
   let spyLocalStorageUtilsSaveValue: jest.SpyInstance;
   let spyChromeRuntimeSendMessage: jest.SpyInstance;
   beforeEach(() => {
-    //spy on LocalStorageUtils.saveValueInLocalStorage
     spyLocalStorageUtilsSaveValue = jest.spyOn(
       LocalStorageUtils,
       'saveValueInLocalStorage',
     );
-    //spy on chrome.runtime.sendMessage
     spyChromeRuntimeSendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
   });
   afterEach(() => {
@@ -147,125 +186,130 @@ describe('saveClaims tests', () => {
       claimRewards: {
         workerjab1: false,
       },
+      claimSavings: {
+        workerjab1: false,
+      },
     },
   };
   const username: string = 'workerjab1';
   test('Passing username, and false(claimRewards, claimAccount) must return undefined and follow/pass the steps bellow', async () => {
-    //expected steps:
-    // 1. getAllClaimRewards will return undefined as no mocking values on this test.
-    // 2. Call LocalStorageUtils.saveValueInLocalStorage 2 times.
-    // 3. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimRewards', { workerjab1: false }
-    // 4. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimAccounts', { workerjab1: false }
-    // 5. Call chrome.runtime.sendMessage with the expected Object bellow.
-    // 6. saveClaims must return undefined as returning no value.
-
-    //expected
     expectedSendMessageObj.value.claimAccounts.workerjab1 = false;
     expectedSendMessageObj.value.claimRewards.workerjab1 = false;
+    expectedSendMessageObj.value.claimSavings.workerjab1 = false;
 
-    const result = await AutomatedTasksUtils.saveClaims(false, false, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      false,
+      false,
+      false,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       workerjab1: false,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      workerjab1: false,
+    });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       workerjab1: false,
     });
     expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
     expect(result).toBeUndefined();
   });
   test.skip('When passed empty username, it returns empty key object with assigned value. Skipped as validation needed.', async () => {
-    //Note; even when is very unlikely that an empty string will be passed as username, it could happen.
-    //so for now this a possible case to study if needed a validation, for now skipped.
-
-    //expected
     expectedSendMessageObj.value.claimAccounts.workerjab1 = false;
     expectedSendMessageObj.value.claimRewards.workerjab1 = false;
 
-    const result = await AutomatedTasksUtils.saveClaims(false, false, '');
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      false,
+      false,
+      false,
+      '',
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       '': false,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      '': false,
+    });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       '': false,
     });
     expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
     expect(result).toBeUndefined();
   });
   test('Passing (username, claimRewards = false, claimAccount = true) must return undefined and follow/pass the steps bellow', async () => {
-    //expected steps:
-    // 1. getAllClaimRewards will return undefined as no mocking values on this test.
-    // 2. Call LocalStorageUtils.saveValueInLocalStorage 2 times.
-    // 3. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimRewards', { workerjab1: false }
-    // 4. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimAccounts', { workerjab1: true }
-    // 5. Call chrome.runtime.sendMessage with the expected Object bellow.
-    // 6. saveClaims must return undefined as returning no value.
-
-    //expected
     expectedSendMessageObj.value.claimAccounts.workerjab1 = true;
     expectedSendMessageObj.value.claimRewards.workerjab1 = false;
+    expectedSendMessageObj.value.claimSavings.workerjab1 = true;
 
-    const result = await AutomatedTasksUtils.saveClaims(false, true, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      false,
+      true,
+      true,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       workerjab1: false,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      workerjab1: true,
+    });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       workerjab1: true,
     });
     expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
     expect(result).toBeUndefined();
   });
   test('Passing (username, claimRewards = true, claimAccount = true) must return undefined and follow/pass the steps bellow', async () => {
-    //expected steps:
-    // 1. getAllClaimRewards will return undefined as no mocking values on this test.
-    // 2. Call LocalStorageUtils.saveValueInLocalStorage 2 times.
-    // 3. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimRewards', { workerjab1: true }
-    // 4. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimAccounts', { workerjab1: true }
-    // 5. Call chrome.runtime.sendMessage with the expected Object bellow.
-    // 6. saveClaims must return undefined as returning no value.
-
-    //expected
     expectedSendMessageObj.value.claimAccounts.workerjab1 = true;
     expectedSendMessageObj.value.claimRewards.workerjab1 = true;
+    expectedSendMessageObj.value.claimSavings.workerjab1 = true;
 
-    const result = await AutomatedTasksUtils.saveClaims(true, true, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      true,
+      true,
+      true,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       workerjab1: true,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      workerjab1: true,
+    });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       workerjab1: true,
     });
     expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
     expect(result).toBeUndefined();
   });
   test('Passing (username, claimRewards = true, claimAccount = false) must return undefined and follow/pass the steps bellow', async () => {
-    //expected steps:
-    // 1. getAllClaimRewards will return undefined as no mocking values on this test.
-    // 2. Call LocalStorageUtils.saveValueInLocalStorage 2 times.
-    // 3. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimRewards', { workerjab1: true }
-    // 4. Call LocalStorageUtils.saveValueInLocalStorage with parameters: 'claimAccounts', { workerjab1: false }
-    // 5. Call chrome.runtime.sendMessage with the expected Object bellow.
-    // 6. saveClaims must return undefined as returning no value.
-
-    //expected
     expectedSendMessageObj.value.claimAccounts.workerjab1 = false;
     expectedSendMessageObj.value.claimRewards.workerjab1 = true;
 
-    const result = await AutomatedTasksUtils.saveClaims(true, false, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      true,
+      false,
+      true,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       workerjab1: true,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
       workerjab1: false,
     });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
+      workerjab1: true,
+    });
     expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
     expect(result).toBeUndefined();
   });
-  //mocking getAllClaimRewards, getAllClaimAccounts
   test('When mocking an existent claimAccount stored and Passing (claimRewards = true, claimAccount = false, username) must return undefined and add claimed reward value, to the username within existing obj', async () => {
     AutomatedTasksUtils.getAllClaimAccounts = jest.fn().mockResolvedValueOnce({
       quentin: true,
@@ -274,11 +318,22 @@ describe('saveClaims tests', () => {
     AutomatedTasksUtils.getAllClaimRewards = jest
       .fn()
       .mockResolvedValueOnce(undefined);
+    AutomatedTasksUtils.getAllClaimSavings = jest
+      .fn()
+      .mockResolvedValueOnce(undefined);
 
-    const result = await AutomatedTasksUtils.saveClaims(false, true, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      false,
+      true,
+      true,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       workerjab1: false,
+    });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
+      workerjab1: true,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
       workerjab1: true,
@@ -296,12 +351,15 @@ describe('saveClaims tests', () => {
         claimRewards: {
           workerjab1: false,
         },
+        claimSavings: {
+          workerjab1: true,
+        },
       },
     });
     expect(result).toBeUndefined();
   });
 
-  test('When mocking an existent claimAccount stored and Passing (claimRewards = false, claimAccount = false, username) must return undefined and add claimed reward value, to the username within existing obj', async () => {
+  test('When mocking an existent claimAccount stored and Passing (claimRewards = false, claimAccount = false, claimSavings = false, username) must return undefined and add claimed reward value, to the username within existing obj', async () => {
     AutomatedTasksUtils.getAllClaimAccounts = jest.fn().mockResolvedValueOnce({
       workerjab1: true,
       quentin: true,
@@ -310,10 +368,21 @@ describe('saveClaims tests', () => {
     AutomatedTasksUtils.getAllClaimRewards = jest
       .fn()
       .mockResolvedValueOnce(undefined);
+    AutomatedTasksUtils.getAllClaimSavings = jest
+      .fn()
+      .mockResolvedValueOnce(undefined);
 
-    const result = await AutomatedTasksUtils.saveClaims(false, false, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      false,
+      false,
+      false,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
+      workerjab1: false,
+    });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       workerjab1: false,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
@@ -330,6 +399,9 @@ describe('saveClaims tests', () => {
           workerjab1: false,
         },
         claimRewards: {
+          workerjab1: false,
+        },
+        claimSavings: {
           workerjab1: false,
         },
       },
@@ -340,19 +412,30 @@ describe('saveClaims tests', () => {
     AutomatedTasksUtils.getAllClaimAccounts = jest
       .fn()
       .mockResolvedValueOnce(undefined);
+    AutomatedTasksUtils.getAllClaimSavings = jest
+      .fn()
+      .mockResolvedValueOnce(undefined);
     AutomatedTasksUtils.getAllClaimRewards = jest.fn().mockResolvedValueOnce({
       aggroed: false,
       quentin: true,
     });
 
-    const result = await AutomatedTasksUtils.saveClaims(true, false, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      true,
+      false,
+      false,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       workerjab1: true,
       aggroed: false,
       quentin: true,
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      workerjab1: false,
+    });
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       workerjab1: false,
     });
     expect(spyChromeRuntimeSendMessage).toBeCalledWith({
@@ -365,6 +448,9 @@ describe('saveClaims tests', () => {
           workerjab1: true,
           aggroed: false,
           quentin: true,
+        },
+        claimSavings: {
+          workerjab1: false,
         },
       },
     });
@@ -379,15 +465,30 @@ describe('saveClaims tests', () => {
       aggroed: false,
       quentin: false,
     });
+    AutomatedTasksUtils.getAllClaimSavings = jest.fn().mockResolvedValueOnce({
+      aggroed: false,
+      quentin: false,
+    });
 
-    const result = await AutomatedTasksUtils.saveClaims(true, true, username);
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(2);
+    const result = await AutomatedTasksUtils.saveClaims(
+      true,
+      true,
+      true,
+      username,
+    );
+    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
+
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+      workerjab1: true,
+      aggroed: false,
+      quentin: false,
+    });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
       workerjab1: true,
       aggroed: false,
       quentin: false,
     });
-    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
+    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       workerjab1: true,
       aggroed: false,
       quentin: false,
@@ -401,6 +502,11 @@ describe('saveClaims tests', () => {
           quentin: false,
         },
         claimRewards: {
+          workerjab1: true,
+          aggroed: false,
+          quentin: false,
+        },
+        claimSavings: {
           workerjab1: true,
           aggroed: false,
           quentin: false,
@@ -416,6 +522,7 @@ describe('initBackgroundClaims tests', () => {
   let spyChromeRuntimeSendMessage: jest.SpyInstance;
   let spyOnGetAllClaimRewards: jest.SpyInstance;
   let spyOnGetAllClaimAccounts: jest.SpyInstance;
+  let spyOnGetAllClaimSavings: jest.SpyInstance;
   beforeEach(() => {
     spyChromeRuntimeSendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
     spyOnGetAllClaimAccounts = jest.spyOn(
@@ -426,6 +533,10 @@ describe('initBackgroundClaims tests', () => {
       AutomatedTasksUtils,
       'getAllClaimRewards',
     );
+    spyOnGetAllClaimSavings = jest.spyOn(
+      AutomatedTasksUtils,
+      'getAllClaimSavings',
+    );
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -435,11 +546,13 @@ describe('initBackgroundClaims tests', () => {
     const result = await AutomatedTasksUtils.initBackgroundClaims();
     expect(spyOnGetAllClaimAccounts).toBeCalledTimes(1);
     expect(spyOnGetAllClaimRewards).toBeCalledTimes(1);
+    expect(spyOnGetAllClaimSavings).toBeCalledTimes(1);
     expect(spyChromeRuntimeSendMessage).toBeCalledWith({
       command: 'updateClaims',
       value: {
         claimAccounts: undefined,
         claimRewards: undefined,
+        claimSavings: undefined,
       },
     });
     expect(result).toBeUndefined();
@@ -456,18 +569,27 @@ describe('initBackgroundClaims tests', () => {
       aggroed: false,
       quentin: false,
     };
+    const mockClaimSavingsObj = {
+      workerjab1: false,
+      aggroed: false,
+      quentin: false,
+    };
     AutomatedTasksUtils.getAllClaimAccounts = jest
       .fn()
       .mockResolvedValueOnce(mockClaimAccountsObj);
     AutomatedTasksUtils.getAllClaimRewards = jest
       .fn()
       .mockResolvedValueOnce(mockClaimRewardsObj);
+    AutomatedTasksUtils.getAllClaimSavings = jest
+      .fn()
+      .mockResolvedValueOnce(mockClaimSavingsObj);
     const result = await AutomatedTasksUtils.initBackgroundClaims();
     expect(spyChromeRuntimeSendMessage).toBeCalledWith({
       command: 'updateClaims',
       value: {
         claimAccounts: mockClaimAccountsObj,
         claimRewards: mockClaimRewardsObj,
+        claimSavings: mockClaimSavingsObj,
       },
     });
     expect(result).toBeUndefined();

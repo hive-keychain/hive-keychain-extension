@@ -1,7 +1,9 @@
+import { BgdHiveEngineConfigModule } from '@background/hive-engine-config.module';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import init from '@background/requests/init';
 import RPCModule from '@background/rpc.module';
 import { Client } from '@hiveio/dhive';
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -34,10 +36,12 @@ type RequestData = {
 export class RequestsHandler {
   data: RequestData;
   hiveClient: Client;
+  hiveEngineConfig: HiveEngineConfig;
 
   constructor() {
     this.data = { confirmed: false };
     this.hiveClient = new Client(Config.rpc.DEFAULT.uri);
+    this.hiveEngineConfig = Config.hiveEngine;
   }
 
   async initFromLocalStorage(data: RequestData) {
@@ -51,6 +55,10 @@ export class RequestsHandler {
     this.hiveClient = await RPCModule.getClient(rpc);
   }
 
+  async setupHiveEngine() {
+    this.hiveEngineConfig = await BgdHiveEngineConfigModule.getActiveConfig();
+  }
+
   async initializeParameters(
     accounts: LocalAccount[],
     rpc: Rpc,
@@ -59,6 +67,7 @@ export class RequestsHandler {
     this.data.accounts = accounts;
     this.data.rpc = rpc;
     await this.setupRpc(rpc);
+    await this.setupHiveEngine();
     this.data.preferences = preferences;
   }
 

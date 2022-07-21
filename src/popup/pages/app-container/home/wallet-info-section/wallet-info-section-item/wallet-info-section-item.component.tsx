@@ -48,6 +48,7 @@ const walletInfoSectionItem = ({
         )}
       </div>
       <img
+        aria-label={`dropdown-arrow-${mainValueLabel.toLowerCase()}`}
         className="dropdown-arrow"
         src="/assets/images/uparrow.png"
         onClick={toggleDropdown}

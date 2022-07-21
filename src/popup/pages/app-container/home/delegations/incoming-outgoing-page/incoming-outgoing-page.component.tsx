@@ -12,7 +12,6 @@ import { IncomingOutgoingItemComponent } from '@popup/pages/app-container/home/d
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './incoming-outgoing-page.component.scss';
@@ -78,13 +77,19 @@ const IncomingOutgoingPage = ({
   }, []);
 
   return (
-    <div className="incoming-outgoing-page">
+    <div className="incoming-outgoing-page" aria-label="incoming-outgoing-page">
       {delegationType === DelegationType.OUTGOING &&
         totalPendingOutgoingUndelegation > 0 && (
-          <div className="panel pending-undelegations">
-            <CustomTooltip
-              message={'popup_html_undelegation_pending_until_message'}
-              position={'bottom'}>
+          <div className="pending-disclaimer">
+            {chrome.i18n.getMessage(
+              'popup_html_undelegation_pending_until_message',
+            )}
+          </div>
+        )}
+      <div className="list-panel">
+        {delegationType === DelegationType.OUTGOING &&
+          totalPendingOutgoingUndelegation > 0 && (
+            <div className="panel pending-undelegations">
               <div className="total">
                 <div className="label">
                   {chrome.i18n.getMessage(
@@ -98,44 +103,44 @@ const IncomingOutgoingPage = ({
                   {currencyLabels.hp}
                 </div>
               </div>
-            </CustomTooltip>
 
-            <div className="list">
-              {pendingUndelegationsList.map((pendingUndelegation, index) => (
-                <IncomingOutgoingItemComponent
-                  key={index}
-                  delegationType={delegationType}
-                  amount={pendingUndelegation.vesting_shares.toString()}
-                  expirationDate={
-                    pendingUndelegation.expiration_date
-                  }></IncomingOutgoingItemComponent>
-              ))}
+              <div className="list">
+                {pendingUndelegationsList.map((pendingUndelegation, index) => (
+                  <IncomingOutgoingItemComponent
+                    key={index}
+                    delegationType={delegationType}
+                    amount={pendingUndelegation.vesting_shares.toString()}
+                    expirationDate={
+                      pendingUndelegation.expiration_date
+                    }></IncomingOutgoingItemComponent>
+                ))}
+              </div>
+            </div>
+          )}
+        <div className="panel">
+          <div className="total">
+            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="value">
+              {FormatUtils.withCommas(totalHP.toString())} {currencyLabels.hp}
             </div>
           </div>
-        )}
-      <div className="panel">
-        <div className="total">
-          <div className="label">{chrome.i18n.getMessage(header)}</div>
-          <div className="value">
-            {FormatUtils.withCommas(totalHP.toString())} {currencyLabels.hp}
-          </div>
-        </div>
 
-        <div className="list">
-          {delegationList.map((delegation, index) => (
-            <IncomingOutgoingItemComponent
-              key={index}
-              delegationType={delegationType}
-              username={
-                delegationType === DelegationType.INCOMING
-                  ? delegation.delegator
-                  : delegation.delegatee
-              }
-              amount={delegation.vesting_shares}
-              expirationDate={
-                delegation.expiration_date
-              }></IncomingOutgoingItemComponent>
-          ))}
+          <div className="list">
+            {delegationList.map((delegation, index) => (
+              <IncomingOutgoingItemComponent
+                key={index}
+                delegationType={delegationType}
+                username={
+                  delegationType === DelegationType.INCOMING
+                    ? delegation.delegator
+                    : delegation.delegatee
+                }
+                amount={delegation.vesting_shares}
+                expirationDate={
+                  delegation.expiration_date
+                }></IncomingOutgoingItemComponent>
+            ))}
+          </div>
         </div>
       </div>
     </div>

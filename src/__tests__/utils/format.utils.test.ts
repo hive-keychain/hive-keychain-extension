@@ -302,9 +302,6 @@ describe('format.utils tests:\n', () => {
         expect(error).toEqual(rangeError);
       }
     });
-    test.todo(
-      'A possible case needed would be test the condition (value === undefined || value === null) but let me know how to assign this to the input',
-    );
   });
 
   describe('nFormatter tests:\n', () => {

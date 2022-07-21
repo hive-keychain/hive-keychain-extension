@@ -16,6 +16,9 @@ const ActionButton = ({
 }: PropsType) => {
   return (
     <div
+      aria-label={`action-button-${chrome.i18n
+        .getMessage(label)
+        .toLowerCase()}`}
       className="action-button"
       onClick={() => navigateToWithParams(nextScreen, nextScreenParams)}>
       <div className="icon-container">
