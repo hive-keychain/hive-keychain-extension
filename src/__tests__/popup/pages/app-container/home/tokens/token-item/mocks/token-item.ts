@@ -1,6 +1,5 @@
 import { ReactElement } from 'react';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
@@ -84,12 +83,6 @@ const methods = {
 };
 
 const extraMocks = () => {
-  HiveEngineUtils.getIncomingDelegations = jest
-    .fn()
-    .mockResolvedValue(tokensUser.incomingDelegations);
-  HiveEngineUtils.getOutgoingDelegations = jest
-    .fn()
-    .mockResolvedValue(tokensUser.outcomingDelegations);
   HiveEngineConfigUtils.getAccountHistoryApi().get = jest
     .fn()
     .mockResolvedValue({ data: [] });

@@ -43,7 +43,6 @@ const beforeEach = async (
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   mockPreset.setOrDefault({});
-  extraMocks.incomingOutcoming();
   extraMocks.saveTransferRecipient();
   if (removeActiveKey) {
     delete initialState.accounts[0].keys.active;
@@ -51,10 +50,8 @@ const beforeEach = async (
   }
   renders.wInitialState(component, initialState);
   await assertion.awaitMk(constants.username);
-  await clickAwait([
-    alButton.actionBtn.tokens,
-    selectPreFix('LEO', 'expandMore'),
-  ]);
+  await clickAwait([alButton.actionBtn.tokens]);
+  await clickAwait([selectPreFix('LEO', 'expandMore')]);
   await assertion.toHaveClass(
     alDiv.token.user.tokenInfo.expandablePanel,
     'expandable-panel opened',
@@ -71,23 +68,25 @@ const methods = {
     confirmTransaction: boolean = false,
     addDelegateTo: boolean = false,
   ) => {
+    if (addDelegateTo) {
+      await clickTypeAwait([
+        {
+          ariaLabel: alInput.username,
+          event: EventType.TYPE,
+          text: mk.user.two,
+        },
+      ]);
+    }
     await clickTypeAwait([
-      addDelegateTo
-        ? {
-            ariaLabel: alInput.username,
-            event: EventType.TYPE,
-            text: mk.user.two,
-          }
-        : { ariaLabel: 'none', event: 'none' },
       { ariaLabel: alInput.amount, event: EventType.TYPE, text: inputAmount },
       {
         ariaLabel: alButton.operation.tokens.preFix + buttonOperation,
         event: EventType.CLICK,
       },
-      confirmTransaction
-        ? { ariaLabel: alButton.dialog.confirm, event: EventType.CLICK }
-        : { ariaLabel: 'none', event: 'none' },
     ]);
+    if (confirmTransaction) {
+      await clickAwait([alButton.dialog.confirm]);
+    }
   },
 };
 

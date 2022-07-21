@@ -6,15 +6,12 @@ import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-componen
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
-import alLogo from 'src/__tests__/utils-for-testing/aria-labels/al-logo';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 const { methods, constants } = tokens;
 const { messages, data, typeValue } = constants;
-//Todo keep testing the new implementations + fix all token section + finish it.
-// probably an error on passing the data, try to follow the same pattern as in keychainApiGet.
 describe('tokens.component tests:\n', () => {
   methods.afterEach;
   describe('User has tokens:\n', () => {
@@ -67,14 +64,6 @@ describe('tokens.component tests:\n', () => {
     });
     it('Must show no tokens message', () => {
       assertion.getOneByText(messages.tokens.noTokens);
-    });
-  });
-  describe('Data still loading:\n', () => {
-    beforeEach(async () => {
-      await tokens.beforeEach(<App />, { showLoading: true });
-    });
-    it('Must show loading component', () => {
-      assertion.getByLabelText(alLogo.loading);
     });
   });
   describe('Having hidden tokens:\n', () => {

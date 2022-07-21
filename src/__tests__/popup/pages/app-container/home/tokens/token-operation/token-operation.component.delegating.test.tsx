@@ -17,8 +17,7 @@ const { message, title, leoToken, displayedCommon, displayedDelegating } =
   constants;
 const { typeValues } = leoToken;
 const { balance } = typeValues;
-//TODO uncomment when fixed mocking
-describe.skip('token-operation Delegating tests:\n', () => {
+describe('token-operation Delegating tests:\n', () => {
   methods.afterEach;
   beforeEach(async () => {
     await tokenOperation.beforeEach(<App />);

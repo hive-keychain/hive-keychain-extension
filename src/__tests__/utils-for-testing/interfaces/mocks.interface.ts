@@ -2,13 +2,11 @@ import { ExtendedAccount, VestingDelegation } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import { TokenDelegation } from '@interfaces/token-delegation.interface';
+import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
-import {
-  FindSmartContractsHive,
-  KeyChainApiGetCustomData,
-} from 'src/__tests__/utils-for-testing/interfaces/implementations';
+import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 
 export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;
@@ -42,8 +40,11 @@ export interface MocksWalletHistory {
 }
 
 export interface MocksTokens {
-  getTokens?: Token[];
   getUserBalance?: TokenBalance[];
+  getIncomingDelegations?: TokenDelegation[];
+  getOutgoingDelegations?: TokenDelegation[];
+  getAllTokens?: any[];
+  getTokensMarket?: TokenMarket[];
 }
 export interface MocksProposal {
   hasVotedForProposal?: boolean;
@@ -53,11 +54,6 @@ export interface MocksProposal {
 export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
 }
-
-export interface MocksTokensSC {
-  customData?: FindSmartContractsHive;
-}
-
 export interface GetManifest {
   version: string;
   name: string;
@@ -77,11 +73,10 @@ export interface MocksToUse {
   topBar?: MocksTopBar;
   powerUp?: MocksPowerUp;
   walletHistory?: MocksWalletHistory;
-  //tokens?: MocksTokens;
+  tokens?: MocksTokens;
   proposal?: MocksProposal;
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
-  tokens?: MocksTokensSC;
 }
 
 export interface MockVotingProposal {

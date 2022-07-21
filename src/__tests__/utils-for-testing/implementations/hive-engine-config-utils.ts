@@ -2,7 +2,7 @@ import tokenMarket from 'src/__tests__/utils-for-testing/data/tokens/token-marke
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import { FindSmartContractsHive } from 'src/__tests__/utils-for-testing/interfaces/implementations';
-
+//TODO remove + delete this
 const GetApiFind = (args: any[], tokensData?: FindSmartContractsHive) => {
   const contract: string = args[0];
   const table: string = args[1];

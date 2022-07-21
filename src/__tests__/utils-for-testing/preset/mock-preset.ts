@@ -1,7 +1,7 @@
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -12,7 +12,6 @@ import TransactionUtils from 'src/utils/transaction.utils';
 import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
 import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentationNeeded';
-import hiveEngineConfigUtils from 'src/__tests__/utils-for-testing/implementations/hive-engine-config-utils';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
@@ -125,28 +124,31 @@ const setOrDefault = (toUse: MocksToUse) => {
         _walletHistory.getAccountTransactions,
     );
 
-  //TODO change to implementation -> commented to get values from HIVE.
-  // HiveEngineConfigUtils.getApi().find = jest
-  //   .fn()
-  //   .mockResolvedValue((tokens && tokens.getTokens) ?? _tokens.getTokens);
-  // //END change to implementation -> commented to get values from HIVE.
-
-  // //TODO after changing when all works remove bellow
-  // HiveEngineUtils.getUserBalance = jest
-  //   .fn()
-  //   .mockResolvedValue(
-  //     (tokens && tokens.getUserBalance) ?? _tokens.getUserBalance,
-  //   );
-  //until here.
-
-  //TODO
-  //  apparently as this is a function without signatures,
-  //  it does not work as the KeychainApi.get
-  console.log('tokens?.customData', tokens?.customData?.getUserBalance);
-  HiveEngineConfigUtils.getApi().find = jest
+  HiveEngineUtils.getUserBalance = jest
     .fn()
-    .mockImplementation((...args: any[]) =>
-      hiveEngineConfigUtils.GetApiFind(args, tokens?.customData),
+    .mockResolvedValue(
+      (tokens && tokens.getUserBalance) ?? _tokens.getUserBalance,
+    );
+
+  HiveEngineUtils.getIncomingDelegations = jest
+    .fn()
+    .mockResolvedValue(
+      (tokens && tokens.getIncomingDelegations) ??
+        _tokens.getIncomingDelegations,
+    );
+  HiveEngineUtils.getOutgoingDelegations = jest
+    .fn()
+    .mockResolvedValue(
+      (tokens && tokens.getOutgoingDelegations) ??
+        _tokens.getOutgoingDelegations,
+    );
+  HiveEngineUtils.getAllTokens = jest
+    .fn()
+    .mockResolvedValue((tokens && tokens.getAllTokens) ?? _tokens.getAllTokens);
+  HiveEngineUtils.getTokensMarket = jest
+    .fn()
+    .mockResolvedValue(
+      (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
     );
 
   ProposalUtils.hasVotedForProposal = jest

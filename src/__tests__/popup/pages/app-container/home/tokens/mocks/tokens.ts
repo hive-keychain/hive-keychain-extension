@@ -9,11 +9,7 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
-import { overWriteMocks } from 'src/__tests__/utils-for-testing/defaults/overwrite';
-import {
-  EventType,
-  OverwriteMock,
-} from 'src/__tests__/utils-for-testing/enums/enums';
+import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
@@ -88,7 +84,6 @@ const constants = {
 const beforeEach = async (
   component: ReactElement,
   toUse?: {
-    showLoading?: boolean;
     noUserTokens?: boolean;
     reImplementGetLS?: boolean;
   },
@@ -98,7 +93,7 @@ const beforeEach = async (
   actAdvanceTime(4300);
   if (toUse?.noUserTokens) {
     remock = {
-      tokens: { customData: { getUserBalance: 'hi' } },
+      tokens: { getUserBalance: [] },
     };
   }
   if (toUse?.reImplementGetLS) {
@@ -112,11 +107,6 @@ const beforeEach = async (
     };
   }
   mockPreset.setOrDefault(remock);
-  if (toUse?.showLoading) {
-    overWriteMocks({
-      tokens: { getUserBalance: OverwriteMock.SET_AS_NOT_IMPLEMENTED },
-    });
-  }
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(constants.username);
   await clickAwait([alButton.actionBtn.tokens]);
