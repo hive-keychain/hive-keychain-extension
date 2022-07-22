@@ -1,4 +1,4 @@
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import PopupUtils from 'src/utils/popup.utils';
 
 const noImplentationNeeded = () => {

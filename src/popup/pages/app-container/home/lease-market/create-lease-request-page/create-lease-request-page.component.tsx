@@ -31,9 +31,11 @@ import CurrencyUtils, {
   CurrencyLabels,
 } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import { LeaseKeys, LeaseMarketUtils } from 'src/utils/lease-market.utils';
+import { LeaseMarketUtils } from 'src/utils/lease-market.utils';
 import { v4 as uuidv4 } from 'uuid';
 import './create-lease-request-page.component.scss';
+
+import { LeaseKeys } from 'hive-keychain-commons/lib/lease-market/lease-keys';
 
 const CreateLeaseRequestPage = ({
   activeAccount,

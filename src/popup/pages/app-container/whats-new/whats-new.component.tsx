@@ -6,7 +6,7 @@ import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import './whats-new.component.scss';
 
 interface Props {

@@ -3,7 +3,7 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { AppThunk } from '@popup/actions/interfaces';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 
 export const setHEActiveRpc = (rpc: string) => {
   HiveEngineConfigUtils.setActiveApi(rpc);

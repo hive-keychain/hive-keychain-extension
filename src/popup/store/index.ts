@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 // import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import LocalStorageUtils from 'src/utils/local-storage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
