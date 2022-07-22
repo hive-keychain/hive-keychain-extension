@@ -724,6 +724,7 @@ const HiveUtils = {
   getCurrentMedianHistoryPrice,
   getRewardFund,
   getDelegatees,
+  getDelegators,
 };
 
 export default HiveUtils;
