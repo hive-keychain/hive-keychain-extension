@@ -20,6 +20,7 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils, { getDelegatees, getDelegators } from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 jest.setTimeout(50000);
@@ -453,45 +454,49 @@ describe('hive.utils tests:\n', () => {
 
   describe('getDelegatees tests:\n', () => {
     test('Passing an account with delegators must return an array filtered and sorted, see conditions bellow', async () => {
+      mockPreset.setOrDefault({ powerUp: { getVestingDelegations: [] } });
+      //HiveUtils.getDelegatees = jest.fn().mockResolvedValue([]);
+      const results = await HiveUtils.getDelegatees('string');
+      expect(results).toEqual(['1']);
       //To filter parseFloat(e.vesting_shares + '') !== 0
       //To order parseFloat(b.vesting_shares + '') - parseFloat(a.vesting_shares + '')
-      let mockedGetVestingDelegations =
-        (HiveUtils.getClient().database.getVestingDelegations = jest.fn());
-      const username = 'blocktrades';
-      mockedGetVestingDelegations.mockResolvedValueOnce(
-        utilsT.fakeGetDelegateesResponse,
-      );
-      const argumentsCallingApi = [username, '', 1000];
-      const expectedArrayOrdered = [
-        {
-          id: 1350016,
-          delegator: 'blocktrades',
-          delegatee: 'usainvote',
-          vesting_shares: '300.000000 VESTS',
-          min_delegation_time: '2020-08-16T05:34:33',
-        },
-        {
-          id: 933999,
-          delegator: 'blocktrades',
-          delegatee: 'ocdb',
-          vesting_shares: '200.902605 VESTS',
-          min_delegation_time: '2018-05-25T22:14:30',
-        },
-        {
-          id: 270663,
-          delegator: 'blocktrades',
-          delegatee: 'buildawhale',
-          vesting_shares: '100.000000 VESTS',
-          min_delegation_time: '2017-09-29T02:19:03',
-        },
-      ];
-      const result = await getDelegatees(username);
-      expect(result.length).toBe(3);
-      expect(result).toEqual(expectedArrayOrdered);
-      expect(mockedGetVestingDelegations).toBeCalledTimes(1);
-      expect(mockedGetVestingDelegations).toBeCalledWith(
-        ...argumentsCallingApi,
-      );
+      // let mockedGetVestingDelegations =
+      //   (HiveUtils.getClient().database.getVestingDelegations = jest.fn());
+      // const username = 'blocktrades';
+      // mockedGetVestingDelegations.mockResolvedValueOnce(
+      //   utilsT.fakeGetDelegateesResponse,
+      // );
+      // const argumentsCallingApi = [username, '', 1000];
+      // const expectedArrayOrdered = [
+      //   {
+      //     id: 1350016,
+      //     delegator: 'blocktrades',
+      //     delegatee: 'usainvote',
+      //     vesting_shares: '300.000000 VESTS',
+      //     min_delegation_time: '2020-08-16T05:34:33',
+      //   },
+      //   {
+      //     id: 933999,
+      //     delegator: 'blocktrades',
+      //     delegatee: 'ocdb',
+      //     vesting_shares: '200.902605 VESTS',
+      //     min_delegation_time: '2018-05-25T22:14:30',
+      //   },
+      //   {
+      //     id: 270663,
+      //     delegator: 'blocktrades',
+      //     delegatee: 'buildawhale',
+      //     vesting_shares: '100.000000 VESTS',
+      //     min_delegation_time: '2017-09-29T02:19:03',
+      //   },
+      // ];
+      // const result = await getDelegatees(username);
+      // expect(result.length).toBe(3);
+      // expect(result).toEqual(expectedArrayOrdered);
+      // expect(mockedGetVestingDelegations).toBeCalledTimes(1);
+      // expect(mockedGetVestingDelegations).toBeCalledWith(
+      //   ...argumentsCallingApi,
+      // );
     });
     test('Passing an account with No delegators must return an Empty array', async () => {
       let mockedGetVestingDelegations =

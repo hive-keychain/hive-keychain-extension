@@ -12,10 +12,11 @@ export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;
   getCurrentRpc?: Rpc;
   getActiveAccountNameFromLocalStorage?: string;
-  getRCMana?: Manabar; //TODO mocking AccountUtils.getRCMana
-  getAccounts?: ExtendedAccount[];
-  //TODO tobe getExtendedAccount mocking: AccountUtils.getExtendedAccount. : ExtendedAccount[]
-  //TODO getAccount mocking: AccountUtils.getAccount. : ExtendedAccount.
+  //changed/added
+  getRCMana?: Manabar;
+  getAccount?: ExtendedAccount[];
+  getExtendedAccount?: ExtendedAccount;
+  //END changed/added
   checkRpcStatus?: boolean;
   hasStoredAccounts?: boolean;
   getMkFromLocalStorage?: string;

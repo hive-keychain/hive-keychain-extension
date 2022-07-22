@@ -37,15 +37,9 @@ const setOrDefault = (toUse: MocksToUse) => {
     _topBar,
     _chromeRunTime,
   } = mocksDefault._defaults;
-  //fixed & not implemented for now
-  //TODO decide if:
-  //  - leave them as async or
-  //  - mock the entire module: HiveUtils.getClient()
-  //    - which imply to mock each part of the module:
-  //      -> database, etc....
   initialMocks.noImplentationNeeded();
   withFixedValues();
-  //
+
   LocalStorageUtils.getValueFromLocalStorage = jest
     .fn()
     .mockImplementation(
@@ -62,12 +56,36 @@ const setOrDefault = (toUse: MocksToUse) => {
     );
 
   //TODO to change by new ones.
-  HiveUtils.getClient().rc.getRCMana = jest //TODO to change by new ones.
+  //////////////
+  //TODO check all of this:
+  //  - Added mocked & as default:
+  //    - getAccount: ExtendedAccount[]
+  //    - getRCMana: Manabar
+  //    - getExtendedAccount: ExtendedAccount (the object {})
+  //  -Changed/Updated:
+  //    -
+  //  - Change on all tests:
+  //      - from: HiveUtils.getClient().database.getAccounts TO: mockPreset.setOrDefault -> AccountUtils.getAccount
+  //      - from: HiveUtils.getClient().rc.getRCMana TO: mockPreset.setOrDefault -> AccountUtils.getRCMana
+  //      - from: HiveUtils.getClient().database.getVestingDelegations TO: mockPreset.setOrDefault -> getVestingDelegations
+  AccountUtils.getAccount = jest
+    .fn()
+    .mockResolvedValue((app && app.getAccount) ?? _app.getAccount);
+  AccountUtils.getRCMana = jest
     .fn()
     .mockResolvedValue((app && app.getRCMana) ?? _app.getRCMana);
-  HiveUtils.getClient().database.getAccounts = jest
+  AccountUtils.getExtendedAccount = jest
     .fn()
-    .mockResolvedValue((app && app.getAccounts) ?? _app.getAccounts); //TODO to change by new ones.
+    .mockResolvedValue(
+      (app && app.getExtendedAccount) ?? _app.getExtendedAccount,
+    );
+  HiveUtils.getDelegatees = jest
+    .fn()
+    .mockResolvedValue(
+      (powerUp && powerUp.getVestingDelegations) ??
+        _powerUp.getVestingDelegations,
+    );
+  ///////////
 
   RpcUtils.checkRpcStatus = jest
     .fn()
@@ -121,14 +139,6 @@ const setOrDefault = (toUse: MocksToUse) => {
   ActiveAccountUtils.hasReward = jest
     .fn()
     .mockReturnValue((topBar && topBar.hasReward) ?? _topBar.hasReward);
-
-  //TODO to change by a new one. ?? how to mock it from where it is {getDelegatees}
-  HiveUtils.getClient().database.getVestingDelegations = jest //TODO to change by new ones.
-    .fn()
-    .mockResolvedValue(
-      (powerUp && powerUp.getVestingDelegations) ??
-        _powerUp.getVestingDelegations,
-    );
 
   TransactionUtils.getAccountTransactions = jest
     .fn()

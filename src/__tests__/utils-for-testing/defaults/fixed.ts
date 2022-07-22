@@ -8,7 +8,7 @@ const withFixedValues = () => {
     .mockResolvedValue(dynamic.globalProperties);
   HiveUtils.getCurrentMedianHistoryPrice = jest
     .fn()
-    .mockResolvedValue(dynamic.globalProperties);
+    .mockResolvedValue(dynamic.medianHistoryPrice);
   HiveUtils.getRewardFund = jest.fn().mockResolvedValue(dynamic.rewardFund);
 
   chrome.i18n.getMessage = jest

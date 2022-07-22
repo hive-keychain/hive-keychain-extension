@@ -4,7 +4,9 @@ import {
   ClaimRewardBalanceOperation,
   Client,
   CollateralizedConvertOperation,
+  DynamicGlobalProperties,
   ExtendedAccount,
+  Price,
   PrivateKey,
   RecurrentTransferOperation,
   TransactionConfirmation,
@@ -27,7 +29,10 @@ import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
 import { Conversion } from 'src/interfaces/conversion.interface';
 import { Delegator } from 'src/interfaces/delegations.interface';
-import { GlobalProperties } from 'src/interfaces/global-properties.interface';
+import {
+  GlobalProperties,
+  RewardFund,
+} from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
 import Logger from 'src/utils/logger.utils';
@@ -670,20 +675,21 @@ const getProposalDailyBudget = async () => {
 /**
  * getClient().database.getDynamicGlobalProperties()
  */
-const getDynamicGlobalProperties = async () => {
-  return getClient().database.getDynamicGlobalProperties();
-};
+const getDynamicGlobalProperties =
+  async (): Promise<DynamicGlobalProperties> => {
+    return getClient().database.getDynamicGlobalProperties();
+  };
 /**
  * getClient().database.getCurrentMedianHistoryPrice()
  */
-const getCurrentMedianHistoryPrice = async () => {
+const getCurrentMedianHistoryPrice = async (): Promise<Price> => {
   return getClient().database.getCurrentMedianHistoryPrice();
 };
 /**
  * getClient().database.call(method, params).
  * Fixed params: method 'get_reward_fund', params ['post]
  */
-const getRewardFund = async () => {
+const getRewardFund = async (): Promise<RewardFund> => {
   return getClient().database.call('get_reward_fund', ['post']);
 };
 
@@ -719,6 +725,7 @@ const HiveUtils = {
   getDynamicGlobalProperties,
   getCurrentMedianHistoryPrice,
   getRewardFund,
+  getDelegatees,
 };
 
 export default HiveUtils;

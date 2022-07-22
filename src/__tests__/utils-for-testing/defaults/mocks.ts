@@ -34,8 +34,11 @@ const _defaults = {
       ),
     getCurrentRpc: rpc.defaultRpc,
     getActiveAccountNameFromLocalStorage: mk.user.one,
+    //changed/added
     getRCMana: manabar,
-    getAccounts: accounts.asArray.extended,
+    getAccount: accounts.asArray.extended,
+    getExtendedAccount: accounts.extended,
+    //END changed/added
     checkRpcStatus: true,
     hasStoredAccounts: true,
     getMkFromLocalStorage: mk.user.one,

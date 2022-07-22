@@ -36,9 +36,6 @@ const getKeys = async (username: string, password: string) => {
     );
     return null;
   }
-  // const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
-  //   username,
-  // ]);
   const hiveAccounts = await AccountUtils.getAccount(username);
   if (hiveAccounts.length === 0) {
     store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
@@ -174,9 +171,7 @@ const addAuthorizedAccount = async (
     return null;
   }
 
-  const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
-    username,
-  ]);
+  const hiveAccounts = await AccountUtils.getAccount(username);
 
   if (!hiveAccounts || hiveAccounts.length === 0) {
     showError('popup_accounts_incorrect_user', []);
@@ -368,9 +363,7 @@ const getAccountValue = (
 };
 /* istanbul ignore next */
 const getPublicMemo = async (username: string): Promise<string> => {
-  const extendedAccounts = await HiveUtils.getClient().database.getAccounts([
-    username,
-  ]);
+  const extendedAccounts = await AccountUtils.getAccount(username);
   return extendedAccounts[0].memo_key;
 };
 
@@ -399,9 +392,7 @@ const getPowerDown = (
 };
 
 const doesAccountExist = async (username: string) => {
-  return (
-    (await HiveUtils.getClient().database.getAccounts([username])).length > 0
-  );
+  return (await AccountUtils.getAccount(username)).length > 0;
 };
 /* istanbul ignore next */
 const getExtendedAccount = async (username: string) => {
