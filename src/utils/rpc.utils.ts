@@ -73,11 +73,9 @@ const checkRpcStatus = async (uri: string) => {
     },
   );
   try {
-    console.log('About to check health!');
     await axios.get(`${uri === 'DEFAULT' ? 'api.hive.blog' : uri}/health`);
     return true;
   } catch (err) {
-    console.log('Error when checking health!');
     Logger.error(err);
     return false;
   }
