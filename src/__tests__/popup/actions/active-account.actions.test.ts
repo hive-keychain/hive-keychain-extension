@@ -3,7 +3,7 @@ import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import * as activeAccountActions from 'src/popup/actions/active-account.actions';
-import HiveUtils from 'src/utils/hive.utils';
+import AccountUtils from 'src/utils/account.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
@@ -12,7 +12,8 @@ import {
   initialStateNoKeys,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
-
+import config from 'src/__tests__/utils-for-testing/setups/config';
+config.byDefault();
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -21,22 +22,21 @@ describe('active-account.actions tests:\n', () => {
     {
       name: utilsT.secondAccountOnState.name,
       reputation: 100,
-    },
+    } as ExtendedAccount,
   ];
   const fakeManaBarResponse = {
     current_mana: 1000,
     max_mana: 10000,
     percentage: 100,
-  };
+  } as Manabar;
   describe('refreshActiveAccount tests:\n', () => {
     test('Must refresh the activeAccount', async () => {
-      HiveUtils.getClient().database.getAccounts = jest
+      AccountUtils.getExtendedAccount = jest
         .fn()
-        .mockResolvedValueOnce(fakeExtendedAccountResponse);
-      HiveUtils.getClient().rc.getRCMana = jest
+        .mockResolvedValue(fakeExtendedAccountResponse[0]);
+      AccountUtils.getRCMana = jest
         .fn()
         .mockResolvedValueOnce(fakeManaBarResponse);
-
       let fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(
         activeAccountActions.refreshActiveAccount(),
@@ -51,10 +51,10 @@ describe('active-account.actions tests:\n', () => {
       });
     });
     test('If the activeAccount is not located in accounts, wont refresh', async () => {
-      HiveUtils.getClient().database.getAccounts = jest
+      AccountUtils.getExtendedAccount = jest
         .fn()
-        .mockResolvedValueOnce(fakeExtendedAccountResponse);
-      HiveUtils.getClient().rc.getRCMana = jest
+        .mockResolvedValue(fakeExtendedAccountResponse[0]);
+      AccountUtils.getRCMana = jest
         .fn()
         .mockResolvedValueOnce(fakeManaBarResponse);
 
@@ -92,10 +92,10 @@ describe('active-account.actions tests:\n', () => {
   });
   describe('loadActiveAccount tests:\n', () => {
     test('must refreshKeys and set activeAccount', async () => {
-      HiveUtils.getClient().database.getAccounts = jest
+      AccountUtils.getExtendedAccount = jest
         .fn()
-        .mockResolvedValueOnce(fakeExtendedAccountResponse);
-      HiveUtils.getClient().rc.getRCMana = jest
+        .mockResolvedValue(fakeExtendedAccountResponse[0]);
+      AccountUtils.getRCMana = jest
         .fn()
         .mockResolvedValueOnce(fakeManaBarResponse);
 
@@ -114,7 +114,7 @@ describe('active-account.actions tests:\n', () => {
 
   describe('getAccountRC tests:\n', () => {
     test('Must set manabar of activeAccount', async () => {
-      HiveUtils.getClient().rc.getRCMana = jest
+      AccountUtils.getRCMana = jest
         .fn()
         .mockResolvedValueOnce(fakeManaBarResponse);
 
