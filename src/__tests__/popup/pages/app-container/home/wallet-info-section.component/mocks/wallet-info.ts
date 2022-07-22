@@ -22,9 +22,10 @@ const beforeEach = async (
   if (toUse?.zeroBalances) {
     remock = {
       app: {
-        getAccounts: [
-          { ...constants.extendedAccount, ...constants.zeroBalances },
-        ],
+        getExtendedAccount: {
+          ...constants.extendedAccount,
+          ...constants.zeroBalances,
+        },
       },
     };
   }

@@ -11,6 +11,12 @@ const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
 };
 const messagesJsonFile = require('public/_locales/en/messages.json');
+/**
+ *
+ * @param args
+ * @returns Null if not found or not mocked.
+ * If debug needed, just uncomment the console.log after the default case.
+ */
 const getValuefromLS = (...args: any[]): any => {
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
@@ -30,6 +36,16 @@ const getValuefromLS = (...args: any[]): any => {
       return manifestFile.chromium.version;
     case LocalStorageKeyEnum.HIDDEN_TOKENS:
       return [];
+    default:
+      //Cases not being handled yet:
+      // - HIVE_ENGINE_ACTIVE_CONFIG
+      // - HIVE_ENGINE_CUSTOM_RPC_LIST
+      // - HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API
+      // - __REQUEST_HANDLER
+      // - LOCAL_STORAGE_VERSION
+
+      //console.log('Not handled and being called by: ', args[0]);
+      return undefined;
   }
 };
 

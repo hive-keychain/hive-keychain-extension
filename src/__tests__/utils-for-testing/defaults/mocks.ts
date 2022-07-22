@@ -30,7 +30,7 @@ const _defaults = {
     getValueFromLocalStorage: jest
       .fn()
       .mockImplementation((...args: any[]) =>
-        mocksImplementation.getValuefromLS(args),
+        mocksImplementation.getValuefromLS(args[0]),
       ),
     getCurrentRpc: rpc.defaultRpc,
     getActiveAccountNameFromLocalStorage: mk.user.one,
