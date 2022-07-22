@@ -61,6 +61,9 @@ export default {
       preFix: 'token-list-item-',
       item: {
         description: 'token-list-item-description',
+        innerCheckBox: {
+          preFix: 'checkbox-checked-',
+        },
       },
     },
   },

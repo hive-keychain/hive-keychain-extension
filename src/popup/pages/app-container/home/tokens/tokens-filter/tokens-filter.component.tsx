@@ -93,6 +93,7 @@ const TokensFilter = ({
             key={token.symbol}>
             <CheckboxComponent
               ariaLabel={`checkbox-select-token-${token.symbol}`}
+              extraAriaLabelOnInput={`checkbox-checked-${token.symbol}`}
               checked={!hiddenTokens.includes(token.symbol)}
               onChange={() => {
                 toggleHiddenToken(token.symbol);
