@@ -3,26 +3,16 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import config from 'src/__tests__/utils-for-testing/setups/config';
 import accountUtilsMocks from 'src/__tests__/utils/mocks/account-utils-mocks';
 import { ActiveAccount } from '../../interfaces/active-account.interface';
 import { setErrorMessage } from '../../popup/actions/message.actions';
 import { store } from '../../popup/store';
 import AccountUtils from '../../utils/account.utils';
-//TODO change all use of calling the Client object directly.
-//  -> to change HiveUtils.getClient().database.getAccounts 7 others.
-//    -> easiest way to do it: without internet and having the console.logs on: node_modules/cross-fetch/node_modules/node-fetch/lib/index.js
-//      -> check if there is any direct calls and change them by the respective util.function
-//    ->>>>Very important, in order to allow mocking leave the call as Module.functionName, i.e:
-//      -> await AccountUtils.getAccount, even if you are on the same module. Otherwise it won't work for mocking.
-//TODO create a method to call on each suite:
-//    - to restore, clean mocks.
-// TODO TO EXPLAIN CEDRIC:
-//  - the importance of this, evene when it is more work for me if being sure there is no tries to connect to the RPC unless we need or want to.
-//  - this is why i am having this errors. I want to guarantee the tests work locally no matter what.
+config.byDefault();
 describe('account.utils tests:\n', () => {
   const userData = { ...utilsT.userData };
   const userDataKeys: Keys = {
@@ -69,7 +59,6 @@ describe('account.utils tests:\n', () => {
     },
   ];
   const { extraMocks } = accountUtilsMocks;
-  jest.setTimeout(10000);
   beforeEach(() => {
     store.dispatch = jest.fn();
   });
@@ -77,8 +66,7 @@ describe('account.utils tests:\n', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
-
-  describe('getKeys tests', () => {
+  describe('getKeys tests:\n', () => {
     test('Passing a public key must return null and dispatch an error message', async () => {
       extraMocks.getAccounts([dataAccounts.default.extended]);
       const getAccount = await AccountUtils.getKeys(
@@ -200,8 +188,7 @@ describe('account.utils tests:\n', () => {
       );
     });
   });
-
-  describe('verifyAccount tests', () => {
+  describe('verifyAccount tests:\n', () => {
     test('Passing an empty username must return null and dispatch MISSING_FIELDS error', async () => {
       const resultVerifyAccount = await AccountUtils.verifyAccount(
         '',
@@ -257,8 +244,7 @@ describe('account.utils tests:\n', () => {
       expect(resultValidDataNonExistingAccounts).toEqual(expected_obj_active);
     });
   });
-
-  describe('isAccountNameAlreadyExisting tests', () => {
+  describe('isAccountNameAlreadyExisting tests:\n', () => {
     const existingAccountsUserPresent = [
       { name: userData.username, keys: {} },
       { name: 'user2', keys: {} },
@@ -312,8 +298,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(true);
     });
   });
-
-  describe('hasStoredAccounts tests', () => {
+  describe('hasStoredAccounts tests:\n', () => {
     afterEach(() => {
       jest.fn().mockClear();
     });
@@ -354,8 +339,7 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
   });
-
-  describe('addKey tests', () => {
+  describe('addKey tests:\n', () => {
     test('test with empty key must return null and setErrorMessage as  popup_accounts_fill', async () => {
       const result = await AccountUtils.addKey(
         activeAccountData,
@@ -477,8 +461,7 @@ describe('account.utils tests:\n', () => {
       expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
     });
   });
-
-  describe('deleteKey tests', () => {
+  describe('deleteKey tests:\n', () => {
     test('KeyType.MEMO and username in the array, should return accounts with that key removed', () => {
       const _accounts: LocalAccount[] = [
         {
@@ -597,8 +580,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toEqual(_accounts);
     });
   });
-
-  describe('deleteAccount tests', () => {
+  describe('deleteAccount tests:\n', () => {
     test('when passed a localAccounts array with the accountName in it, must return the filtered array', () => {
       const _accounts: LocalAccount[] = [
         { name: 'workerjab1', keys: {} },
@@ -622,8 +604,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toEqual(expected_obj);
     });
   });
-
-  describe('isAccountListIdentical tests', () => {
+  describe('isAccountListIdentical tests:\n', () => {
     test('returns true if both lists are identical', () => {
       const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
       const _accounts2: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
@@ -656,8 +637,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(false);
     });
   });
-
-  describe('getAccountValue tests', () => {
+  describe('getAccountValue tests:\n', () => {
     FormatUtils.withCommas = jest.fn().mockReturnValue(1.51);
     FormatUtils.toHP = jest.fn().mockReturnValue(1.51);
     const balances = {
@@ -707,8 +687,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(1.51);
     });
   });
-
-  describe('getPowerDown tests', () => {
+  describe('getPowerDown tests:\n', () => {
     test('must return a valid array as [withdrawn, total_withdrawing, next_vesting_withdrawal]', () => {
       const account_details = {
         withdrawn: '1.00',
@@ -726,8 +705,7 @@ describe('account.utils tests:\n', () => {
       expect(result_array).toEqual(['0', '0', '1.00']);
     });
   });
-
-  describe('doesAccountExist tests', () => {
+  describe('doesAccountExist tests:\n', () => {
     test('with a existing account must return true', async () => {
       extraMocks.getAccounts([dataAccounts.default.extended]);
       const result = await AccountUtils.doesAccountExist('theghost1980');
@@ -739,10 +717,8 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(false);
     });
   });
-
-  describe('addAuthorizedAccount tests', () => {
+  describe('addAuthorizedAccount tests:\n', () => {
     let _setErrorMessage = setErrorMessage;
-
     beforeEach(() => {
       _setErrorMessage = jest.fn();
     });
@@ -817,16 +793,13 @@ describe('account.utils tests:\n', () => {
       );
     });
     test('test with account with no authority', async () => {
-      HiveUtils.getClient().database.getAccounts = jest
+      AccountUtils.getAccount = jest
         .fn()
-        .mockImplementationOnce((...args: any) => [
-          utilsT.fakeQuentinAccResponseWithNoAuth,
-          'fakeData ;)',
-        ]);
+        .mockResolvedValue([utilsT.fakeQuentinAccResponseWithNoAuth]);
       const result_addAuthorizedAccount =
         await AccountUtils.addAuthorizedAccount(
-          'quentin', //account to add
-          'workerjab1', //main account
+          'quentin',
+          'workerjab1',
           [{ name: 'workerjab1', keys: userDataKeys }],
           _setErrorMessage,
         );
@@ -838,13 +811,9 @@ describe('account.utils tests:\n', () => {
       ]);
     });
     test('test with account with authority on posting/active keys, must return keys object as the requested account was added ', async () => {
-      HiveUtils.getClient().database.getAccounts = jest
+      AccountUtils.getAccount = jest
         .fn()
-        .mockImplementationOnce((...args: any) => [
-          utilsT.fakeQuentinAccResponseWithAuth,
-          'fakeData ;)',
-        ]);
-
+        .mockResolvedValue([utilsT.fakeQuentinAccResponseWithAuth]);
       const expectedKeysObject = {
         posting: userData.nonEncryptKeys.posting,
         postingPubkey: `@${userData.username}`,
