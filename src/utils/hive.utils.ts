@@ -48,13 +48,11 @@ const getClient = (): Client => {
   return client;
 };
 const setRpc = async (rpc: Rpc) => {
-  console.log('Is the error before this line?');
   client = new Client(
     rpc.uri === 'DEFAULT'
       ? (await KeychainApi.get('/hive/rpc')).data.rpc
       : rpc.uri,
   );
-  console.log('And after this line?');
 };
 
 const getVP = (account: ExtendedAccount) => {
