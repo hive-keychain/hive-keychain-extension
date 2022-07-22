@@ -33,7 +33,7 @@ describe('add-by-keys:\n', () => {
       ).toBeInTheDocument();
     });
     it('Must add valid posting key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.posting);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -41,7 +41,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must add valid memo key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.memo);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -49,7 +49,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must add valid active key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.active);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -57,7 +57,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must derivate all keys from master, and navigate to select keys page', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.selectPage)).toBeDefined();
@@ -123,7 +123,7 @@ describe('add-by-keys:\n', () => {
         'popup_accounts_incorrect_user',
       );
       mockPreset.setOrDefault({
-        app: { getAccounts: [] },
+        app: { getAccount: [] },
       });
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.fakeKey);
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
