@@ -154,6 +154,5 @@ export const loadTokenHistory =
       type: ActionType.LOAD_TOKEN_HISTORY,
       payload: tokenHistory,
     };
-    console.log('about to dispatch: ', action);
     dispatch(action);
   };

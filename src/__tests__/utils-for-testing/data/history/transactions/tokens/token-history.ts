@@ -1,4 +1,14 @@
-import { TokenTransaction } from '@interfaces/tokens.interface';
+import {
+  AuthorCurationTransaction,
+  CommentCurationTransaction,
+  DelegateTokenTransaction,
+  MiningLotteryTransaction,
+  StakeTokenTransaction,
+  TokenTransaction,
+  TransferTokenTransaction,
+  UndelegateTokenDoneTransaction,
+  UndelegateTokenStartTransaction,
+} from '@interfaces/tokens.interface';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
 const leoToken: TokenTransaction[] = [
@@ -17,7 +27,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1634159133,
     to: mk.user.one,
     transactionId: 'e3525c27349cd7b32903385d967b86273b987377',
-  } as any,
+  } as CommentCurationTransaction,
   {
     _id: '61654d8f8bae125202648bbd',
     account: mk.user.one,
@@ -33,7 +43,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1634028936,
     to: 'theghost1980',
     transactionId: 'fcbd964d3b48a91ed749b0c67d4d57c4cd5a21d0',
-  } as any,
+  } as AuthorCurationTransaction,
   {
     _id: '615a3b378bae1252023114ba',
     account: mk.user.one,
@@ -48,7 +58,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1633303344,
     to: mk.user.one,
     transactionId: 'ca9397cff3f270abeef4880de6570c3adec49134',
-  } as any,
+  } as MiningLotteryTransaction,
   {
     _id: '6147d1928bae125202dd666e',
     account: mk.user.one,
@@ -62,7 +72,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1632096651,
     to: mk.user.one,
     transactionId: '9e79e7a4b3d9cd057655870a7f16959f0674352e',
-  } as any,
+  } as TransferTokenTransaction,
   {
     _id: '613ef535780fd34f81d69aef',
     account: mk.user.one,
@@ -76,7 +86,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1631331048,
     to: mk.user.one,
     transactionId: '5283ef02a869d85be961e963cd7aa75100b0a6b6',
-  } as any,
+  } as StakeTokenTransaction,
   {
     _id: '6135cb1c187544f7ef365d21',
     account: mk.user.one,
@@ -92,7 +102,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1629562089,
     to: 'theghost1980',
     transactionId: 'a463cc98b9912dd117856250087d2842b0ff5f4d',
-  } as any,
+  } as DelegateTokenTransaction,
   {
     _id: '6135ca75187544f7ef2f3833',
     account: mk.user.one,
@@ -108,7 +118,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1629446655,
     to: mk.user.one,
     transactionId: '39b772d44f0f6df07e43397078a53d06eda8e802',
-  } as any,
+  } as UndelegateTokenStartTransaction,
   {
     _id: '6135999e187544f7efe79c78',
     account: mk.user.one,
@@ -124,7 +134,7 @@ const leoToken: TokenTransaction[] = [
     timestamp: 1620470055,
     to: mk.user.one,
     transactionId: '82f138ba16de2ce3bd7901ce5819fd0693e09aa0-3',
-  } as any,
+  } as UndelegateTokenDoneTransaction,
 ];
 
 export default { leoToken };

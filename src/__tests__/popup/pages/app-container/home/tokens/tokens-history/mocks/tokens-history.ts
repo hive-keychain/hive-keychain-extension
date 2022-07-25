@@ -1,3 +1,7 @@
+import {
+  MiningLotteryTransaction,
+  OperationsHiveEngine,
+} from '@interfaces/tokens.interface';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
@@ -23,12 +27,31 @@ const i18n = {
     mocksImplementation.i18nGetMessageCustom(key, options),
 };
 
+const leoTokenMinningIndex = tokenHistory.leoToken.findIndex(
+  (operation) => operation.operation === OperationsHiveEngine.MINING_LOTTERY,
+);
+
+const minningOperationData = tokenHistory.leoToken.filter(
+  (op) => op.operation === OperationsHiveEngine.MINING_LOTTERY,
+)[0] as MiningLotteryTransaction;
+
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
   snapshotName: {
     withData: 'tokens-history.component',
     noData: 'tokens-history.component NO DATA',
+  },
+  message: {
+    item: {
+      miningLottery: i18n.get('popup_html_token_wallet_info_mining_lottery', [
+        minningOperationData.amount,
+        minningOperationData.poolId,
+      ]),
+    },
+  },
+  item: {
+    index: leoTokenMinningIndex,
   },
 };
 /**
