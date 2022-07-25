@@ -30,6 +30,7 @@ import * as ValidUrl from 'valid-url';
 import './tokens-settings.component.scss';
 
 interface SelectOption {
+  panelType: string;
   label: string;
   value: string;
   isDefault: boolean;
@@ -70,6 +71,7 @@ const TokensSettings = ({
     );
     const rpcOpts = rpcFullList.map((rpc) => {
       return {
+        panelType: 'rpc',
         label: rpc.replace('https://', '').split('/')[0],
         value: rpc,
         isDefault: HiveEngineConfigUtils.isRpcDefault(rpc),
@@ -87,6 +89,7 @@ const TokensSettings = ({
     );
     const accountHistoryApiOpts = accountHistoryApiFullList.map((api) => {
       return {
+        panelType: 'account-history-api',
         label: api.replace('https://', '').split('/')[0],
         value: api,
         isDefault: HiveEngineConfigUtils.isAccountHistoryApiDefault(api),
@@ -94,12 +97,15 @@ const TokensSettings = ({
         deleteElement: deleteAccountHistoryApi,
       };
     });
-
+    console.log('getCustomAccountHistoryApi: ', customAccountHistoryApi);
+    console.log('accountHistoryApiFullList: ', accountHistoryApiFullList);
+    console.log('accountHistoryApiOpts ', accountHistoryApiOpts);
     setAccountHistoryApiOptions(accountHistoryApiOpts);
   };
 
-  const createActiveValue = (str: string) => {
+  const createActiveValue = (str: string, panelType: string) => {
     return {
+      panelType: panelType,
       label: str.replace('https://', '').split('/')[0],
       value: str,
       isDefault: false,
@@ -139,6 +145,7 @@ const TokensSettings = ({
   const customLabelRender = (selectProps: SelectRenderer<SelectOption>) => {
     return (
       <div
+        aria-label={`selected-panel-${selectProps.props.values[0].panelType}`}
         className="selected-panel"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -213,7 +220,7 @@ const TokensSettings = ({
         <div className="select-title">Hive-Engine RPC node</div>
         <div className="select-panel">
           <Select
-            values={[createActiveValue(activeHERpc)]}
+            values={[createActiveValue(activeHERpc, 'rpc')]}
             options={rpcOptions}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
@@ -248,7 +255,10 @@ const TokensSettings = ({
         <div className="select-panel">
           <Select
             values={[
-              createActiveValue(activeAccountHistoryApi) as SelectOption,
+              createActiveValue(
+                activeAccountHistoryApi,
+                'account-history',
+              ) as SelectOption,
             ]}
             options={accountHistoryApiOptions}
             onChange={() => undefined}

@@ -14,33 +14,45 @@ const messagesJsonFile = require('public/_locales/en/messages.json');
 /**
  *
  * @param args
+ * @param args[0] Is always used for the LocalStorageKeyEnum.
+ * @param args[1] If need to return specific data.
  * @returns Null if not found or not mocked.
  * If debug needed, just uncomment the console.log after the default case.
  */
 const getValuefromLS = (...args: any[]): any => {
+  let data = null;
+  data = args[1];
+  //to remove
+  if (data) {
+    console.log('Calling getValuefromLS with: ', args);
+  }
+  //end to remove
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
-      return {
-        type: AutoLockType.DEFAULT,
-        mn: 1,
-      };
+      return (
+        data ?? {
+          type: AutoLockType.DEFAULT,
+          mn: 1,
+        }
+      );
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
-      return true;
+      return data ?? true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
-      return null;
+      return data ?? null;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
-      return { 'keychain.tests': true };
+      return data ?? { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
-      return { 'keychain.tests': ['one1', 'two2', 'three3'] };
+      return data ?? { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
-      return manifestFile.chromium.version;
+      return data ?? manifestFile.chromium.version;
     case LocalStorageKeyEnum.HIDDEN_TOKENS:
-      return [];
+      return data ?? [];
+    case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API:
+      return data ?? [];
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG
       // - HIVE_ENGINE_CUSTOM_RPC_LIST
-      // - HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API
       // - __REQUEST_HANDLER
       // - LOCAL_STORAGE_VERSION
 
