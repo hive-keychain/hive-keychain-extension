@@ -1,6 +1,6 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 
 const default_filters_wallet_history = {
   filterValue: '',
@@ -17,7 +17,7 @@ const default_filters_wallet_history = {
   },
 };
 
-const justVissiblePAL = tokensList.alltokens
+const justVissiblePAL = tokensUser.balances
   .filter((token) => token.symbol !== 'PAL')
   .map((hidden) => hidden.symbol);
 

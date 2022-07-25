@@ -1,6 +1,7 @@
 import { ReactElement } from 'react';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import tokensImplementations from 'src/__tests__/popup/pages/app-container/home/tokens/mocks/implementations';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -84,6 +85,7 @@ const beforeEach = async (
   component: ReactElement,
   toUse?: {
     noUserTokens?: boolean;
+    reImplementGetLS?: boolean;
   },
 ) => {
   let remock: MocksToUse = {};
@@ -92,6 +94,16 @@ const beforeEach = async (
   if (toUse?.noUserTokens) {
     remock = {
       tokens: { getUserBalance: [] },
+    };
+  }
+  if (toUse?.reImplementGetLS) {
+    remock = {
+      ...remock,
+      app: {
+        getValueFromLocalStorage: jest
+          .fn()
+          .mockImplementation(tokensImplementations.getValuefromLS),
+      },
     };
   }
   mockPreset.setOrDefault(remock);
