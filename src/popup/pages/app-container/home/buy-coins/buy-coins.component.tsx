@@ -17,7 +17,7 @@ const BuyCoins = ({
     });
   });
   return (
-    <div className="buy-coins-page">
+    <div className="buy-coins-page" aria-label="buy-coins-page">
       <div className="disclaimer">
         {chrome.i18n.getMessage(
           'popup_html_buy_intro',

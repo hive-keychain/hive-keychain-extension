@@ -18,7 +18,7 @@ const Governance = ({ setTitleContainerProperties }: PropsFromRedux) => {
   });
 
   return (
-    <div className="governance-page">
+    <div className="governance-page" aria-label="governance-page">
       <Tabs>
         <TabList>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>

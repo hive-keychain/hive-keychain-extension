@@ -10,13 +10,21 @@
     padding: 0px 24px;
   }
 
-  .settings {
+  .top-bar-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 24px;
+    column-gap: 24px;
+    .custom-input {
+      flex: 1;
+    }
+  }
+
+  .settings,
+  .filter {
     height: 24px;
     width: 24px;
-    cursor: pointer;
     align-self: flex-end;
-    margin-bottom: -18px;
-    margin-right: 24px;
   }
 
   .my-tokens {

@@ -15,6 +15,7 @@ interface CheckboxProps {
   hint?: string;
   skipHintTranslation?: boolean;
   alignment?: LabelAlignment;
+  ariaLabel?: string;
 }
 
 const CheckboxComponent = (props: CheckboxProps) => {
@@ -27,7 +28,10 @@ const CheckboxComponent = (props: CheckboxProps) => {
         <Checkbox
           checked={props.checked}
           onChange={() => props.onChange(!props.checked)}></Checkbox>
-        <div className="label" onClick={() => props.onChange(!props.checked)}>
+        <div
+          aria-label={props.ariaLabel}
+          className="label"
+          onClick={() => props.onChange(!props.checked)}>
           {props.skipTranslation
             ? props.title
             : chrome.i18n.getMessage(props.title ?? '')}

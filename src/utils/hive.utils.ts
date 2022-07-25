@@ -95,10 +95,10 @@ const getVotingDollarsPerAccount = (
     return null;
   }
   const vp = getVP(account)! * 100;
-  const rewardBalance = HiveUtils.getRewardBalance(properties); //modified for testing
-  const recentClaims = HiveUtils.getRecentClaims(properties); //modified for testing
-  const hivePrice = HiveUtils.getHivePrice(properties); //modified for testing
-  const votePowerReserveRate = HiveUtils.getVotePowerReserveRate(properties); //modified for testing
+  const rewardBalance = HiveUtils.getRewardBalance(properties);
+  const recentClaims = HiveUtils.getRecentClaims(properties);
+  const hivePrice = HiveUtils.getHivePrice(properties);
+  const votePowerReserveRate = HiveUtils.getVotePowerReserveRate(properties);
 
   if (rewardBalance && recentClaims && hivePrice && votePowerReserveRate) {
     const effective_vesting_shares = Math.round(
@@ -250,9 +250,7 @@ const claimRewards = async (
 ): Promise<boolean> => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
-      //modified for testing
       HiveUtils.getClient().broadcast.sendOperations(
-        //modified for testing
         [
           [
             'claim_reward_balance',
@@ -294,9 +292,7 @@ const claimRewards = async (
 const powerUp = async (from: string, to: string, amount: string) => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
-      //modified for testing
       HiveUtils.getClient().broadcast.sendOperations(
-        //modified for testing
         [
           [
             'transfer_to_vesting',
@@ -321,9 +317,7 @@ const powerUp = async (from: string, to: string, amount: string) => {
 const powerDown = async (username: string, amount: string) => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
-      //modified for testing
       HiveUtils.getClient().broadcast.sendOperations(
-        //modified for testing
         [
           [
             'withdraw_vesting',
@@ -570,7 +564,7 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
       {
-        id: Config.hiveEngine.MAINNET,
+        id: Config.hiveEngine.mainnet,
         required_auths: [activeAccount.name!],
         required_posting_auths: activeAccount.keys.active
           ? []
@@ -640,12 +634,11 @@ const sendOperationWithConfirmation = async (
   let transaction = null;
   do {
     transaction = await HiveUtils.getClient().transaction.findTransaction(
-      // modified for testing
       transactionConfirmation.id,
     );
     await sleep(500);
-  } while (transaction.status == 'within_mempool');
-  if (transaction.status == 'within_reversible_block') {
+  } while (['within_mempool', 'unknown'].includes(transaction.status));
+  if (transaction.status === 'within_reversible_block') {
     Logger.info('Transaction confirmed');
     return transactionConfirmation.id || true;
   } else {
@@ -664,10 +657,12 @@ const getDelayedTransactionInfo = (trxID: string) => {
 };
 /* istanbul ignore next */
 const getProposalDailyBudget = async () => {
-  return parseFloat(
-    (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
-      .toString()
-      .split(' ')[0],
+  return (
+    parseFloat(
+      (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
+        .toString()
+        .split(' ')[0],
+    ) / 100
   );
 };
 
