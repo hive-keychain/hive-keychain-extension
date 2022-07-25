@@ -64,6 +64,9 @@ export default {
         innerCheckBox: {
           preFix: 'checkbox-checked-',
         },
+        history: {
+          preFix: 'token-history-item-',
+        },
       },
     },
   },
