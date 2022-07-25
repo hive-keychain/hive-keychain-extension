@@ -5,28 +5,19 @@ import './dropdown-menu.component.scss';
 
 export interface DropdownMenuProps {
   dropdownMenuItems: DropdownMenuItemInterface[];
-  position: DropdownPosition;
-}
-
-export interface DropdownPosition {
-  x: number;
-  y: number;
+  onOverlayClicked: () => void;
 }
 
 const DROPDOWN_MENU_WIDTH = 200;
 
-const DropdownMenu = ({ dropdownMenuItems, position }: DropdownMenuProps) => {
+const DropdownMenu = ({
+  dropdownMenuItems,
+  onOverlayClicked,
+}: DropdownMenuProps) => {
   return (
     <div className="dropdown-menu-container">
-      <div className="overlay"></div>
-      <div
-        className="dropdown-menu"
-        style={{
-          position: 'absolute',
-          top: position.y,
-          left: position.x - DROPDOWN_MENU_WIDTH,
-          width: DROPDOWN_MENU_WIDTH,
-        }}>
+      <div className="overlay" onClick={() => onOverlayClicked()}></div>
+      <div className="dropdown-menu">
         {dropdownMenuItems.map((dropdownMenuItem, index) => (
           <DropdownMenuItemComponent
             key={index}

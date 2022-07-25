@@ -94,7 +94,7 @@ const verifyAccount = async (
     return null;
   }
 
-  return getKeys(username, password);
+  return await getKeys(username, password);
 };
 /* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {

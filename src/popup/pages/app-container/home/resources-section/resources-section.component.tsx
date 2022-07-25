@@ -31,7 +31,6 @@ const ResourcesSection = ({
         activeAccount.account,
         false,
       ) as string;
-
       const voting = parseFloat(manaValue);
       const resources = activeAccount.rc.percentage / 100;
 

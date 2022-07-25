@@ -40,7 +40,7 @@ const SignUp = ({
   };
 
   return (
-    <div className="sign-up-page">
+    <div className="sign-up-page" aria-label="signup-page">
       <img src="/assets/images/keychain_logo.png" className="logo-white" />
       <p
         className="introduction"
@@ -54,6 +54,7 @@ const SignUp = ({
           logo={Icons.PASSWORD}
           placeholder="popup_html_new_password"
           type={InputType.PASSWORD}
+          ariaLabel="password-input"
         />
         <InputComponent
           value={newPasswordConfirm}
@@ -62,9 +63,14 @@ const SignUp = ({
           placeholder="popup_html_confirm"
           type={InputType.PASSWORD}
           onEnterPress={submitMk}
+          ariaLabel="password-input-confirmation"
         />
       </div>
-      <ButtonComponent label={'popup_html_submit'} onClick={submitMk} />
+      <ButtonComponent
+        label={'popup_html_submit'}
+        onClick={submitMk}
+        ariaLabel="signup-button"
+      />
     </div>
   );
 };

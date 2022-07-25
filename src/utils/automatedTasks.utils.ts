@@ -6,6 +6,7 @@ const getClaims = async (username: string) => {
   const values = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.CLAIM_ACCOUNTS,
     LocalStorageKeyEnum.CLAIM_REWARDS,
+    LocalStorageKeyEnum.CLAIM_SAVINGS,
   ]);
 
   const accountValue = values[LocalStorageKeyEnum.CLAIM_ACCOUNTS]
@@ -14,23 +15,29 @@ const getClaims = async (username: string) => {
   const rewardValue = values[LocalStorageKeyEnum.CLAIM_REWARDS]
     ? values[LocalStorageKeyEnum.CLAIM_REWARDS][username]
     : false;
+  const savingsValue = values[LocalStorageKeyEnum.CLAIM_SAVINGS]
+    ? values[LocalStorageKeyEnum.CLAIM_SAVINGS][username]
+    : false;
 
   return {
     [LocalStorageKeyEnum.CLAIM_ACCOUNTS]: accountValue,
     [LocalStorageKeyEnum.CLAIM_REWARDS]: rewardValue,
+    [LocalStorageKeyEnum.CLAIM_SAVINGS]: savingsValue,
   };
 };
 
 const saveClaims = async (
   claimRewards: boolean,
   claimAccount: boolean,
+  claimSavings: boolean,
   username: string,
 ) => {
-  let allRewards = await AutomatedTasksUtils.getAllClaimRewards(); //modified to being able to read the mocked value
-  let allAccounts = await AutomatedTasksUtils.getAllClaimAccounts(); //modified to being able to read the mocked value
-
+  let allRewards = await AutomatedTasksUtils.getAllClaimRewards();
+  let allAccounts = await AutomatedTasksUtils.getAllClaimAccounts();
+  let allSavings = await AutomatedTasksUtils.getAllClaimSavings();
   allRewards = allRewards ?? {};
   allAccounts = allAccounts ?? {};
+  allSavings = allSavings ?? {};
 
   allRewards = {
     ...allRewards,
@@ -39,6 +46,10 @@ const saveClaims = async (
   allAccounts = {
     ...allAccounts,
     [username]: claimAccount,
+  };
+  allSavings = {
+    ...allSavings,
+    [username]: claimSavings,
   };
 
   LocalStorageUtils.saveValueInLocalStorage(
@@ -49,12 +60,17 @@ const saveClaims = async (
     LocalStorageKeyEnum.CLAIM_ACCOUNTS,
     allAccounts,
   );
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.CLAIM_SAVINGS,
+    allSavings,
+  );
 
   chrome.runtime.sendMessage({
     command: BackgroundCommand.UPDATE_CLAIMS,
     value: {
       claimRewards: allRewards,
       claimAccounts: allAccounts,
+      claimSavings: allSavings,
     },
   });
 };
@@ -69,15 +85,22 @@ const getAllClaimRewards = async () => {
     LocalStorageKeyEnum.CLAIM_REWARDS,
   );
 };
+const getAllClaimSavings = async () => {
+  return await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.CLAIM_SAVINGS,
+  );
+};
 
 const initBackgroundClaims = async () => {
-  let allRewards = await AutomatedTasksUtils.getAllClaimRewards(); //modified to being able to test
-  let allAccounts = await AutomatedTasksUtils.getAllClaimAccounts(); //modified to being able to test
+  let allRewards = await AutomatedTasksUtils.getAllClaimRewards();
+  let allAccounts = await AutomatedTasksUtils.getAllClaimAccounts();
+  let allSavings = await AutomatedTasksUtils.getAllClaimSavings();
   chrome.runtime.sendMessage({
     command: BackgroundCommand.UPDATE_CLAIMS,
     value: {
       claimRewards: allRewards,
       claimAccounts: allAccounts,
+      claimSavings: allSavings,
     },
   });
 };
@@ -86,8 +109,9 @@ const AutomatedTasksUtils = {
   getClaims,
   saveClaims,
   initBackgroundClaims,
-  getAllClaimAccounts, //to being able to mock it
-  getAllClaimRewards, //to being able to mock it
+  getAllClaimAccounts,
+  getAllClaimRewards,
+  getAllClaimSavings,
 };
 
 export default AutomatedTasksUtils;
