@@ -46,7 +46,6 @@ describe('tokens-settings.component tests:\n', () => {
       beforeEach(async () => {
         _asFragment = await tokensSettings.beforeEach();
       });
-      //todo rest cases
       it('Must show default account history apis', async () => {
         await clickAwait([alSelect.tokens.settings.panel.accountHistoryApi]);
         await assertion.allToHaveLength(
