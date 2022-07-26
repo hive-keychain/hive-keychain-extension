@@ -17,4 +17,5 @@ export default {
   },
   memoOptional: 'input-memo-optional',
   filterBox: 'input-filter-box',
+  textInput: 'input-text',
 };

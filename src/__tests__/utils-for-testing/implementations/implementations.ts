@@ -1,54 +1,58 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
+import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
-import { GetManifest } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import {
+  CustomDataFromLocalStorage,
+  GetManifest,
+} from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
 };
 const messagesJsonFile = require('public/_locales/en/messages.json');
+
+const hasKeys = (obj: {}) => {
+  return Object.keys(obj).length > 0;
+};
 /**
  *
  * @param args
  * @param args[0] Is always used for the LocalStorageKeyEnum.
- * @param args[1] If need to return specific data.
- * @returns Null if not found or not mocked.
+ * @param customData Used to pass custom readed value from LS.
+ * @returns Null if not found or not mocked yet.
  * If debug needed, just uncomment the console.log after the default case.
  */
-const getValuefromLS = (...args: any[]): any => {
-  let data = null;
-  data = args[1];
-  //to remove
-  if (data) {
-    console.log('Calling getValuefromLS with: ', args);
-  }
-  //end to remove
+const getValuefromLS = async (...args: any[]): Promise<any> => {
+  let customData: CustomDataFromLocalStorage =
+    dataMocks.customDataFromLocalStorage;
+  //console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
-      return (
-        data ?? {
-          type: AutoLockType.DEFAULT,
-          mn: 1,
-        }
-      );
+      return {
+        type: AutoLockType.DEFAULT,
+        mn: 1,
+      };
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
-      return data ?? true;
+      return true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
-      return data ?? null;
+      return null;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
-      return data ?? { 'keychain.tests': true };
+      return { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
-      return data ?? { 'keychain.tests': ['one1', 'two2', 'three3'] };
+      return { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
-      return data ?? manifestFile.chromium.version;
+      return manifestFile.chromium.version;
     case LocalStorageKeyEnum.HIDDEN_TOKENS:
-      return data ?? [];
+      return [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API:
-      return data ?? [];
+      return hasKeys(customData) ? customData.accountHistoryApi : [];
+    case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST:
+      return hasKeys(customData) ? customData.customRpcList : [];
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG

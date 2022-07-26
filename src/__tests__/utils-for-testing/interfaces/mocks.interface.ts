@@ -25,23 +25,18 @@ export interface MocksApp {
   getVP?: number;
   getVotingDollarsPerAccount?: number;
 }
-
 export interface MocksHome {
   getAccountValue?: string | 0;
 }
-
 export interface MocksTopBar {
   hasReward?: boolean;
 }
-
 export interface MocksPowerUp {
   getVestingDelegations?: VestingDelegation[];
 }
-
 export interface MocksWalletHistory {
   getAccountTransactions?: [Transaction[], number];
 }
-
 export interface MocksTokens {
   getUserBalance?: TokenBalance[];
   getIncomingDelegations?: TokenDelegation[];
@@ -53,7 +48,6 @@ export interface MocksProposal {
   hasVotedForProposal?: boolean;
   voteForKeychainProposal?: boolean;
 }
-
 export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
 }
@@ -69,7 +63,6 @@ export interface MocksChromeRunTime {
   getManifest?: GetManifest;
   sendMessage: jest.Mock;
 }
-
 export interface MocksToUse {
   app?: MocksApp;
   home?: MocksHome;
@@ -81,18 +74,19 @@ export interface MocksToUse {
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
 }
-
 export interface MockVotingProposal {
   voteForProposal?: boolean;
   unvoteForProposal?: boolean;
 }
-
 export interface MockProxy {
   findUserProxy?: string | null;
   setAsProxy?: string | boolean | undefined;
   removeProxy?: boolean;
 }
-
+export interface CustomDataFromLocalStorage {
+  accountHistoryApi?: string[];
+  customRpcList?: string[];
+}
 //TODO remove all unused from overwrite + add the keychainApiget.
 export interface MocksOverwrite {
   app?: {

@@ -5,7 +5,11 @@ export default {
     settings: {
       panel: {
         rpcNode: 'selected-panel-rpc',
-        //accountHistoryApi: 'select-panel-account-history-api',
+        accountHistoryApi: 'selected-panel-account-history',
+      },
+      items: {
+        rpcNode: 'select-item-rpc',
+        accountHistoryApi: 'select-item-account-history',
       },
     },
   },

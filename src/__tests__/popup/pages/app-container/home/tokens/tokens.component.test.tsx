@@ -29,7 +29,7 @@ describe('tokens.component tests:\n', () => {
     });
     it('Must show filter box and settings', () => {
       assertion.getByLabelText(alInput.filter.token);
-      assertion.getByLabelText(alIcon.tokens.settings);
+      assertion.getByLabelText(alIcon.tokens.settings.open);
     });
     it('Must set filter box value', async () => {
       await methods.typeOnFilter(typeValue.token.keyChain);
@@ -47,11 +47,11 @@ describe('tokens.component tests:\n', () => {
       assertion.getOneByText(messages.tokens.noTokens);
     });
     it('Must show navigate to tokens settings', async () => {
-      await clickAwait([alIcon.tokens.settings]);
+      await clickAwait([alIcon.tokens.settings.open]);
       assertion.getByLabelText(alComponent.tokensSettings);
     });
     it('Must show navigate to tokens settings and go back', async () => {
-      await clickAwait([alIcon.tokens.settings]);
+      await clickAwait([alIcon.tokens.settings.open]);
       assertion.getByLabelText(alComponent.tokensSettings);
       await clickAwait([alIcon.arrowBack]);
       assertion.queryByLabel(alComponent.tokensSettings, false);
