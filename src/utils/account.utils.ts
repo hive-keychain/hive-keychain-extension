@@ -9,6 +9,8 @@ import {
 } from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { store } from '@popup/store';
+import moment from 'moment';
+import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { Keys, KeyType } from 'src/interfaces/keys.interface';
@@ -407,6 +409,32 @@ const getExtendedAccount = async (username: string) => {
   return (await HiveUtils.getClient().database.getAccounts([username]))[0];
 };
 
+const getExtendedAccounts = async (usernames: string[]) => {
+  return await HiveUtils.getClient().database.getAccounts(usernames);
+};
+
+const getGovernanceReminderList = async (usernames: string[]) => {
+  const extendedAccounts = await AccountUtils.getExtendedAccounts(usernames);
+  const accountsToRemind = [];
+  for (const extendedAccount of extendedAccounts) {
+    if (
+      extendedAccount.proxy.length > 0 ||
+      extendedAccount.witnesses_voted_for !== 0
+    ) {
+      const governanceExpirationDate = moment(
+        (extendedAccount as any).governance_vote_expiration_ts,
+      ).utcOffset('+0000', true);
+      if (
+        moment(governanceExpirationDate).diff(moment().utc(), 'days') <=
+        Config.governanceReminderDelayInDays
+      ) {
+        accountsToRemind.push(extendedAccount.name);
+      }
+    }
+  }
+  return accountsToRemind;
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -427,6 +455,8 @@ const AccountUtils = {
   getExtendedAccount,
   AccountErrorMessages,
   isAccountNameAlreadyExisting,
+  getExtendedAccounts,
+  getGovernanceReminderList,
 };
 
 export const BackgroundAccountUtils = {

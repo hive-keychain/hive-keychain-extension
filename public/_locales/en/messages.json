@@ -2345,5 +2345,13 @@
   "popup_html_undelegation_pending_until_message": {
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
+  },
+  "html_popup_governance_renewal_title": {
+    "message": "Governance renewal",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renewal_introduction": {
+    "message": "Your governance are about to expire for the following accounts.<br/>If you want to keep it active, click on the renew button.",
+    "description": "Governance expiration renewal popup"
   }
 }

@@ -7,6 +7,7 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from '@popup/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
+import { GovernanceRenewalComponent } from '@popup/pages/app-container/home/governance-renewal/governance-renewal.component';
 import { ResourcesSectionComponent } from '@popup/pages/app-container/home/resources-section/resources-section.component';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { TopBarComponent } from '@popup/pages/app-container/home/top-bar/top-bar.component';
@@ -19,6 +20,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
@@ -37,6 +39,9 @@ const Home = ({
 }: PropsFromRedux) => {
   const [displayLoader, setDisplayLoader] = useState(false);
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
+  const [governanceAccountsToExpire, setGovernanceAccountsToExpire] = useState<
+    string[]
+  >([]);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   useEffect(() => {
     resetTitleContainerProperties();
@@ -66,6 +71,21 @@ const Home = ({
       initActiveAccount();
     }
   }, []);
+
+  useEffect(() => {
+    initGovernanceExpirationReminder(
+      accounts
+        .filter((localAccount: LocalAccount) => localAccount.keys.active)
+        .map((localAccount: LocalAccount) => localAccount.name),
+    );
+  }, [accounts]);
+
+  const initGovernanceExpirationReminder = async (accountNames: string[]) => {
+    const accountsToRemind = await AccountUtils.getGovernanceReminderList(
+      accountNames,
+    );
+    setGovernanceAccountsToExpire(accountsToRemind);
+  };
 
   const initWhatsNew = async () => {
     const lastVersionSeen = await LocalStorageUtils.getValueFromLocalStorage(
@@ -121,6 +141,13 @@ const Home = ({
           content={whatsNewContent!}
         />
       )}
+      {!displayLoader &&
+        !displayWhatsNew &&
+        governanceAccountsToExpire.length > 0 && (
+          <GovernanceRenewalComponent
+            accountNames={governanceAccountsToExpire}
+          />
+        )}
     </div>
   );
 };
