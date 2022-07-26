@@ -59,6 +59,9 @@ export default {
     voteStoodkevWitness: 'vote-for-stoodkev-witness',
     tokens: {
       preFix: 'token-button-operation-',
+      transfer: {
+        send: 'button-send-tokens-transfer',
+      },
     },
   },
   panel: {
