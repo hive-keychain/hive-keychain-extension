@@ -26,4 +26,5 @@ export default {
   tokensTransfer: 'transfer-tokens-page',
   tokensOperationPage: 'tokens-operation-page',
   tokensFilter: 'tokens-filter',
+  about: 'about-page',
 };

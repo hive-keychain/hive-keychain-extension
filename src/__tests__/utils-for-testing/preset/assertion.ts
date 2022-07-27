@@ -81,9 +81,11 @@ const awaitOneByLabel = async (ariaLabel: string) => {
 };
 /**
  * Can select bewteen getByLabelText or getByText
+ * @param domEl.exact as true per default. Using it as false to be more permissive.
  */
 const getByText = (domEl: ElementQuery[]) => {
   for (let index in domEl) {
+    let _exactMatch = domEl[index].exact ?? true;
     switch (domEl[index].query) {
       case QueryDOM.BYLABEL:
         expect(
@@ -92,7 +94,9 @@ const getByText = (domEl: ElementQuery[]) => {
         break;
       case QueryDOM.BYTEXT:
         expect(
-          screen.getByText(domEl[index].arialabelOrText),
+          screen.getByText(domEl[index].arialabelOrText, {
+            exact: _exactMatch,
+          }),
         ).toBeInTheDocument();
         break;
     }

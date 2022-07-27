@@ -70,4 +70,7 @@ export default {
       },
     },
   },
+  about: {
+    content: 'about-page-content',
+  },
 };
