@@ -97,11 +97,15 @@ const TokensTransfer = ({
   };
 
   const handleClickOnSend = async () => {
-    if (String(receiverUsername).trim().length === 0) {
+    if (
+      String(receiverUsername).trim().length === 0 ||
+      amount.toString().trim().length === 0
+    ) {
       setErrorMessage('popup_accounts_fill');
       return;
     }
-    if (parseFloat(amount.toString()) <= 0) {
+
+    if (parseFloat(amount.toString()) < 0) {
       setErrorMessage('popup_html_need_positive_amount');
       return;
     }
