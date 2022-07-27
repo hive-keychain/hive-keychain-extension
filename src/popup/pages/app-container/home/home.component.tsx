@@ -20,8 +20,8 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
-import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import './home.component.scss';
@@ -81,7 +81,7 @@ const Home = ({
   }, [accounts]);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
-    const accountsToRemind = await AccountUtils.getGovernanceReminderList(
+    const accountsToRemind = await GovernanceUtils.getGovernanceReminderList(
       accountNames,
     );
     setGovernanceAccountsToExpire(accountsToRemind);

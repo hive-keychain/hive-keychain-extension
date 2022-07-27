@@ -9,6 +9,7 @@ import moment from 'moment';
 import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import Logger from 'src/utils/logger.utils';
 
 const PROPOSAL_ID = Config.PROPOSAL;
 
@@ -26,21 +27,34 @@ const hasVotedForProposal = async (
 };
 /* istanbul ignore next */
 const voteForKeychainProposal = async (activeAccount: ActiveAccount) => {
-  return await HiveUtils.voteForProposal(activeAccount, PROPOSAL_ID);
+  return await HiveUtils.updateProposalVote(activeAccount, PROPOSAL_ID, true);
 };
+
 /* istanbul ignore next */
 const voteForProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
-  return await HiveUtils.voteForProposal(activeAccount, proposalId);
+  try {
+    await HiveUtils.updateProposalVote(activeAccount, proposalId, true);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
 };
 /* istanbul ignore next */
 const unvoteProposal = async (
   activeAccount: ActiveAccount,
   proposalId: number,
 ) => {
-  return await HiveUtils.unvoteProposal(activeAccount, proposalId);
+  try {
+    await HiveUtils.updateProposalVote(activeAccount, proposalId, false);
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
 };
 
 const getProposalList = async (accountName: string): Promise<Proposal[]> => {

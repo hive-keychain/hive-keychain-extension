@@ -1,7 +1,9 @@
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import './governance-renewal.component.scss';
 
 interface GovernanceRenewalProps {
@@ -14,8 +16,10 @@ interface AccountsSelected {
 
 const GovernanceRenewal = ({
   accountNames,
+  accounts,
 }: PropsFromRedux & GovernanceRenewalProps) => {
   const [selectedAccounts, setSelectedAccounts] = useState<AccountsSelected>();
+  const [hasAccountsSelected, setHasAccountsSelected] = useState<boolean>(true);
 
   useEffect(() => {
     const select: AccountsSelected = {};
@@ -26,39 +30,82 @@ const GovernanceRenewal = ({
   }, []);
 
   const toggleAccount = (accountName: string) => {
-    setSelectedAccounts({
+    const newValue = {
       ...selectedAccounts,
       [accountName]: !selectedAccounts![accountName],
-    } as AccountsSelected);
+    };
+    setSelectedAccounts(newValue as AccountsSelected);
+    setHasAccountsSelected(
+      Object.values(newValue).some((value) => value === true),
+    );
+  };
+
+  const handleSubmitButton = async () => {
+    if (hasAccountsSelected) {
+      const usernames = Object.keys(selectedAccounts!).filter(
+        (username) => selectedAccounts![username] === true,
+      );
+      await GovernanceUtils.renewUsersGovernance(usernames, accounts);
+    } else {
+      const usernames = Object.keys(selectedAccounts!).filter(
+        (username) => selectedAccounts![username] === false,
+      );
+      await GovernanceUtils.addToIgnoreRenewal(usernames);
+    }
+  };
+
+  const navigateToArticle = () => {
+    chrome.tabs.create({
+      url: 'https://peakd.com/hive/@hiveio/hive-hardfork-25-is-on-the-way-hive-to-reach-equilibrium-on-june-30th-2021#governance-expiration',
+    });
   };
 
   return (
     <div className="governance-renewal">
-      <div className="title">
-        {chrome.i18n.getMessage('html_popup_governance_renewal_title')}
-      </div>
-      <div className="introduction">
-        {chrome.i18n.getMessage('html_popup_governance_renewal_introduction')}
-      </div>
-      {selectedAccounts && (
-        <div className="list">
-          {accountNames.map((name) => (
-            <CheckboxComponent
-              key={name}
-              checked={selectedAccounts[name]}
-              onChange={() => toggleAccount(name)}
-              title={`@${name}`}
-              skipTranslation
-            />
-          ))}
+      <div className="overlay"></div>
+      <div className="governance-renewal-container">
+        <div className="title">
+          {chrome.i18n.getMessage('html_popup_governance_renewal_title')}
         </div>
-      )}
+        <div
+          className="introduction"
+          dangerouslySetInnerHTML={{
+            __html: chrome.i18n.getMessage(
+              'html_popup_governance_renewal_introduction',
+            ),
+          }}></div>
+        {selectedAccounts && (
+          <div className="list">
+            {accountNames.map((name) => (
+              <CheckboxComponent
+                key={name}
+                checked={selectedAccounts[name]}
+                onChange={() => toggleAccount(name)}
+                title={`@${name}`}
+                skipTranslation
+              />
+            ))}
+          </div>
+        )}
+        <a className="read-more-link" onClick={() => navigateToArticle()}>
+          {chrome.i18n.getMessage('html_popup_governance_expiration_read_more')}
+        </a>
+
+        <ButtonComponent
+          label={
+            hasAccountsSelected
+              ? 'html_popup_governance_renew'
+              : 'html_popup_governance_ignore'
+          }
+          onClick={() => handleSubmitButton()}
+        />
+      </div>
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return { accounts: state.accounts };
 };
 
 const connector = connect(mapStateToProps, {});

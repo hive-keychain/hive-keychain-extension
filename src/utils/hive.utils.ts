@@ -596,32 +596,7 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
     ),
   );
 };
-/* istanbul ignore next */
-const voteForProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, true);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
-/* istanbul ignore next */
-const unvoteProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, false);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
+
 /* istanbul ignore next */
 const updateProposalVote = async (
   activeAccount: ActiveAccount,
@@ -707,11 +682,10 @@ const HiveUtils = {
   delegateVestingShares,
   sendCustomJson,
   signMessage,
-  voteForProposal,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
-  unvoteProposal,
   getProposalDailyBudget,
+  updateProposalVote,
   getRewardBalance,
   getRecentClaims,
   getHivePrice,

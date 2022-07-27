@@ -2351,7 +2351,19 @@
     "description": "Governance expiration renewal popup"
   },
   "html_popup_governance_renewal_introduction": {
-    "message": "Your governance are about to expire for the following accounts.<br/>If you want to keep it active, click on the renew button.",
+    "message": "Your governance are about to expire for the following accounts.<br/>If you want to keep it active, click on the renew button. To cancel the expiry, we will vote/unvote the return proposal.",
     "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renew": {
+    "message": "Renew",
+    "description": "Governance expiration renew"
+  },
+  "html_popup_governance_ignore": {
+    "message": "Ignore",
+    "description": "Governance expiration ignore"
+  },
+  "html_popup_governance_expiration_read_more": {
+    "message": "Read more about governance expiration",
+    "description": "Governance expiration description"
   }
 }
