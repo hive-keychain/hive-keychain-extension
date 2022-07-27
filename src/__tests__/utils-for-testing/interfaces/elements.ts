@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 
 export interface ElementQuery {
@@ -9,4 +10,9 @@ export interface ElementQuery {
 export interface ArrowDrop {
   arrow: string;
   dropMenu: string;
+}
+
+export interface IconsPage {
+  icon: Icons;
+  ariaLabel: string;
 }

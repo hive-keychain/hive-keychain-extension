@@ -26,5 +26,8 @@ export default {
   tokensTransfer: 'transfer-tokens-page',
   tokensOperationPage: 'tokens-operation-page',
   tokensFilter: 'tokens-filter',
-  about: 'about-page',
+  peoplePage: 'settings-account-sub-menu-page',
+  tunePage: 'user-preferences-page',
+  settingsPage: 'advanced-settings-page',
+  infoPage: 'about-page',
 };
