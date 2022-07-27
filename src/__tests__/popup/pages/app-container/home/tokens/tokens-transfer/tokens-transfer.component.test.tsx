@@ -46,6 +46,13 @@ describe('tokens-transfer.component tests:\n', () => {
       await clickAwait([alButton.operation.tokens.transfer.send]);
       await assertion.awaitFor(messages.missingField, QueryDOM.BYTEXT);
     });
+    it('Must show error message if empty amount', async () => {
+      await methods.userInteraction({
+        receiverUsername: 'theghost1980',
+        amount: '{space}',
+      });
+      await assertion.awaitFor(messages.missingField, QueryDOM.BYTEXT);
+    });
     it('Must show error if negative amount', async () => {
       await methods.userInteraction({
         receiverUsername: 'theghost1980',
