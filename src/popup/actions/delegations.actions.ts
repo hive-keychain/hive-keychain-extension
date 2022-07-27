@@ -40,3 +40,20 @@ export const loadDelegatees =
       Logger.error(e);
     }
   };
+
+export const loadPendingOutgoingUndelegations =
+  (username: string): AppThunk =>
+  async (dispatch) => {
+    try {
+      const action: ActionPayload<DelegationsPayload> = {
+        type: ActionType.FETCH_PENDING_OUTGOING_UNDELEGATION,
+        payload: {
+          pendingOutgoingUndelegation:
+            await HiveUtils.getPendingOutgoingUndelegation(username),
+        },
+      };
+      dispatch(action);
+    } catch (error) {
+      Logger.error(error);
+    }
+  };
