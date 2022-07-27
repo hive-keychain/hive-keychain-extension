@@ -94,7 +94,7 @@ const verifyAccount = async (
     return null;
   }
 
-  return getKeys(username, password);
+  return await getKeys(username, password);
 };
 /* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
@@ -111,7 +111,7 @@ const getAccountsFromLocalStorage = async (mk: string) => {
     LocalStorageKeyEnum.ACCOUNTS,
   );
   const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
-  return accounts?.list;
+  return accounts?.list.filter((e: LocalAccount) => e.name.length);
 };
 
 const isAccountNameAlreadyExisting = (
@@ -352,7 +352,7 @@ const getAccountValue = (
   { hive, hive_dollar }: CurrencyPrices,
   props: DynamicGlobalProperties,
 ) => {
-  if (!hive_dollar.usd || !hive.usd) return 0;
+  if (!hive_dollar?.usd || !hive?.usd) return 0;
   return FormatUtils.withCommas(
     (
       (parseFloat(hbd_balance as string) +

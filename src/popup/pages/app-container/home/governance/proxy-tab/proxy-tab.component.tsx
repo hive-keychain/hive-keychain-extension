@@ -38,7 +38,7 @@ const ProxyTab = ({
       setSuccessMessage('popup_success_proxy', [proxyUsername]);
       refreshActiveAccount();
     } else {
-      setErrorMessage('html_popup_clear_proxy_error');
+      setErrorMessage('html_popup_set_as_proxy_error');
     }
     removeFromLoadingList('popup_html_setting_proxy');
   };
@@ -57,7 +57,7 @@ const ProxyTab = ({
   };
 
   return (
-    <div className="proxy-tab">
+    <div aria-label="proxy-tab" className="proxy-tab">
       <div className="introduction">
         {chrome.i18n.getMessage(
           activeAccount.account.proxy.length > 0
@@ -67,7 +67,7 @@ const ProxyTab = ({
       </div>
 
       {activeAccount.account.proxy.length > 0 && (
-        <div className="proxy-name">
+        <div aria-label="proxy-name" className="proxy-name">
           {chrome.i18n.getMessage('html_popup_currently_using_proxy', [
             activeAccount.account.proxy,
           ])}
@@ -76,6 +76,7 @@ const ProxyTab = ({
 
       {activeAccount.account.proxy.length === 0 && (
         <InputComponent
+          ariaLabel="input-username"
           value={proxyUsername}
           onChange={setProxyUsername}
           logo={Icons.AT}
@@ -85,6 +86,7 @@ const ProxyTab = ({
       )}
       {activeAccount.account.proxy.length === 0 && (
         <OperationButtonComponent
+          ariaLabel="operation-set-as-proxy-button"
           requiredKey={KeychainKeyTypesLC.active}
           label={'html_popup_set_as_proxy'}
           onClick={() => setAsProxy()}
@@ -93,6 +95,7 @@ const ProxyTab = ({
       )}
       {activeAccount.account.proxy.length > 0 && (
         <OperationButtonComponent
+          ariaLabel="operation-clear-proxy"
           requiredKey={KeychainKeyTypesLC.active}
           label={'html_popup_clear_proxy'}
           onClick={() => removeProxy()}

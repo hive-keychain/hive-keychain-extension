@@ -8,7 +8,9 @@ import './settings-main-page.component.scss';
 
 const SettingsMainPage = ({}: PropsFromRedux) => {
   return (
-    <div className="settings-main-page">
+    <div
+      className="settings-main-page"
+      aria-label="settings-main-page-component">
       <MenuComponent
         title="popup_html_settings"
         isBackButtonEnable={true}

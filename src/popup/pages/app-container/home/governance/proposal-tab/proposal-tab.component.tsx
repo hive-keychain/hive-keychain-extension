@@ -80,7 +80,9 @@ const ProposalTab = ({
   };
 
   return (
-    <div className={`proposal-tab ${isLoading ? 'loading' : ''}`}>
+    <div
+      aria-label="proposal-tab"
+      className={`proposal-tab ${isLoading ? 'loading' : ''}`}>
       {!isLoading && (
         <>
           {displayingProxyVotes && (

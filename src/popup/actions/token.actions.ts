@@ -1,6 +1,6 @@
-import { historyHiveEngineAPI, hsc } from '@api/hiveEngine';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
+import { MessageType } from '@reference-data/message-type.enum';
 import {
   OperationsHiveEngine,
   Token,
@@ -8,20 +8,41 @@ import {
   TokenMarket,
   TokenTransaction,
 } from 'src/interfaces/tokens.interface';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
+  let tokens;
+  try {
+    tokens = (
+      await HiveEngineConfigUtils.getApi().find(
+        'tokens',
+        'tokens',
+        {},
+        1000,
+        0,
+        [],
+      )
+    ).map((t: any) => {
+      return {
+        ...t,
+        metadata: JSON.parse(t.metadata),
+      };
+    });
+  } catch (err: any) {
+    if (err.message.includes('timeout')) {
+      dispatch({
+        type: ActionType.SET_MESSAGE,
+        payload: { key: 'html_popup_tokens_timeout', type: MessageType.ERROR },
+      });
+    }
+    throw err;
+  }
+
   const action: ActionPayload<Token[]> = {
     type: ActionType.LOAD_TOKENS,
-    payload: (await hsc.find('tokens', 'tokens', {}, 1000, 0, [])).map(
-      (t: any) => {
-        return {
-          ...t,
-          metadata: JSON.parse(t.metadata),
-        };
-      },
-    ),
+    payload: tokens,
   };
   dispatch(action);
 };
@@ -29,7 +50,14 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
   const action: ActionPayload<TokenMarket[]> = {
     type: ActionType.LOAD_TOKENS_MARKET,
-    payload: await hsc.find('market', 'metrics', {}, 1000, 0, []),
+    payload: await HiveEngineConfigUtils.getApi().find(
+      'market',
+      'metrics',
+      {},
+      1000,
+      0,
+      [],
+    ),
   };
   dispatch(action);
 };
@@ -44,9 +72,9 @@ export const loadUserTokens =
       let tokensBalance: TokenBalance[] = await HiveEngineUtils.getUserBalance(
         account,
       );
-      tokensBalance = tokensBalance
-        .filter((t) => parseFloat(t.balance) !== 0)
-        .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
+      tokensBalance = tokensBalance.sort(
+        (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
+      );
       const action: ActionPayload<TokenBalance[]> = {
         type: ActionType.LOAD_USER_TOKENS,
         payload: tokensBalance,
@@ -68,14 +96,17 @@ export const loadTokenHistory =
     do {
       previousTokenHistoryLength = tokenHistory.length;
       let result: TokenTransaction[] = (
-        await historyHiveEngineAPI.get('accountHistory', {
-          params: {
-            account,
-            symbol: currency,
-            type: 'user',
-            offset: start,
+        await HiveEngineConfigUtils.getAccountHistoryApi().get(
+          'accountHistory',
+          {
+            params: {
+              account,
+              symbol: currency,
+              type: 'user',
+              offset: start,
+            },
           },
-        })
+        )
       ).data;
       start += 1000;
       tokenHistory = [...tokenHistory, ...result];

@@ -471,6 +471,10 @@
     "message": "Tokens Available",
     "description": "On tokens page"
   },
+  "popup_html_tokens_settings": {
+    "message": "Tokens settings",
+    "description": "On tokens page"
+  },
   "popup_html_tokens_settings_text": {
     "message": "View token information and chose which tokens to display. Learn more about custom tokens on the Hive blockchain at <a href=\"https://hive-engine.com\" target=\"_blank\">https://hive-engine.com</a>.",
     "description": "On tokens page"
@@ -676,7 +680,7 @@
     "description": "on tokens page when trying to send tokens to a non existing user"
   },
   "popup_token_timeout": {
-    "message": "Transaction timed out without response. Please double check your token balance before trying to send again.",
+    "message": "We could not verify this transaction on Hive Engine. This might mean that Hive Engine is behind blocks, wait for the operation to appear in your history, or contact the Hive Engine team on Discord.",
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
@@ -734,6 +738,10 @@
   "dialog_proposal_ids": {
     "message": "Proposal IDs",
     "description": "When website request a proposal vote"
+  },
+  "dialog_id": {
+    "message": "ID",
+    "description": "When website request a custom json"
   },
   "dialog_approve": {
     "message": "Approve",
@@ -1248,7 +1256,7 @@
     "message": "You succesfully imported your keys!"
   },
   "import_html_error": {
-    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same password than when you exported the file."
   },
   "import_permissions_html_title": {
     "message": "Import settings"
@@ -1417,15 +1425,15 @@
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_unvote_successful": {
-    "message": "Unvote successful!",
+    "message": "You successfully removed your vote!",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_fail": {
-    "message": "There was an error while voting for proposal. Try again later",
+    "message": "There was an error while voting for a proposal!",
     "description": "Error while voting for proposal"
   },
   "popup_html_proposal_unvote_fail": {
-    "message": "There was an error while unvoting the proposal. Try again later",
+    "message": "There was an error while removing a proposal vote!",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
@@ -1649,6 +1657,10 @@
     "message": "Clear proxy",
     "description": "Governance"
   },
+  "html_popup_set_as_proxy_error": {
+    "message": "Error while setting user as proxy",
+    "description": "Proxy"
+  },
   "html_popup_clear_proxy_error": {
     "message": "Error while removing proxy",
     "description": "Clear proxy error"
@@ -1674,7 +1686,7 @@
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
-    "message": "For more information, click here to access witness database",
+    "message": "For more information, click here to access the witness database",
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
@@ -2257,5 +2269,69 @@
   "popup_html_token_unstake_cooldown_disclaimer": {
     "message": "Unstaking this token will take $1 day(s).",
     "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_enable_autoclaim_savings": {
+    "message": "Claim savings interest",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_savings_info": {
+    "message": "To claim your savings interest, Keychain will deposit or withdraw 0.001 HBD to/from your savings every 30 days",
+    "description": "When on automated tasks page"
+  },
+  "html_popup_new_account_history": {
+    "message": "New account history API",
+    "description": "Tokens setting page =>  add account history api"
+  },
+  "html_popup_new_rpc": {
+    "message": "New RPC node",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_new_rpc_save_success": {
+    "message": "New RPC node was saved successfully",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_url_not_valid": {
+    "message": "Url not valid",
+    "description": "Tokens setting page"
+  },
+  "html_popup_new_account_history_save_success": {
+    "message": "New account history API was saved successfully",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_rpc_already_exist": {
+    "message": "This RPC is already in your list",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "popup_html_transfer_recurrent_exchange_warning": {
+    "message": "Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.",
+    "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
+  },
+  "popup_html_transfer_recurrent_missing_field": {
+    "message": "Iteration and frequency are mandatory",
+    "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
+  },
+  "popup_html_whats_new": {
+    "message": "What's new in v$1",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_next": {
+    "message": "Next",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_previous": {
+    "message": "Previous",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_got_it": {
+    "message": "Got it!",
+    "description": "What's new popup button"
+  },
+  "html_popup_tokens_timeout": {
+    "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
+    "description": "Token timeout error"
+  },
+  "html_popup_read_more": {
+    "message": "Read more",
+    "description": "read more"
   }
 }

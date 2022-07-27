@@ -1,6 +1,6 @@
-import { hsc } from '@api/hiveEngine';
 import { PrivateKey } from '@hiveio/dhive';
 import { AssertionError } from 'assert';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -13,7 +13,7 @@ describe('hive-engine.utils tests:\n', () => {
 
     describe('getUserBalance tests:\n', () => {
       test('Passing an existing account with tokens, must return balances object with the properties defined bellow', async () => {
-        hsc.find = jest
+        HiveEngineConfigUtils.getApi().find = jest
           .fn()
           .mockReturnValueOnce(utilsT.fakeResponseHavingTokenBalances);
         const propertiesArray = [
@@ -38,7 +38,7 @@ describe('hive-engine.utils tests:\n', () => {
         });
       });
       test('Passing an existing account with no tokens, must return an empty array', async () => {
-        hsc.find = jest.fn().mockReturnValueOnce([]);
+        HiveEngineConfigUtils.getApi().find = jest.fn().mockReturnValueOnce([]);
         const result = await HiveEngineUtils.getUserBalance(
           utilsT.userData2.username,
         );
@@ -47,7 +47,7 @@ describe('hive-engine.utils tests:\n', () => {
       });
 
       test('Passing an non existing account must return an empty array', async () => {
-        hsc.find = jest.fn().mockReturnValueOnce([]);
+        HiveEngineConfigUtils.getApi().find = jest.fn().mockReturnValueOnce([]);
         const result = await HiveEngineUtils.getUserBalance(
           'NonExistingAccountName',
         );
@@ -288,7 +288,7 @@ describe('hive-engine.utils tests:\n', () => {
 
     describe('getIncomingDelegations tests:\n', () => {
       test('Passing a valid token symbol and account that has delegations must return an array of results', async () => {
-        hsc.find = jest
+        HiveEngineConfigUtils.getApi().find = jest
           .fn()
           .mockResolvedValueOnce(utilsT.fakeIncommingDelegations);
         const response = await HiveEngineUtils.getIncomingDelegations(
@@ -298,7 +298,9 @@ describe('hive-engine.utils tests:\n', () => {
         expect(response.length).not.toBe(0);
       });
       test('Passing a valid token symbol and account that No has delegations must return an empty array', async () => {
-        hsc.find = jest.fn().mockResolvedValueOnce([]);
+        HiveEngineConfigUtils.getApi().find = jest
+          .fn()
+          .mockResolvedValueOnce([]);
         const response = await HiveEngineUtils.getIncomingDelegations(
           'BEE',
           'upfundme',
@@ -309,7 +311,7 @@ describe('hive-engine.utils tests:\n', () => {
 
     describe('getOutgoingDelegations tests:\n', () => {
       test('Passing a valid token symbol and account that has made delegations, must return an array of results', async () => {
-        hsc.find = jest
+        HiveEngineConfigUtils.getApi().find = jest
           .fn()
           .mockResolvedValueOnce(utilsT.fakeOutgoingDelegations);
         const response = await HiveEngineUtils.getOutgoingDelegations(
@@ -320,7 +322,9 @@ describe('hive-engine.utils tests:\n', () => {
         expect(response[0].quantity).toBeDefined();
       });
       test('Passing a valid token symbol and account that has no made delegations, must return an empty array', async () => {
-        hsc.find = jest.fn().mockResolvedValueOnce([]);
+        HiveEngineConfigUtils.getApi().find = jest
+          .fn()
+          .mockResolvedValueOnce([]);
         const response = await HiveEngineUtils.getOutgoingDelegations(
           'BEE',
           'upfundme',

@@ -1,8 +1,10 @@
-import { hsc } from '@api/hiveEngine';
 import { PrivateKey } from '@hiveio/dhive';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
+import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveUtils from 'src/utils/hive.utils';
+
 type SendTokenProps = {
   username: string;
   currency: string;
@@ -18,7 +20,7 @@ const stakeToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'stake',
@@ -41,7 +43,7 @@ const unstakeToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'unstake',
@@ -65,7 +67,7 @@ const delegateToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'delegate',
@@ -89,7 +91,7 @@ const cancelDelegationToken = (
   amount: string,
   activeAccountName: string,
 ) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'undelegate',
@@ -107,7 +109,7 @@ const cancelDelegationToken = (
 };
 
 const getUserBalance = (account: string) => {
-  return hsc.find('tokens', 'balances', {
+  return HiveEngineConfigUtils.getApi().find('tokens', 'balances', {
     account,
   });
 };
@@ -116,18 +118,24 @@ const getIncomingDelegations = async (
   symbol: string,
   username: string,
 ): Promise<TokenDelegation[]> => {
-  return hsc.find('tokens', 'delegations', { to: username, symbol: symbol });
+  return HiveEngineConfigUtils.getApi().find('tokens', 'delegations', {
+    to: username,
+    symbol: symbol,
+  });
 };
 
 const getOutgoingDelegations = async (
   symbol: string,
   username: string,
 ): Promise<TokenDelegation[]> => {
-  return hsc.find('tokens', 'delegations', { from: username, symbol: symbol });
+  return HiveEngineConfigUtils.getApi().find('tokens', 'delegations', {
+    from: username,
+    symbol: symbol,
+  });
 };
 
 const sendToken = (data: SendTokenProps, key: PrivateKey) => {
-  const id = Config.hiveEngine.MAINNET;
+  const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'transfer',
@@ -142,6 +150,19 @@ const sendToken = (data: SendTokenProps, key: PrivateKey) => {
     { required_posting_auths: [], required_auths: [data.username], id, json },
     key,
   );
+};
+
+export const getHiveEngineTokenValue = (
+  balance: TokenBalance,
+  market: TokenMarket[],
+) => {
+  const tokenMarket = market.find((t) => t.symbol === balance.symbol);
+  const price = tokenMarket
+    ? parseFloat(tokenMarket.lastPrice)
+    : balance.symbol === 'SWAP.HIVE'
+    ? 1
+    : 0;
+  return parseFloat(balance.balance) * price;
 };
 
 const HiveEngineUtils = {
