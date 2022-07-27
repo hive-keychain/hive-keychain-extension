@@ -313,6 +313,10 @@ Requests a signed call
 *   `callback` **[requestCallback][72]** Function that handles keychain's response to the request
 *   `rpc` **[String][73]** Override user's RPC settings (optional, default `null`)
 
+**Meta**
+
+*   **deprecated**: This is deprecated.
+
 #### requestPost
 
 Requests to broadcast a blog post/comment
@@ -380,7 +384,7 @@ Requests a token transfer
 
 *   `account` **[String][73]** Hive account to perform the request
 *   `to` **[String][73]** Hive account to receive the transfer
-*   `amount` **[String][73]** Amount to be transfered. Requires 3 decimals.
+*   `amount` **[String][73]** Amount to be transferred. Requires 3 decimals.
 *   `memo` **[String][73]** Memo attached to the transfer
 *   `currency` **[String][73]** Token to be sent
 *   `callback` **[requestCallback][72]** Function that handles keychain's response to the request
@@ -405,13 +409,12 @@ Requests a delegation broadcast
 
 ##### Parameters
 
-*   `username`  
+*   `username` **[String][73]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 *   `delegatee` **[String][73]** Account to receive the delegation
 *   `amount` **[String][73]** Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
 *   `unit` **[String][73]** HP or VESTS
 *   `callback` **[requestCallback][72]** Function that handles keychain's response to the request
 *   `rpc` **[String][73]** Override user's RPC settings (optional, default `null`)
-*   `account` **[String][73]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 
 #### requestWitnessVote
 
@@ -419,12 +422,11 @@ Requests a witness vote broadcast
 
 ##### Parameters
 
-*   `username`  
+*   `username` **[String][73]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 *   `witness` **[String][73]** Account to receive the witness vote
 *   `vote` **[boolean][78]** Set to true to vote for the witness, false to unvote
 *   `callback` **[requestCallback][72]** Function that handles keychain's response to the request
 *   `rpc` **[String][73]** Override user's RPC settings (optional, default `null`)
-*   `account` **[String][73]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 
 #### requestProxy
 
@@ -432,11 +434,10 @@ Select an account as proxy
 
 ##### Parameters
 
-*   `username`  
+*   `username` **[String][73]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 *   `proxy` **[String][73]** Account to become the proxy. Empty string ('') to remove a proxy
 *   `callback` **[requestCallback][72]** Function that handles keychain's response to the request
 *   `rpc` **[String][73]** Override user's RPC settings (optional, default `null`)
-*   `account` **[String][73]** Hive account to perform the request. If null, user can choose the account from a dropdown (optional, default `null`)
 
 #### requestPowerUp
 
@@ -526,7 +527,7 @@ Add a new account to Keychain
 
 *   `username` **[String][73]** username of the account to be added
 *   `keys` **[Object][77]** private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
-*   `callback`  
+*   `callback` **[requestCallback][72]** Function that handles keychain's response to the request
 
 #### requestConversion
 

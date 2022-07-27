@@ -247,6 +247,7 @@ var hive_keychain = {
   },
   /**
    * Requests a signed call
+   * @deprecated
    * @param {String} account Hive account to perform the request
    * @param {String} method Method of the call
    * @param {String} params Parameters of the call
@@ -405,7 +406,7 @@ var hive_keychain = {
    *
    * @param {String} account Hive account to perform the request
    * @param {String} to Hive account to receive the transfer
-   * @param {String} amount Amount to be transfered. Requires 3 decimals.
+   * @param {String} amount Amount to be transferred. Requires 3 decimals.
    * @param {String} memo Memo attached to the transfer
    * @param {String} currency Token to be sent
    * @param {requestCallback} callback Function that handles keychain's response to the request
@@ -433,7 +434,7 @@ var hive_keychain = {
   },
   /**
    * Requests a delegation broadcast
-   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
+   * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} delegatee Account to receive the delegation
    * @param {String} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
    * @param {String} unit HP or VESTS
@@ -460,7 +461,7 @@ var hive_keychain = {
   },
   /**
    * Requests a witness vote broadcast
-   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
+   * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} witness Account to receive the witness vote
    * @param {boolean} vote Set to true to vote for the witness, false to unvote
    * @param {requestCallback} callback Function that handles keychain's response to the request
@@ -478,7 +479,7 @@ var hive_keychain = {
   },
   /**
    * Select an account as proxy
-   * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
+   * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} proxy Account to become the proxy. Empty string ('') to remove a proxy
    * @param {requestCallback} callback Function that handles keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
@@ -659,6 +660,7 @@ var hive_keychain = {
    * Add a new account to Keychain
    * @param {String} username username of the account to be added
    * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
+   * @param {requestCallback} callback Function that handles keychain's response to the request
    */
   requestAddAccount: function (username, keys, callback) {
     const request = {
