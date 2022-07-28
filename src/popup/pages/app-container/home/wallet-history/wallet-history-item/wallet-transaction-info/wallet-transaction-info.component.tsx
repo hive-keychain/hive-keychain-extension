@@ -11,6 +11,7 @@ import {
   PowerUp,
   ReceivedInterests,
   RecurrentTransfer,
+  StartWithdrawSavings,
   Transaction,
   Transfer,
   WithdrawSavings,
@@ -97,6 +98,12 @@ const WalletTransactionInfo = ({
             return (
               <WithdrawSavingsTransactionComponent
                 transaction={transaction as WithdrawSavings}
+              />
+            );
+          case 'fill_transfer_from_savings':
+            return (
+              <WithdrawSavingsTransactionComponent
+                transaction={transaction as StartWithdrawSavings}
               />
             );
         }
