@@ -102,7 +102,7 @@ const getGovernanceReminderList = async (usernames: string[]) => {
       moment().utc(),
       'second',
     );
-    if (diff <= Config.governanceReminderDelayInDays && diff > 0) {
+    if (diff <= Config.governanceReminderDelayInSeconds && diff > 0) {
       accountsToRemind.push(extendedAccount.name);
     }
   }
