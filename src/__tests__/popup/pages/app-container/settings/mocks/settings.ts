@@ -45,6 +45,7 @@ const constants = {
 };
 
 const beforeEach = async (component: ReactElement) => {
+  let _asFragment = DocumentFragment;
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   mockPreset.setOrDefault({});
