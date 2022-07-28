@@ -90,6 +90,7 @@ const AccountKeysListItem = ({
         <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
         {publicKey && privateKey && canDelete && (
           <Icon
+            ariaLabel={`icon-remove-key-${chrome.i18n.getMessage(keyName)}`}
             onClick={() => handleClickOnRemoveKey()}
             name={Icons.DELETE}
             type={IconType.OUTLINED}
@@ -110,6 +111,9 @@ const AccountKeysListItem = ({
           {!isAuthorizedAccount && (
             <>
               <div
+                aria-label={`clickeable-account-key-${chrome.i18n.getMessage(
+                  keyName,
+                )}`}
                 className={`private-key key-field ${
                   isPrivateHidden ? 'hidden' : 'show'
                 }`}

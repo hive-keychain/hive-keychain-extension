@@ -34,4 +34,11 @@ export default {
     openFilter: 'open-tokens-filter',
   },
   expandMore: 'icon-expand-more',
+  keys: {
+    list: {
+      preFix: {
+        remove: 'icon-remove-key-',
+      },
+    },
+  },
 };

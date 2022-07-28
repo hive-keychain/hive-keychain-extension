@@ -1,0 +1,214 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`manage-account.component tests:
+ Must display manage-account and match snapshot: manage-account.component ALL KEYS 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          Manage accounts
+        </div>
+        <span
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          aria-label="settings-manage-account"
+          class="settings-manage-account"
+        >
+          <div>
+            <div
+              class="select-account-section"
+            >
+              <div>
+                <div
+                  aria-expanded="false"
+                  aria-label="Dropdown select"
+                  class="react-dropdown-select select-account-select css-16vukcu e1gzf2xs0"
+                  color="#0074D9"
+                  direction="ltr"
+                  tabindex="0"
+                >
+                  <div
+                    class="react-dropdown-select-content react-dropdown-select-type-single css-1m5113o e1gn6jc30"
+                  >
+                    <div
+                      class="selected-account-panel"
+                    >
+                      <img
+                        src="https://images.hive.blog/u/keychain.tests/avatar"
+                      />
+                      <div
+                        aria-label="selected-account-name"
+                        class="selected-account-name"
+                      >
+                        keychain.tests
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="react-dropdown-select-dropdown-handle css-ago8sv e1vudypg0"
+                    color="#0074D9"
+                    rotate="1"
+                    tabindex="-1"
+                  >
+                    <svg
+                      fill="currentColor"
+                      viewBox="0 0 40 40"
+                    >
+                      <path
+                        d="M31 26.4q0 .3-.2.5l-1.1 1.2q-.3.2-.6.2t-.5-.2l-8.7-8.8-8.8 8.8q-.2.2-.5.2t-.5-.2l-1.2-1.2q-.2-.2-.2-.5t.2-.5l10.4-10.4q.3-.2.6-.2t.5.2l10.4 10.4q.2.2.2.5z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="account-keys-list"
+          >
+            <div
+              class="keys-panel"
+            >
+              <div
+                class="account-keys-list-item"
+              >
+                <div
+                  class="top-panel"
+                >
+                  <div
+                    class="key-name"
+                  >
+                    Posting Key
+                  </div>
+                </div>
+                <div
+                  class="keys-panel"
+                >
+                  <div
+                    class="private-key key-field hidden"
+                  >
+                    Click to show private key
+                  </div>
+                  <div
+                    class="public-key key-field"
+                  />
+                </div>
+              </div>
+              <div
+                class="account-keys-list-item"
+              >
+                <div
+                  class="top-panel"
+                >
+                  <div
+                    class="key-name"
+                  >
+                    Active Key
+                  </div>
+                </div>
+                <div
+                  class="keys-panel"
+                >
+                  <div
+                    class="private-key key-field hidden"
+                  >
+                    Click to show private key
+                  </div>
+                  <div
+                    class="public-key key-field"
+                  />
+                </div>
+              </div>
+              <div
+                class="account-keys-list-item"
+              >
+                <div
+                  class="top-panel"
+                >
+                  <div
+                    class="key-name"
+                  >
+                    Memo Key
+                  </div>
+                </div>
+                <div
+                  class="keys-panel"
+                >
+                  <div
+                    class="private-key key-field hidden"
+                  >
+                    Click to show private key
+                  </div>
+                  <div
+                    class="public-key key-field"
+                  />
+                </div>
+              </div>
+            </div>
+            <button
+              class="submit-button default "
+            >
+              <div
+                class="button-label"
+              >
+                Show QR Code 
+              </div>
+            </button>
+            <button
+              class="submit-button important "
+            >
+              <div
+                class="button-label"
+              >
+                Remove from Keychain 
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
