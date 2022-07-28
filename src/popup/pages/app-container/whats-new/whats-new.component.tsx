@@ -1,6 +1,6 @@
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ButtonComponent, {
@@ -16,7 +16,18 @@ interface Props {
 
 const WhatsNew = ({ onOverlayClick, content }: Props) => {
   const [pageIndex, setPageIndex] = useState(0);
+  const [images, setImages] = useState<any[]>();
   const locale = 'en'; // later use getUILanguage()
+
+  useEffect(() => {
+    const imgs = [];
+    for (const feature of content.features[locale]) {
+      const imageElement = new Image();
+      imageElement.src = feature.image;
+      imgs.push(imageElement);
+    }
+    setImages(imgs);
+  }, []);
 
   const next = () => {
     setPageIndex(pageIndex + 1);
@@ -60,33 +71,35 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
         <div className="whats-new-title">
           {chrome.i18n.getMessage('popup_html_whats_new', [content.version])}
         </div>
-        <Carousel
-          showArrows={false}
-          showIndicators={content.features[locale].length > 1}
-          selectedItem={pageIndex}
-          showThumbs={false}
-          showStatus={false}
-          renderIndicator={renderCustomIndicator}>
-          {content.features[locale].map((feature, index) => (
-            <div className="carousel-item" key={`feature-${index}`}>
-              <div className="image">
-                <img src={feature.image} />
+        {images && (
+          <Carousel
+            showArrows={false}
+            showIndicators={content.features[locale].length > 1}
+            selectedItem={pageIndex}
+            showThumbs={false}
+            showStatus={false}
+            renderIndicator={renderCustomIndicator}>
+            {content.features[locale].map((feature, index) => (
+              <div className="carousel-item" key={`feature-${index}`}>
+                <div className="image">
+                  <img src={images[index]} />
+                </div>
+                <div className="title">{feature.title}</div>
+                <div className="description">{feature.description}</div>
+                <div className="extra-information">
+                  {feature.extraInformation}
+                </div>
+                <a
+                  className="read-more-link"
+                  onClick={() =>
+                    navigateToArticle(`${content.url}#${feature.anchor}`)
+                  }>
+                  {chrome.i18n.getMessage('html_popup_read_more')}
+                </a>
               </div>
-              <div className="title">{feature.title}</div>
-              <div className="description">{feature.description}</div>
-              <div className="extra-information">
-                {feature.extraInformation}
-              </div>
-              <a
-                className="read-more-link"
-                onClick={() =>
-                  navigateToArticle(`${content.url}#${feature.anchor}`)
-                }>
-                {chrome.i18n.getMessage('html_popup_read_more')}
-              </a>
-            </div>
-          ))}
-        </Carousel>
+            ))}
+          </Carousel>
+        )}
 
         <div className="button-panel">
           {pageIndex > 0 && (
