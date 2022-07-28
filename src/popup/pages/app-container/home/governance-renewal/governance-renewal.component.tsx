@@ -1,3 +1,7 @@
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -17,9 +21,12 @@ interface AccountsSelected {
 const GovernanceRenewal = ({
   accountNames,
   accounts,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux & GovernanceRenewalProps) => {
   const [selectedAccounts, setSelectedAccounts] = useState<AccountsSelected>();
   const [hasAccountsSelected, setHasAccountsSelected] = useState<boolean>(true);
+  const [forceHide, setForceHide] = useState(false);
 
   useEffect(() => {
     const select: AccountsSelected = {};
@@ -41,17 +48,23 @@ const GovernanceRenewal = ({
   };
 
   const handleSubmitButton = async () => {
-    if (hasAccountsSelected) {
-      const usernames = Object.keys(selectedAccounts!).filter(
-        (username) => selectedAccounts![username] === true,
-      );
-      await GovernanceUtils.renewUsersGovernance(usernames, accounts);
-    } else {
-      const usernames = Object.keys(selectedAccounts!).filter(
-        (username) => selectedAccounts![username] === false,
-      );
-      await GovernanceUtils.addToIgnoreRenewal(usernames);
+    const usernamesToRenew = Object.keys(selectedAccounts!).filter(
+      (username) => selectedAccounts![username] === true,
+    );
+    const usernamesToIgnore = Object.keys(selectedAccounts!).filter(
+      (username) => selectedAccounts![username] === false,
+    );
+    if (usernamesToRenew.length > 0) {
+      addToLoadingList('html_popup_governance_renewing');
+      await GovernanceUtils.renewUsersGovernance(usernamesToRenew, accounts);
+      removeFromLoadingList('html_popup_governance_renewing');
     }
+
+    if (usernamesToIgnore.length > 0) {
+      await GovernanceUtils.addToIgnoreRenewal(usernamesToIgnore);
+    }
+
+    setForceHide(true);
   };
 
   const navigateToArticle = () => {
@@ -61,7 +74,7 @@ const GovernanceRenewal = ({
   };
 
   return (
-    <div className="governance-renewal">
+    <div className={`governance-renewal ${forceHide ? 'force-hide' : ''}`}>
       <div className="overlay"></div>
       <div className="governance-renewal-container">
         <div className="title">
@@ -108,7 +121,10 @@ const mapStateToProps = (state: RootState) => {
   return { accounts: state.accounts };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  addToLoadingList,
+  removeFromLoadingList,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const GovernanceRenewalComponent = connector(GovernanceRenewal);

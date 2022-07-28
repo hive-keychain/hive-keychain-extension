@@ -2365,5 +2365,9 @@
   "html_popup_governance_expiration_read_more": {
     "message": "Read more about governance expiration",
     "description": "Governance expiration description"
+  },
+  "html_popup_governance_renewing": {
+    "message": "Renewing",
+    "description": "Governance expiration description"
   }
 }

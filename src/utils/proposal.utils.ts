@@ -15,9 +15,10 @@ const PROPOSAL_ID = Config.PROPOSAL;
 
 const hasVotedForProposal = async (
   activeAccount: ActiveAccount,
+  proposalId?: number,
 ): Promise<boolean> => {
   const listProposalVotes = await hive.api.listProposalVotesAsync(
-    [PROPOSAL_ID, activeAccount.name],
+    [proposalId !== undefined ? proposalId : PROPOSAL_ID, activeAccount.name],
     1,
     'by_proposal_voter',
     'ascending',

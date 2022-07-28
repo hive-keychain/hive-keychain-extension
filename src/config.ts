@@ -21,7 +21,7 @@ const Config = {
   rpc: {
     DEFAULT: { uri: 'https://api.hive.blog', testnet: false },
   },
-  governanceReminderDelayInDays: 30 * 24 * 3600, //days
+  governanceReminderDelayInDays: 366 * 24 * 3600, //days
 };
 
 export default Config;

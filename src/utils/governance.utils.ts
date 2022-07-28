@@ -9,13 +9,29 @@ import Logger from 'src/utils/logger.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 
 const addToIgnoreRenewal = async (usernames: string[]) => {
-  const ignored = await LocalStorageUtils.getValueFromLocalStorage(
+  let ignored = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,
   );
+  if (!ignored) {
+    ignored = {};
+  }
   for (const username of usernames) {
     ignored[username] = moment().utc();
   }
-  LocalStorageUtils.saveValueInLocalStorage(
+  await LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,
+    ignored,
+  );
+};
+const removeFromIgnoreRenewal = async (username: string) => {
+  let ignored = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,
+  );
+  if (!ignored) {
+    ignored = {};
+  }
+  delete ignored[username];
+  await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,
     ignored,
   );
@@ -25,29 +41,36 @@ const renewUsersGovernance = async (
   usernames: string[],
   localAccounts: LocalAccount[],
 ) => {
+  const promises = [];
   for (const username of usernames) {
     const localAccount = localAccounts.find(
       (localAccount) => localAccount.name === username,
     );
-    try {
-      await ProposalUtils.voteForProposal(
-        {
-          name: username,
-          keys: { active: localAccount?.keys.active },
-        } as ActiveAccount,
-        0,
-      );
-      await ProposalUtils.unvoteProposal(
-        {
-          name: username,
-          keys: { active: localAccount?.keys.active },
-        } as ActiveAccount,
-        0,
-      );
-    } catch (err) {
-      Logger.error('Error while renewing proposal', err);
-    }
+
+    promises.push(
+      new Promise<void>(async (resolve, reject) => {
+        try {
+          const activeAccount = {
+            name: username,
+            keys: { active: localAccount?.keys.active },
+          } as ActiveAccount;
+
+          if (await ProposalUtils.hasVotedForProposal(activeAccount, 0)) {
+            await ProposalUtils.unvoteProposal(activeAccount, 0);
+            await ProposalUtils.voteForProposal(activeAccount, 0);
+          } else {
+            await ProposalUtils.voteForProposal(activeAccount, 0);
+            await ProposalUtils.unvoteProposal(activeAccount, 0);
+          }
+          resolve();
+        } catch (err) {
+          Logger.error('Error while renewing proposal', err);
+          reject();
+        }
+      }),
+    );
   }
+  await Promise.all(promises);
 };
 
 const getGovernanceRenewalIgnored = async () => {
@@ -71,7 +94,6 @@ const getGovernanceReminderList = async (usernames: string[]) => {
   });
 
   const accountsToRemind = [];
-  console.log(extendedAccounts);
   for (const extendedAccount of extendedAccounts) {
     const governanceExpirationDate = moment(
       (extendedAccount as any).governance_vote_expiration_ts,
@@ -92,4 +114,5 @@ export const GovernanceUtils = {
   renewUsersGovernance,
   getGovernanceRenewalIgnored,
   getGovernanceReminderList,
+  removeFromIgnoreRenewal,
 };

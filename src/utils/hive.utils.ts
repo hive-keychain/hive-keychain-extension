@@ -33,6 +33,7 @@ import {
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -603,6 +604,7 @@ const updateProposalVote = async (
   proposalId: number,
   vote: boolean,
 ) => {
+  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
   return await sendOperationWithConfirmation(
     getClient().broadcast.sendOperations(
       [
@@ -616,9 +618,7 @@ const updateProposalVote = async (
           },
         ] as UpdateProposalVotesOperation,
       ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
-      ),
+      PrivateKey.fromString(activeAccount.keys.active as string),
     ),
   );
 };
