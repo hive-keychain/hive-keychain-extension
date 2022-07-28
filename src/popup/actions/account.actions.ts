@@ -113,7 +113,7 @@ export const removeKey =
       type: ActionType.SET_ACCOUNTS,
       payload: finalAccounts,
     };
-    console.log('after removing: ', finalAccounts[0].keys);
+    console.log('after removing: ', finalAccounts[0].keys); //to remove
     dispatch(action);
     if (finalAccounts) {
       if (

@@ -104,18 +104,27 @@ exports[`manage-account.component tests:
                   >
                     Posting Key
                   </div>
+                  <span
+                    aria-label="icon-remove-key-Posting Key"
+                    class="icon-component material-icons-outlined remove-button clickable"
+                  >
+                    delete
+                  </span>
                 </div>
                 <div
                   class="keys-panel"
                 >
                   <div
+                    aria-label="clickeable-account-key-Posting Key"
                     class="private-key key-field hidden"
                   >
                     Click to show private key
                   </div>
                   <div
                     class="public-key key-field"
-                  />
+                  >
+                    STM7KKUZb1CzwRiaN2RQcGeJUpcHM5BmCNudxXW21xqktBe91RpD8
+                  </div>
                 </div>
               </div>
               <div
@@ -129,18 +138,27 @@ exports[`manage-account.component tests:
                   >
                     Active Key
                   </div>
+                  <span
+                    aria-label="icon-remove-key-Active Key"
+                    class="icon-component material-icons-outlined remove-button clickable"
+                  >
+                    delete
+                  </span>
                 </div>
                 <div
                   class="keys-panel"
                 >
                   <div
+                    aria-label="clickeable-account-key-Active Key"
                     class="private-key key-field hidden"
                   >
                     Click to show private key
                   </div>
                   <div
                     class="public-key key-field"
-                  />
+                  >
+                    STM622dVYEu3Hiic6F4QiH1JALAXm8yRqfLd5kCq8xs8ZzNRnKGXC
+                  </div>
                 </div>
               </div>
               <div
@@ -154,18 +172,27 @@ exports[`manage-account.component tests:
                   >
                     Memo Key
                   </div>
+                  <span
+                    aria-label="icon-remove-key-Memo Key"
+                    class="icon-component material-icons-outlined remove-button clickable"
+                  >
+                    delete
+                  </span>
                 </div>
                 <div
                   class="keys-panel"
                 >
                   <div
+                    aria-label="clickeable-account-key-Memo Key"
                     class="private-key key-field hidden"
                   >
                     Click to show private key
                   </div>
                   <div
                     class="public-key key-field"
-                  />
+                  >
+                    STM8eALyQwyb2C4XhXJ7eZfjfjfSeNeeZREaxPcJRApie1uwzzcuF
+                  </div>
                 </div>
               </div>
             </div>

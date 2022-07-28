@@ -1,4 +1,5 @@
 import { ExtendedAccount } from '@hiveio/dhive';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { Icons } from '@popup/icons.enum';
 import AccountUtils from 'src/utils/account.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
@@ -54,7 +55,10 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: initialStates.iniStateAs.defaultExistentAllKeys as RootState,
-  justLocalAccounts: initialStates.iniStateAs.defaultExistentAllKeys.accounts,
+  justLocalAccounts: [
+    accounts.local.oneAllkeys,
+    accounts.local.two,
+  ] as LocalAccount[],
   snapshotName: {
     withData: {
       default: 'manage-account.component ALL KEYS',
@@ -100,6 +104,13 @@ const methods = {
     afterTests.clean();
   }),
   getKeyName: (keyName: KeyNamePopupHtml) => i18n.get(keyName),
+  gotoManageAccounts: async () => {
+    await clickAwait([
+      alButton.menu,
+      alButton.menuSettingsPeople,
+      alButton.menuPreFix + Icons.MANAGE_ACCOUNTS,
+    ]);
+  },
 };
 
 const extraMocks = {
