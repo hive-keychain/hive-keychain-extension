@@ -82,7 +82,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
             {content.features[locale].map((feature, index) => (
               <div className="carousel-item" key={`feature-${index}`}>
                 <div className="image">
-                  <img src={images[index]} />
+                  <img src={images[index].src} />
                 </div>
                 <div className="title">{feature.title}</div>
                 <div className="description">{feature.description}</div>
