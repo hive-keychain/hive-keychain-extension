@@ -100,6 +100,7 @@ const AccountKeysListItem = ({
 
       {!privateKey && !publicKey && (
         <Icon
+          ariaLabel={`icon-add-key-${chrome.i18n.getMessage(keyName)}`}
           onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
           name={Icons.ADD_CIRCLE}
           type={IconType.OUTLINED}

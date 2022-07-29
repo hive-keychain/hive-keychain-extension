@@ -1,19 +1,24 @@
 import { ExtendedAccount } from '@hiveio/dhive';
+import { KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Icons } from '@popup/icons.enum';
 import AccountUtils from 'src/utils/account.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import {
+  EventType,
   KeyToUse,
   KeyToUseNoMaster,
   QueryDOM,
 } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { KeyShowed } from 'src/__tests__/utils-for-testing/interfaces/test-objects';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
@@ -22,10 +27,11 @@ import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import {
   actAdvanceTime,
   clickAwait,
+  clickTypeAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
 import { KeyNamePopupHtml } from 'src/__tests__/utils-for-testing/types/keys-types';
-//TODO remove comments
+
 const keys: KeyShowed[] = [
   {
     keyName: 'popup_html_active',
@@ -50,7 +56,6 @@ const i18n = {
 };
 
 const constants = {
-  test: { a: 10 }, //test
   username: mk.user.one,
   stateAs: initialStates.iniStateAs.defaultExistentAllKeys as RootState,
   localAccount: [
@@ -65,7 +70,7 @@ const constants = {
         postingPubkey: `@${mk.user.two}`,
       },
     } as LocalAccount,
-    accounts.local.two, //TODO add the authorized as needed
+    accounts.local.two,
   ] as LocalAccount[],
   localAccountDeletedOne: [accounts.local.two] as LocalAccount[],
   snapshotName: {
@@ -88,23 +93,29 @@ const constants = {
     usingAuthorized: i18n.get('html_popup_using_authorized_account', [
       `@${mk.user.two}`,
     ]),
+    addKey: {
+      text: (keyType: KeyType) => {
+        const _keyType =
+          keyType.substring(0, 1) + keyType.substring(1).toLowerCase();
+        return manipulateStrings.removeHtmlTags(
+          i18n.get('popup_html_add_key_text', [`${_keyType}`]),
+        );
+      },
+      missingFields: i18n.get('popup_accounts_fill'),
+      isPublicKey: i18n.get('popup_account_password_is_public_key'),
+      incorrectUser: i18n.get('popup_accounts_incorrect_user'),
+      incorrectKey: i18n.get('popup_accounts_incorrect_key'),
+    },
   },
 };
-/**
- * Intended to use App component as default.
- * You must use only inner params to handle different data/initialState.
- * Also it will return the fragment to use the snapshots feature.
- * @link https://jestjs.io/docs/snapshot-testing or https://goo.gl/fbAQLP
- */
+
 const beforeEach = async (feedLocalAccount?: {
   localAccount: LocalAccount[];
-  //stateAs: RootState;
 }) => {
   let localAccounts: LocalAccount[] = constants.localAccount;
   let stateAs: RootState = constants.stateAs;
   if (feedLocalAccount) {
     localAccounts = feedLocalAccount.localAccount;
-    //stateAs = feedStates.stateAs;
   }
   let _asFragment: () => DocumentFragment;
   jest.useFakeTimers('legacy');
@@ -151,6 +162,25 @@ const methods = {
     await clickAwait([alButton.dialog.confirm]);
     await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
   },
+  clickNType: async (
+    key: KeyNamePopupHtml,
+    text: string,
+    clickImport?: boolean,
+  ) => {
+    await clickAwait([alIcon.keys.list.preFix.add + methods.getKeyName(key)]);
+    await clickTypeAwait([
+      {
+        ariaLabel: alInput.privateKey,
+        event: EventType.TYPE,
+        text: text,
+      },
+    ]);
+    if (clickImport) {
+      await clickAwait([alButton.importKeys]);
+    }
+  },
+  asserByText: async (text: string) =>
+    await assertion.awaitFor(text, QueryDOM.BYTEXT),
 };
 
 const extraMocks = {
@@ -166,6 +196,8 @@ const extraMocks = {
     (AccountUtils.deleteAccount = jest
       .fn()
       .mockReturnValue(constants.localAccountDeletedOne)),
+  getAccount: (extendedAccount: ExtendedAccount[]) =>
+    (AccountUtils.getAccount = jest.fn().mockResolvedValue(extendedAccount)),
 };
 
 export default {

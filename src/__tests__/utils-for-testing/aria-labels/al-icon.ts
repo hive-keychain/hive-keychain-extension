@@ -38,6 +38,7 @@ export default {
     list: {
       preFix: {
         remove: 'icon-remove-key-',
+        add: 'icon-add-key-',
       },
     },
   },

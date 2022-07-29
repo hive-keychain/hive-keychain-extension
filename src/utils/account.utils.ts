@@ -74,7 +74,6 @@ const getKeys = async (username: string, password: string) => {
   if (!keys) {
     store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_KEY));
   }
-
   return keys;
 };
 
@@ -229,7 +228,6 @@ const addKey = async (
   let account = accounts.find(
     (account: LocalAccount) => account.name === activeAccount.name,
   );
-
   if (keys && account) {
     switch (keyType) {
       case KeyType.ACTIVE:
@@ -263,7 +261,6 @@ const addKey = async (
         account.keys.memoPubkey = keys.memoPubkey;
         break;
     }
-
     AccountUtils.saveAccounts(accounts, store.getState().mk);
     store.dispatch(setSuccessMessage('import_html_success'));
     return accounts;
