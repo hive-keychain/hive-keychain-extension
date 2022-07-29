@@ -1,6 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`manage-account.component tests:
+ General cases:
  Must display manage-account and match snapshot: manage-account.component ALL KEYS 1`] = `
 <DocumentFragment>
   <div
@@ -25,6 +26,7 @@ exports[`manage-account.component tests:
           Manage accounts
         </div>
         <span
+          aria-label="icon-close-page"
           class="icon-component material-icons-outlined icon-button clickable"
         >
           clear
@@ -197,6 +199,7 @@ exports[`manage-account.component tests:
               </div>
             </div>
             <button
+              aria-label="button-toogle-qr-code"
               class="submit-button default "
             >
               <div
@@ -206,6 +209,7 @@ exports[`manage-account.component tests:
               </div>
             </button>
             <button
+              aria-label="button-delete-account"
               class="submit-button important "
             >
               <div

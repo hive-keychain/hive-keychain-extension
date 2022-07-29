@@ -172,7 +172,6 @@ const App = ({
     accounts: LocalAccount[],
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
-      //TODO possible place to check if navigation has something stored in it
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk && mk.length > 0) {
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);

@@ -82,4 +82,12 @@ export default {
       },
     },
   },
+  qrCode: {
+    toogle: 'button-toogle-qr-code',
+  },
+  accounts: {
+    manage: {
+      delete: 'button-delete-account',
+    },
+  },
 };

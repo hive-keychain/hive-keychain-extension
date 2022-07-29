@@ -1,3 +1,4 @@
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { screen } from '@testing-library/react';
 import manageAccounts from 'src/__tests__/popup/pages/app-container/settings/accounts/manage-account/mocks/manage-accounts';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
@@ -5,8 +6,13 @@ import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-componen
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
+import alSvg from 'src/__tests__/utils-for-testing/aria-labels/al-svg';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
+import {
+  KeyToUseNoMaster,
+  QueryDOM,
+} from 'src/__tests__/utils-for-testing/enums/enums';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import {
@@ -15,9 +21,9 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 describe('manage-account.component tests:\n', () => {
-  let _asFragment: () => DocumentFragment;
-  const { methods, constants, extraMocks, keys } = manageAccounts;
-  const { snapshotName } = constants;
+  let _asFragment: () => DocumentFragment | undefined;
+  const { methods, constants, extraMocks } = manageAccounts;
+  const { snapshotName, localAccount } = constants;
   methods.afterEach;
   describe('General cases:\n', () => {
     beforeEach(async () => {
@@ -36,86 +42,40 @@ describe('manage-account.component tests:\n', () => {
         mk.user.two,
       );
     });
-    it('Must show selected private key when clicking', async () => {
-      for (let i = 0; i < keys.length; i++) {
-        await clickAwait([
-          alDiv.keys.list.preFix.clickeableKey +
-            methods.getKeyName(keys[i].keyName),
-        ]);
-        assertion.getOneByText(keys[i].privateKey);
-      }
+    it('Must show QR code', async () => {
+      extraMocks.scrollNotImpl();
+      await clickAwait([alButton.qrCode.toogle]);
+      actAdvanceTime(100);
+      await assertion.awaitFor(alSvg.qrcode, QueryDOM.BYLABEL);
     });
-    it('Must copy selected private key to clipboard', async () => {
-      for (let i = 0; i < keys.length; i++) {
-        await clickAwait([
-          alDiv.keys.list.preFix.clickeableKey +
-            methods.getKeyName(keys[i].keyName),
-          alDiv.keys.list.preFix.clickeableKey +
-            methods.getKeyName(keys[i].keyName),
-        ]);
-      }
-      actAdvanceTime(200);
-      expect(screen.queryAllByText(constants.message.copied)).toHaveLength(3);
+    it('Must hide QR code', async () => {
+      extraMocks.scrollNotImpl();
+      await clickAwait([alButton.qrCode.toogle]);
+      actAdvanceTime(100);
+      await assertion.awaitFor(alSvg.qrcode, QueryDOM.BYLABEL);
+      await clickAwait([alButton.qrCode.toogle]);
+      actAdvanceTime(100);
+      assertion.queryByLabel(alSvg.qrcode, false);
     });
-    it('Must show confirmation page and go back', async () => {
-      for (let i = 0; i < keys.length; i++) {
-        await clickAwait([
-          alIcon.keys.list.preFix.remove + methods.getKeyName(keys[i].keyName),
-        ]);
-        assertion.getByLabelText(alComponent.confirmationPage);
-        await clickAwait([alButton.dialog.cancel]);
-      }
+    it('Must close page and go home', async () => {
+      await clickAwait([alIcon.closePage]);
+      await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
     });
-    it.todo('Must show error if only one key');
-    it.todo('Must show QR code');
-    it.todo('Must remove from keychain');
-
-    //maybe loading initial data? or just moving it to add-key component if gets too long
-    it.todo('Must add all keys using master password');
-    it.todo('Must add active key');
-    it.todo('Must add memo key');
-    it.todo('Must add posting key');
-
-    //different data tests
-    it.todo('Must not displayed remove button');
   });
-  describe('Removing key cases:\n', () => {
+  describe('Account having 1 key only:\n', () => {
     beforeEach(async () => {
-      _asFragment = await manageAccounts.beforeEach();
+      const cloneLocalAccounts = objects.clone(localAccount) as LocalAccount[];
+      methods.removeKeysLocalAccount(cloneLocalAccounts[0], [
+        KeyToUseNoMaster.ACTIVE,
+        KeyToUseNoMaster.MEMO,
+      ]);
+      _asFragment = await manageAccounts.beforeEach({
+        localAccount: cloneLocalAccounts,
+      });
     });
-    it('Must remove active key', async () => {
-      //TODO actual app take the user to the homepage after deleting a key.
-      const ariaLabel =
-        alIcon.keys.list.preFix.remove +
-        methods.getKeyName('popup_html_active');
-      await clickAwait([ariaLabel]);
-      assertion.getByLabelText(alComponent.confirmationPage);
-      await clickAwait([alButton.dialog.confirm]);
-      await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
-    });
-    it('Must remove posting key', async () => {
-      _asFragment = await manageAccounts.beforeEach();
-      const ariaLabel =
-        alIcon.keys.list.preFix.remove +
-        methods.getKeyName('popup_html_posting');
-      await clickAwait([ariaLabel]);
-      assertion.getByLabelText(alComponent.confirmationPage);
-      await clickAwait([alButton.dialog.confirm]);
-      await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
-    });
-    it('Must remove memo key', async () => {
-      _asFragment = await manageAccounts.beforeEach();
+    it('Must not show remove memo key', () => {
       const ariaLabel =
         alIcon.keys.list.preFix.remove + methods.getKeyName('popup_html_memo');
-      await clickAwait([ariaLabel]);
-      assertion.getByLabelText(alComponent.confirmationPage);
-      await clickAwait([alButton.dialog.confirm]);
-      await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
-      await methods.gotoManageAccounts();
       assertion.queryByLabel(ariaLabel, false);
     });
   });

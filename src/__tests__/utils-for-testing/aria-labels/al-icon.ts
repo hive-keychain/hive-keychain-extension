@@ -41,4 +41,5 @@ export default {
       },
     },
   },
+  closePage: 'icon-close-page',
 };
