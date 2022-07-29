@@ -5,6 +5,7 @@ import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
@@ -15,10 +16,9 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 describe('account-keys-list.component tests:\n', () => {
-  //TODO finish
   let _asFragment: () => DocumentFragment | undefined;
   const { methods, constants, extraMocks, keys } = manageAccounts;
-  const { snapshotName, stateAs, localAccount } = constants;
+  const { localAccount } = constants;
   methods.afterEach;
   describe('General cases:\n', () => {
     beforeEach(async () => {
@@ -71,11 +71,6 @@ describe('account-keys-list.component tests:\n', () => {
       await assertion.awaitMk(constants.localAccountDeletedOne[0].name);
       assertion.getByLabelText(alComponent.homePage);
     });
-    //maybe loading initial data? or just moving it to add-key component if gets too long
-    it.todo('Must add all keys using master password');
-    it.todo('Must add active key');
-    it.todo('Must add memo key');
-    it.todo('Must add posting key');
   });
   describe('Removing key cases:\n', () => {
     beforeEach(async () => {
@@ -88,10 +83,7 @@ describe('account-keys-list.component tests:\n', () => {
       const ariaLabel =
         alIcon.keys.list.preFix.remove +
         methods.getKeyName('popup_html_active');
-      await clickAwait([ariaLabel]);
-      assertion.getByLabelText(alComponent.confirmationPage);
-      await clickAwait([alButton.dialog.confirm]);
-      await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+      await methods.clickNAssert(ariaLabel);
       await methods.gotoManageAccounts();
       assertion.queryByLabel(ariaLabel, false);
     });
@@ -99,22 +91,34 @@ describe('account-keys-list.component tests:\n', () => {
       const ariaLabel =
         alIcon.keys.list.preFix.remove +
         methods.getKeyName('popup_html_posting');
-      await clickAwait([ariaLabel]);
-      assertion.getByLabelText(alComponent.confirmationPage);
-      await clickAwait([alButton.dialog.confirm]);
-      await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+      await methods.clickNAssert(ariaLabel);
       await methods.gotoManageAccounts();
       assertion.queryByLabel(ariaLabel, false);
     });
     it('Must remove memo key', async () => {
       const ariaLabel =
         alIcon.keys.list.preFix.remove + methods.getKeyName('popup_html_memo');
-      await clickAwait([ariaLabel]);
-      assertion.getByLabelText(alComponent.confirmationPage);
-      await clickAwait([alButton.dialog.confirm]);
-      await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+      await methods.clickNAssert(ariaLabel);
       await methods.gotoManageAccounts();
       assertion.queryByLabel(ariaLabel, false);
+    });
+  });
+  describe('Using authorized account', () => {
+    beforeEach(async () => {
+      _asFragment = await manageAccounts.beforeEach({
+        localAccount: constants.authorizedLocalAccount,
+      });
+    });
+    it('Must show using authorized account message', () => {
+      assertion.getByLabelText(alDiv.keys.list.usingAuthorized);
+      assertion.getOneByText(constants.message.usingAuthorized);
+    });
+    it('Must load authorization source account', async () => {
+      extraMocks.remockGetAccount();
+      await clickAwait([alDiv.keys.list.usingAuthorized]);
+      expect(screen.getByLabelText(alDiv.selectedAccount)).toHaveTextContent(
+        mk.user.two,
+      );
     });
   });
 });

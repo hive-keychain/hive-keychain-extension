@@ -97,7 +97,7 @@ const AccountKeysList = ({
         } else {
           finalAccounts = newAccounts;
         }
-        console.log('After deleting: ', finalAccounts);
+
         setAccounts(finalAccounts);
         if (finalAccounts.length) {
           loadActiveAccount(finalAccounts[0]);

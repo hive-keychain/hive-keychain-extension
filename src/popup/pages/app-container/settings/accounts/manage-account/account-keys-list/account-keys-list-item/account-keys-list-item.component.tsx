@@ -135,6 +135,7 @@ const AccountKeysListItem = ({
           )}
           {isAuthorizedAccount && publicKey && (
             <div
+              aria-label="using-authorized-account"
               className="using-authorized-account"
               onClick={() => goToAccount(publicKey)}>
               {chrome.i18n.getMessage('html_popup_using_authorized_account', [

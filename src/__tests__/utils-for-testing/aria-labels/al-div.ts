@@ -78,6 +78,7 @@ export default {
       preFix: {
         clickeableKey: 'clickeable-account-key-',
       },
+      usingAuthorized: 'using-authorized-account',
     },
   },
 };

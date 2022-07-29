@@ -3,6 +3,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { Icons } from '@popup/icons.enum';
 import AccountUtils from 'src/utils/account.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -10,9 +11,11 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import {
   KeyToUse,
   KeyToUseNoMaster,
+  QueryDOM,
 } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { KeyShowed } from 'src/__tests__/utils-for-testing/interfaces/test-objects';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -21,17 +24,8 @@ import {
   clickAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
-
-type KeyNamePopupHtml =
-  | 'popup_html_posting'
-  | 'popup_html_active'
-  | 'popup_html_memo';
-
-interface KeyShowed {
-  keyName: KeyNamePopupHtml;
-  key: KeyToUse;
-  privateKey: string;
-}
+import { KeyNamePopupHtml } from 'src/__tests__/utils-for-testing/types/keys-types';
+//TODO remove comments
 const keys: KeyShowed[] = [
   {
     keyName: 'popup_html_active',
@@ -63,6 +57,16 @@ const constants = {
     accounts.local.oneAllkeys,
     accounts.local.two,
   ] as LocalAccount[],
+  authorizedLocalAccount: [
+    {
+      ...accounts.local.oneAllkeys,
+      keys: {
+        ...accounts.local.oneAllkeys.keys,
+        postingPubkey: `@${mk.user.two}`,
+      },
+    } as LocalAccount,
+    accounts.local.two, //TODO add the authorized as needed
+  ] as LocalAccount[],
   localAccountDeletedOne: [accounts.local.two] as LocalAccount[],
   snapshotName: {
     withData: {
@@ -81,6 +85,9 @@ const constants = {
       'popup_html_delete_account_confirmation_message',
       [mk.user.one],
     ),
+    usingAuthorized: i18n.get('html_popup_using_authorized_account', [
+      `@${mk.user.two}`,
+    ]),
   },
 };
 /**
@@ -138,9 +145,18 @@ const methods = {
       delete removeTo.keys[`${key}Pubkey`];
     });
   },
+  clickNAssert: async (ariaLabel: string) => {
+    await clickAwait([ariaLabel]);
+    assertion.getByLabelText(alComponent.confirmationPage);
+    await clickAwait([alButton.dialog.confirm]);
+    await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+  },
 };
 
 const extraMocks = {
+  /**
+   * Will load the second account.
+   */
   remockGetAccount: () =>
     (AccountUtils.getAccount = jest
       .fn()
