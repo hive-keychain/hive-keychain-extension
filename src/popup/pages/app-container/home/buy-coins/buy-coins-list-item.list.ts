@@ -29,6 +29,16 @@ export const BuyCoinsListItem = (type: BuyCoinType, username: string) => {
             link: 'https://www.binance.com/en/trade/HIVE_BTC',
           },
           {
+            image: 'upbit.svg',
+            link: 'https://id.upbit.com/exchange?code=CRIX.UPBIT.BTC-HIVE',
+          },
+          { image: 'gateio.svg', link: 'https://www.gate.io/trade/HIVE_USDT' },
+          // { image: 'bkex.png', link: 'https://www.bkex.com/trade/HIVE_USDT' },
+          // {
+          //   image: 'bithumb.png',
+          //   link: 'https://en.bithumb.com/trade/order/HIVE_KRW',
+          // },
+          {
             image: 'ionomy.svg',
             link: 'https://exchange.ionomy.com/en/markets/btc-hive',
           },
@@ -65,6 +75,10 @@ export const BuyCoinsListItem = (type: BuyCoinType, username: string) => {
           //   image: 'bittrex.png',
           //   link: 'https://global.bittrex.com/Market/Index?MarketName=BTC-HIVE',
           // },
+          {
+            image: 'upbit.svg',
+            link: 'https://id.upbit.com/exchange?code=CRIX.UPBIT.BTC-HBD',
+          },
           {
             image: 'ionomy.svg',
             link: 'https://exchange.ionomy.com/en/markets/btc-hbd',
