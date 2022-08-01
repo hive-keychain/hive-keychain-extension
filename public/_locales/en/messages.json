@@ -1930,7 +1930,7 @@
     "description": "Wallet information claim account"
   },
   "popup_html_wallet_info_deposit_savings": {
-    "message": "Seposit of $1 into savings",
+    "message": "Deposit of $1 into savings",
     "description": "Wallet information deposit savings"
   },
   "popup_html_wallet_info_deposit_savings_other_account": {
