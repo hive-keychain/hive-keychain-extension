@@ -44,10 +44,15 @@ const Menu = ({
             key={index}
             className="menu-item"
             onClick={() => handleMenuItemClick(menuItem)}>
-            <Icon
-              name={menuItem.icon!}
-              type={IconType.OUTLINED}
-              additionalClassName="icon"></Icon>
+            {menuItem.importedIcon && (
+              <img className="icon" src={`/assets/images/${menuItem.icon}`} />
+            )}
+            {!menuItem.importedIcon && (
+              <Icon
+                name={menuItem.icon!}
+                type={IconType.OUTLINED}
+                additionalClassName="icon"></Icon>
+            )}
 
             <div className="menu-label">
               {chrome.i18n.getMessage(menuItem.label)}

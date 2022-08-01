@@ -21,6 +21,10 @@ const Config = {
   rpc: {
     DEFAULT: { uri: 'https://api.hive.blog', testnet: false },
   },
+  transak: {
+    apiKey:
+      process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
+  },
 };
 
 export default Config;

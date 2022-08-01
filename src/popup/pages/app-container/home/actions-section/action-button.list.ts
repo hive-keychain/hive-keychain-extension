@@ -21,9 +21,8 @@ export const ActionButtonList: ActionButton[] = [
     nextScreen: Screen.TOKENS_PAGE,
   },
   {
-    label: 'popup_html_gov',
-    icon: 'hive-brands.svg',
-    importedIcon: true,
-    nextScreen: Screen.GOVERNANCE_PAGE,
+    label: 'popup_html_buy',
+    icon: Icons.BUY,
+    nextScreen: Screen.BUY_COINS_PAGE,
   },
 ];
