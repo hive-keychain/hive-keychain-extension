@@ -1938,7 +1938,7 @@
     "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
-    "message": "Started withdraw $1 from savings",
+    "message": "Started a $1 withdrawal from savings",
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_fill_withdraw_savings": {
