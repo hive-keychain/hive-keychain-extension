@@ -8,6 +8,7 @@ export default {
     powerUpDown: {
       next: 'custom-tool-tip-next-power-down',
     },
+    preFix: 'custom-tool-tip-',
   },
   content: 'tooltip-content',
 };

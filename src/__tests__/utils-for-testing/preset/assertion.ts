@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
+import { AriaLabelText } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 import { ElementQuery } from 'src/__tests__/utils-for-testing/interfaces/elements';
 /**
  * Await for assertion, until loads username's on screen.
@@ -94,6 +95,16 @@ const toHaveClass = async (ariaLabel: string, _class: string) => {
 const toHaveValue = (arialabel: string, value: string) => {
   expect(screen.getByLabelText(arialabel)).toHaveValue(value);
 };
+/**
+ * getByLabelText to toHaveTextContent, array.
+ */
+const toHaveTextContent = (assertion: AriaLabelText[]) => {
+  assertion.forEach((assert) => {
+    expect(screen.getByLabelText(assert.arialabel)).toHaveTextContent(
+      assert.text,
+    );
+  });
+};
 
 export default {
   awaitMk,
@@ -108,4 +119,5 @@ export default {
   awaitOneByLabel,
   toHaveClass,
   toHaveValue,
+  toHaveTextContent,
 };
