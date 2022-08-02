@@ -51,7 +51,7 @@ exports[`auto-lock.component tests:
                 <input
                   aria-checked="true"
                   checked=""
-                  id="pcr_yX8dw_cn"
+                  id="checkbox-auto-lock-default-inner-input"
                   type="checkbox"
                   value=""
                 />
@@ -59,7 +59,7 @@ exports[`auto-lock.component tests:
                   class="state"
                 >
                   <label
-                    for="pcr_yX8dw_cn"
+                    for="checkbox-auto-lock-default-inner-input"
                   />
                 </div>
               </div>
@@ -87,7 +87,7 @@ exports[`auto-lock.component tests:
               >
                 <input
                   aria-checked="false"
-                  id="pcr_7i3Ismnd"
+                  id="checkbox-auto-lock-locked-inner-input"
                   type="checkbox"
                   value=""
                 />
@@ -95,7 +95,7 @@ exports[`auto-lock.component tests:
                   class="state"
                 >
                   <label
-                    for="pcr_7i3Ismnd"
+                    for="checkbox-auto-lock-locked-inner-input"
                   />
                 </div>
               </div>
@@ -123,7 +123,7 @@ exports[`auto-lock.component tests:
               >
                 <input
                   aria-checked="false"
-                  id="pcr_lxOp7tce"
+                  id="checkbox-auto-lock-idle-inner-input"
                   type="checkbox"
                   value=""
                 />
@@ -131,7 +131,7 @@ exports[`auto-lock.component tests:
                   class="state"
                 >
                   <label
-                    for="pcr_lxOp7tce"
+                    for="checkbox-auto-lock-idle-inner-input"
                   />
                 </div>
               </div>

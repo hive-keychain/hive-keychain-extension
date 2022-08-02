@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`clear-all-data.component tests:
+ Must show page and match snapshot: clear-all-data.component Default 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          Clear all data
+        </div>
+        <span
+          aria-label="icon-close-page"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          class="clear-all-data-page"
+        >
+          <p
+            class="introduction"
+          >
+            By confirming, all your data will be lost. Make sure you have your keys saved outside of Keychain
+          </p>
+          <div
+            class="bottom-panel"
+          >
+            <button
+              aria-label="dialog_cancel-button"
+              class="submit-button default "
+            >
+              <div
+                class="button-label"
+              >
+                Cancel 
+              </div>
+            </button>
+            <button
+              aria-label="dialog_confirm-button"
+              class="submit-button raised "
+            >
+              <div
+                class="button-label"
+              >
+                Confirm 
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

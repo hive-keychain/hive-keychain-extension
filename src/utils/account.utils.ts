@@ -1,13 +1,11 @@
 import * as Hive from '@hiveio/dhive';
 import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
-import { resetAccount } from '@popup/actions/account.actions';
-import { resetActiveAccount } from '@popup/actions/active-account.actions';
+import { ActionType } from '@popup/actions/action-type.enum';
 import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import { forgetMk } from '@popup/actions/mk.actions';
 import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
@@ -327,11 +325,15 @@ const downloadAccounts = async () => {
   a.click();
 };
 /* istanbul ignore next */
-const clearAllData = () => {
+const clearAllData = (
+  resetAccount: () => { type: ActionType },
+  forgetMk: () => { type: ActionType },
+  resetActiveAccount: () => { type: ActionType },
+) => {
   LocalStorageUtils.clearLocalStorage();
-  store.dispatch(resetAccount());
-  store.dispatch(forgetMk());
-  store.dispatch(resetActiveAccount());
+  resetAccount();
+  forgetMk();
+  resetActiveAccount();
 };
 
 const getAccountValue = (

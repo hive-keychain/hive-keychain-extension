@@ -1,3 +1,6 @@
+import { resetAccount } from '@popup/actions/account.actions';
+import { resetActiveAccount } from '@popup/actions/active-account.actions';
+import { forgetMk } from '@popup/actions/mk.actions';
 import { goBack, navigateTo } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
@@ -14,6 +17,9 @@ const ClearAllData = ({
   setTitleContainerProperties,
   navigateTo,
   goBack,
+  resetAccount,
+  forgetMk,
+  resetActiveAccount,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -23,7 +29,7 @@ const ClearAllData = ({
   }, []);
 
   const reset = () => {
-    AccountUtils.clearAllData();
+    AccountUtils.clearAllData(resetAccount, forgetMk, resetActiveAccount);
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
@@ -37,11 +43,11 @@ const ClearAllData = ({
 
       <div className="bottom-panel">
         <ButtonComponent
-          ariaLabel="cancel-clear-button"
+          ariaLabel="dialog_cancel-button"
           label={'dialog_cancel'}
           onClick={goBack}></ButtonComponent>
         <ButtonComponent
-          ariaLabel="confirm-clear-button"
+          ariaLabel="dialog_confirm-button"
           label={'popup_html_confirm'}
           onClick={() => reset()}
           type={ButtonType.RAISED}></ButtonComponent>
@@ -58,6 +64,9 @@ const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateTo,
   goBack,
+  resetAccount,
+  forgetMk,
+  resetActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

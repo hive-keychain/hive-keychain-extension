@@ -27,6 +27,7 @@ const CheckboxComponent = (props: CheckboxProps) => {
       }`}>
       <div className="checkbox-and-label">
         <Checkbox
+          id={`${props.ariaLabel}-inner-input`}
           aria-label={props.extraAriaLabelOnInput}
           checked={props.checked}
           onChange={() => props.onChange(!props.checked)}></Checkbox>
