@@ -27,6 +27,7 @@ const exportSettings = async () => {
 };
 
 const importSettings = async () => {
+  console.log('Windows created!! to import');
   chrome.windows.getCurrent(async (currentWindow) => {
     const win: chrome.windows.CreateData = {
       url: chrome.runtime.getURL('import-preferences.html'),
@@ -49,6 +50,7 @@ const onSettingsUploadSuccessfulListener = (
   sender: chrome.runtime.MessageSender,
   sendResp: (response?: any) => void,
 ) => {
+  console.log('After closing the windows or importing something!!');
   if (
     backgroundMessage.command === BackgroundCommand.IMPORT_SETTINGS_CALLBACK &&
     backgroundMessage.value === 'html_popup_import_settings_successful'

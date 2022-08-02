@@ -31,6 +31,7 @@ const Menu = ({
     if (menuItem.nextScreen) {
       navigateTo(menuItem.nextScreen);
     } else if (menuItem.action) {
+      console.log('calling menuItem action: ', menuItem.icon);
       menuItem.action();
     }
   };
@@ -40,7 +41,7 @@ const Menu = ({
       <div className="menu">
         {menuItems.map((menuItem, index) => (
           <div
-            aria-label={'menu-settings-button-' + menuItem.icon} //for testing
+            aria-label={'menu-settings-button-' + menuItem.icon}
             key={index}
             className="menu-item"
             onClick={() => handleMenuItemClick(menuItem)}>
