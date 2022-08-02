@@ -32,4 +32,5 @@ export default {
   warning: {
     message: 'warning-message',
   },
+
 };

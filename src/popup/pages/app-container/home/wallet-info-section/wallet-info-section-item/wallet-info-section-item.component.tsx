@@ -8,9 +8,9 @@ import FormatUtils from 'src/utils/format.utils';
 import './wallet-info-section-item.component.scss';
 
 interface WalletSectionInfoItemProps {
-  mainValue: string | Asset;
+  mainValue: string | Asset | number;
   mainValueLabel: string;
-  subValue: string | Asset;
+  subValue: string | Asset | number;
   subValueLabel: string;
   menuItems: DropdownMenuItemInterface[];
 }
@@ -36,7 +36,7 @@ const walletInfoSectionItem = ({
         </div>
         {parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
           <div className="savings">
-            {'+ '}
+            {parseFloat(subValue?.toString()) > 0 ? '+' : ''}
             {FormatUtils.formatCurrencyValue(subValue)}
           </div>
         )}
