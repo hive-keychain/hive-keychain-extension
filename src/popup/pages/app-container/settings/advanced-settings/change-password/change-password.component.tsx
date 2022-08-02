@@ -63,6 +63,7 @@ const ChangePassword = ({
       </div>
 
       <InputComponent
+        ariaLabel="input-old-password"
         value={oldPassword}
         onChange={setOldPassword}
         logo={Icons.PASSWORD}
@@ -72,6 +73,7 @@ const ChangePassword = ({
         onEnterPress={submitMk}
       />
       <InputComponent
+        ariaLabel="input-new-password"
         value={newPassword}
         onChange={setNewPassword}
         logo={Icons.PASSWORD}
@@ -81,6 +83,7 @@ const ChangePassword = ({
         onEnterPress={submitMk}
       />
       <InputComponent
+        ariaLabel="input-new-password-confirmation"
         value={newPasswordConfirm}
         onChange={setNewPasswordConfirm}
         logo={Icons.PASSWORD}
@@ -91,6 +94,7 @@ const ChangePassword = ({
       />
 
       <ButtonComponent
+        ariaLabel="submit-button"
         label={'popup_html_submit'}
         onClick={submitMk}
         fixToBottom
