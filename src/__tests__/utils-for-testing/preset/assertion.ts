@@ -2,6 +2,7 @@ import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import { AriaLabelText } from 'src/__tests__/utils-for-testing/interfaces/assertions';
+
 import { ElementQuery } from 'src/__tests__/utils-for-testing/interfaces/elements';
 /**
  * Await for assertion, until loads username's on screen.
@@ -61,6 +62,11 @@ const awaitFor = async (ariaLabelOrText: string, query: QueryDOM) => {
 const getOneByText = (text: string) => {
   expect(screen.getByText(text)).toBeInTheDocument();
 };
+const getManyByText = (texts: string[]) => {
+  texts.forEach((text) => {
+    expect(screen.getByText(text)).toBeInTheDocument();
+  });
+};
 const awaitOneByLabel = async (ariaLabel: string) => {
   expect(await screen.findByLabelText(ariaLabel)).toBeInTheDocument();
 };
@@ -92,7 +98,10 @@ const toHaveClass = async (ariaLabel: string, _class: string) => {
 /**
  * getByLabelText to toHaveValue
  */
-const toHaveValue = (arialabel: string, value: string) => {
+const toHaveValue = (
+  arialabel: string,
+  value: string | number | string[] | null | undefined,
+) => {
   expect(screen.getByLabelText(arialabel)).toHaveValue(value);
 };
 /**
@@ -120,4 +129,5 @@ export default {
   toHaveClass,
   toHaveValue,
   toHaveTextContent,
+  getManyByText,
 };

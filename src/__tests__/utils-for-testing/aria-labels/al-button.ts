@@ -49,6 +49,9 @@ export default {
     powerUpDown: {
       submit: 'submit-power-up-down',
     },
+    savings: {
+      submit: 'submit-savings',
+    },
   },
   panel: {
     close: 'button-panel-close',
