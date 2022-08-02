@@ -2,6 +2,7 @@ import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   loadDelegatees,
   loadDelegators,
+  loadPendingOutgoingUndelegations,
 } from '@popup/actions/delegations.actions';
 import {
   addToLoadingList,
@@ -50,6 +51,7 @@ const Delegations = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadPendingOutgoingUndelegations,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState<string>(
     formParams.username ? formParams.username : '',
@@ -61,6 +63,10 @@ const Delegations = ({
 
   const [totalIncoming, setTotalIncoming] = useState<string | number>('...');
   const [totalOutgoing, setTotalOutgoing] = useState<string | number>('...');
+  const [
+    totalPendingOutgoingUndelegation,
+    setTotalPendingOutgoingUndelegation,
+  ] = useState<string | number>('...');
 
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
     useState([]);
@@ -79,6 +85,7 @@ const Delegations = ({
   useEffect(() => {
     loadDelegators(activeAccount.name!);
     loadDelegatees(activeAccount.name!);
+    loadPendingOutgoingUndelegations(activeAccount.name!);
     setAvailable(0);
     loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
@@ -88,12 +95,30 @@ const Delegations = ({
   }, []);
 
   useEffect(() => {
-    if (delegations.incoming) {
-      const totalIncomingVests = delegations.incoming.reduce((prev, cur) => {
-        return (
-          prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+    if (delegations.pendingOutgoingUndelegation) {
+      const totalPendingOutgoingUndelegationVests =
+        delegations.pendingOutgoingUndelegation.reduce(
+          (prev: any, cur: any) => {
+            return prev + cur.vesting_shares;
+          },
+          0,
         );
-      }, 0);
+      setTotalPendingOutgoingUndelegation(
+        FormatUtils.toHP(
+          totalPendingOutgoingUndelegationVests,
+          globalProperties,
+        ),
+      );
+    }
+    if (delegations.incoming) {
+      const totalIncomingVests = delegations.incoming.reduce(
+        (prev: any, cur: any) => {
+          return (
+            prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+          );
+        },
+        0,
+      );
       setTotalIncoming(
         FormatUtils.toHP(totalIncomingVests.toString(), globalProperties),
       );
@@ -101,11 +126,21 @@ const Delegations = ({
       setIncomingError('popup_html_error_retrieving_incoming_delegations');
     }
     if (delegations.outgoing) {
-      const totalOutgoingVests = delegations.outgoing.reduce((prev, cur) => {
-        return (
-          prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
-        );
-      }, 0);
+      let totalOutgoingVests = delegations.outgoing.reduce(
+        (prev: any, cur: any) => {
+          return (
+            prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+          );
+        },
+        0,
+      );
+
+      totalOutgoingVests += delegations.pendingOutgoingUndelegation.reduce(
+        (prev: any, cur: any) => {
+          return prev + cur.vesting_shares;
+        },
+        0,
+      );
 
       setTotalOutgoing(
         FormatUtils.toHP(totalOutgoingVests.toString(), globalProperties),
@@ -133,6 +168,7 @@ const Delegations = ({
   const goToOutgoing = () => {
     navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
       delegationType: DelegationType.OUTGOING,
+      totalPendingOutgoingUndelegation: totalPendingOutgoingUndelegation,
     });
   };
 
@@ -228,11 +264,11 @@ const Delegations = ({
         {chrome.i18n.getMessage('popup_html_delegations_text')}
       </div>
 
-      <div className="delegations-summary">
+      <div className="delegations-summary" aria-label="delegations-summary">
         <div
-          aria-label="total-incoming"
           className="total-incoming"
-          onClick={goToIncomings}>
+          onClick={goToIncomings}
+          aria-label="total-incoming">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
@@ -254,9 +290,9 @@ const Delegations = ({
           </div>
         </div>
         <div
-          aria-label="total-outgoing"
           className="total-outgoing"
-          onClick={goToOutgoing}>
+          onClick={goToOutgoing}
+          aria-label="total-outgoing">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_outgoing')}
           </div>
@@ -265,6 +301,7 @@ const Delegations = ({
             {currencyLabels.hp}
           </div>
         </div>
+        <div className="divider"></div>
         <div className="total-available">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_available')}
@@ -275,29 +312,31 @@ const Delegations = ({
         </div>
       </div>
 
-      <InputComponent
-        ariaLabel="input-username"
-        value={username}
-        onChange={setUsername}
-        logo={Icons.AT}
-        placeholder="popup_html_username"
-        type={InputType.TEXT}
-        autocompleteValues={autocompleteTransferUsernames}
-      />
+      <div className="form-container">
+        <InputComponent
+          ariaLabel="input-username"
+          value={username}
+          onChange={setUsername}
+          logo={Icons.AT}
+          placeholder="popup_html_username"
+          type={InputType.TEXT}
+          autocompleteValues={autocompleteTransferUsernames}
+        />
 
-      <div className="amount-panel">
-        <div className="amount-input-panel">
-          <InputComponent
-            ariaLabel="amount-input"
-            type={InputType.NUMBER}
-            placeholder="0.000"
-            skipPlaceholderTranslation={true}
-            value={value}
-            onChange={setValue}
-            onSetToMaxClicked={setToMax}
-          />
+        <div className="amount-panel">
+          <div className="amount-input-panel">
+            <InputComponent
+              ariaLabel="amount-input"
+              type={InputType.NUMBER}
+              placeholder="0.000"
+              skipPlaceholderTranslation={true}
+              value={value}
+              onChange={setValue}
+              onSetToMaxClicked={setToMax}
+            />
+          </div>
+          <div className="currency">{currencyLabels.hp}</div>
         </div>
-        <div className="currency">{currencyLabels.hp}</div>
       </div>
 
       <OperationButtonComponent
@@ -333,6 +372,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadPendingOutgoingUndelegations,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
