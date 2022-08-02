@@ -17,4 +17,8 @@ const tokensFilter = {
   },
 };
 
-export default { selectKeys, transfer, tokensFilter };
+const autoLock = {
+  preFix: 'checkbox-auto-lock-',
+};
+
+export default { selectKeys, transfer, tokensFilter, autoLock };

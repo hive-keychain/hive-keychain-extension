@@ -1,5 +1,6 @@
 import { ExtendedAccount, VestingDelegation } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { Autolock } from '@interfaces/autolock.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
@@ -86,6 +87,7 @@ export interface MockProxy {
 export interface CustomDataFromLocalStorage {
   accountHistoryApi?: string[];
   customRpcList?: string[];
+  customAutolock?: Autolock;
 }
 //TODO remove all unused from overwrite + add the keychainApiget.
 export interface MocksOverwrite {

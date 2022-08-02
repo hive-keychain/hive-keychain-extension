@@ -53,6 +53,7 @@ const AutoLock = ({
   return (
     <div className="auto-lock-page">
       <CheckboxComponent
+        ariaLabel={`checkbox-auto-lock-${AutoLockType.DEFAULT}`}
         title="popup_html_al_default_title"
         hint="popup_html_al_default_info"
         checked={selectedType === AutoLockType.DEFAULT}
@@ -60,6 +61,7 @@ const AutoLock = ({
           setSelectedType(AutoLockType.DEFAULT)
         }></CheckboxComponent>
       <CheckboxComponent
+        ariaLabel={`checkbox-auto-lock-${AutoLockType.DEVICE_LOCK}`}
         title="popup_html_al_locked_title"
         hint="popup_html_al_locked_info"
         checked={selectedType === AutoLockType.DEVICE_LOCK}
@@ -67,6 +69,7 @@ const AutoLock = ({
           setSelectedType(AutoLockType.DEVICE_LOCK)
         }></CheckboxComponent>
       <CheckboxComponent
+        ariaLabel={`checkbox-auto-lock-${AutoLockType.IDLE_LOCK}`}
         title="popup_html_al_idle_title"
         hint="popup_html_al_idle_info"
         checked={selectedType === AutoLockType.IDLE_LOCK}
@@ -76,6 +79,7 @@ const AutoLock = ({
 
       {selectedType === AutoLockType.IDLE_LOCK && (
         <InputComponent
+          ariaLabel="amount-input"
           value={interval}
           onChange={setInterval}
           placeholder="10"
@@ -85,6 +89,7 @@ const AutoLock = ({
       )}
 
       <ButtonComponent
+        ariaLabel="button-save"
         label={'popup_html_save'}
         onClick={() => save()}
         fixToBottom

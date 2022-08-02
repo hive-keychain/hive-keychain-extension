@@ -23,7 +23,7 @@ const hasKeys = (obj: {}) => {
  *
  * @param args
  * @param args[0] Is always used for the LocalStorageKeyEnum.
- * @param customData Used to pass custom readed value from LS.
+ * @param customData Used to pass custom readed value from LS. To use, assign dataMocks.customDataFromLocalStorage
  * @returns Null if not found or not mocked yet.
  * If debug needed, just uncomment the console.log after the default case.
  */
@@ -33,10 +33,12 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
   //console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
-      return {
-        type: AutoLockType.DEFAULT,
-        mn: 1,
-      };
+      return hasKeys(customData)
+        ? customData.customAutolock
+        : {
+            type: AutoLockType.DEFAULT,
+            mn: 1,
+          };
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
       return true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
