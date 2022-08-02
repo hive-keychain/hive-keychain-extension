@@ -17,7 +17,7 @@ import {
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils, { getDelegatees, getDelegators } from 'src/utils/hive.utils';
+import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 const chrome = require('chrome-mock');
@@ -392,7 +392,7 @@ describe('hive.utils tests:\n', () => {
         data: utilsT.fakeGetDelegatorsResponse,
       });
       const username = 'blocktrades';
-      const result = await getDelegators(username);
+      const result = await HiveUtils.getDelegators(username);
       expect(result.length).toBeDefined();
       expect(spyKeychainApiGet).toBeCalledTimes(1);
       expect(spyKeychainApiGet).toBeCalledWith(`/hive/delegators/${username}`);
@@ -401,7 +401,7 @@ describe('hive.utils tests:\n', () => {
       const spyKeychainApiGet = jest.spyOn(KeychainApi, 'get');
       spyKeychainApiGet.mockResolvedValueOnce({ data: [] });
       const username = 'blocktrades';
-      const result = await getDelegators(username);
+      const result = await HiveUtils.getDelegators(username);
       expect(result.length).toBeDefined();
       expect(result.length).toBe(0);
       expect(spyKeychainApiGet).toBeCalledTimes(1);
@@ -443,7 +443,7 @@ describe('hive.utils tests:\n', () => {
         },
       ] as Delegator[];
       const username = 'blocktrades';
-      const result = await getDelegators(username);
+      const result = await HiveUtils.getDelegators(username);
       expect(result.length).toBe(2);
       expect(result).toEqual(expectedArrayOrdered);
       expect(spyKeychainApiGet).toBeCalledTimes(1);
@@ -485,7 +485,7 @@ describe('hive.utils tests:\n', () => {
           min_delegation_time: '2017-09-29T02:19:03',
         },
       ];
-      const result = await getDelegatees(username);
+      const result = await HiveUtils.getDelegatees(username);
       expect(result.length).toBe(3);
       expect(result).toEqual(expectedArrayOrdered);
       expect(mockedGetVestingDelegations).toBeCalledTimes(1);
@@ -499,7 +499,7 @@ describe('hive.utils tests:\n', () => {
       mockedGetVestingDelegations.mockResolvedValueOnce([]);
       const username = 'theghost1980';
       const argumentsCallingApi = [username, '', 1000];
-      const result = await getDelegatees(username);
+      const result = await HiveUtils.getDelegatees(username);
       expect(result.length).toBe(0);
       expect(mockedGetVestingDelegations).toBeCalledTimes(1);
       expect(mockedGetVestingDelegations).toBeCalledWith(

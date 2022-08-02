@@ -5,7 +5,7 @@ name: Check builds and run tests
 
 on:
   pull_request:
-    branches: [master, beta, pre-prod]
+    branches: [pre-prod]
 env:
   _TEST_USERNAME: ${{secrets._TEST_USERNAME}}
   _TEST_OWNER: ${{secrets._TEST_OWNER}}
