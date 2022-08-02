@@ -67,7 +67,6 @@ const TopBar = ({
       setErrorMessage('popup_accounts_err_claim');
       return;
     }
-
     addToLoadingList('popup_html_claiming_rewards');
     const claimSuccessful = await HiveUtils.claimRewards(
       activeAccount,
@@ -93,6 +92,7 @@ const TopBar = ({
 
       {hasRewardToClaim && (
         <Icon
+          ariaLabel="reward-claim-icon"
           name={Icons.CLAIM}
           onClick={() => claim()}
           additionalClassName="button claim-button"
