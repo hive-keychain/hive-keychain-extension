@@ -12,6 +12,7 @@ import {
 } from '@popup/actions/navigation.actions';
 import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from '@popup/store';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -24,8 +25,9 @@ import './incoming-outgoing-item.component.scss';
 
 interface IncomingOutgoingProps {
   delegationType: DelegationType;
-  username: string;
+  username?: string;
   amount: string;
+  expirationDate?: string;
 }
 
 const IncomingOutgoing = ({
@@ -35,6 +37,7 @@ const IncomingOutgoing = ({
   amount,
   globalProperties,
   currencyLabels,
+  expirationDate,
   navigateToWithParams,
   navigateTo,
   setErrorMessage,
@@ -62,7 +65,7 @@ const IncomingOutgoing = ({
         addToLoadingList('html_popup_cancel_delegation_operation');
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
-          username,
+          username!,
           '0.000000 VESTS',
         );
         removeFromLoadingList('html_popup_cancel_delegation_operation');
@@ -95,9 +98,6 @@ const IncomingOutgoing = ({
       cancelDelegation();
     }
 
-    const operationString = chrome.i18n
-      .getMessage('popup_html_delegations')
-      .toLowerCase();
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${
       currencyLabels.hp
     }`;
@@ -116,7 +116,7 @@ const IncomingOutgoing = ({
         addToLoadingList('html_popup_delegation_operation');
         let success = await HiveUtils.delegateVestingShares(
           activeAccount,
-          username,
+          username!,
           FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
             ' VESTS',
         );
@@ -134,54 +134,73 @@ const IncomingOutgoing = ({
 
   return (
     <div className="delegation-row" key={username}>
-      <div className="to-from">@{username}</div>
-      <div className="right-panel">
-        {!editModeActivated && (
-          <div
-            className="value"
-            onDoubleClick={() => {
-              if (delegationType === DelegationType.OUTGOING) enterEditMode();
-            }}>
-            {FormatUtils.withCommas(amountHP)} {currencyLabels.hp}
+      {username && (
+        <>
+          <div className="left-panel">{`@${username}`}</div>
+          <div className="right-panel">
+            {!editModeActivated && (
+              <div
+                className="value"
+                onDoubleClick={() => {
+                  if (delegationType === DelegationType.OUTGOING)
+                    enterEditMode();
+                }}>
+                {FormatUtils.withCommas(amountHP)} {currencyLabels.hp}
+              </div>
+            )}
+            {editModeActivated && (
+              <InputComponent
+                min={0}
+                value={value}
+                type={InputType.NUMBER}
+                onChange={setValue}
+                placeholder=""></InputComponent>
+            )}
+            {delegationType === DelegationType.OUTGOING &&
+              !editModeActivated && (
+                <img
+                  className="icon edit-delegation"
+                  src="/assets/images/edit.png"
+                  onClick={enterEditMode}
+                />
+              )}
+            {delegationType === DelegationType.OUTGOING &&
+              !editModeActivated && (
+                <img
+                  className="icon erase-delegation"
+                  src="/assets/images/clear.png"
+                  onClick={cancelDelegation}
+                />
+              )}
+            {delegationType === DelegationType.OUTGOING &&
+              editModeActivated && (
+                <img
+                  className={'icon always-displayed submit'}
+                  src="/assets/images/submit.png"
+                  onClick={saveChanges}
+                />
+              )}
+            {delegationType === DelegationType.OUTGOING &&
+              editModeActivated && (
+                <img
+                  className="icon always-displayed cancel"
+                  src="/assets/images/delete.png"
+                  onClick={cancelEdit}
+                />
+              )}
           </div>
-        )}
-        {editModeActivated && (
-          <InputComponent
-            min={0}
-            value={value}
-            type={InputType.NUMBER}
-            onChange={setValue}
-            placeholder=""></InputComponent>
-        )}
-        {delegationType === DelegationType.OUTGOING && !editModeActivated && (
-          <img
-            className="icon edit-delegation"
-            src="/assets/images/edit.png"
-            onClick={enterEditMode}
-          />
-        )}
-        {delegationType === DelegationType.OUTGOING && !editModeActivated && (
-          <img
-            className="icon erase-delegation"
-            src="/assets/images/clear.png"
-            onClick={cancelDelegation}
-          />
-        )}
-        {delegationType === DelegationType.OUTGOING && editModeActivated && (
-          <img
-            className={'icon always-displayed submit'}
-            src="/assets/images/submit.png"
-            onClick={saveChanges}
-          />
-        )}
-        {delegationType === DelegationType.OUTGOING && editModeActivated && (
-          <img
-            className="icon always-displayed cancel"
-            src="/assets/images/delete.png"
-            onClick={cancelEdit}
-          />
-        )}
-      </div>
+        </>
+      )}
+      {expirationDate && (
+        <div className="pending-undelegation">
+          <div className="expiration-date">
+            {moment(expirationDate).format('L')}
+          </div>
+          <div className="amount">
+            {amountHP} {currencyLabels.hp}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
