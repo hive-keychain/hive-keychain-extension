@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`import-export-preferences.component tests:
+ Must load import-export page and match snapshot: import-export-preferences.component Default 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          Import / Export Settings
+        </div>
+        <span
+          aria-label="icon-close-page"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          class="import-export-preferences-page"
+        >
+          <div
+            class="menu-page"
+          >
+            <div
+              class="menu"
+            >
+              <div
+                aria-label="menu-settings-button-file_upload"
+                class="menu-item"
+              >
+                <span
+                  class="icon-component material-icons-outlined icon "
+                >
+                  file_upload
+                </span>
+                <div
+                  class="menu-label"
+                >
+                  Import Settings
+                </div>
+              </div>
+              <div
+                aria-label="menu-settings-button-file_download"
+                class="menu-item"
+              >
+                <span
+                  class="icon-component material-icons-outlined icon "
+                >
+                  file_download
+                </span>
+                <div
+                  class="menu-label"
+                >
+                  Export settings
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -1,4 +1,5 @@
 import { Icons } from '@popup/icons.enum';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import SettingsUtils from 'src/utils/settings.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -52,8 +53,14 @@ const methods = {
 const extraMocks = {
   spy: {
     importSettings: jest.spyOn(SettingsUtils, 'importSettings'),
-    addListener: () => jest.spyOn(chrome.runtime.onMessage, 'addListener'),
+    exportSettings: jest.spyOn(SettingsUtils, 'exportSettings'),
   },
+  createObjectURL: (window.URL.createObjectURL = jest
+    .fn()
+    .mockImplementation((...args: any) => args)),
+  getMultipleValueFromLocalStorage: () =>
+    (LocalStorageUtils.getMultipleValueFromLocalStorage = jest.fn()),
+  aClick: (HTMLAnchorElement.prototype.click = jest.fn()),
 };
 
 export default {

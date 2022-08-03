@@ -14,10 +14,15 @@ describe('import-export-preferences.component tests:\n', () => {
   it('Must load import-export page and match snapshot', () => {
     expect(_asFragment()).toMatchSnapshot(constants.snapshotName.default);
   });
-  it('Must open import preferences', async () => {
+  it('Must open import window', async () => {
     await clickAwait([alButton.menuPreFix + Icons.IMPORT]);
     expect(extraMocks.spy.importSettings).toBeCalledTimes(1);
-    //expect(extraMocks.spy.addListener()).toBeCalledWith({});
   });
-  it.todo('Must open export preferences');
+  it('Must try to export settings file', async () => {
+    extraMocks.getMultipleValueFromLocalStorage();
+    extraMocks.aClick;
+    await clickAwait([alButton.menuPreFix + Icons.EXPORT]);
+    expect(extraMocks.spy.exportSettings).toBeCalledTimes(1);
+    expect(extraMocks.aClick).toBeCalledTimes(1);
+  });
 });
