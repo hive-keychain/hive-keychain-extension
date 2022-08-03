@@ -23,4 +23,8 @@ export default {
     new: 'input-new-password',
     confirmation: 'input-new-password-confirmation',
   },
+  rpcNodes: {
+    uri: 'input-rpc-node-uri',
+    nodeChainId: 'input-node-chain-id',
+  },
 };

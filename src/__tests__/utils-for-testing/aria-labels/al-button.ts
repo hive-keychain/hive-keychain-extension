@@ -90,4 +90,7 @@ export default {
       delete: 'button-delete-account',
     },
   },
+  rpcNodes: {
+    addRpc: 'button-add-rpc',
+  },
 };

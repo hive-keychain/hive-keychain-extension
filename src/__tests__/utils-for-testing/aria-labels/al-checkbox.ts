@@ -25,4 +25,19 @@ const keychainify = {
   checkbox: 'checkbox-keychainify',
 };
 
-export default { selectKeys, transfer, tokensFilter, autoLock, keychainify };
+const rpcNodes = {
+  select: {
+    automaticMode: 'checkbox-rpc-nodes-automatic-mode',
+    addTesnetNode: 'checkbox-add-rpc-test-node',
+    setAsActive: 'checkbox-set-new-rpc-as-active',
+  },
+};
+
+export default {
+  selectKeys,
+  transfer,
+  tokensFilter,
+  autoLock,
+  keychainify,
+  rpcNodes,
+};

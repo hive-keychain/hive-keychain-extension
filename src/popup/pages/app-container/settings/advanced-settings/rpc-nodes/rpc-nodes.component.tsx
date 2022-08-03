@@ -16,6 +16,7 @@ import InputComponent from 'src/common-ui/input/input.component';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import RpcUtils from 'src/utils/rpc.utils';
+import * as ValidUrl from 'valid-url';
 import './rpc-nodes.component.scss';
 
 interface RpcListItem {
@@ -116,6 +117,10 @@ const RpcNodes = ({
       setErrorMessage('popup_html_rpc_missing_fields');
       return;
     }
+    if (!ValidUrl.isWebUri(addRpcNodeUri)) {
+      setErrorMessage('html_popup_url_not_valid');
+      return;
+    }
     if (displayedRpcs.find((rpc) => rpc.uri === addRpcNodeUri)) {
       setErrorMessage('popup_html_rpc_uri_already_existing');
       return;
@@ -138,11 +143,12 @@ const RpcNodes = ({
   const customLabelRender = (selectProps: SelectRenderer<RpcListItem>) => {
     return (
       <div
+        aria-label="selected-rpc-node-panel"
         className="selected-rpc-node-panel"
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        <div className="selected-rpc-node">
+        <div aria-label="selected-rpc-node" className="selected-rpc-node">
           {activeRpc && activeRpc?.uri && activeRpc.uri}
           {activeRpc?.testnet && <div>- TESTNET</div>}
         </div>
@@ -152,6 +158,7 @@ const RpcNodes = ({
   const customItemRender = (selectProps: SelectItemRenderer<RpcListItem>) => {
     return (
       <div
+        aria-label={`select-rpc-item-${selectProps.item.rpc.uri}`}
         className={`select-rpc-item ${
           activeRpc?.uri === selectProps.item.rpc.uri ? 'selected' : ''
         }`}
@@ -165,6 +172,7 @@ const RpcNodes = ({
         </div>
         {!RpcUtils.isDefault(selectProps.item.rpc) && (
           <img
+            aria-label="button-erase-custom-rpc"
             src="/assets/images/clear.png"
             className="erase-button"
             onClick={($event) => {
@@ -186,6 +194,7 @@ const RpcNodes = ({
         }}></p>
 
       <CheckboxComponent
+        ariaLabel="checkbox-rpc-nodes-automatic-mode"
         title="popup_html_rpc_automatic_mode"
         hint="popup_html_rpc_automatic_mode_hint"
         checked={switchAuto}
@@ -206,6 +215,7 @@ const RpcNodes = ({
 
       {!switchAuto && !isAddRpcPanelDisplayed && (
         <ButtonComponent
+          ariaLabel="button-add-rpc"
           label={'popup_html_add_rpc'}
           onClick={() => setIsAddRpcPanelDisplayed(true)}
         />
@@ -217,6 +227,7 @@ const RpcNodes = ({
             {chrome.i18n.getMessage('popup_html_add_rpc_text')}
           </div>
           <InputComponent
+            ariaLabel="input-rpc-node-uri"
             type={InputType.TEXT}
             value={addRpcNodeUri}
             onChange={setAddRpcNodeUri}
@@ -224,12 +235,14 @@ const RpcNodes = ({
             onEnterPress={handleSaveNewRpcClicked}
           />
           <CheckboxComponent
+            ariaLabel="checkbox-add-rpc-test-node"
             title="TESTNET"
             checked={addRpcNodeTestnet}
             onChange={setAddRpcNodeTestnet}
             skipTranslation={true}></CheckboxComponent>
           {addRpcNodeTestnet && (
             <InputComponent
+              ariaLabel="input-node-chain-id"
               type={InputType.TEXT}
               value={addRpcNodeChainId}
               onChange={setAddRpcNodeChainId}
@@ -240,11 +253,13 @@ const RpcNodes = ({
           )}
 
           <CheckboxComponent
+            ariaLabel="checkbox-set-new-rpc-as-active"
             title="popup_html_set_new_rpc_as_active"
             checked={setNewRpcAsActive}
             onChange={setSetNewRpcAsActive}></CheckboxComponent>
 
           <ButtonComponent
+            ariaLabel="button-save"
             label={'popup_html_save'}
             onClick={() => handleSaveNewRpcClicked()}
             fixToBottom

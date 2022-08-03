@@ -1,0 +1,430 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rpc-nodes.component tests:
+ Not auto:
+ Must load component and match snapshot: rpc-nodes.component No Switch Auto 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          RPC Node
+        </div>
+        <span
+          aria-label="icon-close-page"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          class="rpc-nodes-page"
+        >
+          <p
+            class="introduction"
+          >
+            You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.
+          </p>
+          <div
+            class="checkbox-container align-top"
+          >
+            <div
+              class="checkbox-and-label"
+            >
+              <div
+                class="pretty p-default"
+              >
+                <input
+                  aria-checked="false"
+                  checked=""
+                  id="checkbox-rpc-nodes-automatic-mode-inner-input"
+                  type="checkbox"
+                  value=""
+                />
+                <div
+                  class="state"
+                >
+                  <label
+                    for="checkbox-rpc-nodes-automatic-mode-inner-input"
+                  />
+                </div>
+              </div>
+              <div
+                aria-label="checkbox-rpc-nodes-automatic-mode"
+                class="label"
+              >
+                Switch automatically
+              </div>
+            </div>
+            <div
+              class="hint"
+            >
+              Will always select the best RPC node for you
+            </div>
+          </div>
+          <div
+            class="select-account-section"
+          >
+            <div>
+              <div
+                aria-expanded="true"
+                aria-label="Dropdown select"
+                class="react-dropdown-select select-rpc-node-select css-16vukcu e1gzf2xs0"
+                color="#0074D9"
+                direction="ltr"
+                tabindex="0"
+              >
+                <div
+                  class="react-dropdown-select-content react-dropdown-select-type-single css-1m5113o e1gn6jc30"
+                >
+                  <div
+                    aria-label="selected-rpc-node-panel"
+                    class="selected-rpc-node-panel"
+                  >
+                    <div
+                      aria-label="selected-rpc-node"
+                      class="selected-rpc-node"
+                    >
+                      DEFAULT
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="react-dropdown-select-dropdown-handle css-4ft19d e1vudypg0"
+                  color="#0074D9"
+                  rotate="1"
+                  tabindex="-1"
+                >
+                  <svg
+                    fill="currentColor"
+                    viewBox="0 0 40 40"
+                  >
+                    <path
+                      d="M31 26.4q0 .3-.2.5l-1.1 1.2q-.3.2-.6.2t-.5-.2l-8.7-8.8-8.8 8.8q-.2.2-.5.2t-.5-.2l-1.2-1.2q-.2-.2-.2-.5t.2-.5l10.4-10.4q.3-.2.6-.2t.5.2l10.4 10.4q.2.2.2.5z"
+                    />
+                  </svg>
+                </div>
+                <div
+                  aria-expanded="true"
+                  class="react-dropdown-select-dropdown react-dropdown-select-dropdown-position-bottom css-1jemt82 e1qjn9k91"
+                  role="list"
+                  tabindex="-1"
+                >
+                  <div
+                    aria-label="select-rpc-item-https://api.hive.blog/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://api.hive.blog/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://api.deathwing.me"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://api.deathwing.me 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://api.openhive.network/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://api.openhive.network/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://api.hivekings.com/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://api.hivekings.com/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://anyx.io/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://anyx.io/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://api.pharesim.me/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://api.pharesim.me/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://hived.emre.sh"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://hived.emre.sh 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://hived.hive-engine.com/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://hived.hive-engine.com/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://rpc.ausbit.dev"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://rpc.ausbit.dev 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://rpc.ecency.com"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://rpc.ecency.com 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://techcoderx.com"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://techcoderx.com 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://hive-api.arcange.eu/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://hive-api.arcange.eu/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://hived.privex.io/"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://hived.privex.io/ 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://hive.roelandp.nl"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://hive.roelandp.nl 
+                    </div>
+                  </div>
+                  <div
+                    aria-label="select-rpc-item-https://saturnoman.com/rpc"
+                    class="select-rpc-item "
+                  >
+                    <div
+                      class="rpc-name"
+                    >
+                      https://saturnoman.com/rpc 
+                    </div>
+                    <img
+                      aria-label="button-erase-custom-rpc"
+                      class="erase-button"
+                      src="/assets/images/clear.png"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button
+            aria-label="button-add-rpc"
+            class="submit-button default "
+          >
+            <div
+              class="button-label"
+            >
+              Add RPC 
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`rpc-nodes.component tests:
+ Switch rpc auto:
+ Must load component and match snapshot: rpc-nodes.component Switch Auto 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          RPC Node
+        </div>
+        <span
+          aria-label="icon-close-page"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          class="rpc-nodes-page"
+        >
+          <p
+            class="introduction"
+          >
+            You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.
+          </p>
+          <div
+            class="checkbox-container align-top"
+          >
+            <div
+              class="checkbox-and-label"
+            >
+              <div
+                class="pretty p-default"
+              >
+                <input
+                  aria-checked="true"
+                  checked=""
+                  id="checkbox-rpc-nodes-automatic-mode-inner-input"
+                  type="checkbox"
+                  value=""
+                />
+                <div
+                  class="state"
+                >
+                  <label
+                    for="checkbox-rpc-nodes-automatic-mode-inner-input"
+                  />
+                </div>
+              </div>
+              <div
+                aria-label="checkbox-rpc-nodes-automatic-mode"
+                class="label"
+              >
+                Switch automatically
+              </div>
+            </div>
+            <div
+              class="hint"
+            >
+              Will always select the best RPC node for you
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

@@ -40,7 +40,7 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
             mn: 1,
           };
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
-      return true;
+      return hasKeys(customData) ? customData.customSwitchAuto : true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
       return null;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
@@ -57,10 +57,11 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
       return hasKeys(customData) ? customData.customRpcList : [];
     case LocalStorageKeyEnum.KEYCHAINIFY_ENABLED:
       return true;
+    case LocalStorageKeyEnum.RPC_LIST:
+      return hasKeys(customData) ? customData.customsRpcs : [];
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG
-      // - HIVE_ENGINE_CUSTOM_RPC_LIST
       // - __REQUEST_HANDLER
       // - LOCAL_STORAGE_VERSION
 

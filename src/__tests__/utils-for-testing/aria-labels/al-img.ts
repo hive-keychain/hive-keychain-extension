@@ -4,4 +4,7 @@ export default {
       eraseRpc: 'erase-rpc-img',
     },
   },
+  rpcNodes: {
+    delete: 'button-erase-custom-rpc',
+  },
 };
