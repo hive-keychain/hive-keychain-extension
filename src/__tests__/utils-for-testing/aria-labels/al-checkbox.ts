@@ -21,4 +21,8 @@ const autoLock = {
   preFix: 'checkbox-auto-lock-',
 };
 
-export default { selectKeys, transfer, tokensFilter, autoLock };
+const keychainify = {
+  checkbox: 'checkbox-keychainify',
+};
+
+export default { selectKeys, transfer, tokensFilter, autoLock, keychainify };

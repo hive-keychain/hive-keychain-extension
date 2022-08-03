@@ -55,6 +55,8 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
       return hasKeys(customData) ? customData.accountHistoryApi : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST:
       return hasKeys(customData) ? customData.customRpcList : [];
+    case LocalStorageKeyEnum.KEYCHAINIFY_ENABLED:
+      return true;
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG

@@ -40,6 +40,7 @@ const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
       </div>
 
       <CheckboxComponent
+        ariaLabel="checkbox-keychainify"
         title="popup_html_enable_keychainify_title"
         checked={enabled}
         onChange={setEnabled}
