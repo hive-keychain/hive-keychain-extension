@@ -67,6 +67,8 @@ const AutomatedTasks = ({
 
   const init = async () => {
     const values = await AutomatedTasksUtils.getClaims(activeAccount.name!);
+    console.log('values: ', values);
+    console.log('Config: ', Config.claims.freeAccount.MIN_RC);
     setClaimRewards(values[LocalStorageKeyEnum.CLAIM_REWARDS] ?? false);
     setClaimAccounts(values[LocalStorageKeyEnum.CLAIM_ACCOUNTS] ?? false);
     setClaimSavings(values[LocalStorageKeyEnum.CLAIM_SAVINGS] ?? false);
