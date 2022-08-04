@@ -45,10 +45,6 @@ const constants = {
   },
   menuItems: {
     advanceSettings: AdvancedSettingsMenuItems,
-    // settingsFiltered: SettingsMenuItems.filter(
-    //   (menuItem) => menuItem.icon !== Icons.SUPPORT,
-    // ),
-    // urlSupport: { url: 'https://discord.gg/E6P6Gjv9MC' },
   },
 };
 
@@ -65,7 +61,6 @@ const methods = {
   afterEach: afterEach(() => {
     afterTests.clean();
   }),
-  //spyChromeTabs: () => jest.spyOn(chrome.tabs, 'create'),
 };
 
 const extraMocks = () => {};

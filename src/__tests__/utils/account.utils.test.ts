@@ -58,9 +58,6 @@ describe('account.utils tests:\n', () => {
     },
   ];
   const { extraMocks } = accountUtilsMocks;
-  beforeEach(() => {
-    //store.dispatch = jest.fn();
-  });
   afterEach(() => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
@@ -273,7 +270,6 @@ describe('account.utils tests:\n', () => {
       jest.fn().mockClear();
     });
     test('Test with getValueFromLocalStorage returning [] must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue([]);
@@ -282,7 +278,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning null, must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(null);
@@ -291,7 +286,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning undefined, must return false', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(undefined);
@@ -300,7 +294,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning list with at least one element, must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(['atLeastOneElement']);
@@ -324,7 +317,7 @@ describe('account.utils tests:\n', () => {
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.encryptKeys.active, //key passed as STM on pourpose.
+        userData.encryptKeys.active,
         KeyType.ACTIVE,
         setErrorMessage,
       );
@@ -714,8 +707,8 @@ describe('account.utils tests:\n', () => {
       };
       const result_addAuthorizedAccount =
         await AccountUtils.addAuthorizedAccount(
-          'quentin', //account to add
-          'keychain.tests', //main account
+          'quentin',
+          'keychain.tests',
           [{ name: 'keychain.tests', keys: userDataKeys }],
           setErrorMessage,
         );

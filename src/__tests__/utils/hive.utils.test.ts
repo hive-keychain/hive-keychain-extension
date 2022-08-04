@@ -28,7 +28,7 @@ describe('hive.utils tests:\n', () => {
   }
   afterEach(async () => {
     jest.clearAllMocks();
-    await resetClient(); //reset client if needed as default later on
+    await resetClient();
   });
   describe('getClient tests:\n', () => {
     test('calling getclient must return an instance of Client', () => {
@@ -78,7 +78,7 @@ describe('hive.utils tests:\n', () => {
         vesting_withdraw_rate: '0.000 VESTS',
         voting_manabar: {
           current_mana: 0,
-          last_update_time: 0, //1615046820
+          last_update_time: 0,
         },
         vesting_shares: '0.000 VESTS',
         delegated_vesting_shares: '0.000 VESTS',

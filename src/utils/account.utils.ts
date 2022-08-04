@@ -34,15 +34,11 @@ const getKeys = async (
   ) => ActionPayload<ErrorMessage>,
 ) => {
   if (password.startsWith('STM')) {
-    // store.dispatch(
-    //   setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
-    // );
     setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
     return null;
   }
   const hiveAccounts = await AccountUtils.getAccount(username);
   if (hiveAccounts.length === 0) {
-    //store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
     setErrorMessage(AccountErrorMessages.INCORRECT_USER);
     return null;
   }
@@ -77,7 +73,6 @@ const getKeys = async (
   );
 
   if (!keys) {
-    //store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_KEY));
     setErrorMessage(AccountErrorMessages.INCORRECT_KEY);
   }
   return keys;
@@ -93,12 +88,10 @@ const verifyAccount = async (
   ) => ActionPayload<ErrorMessage>,
 ): Promise<Keys | null> => {
   if (username.length === 0 || password.length === 0) {
-    //store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
     setErrorMessage(AccountErrorMessages.MISSING_FIELDS);
     return null;
   }
   if (isAccountNameAlreadyExisting(existingAccounts, username)) {
-    //store.dispatch(setErrorMessage(AccountErrorMessages.ALREADY_REGISTERED));
     setErrorMessage(AccountErrorMessages.ALREADY_REGISTERED);
     return null;
   }
@@ -228,15 +221,11 @@ const addKey = async (
 ) => {
   const setSuccessMessage = showError;
   if (privateKey.length === 0 || privateKey.length === 0) {
-    //store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
     showError(AccountErrorMessages.MISSING_FIELDS);
     return null;
   }
 
   if (privateKey.startsWith('STM')) {
-    // store.dispatch(
-    //   setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
-    // );
     showError(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
     return null;
   }
@@ -278,7 +267,6 @@ const addKey = async (
         break;
     }
     AccountUtils.saveAccounts(accounts, store.getState().mk);
-    //store.dispatch(setSuccessMessage('import_html_success'));
     setSuccessMessage('import_html_success');
     return accounts;
   }

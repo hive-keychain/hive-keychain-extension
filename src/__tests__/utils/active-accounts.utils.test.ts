@@ -170,9 +170,6 @@ describe(' active-account.utils tests', () => {
   });
 
   describe('hasRewards tests with mocking functions:\n', () => {
-    // beforeEach(() => {
-    //   jest.fn().mockClear();
-    // });
     afterEach(() => {
       jest.fn().mockClear();
     });
@@ -274,7 +271,7 @@ describe(' active-account.utils tests', () => {
       } as ActiveAccount;
       const messageI18n = 'Message';
       const expectedRewardText = `["1.00 HBD","1 HP","1.00 HIVE","${messageI18n}:<br>1 HP / 1.00 HBD / 1.00 HIVE"]`;
-      FormatUtils.toHP = jest.fn().mockReturnValue(1); // so it will print 1 HP.
+      FormatUtils.toHP = jest.fn().mockReturnValue(1);
       ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
@@ -293,7 +290,7 @@ describe(' active-account.utils tests', () => {
       } as ActiveAccount;
       const messageI18n = 'Message 2';
       const expectedRewardText = `["1.00 HBD","0 HP","0.00 HIVE","${messageI18n}:<br>1.00 HBD"]`;
-      FormatUtils.toHP = jest.fn().mockReturnValue(0); // so it won't print any HP.
+      FormatUtils.toHP = jest.fn().mockReturnValue(0);
       ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
@@ -312,7 +309,7 @@ describe(' active-account.utils tests', () => {
       } as ActiveAccount;
       const messageI18n = 'Message 3';
       const expectedRewardText = `["0.00 HBD","10 HP","0.00 HIVE","${messageI18n}:<br>10 HP"]`;
-      FormatUtils.toHP = jest.fn().mockReturnValue(10); // so it will print 10 HP.
+      FormatUtils.toHP = jest.fn().mockReturnValue(10);
       ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
@@ -331,7 +328,7 @@ describe(' active-account.utils tests', () => {
       } as ActiveAccount;
       const messageI18n = 'Message 4';
       const expectedRewardText = `["0.00 HBD","0 HP","100.00 HIVE","${messageI18n}:<br>100.00 HIVE"]`;
-      FormatUtils.toHP = jest.fn().mockReturnValue(0); // so it will print 0 HP.
+      FormatUtils.toHP = jest.fn().mockReturnValue(0);
       ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
@@ -350,7 +347,7 @@ describe(' active-account.utils tests', () => {
       } as ActiveAccount;
       const messageI18n = 'Message 5';
       const expectedRewardText = `["A HBD","0 HP","WT HIVE","${messageI18n}:<br>A HBD / WT HIVE"]`;
-      FormatUtils.toHP = jest.fn().mockReturnValue(0); // so it will print 0 HP.
+      FormatUtils.toHP = jest.fn().mockReturnValue(0);
       ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
