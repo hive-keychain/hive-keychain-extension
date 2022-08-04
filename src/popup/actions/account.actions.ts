@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@interfaces/errorMessage.interface';
 import {
   loadActiveAccount,
   refreshKeys,
@@ -42,7 +43,14 @@ export const setAccounts = (accounts: LocalAccount[]) => {
 };
 
 export const addKey =
-  (privateKey: string, keyType: KeyType): AppThunk =>
+  (
+    privateKey: string,
+    keyType: KeyType,
+    setErrorMessage: (
+      key: string,
+      params?: string[],
+    ) => ActionPayload<ErrorMessage>,
+  ): AppThunk =>
   async (dispatch, getState) => {
     const { activeAccount, accounts } = getState();
 
@@ -51,6 +59,7 @@ export const addKey =
       accounts,
       privateKey,
       keyType,
+      setErrorMessage,
     );
 
     if (newAccounts && newAccounts?.length > 0) {

@@ -112,9 +112,8 @@ describe('add-key.component tests:\n', () => {
         await methods.asserByText(userData.one.encryptKeys.memo);
       });
     });
-    describe.skip('Error cases:\n', () => {
-      //TODO uncomment, waiting for fixes on dispatcher.
-      it.skip('Must show error if using public key', async () => {
+    describe('Error cases:\n', () => {
+      it('Must show error if using public key', async () => {
         await methods.clickNType(
           'popup_html_active',
           userData.one.encryptKeys.active,
@@ -122,16 +121,16 @@ describe('add-key.component tests:\n', () => {
         );
         await methods.asserByText(message.addKey.isPublicKey);
       });
-      it.skip('Must show error if user not found', async () => {
+      it('Must show error if user not found', async () => {
         extraMocks.getAccount([]);
         await methods.clickNType(
           'popup_html_active',
-          userData.one.encryptKeys.active,
+          userData.one.nonEncryptKeys.active,
           true,
         );
         await methods.asserByText(message.addKey.incorrectUser);
       });
-      it.skip('Must show error if not valid master password', async () => {
+      it('Must show error if not valid master password', async () => {
         await methods.clickNType(
           'popup_html_active',
           userData.one.nonEncryptKeys.randomStringKey51,

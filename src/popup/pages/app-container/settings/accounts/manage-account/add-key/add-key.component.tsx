@@ -33,7 +33,7 @@ const AddKey = ({
       setErrorMessage('popup_accounts_fill');
       return;
     }
-    addKey(privateKey.trim(), navParams);
+    addKey(privateKey.trim(), navParams, setErrorMessage);
     goBack();
   };
 

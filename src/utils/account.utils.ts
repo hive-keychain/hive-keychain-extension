@@ -1,11 +1,9 @@
 import * as Hive from '@hiveio/dhive';
 import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
+import { ErrorMessage } from '@interfaces/errorMessage.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/actions/message.actions';
+import { ActionPayload } from '@popup/actions/interfaces';
 import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
@@ -27,16 +25,25 @@ enum AccountErrorMessages {
   PASSWORD_IS_PUBLIC_KEY = 'popup_account_password_is_public_key',
 }
 
-const getKeys = async (username: string, password: string) => {
+const getKeys = async (
+  username: string,
+  password: string,
+  setErrorMessage: (
+    key: string,
+    params?: string[],
+  ) => ActionPayload<ErrorMessage>,
+) => {
   if (password.startsWith('STM')) {
-    store.dispatch(
-      setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
-    );
+    // store.dispatch(
+    //   setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
+    // );
+    setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
     return null;
   }
   const hiveAccounts = await AccountUtils.getAccount(username);
   if (hiveAccounts.length === 0) {
-    store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
+    //store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_USER));
+    setErrorMessage(AccountErrorMessages.INCORRECT_USER);
     return null;
   }
   const activeInfo = hiveAccounts[0].active;
@@ -70,7 +77,8 @@ const getKeys = async (username: string, password: string) => {
   );
 
   if (!keys) {
-    store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_KEY));
+    //store.dispatch(setErrorMessage(AccountErrorMessages.INCORRECT_KEY));
+    setErrorMessage(AccountErrorMessages.INCORRECT_KEY);
   }
   return keys;
 };
@@ -79,17 +87,23 @@ const verifyAccount = async (
   username: string,
   password: string,
   existingAccounts: LocalAccount[],
+  setErrorMessage: (
+    key: string,
+    params?: string[],
+  ) => ActionPayload<ErrorMessage>,
 ): Promise<Keys | null> => {
   if (username.length === 0 || password.length === 0) {
-    store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
+    //store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
+    setErrorMessage(AccountErrorMessages.MISSING_FIELDS);
     return null;
   }
   if (isAccountNameAlreadyExisting(existingAccounts, username)) {
-    store.dispatch(setErrorMessage(AccountErrorMessages.ALREADY_REGISTERED));
+    //store.dispatch(setErrorMessage(AccountErrorMessages.ALREADY_REGISTERED));
+    setErrorMessage(AccountErrorMessages.ALREADY_REGISTERED);
     return null;
   }
 
-  return await getKeys(username, password);
+  return await getKeys(username, password, setErrorMessage);
 };
 /* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
@@ -210,19 +224,27 @@ const addKey = async (
   accounts: LocalAccount[],
   privateKey: string,
   keyType: KeyType,
+  showError: (key: string, params?: string[]) => ActionPayload<ErrorMessage>,
 ) => {
+  const setSuccessMessage = showError;
   if (privateKey.length === 0 || privateKey.length === 0) {
-    store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
+    //store.dispatch(setErrorMessage(AccountErrorMessages.MISSING_FIELDS));
+    showError(AccountErrorMessages.MISSING_FIELDS);
     return null;
   }
 
   if (privateKey.startsWith('STM')) {
-    store.dispatch(
-      setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
-    );
+    // store.dispatch(
+    //   setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY),
+    // );
+    showError(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
     return null;
   }
-  const keys = await AccountUtils.getKeys(activeAccount.name!, privateKey);
+  const keys = await AccountUtils.getKeys(
+    activeAccount.name!,
+    privateKey,
+    showError,
+  );
   let account = accounts.find(
     (account: LocalAccount) => account.name === activeAccount.name,
   );
@@ -230,9 +252,7 @@ const addKey = async (
     switch (keyType) {
       case KeyType.ACTIVE:
         if (!keys.active) {
-          setErrorMessage('popup_html_wrong_key', [
-            chrome.i18n.getMessage('active'),
-          ]);
+          showError('popup_html_wrong_key', [chrome.i18n.getMessage('active')]);
           return null;
         }
         account.keys.active = keys.active;
@@ -240,7 +260,7 @@ const addKey = async (
         break;
       case KeyType.POSTING:
         if (!keys.posting) {
-          setErrorMessage('popup_html_wrong_key', [
+          showError('popup_html_wrong_key', [
             chrome.i18n.getMessage('posting'),
           ]);
           return null;
@@ -250,9 +270,7 @@ const addKey = async (
         break;
       case KeyType.MEMO:
         if (!keys.memo) {
-          setErrorMessage('popup_html_wrong_key', [
-            chrome.i18n.getMessage('memo'),
-          ]);
+          showError('popup_html_wrong_key', [chrome.i18n.getMessage('memo')]);
           return null;
         }
         account.keys.memo = keys.memo;
@@ -260,7 +278,8 @@ const addKey = async (
         break;
     }
     AccountUtils.saveAccounts(accounts, store.getState().mk);
-    store.dispatch(setSuccessMessage('import_html_success'));
+    //store.dispatch(setSuccessMessage('import_html_success'));
+    setSuccessMessage('import_html_success');
     return accounts;
   }
 };
