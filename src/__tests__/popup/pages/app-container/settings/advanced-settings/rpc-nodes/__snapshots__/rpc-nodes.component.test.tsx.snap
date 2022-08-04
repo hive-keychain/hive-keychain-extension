@@ -37,6 +37,7 @@ exports[`rpc-nodes.component tests:
         style="overflow: auto; display: flex; flex-direction: column;"
       >
         <div
+          aria-label="rpc-nodes-page"
           class="rpc-nodes-page"
         >
           <p
@@ -360,6 +361,7 @@ exports[`rpc-nodes.component tests:
         style="overflow: auto; display: flex; flex-direction: column;"
       >
         <div
+          aria-label="rpc-nodes-page"
           class="rpc-nodes-page"
         >
           <p

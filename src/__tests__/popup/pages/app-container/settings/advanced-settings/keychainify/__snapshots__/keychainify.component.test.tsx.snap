@@ -36,6 +36,7 @@ exports[`keychainify.component tests:
         style="overflow: auto; display: flex; flex-direction: column;"
       >
         <div
+          aria-label="keychainify-page"
           class="keychainify-page"
         >
           <div

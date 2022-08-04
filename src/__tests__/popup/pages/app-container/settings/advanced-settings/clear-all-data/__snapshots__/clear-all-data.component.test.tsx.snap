@@ -36,6 +36,7 @@ exports[`clear-all-data.component tests:
         style="overflow: auto; display: flex; flex-direction: column;"
       >
         <div
+          aria-label="clear-all-data-page"
           class="clear-all-data-page"
         >
           <p

@@ -36,6 +36,7 @@ exports[`import-export-preferences.component tests:
         style="overflow: auto; display: flex; flex-direction: column;"
       >
         <div
+          aria-label="import-export-preferences-page"
           class="import-export-preferences-page"
         >
           <div

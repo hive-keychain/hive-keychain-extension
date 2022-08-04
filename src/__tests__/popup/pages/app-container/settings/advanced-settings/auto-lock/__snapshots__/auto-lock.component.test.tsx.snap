@@ -37,6 +37,7 @@ exports[`auto-lock.component tests:
         style="overflow: auto; display: flex; flex-direction: column;"
       >
         <div
+          aria-label="auto-lock-page"
           class="auto-lock-page"
         >
           <div
