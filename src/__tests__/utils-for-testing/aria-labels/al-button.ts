@@ -55,10 +55,8 @@ export default {
     transfer: {
       send: 'send-transfer',
     },
-
     voteProposal: 'vote-key-chain-proposal',
     voteStoodkevWitness: 'vote-for-stoodkev-witness',
-
   },
   panel: {
     close: 'button-panel-close',
