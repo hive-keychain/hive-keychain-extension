@@ -23,7 +23,6 @@ export const NavigationReducer = (
   state: NavigationState = { stack: [] },
   { type, payload }: ActionPayload<NavigatePayload>,
 ): NavigationState => {
-  console.log(state, payload);
   switch (type) {
     case ActionType.RESET_NAV:
       return { stack: [], params: null };

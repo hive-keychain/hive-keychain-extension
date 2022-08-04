@@ -1,9 +1,11 @@
 import { Asset } from '@hiveio/dhive';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
 import DropdownMenu from 'src/common-ui/dropdown-menu/dropdown-menu.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import './wallet-info-section-item.component.scss';
 
@@ -13,6 +15,7 @@ interface WalletSectionInfoItemProps {
   subValue: string | Asset | number;
   subValueLabel: string;
   menuItems: DropdownMenuItemInterface[];
+  infoContent?: string;
 }
 
 const walletInfoSectionItem = ({
@@ -21,6 +24,7 @@ const walletInfoSectionItem = ({
   subValue,
   subValueLabel,
   menuItems,
+  infoContent,
 }: PropsFromRedux) => {
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
@@ -43,6 +47,14 @@ const walletInfoSectionItem = ({
       </div>
       <div className="currency">
         <div className="balance">{mainValueLabel}</div>
+        {infoContent && (
+          <Icon
+            name={Icons.INFO}
+            type={IconType.OUTLINED}
+            tooltipMessage={infoContent}
+            skipTooltipTranslation
+          />
+        )}
         {parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
           <div className="savings">({subValueLabel})</div>
         )}

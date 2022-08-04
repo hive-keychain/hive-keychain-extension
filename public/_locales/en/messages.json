@@ -2353,5 +2353,9 @@
   "popup_html_pending_currency": {
     "message": "Pending $1",
     "description": "Global"
+  },
+  "popup_html_pending_conversions": {
+    "message": "You have $1 pending $2 conversion(s)",
+    "description": "Global"
   }
 }
