@@ -74,6 +74,7 @@ export interface MocksToUse {
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
 }
+
 export interface MockVotingProposal {
   voteForProposal?: boolean;
   unvoteForProposal?: boolean;

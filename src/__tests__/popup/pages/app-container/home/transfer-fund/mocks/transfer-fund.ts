@@ -106,6 +106,9 @@ const extraMocks = {
       .fn()
       .mockResolvedValue(accounts.extended.memo_key);
   },
+  getPhishingAccounts: () => {
+    KeychainApi.get = jest.fn().mockResolvedValue(phishing.accounts);
+  },
 };
 
 export default {

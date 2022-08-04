@@ -75,6 +75,10 @@ const extraMocks = {
     AccountUtils.getExtendedAccount = jest
       .fn()
       .mockResolvedValue(constants.newExtendedAccount);
+  getAccounts: () => {
+    HiveUtils.getClient().database.getAccounts = jest
+      .fn()
+      .mockResolvedValue([constants.newExtendedAccount]);
   },
 };
 

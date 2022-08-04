@@ -26,6 +26,9 @@ const beforeEach = async (
           ...constants.extendedAccount,
           ...constants.zeroBalances,
         },
+        getAccounts: [
+          { ...constants.extendedAccount, ...constants.zeroBalances },
+        ],
       },
     };
   }
