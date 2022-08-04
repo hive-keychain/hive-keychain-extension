@@ -72,7 +72,7 @@ const TokenIncomingOutgoingPage = ({
   };
 
   return (
-    <div className="incoming-outgoing-page">
+    <div className="token-incoming-outgoing-page">
       {delegationType === DelegationType.OUTGOING &&
         tokenInfo.undelegationCooldown > 0 && (
           <div className="cooldown-message">

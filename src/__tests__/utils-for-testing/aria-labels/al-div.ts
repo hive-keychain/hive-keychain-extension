@@ -32,5 +32,7 @@ export default {
   warning: {
     message: 'warning-message',
   },
+
   proposalVotingSection: 'proposal-voting-section',
+
 };
