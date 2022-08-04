@@ -38,4 +38,12 @@ export default {
     importExport: 'import-export-preferences-page',
     clearAllData: 'clear-all-data-page',
   },
+  account: {
+    subMenu: {
+      addAccount: {
+        router: 'add-account-router-page',
+      },
+      manageAccount: 'settings-manage-account',
+    },
+  },
 };

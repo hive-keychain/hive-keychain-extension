@@ -1,38 +1,41 @@
 import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
+import AccountSubMenuItems from '@popup/pages/app-container/settings/accounts/account-sub-menu-items';
 import React from 'react';
-import settings from 'src/__tests__/popup/pages/app-container/settings/mocks/settings';
+import accountSubMenu from 'src/__tests__/popup/pages/app-container/settings/accounts/mocks/account-sub-menu';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-const { menuPages, constants, methods } = settings;
-const { menuItems } = constants;
+const { ariaLabelPage, methods, extraMocks } = accountSubMenu;
 describe('account-sub-menu.component tests:\n', () => {
   methods.afterEach;
   beforeEach(async () => {
-    await settings.beforeEach(<App />);
+    await accountSubMenu.beforeEach(<App />);
   });
-  it('Must show all menu items', () => {
-    menuItems.settings.forEach((menuItem) => {
-      assertion.getByLabelText(alButton.menuPreFix + menuItem.icon);
+  it('Must show sub menu items', () => {
+    AccountSubMenuItems.forEach((item) => {
+      assertion.getByLabelText(alButton.menuPreFix + item.icon);
     });
   });
-  it('Must open each menu item', async () => {
-    for (let i = 0; i < menuItems.settingsFiltered.length; i++) {
-      const menuIcon = menuItems.settingsFiltered[i].icon;
-      const ariaLabelPage = menuPages.filter(
-        (menu) => menu.icon === menuIcon,
-      )[0].ariaLabel;
-      await clickAwait([alButton.menuPreFix + menuIcon]);
-      assertion.getByLabelText(ariaLabelPage);
+  it('Must open each sub menu item', async () => {
+    const filteredSubMenu = AccountSubMenuItems.filter(
+      (item) => item.icon !== Icons.EXPORT,
+    );
+    for (let i = 0; i < filteredSubMenu.length; i++) {
+      const icon = filteredSubMenu[i].icon;
+      const ariaLabel = alButton.menuPreFix + icon;
+      await clickAwait([ariaLabel]);
+      assertion.getByLabelText(ariaLabelPage[i]);
       await clickAwait([alIcon.arrowBack]);
     }
   });
-  it('Must open a new window when clicking support', async () => {
-    await clickAwait([alButton.menuPreFix + Icons.SUPPORT]);
-    expect(methods.spyChromeTabs()).toBeCalledWith(menuItems.urlSupport);
+  it('Must call export account action', async () => {
+    extraMocks.createObjectURL();
+    extraMocks.aClick;
+    await clickAwait([alButton.menuPreFix + Icons.EXPORT]);
+    expect(extraMocks.spyDownloadAccount).toBeCalledTimes(1);
   });
 });
