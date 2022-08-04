@@ -34,7 +34,7 @@ const Keychainify = ({ setTitleContainerProperties }: PropsFromRedux) => {
   };
 
   return (
-    <div className="keychainify-page">
+    <div aria-label="keychainify-page" className="keychainify-page">
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_keychainify_text')}
       </div>

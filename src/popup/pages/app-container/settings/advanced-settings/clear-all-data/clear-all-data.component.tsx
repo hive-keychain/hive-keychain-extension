@@ -34,7 +34,7 @@ const ClearAllData = ({
   };
 
   return (
-    <div className="clear-all-data-page">
+    <div aria-label="clear-all-data-page" className="clear-all-data-page">
       <p
         className="introduction"
         dangerouslySetInnerHTML={{

@@ -186,7 +186,7 @@ const RpcNodes = ({
   };
 
   return (
-    <div className="rpc-nodes-page">
+    <div aria-label="rpc-nodes-page" className="rpc-nodes-page">
       <p
         className="introduction"
         dangerouslySetInnerHTML={{

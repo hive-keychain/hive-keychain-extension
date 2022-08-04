@@ -57,7 +57,7 @@ const ChangePassword = ({
   };
 
   return (
-    <div className="change-password-page">
+    <div aria-label="change-password-page" className="change-password-page">
       <div className="caption">
         {chrome.i18n.getMessage('popup_html_change_password_text')}
       </div>

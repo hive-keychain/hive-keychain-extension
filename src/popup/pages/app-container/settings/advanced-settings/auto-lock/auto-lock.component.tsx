@@ -51,7 +51,7 @@ const AutoLock = ({
   };
 
   return (
-    <div className="auto-lock-page">
+    <div aria-label="auto-lock-page" className="auto-lock-page">
       <CheckboxComponent
         ariaLabel={`checkbox-auto-lock-${AutoLockType.DEFAULT}`}
         title="popup_html_al_default_title"
