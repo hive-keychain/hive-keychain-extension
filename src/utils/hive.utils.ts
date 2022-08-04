@@ -205,22 +205,27 @@ const getTimeBeforeFull = (votingPower: number) => {
   }
 };
 
-export const getConversionRequests = async (name: string) => {
+export const getConversionRequests = async (
+  name: string,
+): Promise<Conversion[]> => {
   const [hbdConversions, hiveConversions] = await Promise.all([
     getClient().database.call('get_conversion_requests', [name]),
     getClient().database.call('get_collateralized_conversion_requests', [name]),
   ]);
 
   return [
-    ...hiveConversions.map((e: CollateralizedConversion) => ({
-      amount: e.collateral_amount,
-      conversion_date: e.conversion_date,
-      id: e.id,
-      owner: e.owner,
-      requestid: e.requestid,
+    ...hiveConversions.map((conv: CollateralizedConversion) => ({
+      amount: conv.collateral_amount,
+      conversion_date: conv.conversion_date,
+      id: conv.id,
+      owner: conv.owner,
+      requestid: conv.requestid,
       collaterized: true,
     })),
-    ...hbdConversions,
+    ...hbdConversions.map((conv: any) => ({
+      ...conv,
+      collaterized: false,
+    })),
   ].sort(
     (a, b) =>
       new Date(a.conversion_date).getTime() -
