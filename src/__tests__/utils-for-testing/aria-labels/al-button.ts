@@ -52,6 +52,9 @@ export default {
     savings: {
       submit: 'submit-savings',
     },
+    transfer: {
+      send: 'send-transfer',
+    },
   },
   panel: {
     close: 'button-panel-close',

@@ -29,4 +29,8 @@ export default {
     vm: 'resource-item-voting-mana',
     rc: 'resource-item-resource-credits',
   },
+  warning: {
+    message: 'warning-message',
+  },
+
 };
