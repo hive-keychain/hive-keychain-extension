@@ -1,4 +1,5 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
@@ -59,6 +60,10 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
       return true;
     case LocalStorageKeyEnum.RPC_LIST:
       return hasKeys(customData) ? customData.customsRpcs : [];
+    case LocalStorageKeyEnum.NO_CONFIRM:
+      return hasKeys(customData)
+        ? customData.customAuthorizedOP
+        : ({} as NoConfirm);
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG

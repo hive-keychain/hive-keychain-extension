@@ -46,4 +46,7 @@ export default {
       manageAccount: 'settings-manage-account',
     },
   },
+  userPreferences: {
+    authorizedOperations: 'authorized-operations-page',
+  },
 };

@@ -43,4 +43,11 @@ export default {
     },
   },
   closePage: 'icon-close-page',
+  authorizedOperations: {
+    icon: {
+      delete: {
+        preFix: 'icon-delete-authorized-',
+      },
+    },
+  },
 };
