@@ -29,16 +29,17 @@
   }
 
   .currency {
-    display: flex;
-    align-items: center;
-    column-gap: 8px;
     width: 50px;
-
-    .icon-component {
-      padding-top: 4px;
-      padding-bottom: unset;
-      font-size: 16px;
-    }
+    // .balance {
+    //   display: flex;
+    //   align-items: center;
+    //   column-gap: 8px;
+    //   .icon-component {
+    //     padding-top: 4px;
+    //     padding-bottom: unset;
+    //     font-size: 16px;
+    //   }
+    // }
   }
 
   .value {
