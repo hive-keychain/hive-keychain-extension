@@ -92,6 +92,7 @@ export interface CustomDataFromLocalStorage {
   customSwitchAuto?: boolean;
   customsRpcs?: Rpc[];
   customAuthorizedOP?: NoConfirm;
+  customlastVersionSeen?: string;
 }
 //TODO remove all unused from overwrite + add the keychainApiget.
 export interface MocksOverwrite {

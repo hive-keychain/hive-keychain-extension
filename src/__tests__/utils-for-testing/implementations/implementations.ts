@@ -1,5 +1,6 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
+import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
@@ -7,10 +8,7 @@ import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
-import {
-  CustomDataFromLocalStorage,
-  GetManifest,
-} from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
@@ -49,7 +47,9 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
     case LocalStorageKeyEnum.FAVORITE_USERS:
       return { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
-      return manifestFile.chromium.version;
+      return hasKeys(customData)
+        ? customData.customlastVersionSeen
+        : manifestFile.chromium.version;
     case LocalStorageKeyEnum.HIDDEN_TOKENS:
       return [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_ACCOUNT_HISTORY_API:
@@ -126,9 +126,11 @@ const keychainApiGet = async (
       return (
         customData?.extensionVersion ?? {
           data: {
-            version: manifestFile.chromium.version,
-            name: manifestFile.chromium.name,
-          } as GetManifest,
+            version: manifestFile.chromium.version, //by default same version as current
+            //name: manifestFile.chromium.name,
+            features: {},
+            url: 'https://hive-keychain.com',
+          } as WhatsNewContent,
         }
       );
     case urlToGet.includes('/hive/delegators/'):
@@ -143,6 +145,7 @@ const mocksImplementation = {
   i18nGetMessage,
   i18nGetMessageCustom,
   keychainApiGet,
+  manifestFile,
 };
 
 export default mocksImplementation;
