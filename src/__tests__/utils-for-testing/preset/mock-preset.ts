@@ -15,7 +15,6 @@ import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentatio
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 /**
- *
  * @param app.getExtendedAccount ExtendedAccount Used by refresh_account, loadActiveAccount. The main one to mock when using any process within the HomePage.
  * @param app.getAccount ExtendedAccount[] Used by processes as: add-by-auth.
  */
