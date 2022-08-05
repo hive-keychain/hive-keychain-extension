@@ -82,7 +82,7 @@ const methods = {
   },
   removeKey: (key: string) => {
     delete constants.stateAs.accounts[0].keys[key];
-    delete constants.stateAs.accounts[0].keys[`${key}Pubkey`]; //
+    delete constants.stateAs.accounts[0].keys[`${key}Pubkey`];
   },
   selectBalance: (currency: string) => {
     switch (currency) {
@@ -105,9 +105,6 @@ const extraMocks = {
     AccountUtils.getPublicMemo = jest
       .fn()
       .mockResolvedValue(accounts.extended.memo_key);
-  },
-  getPhishingAccounts: () => {
-    KeychainApi.get = jest.fn().mockResolvedValue(phishing.accounts);
   },
 };
 
