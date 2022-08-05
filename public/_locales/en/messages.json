@@ -2351,11 +2351,11 @@
     "description": "Main page buy button"
   },
   "html_popup_transak_description": {
-    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel maximus libero. Morbi sed sapien dictum, tincidunt sapien sit amet, euismod magna. Nulla facilisi. Vivamus.",
+    "message": "Transak helps you buy HIVE using fiat. It supports credit cards, bank transfers, Apple Pay and MobiKwik in more than 100 countries (options vary per country). You will receive your HIVE directly in your Hive Keychain wallet.",
     "description": "Buy coin, transak description"
   },
   "html_popup_blocktrades_description": {
-    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vel maximus libero. Morbi sed sapien dictum, tincidunt sapien sit amet, euismod magna. Nulla facilisi. Vivamus.",
+    "message": "With Blocktrades, quickly swap between other major cryptocurrencies and HIVE/HBD.",
     "description": "Buy coin, blocktrades description"
   },
   "html_popup_exchanges": {
