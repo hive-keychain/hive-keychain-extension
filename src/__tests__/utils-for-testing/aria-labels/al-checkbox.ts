@@ -33,6 +33,16 @@ const rpcNodes = {
   },
 };
 
+const automatedTasks = {
+  checkbox: {
+    claim: {
+      rewards: 'checkbox-autoclaim-rewards',
+      accounts: 'checkbox-autoclaim-accounts',
+      savings: 'checkbox-autoclaim-savings',
+    },
+  },
+};
+
 export default {
   selectKeys,
   transfer,
@@ -40,4 +50,5 @@ export default {
   autoLock,
   keychainify,
   rpcNodes,
+  automatedTasks,
 };

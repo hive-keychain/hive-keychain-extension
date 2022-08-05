@@ -1,16 +1,18 @@
-import { screen } from '@testing-library/react';
 import automatedTasks from 'src/__tests__/popup/pages/app-container/settings/user-preferences/automated-tasks/mocks/automated-tasks';
+import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
+import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
+import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 describe('automated-tasks.component tests:\n', () => {
   let _asFragment: () => DocumentFragment;
-  const { methods } = automatedTasks;
+  const { methods, constants, extraMocks } = automatedTasks;
+  const { snapshotName } = constants;
   methods.afterEach;
   describe('Stored data:\n', () => {
     describe('Max mana greater than freeAccount credits:\n', () => {
-      it.todo('Must load component and match snapshot');
-    });
-    describe('Max mana lower:\n', () => {
       beforeEach(async () => {
         _asFragment = await automatedTasks.beforeEach({
           passData: true,
@@ -18,11 +20,66 @@ describe('automated-tasks.component tests:\n', () => {
         });
       });
       it('Must load component and match snapshot', () => {
-        screen.debug();
+        expect(_asFragment()).toMatchSnapshot(
+          snapshotName.storedData.maxManaGreater,
+        );
+      });
+      it('Must set to false auto claim accounts', async () => {
+        await clickAwait([alCheckbox.automatedTasks.checkbox.claim.accounts]);
+        expect(extraMocks.spySaveClaims).toBeCalledWith(
+          true,
+          false,
+          true,
+          'keychain.tests',
+        );
+      });
+      it('Must set to false auto claims rewards', async () => {
+        await clickAwait([alCheckbox.automatedTasks.checkbox.claim.rewards]);
+        expect(extraMocks.spySaveClaims).toBeCalledWith(
+          false,
+          true,
+          true,
+          'keychain.tests',
+        );
+      });
+      it('Must set to false auto claims savings', async () => {
+        await clickAwait([alCheckbox.automatedTasks.checkbox.claim.savings]);
+        expect(extraMocks.spySaveClaims).toBeCalledWith(
+          true,
+          true,
+          false,
+          'keychain.tests',
+        );
+      });
+    });
+    describe('Max mana lower:\n', () => {
+      beforeEach(async () => {
+        _asFragment = await automatedTasks.beforeEach({
+          passData: true,
+        });
+      });
+      it('Must load component and match snapshot', () => {
+        expect(_asFragment()).toMatchSnapshot(
+          snapshotName.storedData.maxManaLower,
+        );
+      });
+      it('Must load selected account', async () => {
+        extraMocks.remockAccounts();
+        await clickAwait([
+          alSelect.accountSelector,
+          alSelect.itemSelectorPreFix + mk.user.two,
+        ]);
+        assertion.queryByText(mk.user.one, false);
+        assertion.queryByText(mk.user.two);
       });
     });
   });
   describe('No data', () => {
-    it.todo('Must load component and match snapshot');
+    beforeEach(async () => {
+      _asFragment = await automatedTasks.beforeEach();
+    });
+    it('Must load component and match snapshot', () => {
+      expect(_asFragment()).toMatchSnapshot(snapshotName.noData);
+    });
   });
 });

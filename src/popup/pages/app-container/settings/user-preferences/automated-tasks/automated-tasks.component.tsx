@@ -67,8 +67,6 @@ const AutomatedTasks = ({
 
   const init = async () => {
     const values = await AutomatedTasksUtils.getClaims(activeAccount.name!);
-    console.log('values: ', values);
-    console.log('Config: ', Config.claims.freeAccount.MIN_RC);
     setClaimRewards(values[LocalStorageKeyEnum.CLAIM_REWARDS] ?? false);
     setClaimAccounts(values[LocalStorageKeyEnum.CLAIM_ACCOUNTS] ?? false);
     setClaimSavings(values[LocalStorageKeyEnum.CLAIM_SAVINGS] ?? false);
@@ -106,6 +104,7 @@ const AutomatedTasks = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}
@@ -143,6 +142,7 @@ const AutomatedTasks = ({
       </div>
 
       <CheckboxComponent
+        ariaLabel="checkbox-autoclaim-rewards"
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
         onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
@@ -150,6 +150,7 @@ const AutomatedTasks = ({
       />
       {activeAccount.rc.max_mana > Config.claims.freeAccount.MIN_RC && (
         <CheckboxComponent
+          ariaLabel="checkbox-autoclaim-accounts"
           title="popup_html_enable_autoclaim_accounts"
           checked={claimAccounts}
           onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
@@ -161,6 +162,7 @@ const AutomatedTasks = ({
         />
       )}
       <CheckboxComponent
+        ariaLabel="checkbox-autoclaim-savings"
         title="popup_html_enable_autoclaim_savings"
         checked={claimSavings}
         onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}

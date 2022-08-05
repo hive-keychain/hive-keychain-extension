@@ -1,7 +1,9 @@
 import { Icons } from '@popup/icons.enum';
 import Config from 'src/config';
+import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -20,7 +22,10 @@ const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
   snapshotName: {
-    withData: 'automated-tasks.component With Data',
+    storedData: {
+      maxManaGreater: 'automated-tasks.component With Data Mana Greater',
+      maxManaLower: 'automated-tasks.component With Data Mana Lower',
+    },
     noData: 'automated-tasks.component No Data',
   },
   data: {
@@ -83,10 +88,22 @@ const extraMocks = {
     (LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue(constants.data.getClaims)),
+  remockAccounts: () => {
+    mockPreset.setOrDefault({
+      app: {
+        getExtendedAccount: {
+          ...accounts.extended,
+          name: mk.user.two,
+        },
+      },
+    });
+  },
+  spySaveClaims: jest.spyOn(AutomatedTasksUtils, 'saveClaims'),
 };
 
 export default {
   beforeEach,
   methods,
   constants,
+  extraMocks,
 };
