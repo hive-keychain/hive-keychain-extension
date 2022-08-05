@@ -125,7 +125,7 @@ const AutomatedTasks = ({
   };
 
   return (
-    <div className="automated-tasks-page">
+    <div aria-label="automated-tasks-page" className="automated-tasks-page">
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_automated_intro')}
       </div>

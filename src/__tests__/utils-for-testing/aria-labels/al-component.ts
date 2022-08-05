@@ -48,5 +48,6 @@ export default {
   },
   userPreferences: {
     authorizedOperations: 'authorized-operations-page',
+    automatedTasks: 'automated-tasks-page',
   },
 };
