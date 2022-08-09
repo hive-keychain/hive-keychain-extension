@@ -3,9 +3,12 @@ import {
   KeychainRequest,
   KeychainRequestData,
   KeychainRequestTypes,
+  RequestAddAccount,
+  RequestAddAccountKeys,
   RequestDecode,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 
 const requestDecode = {
   rpc: '',
@@ -37,4 +40,13 @@ const noValues = {
   } as RequestTransfer,
 };
 
-export default { noValues };
+const wValues = {
+  addAccount: {
+    domain: 'domain',
+    type: KeychainRequestTypes.addAccount,
+    username: mk.user.one,
+    keys: {} as RequestAddAccountKeys,
+  } as RequestAddAccount,
+};
+
+export default { noValues, wValues };
