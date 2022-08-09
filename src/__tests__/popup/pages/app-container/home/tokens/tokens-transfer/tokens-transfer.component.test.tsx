@@ -10,10 +10,10 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-const { methods, constants, extraMocks } = tokensTransfer;
-const { snapshotName, messages, selectedToken, memo } = constants;
-let _asFragment: () => {};
 describe('tokens-transfer.component tests:\n', () => {
+  const { methods, constants, extraMocks } = tokensTransfer;
+  const { snapshotName, messages, selectedToken, memo } = constants;
+  let _asFragment: () => {};
   methods.afterEach;
   describe('Snapshot cases:\n', () => {
     describe('Having balances:\n', () => {
