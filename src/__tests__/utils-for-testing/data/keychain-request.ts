@@ -4,6 +4,7 @@ import {
   KeychainRequestData,
   KeychainRequestTypes,
   RequestDecode,
+  RequestTransfer,
 } from '@interfaces/keychain.interface';
 
 const requestDecode = {
@@ -25,6 +26,15 @@ const noValues = {
     ...keyChainRequestData,
     request_id: 0,
   } as KeychainRequest,
+  transfer: {
+    domain: '',
+    type: KeychainRequestTypes.transfer,
+    to: '',
+    amount: '',
+    memo: '',
+    enforce: false,
+    currency: '',
+  } as RequestTransfer,
 };
 
 export default { noValues };
