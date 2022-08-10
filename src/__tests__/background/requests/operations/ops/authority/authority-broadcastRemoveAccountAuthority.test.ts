@@ -9,7 +9,6 @@ import messages from 'src/__tests__/background/requests/operations/ops/mocks/mes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-
 describe('authority tests:/n', () => {
   const { methods, constants, mocks } = authority;
   const { requestHandler, confirmed } = constants;

@@ -6,6 +6,7 @@ import {
   RequestAddAccount,
   RequestAddAccountAuthority,
   RequestAddAccountKeys,
+  RequestAddKeyAuthority,
   RequestDecode,
   RequestRemoveAccountAuthority,
   RequestTransfer,
@@ -66,6 +67,15 @@ const wValues = {
     role: KeychainKeyTypes.posting,
     method: KeychainKeyTypes.active,
   } as RequestRemoveAccountAuthority,
+  addKeyAuthority: {
+    domain: 'domain',
+    type: KeychainRequestTypes.addKeyAuthority,
+    authorizedKey: userData.one.encryptKeys.posting,
+    username: mk.user.one,
+    method: KeychainKeyTypes.active,
+    weight: 1,
+    role: KeychainKeyTypes.posting,
+  } as RequestAddKeyAuthority,
 };
 
 export default { noValues, wValues };

@@ -98,5 +98,29 @@ export default {
         },
       };
     },
+    addKey: (
+      result: TransactionConfirmation,
+      datas: any,
+      cloneData: any,
+      request_id: number,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          error: undefined,
+          result: result,
+          data: datas,
+          message: chrome.i18n.getMessage('bgd_ops_add_key_auth', [
+            datas.authorizedKey,
+            chrome.i18n.getMessage(datas.role.toLowerCase()),
+            datas.username,
+            datas.weight + '',
+          ]),
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
   },
 };

@@ -164,7 +164,7 @@ export const broadcastAddKeyAuthority = async (
     const authorizedKeys = updatedAuthority.key_auths.map((auth) => auth[0]);
     const hasAuthority = authorizedKeys.indexOf(authorizedKey) !== -1;
     if (hasAuthority) {
-      throw new Error('already has authority');
+      throw new Error('Already has authority');
     }
 
     /** Use weight_thresold as default weight */

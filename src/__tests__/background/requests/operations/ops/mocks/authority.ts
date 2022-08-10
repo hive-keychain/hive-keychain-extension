@@ -2,6 +2,7 @@ import { RequestsHandler } from '@background/requests';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import {
   RequestAddAccountAuthority,
+  RequestAddKeyAuthority,
   RequestId,
   RequestRemoveAccountAuthority,
 } from '@interfaces/keychain.interface';
@@ -20,6 +21,10 @@ const data = {
     ...keychainRequest.wValues.removeAccountAuthority,
     request_id: 1,
   } as RequestRemoveAccountAuthority & RequestId,
+  addKeyAuthority: {
+    ...keychainRequest.wValues.addKeyAuthority,
+    request_id: 1,
+  } as RequestAddKeyAuthority & RequestId,
 };
 const confirmed = {
   id: '1',
