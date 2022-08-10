@@ -7,25 +7,23 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('add-account tests:\n', () => {
-  const { methods, constants, mocks } = addAccountMocks;
-  const { requestHandler, data, dataNoId } = constants;
+  const { methods, constants, mocks, spies } = addAccountMocks;
+  const { requestHandler, data } = constants;
   methods.afterEach;
-  beforeEach(() => {
-    mocks.getUILanguage();
-    mocks.i18n();
-  });
+  methods.beforeEach;
   it('Must return message with no such account error', async () => {
     mocks.client.database.getAccounts([]);
     const result = await addAccount(requestHandler, data);
+    const { request_id, ...datas } = data;
     expect(result).toEqual({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         error: true,
         result: false,
         success: false,
-        data: dataNoId,
+        data: datas,
         message: chrome.i18n.getMessage('bgd_ops_add_account_error_invalid'),
-        request_id: data.request_id,
+        request_id: request_id,
         publicKey: undefined,
       },
     });
@@ -33,16 +31,19 @@ describe('add-account tests:\n', () => {
   it('Must return message with invalid account error if no keys on data', async () => {
     mocks.client.database.getAccounts([accounts.extended]);
     mocks.getMk(mk.user.one);
-    const result = await addAccount(requestHandler, data);
+    const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
+    cloneData.keys = {};
+    const { request_id, ...datas } = cloneData;
+    const result = await addAccount(requestHandler, cloneData);
     expect(result).toEqual({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         error: true,
         result: false,
         success: false,
-        data: dataNoId,
+        data: datas,
         message: chrome.i18n.getMessage('bgd_ops_add_account_error'),
-        request_id: data.request_id,
+        request_id: request_id,
         publicKey: undefined,
       },
     });
@@ -53,22 +54,53 @@ describe('add-account tests:\n', () => {
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
     cloneData.keys = userData.one.nonEncryptKeys;
     const result = await addAccount(requestHandler, cloneData);
+    const { request_id, ...datas } = cloneData;
     expect(result).toEqual({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
         error: true,
         result: false,
         success: false,
-        data: { ...dataNoId, keys: userData.one.nonEncryptKeys },
+        data: datas,
         message: chrome.i18n.getMessage('bgd_ops_add_account_error'),
-        request_id: data.request_id,
+        request_id: request_id,
         publicKey: undefined,
       },
     });
   });
-  //mock as empty:
-  //    - AccountUtils.getAccountsFromLocalStorage
-  //    - AccountUtils.saveAccounts
-  //    and just check calling params on both.
-  it.todo('Must add add account');
+  it('Must throw an unhandled error if invalid active key', async () => {
+    const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
+    cloneData.keys = userData.one.encryptKeys;
+    await methods.tryBlock('Invalid active key', cloneData);
+  });
+  it('Must throw an unhandled error if invalid posting key', async () => {
+    const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
+    cloneData.keys = {
+      ...userData.one.nonEncryptKeys,
+      posting: userData.one.encryptKeys.posting,
+    };
+    await methods.tryBlock('Invalid posting key', cloneData);
+  });
+  it('Must add account', async () => {
+    mocks.client.database.getAccounts([accounts.extended]);
+    mocks.getMk(mk.user.one);
+    mocks.getAccountsFromLocalStorage();
+    const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
+    cloneData.keys = userData.one.nonEncryptKeys;
+    const result = await addAccount(requestHandler, cloneData);
+    const { request_id, ...datas } = cloneData;
+    expect(spies.saveAccounts).toBeCalledTimes(1);
+    expect(result).toEqual({
+      command: DialogCommand.ANSWER_REQUEST,
+      msg: {
+        error: false,
+        result: true,
+        success: true,
+        data: datas,
+        message: chrome.i18n.getMessage('bgd_ops_add_account', [mk.user.one]),
+        request_id: request_id,
+        publicKey: undefined,
+      },
+    });
+  });
 });

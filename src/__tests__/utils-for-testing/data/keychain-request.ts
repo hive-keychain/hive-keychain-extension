@@ -9,6 +9,7 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
 const requestDecode = {
   rpc: '',
@@ -45,7 +46,7 @@ const wValues = {
     domain: 'domain',
     type: KeychainRequestTypes.addAccount,
     username: mk.user.one,
-    keys: {} as RequestAddAccountKeys,
+    keys: userData.one.nonEncryptKeys as RequestAddAccountKeys,
   } as RequestAddAccount,
 };
 

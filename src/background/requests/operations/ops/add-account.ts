@@ -14,7 +14,6 @@ export const addAccount = async (
   let err = null;
   const client = requestHandler.getHiveClient();
   const account = (await client.database.getAccounts([username]))[0];
-  console.log('account: ', account);
   if (account) {
     const savedKeys: Keys = keys;
     if (keys.memo) savedKeys.memoPubkey = account.memo_key;
@@ -26,7 +25,7 @@ export const addAccount = async (
         )
           savedKeys.activePubkey = active[0] as string;
       }
-      if (!savedKeys.activePubkey) throw new Error();
+      if (!savedKeys.activePubkey) throw new Error('Invalid active key');
     }
     if (keys.posting) {
       for (const posting of account.posting.key_auths) {
@@ -36,7 +35,7 @@ export const addAccount = async (
         )
           savedKeys.postingPubkey = posting[0] as string;
       }
-      if (!savedKeys.postingPubkey) throw new Error();
+      if (!savedKeys.postingPubkey) throw new Error('Invalid posting key');
     }
     const mk = await MkModule.getMk();
     if (Object.keys(savedKeys).length && mk) {

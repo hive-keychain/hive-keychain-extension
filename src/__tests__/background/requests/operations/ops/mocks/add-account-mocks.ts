@@ -1,20 +1,23 @@
 import MkModule from '@background/mk.module';
 import { RequestsHandler } from '@background/requests';
+import { addAccount } from '@background/requests/operations/ops/add-account';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
-import * as dialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+import AccountUtils from 'src/utils/account.utils';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
-const dataNoId = keychainRequest.wValues.addAccount;
 const data = {
-  ...dataNoId,
+  ...keychainRequest.wValues.addAccount,
   request_id: 1,
 } as RequestAddAccount & RequestId;
 
 const spies = {
-  createPopup: jest.spyOn(dialogLifeCycle, 'createPopup'),
+  saveAccounts: jest
+    .spyOn(AccountUtils, 'saveAccounts')
+    .mockResolvedValue(undefined),
 };
 
 const mocks = {
@@ -34,21 +37,35 @@ const mocks = {
   },
   getMk: (mk: string | null) =>
     (MkModule.getMk = jest.fn().mockResolvedValue(mk)),
-};
-
-const callback = {
-  sendMessage: () => {},
-  sendErrors: () => {},
+  getAccountsFromLocalStorage: () =>
+    (AccountUtils.getAccountsFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(accounts.twoAccounts)),
 };
 
 const methods = {
   afterEach: afterEach(() => {
     jest.clearAllMocks();
   }),
+  beforeEach: beforeEach(() => {
+    mocks.getUILanguage();
+    mocks.i18n();
+  }),
+  tryBlock: async (
+    errorDesc: string,
+    cloneData: RequestAddAccount & RequestId,
+  ) => {
+    try {
+      mocks.client.database.getAccounts([accounts.extended]);
+      mocks.getMk(null);
+      await addAccount(requestHandler, cloneData);
+    } catch (error) {
+      expect(error).toEqual(new Error(errorDesc));
+    }
+  },
 };
 
 const constants = {
-  dataNoId,
   data,
   requestHandler,
 };
@@ -57,6 +74,5 @@ export default {
   methods,
   constants,
   spies,
-  callback,
   mocks,
 };
