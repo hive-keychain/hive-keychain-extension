@@ -4,8 +4,10 @@ import {
   KeychainRequestData,
   KeychainRequestTypes,
   RequestAddAccount,
+  RequestAddAccountAuthority,
   RequestAddAccountKeys,
   RequestDecode,
+  RequestRemoveAccountAuthority,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -48,6 +50,22 @@ const wValues = {
     username: mk.user.one,
     keys: userData.one.nonEncryptKeys as RequestAddAccountKeys,
   } as RequestAddAccount,
+  addAccountAuthority: {
+    domain: 'domain',
+    type: KeychainRequestTypes.addAccountAuthority,
+    username: mk.user.one,
+    role: KeychainKeyTypes.posting,
+    weight: 1,
+    authorizedUsername: 'theghost1980',
+  } as RequestAddAccountAuthority,
+  removeAccountAuthority: {
+    domain: 'domain',
+    type: KeychainRequestTypes.removeAccountAuthority,
+    username: mk.user.one,
+    authorizedUsername: 'theghost1980',
+    role: KeychainKeyTypes.posting,
+    method: KeychainKeyTypes.active,
+  } as RequestRemoveAccountAuthority,
 };
 
 export default { noValues, wValues };
