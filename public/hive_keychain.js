@@ -12,7 +12,7 @@ var hive_keychain = {
 
   /**
    * This function is called to verify Keychain installation on a user's device
-   * @param {requestCallback} callback Confirms Keychain installation
+   * @param {function} callback Confirms Keychain installation (has no parameters)
    */
   requestHandshake: function (callback) {
     this.handshake_callback = callback;
@@ -210,7 +210,7 @@ var hive_keychain = {
    * @example
    * import dhive from '@hiveio/dhive';
    *
-   * const client = new dhive.Client(['https://api.hive.blog', 'https://api.hivekings.com', 'https://anyx.io', 'https://api.openhive.network']);
+   * const client = new dhive.Client(['https://api.hive.blog', 'https://anyx.io', 'https://api.openhive.network']);
    * const keychain = window.hive_keychain;
    *
    * const props = await client.database.getDynamicGlobalProperties();
@@ -224,8 +224,12 @@ var hive_keychain = {
    *   expiration: new Date(Date.now() + expireTime).toISOString(),
    *   operations: [...] // Add operations here
    * };
-   * keychain.requestSignTx(username, op, 'Posting', (response) => {
-   *   console.log(response);
+   * keychain.requestSignTx(username, op, 'Posting', async (response) => {
+   *   if (!response.error) {
+   *     console.log(response.result);
+   *     await client.database.verifyAuthority(response.result);
+   *     await client.broadcast.send(response.result);
+   *   }
    * });
    *
    * @param {String} account Hive account to perform the request
@@ -271,6 +275,14 @@ var hive_keychain = {
   // Example comment_options: {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}
   /**
    * Requests to broadcast a blog post/comment
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestPost('stoodkev', 'Hello World!', '## This is a blog post \
+   * \
+   * And this is some text', 'Blog', null, {format:'markdown',description:'A blog post',tags:['Blog']},'hello-world', {"author":"stoodkev","permlink":"hi","max_accepted_payout":"100000.000 SBD","percent_steem_dollars":10000,"allow_votes":true,"allow_curation_rewards":true,"extensions":[[0,{"beneficiaries":[{"account":"yabapmatt","weight":1000},{"account":"steemplus-pay","weight":500}]}]]}, (response) => {
+   *   console.log(response);
+   * });
+   *
    * @param {String} account Hive account to perform the request
    * @param {String} title Title of the blog post
    * @param {String} body Content of the blog post
@@ -310,6 +322,12 @@ var hive_keychain = {
   },
   /**
    * Requests a vote
+   * @example
+   * // Vote +50%
+   * const keychain = window.hive_keychain;
+   * keychain.requestVote('npfedwards', 'hello-world', 'stoodkev', 5000, (response) => {
+   *   console.log(response);
+   * });
    * @param {String} account Hive account to perform the request
    * @param {String} permlink Permlink of the blog post
    * @param {String} author Author of the blog post
