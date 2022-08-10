@@ -4,8 +4,8 @@ import {
   RequestAddAccountAuthority,
   RequestId,
 } from '@interfaces/keychain.interface';
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
+import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
@@ -26,20 +26,7 @@ describe('authority tests:\n', () => {
     it('Must throw error if account exists in auths', async () => {
       const result = await broadcastAddAccountAuthority(requestHandler, data);
       const { request_id, ...datas } = data;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: false,
-          error: new Error('Already has authority'),
-          result: undefined,
-          data: datas,
-          message: `${await chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Already has authority`,
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(messages.error.hasAuthority(datas, request_id));
     });
     it('Must return error if no key on handler', async () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
@@ -50,20 +37,7 @@ describe('authority tests:\n', () => {
         cloneData,
       );
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: false,
-          error: new TypeError(),
-          result: undefined,
-          data: datas,
-          message: `${await chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : private key should be a Buffer`,
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
     });
     it('Must broadcast update account using active key', async () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
@@ -78,22 +52,9 @@ describe('authority tests:\n', () => {
         cloneData,
       );
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: true,
-          error: undefined,
-          result: confirmed,
-          data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_add_auth', [
-            cloneData.role.toLowerCase(),
-            cloneData.authorizedUsername,
-            cloneData.username,
-          ]),
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(
+        messages.success.addAuth(confirmed, datas, cloneData, request_id),
+      );
     });
     it('Must broadcast update account using posting key', async () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
@@ -108,22 +69,9 @@ describe('authority tests:\n', () => {
         cloneData,
       );
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: true,
-          error: undefined,
-          result: confirmed,
-          data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_add_auth', [
-            cloneData.role.toLowerCase(),
-            cloneData.authorizedUsername,
-            cloneData.username,
-          ]),
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(
+        messages.success.addAuth(confirmed, datas, cloneData, request_id),
+      );
     });
   });
 });

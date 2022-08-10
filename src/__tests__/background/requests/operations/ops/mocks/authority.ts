@@ -5,6 +5,7 @@ import {
   RequestId,
   RequestRemoveAccountAuthority,
 } from '@interfaces/keychain.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import AccountUtils from 'src/utils/account.utils';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -70,18 +71,28 @@ const methods = {
     mocks.getUILanguage();
     mocks.i18n();
   }),
-  //   tryBlock: async (
-  //     errorDesc: string,
-  //     cloneData: RequestAddAccount & RequestId,
-  //   ) => {
-  //     try {
-  //       mocks.client.database.getAccounts([accounts.extended]);
-  //       mocks.getMk(null);
-  //       await addAccount(requestHandler, cloneData);
-  //     } catch (error) {
-  //       expect(error).toEqual(new Error(errorDesc));
-  //     }
-  //   },
+};
+
+const returned = async (
+  success: boolean,
+  error: any,
+  result: any,
+  message: string,
+  request_id: string,
+  datas: any,
+) => {
+  return {
+    command: DialogCommand.ANSWER_REQUEST,
+    msg: {
+      success,
+      error,
+      result,
+      datas,
+      message,
+      request_id,
+      publicKey: undefined,
+    },
+  };
 };
 
 const constants = {
@@ -95,4 +106,5 @@ export default {
   constants,
   spies,
   mocks,
+  returned,
 };
