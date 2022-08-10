@@ -4,8 +4,8 @@ import {
   RequestId,
   RequestRemoveAccountAuthority,
 } from '@interfaces/keychain.interface';
-import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
+import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
@@ -33,20 +33,7 @@ describe('authority tests:/n', () => {
         data,
       );
       const { request_id, ...datas } = data;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: false,
-          error: new TypeError(),
-          result: undefined,
-          data: datas,
-          message: `${await chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : private key should be a Buffer`,
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
     });
     it('Must return error if user not authorized', async () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
@@ -61,20 +48,7 @@ describe('authority tests:/n', () => {
         cloneData,
       );
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: false,
-          error: new Error('Nothing to remove'),
-          result: undefined,
-          data: datas,
-          message: `${await chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Nothing to remove`,
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(messages.error.nothingToRemove(datas, request_id));
     });
     it('Must broadcast update account using active key', async () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
@@ -89,22 +63,9 @@ describe('authority tests:/n', () => {
         cloneData,
       );
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: true,
-          error: undefined,
-          result: confirmed,
-          data: datas,
-          message: await chrome.i18n.getMessage('bgd_ops_remove_auth', [
-            datas.role.toLowerCase(),
-            datas.authorizedUsername,
-            datas.username,
-          ]),
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(
+        messages.success.removedAuth(confirmed, datas, request_id),
+      );
     });
     it('Must broadcast update account using posting key', async () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
@@ -119,22 +80,9 @@ describe('authority tests:/n', () => {
         cloneData,
       );
       const { request_id, ...datas } = cloneData;
-      expect(result).toEqual({
-        command: DialogCommand.ANSWER_REQUEST,
-        msg: {
-          success: true,
-          error: undefined,
-          result: confirmed,
-          data: datas,
-          message: await chrome.i18n.getMessage('bgd_ops_remove_auth', [
-            datas.role.toLowerCase(),
-            datas.authorizedUsername,
-            datas.username,
-          ]),
-          request_id,
-          publicKey: undefined,
-        },
-      });
+      expect(result).toEqual(
+        messages.success.removedAuth(confirmed, datas, request_id),
+      );
     });
   });
 });

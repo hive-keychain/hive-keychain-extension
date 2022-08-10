@@ -35,6 +35,22 @@ export default {
         },
       };
     },
+    nothingToRemove: (datas: any, request_id: number) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          error: new Error('Nothing to remove'),
+          result: undefined,
+          data: datas,
+          message: `${chrome.i18n.getMessage(
+            'bgd_ops_error',
+          )} : Nothing to remove`,
+          request_id,
+          publicKey: undefined,
+        },
+      };
+    },
   },
   success: {
     addAuth: (
@@ -54,6 +70,28 @@ export default {
             cloneData.role.toLowerCase(),
             cloneData.authorizedUsername,
             cloneData.username,
+          ]),
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    removedAuth: (
+      result: TransactionConfirmation,
+      datas: any,
+      request_id: number,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          error: undefined,
+          result: result,
+          data: datas,
+          message: chrome.i18n.getMessage('bgd_ops_remove_auth', [
+            datas.role.toLowerCase(),
+            datas.authorizedUsername,
+            datas.username,
           ]),
           request_id: request_id,
           publicKey: undefined,
