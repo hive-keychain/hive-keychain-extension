@@ -5,6 +5,7 @@ import {
   RequestAddKeyAuthority,
   RequestId,
   RequestRemoveAccountAuthority,
+  RequestRemoveKeyAuthority,
 } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -25,6 +26,10 @@ const data = {
     ...keychainRequest.wValues.addKeyAuthority,
     request_id: 1,
   } as RequestAddKeyAuthority & RequestId,
+  removeKeyAuthority: {
+    ...keychainRequest.wValues.removeKeyAuthority,
+    request_id: 1,
+  } as RequestRemoveKeyAuthority & RequestId,
 };
 const confirmed = {
   id: '1',

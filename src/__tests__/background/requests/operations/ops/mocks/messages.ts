@@ -51,6 +51,22 @@ export default {
         },
       };
     },
+    missingAuthority: (datas: any, request_id: number) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          error: new Error('Missing authority'),
+          result: undefined,
+          data: datas,
+          message: `${chrome.i18n.getMessage(
+            'bgd_ops_error',
+          )} : Missing authority`,
+          request_id,
+          publicKey: undefined,
+        },
+      };
+    },
   },
   success: {
     addAuth: (
@@ -116,6 +132,28 @@ export default {
             chrome.i18n.getMessage(datas.role.toLowerCase()),
             datas.username,
             datas.weight + '',
+          ]),
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    removedKey: (
+      result: TransactionConfirmation,
+      datas: any,
+      request_id: number,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          error: undefined,
+          result: result,
+          data: datas,
+          message: chrome.i18n.getMessage('bgd_ops_remove_key_auth', [
+            datas.authorizedKey,
+            chrome.i18n.getMessage(datas.role.toLowerCase()),
+            datas.username,
           ]),
           request_id: request_id,
           publicKey: undefined,
