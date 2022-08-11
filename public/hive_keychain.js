@@ -349,6 +349,11 @@ var hive_keychain = {
   },
   /**
    * Requests a custom JSON broadcast
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestCustomJson(null, 'sm_market_rent', 'Active', JSON.stringify({items:["9292cd44ccaef8b73a607949cc787f1679ede10b-93"],currency:"DEC",days:1}), 'Rent 1 card on Splinterlands', (response) => {
+   *   console.log(response);
+   * });
    * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} id Type of custom_json to be broadcasted
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
@@ -379,6 +384,12 @@ var hive_keychain = {
   },
   /**
    * Requests a transfer
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestTransfer(username, toUsername, amount.toFixed(3),'','HIVE',(response) => {
+   *   console.log(response)
+   * }, true);
+   *
    * @param {String} account Hive account to perform the request
    * @param {String} to Hive account to receive the transfer
    * @param {String} amount Amount to be transfered. Requires 3 decimals.
