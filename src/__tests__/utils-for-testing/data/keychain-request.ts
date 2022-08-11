@@ -11,6 +11,7 @@ import {
   RequestBroadcast,
   RequestConvert,
   RequestCreateClaimedAccount,
+  RequestCustomJSON,
   RequestDecode,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
@@ -116,6 +117,17 @@ const wValues = {
     posting: JSON.stringify(authType),
     memo: JSON.stringify(authType),
   } as RequestCreateClaimedAccount,
+  customJson: {
+    ...commonValues,
+    type: KeychainRequestTypes.custom,
+    id: '1',
+    json: JSON.stringify({
+      command: 'send_tokens',
+      amount: 1,
+    }),
+    display_msg: 'display_msg',
+    method: KeychainKeyTypes.active,
+  } as RequestCustomJSON,
 };
 
 export default { noValues, wValues };
