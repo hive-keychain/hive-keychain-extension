@@ -7,6 +7,7 @@ import {
   RequestAddAccountAuthority,
   RequestAddAccountKeys,
   RequestAddKeyAuthority,
+  RequestBroadcast,
   RequestDecode,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
@@ -85,6 +86,13 @@ const wValues = {
     method: KeychainKeyTypes.active,
     role: KeychainKeyTypes.posting,
   } as RequestRemoveKeyAuthority,
+  broadcastOperation: {
+    domain: 'domain',
+    type: KeychainRequestTypes.broadcast,
+    username: mk.user.one,
+    operations: 'transfer',
+    method: KeychainKeyTypes.posting,
+  } as RequestBroadcast,
 };
 
 export default { noValues, wValues };

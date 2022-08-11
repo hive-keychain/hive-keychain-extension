@@ -1,4 +1,5 @@
 import { TransactionConfirmation } from '@hiveio/dhive';
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export default {
@@ -63,6 +64,74 @@ export default {
             'bgd_ops_error',
           )} : Missing authority`,
           request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    parsedFailed: (datas: any, request_id: number) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          error: new SyntaxError('Unexpected token / in JSON at position 0'),
+          result: undefined,
+          data: datas,
+          message: `${chrome.i18n.getMessage(
+            'bgd_ops_error',
+          )} : Unexpected token / in JSON at position 0`,
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    notIterable: (datas: any, request_id: number) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          error: new TypeError('operations is not iterable'),
+          result: undefined,
+          data: datas,
+          message: `${chrome.i18n.getMessage(
+            'bgd_ops_error',
+          )} : operations is not iterable`,
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    receiverMemoKey: (datas: any, request_id: number) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          error: new Error('Failed to load receiver memo key'),
+          result: undefined,
+          data: datas,
+          message: `${chrome.i18n.getMessage(
+            'bgd_ops_error',
+          )} : Failed to load receiver memo key`,
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    missingKey: (
+      datas: any,
+      request_id: number,
+      keyName: KeychainKeyTypesLC,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          error: new Error(`Failed to load user ${keyName} key`),
+          result: undefined,
+          data: datas,
+          message: `${chrome.i18n.getMessage(
+            'bgd_ops_error',
+          )} : Failed to load user ${keyName} key`,
+          request_id: request_id,
           publicKey: undefined,
         },
       };
@@ -155,6 +224,24 @@ export default {
             chrome.i18n.getMessage(datas.role.toLowerCase()),
             datas.username,
           ]),
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    broadcast: (
+      result: TransactionConfirmation,
+      datas: any,
+      request_id: number,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          error: undefined,
+          result: result,
+          data: datas,
+          message: chrome.i18n.getMessage('bgd_ops_broadcast'),
           request_id: request_id,
           publicKey: undefined,
         },
