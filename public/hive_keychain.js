@@ -712,6 +712,15 @@ var hive_keychain = {
   //HF21
   /**
    * Request the creation of a DHF proposal
+   * @example
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestCreateProposal('keychain', 'keychain', 'Hive Keychain development', 'hive-keychain-proposal-dhf-ran717', '10.000', '2022-03-22', '2023-03-21', JSON.stringify([]), (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} username Hive account to perform the request
    * @param {String} receiver Account receiving the funding if the proposal is voted
    * @param {String} subject Title of the DAO
@@ -752,6 +761,15 @@ var hive_keychain = {
   },
   /**
    * Request the removal of a DHF proposal
+   * @example
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestRemoveProposal(username, JSON.stringify([216]), JSON.stringify([]), (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} username Hive account to perform the request
    * @param {String} proposal_ids Stringified Array of ids of the proposals to be removed
    * @param {String} extensions Stringified Array of extensions
@@ -777,6 +795,16 @@ var hive_keychain = {
   },
   /**
    * Vote/Unvote a DHF proposal
+   * @example
+   * // Approve a proposal
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestUpdateProposalVote(username, JSON.stringify([216]), true, JSON.stringify([]), (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} username Hive account to perform the request
    * @param {String} proposal_ids Stringified Array of Ids of the proposals to be voted
    * @param {boolean} approve Set to true to support the proposal, false to remove a vote
@@ -805,6 +833,18 @@ var hive_keychain = {
   },
   /**
    * Add a new account to Keychain
+   * @example
+   * if (window.hive_keychain) {
+   *   const postingKey = '...';
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestConversion(username, {
+   *     posting: postingKey
+   *   }, (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} username username of the account to be added
    * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
    * @param {requestCallback} callback Function that handles keychain's response to the request
@@ -820,6 +860,17 @@ var hive_keychain = {
   },
   /**
    * Request currency conversion
+   * @example
+   * // Convert 5 HIVE to HBD
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestConversion(username, '5.000', true, (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
+   *
    * @param {String} username Hive account to perform the request
    * @param {String} amount amount to be converted.
    * @param {Boolean} collaterized true to convert HIVE to HBD. false to convert HBD to HIVE.
@@ -839,6 +890,16 @@ var hive_keychain = {
   },
   /**
    * Request recurrent transfer
+   * @example
+   * // Let's send @stoodkev 5 HIVE a day
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestConversion(null, 'stoodkev', '5.000', 'HIVE', memo, 24, 7, (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} [username=null] Hive account to perform the request
    * @param {String} to Hive account receiving the transfers.
    * @param {String} amount amount to be sent on each execution.
