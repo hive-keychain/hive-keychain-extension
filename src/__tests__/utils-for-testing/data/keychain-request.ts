@@ -128,6 +128,12 @@ const wValues = {
     display_msg: 'display_msg',
     method: KeychainKeyTypes.active,
   } as RequestCustomJSON,
+  decode: {
+    ...commonValues,
+    type: KeychainRequestTypes.decode,
+    message: '',
+    method: KeychainKeyTypes.active,
+  } as RequestDecode,
 };
 
 export default { noValues, wValues };
