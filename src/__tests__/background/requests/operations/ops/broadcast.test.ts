@@ -94,7 +94,12 @@ describe('broadcast tests:\n', () => {
     );
     const result = await broadcastOperations(requestHandler, cloneData);
     expect(result).toEqual(
-      messages.success.broadcast(confirmed, datas, request_id),
+      messages.success.broadcast(
+        confirmed,
+        datas,
+        request_id,
+        chrome.i18n.getMessage('bgd_ops_broadcast'),
+      ),
     );
   });
   it('Must return success broadcasting operations', async () => {
@@ -110,7 +115,12 @@ describe('broadcast tests:\n', () => {
     );
     const result = await broadcastOperations(requestHandler, cloneData);
     expect(result).toEqual(
-      messages.success.broadcast(confirmed, datas, request_id),
+      messages.success.broadcast(
+        confirmed,
+        datas,
+        request_id,
+        chrome.i18n.getMessage('bgd_ops_broadcast'),
+      ),
     );
   });
 });

@@ -233,6 +233,7 @@ export default {
       result: TransactionConfirmation,
       datas: any,
       request_id: number,
+      message: string,
     ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
@@ -241,7 +242,32 @@ export default {
           error: undefined,
           result: result,
           data: datas,
-          message: chrome.i18n.getMessage('bgd_ops_broadcast'),
+          message: message,
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    convert: (
+      result: TransactionConfirmation,
+      datas: any,
+      request_id: number,
+      collateralized: boolean,
+    ) => {
+      const keyMsg = collateralized
+        ? 'bgd_ops_convert_collaterized'
+        : 'bgd_ops_convert';
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          error: undefined,
+          result: result,
+          data: datas,
+          message: chrome.i18n.getMessage(keyMsg, [
+            datas.amount,
+            datas.username,
+          ]),
           request_id: request_id,
           publicKey: undefined,
         },

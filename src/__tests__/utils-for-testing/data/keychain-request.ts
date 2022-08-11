@@ -1,3 +1,4 @@
+import { AuthorityType } from '@hiveio/dhive';
 import {
   KeychainKeyTypes,
   KeychainRequest,
@@ -8,6 +9,8 @@ import {
   RequestAddAccountKeys,
   RequestAddKeyAuthority,
   RequestBroadcast,
+  RequestConvert,
+  RequestCreateClaimedAccount,
   RequestDecode,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
@@ -46,53 +49,73 @@ const noValues = {
   } as RequestTransfer,
 };
 
+const commonValues = {
+  domain: 'domain',
+  username: mk.user.one,
+};
+
+const authType = {
+  weight_threshold: 1,
+  account_auths: [],
+  key_auths: [],
+} as AuthorityType;
+
 const wValues = {
   addAccount: {
-    domain: 'domain',
+    ...commonValues,
     type: KeychainRequestTypes.addAccount,
-    username: mk.user.one,
     keys: userData.one.nonEncryptKeys as RequestAddAccountKeys,
   } as RequestAddAccount,
   addAccountAuthority: {
-    domain: 'domain',
+    ...commonValues,
     type: KeychainRequestTypes.addAccountAuthority,
-    username: mk.user.one,
     role: KeychainKeyTypes.posting,
     weight: 1,
     authorizedUsername: 'theghost1980',
   } as RequestAddAccountAuthority,
   removeAccountAuthority: {
-    domain: 'domain',
+    ...commonValues,
     type: KeychainRequestTypes.removeAccountAuthority,
-    username: mk.user.one,
     authorizedUsername: 'theghost1980',
     role: KeychainKeyTypes.posting,
     method: KeychainKeyTypes.active,
   } as RequestRemoveAccountAuthority,
   addKeyAuthority: {
-    domain: 'domain',
+    ...commonValues,
     type: KeychainRequestTypes.addKeyAuthority,
     authorizedKey: userData.one.encryptKeys.posting,
-    username: mk.user.one,
     method: KeychainKeyTypes.active,
     weight: 1,
     role: KeychainKeyTypes.posting,
   } as RequestAddKeyAuthority,
   removeKeyAuthority: {
-    domain: 'domain',
+    ...commonValues,
     type: KeychainRequestTypes.removeKeyAuthority,
     authorizedKey: userData.one.encryptKeys.posting,
-    username: mk.user.one,
     method: KeychainKeyTypes.active,
     role: KeychainKeyTypes.posting,
   } as RequestRemoveKeyAuthority,
   broadcastOperation: {
-    domain: 'domain',
+    ...commonValues,
     type: KeychainRequestTypes.broadcast,
-    username: mk.user.one,
     operations: 'transfer',
     method: KeychainKeyTypes.posting,
   } as RequestBroadcast,
+  convert: {
+    ...commonValues,
+    type: KeychainRequestTypes.convert,
+    amount: '0.1',
+    collaterized: false,
+  } as RequestConvert,
+  claimedAccount: {
+    ...commonValues,
+    type: KeychainRequestTypes.createClaimedAccount,
+    new_account: 'new_account',
+    owner: JSON.stringify(authType),
+    active: JSON.stringify(authType),
+    posting: JSON.stringify(authType),
+    memo: JSON.stringify(authType),
+  } as RequestCreateClaimedAccount,
 };
 
 export default { noValues, wValues };
