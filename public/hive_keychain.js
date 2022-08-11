@@ -95,6 +95,13 @@ var hive_keychain = {
   },
   /**
    * Requests to add account authority over another account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @example
+   * // Gives @stoodkev active authority with weight 2
+   * const keychain = window.hive_keychain
+   * keychain.requestAddAccountAuthority(username, 'stoodkev', 'Active', 2, (response) => {
+   *   console.log(response);
+   * });
+   *
    * @param {String} account Hive account to perform the request
    * @param {String} authorizedUsername Authorized account
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
@@ -124,6 +131,13 @@ var hive_keychain = {
   },
   /**
    * Requests to remove an account authority over another account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @example
+   * // Removes @stoodkev's active authority from `username`
+   * const keychain = window.hive_keychain;
+   * keychain.requestRemoveAccountAuthority(username, 'stoodkev', 'Active', (response) => {
+   *   console.log(response);
+   * });
+   *
    * @param {String} account Hive account to perform the request
    * @param {String} authorizedUsername Account to lose authority
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
@@ -150,6 +164,12 @@ var hive_keychain = {
   },
   /**
    * Requests to add a new key authority to an account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestAddKeyAuthority(username, publicKey, 'Memo', 1, (response) => {
+   *   console.log(response);
+   * });
+   *
    * @param {String} account Hive account to perform the request
    * @param {String} authorizedKey New public key to be associated with the account
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
@@ -179,6 +199,11 @@ var hive_keychain = {
   },
   /**
    * Requests to remove a key to an account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestRemoveKeyAuthority(username, publicKey, 'Memo', (response) => {
+   *   console.log(response);
+   * });
    * @param {String} account Hive account to perform the request
    * @param {String} authorizedKey Key to be removed (public key).
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'.
@@ -205,6 +230,21 @@ var hive_keychain = {
   },
   /**
    * Generic broadcast request
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestBroadcast('npfedwards', [
+   *   [
+   *     'account_witness_vote',
+   *     {
+   *       account: 'npfedwards',
+   *       witness: 'stoodkev',
+   *       approve: true
+   *     }
+   *   ]
+   * ], 'Active', (response) => {
+   *   console.log(response);
+   * });
+   *
    * @param {String} account Hive account to perform the request
    * @param {Array} operations Array of operations to be broadcasted
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
@@ -225,6 +265,7 @@ var hive_keychain = {
   /**
    * Requests to sign a transaction with a given authority
    * @example
+   * // This example would be done much easier with requestBroadcast
    * import dhive from '@hiveio/dhive';
    *
    * const client = new dhive.Client(['https://api.hive.blog', 'https://anyx.io', 'https://api.openhive.network']);
@@ -340,7 +381,7 @@ var hive_keychain = {
   /**
    * Requests a vote
    * @example
-   * // Vote +50%
+   * // Upvote with 50% weight
    * const keychain = window.hive_keychain;
    * keychain.requestVote('npfedwards', 'hello-world', 'stoodkev', 5000, (response) => {
    *   console.log(response);
@@ -480,6 +521,16 @@ var hive_keychain = {
   },
   /**
    * Requests a delegation broadcast
+   * @example
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestDelegation(null, 'stoodkev', '1.000', 'HP', (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
+   *
    * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} delegatee Account to receive the delegation
    * @param {String} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
@@ -507,6 +558,16 @@ var hive_keychain = {
   },
   /**
    * Requests a witness vote broadcast
+   * @example
+   * // Unvote our witness vote for @stoodkev
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestWitnessVote(null, 'stoodkev', false, (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} witness Account to receive the witness vote
    * @param {boolean} vote Set to true to vote for the witness, false to unvote
@@ -525,6 +586,26 @@ var hive_keychain = {
   },
   /**
    * Select an account as proxy
+   * @example
+   * // Let @stoodkev use our voting power in governance votes
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestProxy(null, 'stoodkev', (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
+   * @example
+   * // Remove voting proxy
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestProxy(null, '', (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} proxy Account to become the proxy. Empty string ('') to remove a proxy
    * @param {requestCallback} callback Function that handles keychain's response to the request
@@ -541,6 +622,16 @@ var hive_keychain = {
   },
   /**
    * Request a power up
+   * @example
+   * // Power up 5 HP
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestProxy(username, username, '5.000', (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} username Hive account to perform the request
    * @param {String} recipient Account to receive the power up
    * @param {String} hive Amount of HIVE to be powered up
@@ -559,6 +650,16 @@ var hive_keychain = {
   },
   /**
    * Request a power down
+   * @example
+   * // Power down 5 HP
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestProxy(username, '5.000', (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} username Hive account to perform the request
    * @param {String} hive_power Amount of HIVE to be powered down
    * @param {requestCallback} callback Function that handles keychain's response to the request
