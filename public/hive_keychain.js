@@ -21,6 +21,16 @@ var hive_keychain = {
 
   /**
    * This function is called to verify that the user has a certain authority over an account, by requesting to decode a message
+   * @example
+   * const keychain = window.hive_keychain;
+   * const message = username + Date.now();
+   * keychain.requestEncodeMessage(username, myUsername, message, 'Memo', (response) => {
+   *   if (response.success) {
+   *     const encodedMessage = response.result;
+   *     // Send message to a server where you can use your private key to decode it
+   *   }
+   * });
+   *
    * @param {String} username Hive account to perform the request
    * @param {String} receiver Account that will decode the string
    * @param {String} message Message to be encrypted
@@ -40,6 +50,13 @@ var hive_keychain = {
   },
   /**
    * This function is called to verify that the user has a certain authority over an account, by requesting to decode a message
+   * @example
+   * const keychain = window.hive_keychain;
+   * keychain.requestVerifyKey('stoodkev', encodedMessage, 'Posting', (response) => {
+   *   if (response.success === true) {
+   *     const decodedMessage = response.result;
+   *   }
+   * });
    * @param {String} account Hive account to perform the request
    * @param {String} message Message to be decoded by the account
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
@@ -290,7 +307,7 @@ var hive_keychain = {
    * @param {String} parent_account Author of the parent post. Pass null for root post
    * @param {Object} json_metadata Parameters of the call
    * @param {String} permlink Permlink of the blog post
-   * @param {Object} comment_options Options attached to the blog post. Consult Hive documentation to learn more about it
+   * @param {Object} comment_options Options attached to the blog post. Consult Hive documentation at <https://developers.hive.io/apidefinitions/#broadcast_ops_comment_options> to learn more about it
    * @param {requestCallback} callback Function that handles keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
