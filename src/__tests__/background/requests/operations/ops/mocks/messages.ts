@@ -2,7 +2,9 @@ import { TransactionConfirmation } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { AssertionError } from 'assert';
-
+//TODO refactor and try to re-use code here
+//  Needed:
+//  answer: success & error.
 export default {
   error: {
     hasAuthority: (datas: any, request_id: number) => {
@@ -143,17 +145,18 @@ export default {
      * So use it on its definition.
      */
     answerError: (
-      error: AssertionError,
+      error: AssertionError | TypeError,
       datas: any,
       request_id: number,
       message: string,
+      result?: any,
     ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
           error: error,
-          result: null,
+          result: result !== null ? result : null,
           data: datas,
           message: message,
           request_id: request_id,

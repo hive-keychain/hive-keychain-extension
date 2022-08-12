@@ -13,6 +13,7 @@ import {
   RequestCreateClaimedAccount,
   RequestCustomJSON,
   RequestDecode,
+  RequestDelegation,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
   RequestTransfer,
@@ -134,6 +135,13 @@ const wValues = {
     message: '',
     method: KeychainKeyTypes.active,
   } as RequestDecode,
+  delegation: {
+    ...commonValues,
+    type: KeychainRequestTypes.delegation,
+    delegatee: 'theghost1980',
+    amount: '100.000',
+    unit: 'HP',
+  } as RequestDelegation,
 };
 
 export default { noValues, wValues };
