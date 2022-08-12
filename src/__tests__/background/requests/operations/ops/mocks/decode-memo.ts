@@ -16,12 +16,6 @@ const confirmed = {
   expired: false,
 } as TransactionConfirmation;
 
-const memo = {
-  encoded:
-    '#AhTgoBkHRDnswPQt2sBq41FV7iC39CgnnvmS3ZoDBADJmbf5BQAHzeF7vXg9WvKGYJgCsaRGQX67MJjDpGq1tkcTZc3byU87Fseqfg6ZQpj8FBw9ejaCVpwuBPuWHFinZ3RuxvwTdQ7W3pegK2jDHtB',
-  decoded: '# keychain tha best wallet!',
-};
-
 const mocks = {
   getUILanguage: () =>
     (chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US')),
@@ -29,18 +23,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      json: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.json = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-  },
-};
-
-const spies = {
-  getUserKey: jest.spyOn(requestHandler, 'getUserKey'),
 };
 
 const methods = {
@@ -57,12 +39,9 @@ const constants = {
   data,
   requestHandler,
   confirmed,
-  memo,
 };
 
 export default {
   methods,
   constants,
-  mocks,
-  spies,
 };

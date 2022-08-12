@@ -1,6 +1,7 @@
 import { TransactionConfirmation } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { AssertionError } from 'assert';
 
 export default {
   error: {
@@ -131,6 +132,30 @@ export default {
           message: `${chrome.i18n.getMessage(
             'bgd_ops_error',
           )} : Failed to load user ${keyName} key`,
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    /**
+     * @param error
+     * Note: AssertionError, will use message to set expected as: this.expected: !this.message.
+     * So use it on its definition.
+     */
+    answerError: (
+      error: AssertionError,
+      datas: any,
+      request_id: number,
+      message: string,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: false,
+          error: error,
+          result: null,
+          data: datas,
+          message: message,
           request_id: request_id,
           publicKey: undefined,
         },
@@ -268,6 +293,25 @@ export default {
             datas.amount,
             datas.username,
           ]),
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    decoded: (
+      result: string,
+      datas: any,
+      request_id: number,
+      message: string,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          error: null,
+          result: result,
+          data: datas,
+          message: message,
           request_id: request_id,
           publicKey: undefined,
         },
