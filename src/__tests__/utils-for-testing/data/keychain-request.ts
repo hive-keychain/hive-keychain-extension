@@ -14,6 +14,7 @@ import {
   RequestCustomJSON,
   RequestDecode,
   RequestDelegation,
+  RequestEncode,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
   RequestTransfer,
@@ -142,6 +143,12 @@ const wValues = {
     amount: '100.000',
     unit: 'HP',
   } as RequestDelegation,
+  encode: {
+    ...commonValues,
+    type: KeychainRequestTypes.encode,
+    message: '',
+    method: KeychainKeyTypes.memo,
+  } as RequestEncode,
 };
 
 export default { noValues, wValues };

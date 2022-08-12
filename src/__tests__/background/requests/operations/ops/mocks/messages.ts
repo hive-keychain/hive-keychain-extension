@@ -141,22 +141,21 @@ export default {
     },
     /**
      * @param error
-     * Note: AssertionError, will use message to set expected as: this.expected: !this.message.
-     * So use it on its definition.
+     * Note: AssertionError {expected: true,operator: '==',message: errorTitle,}
      */
     answerError: (
       error: AssertionError | TypeError,
       datas: any,
       request_id: number,
       message: string,
-      result?: any,
+      result: any,
     ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
           error: error,
-          result: result !== null ? result : null,
+          result: result,
           data: datas,
           message: message,
           request_id: request_id,
@@ -303,6 +302,25 @@ export default {
     },
     decoded: (
       result: string,
+      datas: any,
+      request_id: number,
+      message: string,
+    ) => {
+      return {
+        command: DialogCommand.ANSWER_REQUEST,
+        msg: {
+          success: true,
+          error: null,
+          result: result,
+          data: datas,
+          message: message,
+          request_id: request_id,
+          publicKey: undefined,
+        },
+      };
+    },
+    answerSucess: (
+      result: any,
       datas: any,
       request_id: number,
       message: string,
