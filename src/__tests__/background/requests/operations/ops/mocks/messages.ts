@@ -144,7 +144,7 @@ export default {
      * Note: AssertionError {expected: true,operator: '==',message: errorTitle,}
      */
     answerError: (
-      error: AssertionError | TypeError,
+      error: AssertionError | TypeError | SyntaxError,
       datas: any,
       request_id: number,
       message: string,
@@ -324,12 +324,13 @@ export default {
       datas: any,
       request_id: number,
       message: string,
+      error: undefined | null,
     ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: true,
-          error: null,
+          error: error,
           result: result,
           data: datas,
           message: message,

@@ -15,6 +15,7 @@ import {
   RequestDecode,
   RequestDelegation,
   RequestEncode,
+  RequestPost,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
   RequestTransfer,
@@ -149,6 +150,17 @@ const wValues = {
     message: '',
     method: KeychainKeyTypes.memo,
   } as RequestEncode,
+  post: {
+    ...commonValues,
+    type: KeychainRequestTypes.post,
+    title: 'title',
+    body: 'body_stringyfied',
+    parent_perm: 'https://hive.com/perm-link/',
+    parent_username: 'theghost1980',
+    json_metadata: 'metadata_stringyfied',
+    permlink: 'https://hive.com/perm-link-1/',
+    comment_options: '',
+  } as RequestPost,
 };
 
 export default { noValues, wValues };
