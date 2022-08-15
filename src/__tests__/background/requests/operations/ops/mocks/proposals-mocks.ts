@@ -8,6 +8,7 @@ import {
   KeychainRequestTypes,
   RequestCreateProposal,
   RequestId,
+  RequestRemoveProposal,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
@@ -40,6 +41,14 @@ const data = {
     extensions: '',
     request_id: 1,
   } as RequestUpdateProposalVote & RequestId,
+  remove: {
+    domain: 'domain',
+    username: mk.user.one,
+    type: KeychainRequestTypes.removeProposal,
+    proposal_ids: '',
+    extensions: '',
+    request_id: 1,
+  } as RequestRemoveProposal & RequestId,
 };
 
 const confirmed = {

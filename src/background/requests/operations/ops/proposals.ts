@@ -125,20 +125,21 @@ export const broadcastRemoveProposal = async (
   requestHandler: RequestsHandler,
   data: RequestRemoveProposal & RequestId,
 ) => {
-  let err, result;
+  let err, result, ids;
   const client = requestHandler.getHiveClient();
   const key = requestHandler.data.key;
   try {
+    ids =
+      typeof data.proposal_ids === 'string'
+        ? JSON.parse(data.proposal_ids)
+        : data.proposal_ids;
     result = await client.broadcast.sendOperations(
       [
         [
           'remove_proposal',
           {
             proposal_owner: data.username,
-            proposal_ids:
-              typeof data.proposal_ids === 'string'
-                ? JSON.parse(data.proposal_ids)
-                : data.proposal_ids,
+            proposal_ids: ids,
             extensions:
               typeof data.extensions === 'string'
                 ? JSON.parse(data.extensions)
@@ -156,11 +157,7 @@ export const broadcastRemoveProposal = async (
       err,
       result,
       data,
-      await chrome.i18n.getMessage('bgd_ops_proposal_remove', [
-        typeof data.proposal_ids === 'string'
-          ? JSON.parse(data.proposal_ids)[0]
-          : data.proposal_ids[0],
-      ]),
+      await chrome.i18n.getMessage('bgd_ops_proposal_remove', [ids]),
       err_message,
     );
     return message;
