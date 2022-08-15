@@ -60,31 +60,36 @@ export const broadcastTransfer = async (
       return message;
     } else {
       err = e;
-      if (!(err as any)?.data?.stack[0]?.context?.method)
-        err_message = await chrome.i18n.getMessage(
-          'bgd_ops_error_broadcasting',
-        );
-      else {
-        switch ((err as any).data.stack[0].context.method) {
-          case 'adjust_balance':
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_transfer_adjust_balance',
-              [data.currency, data.username!],
-            );
-            break;
-          case 'get_account':
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_transfer_get_account',
-              [data.to],
-            );
-            break;
-          default:
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_error_broadcasting',
-            );
-            break;
-        }
+      console.log('e: ', e);
+      console.log('e method: ', (err as any).jse_info.stack[0].context.method);
+      // if (!(err as any)?.data?.stack[0]?.context?.method)
+      //   err_message = await chrome.i18n.getMessage(
+      //     'bgd_ops_error_broadcasting',
+      //   );
+      // else {
+      switch ((err as any).data.stack[0].context.method) {
+        case 'adjust_balance':
+          console.log('adjust_balance');
+          err_message = await chrome.i18n.getMessage(
+            'bgd_ops_transfer_adjust_balance',
+            [data.currency, data.username!],
+          );
+          break;
+        case 'get_account':
+          console.log('get_account');
+          err_message = await chrome.i18n.getMessage(
+            'bgd_ops_transfer_get_account',
+            [data.to],
+          );
+          break;
+        default:
+          console.log('default');
+          err_message = await chrome.i18n.getMessage(
+            'bgd_ops_error_broadcasting',
+          );
+          break;
       }
+      //}
     }
   } finally {
     const message = createMessage(
