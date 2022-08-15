@@ -87,6 +87,7 @@ describe('encode-memo tests:\n', () => {
         datas,
         request_id,
         chrome.i18n.getMessage('bgd_ops_encode'),
+        null,
       ),
     );
   });
