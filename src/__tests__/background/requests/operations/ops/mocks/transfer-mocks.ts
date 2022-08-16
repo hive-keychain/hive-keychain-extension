@@ -49,10 +49,6 @@ const mocks = {
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
   client: {
     broadcast: {
-      //   sendOperations: (id: TransactionConfirmation) =>
-      //     (requestHandler.getHiveClient().broadcast.sendOperations = jest
-      //       .fn()
-      //       .mockResolvedValue(id)),
       transfer: (
         using: 'success' | 'error',
         result: TransactionConfirmation | RPCError,
@@ -88,7 +84,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    //mocks.client.broadcast.sendOperations(confirmed);
     mocks.client.broadcast.transfer('success', confirmed);
     mocks.client.database.getAccounts([]);
   }),
