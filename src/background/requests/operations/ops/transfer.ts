@@ -14,7 +14,7 @@ export const broadcastTransfer = async (
   data: RequestTransfer & RequestId,
 ) => {
   let result,
-    err,
+    err: any,
     err_message = null;
   try {
     const { username, to } = data;
@@ -31,7 +31,7 @@ export const broadcastTransfer = async (
     if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
       const receiver = (await client.database.getAccounts([to]))[0];
 
-      if (!receiver) {
+      if (!receiver || !memoKey) {
         throw new Error('Could not encode memo.');
       }
       const memoReceiver = receiver.memo_key;
@@ -60,36 +60,33 @@ export const broadcastTransfer = async (
       return message;
     } else {
       err = e;
-      console.log('e: ', e);
-      console.log('e method: ', (err as any).jse_info.stack[0].context.method);
-      // if (!(err as any)?.data?.stack[0]?.context?.method)
-      //   err_message = await chrome.i18n.getMessage(
-      //     'bgd_ops_error_broadcasting',
-      //   );
-      // else {
-      switch ((err as any).data.stack[0].context.method) {
-        case 'adjust_balance':
-          console.log('adjust_balance');
-          err_message = await chrome.i18n.getMessage(
-            'bgd_ops_transfer_adjust_balance',
-            [data.currency, data.username!],
-          );
-          break;
-        case 'get_account':
-          console.log('get_account');
-          err_message = await chrome.i18n.getMessage(
-            'bgd_ops_transfer_get_account',
-            [data.to],
-          );
-          break;
-        default:
-          console.log('default');
-          err_message = await chrome.i18n.getMessage(
-            'bgd_ops_error_broadcasting',
-          );
-          break;
+      if (!err['jse_info']) {
+        err_message = await chrome.i18n.getMessage(
+          'bgd_ops_error_broadcasting',
+        );
+      } else {
+        const { jse_info } = err; //hiveoio sending a custom error.
+        const { stack } = jse_info;
+        switch (stack[0].context.method) {
+          case 'adjust_balance':
+            err_message = await chrome.i18n.getMessage(
+              'bgd_ops_transfer_adjust_balance',
+              [data.currency, data.username!],
+            );
+            break;
+          case 'get_account':
+            err_message = await chrome.i18n.getMessage(
+              'bgd_ops_transfer_get_account',
+              [data.to],
+            );
+            break;
+          default:
+            err_message = await chrome.i18n.getMessage(
+              'bgd_ops_error_broadcasting',
+            );
+            break;
+        }
       }
-      //}
     }
   } finally {
     const message = createMessage(

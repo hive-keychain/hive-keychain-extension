@@ -8,6 +8,7 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
+import { RPCError } from 'src/__tests__/utils-for-testing/classes/errors/rpc';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -52,10 +53,20 @@ const mocks = {
       //     (requestHandler.getHiveClient().broadcast.sendOperations = jest
       //       .fn()
       //       .mockResolvedValue(id)),
-      transfer: (result: TransactionConfirmation) => {},
-      // (requestHandler.getHiveClient().broadcast.transfer = jest
-      //   .fn()
-      //   .mockResolvedValue(result)),
+      transfer: (
+        using: 'success' | 'error',
+        result: TransactionConfirmation | RPCError,
+      ) => {
+        if (using === 'success') {
+          requestHandler.getHiveClient().broadcast.transfer = jest
+            .fn()
+            .mockResolvedValue(result);
+        } else {
+          requestHandler.getHiveClient().broadcast.transfer = jest
+            .fn()
+            .mockRejectedValue(result);
+        }
+      },
     },
     database: {
       getAccounts: (receiverAccount: ExtendedAccount[]) =>
@@ -78,7 +89,7 @@ const methods = {
     mocks.getUILanguage();
     mocks.i18n();
     //mocks.client.broadcast.sendOperations(confirmed);
-    mocks.client.broadcast.transfer(confirmed);
+    mocks.client.broadcast.transfer('success', confirmed);
     mocks.client.database.getAccounts([]);
   }),
   assert: {

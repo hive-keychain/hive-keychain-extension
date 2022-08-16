@@ -63,6 +63,7 @@ const chromeMessageHandler = async (
       if (requestHandler) {
         requestHandler.closeWindow();
       }
+      console.log('sender: ', sender);
       new RequestsHandler().sendRequest(
         sender,
         backgroundMessage as KeychainRequestWrapper,
