@@ -49,7 +49,7 @@ export const createPopup = (
 chrome.windows.onRemoved.addListener(async (id: number) => {
   const requestHandler = await RequestsHandler.getFromLocalStorage();
   const { windowId, request, request_id, tab, confirmed } = requestHandler.data;
-
+  console.log('calling onRemoved.addListener');
   if (id == windowId && !confirmed && tab) {
     chrome.tabs.sendMessage(tab!, {
       command: DialogCommand.ANSWER_REQUEST,
@@ -80,7 +80,7 @@ const waitUntilDialogIsReady = async (
   }
 };
 
-const askIfReady = (ms: number) => {
+export const askIfReady = (ms: number) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(false);
