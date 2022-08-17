@@ -3,13 +3,22 @@ import {
   DynamicGlobalProperties,
   TransactionConfirmation,
 } from '@hiveio/dhive';
-import { RequestDelegation, RequestId } from '@interfaces/keychain.interface';
-import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import {
+  KeychainRequestTypes,
+  RequestDelegation,
+  RequestId,
+} from '@interfaces/keychain.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
 const data = {
-  ...keychainRequest.wValues.delegation,
+  domain: 'domain',
+  username: mk.user.one,
+  type: KeychainRequestTypes.delegation,
+  delegatee: 'theghost1980',
+  amount: '100.000',
+  unit: 'HP',
   request_id: 1,
 } as RequestDelegation & RequestId;
 const confirmed = {

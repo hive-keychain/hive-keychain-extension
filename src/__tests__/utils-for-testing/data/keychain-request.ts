@@ -1,27 +1,11 @@
-import { AuthorityType } from '@hiveio/dhive';
 import {
   KeychainKeyTypes,
   KeychainRequest,
   KeychainRequestData,
   KeychainRequestTypes,
-  RequestAddAccount,
-  RequestAddAccountAuthority,
-  RequestAddAccountKeys,
-  RequestAddKeyAuthority,
-  RequestBroadcast,
-  RequestConvert,
-  RequestCreateClaimedAccount,
-  RequestCustomJSON,
   RequestDecode,
-  RequestDelegation,
-  RequestEncode,
-  RequestPost,
-  RequestRemoveAccountAuthority,
-  RequestRemoveKeyAuthority,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
-import mk from 'src/__tests__/utils-for-testing/data/mk';
-import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
 const requestDecode = {
   rpc: '',
@@ -53,114 +37,4 @@ const noValues = {
   } as RequestTransfer,
 };
 
-const commonValues = {
-  domain: 'domain',
-  username: mk.user.one,
-};
-
-const authType = {
-  weight_threshold: 1,
-  account_auths: [],
-  key_auths: [],
-} as AuthorityType;
-
-const wValues = {
-  addAccount: {
-    ...commonValues,
-    type: KeychainRequestTypes.addAccount,
-    keys: userData.one.nonEncryptKeys as RequestAddAccountKeys,
-  } as RequestAddAccount,
-  addAccountAuthority: {
-    ...commonValues,
-    type: KeychainRequestTypes.addAccountAuthority,
-    role: KeychainKeyTypes.posting,
-    weight: 1,
-    authorizedUsername: 'theghost1980',
-  } as RequestAddAccountAuthority,
-  removeAccountAuthority: {
-    ...commonValues,
-    type: KeychainRequestTypes.removeAccountAuthority,
-    authorizedUsername: 'theghost1980',
-    role: KeychainKeyTypes.posting,
-    method: KeychainKeyTypes.active,
-  } as RequestRemoveAccountAuthority,
-  addKeyAuthority: {
-    ...commonValues,
-    type: KeychainRequestTypes.addKeyAuthority,
-    authorizedKey: userData.one.encryptKeys.posting,
-    method: KeychainKeyTypes.active,
-    weight: 1,
-    role: KeychainKeyTypes.posting,
-  } as RequestAddKeyAuthority,
-  removeKeyAuthority: {
-    ...commonValues,
-    type: KeychainRequestTypes.removeKeyAuthority,
-    authorizedKey: userData.one.encryptKeys.posting,
-    method: KeychainKeyTypes.active,
-    role: KeychainKeyTypes.posting,
-  } as RequestRemoveKeyAuthority,
-  broadcastOperation: {
-    ...commonValues,
-    type: KeychainRequestTypes.broadcast,
-    operations: 'transfer',
-    method: KeychainKeyTypes.posting,
-  } as RequestBroadcast,
-  convert: {
-    ...commonValues,
-    type: KeychainRequestTypes.convert,
-    amount: '0.1',
-    collaterized: false,
-  } as RequestConvert,
-  claimedAccount: {
-    ...commonValues,
-    type: KeychainRequestTypes.createClaimedAccount,
-    new_account: 'new_account',
-    owner: JSON.stringify(authType),
-    active: JSON.stringify(authType),
-    posting: JSON.stringify(authType),
-    memo: JSON.stringify(authType),
-  } as RequestCreateClaimedAccount,
-  customJson: {
-    ...commonValues,
-    type: KeychainRequestTypes.custom,
-    id: '1',
-    json: JSON.stringify({
-      command: 'send_tokens',
-      amount: 1,
-    }),
-    display_msg: 'display_msg',
-    method: KeychainKeyTypes.active,
-  } as RequestCustomJSON,
-  decode: {
-    ...commonValues,
-    type: KeychainRequestTypes.decode,
-    message: '',
-    method: KeychainKeyTypes.active,
-  } as RequestDecode,
-  delegation: {
-    ...commonValues,
-    type: KeychainRequestTypes.delegation,
-    delegatee: 'theghost1980',
-    amount: '100.000',
-    unit: 'HP',
-  } as RequestDelegation,
-  encode: {
-    ...commonValues,
-    type: KeychainRequestTypes.encode,
-    message: '',
-    method: KeychainKeyTypes.memo,
-  } as RequestEncode,
-  post: {
-    ...commonValues,
-    type: KeychainRequestTypes.post,
-    title: 'title',
-    body: 'body_stringyfied',
-    parent_perm: 'https://hive.com/perm-link/',
-    parent_username: 'theghost1980',
-    json_metadata: 'metadata_stringyfied',
-    permlink: 'https://hive.com/perm-link-1/',
-    comment_options: '',
-  } as RequestPost,
-};
-
-export default { noValues, wValues };
+export default { noValues };

@@ -2,15 +2,24 @@ import MkModule from '@background/mk.module';
 import { RequestsHandler } from '@background/requests';
 import { addAccount } from '@background/requests/operations/ops/add-account';
 import { ExtendedAccount } from '@hiveio/dhive';
-import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
+import {
+  KeychainRequestTypes,
+  RequestAddAccount,
+  RequestAddAccountKeys,
+  RequestId,
+} from '@interfaces/keychain.interface';
 import AccountUtils from 'src/utils/account.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
 const data = {
-  ...keychainRequest.wValues.addAccount,
+  domain: 'domain',
+  username: mk.user.one,
+  type: KeychainRequestTypes.addAccount,
+  keys: userData.one.nonEncryptKeys as RequestAddAccountKeys,
   request_id: 1,
 } as RequestAddAccount & RequestId;
 

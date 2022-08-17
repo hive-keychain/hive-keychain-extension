@@ -1,15 +1,26 @@
 import { RequestsHandler } from '@background/requests';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import * as MemoEncodeHiveJS from '@hiveio/hive-js/lib/auth/memo';
-import { RequestEncode, RequestId } from '@interfaces/keychain.interface';
-import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import {
+  KeychainKeyTypes,
+  KeychainRequestTypes,
+  RequestEncode,
+  RequestId,
+} from '@interfaces/keychain.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
+
 const data = {
-  ...keychainRequest.wValues.encode,
+  domain: 'domain',
+  username: mk.user.one,
+  type: KeychainRequestTypes.encode,
+  message: '',
+  method: KeychainKeyTypes.memo,
   request_id: 1,
 } as RequestEncode & RequestId;
+
 const confirmed = {
   id: '1',
   trx_num: 112234,

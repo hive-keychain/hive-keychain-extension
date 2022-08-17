@@ -1,12 +1,27 @@
 import { RequestsHandler } from '@background/requests';
 import { TransactionConfirmation } from '@hiveio/dhive';
-import { RequestCustomJSON, RequestId } from '@interfaces/keychain.interface';
-import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import {
+  KeychainKeyTypes,
+  KeychainRequestTypes,
+  RequestCustomJSON,
+  RequestId,
+} from '@interfaces/keychain.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
+
 const data = {
-  ...keychainRequest.wValues.customJson,
+  domain: 'domain',
+  username: mk.user.one,
+  type: KeychainRequestTypes.custom,
+  id: '1',
+  json: JSON.stringify({
+    command: 'send_tokens',
+    amount: 1,
+  }),
+  display_msg: 'display_msg',
+  method: KeychainKeyTypes.active,
   request_id: 1,
 } as RequestCustomJSON & RequestId;
 const confirmed = {

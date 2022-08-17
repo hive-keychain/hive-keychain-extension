@@ -1,15 +1,30 @@
 import { RequestsHandler } from '@background/requests';
-import { TransactionConfirmation } from '@hiveio/dhive';
+import { AuthorityType, TransactionConfirmation } from '@hiveio/dhive';
 import {
+  KeychainRequestTypes,
   RequestCreateClaimedAccount,
   RequestId,
 } from '@interfaces/keychain.interface';
-import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
+
+const authType = {
+  weight_threshold: 1,
+  account_auths: [],
+  key_auths: [],
+} as AuthorityType;
+
 const data = {
-  ...keychainRequest.wValues.claimedAccount,
+  domain: 'domain',
+  username: mk.user.one,
+  type: KeychainRequestTypes.createClaimedAccount,
+  new_account: 'new_account',
+  owner: JSON.stringify(authType),
+  active: JSON.stringify(authType),
+  posting: JSON.stringify(authType),
+  memo: JSON.stringify(authType),
   request_id: 1,
 } as RequestCreateClaimedAccount & RequestId;
 const confirmed = {

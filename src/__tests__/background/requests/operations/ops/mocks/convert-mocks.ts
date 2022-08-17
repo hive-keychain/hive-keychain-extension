@@ -1,12 +1,20 @@
 import { RequestsHandler } from '@background/requests';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
-import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
-import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import {
+  KeychainRequestTypes,
+  RequestConvert,
+  RequestId,
+} from '@interfaces/keychain.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
 const data = {
-  ...keychainRequest.wValues.convert,
+  type: KeychainRequestTypes.convert,
+  amount: '0.1',
+  collaterized: false,
+  domain: 'domain',
+  username: mk.user.one,
   request_id: 1,
 } as RequestConvert & RequestId;
 const confirmed = {

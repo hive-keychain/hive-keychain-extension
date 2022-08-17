@@ -2,18 +2,30 @@ import { RequestsHandler } from '@background/requests';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestData,
+  KeychainRequestTypes,
   RequestId,
   RequestPost,
 } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
-import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const requestHandler = new RequestsHandler();
+
 const data = {
-  ...keychainRequest.wValues.post,
+  domain: 'domain',
+  username: mk.user.one,
+  type: KeychainRequestTypes.post,
+  title: 'title',
+  body: 'body_stringyfied',
+  parent_perm: 'https://hive.com/perm-link/',
+  parent_username: 'theghost1980',
+  json_metadata: 'metadata_stringyfied',
+  permlink: 'https://hive.com/perm-link-1/',
+  comment_options: '',
   request_id: 1,
 } as RequestPost & RequestId;
+
 const confirmed = {
   id: '1',
   trx_num: 112234,
