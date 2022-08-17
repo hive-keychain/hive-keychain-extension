@@ -36,7 +36,7 @@ const data = {
     domain: 'domain',
     type: KeychainRequestTypes.updateProposalVote,
     username: mk.user.one,
-    proposal_ids: '',
+    proposal_ids: [1],
     approve: true,
     extensions: '',
     request_id: 1,

@@ -2,7 +2,6 @@ import { performOperation } from '@background/requests/operations';
 import { KeychainRequestTypes } from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { requestsData } from 'src/__tests__/background/requests/operations/mocks/index-data';
 import indexMocks from 'src/__tests__/background/requests/operations/mocks/index-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
@@ -51,27 +50,18 @@ describe('index tests:\n', () => {
     expect(spies.removeWindow).toBeCalledWith(requestHandler.data.windowId);
     expect(spies.reset).toBeCalledWith(false);
   });
-  it.skip('Must call each type of request', async () => {
-    //loop TODO.
-    for (let i = 0; i < requestsData.length; i++) {
+  it('Must call each type of request', async () => {
+    for (let i = 0; i < _data.length; i++) {
       const tab = 0;
       requestHandler.data.rpc = DefaultRpcs[0];
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       requestHandler.data.accounts = accounts.twoAccounts;
-      await performOperation(
-        requestHandler,
-        requestsData[i].data,
-        tab,
-        'domain',
-        false,
-      );
+      await performOperation(requestHandler, _data[i], tab, 'domain', false);
       expect(spies.tabsSendMessage.mock.calls[0][0]).toBe(tab);
       const callingArg: any = spies.tabsSendMessage.mock.calls[0][1];
-      console.log(callingArg);
       const { msg } = callingArg;
       const { data } = msg;
-      expect(data.type).toBe(requestsData[i].data.type);
-      //expect(msg.success).toBe(true);
+      expect(data.type).toBe(_data[i].type);
       spies.tabsSendMessage.mockClear();
     }
   });
