@@ -45,11 +45,11 @@ export const createPopup = (
     );
   });
 };
-
+/* istanbul ignore next */
 chrome.windows.onRemoved.addListener(async (id: number) => {
   const requestHandler = await RequestsHandler.getFromLocalStorage();
   const { windowId, request, request_id, tab, confirmed } = requestHandler.data;
-  console.log('calling onRemoved.addListener');
+
   if (id == windowId && !confirmed && tab) {
     chrome.tabs.sendMessage(tab!, {
       command: DialogCommand.ANSWER_REQUEST,
@@ -66,7 +66,7 @@ chrome.windows.onRemoved.addListener(async (id: number) => {
     requestHandler.reset(true);
   }
 });
-
+/* istanbul ignore next */
 const waitUntilDialogIsReady = async (
   ms: number,
   callback: () => void,
@@ -79,8 +79,8 @@ const waitUntilDialogIsReady = async (
     waitUntilDialogIsReady(ms, callback, nb);
   }
 };
-
-export const askIfReady = (ms: number) => {
+/* istanbul ignore next */
+const askIfReady = (ms: number) => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(false);
@@ -97,6 +97,7 @@ export const askIfReady = (ms: number) => {
 };
 
 // check if win exists before removing it
+/* istanbul ignore next */
 export const removeWindow = (windowId: number) => {
   chrome.windows.getAll((windows) => {
     const hasWin = windows.filter((win) => {
