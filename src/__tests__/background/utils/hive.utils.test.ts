@@ -70,7 +70,7 @@ describe('hive.utils tests:\n', () => {
       it('Must return false on each error', async () => {
         await method.assertErrors('savings_hbd_balance');
       });
-      it('Must call logger with nothing to withdraw', async () => {
+      it('Must call logger with nothing to claim', async () => {
         const noBalances = method.resetBothBalances(accounts.active);
         await BgdHiveUtils.claimSavings(noBalances);
         expect(spies.logger.error).toBeCalledWith(noPendings);
