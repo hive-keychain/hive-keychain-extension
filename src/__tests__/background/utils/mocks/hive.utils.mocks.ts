@@ -1,4 +1,5 @@
 import RPCModule from '@background/rpc.module';
+import BgdHiveUtils from '@background/utils/hive.utils';
 import { Asset, Client } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
@@ -9,20 +10,20 @@ import confirmations from 'src/__tests__/utils-for-testing/data/confirmations';
 import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import { KeyToUseNoMaster } from 'src/__tests__/utils-for-testing/enums/enums';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import {
-  ClaimAccountsParams,
-  ClaimRewardsParams,
-} from 'src/__tests__/utils-for-testing/interfaces/params';
+import { BalancesTypes } from 'src/__tests__/utils-for-testing/types/balances-types';
 
 const constants = {
   client: new Client(DefaultRpcs[0].uri),
+  tuple: {
+    assets: {
+      _string: [accounts.active, '1000', '1000', '10000000'] as const,
+    },
+    claimAccounts: [manabar, accounts.active] as const,
+  },
+  noPendings: `@${accounts.active.name} has no HBD to deposit or savings to withdraw`,
 };
 
 const mocks = {
-  //   getValueFromLocalStorage: (_accountsEnc: string) =>
-  //     (LocalStorageUtils.getValueFromLocalStorage = jest
-  //       .fn()
-  //       .mockResolvedValue(_accountsEnc)),
   getClient: (client?: Client) =>
     (RPCModule.getClient = jest.fn().mockResolvedValue(client)),
   sendOperations: (constants.client.broadcast.sendOperations = jest
@@ -36,8 +37,6 @@ const mocks = {
 };
 
 const spies = {
-  //   getValueFromLocalStorage: () =>
-  //     jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage'),
   logger: {
     info: jest.spyOn(Logger, 'info'),
     error: jest.spyOn(Logger, 'error'),
@@ -55,94 +54,68 @@ const method = {
     return clonedActiveAccount;
   },
   reset: (
-    property: 'hbd_balance' | 'savings_hbd_balance',
+    property: BalancesTypes,
+    activeAccount: ActiveAccount,
     asAsset?: boolean,
   ) => {
-    const clonedActiveAccount = objects.clone(accounts.active) as ActiveAccount;
+    const clonedActiveAccount = objects.clone(activeAccount) as ActiveAccount;
     clonedActiveAccount.account[property] = asAsset
       ? new Asset(0, 'HBD')
       : '0.000 HBD';
     return clonedActiveAccount;
   },
+  assertErrors: async (usingBalance: BalancesTypes) => {
+    for (let i = 0; i < errorClaimSavings.length; i++) {
+      const element = errorClaimSavings[i];
+      const { mocks, spies, param } = element;
+      mocks();
+      const activeAccount = method.reset(usingBalance, param);
+      expect(await BgdHiveUtils.claimSavings(activeAccount)).toBe(false);
+      expect(spies.using).toBeCalledWith(...spies.callingParams);
+      spies.using.mockReset();
+    }
+  },
+  resetBothBalances: (activeAccount: ActiveAccount) => {
+    const clonedActiveAccount = objects.clone(activeAccount) as ActiveAccount;
+    clonedActiveAccount.account.hbd_balance = '0.000 HBD';
+    clonedActiveAccount.account.savings_hbd_balance = new Asset(0, 'HBD');
+    return clonedActiveAccount;
+  },
 };
 
-const errorClaimRewards = [
+const errorClaimSavings = [
   {
     description: 'undefined Client returned',
-    params: {
-      activeAccount: accounts.active,
-      rewardHive: new Asset(1000, 'HIVE'),
-      rewardHBD: new Asset(1000, 'HBD'),
-      rewardVests: new Asset(1000, 'VESTS'),
-    } as ClaimRewardsParams,
     mocks: () => {
       mocks.getClient(undefined);
     },
+    param: accounts.active as ActiveAccount,
+    spies: {
+      using: spies.logger.error,
+      callingParams: [
+        `Error while claiming savings for @${accounts.active.name}`,
+        new TypeError(
+          "Cannot read properties of undefined (reading 'broadcast')",
+        ),
+      ],
+    },
   },
   {
-    description: 'No posting key on active account',
-    params: {
-      activeAccount: method.removeKey(
-        KeyToUseNoMaster.POSTING,
-        accounts.active,
-      ),
-      rewardHive: new Asset(1000, 'HIVE'),
-      rewardHBD: new Asset(1000, 'HBD'),
-      rewardVests: new Asset(1000, 'VESTS'),
-    } as ClaimRewardsParams,
+    description: 'No active key on activeAccount',
+    param: method.removeKey(
+      KeyToUseNoMaster.ACTIVE,
+      accounts.active,
+    ) as ActiveAccount,
     mocks: () => {
       mocks.getClient(constants.client);
       mocks.sendOperations;
     },
-  },
-];
-
-const errorClaimAccounts = [
-  {
-    description: 'Not enough RC% to claim account',
-    params: {
-      rc: manabar,
-      activeAccount: accounts.active,
-    } as ClaimAccountsParams,
-    mocks: () => {
-      //mocks.getClient(undefined);
-    },
-    spies: {
-      using: spies.logger.info,
-    },
-  },
-  {
-    description: new TypeError(
-      "Cannot read properties of undefined (reading 'broadcast')",
-    ),
-    params: {
-      rc: manabar,
-      activeAccount: accounts.active,
-    } as ClaimAccountsParams,
-    mocks: () => {
-      mocks.getClient(undefined);
-      mocks.setConfigAsMin();
-    },
     spies: {
       using: spies.logger.error,
-    },
-  },
-  {
-    description: new TypeError('Expected String'),
-    params: {
-      rc: manabar,
-      activeAccount: method.removeKey(
-        KeyToUseNoMaster.ACTIVE,
-        accounts.active,
-      ) as ActiveAccount,
-    } as ClaimAccountsParams,
-    mocks: () => {
-      mocks.getClient(constants.client);
-      mocks.setConfigAsMin();
-      mocks.sendOperations;
-    },
-    spies: {
-      using: spies.logger.error,
+      callingParams: [
+        `Error while claiming savings for @${accounts.active.name}`,
+        new TypeError('Expected String'),
+      ],
     },
   },
 ];
@@ -152,6 +125,4 @@ export default {
   mocks,
   spies,
   method,
-  errorClaimRewards,
-  errorClaimAccounts,
 };
