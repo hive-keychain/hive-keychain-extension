@@ -1,3 +1,4 @@
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
@@ -13,10 +14,70 @@ const constants = {
     },
     original: [accounts.local.justTwoKeys],
   },
+  accountsArray: [
+    {
+      importedAccounts: [
+        { name: 'quentin', keys: {} },
+        { name: 'cedric', keys: {} },
+      ],
+      existingAccounts: [],
+      expected: [
+        { name: 'quentin', keys: {} },
+        { name: 'cedric', keys: {} },
+      ],
+    },
+    {
+      importedAccounts: [
+        { name: 'quentin', keys: accounts.local.two.keys },
+        { name: 'cedric', keys: accounts.local.two.keys },
+      ],
+      existingAccounts: [
+        { name: 'quentin', keys: {} },
+        { name: 'cedric', keys: {} },
+      ],
+      expected: [
+        { name: 'quentin', keys: accounts.local.two.keys },
+        { name: 'cedric', keys: accounts.local.two.keys },
+      ],
+    },
+    {
+      importedAccounts: [
+        { name: 'quentin', keys: accounts.local.two.keys },
+        { name: 'cedric', keys: {} },
+        { name: 'theghost1980', keys: {} },
+      ],
+      existingAccounts: [
+        { name: 'quentin', keys: {} },
+        { name: 'cedric', keys: {} },
+      ],
+      expected: [
+        { name: 'quentin', keys: accounts.local.two.keys },
+        { name: 'cedric', keys: {} },
+        { name: 'theghost1980', keys: {} },
+      ],
+    },
+  ],
+  encrypt: {
+    msg: '0000009b000000770000005700000029000000ae0000008d000000ae00000046WHrXFxuZRaj4uDwLXR8vFw+tW0M7fUZqAfRqnqga+fvyVCNAEnutR76JDJ+Hi6zfX2bMEkzk2c/fnL2FZb9e+ZNoklar2xYnxvM3tXjkh8Qj0roAbwXfWt+DzjqMfeTvuzHzbgnCzir7r5v6NgDug0pBplvNAsk83kj5Kd3gBmJfhRieDf8VRk18bZ8DUmhGqu0U0EmFn9KqSE6HxOKo/sZFRu0In8090s/05IHro9OLCZQ3vEy6A0GPyzoc5PyL/a7qgNiERpK37e3h3LXZBG9HkmDh0HimY2GoQzBYr7sOKFrrmfZlT7rtIuXWfa0nhQSM1pI9Y1s9Y2GWkoiUlweNRuTuAwFAi+SuEHRHBtmokqkgChUUT4bNs0fGbszm3NuB3rqiCXj27kcVWw/aqglb0qJGT77cv2gqhqSKu3BJkw7KNwkjFRYow/5ScHvh6RP1hUPEpEavIiuYZEi0cMu7cmROyZYbc8XLDry8Jpc=',
+    mkUsed: mk.user.one,
+    wrong: {
+      msg: '0000005900000096000000c500000028000000cb000000ce00000020000000afoZAc9WPwIS3MsSe/vHGK/GhcAc9cf9s+8wsrGNKgC3dVkA1T6WpMZeUFkoBp1xwWExHtkBqplucrygjHr/uhGjjDQfE7+458c3YyNNBi0FedgUPwAUA9lmgG0n97Ij',
+      mkUsed: mk.user.one,
+    },
+    original: [accounts.local.justTwoKeys],
+  },
 };
 
-const mocks = {};
+const mocks = {
+  getValueFromLocalStorage: (_accountsEnc: string) =>
+    (LocalStorageUtils.getValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue(_accountsEnc)),
+};
 
-const spies = {};
+const spies = {
+  getValueFromLocalStorage: () =>
+    jest.spyOn(LocalStorageUtils, 'getValueFromLocalStorage'),
+};
 
 export default { constants, mocks, spies };
