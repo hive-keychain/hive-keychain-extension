@@ -656,7 +656,7 @@ Request a power up
 // Power up 5 HP
 if (window.hive_keychain) {
   const keychain = window.hive_keychain;
-  keychain.requestProxy(username, username, '5.000', (response) => {
+  keychain.requestPowerUp(username, username, '5.000', (response) => {
     console.log(response);
   });
 } else {
@@ -681,7 +681,7 @@ Request a power down
 // Power down 5 HP
 if (window.hive_keychain) {
   const keychain = window.hive_keychain;
-  keychain.requestProxy(username, '5.000', (response) => {
+  keychain.requestPowerDown(username, '5.000', (response) => {
     console.log(response);
   });
 } else {
@@ -786,6 +786,18 @@ if (window.hive_keychain) {
 }
 ```
 
+```javascript
+// Unapprove a proposal
+if (window.hive_keychain) {
+  const keychain = window.hive_keychain;
+  keychain.requestUpdateProposalVote(username, JSON.stringify([216]), false, JSON.stringify([]), (response) => {
+    console.log(response);
+  });
+} else {
+  alert('You do not have hive keychain installed');
+}
+```
+
 #### requestAddAccount
 
 Add a new account to Keychain
@@ -849,8 +861,8 @@ Request recurrent transfer
 *   `amount` **[String][95]** amount to be sent on each execution.
 *   `currency` **[String][95]** HIVE or HBD on mainnet.
 *   `memo` **[String][95]** transfer memo
-*   `recurrence` **[Number][98]** How often will the payment be triggered (in hours).
-*   `executions` **[Number][98]** The times the recurrent payment will be executed.
+*   `recurrence` **[Number][98]** How often will the payment be triggered (in hours) - minimum 24.
+*   `executions` **[Number][98]** The times the recurrent payment will be executed - minimum 2.
 *   `callback` **[requestCallback][96]** Function that handles Keychain's response to the request
 *   `rpc` **[String][95]** Override user's RPC settings (optional, default `null`)
 

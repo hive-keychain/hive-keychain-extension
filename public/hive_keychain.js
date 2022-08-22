@@ -626,7 +626,7 @@ var hive_keychain = {
    * // Power up 5 HP
    * if (window.hive_keychain) {
    *   const keychain = window.hive_keychain;
-   *   keychain.requestProxy(username, username, '5.000', (response) => {
+   *   keychain.requestPowerUp(username, username, '5.000', (response) => {
    *     console.log(response);
    *   });
    * } else {
@@ -654,7 +654,7 @@ var hive_keychain = {
    * // Power down 5 HP
    * if (window.hive_keychain) {
    *   const keychain = window.hive_keychain;
-   *   keychain.requestProxy(username, '5.000', (response) => {
+   *   keychain.requestPowerDown(username, '5.000', (response) => {
    *     console.log(response);
    *   });
    * } else {
@@ -805,6 +805,16 @@ var hive_keychain = {
    * } else {
    *   alert('You do not have hive keychain installed');
    * }
+   * @example
+   * // Unapprove a proposal
+   * if (window.hive_keychain) {
+   *   const keychain = window.hive_keychain;
+   *   keychain.requestUpdateProposalVote(username, JSON.stringify([216]), false, JSON.stringify([]), (response) => {
+   *     console.log(response);
+   *   });
+   * } else {
+   *   alert('You do not have hive keychain installed');
+   * }
    * @param {String} username Hive account to perform the request
    * @param {String} proposal_ids Stringified Array of Ids of the proposals to be voted
    * @param {boolean} approve Set to true to support the proposal, false to remove a vote
@@ -905,8 +915,8 @@ var hive_keychain = {
    * @param {String} amount amount to be sent on each execution.
    * @param {String} currency HIVE or HBD on mainnet.
    * @param {String} memo transfer memo
-   * @param {Number} recurrence How often will the payment be triggered (in hours).
-   * @param {Number} executions The times the recurrent payment will be executed.
+   * @param {Number} recurrence How often will the payment be triggered (in hours) - minimum 24.
+   * @param {Number} executions The times the recurrent payment will be executed - minimum 2.
    * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
