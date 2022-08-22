@@ -27,7 +27,7 @@ const alarmHandler = async () => {
       LocalStorageKeyEnum.CLAIM_SAVINGS,
     ],
   );
-
+  console.log('localStorage: ', localStorage);
   const mk = localStorage[LocalStorageKeyEnum.__MK];
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
