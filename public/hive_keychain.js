@@ -96,9 +96,9 @@ var hive_keychain = {
   /**
    * Requests to add account authority over another account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
    * @example
-   * // Gives @stoodkev active authority with weight 2
+   * // Gives @stoodkev active authority with weight 2 to `account`
    * const keychain = window.hive_keychain
-   * keychain.requestAddAccountAuthority(username, 'stoodkev', 'Active', 2, (response) => {
+   * keychain.requestAddAccountAuthority(account, 'stoodkev', 'Active', 2, (response) => {
    *   console.log(response);
    * });
    *
@@ -132,9 +132,9 @@ var hive_keychain = {
   /**
    * Requests to remove an account authority over another account. For more information about multisig, please read https://peakd.com/utopian-io/@stoodkev/how-to-set-up-and-use-multisignature-accounts-on-steem-blockchain
    * @example
-   * // Removes @stoodkev's active authority from `username`
+   * // Removes @stoodkev's active authority from `account`
    * const keychain = window.hive_keychain;
-   * keychain.requestRemoveAccountAuthority(username, 'stoodkev', 'Active', (response) => {
+   * keychain.requestRemoveAccountAuthority(account, 'stoodkev', 'Active', (response) => {
    *   console.log(response);
    * });
    *
