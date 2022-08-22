@@ -35,7 +35,7 @@ var hive_keychain = {
    * @param {String} receiver Account that will decode the string
    * @param {String} message Message to be encrypted
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    */
   requestEncodeMessage: function (username, receiver, message, key, callback) {
     var request = {
@@ -60,7 +60,7 @@ var hive_keychain = {
    * @param {String} account Hive account to perform the request
    * @param {String} message Message to be decoded by the account
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    */
   requestVerifyKey: function (account, message, key, callback) {
     var request = {
@@ -77,7 +77,7 @@ var hive_keychain = {
    * @param {String} [account=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} message Message to be signed by the account
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    * @param {String} [title=null] Override "Sign message" title
    */
@@ -106,7 +106,7 @@ var hive_keychain = {
    * @param {String} authorizedUsername Authorized account
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
    * @param {number} weight Weight of the authority
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestAddAccountAuthority: function (
@@ -141,7 +141,7 @@ var hive_keychain = {
    * @param {String} account Hive account to perform the request
    * @param {String} authorizedUsername Account to lose authority
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestRemoveAccountAuthority: function (
@@ -174,7 +174,7 @@ var hive_keychain = {
    * @param {String} authorizedKey New public key to be associated with the account
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'
    * @param {number} weight Weight of the key authority
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestAddKeyAuthority: function (
@@ -207,7 +207,7 @@ var hive_keychain = {
    * @param {String} account Hive account to perform the request
    * @param {String} authorizedKey Key to be removed (public key).
    * @param {String} role Type of authority. Can be 'Posting','Active' or 'Memo'.
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestRemoveKeyAuthority: function (
@@ -248,7 +248,7 @@ var hive_keychain = {
    * @param {String} account Hive account to perform the request
    * @param {Array} operations Array of operations to be broadcasted
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestBroadcast: function (account, operations, key, callback, rpc) {
@@ -293,7 +293,7 @@ var hive_keychain = {
    * @param {String} account Hive account to perform the request
    * @param {Object} tx Unsigned transaction
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestSignTx: function (account, tx, key, callback, rpc) {
@@ -314,7 +314,7 @@ var hive_keychain = {
    * @param {String} method Method of the call
    * @param {String} params Parameters of the call
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestSignedCall: function (account, method, params, key, callback, rpc) {
@@ -349,7 +349,7 @@ var hive_keychain = {
    * @param {Object} json_metadata Parameters of the call
    * @param {String} permlink Permlink of the blog post
    * @param {Object} comment_options Options attached to the blog post. Consult Hive documentation at <https://developers.hive.io/apidefinitions/#broadcast_ops_comment_options> to learn more about it
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestPost: function (
@@ -390,7 +390,7 @@ var hive_keychain = {
    * @param {String} permlink Permlink of the blog post
    * @param {String} author Author of the blog post
    * @param {Number} weight Weight of the vote, comprised between -10,000 (-100%) and 10,000 (100%)
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestVote: function (account, permlink, author, weight, callback, rpc) {
@@ -417,7 +417,7 @@ var hive_keychain = {
    * @param {String} key Type of key. Can be 'Posting','Active' or 'Memo'
    * @param {String} json Stringified custom json
    * @param {String} display_msg Message to display to explain to the user what this broadcast is about
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestCustomJson: function (
@@ -453,7 +453,7 @@ var hive_keychain = {
    * @param {String} amount Amount to be transfered. Requires 3 decimals.
    * @param {String} memo The memo will be automatically encrypted if starting by '#' and the memo key is available on Keychain. It will also overrule the account to be enforced, regardless of the 'enforce' parameter
    * @param {String} currency 'HIVE' or 'HBD'
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {boolean} [enforce=false] If set to true, user cannot chose to make the transfer from another account
    * @param {String} [rpc=null] Override user's RPC settings
    */
@@ -496,7 +496,7 @@ var hive_keychain = {
    * @param {String} amount Amount to be transferred. Requires 3 decimals.
    * @param {String} memo Memo attached to the transfer
    * @param {String} currency Token to be sent
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestSendToken: function (
@@ -535,7 +535,7 @@ var hive_keychain = {
    * @param {String} delegatee Account to receive the delegation
    * @param {String} amount Amount to be transfered. Requires 3 decimals for HP, 6 for VESTS.
    * @param {String} unit HP or VESTS
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestDelegation: function (
@@ -571,7 +571,7 @@ var hive_keychain = {
    * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} witness Account to receive the witness vote
    * @param {boolean} vote Set to true to vote for the witness, false to unvote
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestWitnessVote: function (username, witness, vote, callback, rpc) {
@@ -608,7 +608,7 @@ var hive_keychain = {
    * }
    * @param {String} [username=null] Hive account to perform the request. If null, user can choose the account from a dropdown
    * @param {String} proxy Account to become the proxy. Empty string ('') to remove a proxy
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestProxy: function (username, proxy, callback, rpc) {
@@ -635,7 +635,7 @@ var hive_keychain = {
    * @param {String} username Hive account to perform the request
    * @param {String} recipient Account to receive the power up
    * @param {String} hive Amount of HIVE to be powered up
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestPowerUp: function (username, recipient, hive, callback, rpc) {
@@ -662,7 +662,7 @@ var hive_keychain = {
    * }
    * @param {String} username Hive account to perform the request
    * @param {String} hive_power Amount of HIVE to be powered down
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestPowerDown: function (username, hive_power, callback, rpc) {
@@ -682,7 +682,7 @@ var hive_keychain = {
    * @param {object} active active authority object
    * @param {object} posting posting authority object
    * @param {String} memo public memo key
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestCreateClaimedAccount: function (
@@ -729,7 +729,7 @@ var hive_keychain = {
    * @param {String} start Starting date
    * @param {String} end Ending date
    * @param {String} extensions Stringified Array of extensions
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestCreateProposal: function (
@@ -773,7 +773,7 @@ var hive_keychain = {
    * @param {String} username Hive account to perform the request
    * @param {String} proposal_ids Stringified Array of ids of the proposals to be removed
    * @param {String} extensions Stringified Array of extensions
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestRemoveProposal: function (
@@ -809,7 +809,7 @@ var hive_keychain = {
    * @param {String} proposal_ids Stringified Array of Ids of the proposals to be voted
    * @param {boolean} approve Set to true to support the proposal, false to remove a vote
    * @param {String} extensions Stringified Array of extensions
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestUpdateProposalVote: function (
@@ -847,7 +847,7 @@ var hive_keychain = {
    * }
    * @param {String} username username of the account to be added
    * @param {Object} keys private keys of the account : {active:'...',posting:'...',memo:'...'}. At least one must be specified.
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    */
   requestAddAccount: function (username, keys, callback) {
     const request = {
@@ -874,7 +874,7 @@ var hive_keychain = {
    * @param {String} username Hive account to perform the request
    * @param {String} amount amount to be converted.
    * @param {Boolean} collaterized true to convert HIVE to HBD. false to convert HBD to HIVE.
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestConversion: function (username, amount, collaterized, callback, rpc) {
@@ -907,7 +907,7 @@ var hive_keychain = {
    * @param {String} memo transfer memo
    * @param {Number} recurrence How often will the payment be triggered (in hours).
    * @param {Number} executions The times the recurrent payment will be executed.
-   * @param {requestCallback} callback Function that handles keychain's response to the request
+   * @param {requestCallback} callback Function that handles Keychain's response to the request
    * @param {String} [rpc=null] Override user's RPC settings
    */
   requestRecurrentTransfer: function (
