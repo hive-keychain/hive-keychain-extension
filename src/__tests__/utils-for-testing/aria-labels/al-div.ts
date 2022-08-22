@@ -25,4 +25,27 @@ export default {
       totallyFunded: 'proposal-item-extra-info-funded',
     },
   },
+  resources: {
+    vm: 'resource-item-voting-mana',
+    rc: 'resource-item-resource-credits',
+  },
+  warning: {
+    message: 'warning-message',
+  },
+  proposalVotingSection: 'proposal-voting-section',
+  wallet: {
+    history: {
+      item: 'wallet-history-item',
+      filterPanel: 'wallet-history-filter-panel',
+      clearFilters: 'clear-filters',
+      filterSelector: {
+        preFix: 'filter-selector-',
+      },
+      byIn: 'filter-by-incoming',
+      byOut: 'filter-by-outgoing',
+    },
+  },
+  transactions: {
+    expandableArea: 'transaction-expandable-area',
+  },
 };

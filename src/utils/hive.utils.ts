@@ -26,7 +26,10 @@ import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
 import { Conversion } from 'src/interfaces/conversion.interface';
-import { Delegator } from 'src/interfaces/delegations.interface';
+import {
+  Delegator,
+  PendingOutgoingUndelegation,
+} from 'src/interfaces/delegations.interface';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
@@ -225,7 +228,7 @@ export const getConversionRequests = async (name: string) => {
   );
 };
 
-export const getDelegators = async (name: string) => {
+const getDelegators = async (name: string) => {
   return (
     (await KeychainApi.get(`/hive/delegators/${name}`)).data as Delegator[]
   )
@@ -233,13 +236,31 @@ export const getDelegators = async (name: string) => {
     .sort((a, b) => b.vesting_shares - a.vesting_shares);
 };
 
-export const getDelegatees = async (name: string) => {
+const getDelegatees = async (name: string) => {
   return (await getClient().database.getVestingDelegations(name, '', 1000))
     .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
     .sort(
       (a, b) =>
         parseFloat(b.vesting_shares + '') - parseFloat(a.vesting_shares + ''),
     );
+};
+
+const getPendingOutgoingUndelegation = async (name: string) => {
+  return (
+    await hive.api.callAsync(
+      'database_api.find_vesting_delegation_expirations',
+      {
+        account: name,
+      },
+    )
+  ).delegations.map((pendingUndelegation: any) => {
+    return {
+      delegator: pendingUndelegation.delegator,
+      expiration_date: pendingUndelegation.expiration,
+      vesting_shares:
+        parseInt(pendingUndelegation.vesting_shares.amount) / 1000000,
+    } as PendingOutgoingUndelegation;
+  });
 };
 
 const claimRewards = async (
@@ -691,10 +712,13 @@ const HiveUtils = {
   sendOperationWithConfirmation,
   unvoteProposal,
   getProposalDailyBudget,
-  getRewardBalance, //exported for testing
-  getRecentClaims, //exported for testing
-  getHivePrice, //exported for testing
-  getVotePowerReserveRate, //exported for testing
+  getRewardBalance,
+  getRecentClaims,
+  getHivePrice,
+  getVotePowerReserveRate,
+  getDelegatees,
+  getDelegators,
+  getPendingOutgoingUndelegation,
 };
 
 export default HiveUtils;
