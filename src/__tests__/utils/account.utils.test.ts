@@ -303,7 +303,6 @@ describe('account.utils tests:\n', () => {
       jest.fn().mockClear();
     });
     test('Test with getValueFromLocalStorage returning [] must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue([]);
@@ -312,7 +311,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning null, must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(null);
@@ -321,7 +319,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning undefined, must return false', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(undefined);
@@ -330,7 +327,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning list with at least one element, must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(['atLeastOneElement']);
@@ -358,8 +354,6 @@ describe('account.utils tests:\n', () => {
       });
     });
     test.skip('test with empty accounts array should return null and setErrorMessage as popup_accounts_fill?', async () => {
-      //the condition inside the function: AccountUtils.addKey is repeated and only check for the privateKey.length
-      //let me know if this case is needed.
       const result = await AccountUtils.addKey(
         activeAccountData,
         [],
@@ -380,7 +374,7 @@ describe('account.utils tests:\n', () => {
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.encryptKeys.active, //key passed as STM on pourpose.
+        userData.encryptKeys.active,
         KeyType.ACTIVE,
       );
       expect(result).toBeNull();
@@ -399,14 +393,14 @@ describe('account.utils tests:\n', () => {
         active: userData.nonEncryptKeys.active,
         activePubkey: userData.encryptKeys.active,
       };
-      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj);
       AccountUtils.saveAccounts = jest
         .fn()
         .mockResolvedValue('data saved mocked!');
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.nonEncryptKeys.active, //now a valid unencrypcted key
+        userData.nonEncryptKeys.active,
         KeyType.ACTIVE,
       );
       expect(result).toEqual(accounts);
@@ -421,14 +415,14 @@ describe('account.utils tests:\n', () => {
         posting: userData.nonEncryptKeys.posting,
         postingPubkey: userData.encryptKeys.posting,
       };
-      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj);
       AccountUtils.saveAccounts = jest
         .fn()
         .mockResolvedValue('data saved mocked!');
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.nonEncryptKeys.posting, //now a valid unencrypcted key
+        userData.nonEncryptKeys.posting,
         KeyType.POSTING,
       );
       expect(result).toEqual(accounts);
@@ -443,14 +437,14 @@ describe('account.utils tests:\n', () => {
         memo: userData.nonEncryptKeys.memo,
         memoPubkey: userData.encryptKeys.memo,
       };
-      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj);
       AccountUtils.saveAccounts = jest
         .fn()
         .mockResolvedValue('data saved mocked!');
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.nonEncryptKeys.memo, //now a valid unencrypcted key
+        userData.nonEncryptKeys.memo,
         KeyType.MEMO,
       );
       expect(result).toEqual(accounts);
@@ -615,8 +609,6 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(true);
     });
     test.skip('must returns true if both lists are identical, even on disorder lists, needs a sort function', () => {
-      //skipped for now as there is no function to sort the fielnd inside each list
-      //if you consider this is not need for this case I will remove it.
       const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
       const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
       const result = AccountUtils.isAccountListIdentical(
@@ -822,8 +814,8 @@ describe('account.utils tests:\n', () => {
       };
       const result_addAuthorizedAccount =
         await AccountUtils.addAuthorizedAccount(
-          'quentin', //account to add
-          'keychain.tests', //main account
+          'quentin',
+          'keychain.tests',
           [{ name: 'keychain.tests', keys: userDataKeys }],
           _setErrorMessage,
         );

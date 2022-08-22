@@ -69,7 +69,6 @@ describe('add-by-keys:\n', () => {
       });
     });
     it.skip('Must show error if empty username', async () => {
-      //TODO: waiting for fixes on dispatcher.
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_fill',
       );
@@ -80,7 +79,6 @@ describe('add-by-keys:\n', () => {
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
     it.skip('Must show error if empty password', async () => {
-      //TODO: waiting for fixes on dispatcher.
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_fill',
       );
@@ -91,7 +89,6 @@ describe('add-by-keys:\n', () => {
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
     it.skip('Must show error if empty username and empty password', async () => {
-      //TODO: waiting for fixes on dispatcher.
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_fill',
       );
@@ -102,7 +99,6 @@ describe('add-by-keys:\n', () => {
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
     it.skip('Must show error when using a public key', async () => {
-      //TODO: waiting for fixes on dispatcher.
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_account_password_is_public_key',
       );
@@ -110,7 +106,6 @@ describe('add-by-keys:\n', () => {
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
     it.skip('Must show error when using an incorrect key', async () => {
-      //TODO: waiting for fixes on dispatcher.
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_incorrect_key',
       );
@@ -118,7 +113,6 @@ describe('add-by-keys:\n', () => {
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
     it.skip('Must show error when using an incorrect username', async () => {
-      //TODO: waiting for fixes on dispatcher.
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_incorrect_user',
       );

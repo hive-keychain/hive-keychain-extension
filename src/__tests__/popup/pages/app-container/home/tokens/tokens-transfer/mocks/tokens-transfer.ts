@@ -107,7 +107,7 @@ const methods = {
   }),
   removeKey: (key: KeyToUse) => {
     delete constants.stateAs.accounts[0].keys[key];
-    delete constants.stateAs.accounts[0].keys[`${key}Pubkey`]; //
+    delete constants.stateAs.accounts[0].keys[`${key}Pubkey`];
   },
   userInteraction: async (toUse: {
     receiverUsername: string;
