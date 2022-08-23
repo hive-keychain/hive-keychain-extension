@@ -15,7 +15,7 @@ import Logger from 'src/utils/logger.utils';
 const start = async () => {
   Logger.info(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
   chrome.alarms.create({ periodInMinutes: Config.claims.FREQUENCY });
-  alarmHandler();
+  await alarmHandler();
 };
 
 const alarmHandler = async () => {
@@ -27,33 +27,39 @@ const alarmHandler = async () => {
       LocalStorageKeyEnum.CLAIM_SAVINGS,
     ],
   );
-  console.log('localStorage: ', localStorage);
   const mk = localStorage[LocalStorageKeyEnum.__MK];
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
   const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];
   if (!mk) return;
   if (claimAccounts) {
-    initClaimAccounts(claimAccounts, mk);
+    await initClaimAccounts(claimAccounts, mk);
   }
   if (claimRewards) {
-    initClaimRewards(claimRewards, mk);
+    await initClaimRewards(claimRewards, mk);
   }
   if (claimSavings) {
-    initClaimSavings(claimSavings, mk);
+    await initClaimSavings(claimSavings, mk);
   }
 };
 
 chrome.alarms.onAlarm.addListener(alarmHandler);
 
-const initClaimRewards = (claimRewards: LocalStorageClaimItem, mk: string) => {
-  if (claimRewards) {
+const initClaimRewards = async (
+  claimRewards: LocalStorageClaimItem,
+  mk: string,
+) => {
+  if (
+    claimRewards &&
+    isPureObject(claimRewards) &&
+    objHasKeys(claimRewards, 1)
+  ) {
     const users = Object.keys(claimRewards).filter(
       (user) => claimRewards[user] === true,
     );
-    iterateClaimRewards(users, mk);
+    await iterateClaimRewards(users, mk);
   } else {
-    Logger.info('startClaimRewards: obj not defined');
+    Logger.error('startClaimRewards: claimRewards not defined');
   }
 };
 
@@ -85,15 +91,19 @@ const iterateClaimRewards = async (users: string[], mk: string) => {
   }
 };
 
-const initClaimSavings = (
+const initClaimSavings = async (
   claimSavings: { [username: string]: boolean },
   mk: string,
 ) => {
-  if (claimSavings) {
+  if (
+    claimSavings &&
+    isPureObject(claimSavings) &&
+    objHasKeys(claimSavings, 1)
+  ) {
     const users = Object.keys(claimSavings).filter(
       (username) => claimSavings[username] === true,
     );
-    iterateClaimSavings(users, mk);
+    await iterateClaimSavings(users, mk);
   } else {
     Logger.error('startClaimSavings: claimSavings not defined');
   }
@@ -108,6 +118,7 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
 
   for (const userAccount of userExtendedAccounts) {
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
+    if (!activeAccount) return;
     let baseDate: any =
       new Date(
         activeAccount?.account.savings_hbd_last_interest_payment!,
@@ -138,17 +149,21 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
   }
 };
 
-const initClaimAccounts = (
+const initClaimAccounts = async (
   claimAccounts: { [x: string]: boolean },
   mk: string,
 ) => {
-  if (claimAccounts) {
+  if (
+    claimAccounts &&
+    isPureObject(claimAccounts) &&
+    objHasKeys(claimAccounts, 1)
+  ) {
     const users = Object.keys(claimAccounts).filter(
       (user) => claimAccounts[user] === true,
     );
-    iterateClaimAccounts(users, mk);
+    await iterateClaimAccounts(users, mk);
   } else {
-    Logger.error('startClaimAccounts: obj not defined', '');
+    Logger.error('startClaimAccounts: claimAccounts not defined');
   }
 };
 
@@ -200,6 +215,13 @@ const getRC = async (accountName: string) => {
   ).rc.findRCAccounts([accountName]);
   const rc = await (await RPCModule.getClient()).rc.calculateRCMana(rcAcc[0]);
   return rc;
+};
+
+export const isPureObject = (obj: any) => {
+  return typeof obj === 'object' && !Array.isArray(obj) && obj !== null;
+};
+export const objHasKeys = (obj: object, greaterOrEqualTo: number) => {
+  return Object.keys(obj).length >= greaterOrEqualTo;
 };
 
 const ClaimModule = {
