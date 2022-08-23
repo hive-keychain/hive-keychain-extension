@@ -98,6 +98,8 @@ export interface CustomDataFromLocalStorage {
   customlastVersionSeen?: string;
   customStorageVersion?: string;
   customCurrentRpc?: Rpc;
+  customMK?: string;
+  customAccounts?: string;
 }
 //TODO remove all unused from overwrite + add the keychainApiget.
 export interface MocksOverwrite {
