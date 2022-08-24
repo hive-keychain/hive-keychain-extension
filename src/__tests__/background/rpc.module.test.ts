@@ -7,6 +7,7 @@ import rpcModuleMocks from 'src/__tests__/background/mocks/rpc.module.mocks';
 describe('rpc.module tests:\n', () => {
   const { spies, methods, mocks } = rpcModuleMocks;
   methods.afterEach;
+  methods.afterAll;
   it('Must set active Rpc', async () => {
     await RPCModule.setActiveRpc(DefaultRpcs[0]);
     expect(spies.saveValueInLocalStorage).toBeCalledWith(
