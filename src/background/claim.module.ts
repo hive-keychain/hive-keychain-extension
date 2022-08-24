@@ -191,11 +191,6 @@ const createActiveAccount = async (
   return activeAccount;
 };
 
-export type AccountResourceCredits = {
-  estimated_max: number;
-  estimated_pct: string;
-};
-
 const getRC = async (accountName: string) => {
   const rcAcc = await (
     await RPCModule.getClient()
