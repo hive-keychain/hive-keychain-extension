@@ -29,6 +29,7 @@ const App = () => {
   const [data, setData] = useState<any>({});
 
   const renderDialogContent = () => {
+    console.log('data: ', data);
     switch (data.command) {
       case DialogCommand.UNLOCK:
         return <Unlock data={data} />;
