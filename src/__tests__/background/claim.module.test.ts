@@ -23,11 +23,10 @@ describe('claim.module tests:\n', () => {
       periodInMinutes: Config.claims.FREQUENCY,
     });
   });
-  it('Must call Logger with on each case', async () => {
+  it('Must call Logger with error on each case', async () => {
     for (let i = 0; i < nonValidClaims.length; i++) {
       mocks.getMultipleValueFromLocalStorage(nonValidClaims[i]);
       await ClaimModule.start();
-      expect(spies.logger.error).toBeCalledTimes(nonValidClaims.length);
       expect(spies.logger.error.mock.calls).toEqual(error);
       spies.logger.error.mockReset();
     }

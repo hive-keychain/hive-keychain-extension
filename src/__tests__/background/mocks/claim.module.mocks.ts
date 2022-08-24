@@ -53,12 +53,6 @@ const constants = {
       claimRewards: 'not object',
       claimSavings: 'not object',
     },
-    {
-      __MK: mk.user.one,
-      claimAccounts: {},
-      claimRewards: {},
-      claimSavings: {},
-    },
   ],
   validClaims: (claim: {
     accounts?: boolean;
