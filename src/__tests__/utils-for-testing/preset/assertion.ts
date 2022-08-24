@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom';
 import { screen, waitFor } from '@testing-library/react';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
+import { AriaLabelText } from 'src/__tests__/utils-for-testing/interfaces/assertions';
+
 import { ElementQuery } from 'src/__tests__/utils-for-testing/interfaces/elements';
 /**
  * Await for assertion, until loads username's on screen.
@@ -43,6 +45,15 @@ const queryByLabel = (ariaLabel: string, tobeInDoc: boolean = true) => {
     : expect(screen.queryByLabelText(ariaLabel)).not.toBeInTheDocument();
 };
 /**
+ * queryByLabelText. More flexible to test appearance/dissapearance of DOM elements.
+ * @param {boolean} tobeInDoc Default as true.
+ */
+const queryByText = (text: string, tobeInDoc: boolean = true) => {
+  tobeInDoc === true
+    ? expect(screen.queryByText(text)).toBeInTheDocument()
+    : expect(screen.queryByText(text)).not.toBeInTheDocument();
+};
+/**
  * Await for assertion. using waitFor under the hood.
  * Can select bewteen getByLabelText or getByText
  */
@@ -59,6 +70,11 @@ const awaitFor = async (ariaLabelOrText: string, query: QueryDOM) => {
 };
 const getOneByText = (text: string) => {
   expect(screen.getByText(text)).toBeInTheDocument();
+};
+const getManyByText = (texts: string[]) => {
+  texts.forEach((text) => {
+    expect(screen.getByText(text)).toBeInTheDocument();
+  });
 };
 const awaitOneByLabel = async (ariaLabel: string) => {
   expect(await screen.findByLabelText(ariaLabel)).toBeInTheDocument();
@@ -91,8 +107,30 @@ const toHaveClass = async (ariaLabel: string, _class: string) => {
 /**
  * getByLabelText to toHaveValue
  */
-const toHaveValue = (arialabel: string, value: string) => {
+const toHaveValue = (
+  arialabel: string,
+  value: string | number | string[] | null | undefined,
+) => {
   expect(screen.getByLabelText(arialabel)).toHaveValue(value);
+};
+/**
+ * getByLabelText to toHaveTextContent, array.
+ */
+const toHaveTextContent = (assertion: AriaLabelText[]) => {
+  assertion.forEach((assert) => {
+    expect(screen.getByLabelText(assert.arialabel)).toHaveTextContent(
+      assert.text,
+    );
+  });
+};
+/**
+ * getAllByLabelText, to get multiple elements and check the results length.
+ * Using waitFor under the hood.
+ */
+const allToHaveLength = async (ariaLabel: string, length: number) => {
+  await waitFor(() => {
+    expect(screen.getAllByLabelText(ariaLabel).length).toBe(length);
+  });
 };
 
 export default {
@@ -108,4 +146,8 @@ export default {
   awaitOneByLabel,
   toHaveClass,
   toHaveValue,
+  toHaveTextContent,
+  getManyByText,
+  allToHaveLength,
+  queryByText,
 };

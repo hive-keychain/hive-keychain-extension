@@ -6,4 +6,9 @@ const selectKeys = {
   },
 };
 
-export default { selectKeys };
+const transfer = {
+  recurrent: 'checkbox-transfer-recurrent',
+  cancelRecurrent: 'checkbox-cancel-recurrent',
+};
+
+export default { selectKeys, transfer };

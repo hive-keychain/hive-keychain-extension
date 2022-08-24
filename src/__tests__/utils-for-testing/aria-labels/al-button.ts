@@ -49,9 +49,18 @@ export default {
     powerUpDown: {
       submit: 'submit-power-up-down',
     },
+    savings: {
+      submit: 'submit-savings',
+    },
+    transfer: {
+      send: 'send-transfer',
+    },
+    voteProposal: 'vote-key-chain-proposal',
+    voteStoodkevWitness: 'vote-for-stoodkev-witness',
   },
   panel: {
     close: 'button-panel-close',
   },
   save: 'button-save',
+  readProposal: 'button-read-proposal',
 };
