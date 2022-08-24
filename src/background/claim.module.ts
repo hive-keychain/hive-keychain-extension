@@ -11,6 +11,7 @@ import Config from 'src/config';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { ObjectUtils } from 'src/utils/object.utils';
 
 const start = async () => {
   Logger.info(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
@@ -49,11 +50,7 @@ const initClaimRewards = async (
   claimRewards: LocalStorageClaimItem,
   mk: string,
 ) => {
-  if (
-    claimRewards &&
-    isPureObject(claimRewards) &&
-    objHasKeys(claimRewards, 1)
-  ) {
+  if (ObjectUtils.isPureObject(claimRewards)) {
     const users = Object.keys(claimRewards).filter(
       (user) => claimRewards[user] === true,
     );
@@ -95,11 +92,7 @@ const initClaimSavings = async (
   claimSavings: { [username: string]: boolean },
   mk: string,
 ) => {
-  if (
-    claimSavings &&
-    isPureObject(claimSavings) &&
-    objHasKeys(claimSavings, 1)
-  ) {
+  if (ObjectUtils.isPureObject(claimSavings)) {
     const users = Object.keys(claimSavings).filter(
       (username) => claimSavings[username] === true,
     );
@@ -110,15 +103,14 @@ const initClaimSavings = async (
 };
 
 const iterateClaimSavings = async (users: string[], mk: string) => {
-  const userExtendedAccounts = await (
-    await RPCModule.getClient()
-  ).database.getAccounts(users);
+  const client = await RPCModule.getClient();
+  const userExtendedAccounts = await client.database.getAccounts(users);
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
 
   for (const userAccount of userExtendedAccounts) {
     const activeAccount = await createActiveAccount(userAccount, localAccounts);
-    if (!activeAccount) return;
+    if (!activeAccount) continue;
     let baseDate: any =
       new Date(
         activeAccount?.account.savings_hbd_last_interest_payment!,
@@ -153,11 +145,7 @@ const initClaimAccounts = async (
   claimAccounts: { [x: string]: boolean },
   mk: string,
 ) => {
-  if (
-    claimAccounts &&
-    isPureObject(claimAccounts) &&
-    objHasKeys(claimAccounts, 1)
-  ) {
+  if (ObjectUtils.isPureObject(claimAccounts)) {
     const users = Object.keys(claimAccounts).filter(
       (user) => claimAccounts[user] === true,
     );
@@ -168,9 +156,8 @@ const initClaimAccounts = async (
 };
 
 const iterateClaimAccounts = async (users: string[], mk: string) => {
-  const userExtendedAccounts = await (
-    await RPCModule.getClient()
-  ).database.getAccounts(users);
+  const client = await RPCModule.getClient();
+  const userExtendedAccounts = await client.database.getAccounts(users);
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
@@ -215,13 +202,6 @@ const getRC = async (accountName: string) => {
   ).rc.findRCAccounts([accountName]);
   const rc = await (await RPCModule.getClient()).rc.calculateRCMana(rcAcc[0]);
   return rc;
-};
-
-export const isPureObject = (obj: any) => {
-  return typeof obj === 'object' && !Array.isArray(obj) && obj !== null;
-};
-export const objHasKeys = (obj: object, greaterOrEqualTo: number) => {
-  return Object.keys(obj).length >= greaterOrEqualTo;
 };
 
 const ClaimModule = {
