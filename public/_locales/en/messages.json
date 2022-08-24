@@ -2573,5 +2573,21 @@
   "popup_html_refresh_in": {
     "message": "Refresh in $1 seconds",
     "description": "my lease item delegation from"
+  },
+  "popup_html_lease_market_accept_lease_countdown": {
+    "message": "You have locked this lease request. Your lock will expire in $1 secondes",
+    "description": "lease market accept lease request countdown message"
+  },
+  "popup_html_lease_market_lease_locked": {
+    "message": "This lease is already locked. Please try again later",
+    "description": "lease market lease already locked"
+  },
+  "popup_html_lease_market_wrong_signature": {
+    "message": "The signature you used is incorrect.",
+    "description": "lease market lease already locked"
+  },
+  "popup_html_lease_market_locking_lease": {
+    "message": "Locking lease",
+    "description": "Lease market locking lease loading message"
   }
 }

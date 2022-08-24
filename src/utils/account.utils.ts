@@ -372,6 +372,13 @@ const getPublicMemo = async (username: string): Promise<string> => {
   ]);
   return extendedAccounts[0].memo_key;
 };
+/* istanbul ignore next */
+const getPublicActiveKey = async (username: string): Promise<string> => {
+  const extendedAccounts = await HiveUtils.getClient().database.getAccounts([
+    username,
+  ]);
+  return extendedAccounts[0].active.key_auths[0][0].toString();
+};
 
 const getPowerDown = (
   account: ExtendedAccount,
@@ -427,6 +434,7 @@ const AccountUtils = {
   getExtendedAccount,
   AccountErrorMessages,
   isAccountNameAlreadyExisting,
+  getPublicActiveKey,
 };
 
 export const BackgroundAccountUtils = {

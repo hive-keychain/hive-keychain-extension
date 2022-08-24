@@ -88,29 +88,51 @@ const LeaseMarketItem = ({
         )} ${currencyLabels.hp}`,
       });
     }
+    addToLoadingList('popup_html_lease_market_locking_lease');
 
-    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
-      message: chrome.i18n.getMessage(
-        'popup_html_confirm_delegation_lease_accept_message',
-      ),
-      fields: fields,
-      title: 'popup_html_confirm_delegation_lease_accept_title',
-      afterConfirmAction: async () => {
-        addToLoadingList('popup_html_lease_market_delegate_to_user');
-        const success = await LeaseMarketUtils.acceptLeaseRequest(
-          lease,
-          activeAccount,
-          newDelegation,
-        );
-        if (success) {
-          setSuccessMessage('popup_html_delegation_request_accept_success');
-        } else {
-          setErrorMessage('popup_html_delegation_request_accept_failed');
-        }
-        removeFromLoadingList('popup_html_lease_market_delegate_to_user');
-        goBack();
-      },
-    });
+    const responseStatus = await LeaseMarketUtils.tryLockingLeaseRequest(
+      lease,
+      activeAccount.keys.active!,
+      activeAccount.name!,
+    );
+    removeFromLoadingList('popup_html_lease_market_locking_lease');
+    if (!responseStatus.success) {
+      setErrorMessage(responseStatus.message!);
+    } else {
+      navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+        message: chrome.i18n.getMessage(
+          'popup_html_confirm_delegation_lease_accept_message',
+        ),
+        fields: fields,
+        title: 'popup_html_confirm_delegation_lease_accept_title',
+        timeoutParams: {
+          duration: 60,
+          message: 'popup_html_lease_market_accept_lease_countdown',
+        },
+        onCancelAction: () =>
+          LeaseMarketUtils.unlockLeaseRequest(
+            lease,
+            activeAccount.keys.active!,
+            activeAccount.name!,
+          ),
+        afterConfirmAction: async () => {
+          addToLoadingList('popup_html_lease_market_delegate_to_user');
+          const success = await LeaseMarketUtils.acceptLeaseRequest(
+            lease,
+            activeAccount,
+            newDelegation,
+            responseStatus.data,
+          );
+          if (success) {
+            setSuccessMessage('popup_html_delegation_request_accept_success');
+          } else {
+            setErrorMessage('popup_html_delegation_request_accept_failed');
+          }
+          removeFromLoadingList('popup_html_lease_market_delegate_to_user');
+          goBack();
+        },
+      });
+    }
   };
 
   return (
@@ -130,7 +152,7 @@ const LeaseMarketItem = ({
         </div>
         <div className="delegation-payout">
           {chrome.i18n.getMessage('popup_html_lease_market_daily_payout')} :{' '}
-          {FormatUtils.withCommas(lease.dailyPay)}{' '}
+          {FormatUtils.withCommas(lease.dailyPay.toString())}{' '}
           {currencyLabels[lease.currency]}
         </div>
         <div className="delegation-nb-days">

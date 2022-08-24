@@ -6,6 +6,7 @@ import {
   CollateralizedConvertOperation,
   ExtendedAccount,
   PrivateKey,
+  PublicKey,
   RecurrentTransferOperation,
   TransactionConfirmation,
   TransferFromSavingsOperation,
@@ -446,8 +447,14 @@ const convertOperation = async (
 const encodeMemo = (
   memo: string,
   privateKey: string,
-  receiverPublicKey: string,
+  receiverPublicKey: string | PublicKey,
 ) => {
+  console.log(
+    memo,
+    privateKey,
+    receiverPublicKey,
+    hive.memo.encode(privateKey, receiverPublicKey, memo),
+  );
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
 /* istanbul ignore next */

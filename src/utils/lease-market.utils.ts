@@ -1,3 +1,4 @@
+import KeychainLeaseMarketApi from '@api/lease-market';
 import {
   CustomJsonOperation,
   DelegateVestingSharesOperation,
@@ -15,15 +16,18 @@ import {
 } from '@popup/pages/app-container/home/lease-market/lease-market.interface';
 import { store } from '@popup/store';
 import { LeaseKeys } from 'hive-keychain-commons/lib/lease-market/lease-keys';
+import {
+  LeaseLockResponse,
+  LockLeaseData,
+} from 'hive-keychain-commons/lib/lease-market/lease-market.interface';
+import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 
 export const KEYCHAIN_DELEGATION_MARKET_ACCOUNT = 'cedric.tests';
 
 const downloadAllLeases = async (): Promise<Lease[]> => {
-  const response = await fetch(
-    process.env.DELEGATION_MARKET_BASE_API! + '/leases',
-  );
-  return response.json();
+  const response = await KeychainLeaseMarketApi.get('/leases');
+  return response.data;
 };
 
 const cancelLeaseRequest = async (
@@ -42,6 +46,7 @@ const acceptLeaseRequest = async (
   lease: Lease,
   activeAccount: ActiveAccount,
   delegationTotalAmount: number,
+  token: string,
 ) => {
   return await HiveUtils.sendOperationWithConfirmation(
     HiveUtils.getClient().broadcast.sendOperations(
@@ -56,6 +61,7 @@ const acceptLeaseRequest = async (
               : [activeAccount.name!],
             json: JSON.stringify({
               leaseId: lease.id,
+              token: token,
             }),
           } as CustomJsonOperation[1],
         ],
@@ -181,6 +187,48 @@ const sortLease = (a: Lease, b: Lease) => {
   );
 };
 
+const tryLockingLeaseRequest = async (
+  lease: Lease,
+  privateActiveKey: string,
+  username: string,
+) => {
+  const result: LeaseLockResponse = (
+    await KeychainLeaseMarketApi.post(`leases/lock/`, {
+      signedMessage: HiveUtils.encodeMemo(
+        `#${username}`,
+        privateActiveKey,
+        await AccountUtils.getPublicActiveKey(
+          KEYCHAIN_DELEGATION_MARKET_ACCOUNT,
+        ),
+      ),
+      username: username,
+      leaseId: lease.id,
+    } as LockLeaseData)
+  ).data;
+  return result;
+};
+
+const unlockLeaseRequest = async (
+  lease: Lease,
+  privateActiveKey: string,
+  username: string,
+) => {
+  const result: LeaseLockResponse = (
+    await KeychainLeaseMarketApi.post(`leases/unlock`, {
+      signedMessage: HiveUtils.encodeMemo(
+        `#${username}`,
+        privateActiveKey,
+        await AccountUtils.getPublicActiveKey(
+          KEYCHAIN_DELEGATION_MARKET_ACCOUNT,
+        ),
+      ),
+      username: username,
+      leaseId: lease.id,
+    })
+  ).data;
+  return result;
+};
+
 export const LeaseMarketUtils = {
   downloadAllLeases,
   cancelLeaseRequest,
@@ -189,4 +237,6 @@ export const LeaseMarketUtils = {
   getPreviousAndNewDelegationToUser,
   createLeaseRequest,
   sortLease,
+  tryLockingLeaseRequest,
+  unlockLeaseRequest,
 };
