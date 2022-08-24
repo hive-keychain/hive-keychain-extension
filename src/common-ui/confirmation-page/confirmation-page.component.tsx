@@ -24,7 +24,7 @@ const ConfirmationPage = ({
   setTitleContainerProperties,
 }: PropsType) => {
   const [countDown, setCountDown] = useState<number | undefined>(
-    timeoutParams.duration,
+    timeoutParams?.duration,
   );
   let timer: NodeJS.Timer;
   useEffect(() => {
