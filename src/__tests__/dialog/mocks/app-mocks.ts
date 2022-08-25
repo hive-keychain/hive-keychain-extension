@@ -1,7 +1,7 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import { cleanup } from '@testing-library/react';
 import BrowserUtils from 'src/utils/browser.utils';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 
 const data = {
   request: (command: DialogCommand, display_msg?: string) => {
@@ -56,20 +56,24 @@ const spies = {
 const methods = {
   config: () => {
     beforeEach(() => {
+      jest.useFakeTimers('legacy');
       mocks.getUILanguage();
       mocks.i18n();
       mocks.getCurrent;
       mocks.update;
     });
     afterEach(() => {
-      jest.clearAllMocks();
-      cleanup();
+      afterTests.clean();
     });
   },
 };
 
 const constants = {
   data,
+  props: {
+    title: 'description',
+    content: 'content in collapsible-item component',
+  },
 };
 
 export default { methods, mocks, spies, constants };

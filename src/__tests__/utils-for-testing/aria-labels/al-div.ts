@@ -81,4 +81,5 @@ export default {
       usingAuthorized: 'using-authorized-account',
     },
   },
+  collapsible: 'collapsible-div',
 };

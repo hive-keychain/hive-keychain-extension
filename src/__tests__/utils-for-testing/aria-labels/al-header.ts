@@ -4,4 +4,5 @@ export default {
       preFix: 'dialog-header-',
     },
   },
+  clickeable: 'clickeable-header',
 };

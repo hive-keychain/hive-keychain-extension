@@ -13,14 +13,15 @@ const CollaspsibleItem = ({ title, content, pre, preContent }: Props) => {
   return (
     <>
       <h3
+        aria-label="clickeable-header"
         dangerouslySetInnerHTML={{ __html: chrome.i18n.getMessage(title) }}
         onClick={() => {
           setCollapsed(!collapsed);
         }}></h3>
-      <div className={collapsed ? 'hide' : ''}>
+      <div aria-label="collapsible-div" className={collapsed ? 'hide' : ''}>
         {pre ? (
           <div className="operation_item_content">
-            <pre>{content}</pre>
+            <pre role={'contentinfo'}>{content}</pre>
           </div>
         ) : (
           <div className="operation_item_content">{content}</div>
