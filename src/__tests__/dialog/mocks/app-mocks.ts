@@ -45,12 +45,19 @@ const mocks = {
     .fn()
     .mockResolvedValue({ id: 66 })),
   update: (chrome.windows.update = jest.fn().mockResolvedValue(undefined)),
+  scroll: {
+    intoView: () => (Element.prototype.scrollIntoView = jest.fn()),
+  },
 };
 
 const spies = {
   sendResponse: jest
     .spyOn(BrowserUtils, 'sendResponse')
     .mockResolvedValue(undefined),
+  sendMessage: jest
+    .spyOn(chrome.runtime, 'sendMessage')
+    .mockReturnValue(undefined),
+  closeWindow: jest.spyOn(window, 'close').mockReturnValue(undefined),
 };
 
 const methods = {
@@ -61,6 +68,7 @@ const methods = {
       mocks.i18n();
       mocks.getCurrent;
       mocks.update;
+      mocks.scroll.intoView();
     });
     afterEach(() => {
       afterTests.clean();

@@ -53,5 +53,6 @@ export default {
   whatsNew: 'whats-new-component',
   dialog: {
     component: 'dialog-component',
+    operation: 'dialog-operation-component',
   },
 };

@@ -11,7 +11,9 @@ type Props = {
 };
 const Loading = ({ hide, operations }: Props) => {
   return (
-    <div className={`loading-container ${hide ? 'hide' : ''}`}>
+    <div
+      aria-label="loading-container"
+      className={`loading-container ${hide ? 'hide' : ''}`}>
       <div className="overlay"></div>
       <RotatingLogoComponent></RotatingLogoComponent>
       <div className="loading-text">

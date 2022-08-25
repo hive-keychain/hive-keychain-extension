@@ -82,4 +82,10 @@ export default {
     },
   },
   collapsible: 'collapsible-div',
+  container: {
+    loading: 'loading-container',
+  },
+  operation: {
+    whiteList: 'whitelist-operation',
+  },
 };

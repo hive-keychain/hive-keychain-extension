@@ -60,9 +60,9 @@ const Operation = ({
   };
 
   return (
-    <div className="operation">
+    <div aria-label="dialog-operation-component" className="operation">
       <div>
-        <DialogHeader title={title} />
+        <DialogHeader ariaLabel="operation" title={title} />
         {header && (
           <div
             className={`operation_header ${redHeader ? 'operation-red' : ''}`}>
@@ -80,7 +80,7 @@ const Operation = ({
 
       <div className="operation_body">{...children}</div>
       <div className={`operation_footer ${canWhitelist ? '' : 'no-whitelist'}`}>
-        <div className={`whitelist_operation`}>
+        <div aria-label="whitelist-operation" className={`whitelist_operation`}>
           {canWhitelist && (
             <CheckboxComponent
               onChange={setKeep}
@@ -100,6 +100,7 @@ const Operation = ({
         </div>
         <div className={`operation_buttons ${loading ? 'hide' : ''}`}>
           <ButtonComponent
+            ariaLabel="dialog_cancel-button"
             label="dialog_cancel"
             type={ButtonType.STROKED}
             onClick={() => {
@@ -107,6 +108,7 @@ const Operation = ({
             }}
           />
           <ButtonComponent
+            ariaLabel="dialog_confirm-button"
             type={ButtonType.RAISED}
             label="dialog_confirm"
             onClick={onConfirm || genericOnConfirm}
