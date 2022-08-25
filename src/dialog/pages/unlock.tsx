@@ -33,9 +33,8 @@ type UnlockMessage = {
 export default ({ data, wrongMk, index }: Props) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
-    setLoading(false);
+    if (typeof index === 'number') setLoading(false);
   }, [index]);
 
   const login = () => {
@@ -54,7 +53,10 @@ export default ({ data, wrongMk, index }: Props) => {
 
   return (
     <>
-      <DialogHeader title={chrome.i18n.getMessage('dialog_header_unlock')} />
+      <DialogHeader
+        ariaLabel="unlock"
+        title={chrome.i18n.getMessage('dialog_header_unlock')}
+      />
       <p>{chrome.i18n.getMessage('bgd_auth_locked_desc')}</p>
       <InputComponent
         value={password}

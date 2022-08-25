@@ -10,6 +10,7 @@ import './dialog.scss';
 
 const App = () => {
   useEffect(() => {
+    let isMounted = true;
     chrome.runtime.onMessage.addListener(async function (
       data,
       sender,
@@ -18,18 +19,20 @@ const App = () => {
       if (data.command === DialogCommand.READY) {
         return BrowserUtils.sendResponse(true, sendResp);
       } else if (Object.values(DialogCommand).includes(data.command)) {
-        setData(data);
+        if (isMounted) setData(data);
       }
       chrome.windows.update((await chrome.windows.getCurrent()).id!, {
         focused: true,
       });
     });
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const [data, setData] = useState<any>({});
 
   const renderDialogContent = () => {
-    console.log('data: ', data);
     switch (data.command) {
       case DialogCommand.UNLOCK:
         return <Unlock data={data} />;
@@ -48,7 +51,11 @@ const App = () => {
     }
   };
 
-  return <div className="dialog">{renderDialogContent()}</div>;
+  return (
+    <div aria-label="dialog-component" className="dialog">
+      {renderDialogContent()}
+    </div>
+  );
 };
 
 export default App;

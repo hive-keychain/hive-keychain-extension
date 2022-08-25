@@ -56,7 +56,10 @@ const Register = ({ data }: Props) => {
 
   return (
     <>
-      <DialogHeader title={chrome.i18n.getMessage('dialog_header_register')} />
+      <DialogHeader
+        ariaLabel="register"
+        title={chrome.i18n.getMessage('dialog_header_register')}
+      />
       <p
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_register'),

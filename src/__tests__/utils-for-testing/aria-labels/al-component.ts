@@ -51,4 +51,7 @@ export default {
     automatedTasks: 'automated-tasks-page',
   },
   whatsNew: 'whats-new-component',
+  dialog: {
+    component: 'dialog-component',
+  },
 };

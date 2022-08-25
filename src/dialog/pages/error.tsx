@@ -14,7 +14,10 @@ type ErrorMessage = {
 const DialogError = ({ data }: Props) => {
   return (
     <>
-      <DialogHeader title={chrome.i18n.getMessage('dialog_header_error')} />
+      <DialogHeader
+        ariaLabel="error"
+        title={chrome.i18n.getMessage('dialog_header_error')}
+      />
       <p style={{ wordBreak: 'break-word' }}>{data.msg.display_msg}</p>
 
       <ButtonComponent

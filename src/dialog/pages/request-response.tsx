@@ -19,6 +19,7 @@ const RequestResponse = ({ data }: Props) => {
   return (
     <>
       <DialogHeader
+        ariaLabel="request-response"
         title={
           data.msg.success
             ? `${chrome.i18n.getMessage('dialog_header_success')} !`

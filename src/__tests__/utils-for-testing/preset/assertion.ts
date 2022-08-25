@@ -20,8 +20,8 @@ const awaitFind = async (arialabel: string) => {
 /**
  * Await for assertion. findByText
  */
-const awaitFindText = async (arialabel: string) => {
-  expect(await screen.findByText(arialabel)).toBeInTheDocument();
+const awaitFindText = async (text: string) => {
+  expect(await screen.findByText(text)).toBeInTheDocument();
 };
 /**
  * getByLabelText
@@ -133,6 +133,12 @@ const allToHaveLength = async (ariaLabel: string, length: number) => {
   });
 };
 
+const findLabelChildren = async (ariaLabel: string, childrenLength: number) => {
+  expect((await screen.findByLabelText(ariaLabel)).children.length).toBe(
+    childrenLength,
+  );
+};
+
 export default {
   awaitMk,
   awaitFor,
@@ -150,4 +156,5 @@ export default {
   getManyByText,
   allToHaveLength,
   queryByText,
+  findLabelChildren,
 };
