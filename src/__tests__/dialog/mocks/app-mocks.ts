@@ -1,5 +1,6 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import BrowserUtils from 'src/utils/browser.utils';
+import Logger from 'src/utils/logger.utils';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 
@@ -58,6 +59,9 @@ const spies = {
     .spyOn(chrome.runtime, 'sendMessage')
     .mockReturnValue(undefined),
   closeWindow: jest.spyOn(window, 'close').mockReturnValue(undefined),
+  logger: {
+    error: jest.spyOn(Logger, 'error'),
+  },
 };
 
 const methods = {

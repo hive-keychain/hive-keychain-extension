@@ -2,6 +2,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
 import CurrencyUtils, { BaseCurrencies } from 'src/utils/currency.utils';
+import Logger from 'src/utils/logger.utils';
 
 type Props = {
   amount: number;
@@ -23,22 +24,24 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
             chainId: rpc.testnet ? rpc.chainId : undefined,
           },
         );
-
-        client.database.getAccounts([username]).then((accounts) => {
-          const account = accounts[0];
-          const currencyParsed = CurrencyUtils.getCurrencyLabel(
-            currency,
-            rpc.testnet,
-          );
-          const currentBalance = (
-            (cur === BaseCurrencies.HIVE
-              ? account.balance
-              : account.hbd_balance) as string
-          ).split(' ')[0];
-          const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
-          setBalance(`${currentBalance} ${currencyParsed}`);
-          setNewBalance(`${newBalance} ${currencyParsed}`);
-        });
+        client.database
+          .getAccounts([username])
+          .then((accounts) => {
+            const account = accounts[0];
+            const currencyParsed = CurrencyUtils.getCurrencyLabel(
+              currency,
+              rpc.testnet,
+            );
+            const currentBalance = (
+              (cur === BaseCurrencies.HIVE
+                ? account.balance
+                : account.hbd_balance) as string
+            ).split(' ')[0];
+            const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
+            setBalance(`${currentBalance} ${currencyParsed}`);
+            setNewBalance(`${newBalance} ${currencyParsed}`);
+          })
+          .catch((e) => Logger.error(e));
       });
     }
   }, [username]);
