@@ -65,6 +65,7 @@ const Operation = ({
         <DialogHeader ariaLabel="operation" title={title} />
         {header && (
           <div
+            aria-label="operation_header"
             className={`operation_header ${redHeader ? 'operation-red' : ''}`}>
             {header}
           </div>
@@ -83,6 +84,7 @@ const Operation = ({
         <div aria-label="whitelist-operation" className={`whitelist_operation`}>
           {canWhitelist && (
             <CheckboxComponent
+              ariaLabel="checkbox-set-keep"
               onChange={setKeep}
               checked={keep}
               skipTranslation

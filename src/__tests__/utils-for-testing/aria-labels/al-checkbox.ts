@@ -43,6 +43,10 @@ const automatedTasks = {
   },
 };
 
+const operation = {
+  checkbox: 'checkbox-set-keep',
+};
+
 export default {
   selectKeys,
   transfer,
@@ -51,4 +55,5 @@ export default {
   keychainify,
   rpcNodes,
   automatedTasks,
+  operation,
 };

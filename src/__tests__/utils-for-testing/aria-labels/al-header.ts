@@ -5,4 +5,7 @@ export default {
     },
   },
   clickeable: 'clickeable-header',
+  operation: {
+    header: 'operation_header',
+  },
 };

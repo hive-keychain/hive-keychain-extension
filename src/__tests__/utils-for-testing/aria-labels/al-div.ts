@@ -1,5 +1,6 @@
 export default {
   selectedAccount: 'selected-account-name',
+  selectedAccountPanel: 'selected-account-panel',
   estimatedAccountValue: 'estimated-account-div-value',
   error: {
     witness: {

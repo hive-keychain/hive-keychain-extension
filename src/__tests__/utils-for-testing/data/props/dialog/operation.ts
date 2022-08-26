@@ -12,7 +12,7 @@ export default {
     tab: 0,
     canWhitelist: false,
     header: 'description',
-    checkboxLabelOverride: 'overrride',
+    checkboxLabelOverride: 'override',
     accounts: [mk.user.one, mk.user.two],
     username: mk.user.one,
     setUsername: jest.fn(),

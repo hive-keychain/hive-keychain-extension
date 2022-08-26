@@ -19,6 +19,7 @@ const RequestUsername = ({ accounts, username, setUsername }: Props) => {
   ) => {
     return (
       <div
+        aria-label="selected-account-panel"
         className="selected-account-panel"
         onClick={() => {
           selectProps.methods.dropDown('close');
