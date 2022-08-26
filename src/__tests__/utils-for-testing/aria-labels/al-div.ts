@@ -88,5 +88,8 @@ export default {
   },
   operation: {
     whiteList: 'whitelist-operation',
+    item: {
+      content: 'operation_item_content',
+    },
   },
 };

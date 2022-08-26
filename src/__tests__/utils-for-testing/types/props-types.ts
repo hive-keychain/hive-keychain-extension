@@ -6,3 +6,10 @@ export type PropsRequestBalance = {
   username?: string;
   rpc: Rpc;
 };
+
+export type PropsRequestItem = {
+  title: string;
+  content: string;
+  pre?: boolean;
+  red?: boolean;
+};

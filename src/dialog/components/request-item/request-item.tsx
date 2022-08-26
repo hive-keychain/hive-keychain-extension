@@ -14,10 +14,12 @@ const RequestItem = ({ title, content, pre, red }: Props) => {
 
       {pre ? (
         <div className="operation_item_content">
-          <pre>{content}</pre>
+          <pre role={'contentinfo'}>{content}</pre>
         </div>
       ) : (
-        <div className={`operation_item_content ${red ? 'operation-red' : ''}`}>
+        <div
+          aria-label="operation_item_content"
+          className={`operation_item_content ${red ? 'operation-red' : ''}`}>
           {content}
         </div>
       )}
