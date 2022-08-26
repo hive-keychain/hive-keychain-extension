@@ -1,3 +1,4 @@
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 
 export type PropsRequestBalance = {
@@ -12,4 +13,11 @@ export type PropsRequestItem = {
   content: string;
   pre?: boolean;
   red?: boolean;
+};
+
+export type PropsRequestTokenBalance = {
+  amount: number;
+  currency: string;
+  username: string;
+  hiveEngineConfig: HiveEngineConfig;
 };
