@@ -10,6 +10,7 @@ const getExchangeValidationWarning = async (
 ) => {
   const exchanges = [
     { account: 'bittrex', tokens: ['HIVE', 'HBD'] },
+    { account: 'orinoco', tokens: ['HIVE', 'HBD'] },
     { account: 'deepcrypto8', tokens: ['HIVE'] },
     { account: 'binance-hot', tokens: [] },
     { account: 'ionomy', tokens: ['HIVE', 'HBD'] },
