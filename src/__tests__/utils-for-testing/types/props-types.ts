@@ -5,6 +5,7 @@ import {
   RequestId,
   RequestProxy,
   RequestRemoveAccountAuthority,
+  RequestRemoveKeyAuthority,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -68,6 +69,13 @@ export type PropsRequestAddKeyAuthority = {
 
 export type PropsRequestRemoveAccountAuthority = {
   data: RequestRemoveAccountAuthority & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestRemoveKeyAuthority = {
+  data: RequestRemoveKeyAuthority & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
