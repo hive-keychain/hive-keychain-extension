@@ -3,6 +3,7 @@ import {
   RequestAddAccountAuthority,
   RequestAddKeyAuthority,
   RequestId,
+  RequestPowerDown,
   RequestProxy,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
@@ -76,6 +77,13 @@ export type PropsRequestRemoveAccountAuthority = {
 
 export type PropsRequestRemoveKeyAuthority = {
   data: RequestRemoveKeyAuthority & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestPowerDown = {
+  data: RequestPowerDown & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
