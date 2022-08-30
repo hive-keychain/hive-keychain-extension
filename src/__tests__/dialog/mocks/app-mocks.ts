@@ -49,6 +49,16 @@ const mocks = {
   scroll: {
     intoView: () => (Element.prototype.scrollIntoView = jest.fn()),
   },
+  dHiveHiveIO: (client: any) => {
+    jest.mock('@hiveio/dhive', () => {
+      const originalModule = jest.requireActual('@hiveio/dhive');
+      return {
+        __esModule: true,
+        ...originalModule,
+        Client: client,
+      };
+    });
+  },
 };
 
 const spies = {
