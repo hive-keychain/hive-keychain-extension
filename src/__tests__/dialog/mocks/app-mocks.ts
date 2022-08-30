@@ -72,6 +72,7 @@ const spies = {
   logger: {
     error: jest.spyOn(Logger, 'error'),
   },
+  onConfirm: jest.fn(),
 };
 
 const methods = {

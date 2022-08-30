@@ -1,5 +1,6 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
+  RequestAddAccountAuthority,
   RequestId,
   RequestProxy,
   RequestTransfer,
@@ -47,4 +48,11 @@ export type PropsRequestTransfer = {
   tab: number;
   rpc: Rpc;
   accounts?: string[];
+};
+
+export type PropsRequestAddAccountAuthority = {
+  data: RequestAddAccountAuthority & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
 };
