@@ -23,7 +23,6 @@ const RequestTokenBalance = ({
   const [newBalance, setNewBalance] = useState('');
   const config = hiveEngineConfig ? hiveEngineConfig : Config.hiveEngine;
   useEffect(() => {
-    console.log('hook!', { username, config });
     async function fetchMyAPI() {
       HiveEngineConfigUtils.setActiveApi(config.rpc);
       let response = await HiveEngineUtils.getUserBalance(username);
@@ -31,7 +30,6 @@ const RequestTokenBalance = ({
     }
     fetchMyAPI()
       .then((tokens: any) => {
-        console.log('tokens: ', tokens);
         const token = tokens.find((e: any) => e.symbol === currency);
         const bal = token ? token.balance : '0';
         const newBal = (parseFloat(bal) - amount).toFixed(3);

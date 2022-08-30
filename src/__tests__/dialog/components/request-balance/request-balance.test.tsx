@@ -45,7 +45,9 @@ describe('request-balance tests:\n', () => {
     });
     const propsGoodBalance = objects.clone(props) as PropsRequestBalance;
     render(<RequestBalance {...{ ...propsGoodBalance, amount: 10 }} />);
-    await screen.findByText('100 HIVE => 90.000 HIVE', { exact: false });
+    expect(
+      await screen.findByText('100 HIVE => 90.000 HIVE', { exact: false }),
+    ).toBeDefined();
     jest.resetModules();
   });
   it('Must call Logger with error', () => {
