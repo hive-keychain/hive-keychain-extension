@@ -17,6 +17,34 @@
   box-sizing: border-box;
   overflow: auto;
   margin-left: calc(100vw - 100%);
+
+  .mobile-version-warning {
+    height: 100%;
+    background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
+        padding-box,
+      linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0% no-repeat
+        padding-box !important;
+    width: 100%;
+    z-index: 99;
+    position: fixed;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 0px 24px;
+    box-sizing: border-box;
+    row-gap: 24px;
+
+    img {
+      width: 100%;
+    }
+
+    .warning-message {
+      font-size: 18px;
+    }
+  }
+
   &.homepage {
     background: url(/assets/images/hive-watermark.png) 0% 0% no-repeat
         padding-box,

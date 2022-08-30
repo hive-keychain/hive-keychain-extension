@@ -58,6 +58,10 @@ const App = ({
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+  const isMobile =
+    navigator.userAgent.toLowerCase().includes('mobile') ||
+    (navigator as any).userAgentData?.mobile;
+  const [isMobileMessageDiscarded, setMobileMessageDiscarded] = useState(true);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -146,6 +150,12 @@ const App = ({
     initActiveRpc(rpc);
     initHiveEngineConfigFromStorage();
 
+    setMobileMessageDiscarded(
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.MOBILE_VERSION_WARNING_DISCARDED,
+      ),
+    );
+
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
 
@@ -209,9 +219,34 @@ const App = ({
     setActiveRpc(switchToRpc!);
     setDisplayChangeRpcPopup(false);
   };
+
+  const discardMobileWarningMessage = () => {
+    setMobileMessageDiscarded(true);
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.MOBILE_VERSION_WARNING_DISCARDED,
+      true,
+    );
+  };
+
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {activeRpc && renderMainLayoutNav()}
+      {isMobile && !isMobileMessageDiscarded && (
+        <div className="mobile-version-warning">
+          <img src="/assets/images/keychain_logo.png" className="logo-white" />
+          <div
+            className="warning-message"
+            dangerouslySetInnerHTML={{
+              __html: chrome.i18n.getMessage(
+                'popup_html_mobile_version_warning',
+              ),
+            }}></div>
+          <ButtonComponent
+            label="popup_html_i_understand"
+            onClick={discardMobileWarningMessage}
+          />
+        </div>
+      )}
       <MessageContainerComponent />
       <ProposalVotingSectionComponent />
       {(loading || !activeRpc) && (

@@ -2345,5 +2345,13 @@
   "popup_html_undelegation_pending_until_message": {
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
+  },
+  "popup_html_mobile_version_warning": {
+    "message": "We detected that you are using Hive Keychain Extension on a mobile browser. We do not support mobile browsers. You might face errors. <br/>We suggest that you download Hive Keychain mobile app (available on iOS and Android).",
+    "description": "Mobile version warning"
+  },
+  "popup_html_i_understand": {
+    "message": "I understand",
+    "description": "General word"
   }
 }
