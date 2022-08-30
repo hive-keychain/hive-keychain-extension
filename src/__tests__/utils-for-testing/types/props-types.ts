@@ -66,7 +66,7 @@ export type PropsRequestAddKeyAuthority = {
   rpc: Rpc;
 };
 
-export type PropsRequestRemoveAuthority = {
+export type PropsRequestRemoveAccountAuthority = {
   data: RequestRemoveAccountAuthority & RequestId;
   domain: string;
   tab: number;

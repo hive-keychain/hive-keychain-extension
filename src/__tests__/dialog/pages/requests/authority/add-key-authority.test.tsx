@@ -10,7 +10,7 @@ describe('add-key-authority tests:\n', () => {
   const { methods, spies } = appMocks;
   const { props } = requestAddKeyAuthority;
   methods.config();
-  it('Must show add account authority dialog', async () => {
+  it('Must show add key authority dialog', async () => {
     const { asFragment } = render(<AddKeyAuthority {...props} />);
     expect(asFragment()).toMatchSnapshot(
       'Request AddKeyAuthority with loading',
