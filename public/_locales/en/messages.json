@@ -2345,5 +2345,21 @@
   "popup_html_undelegation_pending_until_message": {
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
+  },
+  "popup_html_nfts": {
+    "message": "NFTs",
+    "description": "Nfts main page title"
+  },
+  "popup_html_nfts_description": {
+    "message": "This is the description for NFT page. Will need to be changed because this is totally useless!",
+    "description": "Nfts main page description"
+  },
+  "popup_html_nfts_filters": {
+    "message": "NFTs filters",
+    "description": "Nfts filters main page title"
+  },
+  "popup_html_nfts_filters_description": {
+    "message": "This is the description for NFTs filter page. Will need to be changed because this is totally useless!",
+    "description": "Nfts main page description"
   }
 }
