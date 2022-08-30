@@ -4,6 +4,7 @@ import {
   RequestAddAccountAuthority,
   RequestAddKeyAuthority,
   RequestBroadcast,
+  RequestConvert,
   RequestCreateProposal,
   RequestId,
   RequestPowerDown,
@@ -132,6 +133,13 @@ export type PropsRequestAddAccount = {
 
 export type PropsRequestBroadcast = {
   data: RequestBroadcast & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestConvert = {
+  data: RequestConvert & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
