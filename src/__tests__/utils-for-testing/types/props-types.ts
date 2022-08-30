@@ -3,6 +3,7 @@ import {
   RequestAddAccount,
   RequestAddAccountAuthority,
   RequestAddKeyAuthority,
+  RequestBroadcast,
   RequestCreateProposal,
   RequestId,
   RequestPowerDown,
@@ -124,6 +125,13 @@ export type PropsRequestUpdateProposal = {
 
 export type PropsRequestAddAccount = {
   data: RequestAddAccount & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestBroadcast = {
+  data: RequestBroadcast & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
