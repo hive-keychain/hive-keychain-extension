@@ -2,12 +2,14 @@ import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   RequestAddAccountAuthority,
   RequestAddKeyAuthority,
+  RequestCreateProposal,
   RequestId,
   RequestPowerDown,
   RequestPowerUp,
   RequestProxy,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
+  RequestRemoveProposal,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -92,6 +94,20 @@ export type PropsRequestPowerDown = {
 
 export type PropsRequestPowerUp = {
   data: RequestPowerUp & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestCreateProposal = {
+  data: RequestCreateProposal & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestRemoveProposal = {
+  data: RequestRemoveProposal & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
