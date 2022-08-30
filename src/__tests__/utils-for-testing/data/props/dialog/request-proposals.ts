@@ -3,6 +3,7 @@ import proposalsMocks from 'src/__tests__/background/requests/operations/ops/moc
 import {
   PropsRequestCreateProposal,
   PropsRequestRemoveProposal,
+  PropsRequestUpdateProposal,
 } from 'src/__tests__/utils-for-testing/types/props-types';
 
 export default {
@@ -21,5 +22,13 @@ export default {
       tab: 0,
       rpc: DefaultRpcs[0],
     } as PropsRequestRemoveProposal,
+  },
+  update: {
+    props: {
+      data: proposalsMocks.constants.data.update,
+      domain: 'domain',
+      tab: 0,
+      rpc: DefaultRpcs[0],
+    } as PropsRequestUpdateProposal,
   },
 };

@@ -11,6 +11,7 @@ import {
   RequestRemoveKeyAuthority,
   RequestRemoveProposal,
   RequestTransfer,
+  RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 
@@ -108,6 +109,13 @@ export type PropsRequestCreateProposal = {
 
 export type PropsRequestRemoveProposal = {
   data: RequestRemoveProposal & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestUpdateProposal = {
+  data: RequestUpdateProposalVote & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
