@@ -1,5 +1,6 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
+  RequestAddAccount,
   RequestAddAccountAuthority,
   RequestAddKeyAuthority,
   RequestCreateProposal,
@@ -116,6 +117,13 @@ export type PropsRequestRemoveProposal = {
 
 export type PropsRequestUpdateProposal = {
   data: RequestUpdateProposalVote & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestAddAccount = {
+  data: RequestAddAccount & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
