@@ -21,3 +21,9 @@ export type PropsRequestTokenBalance = {
   username: string;
   hiveEngineConfig: HiveEngineConfig;
 };
+
+export type PropsRequestUsername = {
+  accounts: string[];
+  username: string;
+  setUsername: (username: string) => void;
+};
