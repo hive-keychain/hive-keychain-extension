@@ -4,6 +4,7 @@ import {
   RequestAddKeyAuthority,
   RequestId,
   RequestPowerDown,
+  RequestPowerUp,
   RequestProxy,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
@@ -84,6 +85,13 @@ export type PropsRequestRemoveKeyAuthority = {
 
 export type PropsRequestPowerDown = {
   data: RequestPowerDown & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestPowerUp = {
+  data: RequestPowerUp & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
