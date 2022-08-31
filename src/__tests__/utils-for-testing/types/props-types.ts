@@ -16,6 +16,7 @@ import {
   RequestPowerDown,
   RequestPowerUp,
   RequestProxy,
+  RequestRecurrentTransfer,
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
   RequestRemoveProposal,
@@ -199,4 +200,12 @@ export type PropsRequestPost = {
   domain: string;
   tab: number;
   rpc: Rpc;
+};
+
+export type PropsRequestRecurrentTransfer = {
+  data: RequestRecurrentTransfer & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  accounts?: string[];
 };
