@@ -1,0 +1,361 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`transfer tests:
+ Must show Transfer dialog(Anonymous, encrypted memo, phishing warning): Request Transfer Anonymous, encrypted memo, phishing warning 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="dialog-operation-component"
+    class="operation"
+  >
+    <div>
+      <h2
+        aria-label="dialog-header-operation"
+        class="dialog-header"
+      >
+        Transfer
+      </h2>
+      <div
+        aria-label="operation_header"
+        class="operation_header operation-red"
+      >
+        @aalpha has been listed as a potential phishing account, check the spelling and make sure it is the account you want to transfer to.
+      </div>
+    </div>
+    <div
+      class="operation_body"
+    >
+      <h3>
+        Account
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @keychain.tests
+      </div>
+      <h3>
+        To
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @aalpha
+      </div>
+      <h3>
+        Amount
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        1.000 HIVE
+      </div>
+      <h3>
+        Balance
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        100 HIVE =&gt; 99.000 HIVE
+      </div>
+      <h3>
+        Memo
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        #To Encrypt memo (encrypted)
+      </div>
+    </div>
+    <div
+      class="operation_footer no-whitelist"
+    >
+      <div
+        aria-label="whitelist-operation"
+        class="whitelist_operation"
+      />
+      <div
+        class="operation_buttons "
+      >
+        <button
+          aria-label="dialog_cancel-button"
+          class="submit-button stroked "
+        >
+          <div
+            class="button-label"
+          >
+            Cancel 
+          </div>
+        </button>
+        <button
+          aria-label="dialog_confirm-button"
+          class="submit-button raised "
+        >
+          <div
+            class="button-label"
+          >
+            Confirm 
+          </div>
+        </button>
+      </div>
+    </div>
+    <div
+      aria-label="loading-container"
+      class="loading-container hide"
+    >
+      <div
+        class="overlay"
+      />
+      <img
+        aria-label="loading-logo"
+        class="rotating-logo"
+        src="/assets/images/iconhive.png"
+      />
+      <div
+        class="loading-text"
+      >
+        Loading...
+      </div>
+      <div
+        class="operations"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`transfer tests:
+ Must show Transfer dialog(empty memo): Request Transfer empty memo 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="dialog-operation-component"
+    class="operation"
+  >
+    <div>
+      <h2
+        aria-label="dialog-header-operation"
+        class="dialog-header"
+      >
+        Transfer
+      </h2>
+    </div>
+    <div
+      class="operation_body"
+    >
+      <h3>
+        Account
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @keychain.tests
+      </div>
+      <h3>
+        To
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @theghost1980
+      </div>
+      <h3>
+        Amount
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        1.000 HIVE
+      </div>
+      <h3>
+        Balance
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        100 HIVE =&gt; 99.000 HIVE
+      </div>
+    </div>
+    <div
+      class="operation_footer no-whitelist"
+    >
+      <div
+        aria-label="whitelist-operation"
+        class="whitelist_operation"
+      />
+      <div
+        class="operation_buttons "
+      >
+        <button
+          aria-label="dialog_cancel-button"
+          class="submit-button stroked "
+        >
+          <div
+            class="button-label"
+          >
+            Cancel 
+          </div>
+        </button>
+        <button
+          aria-label="dialog_confirm-button"
+          class="submit-button raised "
+        >
+          <div
+            class="button-label"
+          >
+            Confirm 
+          </div>
+        </button>
+      </div>
+    </div>
+    <div
+      aria-label="loading-container"
+      class="loading-container hide"
+    >
+      <div
+        class="overlay"
+      />
+      <img
+        aria-label="loading-logo"
+        class="rotating-logo"
+        src="/assets/images/iconhive.png"
+      />
+      <div
+        class="loading-text"
+      >
+        Loading...
+      </div>
+      <div
+        class="operations"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`transfer tests:
+ Must show Transfer dialog(regular memo): Request Transfer regular memo 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="dialog-operation-component"
+    class="operation"
+  >
+    <div>
+      <h2
+        aria-label="dialog-header-operation"
+        class="dialog-header"
+      >
+        Transfer
+      </h2>
+    </div>
+    <div
+      class="operation_body"
+    >
+      <h3>
+        Account
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @keychain.tests
+      </div>
+      <h3>
+        To
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @theghost1980
+      </div>
+      <h3>
+        Amount
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        1.000 HIVE
+      </div>
+      <h3>
+        Balance
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        100 HIVE =&gt; 99.000 HIVE
+      </div>
+      <h3>
+        Memo
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        Regular memo!
+      </div>
+    </div>
+    <div
+      class="operation_footer no-whitelist"
+    >
+      <div
+        aria-label="whitelist-operation"
+        class="whitelist_operation"
+      />
+      <div
+        class="operation_buttons "
+      >
+        <button
+          aria-label="dialog_cancel-button"
+          class="submit-button stroked "
+        >
+          <div
+            class="button-label"
+          >
+            Cancel 
+          </div>
+        </button>
+        <button
+          aria-label="dialog_confirm-button"
+          class="submit-button raised "
+        >
+          <div
+            class="button-label"
+          >
+            Confirm 
+          </div>
+        </button>
+      </div>
+    </div>
+    <div
+      aria-label="loading-container"
+      class="loading-container hide"
+    >
+      <div
+        class="overlay"
+      />
+      <img
+        aria-label="loading-logo"
+        class="rotating-logo"
+        src="/assets/images/iconhive.png"
+      />
+      <div
+        class="loading-text"
+      >
+        Loading...
+      </div>
+      <div
+        class="operations"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
