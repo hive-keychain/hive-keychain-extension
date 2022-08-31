@@ -25,6 +25,7 @@ import {
   RequestSignTx,
   RequestTransfer,
   RequestUpdateProposalVote,
+  RequestVote,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 //TODO change all common by & PropsCommon.
@@ -231,6 +232,13 @@ export type PropsRequestSignBuffer = {
 
 export type PropsRequestsSignTx = {
   data: RequestSignTx & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestVote = {
+  data: RequestVote & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;

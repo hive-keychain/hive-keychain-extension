@@ -49,7 +49,7 @@ describe('transfer tests:\n', () => {
   it('Must call window.close when clicking on cancel', async () => {
     const clonedProps = objects.clone(props) as PropsRequestTransfer;
     clonedProps.data.amount = '1.000';
-    render(<Transfer {...props} />);
+    render(<Transfer {...clonedProps} />);
     await clickAwait([alButton.dialog.cancel]);
     expect(spies.closeWindow).toBeCalledTimes(1);
   });
@@ -61,15 +61,17 @@ describe('transfer tests:\n', () => {
     expect(spies.onConfirm).toBeCalledTimes(1);
   });
   it('Must call sendMessage when clicking on confirm', async () => {
+    const clonedProps = objects.clone(props) as PropsRequestTransfer;
+    clonedProps.data.amount = '1.000';
     const spySendMessage = jest.spyOn(chrome.runtime, 'sendMessage');
-    render(<Transfer {...props} />);
+    render(<Transfer {...clonedProps} />);
     await clickAwait([alButton.dialog.confirm]);
     expect(spySendMessage).toBeCalledWith({
       command: BackgroundCommand.ACCEPT_TRANSACTION,
       value: {
-        data: props.data,
-        tab: props.tab,
-        domain: props.domain,
+        data: clonedProps.data,
+        tab: clonedProps.tab,
+        domain: clonedProps.domain,
         keep: false,
       },
     });
