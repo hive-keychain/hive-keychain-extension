@@ -26,6 +26,7 @@ import {
   RequestTransfer,
   RequestUpdateProposalVote,
   RequestVote,
+  RequestWitnessVote,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 //TODO change all common by & PropsCommon.
@@ -242,4 +243,12 @@ export type PropsRequestVote = {
   domain: string;
   tab: number;
   rpc: Rpc;
+};
+
+export type PropsRequestWitnessVote = {
+  data: RequestWitnessVote & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  accounts?: string[];
 };
