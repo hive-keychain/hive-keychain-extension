@@ -22,6 +22,7 @@ import {
   RequestRemoveProposal,
   RequestSendToken,
   RequestSignBuffer,
+  RequestSignTx,
   RequestTransfer,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
@@ -226,4 +227,11 @@ export type PropsRequestSignBuffer = {
   tab: number;
   rpc: Rpc;
   accounts?: string[];
+};
+
+export type PropsRequestsSignTx = {
+  data: RequestSignTx & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
 };
