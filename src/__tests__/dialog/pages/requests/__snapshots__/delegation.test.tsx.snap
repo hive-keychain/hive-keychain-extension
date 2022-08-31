@@ -1,0 +1,243 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`delegation tests:
+ Must show Delegation dialog(AnonymousRequest): Request CustomJson AnonymousRequest 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="dialog-operation-component"
+    class="operation"
+  >
+    <div>
+      <h2
+        aria-label="dialog-header-operation"
+        class="dialog-header"
+      >
+        Delegation
+      </h2>
+    </div>
+    <div
+      class="operation_body"
+    >
+      <h3>
+        Account
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @keychain.tests
+      </div>
+      <h3>
+        Delegatee
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @theghost1980
+      </div>
+      <h3>
+        Amount
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        100.000 HP
+      </div>
+    </div>
+    <div
+      class="operation_footer no-whitelist"
+    >
+      <div
+        aria-label="whitelist-operation"
+        class="whitelist_operation"
+      />
+      <div
+        class="operation_buttons "
+      >
+        <button
+          aria-label="dialog_cancel-button"
+          class="submit-button stroked "
+        >
+          <div
+            class="button-label"
+          >
+            Cancel 
+          </div>
+        </button>
+        <button
+          aria-label="dialog_confirm-button"
+          class="submit-button raised "
+        >
+          <div
+            class="button-label"
+          >
+            Confirm 
+          </div>
+        </button>
+      </div>
+    </div>
+    <div
+      aria-label="loading-container"
+      class="loading-container hide"
+    >
+      <div
+        class="overlay"
+      />
+      <img
+        aria-label="loading-logo"
+        class="rotating-logo"
+        src="/assets/images/iconhive.png"
+      />
+      <div
+        class="loading-text"
+      >
+        Loading...
+      </div>
+      <div
+        class="operations"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`delegation tests:
+ Must show Delegation dialog: Request Delegation 1`] = `
+<DocumentFragment>
+  <div
+    aria-label="dialog-operation-component"
+    class="operation"
+  >
+    <div>
+      <h2
+        aria-label="dialog-header-operation"
+        class="dialog-header"
+      >
+        Delegation
+      </h2>
+      <div
+        class="select-account-section"
+      >
+        <div>
+          <div
+            aria-expanded="false"
+            aria-label="Dropdown select"
+            class="react-dropdown-select select-account-select css-16vukcu e1gzf2xs0"
+            color="#0074D9"
+            direction="ltr"
+            tabindex="0"
+          >
+            <div
+              class="react-dropdown-select-content react-dropdown-select-type-single css-1m5113o e1gn6jc30"
+            >
+              <div
+                aria-label="selected-account-panel"
+                class="selected-account-panel"
+              >
+                <div
+                  aria-label="selected-account-name"
+                  class="selected-account-name"
+                >
+                  keychain.tests
+                </div>
+              </div>
+            </div>
+            <div
+              class="react-dropdown-select-dropdown-handle css-ago8sv e1vudypg0"
+              color="#0074D9"
+              rotate="1"
+              tabindex="-1"
+            >
+              <svg
+                fill="currentColor"
+                viewBox="0 0 40 40"
+              >
+                <path
+                  d="M31 26.4q0 .3-.2.5l-1.1 1.2q-.3.2-.6.2t-.5-.2l-8.7-8.8-8.8 8.8q-.2.2-.5.2t-.5-.2l-1.2-1.2q-.2-.2-.2-.5t.2-.5l10.4-10.4q.3-.2.6-.2t.5.2l10.4 10.4q.2.2.2.5z"
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="operation_body"
+    >
+      <h3>
+        Delegatee
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        @theghost1980
+      </div>
+      <h3>
+        Amount
+      </h3>
+      <div
+        aria-label="operation_item_content"
+        class="operation_item_content "
+      >
+        100.000 HP
+      </div>
+    </div>
+    <div
+      class="operation_footer no-whitelist"
+    >
+      <div
+        aria-label="whitelist-operation"
+        class="whitelist_operation"
+      />
+      <div
+        class="operation_buttons "
+      >
+        <button
+          aria-label="dialog_cancel-button"
+          class="submit-button stroked "
+        >
+          <div
+            class="button-label"
+          >
+            Cancel 
+          </div>
+        </button>
+        <button
+          aria-label="dialog_confirm-button"
+          class="submit-button raised "
+        >
+          <div
+            class="button-label"
+          >
+            Confirm 
+          </div>
+        </button>
+      </div>
+    </div>
+    <div
+      aria-label="loading-container"
+      class="loading-container hide"
+    >
+      <div
+        class="overlay"
+      />
+      <img
+        aria-label="loading-logo"
+        class="rotating-logo"
+        src="/assets/images/iconhive.png"
+      />
+      <div
+        class="loading-text"
+      >
+        Loading...
+      </div>
+      <div
+        class="operations"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;

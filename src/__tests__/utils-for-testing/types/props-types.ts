@@ -9,6 +9,7 @@ import {
   RequestCreateProposal,
   RequestCustomJSON,
   RequestDecode,
+  RequestDelegation,
   RequestId,
   RequestPowerDown,
   RequestPowerUp,
@@ -174,4 +175,12 @@ export type PropsRequestDecodeMemo = {
   domain: string;
   tab: number;
   rpc: Rpc;
+};
+
+export type PropsRequestDelegation = {
+  data: RequestDelegation & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  accounts?: string[];
 };
