@@ -5,7 +5,9 @@ import {
   RequestAddKeyAuthority,
   RequestBroadcast,
   RequestConvert,
+  RequestCreateClaimedAccount,
   RequestCreateProposal,
+  RequestCustomJSON,
   RequestId,
   RequestPowerDown,
   RequestPowerUp,
@@ -17,6 +19,12 @@ import {
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+//TODO change all common by & PropsCommon.
+type PropsCommon = {
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
 
 export type PropsRequestBalance = {
   amount: number;
@@ -143,4 +151,19 @@ export type PropsRequestConvert = {
   domain: string;
   tab: number;
   rpc: Rpc;
+};
+
+export type PropsRequestCreateClaimedAccount = {
+  data: RequestCreateClaimedAccount & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestCustomJSON = {
+  data: RequestCustomJSON & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  accounts?: string[];
 };
