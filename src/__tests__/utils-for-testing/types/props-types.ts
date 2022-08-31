@@ -12,6 +12,7 @@ import {
   RequestDelegation,
   RequestEncode,
   RequestId,
+  RequestPost,
   RequestPowerDown,
   RequestPowerUp,
   RequestProxy,
@@ -188,6 +189,13 @@ export type PropsRequestDelegation = {
 
 export type PropsRequestEncodeMemo = {
   data: RequestEncode & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+};
+
+export type PropsRequestPost = {
+  data: RequestPost & RequestId;
   domain: string;
   tab: number;
   rpc: Rpc;
