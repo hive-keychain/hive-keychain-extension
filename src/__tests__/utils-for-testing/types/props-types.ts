@@ -20,6 +20,7 @@ import {
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
   RequestRemoveProposal,
+  RequestSendToken,
   RequestTransfer,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
@@ -208,4 +209,12 @@ export type PropsRequestRecurrentTransfer = {
   tab: number;
   rpc: Rpc;
   accounts?: string[];
+};
+
+export type PropsRequestSendToken = {
+  data: RequestSendToken & RequestId;
+  domain: string;
+  tab: number;
+  rpc: Rpc;
+  hiveEngineConfig: HiveEngineConfig;
 };

@@ -1,5 +1,6 @@
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import BrowserUtils from 'src/utils/browser.utils';
+import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -59,6 +60,8 @@ const mocks = {
       };
     });
   },
+  getUserBalance: (userBalance: [{ symbol: string; balance: string }]) =>
+    (HiveEngineUtils.getUserBalance = jest.fn().mockResolvedValue(userBalance)),
 };
 
 const spies = {
