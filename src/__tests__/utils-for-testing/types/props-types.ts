@@ -29,7 +29,7 @@ import {
   RequestWitnessVote,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-//TODO change all common by & PropsCommon.
+
 type PropsCommon = {
   domain: string;
   tab: number;
@@ -65,190 +65,112 @@ export type PropsRequestUsername = {
 
 export type PropsRequestProxy = {
   data: RequestProxy & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   accounts?: string[];
-};
+} & PropsCommon;
 
 export type PropsRequestTransfer = {
   data: RequestTransfer & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   accounts?: string[];
-};
+} & PropsCommon;
 
 export type PropsRequestAddAccountAuthority = {
   data: RequestAddAccountAuthority & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestAddKeyAuthority = {
   data: RequestAddKeyAuthority & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestRemoveAccountAuthority = {
   data: RequestRemoveAccountAuthority & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestRemoveKeyAuthority = {
   data: RequestRemoveKeyAuthority & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestPowerDown = {
   data: RequestPowerDown & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestPowerUp = {
   data: RequestPowerUp & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestCreateProposal = {
   data: RequestCreateProposal & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestRemoveProposal = {
   data: RequestRemoveProposal & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestUpdateProposal = {
   data: RequestUpdateProposalVote & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestAddAccount = {
   data: RequestAddAccount & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestBroadcast = {
   data: RequestBroadcast & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestConvert = {
   data: RequestConvert & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestCreateClaimedAccount = {
   data: RequestCreateClaimedAccount & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestCustomJSON = {
   data: RequestCustomJSON & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   accounts?: string[];
-};
+} & PropsCommon;
 
 export type PropsRequestDecodeMemo = {
   data: RequestDecode & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestDelegation = {
   data: RequestDelegation & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   accounts?: string[];
-};
+} & PropsCommon;
 
 export type PropsRequestEncodeMemo = {
   data: RequestEncode & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestPost = {
   data: RequestPost & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestRecurrentTransfer = {
   data: RequestRecurrentTransfer & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   accounts?: string[];
-};
+} & PropsCommon;
 
 export type PropsRequestSendToken = {
   data: RequestSendToken & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   hiveEngineConfig: HiveEngineConfig;
-};
+} & PropsCommon;
 
 export type PropsRequestSignBuffer = {
   data: RequestSignBuffer & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   accounts?: string[];
-};
+} & PropsCommon;
 
 export type PropsRequestsSignTx = {
   data: RequestSignTx & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestVote = {
   data: RequestVote & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
-};
+} & PropsCommon;
 
 export type PropsRequestWitnessVote = {
   data: RequestWitnessVote & RequestId;
-  domain: string;
-  tab: number;
-  rpc: Rpc;
   accounts?: string[];
-};
+} & PropsCommon;

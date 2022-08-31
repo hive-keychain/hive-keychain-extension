@@ -8,7 +8,7 @@ import requestWitnessVote from 'src/__tests__/utils-for-testing/data/props/dialo
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 import { PropsRequestWitnessVote } from 'src/__tests__/utils-for-testing/types/props-types';
-describe('wtiness-vote tests:\n', () => {
+describe('witness-vote tests:\n', () => {
   const { methods, spies } = appMocks;
   const { props } = requestWitnessVote;
   methods.config();

@@ -22,9 +22,10 @@ const set = async (autoLock: Autolock) => {
     }
   }
 };
-/* istanbul ignore next */
+
 const start = async () => {
   Logger.info('Starting autolock');
+  /* istanbul ignore next */
   chrome.idle.onStateChanged.addListener(async (state: any) => {
     const autoLock: Autolock = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.AUTOLOCK,
