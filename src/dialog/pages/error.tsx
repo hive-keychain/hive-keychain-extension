@@ -21,6 +21,7 @@ const DialogError = ({ data }: Props) => {
       <p style={{ wordBreak: 'break-word' }}>{data.msg.display_msg}</p>
 
       <ButtonComponent
+        ariaLabel="button-close"
         label={'dialog_ok'}
         onClick={() => {
           window.close();

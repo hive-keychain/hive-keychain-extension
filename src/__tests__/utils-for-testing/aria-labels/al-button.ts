@@ -99,4 +99,5 @@ export default {
       nextPage: 'button-next-page',
     },
   },
+  close: 'button-close',
 };

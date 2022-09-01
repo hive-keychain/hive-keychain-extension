@@ -1,0 +1,28 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`error tests:
+ Must show DialogError: DialogError 1`] = `
+<DocumentFragment>
+  <h2
+    aria-label="dialog-header-error"
+    class="dialog-header"
+  >
+    Error
+  </h2>
+  <p
+    style="word-break: break-word;"
+  >
+    Error on this Dialog!!!
+  </p>
+  <button
+    aria-label="button-close"
+    class="submit-button default "
+  >
+    <div
+      class="button-label"
+    >
+      Ok 
+    </div>
+  </button>
+</DocumentFragment>
+`;

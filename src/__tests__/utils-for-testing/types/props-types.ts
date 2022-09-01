@@ -174,3 +174,9 @@ export type PropsRequestWitnessVote = {
   data: RequestWitnessVote & RequestId;
   accounts?: string[];
 } & PropsCommon;
+
+export type PropsRequestDialogError = {
+  data: {
+    msg: { display_msg: string };
+  };
+};
