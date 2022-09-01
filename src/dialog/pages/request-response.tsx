@@ -29,6 +29,7 @@ const RequestResponse = ({ data }: Props) => {
       <p style={{ wordBreak: 'break-word' }}>{data.msg.message}</p>
 
       <ButtonComponent
+        ariaLabel="button-close"
         label={'dialog_ok'}
         fixToBottom
         onClick={() => {

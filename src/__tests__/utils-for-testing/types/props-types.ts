@@ -183,6 +183,10 @@ export type PropsDialogError = {
   };
 };
 
+export type PropsResultMessage = {
+  msg: { message: string; success: boolean };
+};
+
 export type PropsRegisterMessage = {
   data: {
     command: DialogCommand.REGISTER;
