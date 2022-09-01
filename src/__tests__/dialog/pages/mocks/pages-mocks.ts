@@ -1,3 +1,4 @@
+import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -52,18 +53,18 @@ const mocks = {
   //   scroll: {
   //     intoView: () => (Element.prototype.scrollIntoView = jest.fn()),
   //   },
-  //   dHiveHiveIO: (client: any) => {
-  //     jest.mock('@hiveio/dhive', () => {
-  //       const originalModule = jest.requireActual('@hiveio/dhive');
-  //       return {
-  //         __esModule: true,
-  //         ...originalModule,
-  //         Client: client,
-  //       };
-  //     });
-  //   },
-  //   getUserBalance: (userBalance: [{ symbol: string; balance: string }]) =>
-  //     (HiveEngineUtils.getUserBalance = jest.fn().mockResolvedValue(userBalance)),
+  dHiveHiveIO: (client: any) => {
+    jest.mock('@hiveio/dhive', () => {
+      const originalModule = jest.requireActual('@hiveio/dhive');
+      return {
+        __esModule: true,
+        ...originalModule,
+        Client: client,
+      };
+    });
+  },
+  getUserBalance: (userBalance: [{ symbol: string; balance: string }]) =>
+    (HiveEngineUtils.getUserBalance = jest.fn().mockResolvedValue(userBalance)),
 };
 
 const spies = {

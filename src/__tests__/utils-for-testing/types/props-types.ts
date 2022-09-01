@@ -198,3 +198,13 @@ export type PropsRegisterMessage = {
     domain: string;
   };
 };
+
+export type PropsRequestMessage = {
+  command: DialogCommand.SEND_DIALOG_CONFIRM;
+  data: KeychainRequest;
+  rpc: Rpc;
+  tab: number;
+  domain: string;
+  accounts?: string[];
+  hiveEngineConfig: HiveEngineConfig;
+};
