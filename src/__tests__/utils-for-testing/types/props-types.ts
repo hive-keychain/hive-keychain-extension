@@ -1,5 +1,6 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
+  KeychainRequest,
   RequestAddAccount,
   RequestAddAccountAuthority,
   RequestAddKeyAuthority,
@@ -29,6 +30,7 @@ import {
   RequestWitnessVote,
 } from '@interfaces/keychain.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 type PropsCommon = {
   domain: string;
@@ -175,8 +177,24 @@ export type PropsRequestWitnessVote = {
   accounts?: string[];
 } & PropsCommon;
 
-export type PropsRequestDialogError = {
+export type PropsDialogError = {
   data: {
     msg: { display_msg: string };
+  };
+};
+
+export type PropsRegisterMessage = {
+  data: {
+    command: DialogCommand.REGISTER;
+    msg: {
+      success: false;
+      error: 'register';
+      result: null;
+      data: KeychainRequest;
+      message: string;
+      display_msg: string;
+    };
+    tab: number;
+    domain: string;
   };
 };

@@ -4,10 +4,10 @@ import DialogError from 'src/dialog/pages/error';
 import pagesMocks from 'src/__tests__/dialog/pages/mocks/pages-mocks';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-import { PropsRequestDialogError } from 'src/__tests__/utils-for-testing/types/props-types';
+import { PropsDialogError } from 'src/__tests__/utils-for-testing/types/props-types';
 describe('error tests:\n', () => {
   const { methods, spies } = pagesMocks;
-  const props: PropsRequestDialogError = {
+  const props: PropsDialogError = {
     data: { msg: { display_msg: 'Error on this Dialog!!!' } },
   };
   methods.config();

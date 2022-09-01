@@ -27,4 +27,5 @@ export default {
     uri: 'input-rpc-node-uri',
     nodeChainId: 'input-node-chain-id',
   },
+  password_confirmation: 'password-confirmation',
 };

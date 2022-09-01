@@ -1,0 +1,87 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`error tests:
+ Must show Register dialog: Register dialog 1`] = `
+<DocumentFragment>
+  <h2
+    aria-label="dialog-header-register"
+    class="dialog-header"
+  >
+    Welcome to Keychain
+  </h2>
+  <p>
+    The ultimate 
+    <strong>
+      HIVE
+    </strong>
+     wallet.
+    <br />
+    <br />
+    Manage HIVE assets, and connect to HIVE applications.
+    <br />
+    <br />
+    Simple. Lightweight. Secure.
+  </p>
+  <div
+    class="custom-input"
+  >
+    <div
+      class="input-container  password-type  "
+    >
+      <input
+        aria-label="password-input"
+        class=""
+        placeholder="Password "
+        type="password"
+        value=""
+      />
+      <span
+        class="icon-component material-icons-outlined input-img display-password clickable"
+      >
+        visibility
+      </span>
+      <span
+        class="icon-component material-icons-outlined input-img "
+      >
+        password
+      </span>
+    </div>
+  </div>
+  <div
+    class="custom-input"
+  >
+    <div
+      class="input-container  password-type  "
+    >
+      <input
+        aria-label="password-confirmation"
+        class=""
+        placeholder="Confirm "
+        type="password"
+        value=""
+      />
+      <span
+        class="icon-component material-icons-outlined input-img display-password clickable"
+      >
+        visibility
+      </span>
+      <span
+        class="icon-component material-icons-outlined input-img "
+      >
+        password
+      </span>
+    </div>
+  </div>
+  <p />
+  <button
+    aria-label="signup-button"
+    class="submit-button default "
+  >
+    <div
+      class="button-label"
+    >
+      Submit 
+    </div>
+  </button>
+</DocumentFragment>
+`;

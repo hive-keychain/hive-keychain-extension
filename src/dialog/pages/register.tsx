@@ -65,6 +65,7 @@ const Register = ({ data }: Props) => {
           __html: chrome.i18n.getMessage('popup_html_register'),
         }}></p>
       <InputComponent
+        ariaLabel="password-input"
         value={password}
         onChange={setPassword}
         logo={Icons.PASSWORD}
@@ -72,6 +73,7 @@ const Register = ({ data }: Props) => {
         type={InputType.PASSWORD}
       />
       <InputComponent
+        ariaLabel="password-confirmation"
         value={password2}
         onChange={setPassword2}
         logo={Icons.PASSWORD}
@@ -80,7 +82,11 @@ const Register = ({ data }: Props) => {
         onEnterPress={signup}
       />
       <p>{signupError}</p>
-      <ButtonComponent label={'popup_html_submit'} onClick={signup} />
+      <ButtonComponent
+        ariaLabel="signup-button"
+        label={'popup_html_submit'}
+        onClick={signup}
+      />
     </>
   );
 };
