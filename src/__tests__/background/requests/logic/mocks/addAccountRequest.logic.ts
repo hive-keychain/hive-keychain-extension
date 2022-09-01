@@ -2,6 +2,7 @@ import { RequestsHandler } from '@background/requests';
 import sendErrors from '@background/requests/errors';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import * as dialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+import * as SendErrorsModule from 'src/background/requests/errors';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 
@@ -12,7 +13,19 @@ const account = accounts.local.one;
 const requestHandler = new RequestsHandler();
 
 const spies = {
-  createPopup: jest.spyOn(dialogLifeCycle, 'createPopup'),
+  createPopup: jest
+    .spyOn(dialogLifeCycle, 'createPopup')
+    .mockImplementation(
+      (
+        callback: () => void,
+        requestHandler: RequestsHandler,
+        popupHtml = 'dialog.html',
+      ) => {
+        chrome.runtime.sendMessage = jest.fn();
+        jest.spyOn(SendErrorsModule, 'default');
+        callback();
+      },
+    ),
 };
 
 const callback = {
@@ -39,9 +52,11 @@ const callback = {
 };
 
 const methods = {
+  beforeEach: beforeEach(() => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
+  }),
   afterEach: afterEach(() => {
-    spies.createPopup.mockClear();
-    spies.createPopup.mockReset();
+    jest.clearAllMocks();
   }),
 };
 
