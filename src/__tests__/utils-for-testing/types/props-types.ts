@@ -212,3 +212,21 @@ export type PropsRequestMessage = {
   accounts?: string[];
   hiveEngineConfig: HiveEngineConfig;
 };
+
+export type PropsUnlockMessage = {
+  data: {
+    command: DialogCommand;
+    msg: {
+      success: false;
+      error: 'locked';
+      result: null;
+      data: KeychainRequest;
+      message: string;
+      display_msg: string;
+    };
+    tab: number;
+    domain: string;
+  };
+  wrongMk?: boolean;
+  index?: number;
+};

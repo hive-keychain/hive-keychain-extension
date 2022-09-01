@@ -59,6 +59,7 @@ export default ({ data, wrongMk, index }: Props) => {
       />
       <p>{chrome.i18n.getMessage('bgd_auth_locked_desc')}</p>
       <InputComponent
+        ariaLabel="password-input"
         value={password}
         onChange={setPassword}
         logo=""
@@ -69,11 +70,13 @@ export default ({ data, wrongMk, index }: Props) => {
       <p>{wrongMk && chrome.i18n.getMessage('dialog_header_wrong_pwd')}</p>
 
       <ButtonComponent
+        ariaLabel="dialog_unlock-button"
         label={'dialog_unlock'}
         onClick={login}
         type={ButtonType.RAISED}
       />
       <ButtonComponent
+        ariaLabel="dialog_cancel-button"
         label={'dialog_cancel'}
         type={ButtonType.STROKED}
         onClick={() => {

@@ -25,6 +25,7 @@ export default {
   dialog: {
     cancel: 'dialog_cancel-button',
     confirm: 'dialog_confirm-button',
+    unlock: 'dialog_unlock-button',
   },
   setToMax: 'set-to-max-button',
   delegations: {
