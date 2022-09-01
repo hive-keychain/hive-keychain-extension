@@ -8,37 +8,6 @@ import { ClickOrType } from 'src/__tests__/utils-for-testing/interfaces/events';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import { clickTypeAwait } from 'src/__tests__/utils-for-testing/setups/events';
 
-const data = {
-  //   request: (command: DialogCommand, display_msg?: string) => {
-  //     return {
-  //       command: command,
-  //       msg: {
-  //         success: false,
-  //         error: '',
-  //         result: null,
-  //         data: {},
-  //         message: chrome.i18n.getMessage('bgd_auth_locked'),
-  //         display_msg:
-  //           display_msg ?? chrome.i18n.getMessage('bgd_auth_locked_desc'),
-  //       },
-  //       tab: 0,
-  //       domain: 'domain',
-  //     };
-  //   },
-  //   requestConfirmation: {
-  //     command: DialogCommand.SEND_DIALOG_CONFIRM,
-  //     data: { data: { type: 'non_existing_type' } },
-  //     rpc: {},
-  //     tab: 0,
-  //     domain: 'domain',
-  //     hiveEngineConfig: {},
-  //   },
-  //   requestResponse: {
-  //     command: DialogCommand.ANSWER_REQUEST,
-  //     msg: { message: 'Error on request response', success: false },
-  //   },
-};
-
 const mocks = {
   getUILanguage: () =>
     (chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US')),
@@ -50,9 +19,6 @@ const mocks = {
     .fn()
     .mockResolvedValue({ id: 66 })),
   update: (chrome.windows.update = jest.fn().mockResolvedValue(undefined)),
-  //   scroll: {
-  //     intoView: () => (Element.prototype.scrollIntoView = jest.fn()),
-  //   },
   dHiveHiveIO: (client: any) => {
     jest.mock('@hiveio/dhive', () => {
       const originalModule = jest.requireActual('@hiveio/dhive');
@@ -68,9 +34,6 @@ const mocks = {
 };
 
 const spies = {
-  //   sendResponse: jest
-  //     .spyOn(BrowserUtils, 'sendResponse')
-  //     .mockResolvedValue(undefined),
   sendMessage: jest
     .spyOn(chrome.runtime, 'sendMessage')
     .mockReturnValue(undefined),
@@ -78,7 +41,6 @@ const spies = {
   logger: {
     error: jest.spyOn(Logger, 'error'),
   },
-  //onConfirm: jest.fn(),
 };
 
 const methods = {
@@ -89,7 +51,6 @@ const methods = {
       mocks.i18n();
       mocks.getCurrent;
       mocks.update;
-      //mocks.scroll.intoView();
     });
     afterEach(() => {
       afterTests.clean();
@@ -121,12 +82,4 @@ const methods = {
   },
 };
 
-const constants = {
-  data,
-  //   props: {
-  //     title: 'description',
-  //     content: 'content in collapsible-item component',
-  //   },
-};
-
-export default { methods, mocks, spies, constants };
+export default { methods, mocks, spies };
