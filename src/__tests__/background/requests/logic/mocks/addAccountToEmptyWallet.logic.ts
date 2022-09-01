@@ -11,28 +11,45 @@ const account = accounts.local.one;
 const requestHandler = new RequestsHandler();
 
 const spies = {
-  createPopup: jest.spyOn(dialogLifeCycle, 'createPopup'),
+  createPopup: jest
+    .spyOn(dialogLifeCycle, 'createPopup')
+    .mockImplementation(
+      (
+        callback: () => void,
+        requestHandler: RequestsHandler,
+        popupHtml = 'dialog.html',
+      ) => {
+        chrome.runtime.sendMessage = jest.fn();
+        callback();
+      },
+    ),
 };
 
 const callback = {
-  sendMessage: async () => {
-    chrome.runtime.sendMessage({
-      command: DialogCommand.REGISTER,
-      msg: {
-        success: false,
-        error: 'register',
-        result: null,
-        data: request,
-        message: await chrome.i18n.getMessage('popup_html_register'),
-        display_msg: await chrome.i18n.getMessage('popup_html_register'),
-      },
-      tab,
-      domain,
-    });
-  },
+  sendMessage: [
+    async () => {
+      chrome.runtime.sendMessage({
+        command: DialogCommand.REGISTER,
+        msg: {
+          success: false,
+          error: 'register',
+          result: null,
+          data: request,
+          message: await chrome.i18n.getMessage('popup_html_register'),
+          display_msg: await chrome.i18n.getMessage('popup_html_register'),
+        },
+        tab,
+        domain,
+      });
+    },
+    requestHandler,
+  ],
 };
 
 const methods = {
+  beforeEach: beforeEach(() => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
+  }),
   afterEach: afterEach(() => {
     spies.createPopup.mockClear();
     spies.createPopup.mockReset();
