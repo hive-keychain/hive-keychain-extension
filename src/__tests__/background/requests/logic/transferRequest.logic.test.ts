@@ -8,6 +8,7 @@ describe('transferRequest.logic tests:\n', () => {
   const { methods, constants, spies, callback } = transferRequestLogic;
   const { requestHandler, request, domain, current_rpc } = constants;
   const { tab } = constants;
+  methods.beforeEach;
   methods.afterEach;
   it('Must call createPopup with sendErrors if no active key', () => {
     const accountNoActive = objects.clone(accounts.local.one) as LocalAccount;
@@ -24,8 +25,8 @@ describe('transferRequest.logic tests:\n', () => {
       current_rpc,
       accountNoActive,
     );
-    expect(spies.createPopup.mock.calls[0][0].toString()).toEqual(
-      callback.sendErrors.noActive.toString(),
+    expect(JSON.stringify(spies.createPopup.mock.calls[0][0])).toEqual(
+      JSON.stringify(callback.sendErrors.noActive),
     );
   });
   it('Must call createPopup with sendErrors if no memo key', () => {
@@ -43,8 +44,8 @@ describe('transferRequest.logic tests:\n', () => {
       current_rpc,
       accountNoMemo,
     );
-    expect(spies.createPopup.mock.calls[0][0].toString()).toEqual(
-      callback.sendErrors.noMemo.toString(),
+    expect(JSON.stringify(spies.createPopup.mock.calls[0][0])).toEqual(
+      JSON.stringify(callback.sendErrors.noMemo),
     );
   });
   it('Must call createPopup with sendErrors if no acccounts', () => {
@@ -59,24 +60,20 @@ describe('transferRequest.logic tests:\n', () => {
       current_rpc,
       account,
     );
-    expect(spies.createPopup.mock.calls[0][0].toString()).toEqual(
-      callback.sendErrors.noActiveAccounts.toString(),
+    expect(JSON.stringify(spies.createPopup.mock.calls[0][0])).toEqual(
+      JSON.stringify(callback.sendErrors.noActiveAccounts),
     );
   });
-  it('Must call createPopup with sendMessage callback', () => {
-    const account = objects.clone(accounts.local.one) as LocalAccount;
+  it('Must call createPopup with sendMessage callback with accounts', () => {
     request.username = mk.user.one;
-    transferRequest(
-      requestHandler,
-      tab,
-      request,
-      domain,
-      accounts.twoAccounts,
-      current_rpc,
-      account,
-    );
-    expect(
-      methods.clean(spies.createPopup.mock.calls[0][0].toString()),
-    ).toEqual(methods.clean(callback.sendMessage.toString()));
+    request.enforce = false;
+    request.memo = 'Regular Memo';
+    methods.assertSendMessage(request, ['keychain.tests']);
+  });
+  it('Must call createPopup with sendMessage callback with no accounts', () => {
+    request.username = mk.user.one;
+    request.enforce = true;
+    request.memo = '# Encrypted Memo!';
+    methods.assertSendMessage(request, undefined);
   });
 });
