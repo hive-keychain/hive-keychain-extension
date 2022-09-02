@@ -22,17 +22,15 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         Object.keys(importedSettings)[0] as LocalStorageKeyEnum,
       )
     ) {
-      console.log('unknown keys!');
       const importedNoConfirm: any = importedSettings;
       let existingNoConfirm: NoConfirm =
         await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_CONFIRM,
         );
-      console.log('existingNoConfirm: ', existingNoConfirm);
+
       if (!existingNoConfirm) existingNoConfirm = {};
       for (const username of Object.keys(importedNoConfirm)) {
         if (!existingNoConfirm[username]) existingNoConfirm[username] = {};
-        console.log('existingNoConfirm: ', existingNoConfirm[username]);
         for (const website of Object.keys(importedNoConfirm[username])) {
           existingNoConfirm[username][website] =
             importedNoConfirm[username][website];
