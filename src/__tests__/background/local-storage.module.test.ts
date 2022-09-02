@@ -17,20 +17,39 @@ describe('local-storage.module tests:\n', () => {
     mocks.saveValueInLocalStorage;
     mocks.getValueFromLocalStorage({
       customAutolock: JSON.stringify(autoLockDefault),
-      customRpcList: JSON.stringify(DefaultRpcs),
+      customsRpcs: JSON.stringify(DefaultRpcs),
       customCurrentRpc: DefaultRpcs[1],
       customAuthorizedOP: JSON.stringify(noConfirm),
     });
     await LocalStorageModule.checkAndUpdateLocalStorage();
     expect(spies.saveValueInLocalStorage.mock.calls).toEqual([
       [LocalStorageKeyEnum.AUTOLOCK, autoLockDefault],
+      [LocalStorageKeyEnum.RPC_LIST, DefaultRpcs],
       [LocalStorageKeyEnum.CURRENT_RPC, DefaultRpcs[1]],
       [LocalStorageKeyEnum.SWITCH_RPC_AUTO, false],
       [LocalStorageKeyEnum.NO_CONFIRM, noConfirm],
       [LocalStorageKeyEnum.LOCAL_STORAGE_VERSION, 2],
     ]);
   });
-  it('Must save SWITCH_RPC_AUTO as true an change current rpc', async () => {
+  it('Must load rpc[0] as not found on defaults', async () => {
+    mocks.saveValueInLocalStorage;
+    mocks.getValueFromLocalStorage({
+      customAutolock: JSON.stringify(autoLockDefault),
+      customsRpcs: JSON.stringify(DefaultRpcs),
+      customCurrentRpc: 'https://api.saturnoman.hive/',
+      customAuthorizedOP: JSON.stringify(noConfirm),
+    });
+    await LocalStorageModule.checkAndUpdateLocalStorage();
+    expect(spies.saveValueInLocalStorage.mock.calls).toEqual([
+      [LocalStorageKeyEnum.AUTOLOCK, autoLockDefault],
+      [LocalStorageKeyEnum.RPC_LIST, DefaultRpcs],
+      [LocalStorageKeyEnum.CURRENT_RPC, DefaultRpcs[0]],
+      [LocalStorageKeyEnum.SWITCH_RPC_AUTO, false],
+      [LocalStorageKeyEnum.NO_CONFIRM, noConfirm],
+      [LocalStorageKeyEnum.LOCAL_STORAGE_VERSION, 2],
+    ]);
+  });
+  it('Must save SWITCH_RPC_AUTO as true and change current rpc', async () => {
     mocks.saveValueInLocalStorage;
     mocks.getValueFromLocalStorage({
       customAutolock: JSON.stringify(autoLockDefault),

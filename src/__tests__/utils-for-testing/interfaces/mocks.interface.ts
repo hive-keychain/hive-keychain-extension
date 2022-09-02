@@ -93,11 +93,17 @@ export interface CustomDataFromLocalStorage {
   customRpcList?: string[] | string;
   customAutolock?: Autolock | string;
   customSwitchAuto?: boolean;
-  customsRpcs?: Rpc[];
+  /**
+   * note: using as string just for local-storage.module
+   */
+  customsRpcs?: Rpc[] | string;
   customAuthorizedOP?: NoConfirm | string;
   customlastVersionSeen?: string;
   customStorageVersion?: string;
-  customCurrentRpc?: Rpc;
+  /**
+   * note: using as string just for local-storage.module
+   */
+  customCurrentRpc?: Rpc | string;
   customMK?: string;
   customAccounts?: string;
 }
