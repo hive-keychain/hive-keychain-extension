@@ -30,4 +30,15 @@ export default {
       'keychain.tests': ['orinoco', 'jobaboard'],
     },
   } as Settings,
+  justNoConfirm: {
+    'keychain.tests': {
+      'splinterlands2.com': {
+        signBuffer: true,
+        signTx: true,
+      },
+      'splinterlands.com': {
+        signTx: true,
+      },
+    },
+  },
 };

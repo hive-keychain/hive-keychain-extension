@@ -1,4 +1,5 @@
 import SettingsModule from '@background/settings.module';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import settingsModuleMocks from 'src/__tests__/background/mocks/settings.module.mocks';
 import settings from 'src/__tests__/utils-for-testing/data/settings';
 describe('settings.module tests:\n', () => {
@@ -22,7 +23,7 @@ describe('settings.module tests:\n', () => {
       spies.logger.error.mockReset();
     }
   });
-  it('Must return sucess on empty settings', async () => {
+  it('Will return sucess on empty settings', async () => {
     mocks.getValueFromLocalStorage({
       customAuthorizedOP: noConfirm,
     });
@@ -30,8 +31,41 @@ describe('settings.module tests:\n', () => {
     methods.assertSendMessage('html_popup_import_settings_successful');
   });
   it('Must return success importing', async () => {
+    mocks.getValueFromLocalStorage({
+      customAuthorizedOP: noConfirm,
+    });
     await SettingsModule.sendBackImportedFileContent(settings.all);
     methods.assertSendMessage('html_popup_import_settings_successful');
     expect(spies.saveValueInLocalStorage()).toBeCalledTimes(9);
+  });
+  it('Must return success importing(no existingNoConfirm)', async () => {
+    mocks.getValueFromLocalStorage({
+      customAuthorizedOP: undefined,
+    });
+    await SettingsModule.sendBackImportedFileContent(settings.all);
+    methods.assertSendMessage('html_popup_import_settings_successful');
+    expect(spies.saveValueInLocalStorage()).toBeCalledTimes(9);
+  });
+  it('Must save noConfirm values(no existingNoConfirm)', async () => {
+    mocks.getValueFromLocalStorage({
+      customAuthorizedOP: undefined,
+    });
+    await SettingsModule.sendBackImportedFileContent(settings.justNoConfirm);
+    expect(spies.saveValueInLocalStorage()).toBeCalledWith(
+      LocalStorageKeyEnum.NO_CONFIRM,
+      settings.justNoConfirm,
+    );
+    methods.assertSendMessage('html_popup_import_settings_successful');
+  });
+  it('Must save noConfirm values(with existingNoConfirm)', async () => {
+    mocks.getValueFromLocalStorage({
+      customAuthorizedOP: noConfirm,
+    });
+    await SettingsModule.sendBackImportedFileContent(settings.justNoConfirm);
+    expect(spies.saveValueInLocalStorage()).toBeCalledWith(
+      LocalStorageKeyEnum.NO_CONFIRM,
+      noConfirm,
+    );
+    methods.assertSendMessage('html_popup_import_settings_successful');
   });
 });
