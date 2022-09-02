@@ -3,8 +3,8 @@ import sendErrors from '@background/requests/errors';
 import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import * as dialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+import * as SendErrorsModule from 'src/background/requests/errors';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
-import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 
 const request = keychainRequest.noValues.decode;
 const domain = '';
@@ -17,7 +17,19 @@ const account_candidates = {
 };
 
 const spies = {
-  createPopup: jest.spyOn(dialogLifeCycle, 'createPopup'),
+  createPopup: jest
+    .spyOn(dialogLifeCycle, 'createPopup')
+    .mockImplementation(
+      (
+        callback: () => void,
+        requestHandler: RequestsHandler,
+        popupHtml = 'dialog.html',
+      ) => {
+        jest.spyOn(SendErrorsModule, 'default');
+        chrome.runtime.sendMessage = jest.fn();
+        callback();
+      },
+    ),
 };
 
 const callback = {
@@ -44,11 +56,12 @@ const callback = {
 };
 
 const methods = {
-  afterEach: afterEach(() => {
-    spies.createPopup.mockClear();
-    spies.createPopup.mockReset();
+  beforeEach: beforeEach(() => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
   }),
-  clean: (str: string) => manipulateStrings.removeTabs(str),
+  afterEach: afterEach(() => {
+    jest.clearAllMocks();
+  }),
 };
 
 const constants = {

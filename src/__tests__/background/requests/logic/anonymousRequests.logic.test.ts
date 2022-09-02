@@ -3,6 +3,7 @@ import anonymousRequestsLogic from 'src/__tests__/background/requests/logic/mock
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 describe('anonymousRequests.logic tests:\n', () => {
   const { constants, spies, callback, methods } = anonymousRequestsLogic;
+  methods.beforeEach;
   methods.afterEach;
   it('If empty account must call sendErrors', () => {
     anonymousRequests(
@@ -13,9 +14,12 @@ describe('anonymousRequests.logic tests:\n', () => {
       constants.account_candidates.empty,
       constants.current_rpc,
     );
-    expect(
-      methods.clean(spies.createPopup.mock.calls[0][0].toString()),
-    ).toEqual(methods.clean(callback.sendErrors.toString()));
+    expect(JSON.stringify(spies.createPopup.mock.calls[0][0])).toEqual(
+      JSON.stringify(callback.sendErrors),
+    );
+    expect(spies.createPopup.mock.calls[0][1]).toEqual(
+      constants.requestHandler,
+    );
   });
   it('Must call createPopup with sendMessage callback', () => {
     anonymousRequests(
@@ -26,8 +30,11 @@ describe('anonymousRequests.logic tests:\n', () => {
       accounts.twoAccounts,
       constants.current_rpc,
     );
-    expect(
-      methods.clean(spies.createPopup.mock.calls[0][0].toString()),
-    ).toEqual(methods.clean(callback.sendMessage.toString()));
+    expect(JSON.stringify(spies.createPopup.mock.calls[0][0])).toEqual(
+      JSON.stringify(callback.sendMessage),
+    );
+    expect(spies.createPopup.mock.calls[0][1]).toEqual(
+      constants.requestHandler,
+    );
   });
 });
