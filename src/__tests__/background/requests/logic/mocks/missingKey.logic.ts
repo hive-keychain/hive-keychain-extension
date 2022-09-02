@@ -1,9 +1,9 @@
 import { RequestsHandler } from '@background/requests';
 import sendErrors from '@background/requests/errors';
 import * as dialogLifeCycle from 'src/background/requests/dialog-lifecycle';
+import * as SendErrorsModule from 'src/background/requests/errors';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 
 const request = keychainRequest.noValues.decode;
 const tab = 0;
@@ -12,7 +12,19 @@ const username = mk.user.one;
 const typeWif = 'type_wif';
 
 const spies = {
-  createPopup: jest.spyOn(dialogLifeCycle, 'createPopup'),
+  createPopup: jest
+    .spyOn(dialogLifeCycle, 'createPopup')
+    .mockImplementation(
+      (
+        callback: () => void,
+        requestHandler: RequestsHandler,
+        popupHtml = 'dialog.html',
+      ) => {
+        jest.spyOn(SendErrorsModule, 'default');
+        chrome.runtime.sendMessage = jest.fn();
+        callback();
+      },
+    ),
 };
 
 const callback = {
@@ -29,10 +41,12 @@ const callback = {
 };
 
 const methods = {
+  beforeEach: beforeEach(() => {
+    chrome.i18n.getUILanguage = jest.fn().mockReturnValue('en-US');
+  }),
   afterEach: afterEach(() => {
     jest.clearAllMocks();
   }),
-  clean: (str: string) => manipulateStrings.removeTabs(str),
 };
 
 const constants = {
