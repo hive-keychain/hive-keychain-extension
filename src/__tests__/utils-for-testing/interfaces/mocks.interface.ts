@@ -106,6 +106,7 @@ export interface CustomDataFromLocalStorage {
   customCurrentRpc?: Rpc | string;
   customMK?: string;
   customAccounts?: string;
+  customFavoriteUsers?: {} | undefined;
 }
 //TODO remove all unused from overwrite + add the keychainApiget.
 export interface MocksOverwrite {

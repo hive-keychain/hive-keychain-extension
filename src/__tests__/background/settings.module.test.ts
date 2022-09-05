@@ -68,4 +68,18 @@ describe('settings.module tests:\n', () => {
     );
     methods.assertSendMessage('html_popup_import_settings_successful');
   });
+  it('Must load existingTransferTo as {}', async () => {
+    mocks.getValueFromLocalStorage({ customFavoriteUsers: undefined });
+    await SettingsModule.sendBackImportedFileContent({
+      transfer_to: settings.all.transfer_to,
+      switchRpcAuto: null,
+    });
+    expect(spies.saveValueInLocalStorage()).toBeCalledWith(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+      {
+        ...settings.all.transfer_to,
+      },
+    );
+    methods.assertSendMessage('html_popup_import_settings_successful');
+  });
 });

@@ -45,7 +45,9 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
       return { 'keychain.tests': true };
     case LocalStorageKeyEnum.FAVORITE_USERS:
-      return { 'keychain.tests': ['one1', 'two2', 'three3'] };
+      return hasKeys(customData)
+        ? customData.customFavoriteUsers
+        : { 'keychain.tests': ['one1', 'two2', 'three3'] };
     case LocalStorageKeyEnum.LAST_VERSION_UPDATE:
       return hasKeys(customData)
         ? customData.customlastVersionSeen
