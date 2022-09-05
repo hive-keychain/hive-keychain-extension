@@ -10,6 +10,136 @@
     padding: 0px 24px;
   }
 
+  .filter-panel {
+    padding: 0px 24px;
+    .title-panel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      margin-bottom: 16px;
+      .title {
+        font-size: 16px;
+      }
+      .icon {
+        height: 10px;
+        width: 20px;
+        transition-duration: 0.25s;
+        transition-property: transform;
+      }
+    }
+
+    .filters {
+      max-height: 0;
+      transition: max-height 0.25s;
+      overflow: auto;
+
+      .filter-button {
+        padding: 4px;
+        border: 1px solid white;
+        border-radius: 12px;
+        text-align: center;
+        font-size: 14px;
+        cursor: pointer;
+        min-width: 60px;
+
+        &.selected,
+        &:hover {
+          background: white;
+          color: black;
+        }
+      }
+      .search-panel {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        column-gap: 8px;
+        margin-bottom: 16px;
+        .input-container {
+          input {
+            height: 30px;
+            font-size: 14px;
+            &:focus {
+              box-shadow: unset;
+            }
+            &::-webkit-input-placeholder {
+              font-size: 14px;
+            }
+          }
+          .input-img.erase {
+            top: 8px;
+            height: 14px;
+            width: 14px;
+          }
+        }
+      }
+
+      .filter-selectors {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 16px;
+        row-gap: 8px;
+        max-height: calc(190px - 64px);
+        .horizontal-divider {
+          width: 1px;
+          height: 100%;
+          background: white;
+        }
+        .vertical-divider {
+          height: 1px;
+          width: 100%;
+          background: white;
+        }
+
+        .filter-category {
+          .category-name {
+            font-size: 16px;
+          }
+          .category-options {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            column-gap: 8px;
+
+            .filter-option-button {
+            }
+            .filter-option-image {
+              height: 24px;
+              width: 24px;
+              border-radius: 50%;
+              border: 1px solid white;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              opacity: 0.25;
+              img {
+                height: 16px;
+                width: 16px;
+              }
+              &:hover,
+              &.selected {
+                opacity: 1;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    &.filter-opened {
+      .title-panel {
+        .icon {
+          transform: rotate(180deg);
+        }
+      }
+
+      .filters {
+        max-height: 190px;
+        transition: max-height 0.25s;
+      }
+    }
+  }
+
   .main-panel {
     flex: 1;
     display: grid;
