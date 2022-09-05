@@ -28,8 +28,10 @@ const constants = {
     {
       ...accounts.extended,
       hbd_last_interest_payment: '2021-06-02 16:46:36',
+      savings_hbd_seconds_last_update: '2021-06-02 16:46:36',
       savings_hbd_seconds: '457,677,360',
       savings_hbd_balance: '3,148.720 HBD',
+      savings_hbd_last_interest_payment: '2021-06-02 16:46:36',
     },
   ],
   noAvailableSavings: [
@@ -38,6 +40,8 @@ const constants = {
       hbd_last_interest_payment: '1970-01-01 00:00:00',
       savings_hbd_seconds: '0',
       savings_hbd_balance: '0.000 HBD',
+      savings_hbd_seconds_last_update: '1970-01-01 00:00:00',
+      savings_hbd_last_interest_payment: '1970-01-01 00:00:00',
     },
   ],
   nonValidClaims: [

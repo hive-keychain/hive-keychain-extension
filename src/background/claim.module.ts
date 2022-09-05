@@ -113,19 +113,19 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
     if (!activeAccount) continue;
     let baseDate: any =
       new Date(
-        activeAccount?.account.savings_hbd_last_interest_payment!,
+        activeAccount.account.savings_hbd_last_interest_payment!,
       ).getUTCFullYear() === 1970
-        ? activeAccount?.account.savings_hbd_seconds_last_update
-        : activeAccount?.account.savings_hbd_last_interest_payment;
+        ? activeAccount.account.savings_hbd_seconds_last_update
+        : activeAccount.account.savings_hbd_last_interest_payment;
 
     baseDate = moment(baseDate).utcOffset('+0000', true);
     const hasSavingsToClaim =
-      Number(activeAccount?.account.savings_hbd_seconds) > 0 ||
-      Asset.from(activeAccount?.account.savings_hbd_balance!).amount > 0;
+      Number(activeAccount.account.savings_hbd_seconds) > 0 ||
+      Asset.from(activeAccount.account.savings_hbd_balance!).amount > 0;
 
     if (!hasSavingsToClaim) {
       Logger.info(
-        `@${activeAccount?.name} doesn't have any savings interests to claim`,
+        `@${activeAccount.name} doesn't have any savings interests to claim`,
       );
     } else {
       const canClaimSavings =
@@ -133,9 +133,9 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
         Config.claims.savings.delay;
       if (canClaimSavings) {
         if (await BgdHiveUtils.claimSavings(activeAccount!))
-          Logger.info(`Claim savings for @${activeAccount?.name} successful`);
+          Logger.info(`Claim savings for @${activeAccount.name} successful`);
       } else {
-        Logger.info(`Not time to claim yet for @${activeAccount?.name}`);
+        Logger.info(`Not time to claim yet for @${activeAccount.name}`);
       }
     }
   }
