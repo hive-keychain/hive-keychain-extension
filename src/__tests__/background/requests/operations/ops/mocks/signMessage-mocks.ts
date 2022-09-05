@@ -1,4 +1,5 @@
 import { RequestsHandler } from '@background/requests';
+import * as OperationUtilsModule from '@background/requests/operations/operations.utils';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainKeyTypes,
@@ -8,6 +9,7 @@ import {
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
 import { AssertionError } from 'assert';
+import Logger from 'src/utils/logger.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -35,6 +37,7 @@ const signedMessage = {
     '20221a058cd7f8d541427066e326b968efdcf0632773ee4042f87a0f559b9b93d3293aeedc37d6a50565ff9b4a9cf78e684f8fe94a381e1ff146c00c48500535de',
   buffer:
     '20382cf71c9264cf5ac5feec1c3a4de25f73113bae496769603087dc63531fb0c676097d99da6c42c3ecde7297b73c2bf187e4e7982cb1cae663e414bfe31bc6b2',
+  json: '2049866a2506cdf1c67677be41ab7a4ebbac4315a4e9e3da2a20c2638b5b4b993f158d45771070e85a79f4f197768474c0a2821029e4819050021b59c7545d2874',
 };
 
 const mocks = {
@@ -48,6 +51,10 @@ const mocks = {
 
 const spies = {
   getUserKey: jest.spyOn(requestHandler, 'getUserKey'),
+  createMessage: jest.spyOn(OperationUtilsModule, 'createMessage'),
+  logger: {
+    error: jest.spyOn(Logger, 'error'),
+  },
 };
 
 const methods = {

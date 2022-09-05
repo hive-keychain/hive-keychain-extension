@@ -25,6 +25,23 @@ describe('sign-buffer tests:\n', () => {
       null,
     );
   });
+  it('Must return catch error and return success signing a json', async () => {
+    requestHandler.data.key = userData.one.nonEncryptKeys.active;
+    data.message = '{not_buffer_nor_text:"the key is very importat on HIVE"}';
+    await signBuffer(requestHandler, data);
+    expect(spies.createMessage).toBeCalledTimes(1);
+    expect(spies.logger.error).not.toBeCalled();
+  });
+  it('Must return success signing an array', async () => {
+    requestHandler.data.key = userData.one.nonEncryptKeys.active;
+    data.message = JSON.stringify(['var_2', 1, 2]);
+    const signed = await signBuffer(requestHandler, data);
+    methods.assert.success(
+      signed,
+      chrome.i18n.getMessage('bgd_ops_sign_success'),
+      signed.msg.result,
+    );
+  });
   it('Must return success on string', async () => {
     requestHandler.data.key = userData.one.nonEncryptKeys.active;
     data.message = 'the key is very importat on HIVE';
