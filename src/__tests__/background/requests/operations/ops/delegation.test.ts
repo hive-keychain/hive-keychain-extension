@@ -1,10 +1,15 @@
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { DynamicGlobalProperties } from '@hiveio/dhive';
-import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import {
+  KeychainKeyTypesLC,
+  RequestDelegation,
+  RequestId,
+} from '@interfaces/keychain.interface';
 import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('delegation tests:\n', () => {
   const { methods, constants, mocks, spies } = delegationMocks;
   const { requestHandler, data, confirmed } = constants;
@@ -50,11 +55,50 @@ describe('delegation tests:\n', () => {
       ),
     );
   });
-  it('Must return success', async () => {
+  it('Must return success on undelegation', async () => {
+    mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);
+    requestHandler.data.key = userData.one.nonEncryptKeys.active;
+    const dataCloned = objects.clone(data) as RequestDelegation & RequestId;
+    dataCloned.amount = '0.000';
+    const result = await broadcastDelegation(requestHandler, dataCloned);
+    const { request_id, ...datas } = dataCloned;
+    expect(result).toEqual(
+      messages.success.broadcast(
+        confirmed,
+        datas,
+        request_id,
+        chrome.i18n.getMessage('bgd_ops_undelegate', [
+          datas.delegatee,
+          datas.username!,
+        ]),
+      ),
+    );
+  });
+  it('Must return success on delegation', async () => {
     mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);
     requestHandler.data.key = userData.one.nonEncryptKeys.active;
     const result = await broadcastDelegation(requestHandler, data);
     const { request_id, ...datas } = data;
+    expect(result).toEqual(
+      messages.success.broadcast(
+        confirmed,
+        datas,
+        request_id,
+        chrome.i18n.getMessage('bgd_ops_delegate', [
+          `${datas.amount} ${datas.unit}`,
+          datas.delegatee,
+          datas.username!,
+        ]),
+      ),
+    );
+  });
+  it('Must return success with VESTS', async () => {
+    mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);
+    requestHandler.data.key = userData.one.nonEncryptKeys.active;
+    const dataCloned = objects.clone(data) as RequestDelegation & RequestId;
+    dataCloned.unit = 'VESTS';
+    const result = await broadcastDelegation(requestHandler, dataCloned);
+    const { request_id, ...datas } = dataCloned;
     expect(result).toEqual(
       messages.success.broadcast(
         confirmed,
