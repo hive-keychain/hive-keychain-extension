@@ -4,7 +4,7 @@ import { AppThunk } from '@popup/actions/interfaces';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-
+/* istanbul ignore next */
 export const setHEActiveRpc = (rpc: string) => {
   HiveEngineConfigUtils.setActiveApi(rpc);
   return {
@@ -12,7 +12,7 @@ export const setHEActiveRpc = (rpc: string) => {
     payload: { rpc: rpc },
   };
 };
-
+/* istanbul ignore next */
 export const setHEActiveAccountHistoryApi = (api: string) => {
   HiveEngineConfigUtils.setActiveAccountHistoryApi(api);
   return {
@@ -20,7 +20,7 @@ export const setHEActiveAccountHistoryApi = (api: string) => {
     payload: { accountHistoryApi: api },
   };
 };
-
+/* istanbul ignore next */
 export const initHiveEngineConfigFromStorage =
   (): AppThunk => async (dispatch) => {
     const config = (await LocalStorageUtils.getValueFromLocalStorage(
