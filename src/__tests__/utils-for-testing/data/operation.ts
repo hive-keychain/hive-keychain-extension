@@ -17,7 +17,7 @@ const array = [
     '1': {
       voter: mk.user.one,
       proposal_ids: [1, 2],
-      approve: true,
+      approve: 'true',
       extensions: [],
     },
   },
@@ -85,8 +85,6 @@ const array = [
   {
     '0': 'custom_json',
     '1': {
-      required_auths: [userData.one.encryptKeys.owner],
-      required_posting_auths: [mk.user.one],
       id: '1',
       json: '{"token":"SPS","qty":0,"app":"splinterlands/0.7.139","n":"0MtjYZ1uI4"}',
     },
