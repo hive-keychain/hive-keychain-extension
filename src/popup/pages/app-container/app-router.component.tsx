@@ -9,8 +9,9 @@ import { DelegationsComponent } from '@popup/pages/app-container/home/delegation
 import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { GovernanceComponent } from '@popup/pages/app-container/home/governance/governance.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
-import { NftsFilterComponent } from '@popup/pages/app-container/home/ntfs/nfts-filter/ntfs-filter.component';
-import { NftsComponent } from '@popup/pages/app-container/home/ntfs/ntfs.component';
+import { NftsDetailComponent } from '@popup/pages/app-container/home/nfts/nfts-category-detail/nfts-category-detail.component';
+import { NftsFilterComponent } from '@popup/pages/app-container/home/nfts/nfts-filter/nfts-filter.component';
+import { NftsComponent } from '@popup/pages/app-container/home/nfts/nfts.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
@@ -137,8 +138,10 @@ const AppRouter = ({
         return <AboutPageComponent />;
 
       // NFTS
-      case Screen.NFTS_PAGE:
+      case Screen.NFTS_CATEGORY_PAGE:
         return <NftsComponent />;
+      case Screen.NFTS_PAGE:
+        return <NftsDetailComponent />;
       case Screen.NTFS_FILTER_PAGE:
         return <NftsFilterComponent />;
     }

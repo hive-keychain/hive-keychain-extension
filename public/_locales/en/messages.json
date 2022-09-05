@@ -2358,6 +2358,10 @@
     "message": "NFTs filters",
     "description": "Nfts filters main page title"
   },
+  "popup_html_nfts_category_market": {
+    "message": "$1 market",
+    "description": "Nfts filters main page title"
+  },
   "popup_html_nfts_filters_description": {
     "message": "This is the description for NFTs filter page. Will need to be changed because this is totally useless!",
     "description": "Nfts main page description"

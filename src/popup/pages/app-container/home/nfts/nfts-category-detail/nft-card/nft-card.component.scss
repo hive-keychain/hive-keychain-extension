@@ -1,0 +1,93 @@
+@import '/src/popup/variable.scss';
+
+.nft-card {
+  &.flip-card {
+    background-color: transparent;
+    height: 200px;
+    width: 140px;
+    perspective: 1000px;
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+
+      .flip-card-front,
+      .flip-card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+      }
+      .flip-card-front {
+        background-color: #bbb;
+        color: black;
+        .image {
+          height: 200px;
+          width: 140px;
+        }
+
+        .item-count-container {
+          position: fixed;
+          right: 0px;
+          top: 0px;
+          height: 50px;
+          width: 42px;
+          text-align: center;
+          img {
+            height: 50px;
+            width: 42px;
+            margin-top: -2px;
+          }
+          .item-count {
+            font-size: 18px;
+            color: white;
+            font-weight: bold;
+            margin-top: 2px;
+            position: fixed;
+            top: 4px;
+            right: 16px;
+          }
+        }
+      }
+
+      .flip-card-back {
+        background-color: black;
+        color: white;
+        transform: rotateY(180deg);
+        border: 1px solid white;
+        padding: 24px;
+        box-sizing: border-box;
+
+        .info {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          .name {
+            font-size: 20px;
+          }
+          .price {
+            font-size: 18px;
+          }
+          .divider {
+            flex: 1;
+          }
+
+          .submit-button {
+            height: 32px;
+          }
+        }
+      }
+    }
+    &.display-back {
+      .flip-card-inner {
+        transform: rotateY(180deg);
+      }
+    }
+  }
+}

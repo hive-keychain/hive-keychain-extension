@@ -26,4 +26,9 @@ export const ActionButtonList: ActionButton[] = [
     importedIcon: true,
     nextScreen: Screen.GOVERNANCE_PAGE,
   },
+  {
+    label: 'popup_html_nfts',
+    icon: Icons.NFT_MARKET,
+    nextScreen: Screen.NFTS_CATEGORY_PAGE,
+  },
 ];

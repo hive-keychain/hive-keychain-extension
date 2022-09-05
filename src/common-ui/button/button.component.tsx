@@ -11,7 +11,7 @@ export enum ButtonType {
 }
 
 export interface ButtonProps {
-  onClick: () => void;
+  onClick: (...params: any) => void;
   label: string;
   skipLabelTranslation?: boolean;
   labelParams?: string[];

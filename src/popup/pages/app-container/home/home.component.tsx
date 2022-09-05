@@ -4,6 +4,7 @@ import {
 } from '@popup/actions/active-account.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
 import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from '@popup/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
@@ -15,6 +16,7 @@ import { WhatsNewComponent } from '@popup/pages/app-container/whats-new/whats-ne
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -34,6 +36,7 @@ const Home = ({
   refreshActiveAccount,
   globalProperties,
   resetTitleContainerProperties,
+  navigateTo,
 }: PropsFromRedux) => {
   const [displayLoader, setDisplayLoader] = useState(false);
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
@@ -46,6 +49,10 @@ const Home = ({
       refreshActiveAccount();
     }
     initWhatsNew();
+    console.log(process.env.DEV_AUTO_LOAD_PAGE);
+    if (process.env.DEV_AUTO_LOAD_PAGE) {
+      navigateTo(process.env.DEV_AUTO_LOAD_PAGE as Screen);
+    }
   }, []);
 
   useEffect(() => {
@@ -143,6 +150,7 @@ const connector = connect(mapStateToProps, {
   loadGlobalProperties,
   refreshActiveAccount,
   resetTitleContainerProperties,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

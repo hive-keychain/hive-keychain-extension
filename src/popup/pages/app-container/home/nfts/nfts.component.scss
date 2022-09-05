@@ -1,0 +1,55 @@
+@import '/src/popup/variable.scss';
+
+.nfts-page {
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  .description {
+    font-size: 16px;
+    padding: 0px 24px;
+  }
+
+  .main-panel {
+    .settings-panel {
+      display: flex;
+      padding: 0px 24px;
+      .left-panel {
+        flex: 1;
+      }
+    }
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 140px);
+      align-items: center;
+      justify-content: space-between;
+      row-gap: 16px;
+      padding: 0px 24px;
+      .category-card {
+        height: 140px;
+        width: 140px;
+        border-radius: 8px;
+        border: 1px solid white;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        row-gap: 16px;
+        cursor: pointer;
+        .title {
+          font-size: 18px;
+        }
+        .image {
+          height: 50px;
+          width: 50px;
+          border-radius: 50px;
+          justify-self: center;
+        }
+
+        &:hover {
+          background: $red-transparent;
+        }
+      }
+    }
+  }
+}

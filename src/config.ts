@@ -21,6 +21,13 @@ const Config = {
   rpc: {
     DEFAULT: { uri: 'https://api.hive.blog', testnet: false },
   },
+  nft: {
+    splinterlands: {
+      baseApi: 'https://api2.splinterlands.com',
+      multipleCardsImage:
+        'https://d36mxiodymuqjm.cloudfront.net/website/qty-banner.png',
+    },
+  },
 };
 
 export default Config;
