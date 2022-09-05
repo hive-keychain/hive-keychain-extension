@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { RequestsHandler } from '@background/requests';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
