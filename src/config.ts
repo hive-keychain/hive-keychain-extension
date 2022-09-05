@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
-
+/* istanbul ignore next */
 const Config = {
   hiveEngine: {
     mainnet: 'ssc-mainnet-hive',

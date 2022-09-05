@@ -9,8 +9,8 @@ const getAccountsFromFileData = (
 ): LocalAccount[] => {
   try {
     const accounts = EncryptUtils.decryptToJsonWithoutMD5Check(fileContent, mk);
-    if (accounts) {
-      return accounts?.list;
+    if (accounts && accounts.list) {
+      return accounts.list;
     } else {
       return [];
     }

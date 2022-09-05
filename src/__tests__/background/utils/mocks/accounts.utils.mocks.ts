@@ -1,3 +1,4 @@
+import { Keys } from '@interfaces/local-account.interface';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -54,6 +55,37 @@ const constants = {
         { name: 'quentin', keys: accounts.local.two.keys },
         { name: 'cedric', keys: {} },
         { name: 'theghost1980', keys: {} },
+      ],
+    },
+    {
+      importedAccounts: [
+        {
+          name: 'theghost',
+          keys: {
+            active: 'active',
+            activePubkey: 'activePub',
+            memo: 'memo',
+            memoPubkey: 'memoPub',
+            posting: 'posting',
+            postingPubkey: 'postingPub',
+          } as Keys,
+        },
+        { name: 'quentin', keys: {} },
+      ],
+      existingAccounts: [{ name: 'theghost', keys: {} }],
+      expected: [
+        {
+          name: 'theghost',
+          keys: {
+            active: 'active',
+            activePubkey: 'activePub',
+            memo: 'memo',
+            memoPubkey: 'memoPub',
+            posting: 'posting',
+            postingPubkey: 'postingPub',
+          } as Keys,
+        },
+        { name: 'quentin', keys: {} },
       ],
     },
   ],

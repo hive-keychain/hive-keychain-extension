@@ -27,6 +27,7 @@ module.exports = {
     '<rootDir>/src/__tests__/utils-for-testing/',
     'mocks',
     'othercases',
+    'src/content-scripts',
   ],
   //until here
   //working configuration until here E2E/utils/actions tests.
