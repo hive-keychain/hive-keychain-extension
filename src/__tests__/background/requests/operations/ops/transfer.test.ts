@@ -1,8 +1,10 @@
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
+import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
 import { RPCError } from 'src/__tests__/utils-for-testing/classes/errors/rpc';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import testsI18n from 'src/__tests__/utils-for-testing/i18n/tests-i18n';
 describe('transfer tests:\n', () => {
   const { methods, constants, spies, mocks } = transferMocks;
   const { requestHandler, data, params, confirmed } = constants;
@@ -93,6 +95,24 @@ describe('transfer tests:\n', () => {
             data.username!,
             data.to,
           ]),
+        );
+      });
+      it('Must catch error', async () => {
+        const error = 'Error on broadcast';
+        mocks.client.broadcast.transfer('error', error);
+        requestHandler.data.key = userData.one.nonEncryptKeys.active;
+        requestHandler.data.accounts = accounts.twoAccounts;
+        const { request_id, ...datas } = data;
+        const result = await broadcastTransfer(requestHandler, data);
+        expect(spies.logger.error).toBeCalledWith(error);
+        expect(result).toEqual(
+          messages.error.answerError(
+            'Error on broadcast, Could not encode memo.',
+            datas,
+            request_id,
+            testsI18n.get('bgd_ops_error_broadcasting'),
+            undefined,
+          ),
         );
       });
     });

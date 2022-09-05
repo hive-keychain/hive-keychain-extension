@@ -7,6 +7,7 @@ import {
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
+import Logger from 'src/utils/logger.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import { RPCError } from 'src/__tests__/utils-for-testing/classes/errors/rpc';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -51,7 +52,7 @@ const mocks = {
     broadcast: {
       transfer: (
         using: 'success' | 'error',
-        result: TransactionConfirmation | RPCError,
+        result: TransactionConfirmation | RPCError | string,
       ) => {
         if (using === 'success') {
           requestHandler.getHiveClient().broadcast.transfer = jest
@@ -75,6 +76,9 @@ const mocks = {
 
 const spies = {
   getUserKey: jest.spyOn(requestHandler, 'getUserKey'),
+  logger: {
+    error: jest.spyOn(Logger, 'error'),
+  },
 };
 
 const methods = {

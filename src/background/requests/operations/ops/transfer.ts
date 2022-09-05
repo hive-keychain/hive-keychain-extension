@@ -50,14 +50,8 @@ export const broadcastTransfer = async (
   } catch (e) {
     Logger.error(e);
     if (typeof e === 'string') {
-      const message = createMessage(
-        true,
-        null,
-        data,
-        null,
-        'Could not encode memo.',
-      );
-      return message;
+      err = e + ', Could not encode memo.';
+      err_message = await chrome.i18n.getMessage('bgd_ops_error_broadcasting');
     } else {
       err = e;
       if (!err['jse_info']) {

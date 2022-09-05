@@ -144,7 +144,7 @@ export default {
      * Note: AssertionError {expected: true,operator: '==',message: errorTitle,}
      */
     answerError: (
-      error: AssertionError | TypeError | SyntaxError,
+      error: AssertionError | TypeError | SyntaxError | string,
       datas: any,
       request_id: number,
       message: string,
