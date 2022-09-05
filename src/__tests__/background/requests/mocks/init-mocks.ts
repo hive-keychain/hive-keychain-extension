@@ -81,8 +81,8 @@ const mocks = {
   findRpc: (rpc: Rpc) => (RpcUtils.findRpc = jest.fn().mockResolvedValue(rpc)),
   getMultipleValueFromLocalStorage: (items: {
     accounts: string;
-    current_rpc: Rpc;
-    no_confirm: NoConfirm;
+    current_rpc: Rpc | undefined;
+    no_confirm: NoConfirm | undefined;
   }) =>
     (LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
@@ -114,12 +114,17 @@ const methods = {
     mocks.i18n();
     mocks.performOperation;
   }),
-  mocking: (mk: string, accounts: string, noConfirm?: NoConfirm) => {
+  mocking: (
+    mk: string,
+    accounts: string,
+    current_rpc: Rpc | undefined,
+    noConfirm?: NoConfirm,
+  ) => {
     mocks.getMk(mk);
     mocks.getMultipleValueFromLocalStorage({
       accounts: accounts,
-      current_rpc: DefaultRpcs[0],
-      no_confirm: noConfirm ?? {},
+      current_rpc: current_rpc,
+      no_confirm: noConfirm ?? undefined,
     });
     mocks.findRpc(DefaultRpcs[0]);
     mocks.getActiveConfig(hiveEngineConfigByDefault);

@@ -17,18 +17,24 @@ describe('init tests:\n', () => {
   methods.afterEach;
   methods.beforeEach;
   it('Must call Logger', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.msg);
+    methods.mocking(mk.user.one, _accounts.encrypt.msg, DefaultRpcs[0]);
     await init(data, 0, data.domain, requestHandler);
     expect(spies.logger.info).toBeCalledWith('Initializing request logic');
   });
+  it('Must load rpc from config', async () => {
+    methods.mocking(mk.user.one, '', undefined);
+    data.type = KeychainRequestTypes.transfer;
+    await init(data, 0, data.domain, requestHandler);
+    expect(logicSpies.initializeWallet).toBeCalledWith(requestHandler, 0, data);
+  });
   it('Must call initializeWallet & saveInLocalStorage', async () => {
-    methods.mocking(mk.user.one, '');
+    methods.mocking(mk.user.one, '', DefaultRpcs[0]);
     data.type = KeychainRequestTypes.transfer;
     await init(data, 0, data.domain, requestHandler);
     expect(logicSpies.initializeWallet).toBeCalledWith(requestHandler, 0, data);
   });
   it('Must call addAccountToEmptyWallet', async () => {
-    methods.mocking('', '');
+    methods.mocking('', '', DefaultRpcs[0]);
     data.type = KeychainRequestTypes.addAccount;
     await init(data, 0, data.domain, requestHandler);
     expect(logicSpies.addAccountToEmptyWallet).toBeCalledWith(
@@ -39,7 +45,7 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call unlockWallet', async () => {
-    methods.mocking('', _accounts.encrypt.msg);
+    methods.mocking('', _accounts.encrypt.msg, DefaultRpcs[0]);
     data.type = KeychainRequestTypes.transfer;
     await init(data, 0, data.domain, requestHandler);
     expect(logicSpies.unlockWallet).toBeCalledWith(
@@ -50,7 +56,7 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call addAccountRequest', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.msg);
+    methods.mocking(mk.user.one, _accounts.encrypt.msg, DefaultRpcs[0]);
     data.type = KeychainRequestTypes.addAccount;
     await init(data, 0, data.domain, requestHandler);
     expect(logicSpies.addAccountRequest).toBeCalledWith(
@@ -62,7 +68,7 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call addAccountRequest', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.msg);
+    methods.mocking(mk.user.one, _accounts.encrypt.msg, DefaultRpcs[0]);
     data.type = KeychainRequestTypes.transfer;
     await init(data, 0, data.domain, requestHandler);
     expect(logicSpies.transferRequest).toBeCalledWith(
@@ -76,7 +82,7 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call anonymousRequests', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.msg);
+    methods.mocking(mk.user.one, _accounts.encrypt.msg, DefaultRpcs[0]);
     data.username = '';
     data.type = anonymous_requests[0];
     await init(data, 0, data.domain, requestHandler);
@@ -90,7 +96,11 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call missingUser', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.differentName.msg);
+    methods.mocking(
+      mk.user.one,
+      _accounts.encrypt.differentName.msg,
+      DefaultRpcs[0],
+    );
     data.type = KeychainRequestTypes.post;
     await init(data, 0, data.domain, requestHandler);
     expect(logicSpies.missingUser).toBeCalledWith(
@@ -101,7 +111,7 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call missingKey', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.msg);
+    methods.mocking(mk.user.one, _accounts.encrypt.msg, DefaultRpcs[0]);
     await init(decodeData, 0, decodeData.domain, requestHandler);
     expect(logicSpies.missingKey).toBeCalledWith(
       requestHandler,
@@ -112,7 +122,7 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call requestWithoutConfirmation', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.msg, {
+    methods.mocking(mk.user.one, _accounts.encrypt.msg, DefaultRpcs[0], {
       'keychain.tests': { domain: { post: true } },
     });
     await init(postData, 0, postData.domain, requestHandler);
@@ -123,7 +133,7 @@ describe('init tests:\n', () => {
     );
   });
   it('Must call requestWithConfirmation', async () => {
-    methods.mocking(mk.user.one, _accounts.encrypt.msg);
+    methods.mocking(mk.user.one, _accounts.encrypt.msg, DefaultRpcs[0]);
     data.username = mk.user.one;
     data.type = KeychainRequestTypes.post;
     await init(data, 0, data.domain, requestHandler);
