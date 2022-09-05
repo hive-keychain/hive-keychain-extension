@@ -39,7 +39,7 @@ const mocks = {
           .mockResolvedValue(result)),
       call: (
         conversions: { requestid: number }[],
-        collaterized: { requestid: number }[],
+        collaterized: { requestid: number }[] | undefined,
       ) =>
         (requestHandler.getHiveClient().database.call = jest
           .fn()
