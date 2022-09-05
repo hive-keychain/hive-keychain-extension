@@ -41,7 +41,6 @@ describe('delegations.actions tests:\n', () => {
       expect(fakeStore.getState().errorMessage).toEqual(errorMessageExpected);
     });
   });
-
   describe('loadDelegatees tests:\n', () => {
     test('Must fetch delegatees', async () => {
       HiveUtils.getDelegatees = jest
@@ -63,6 +62,51 @@ describe('delegations.actions tests:\n', () => {
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
         delegationsActions.loadDelegatees(utilsT.secondAccountOnState.name),
+      );
+      expect(fakeStore.getState().delegations.outgoing).toEqual([]);
+      expect(spyLoggerError).toBeCalledTimes(1);
+      expect(spyLoggerError).toBeCalledWith(promiseError);
+      spyLoggerError.mockClear();
+      spyLoggerError.mockReset();
+    });
+  });
+  describe('loadPendingOutgoingUndelegations tests:\n', () => {
+    test('Must fetch getPendingOutgoingUndelegation', async () => {
+      HiveUtils.getPendingOutgoingUndelegation = jest.fn().mockResolvedValue([
+        {
+          delegator: 'theghost1980',
+          vesting_shares: '100000000',
+          expiration_date: '10/10/2030',
+        },
+      ]);
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(
+        delegationsActions.loadPendingOutgoingUndelegations(
+          utilsT.secondAccountOnState.name,
+        ),
+      );
+      expect(
+        fakeStore.getState().delegations.pendingOutgoingUndelegation,
+      ).toEqual([
+        {
+          delegator: 'theghost1980',
+          vesting_shares: '100000000',
+          expiration_date: '10/10/2030',
+        },
+      ]);
+    });
+    it('Must catch the error and call Logger.error', async () => {
+      const customErrorMessage = 'Custom Error';
+      const promiseError = new Error(customErrorMessage);
+      HiveUtils.getPendingOutgoingUndelegation = jest
+        .fn()
+        .mockRejectedValueOnce(promiseError);
+      const spyLoggerError = jest.spyOn(Logger, 'error');
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      await fakeStore.dispatch<any>(
+        delegationsActions.loadPendingOutgoingUndelegations(
+          utilsT.secondAccountOnState.name,
+        ),
       );
       expect(fakeStore.getState().delegations.outgoing).toEqual([]);
       expect(spyLoggerError).toBeCalledTimes(1);
