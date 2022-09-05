@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 
 const Config = {

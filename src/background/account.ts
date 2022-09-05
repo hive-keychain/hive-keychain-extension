@@ -6,7 +6,7 @@ import EncryptUtils from 'src/utils/encrypt.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const sendBackImportedAccounts = async (fileContent: string) => {
-  if (fileContent?.length) {
+  if (fileContent.length) {
     const mk = await MkModule.getMk();
     let importedAccounts;
     try {
