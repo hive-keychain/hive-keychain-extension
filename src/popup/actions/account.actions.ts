@@ -62,7 +62,7 @@ export const addKey =
       setErrorMessage,
     );
 
-    if (newAccounts && newAccounts?.length > 0) {
+    if (newAccounts && newAccounts.length > 0) {
       const activeLocalAccount = newAccounts.find(
         (account: LocalAccount) => account.name === activeAccount.name,
       );
@@ -79,7 +79,6 @@ export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
     const { activeAccount, accounts } = getState();
-
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
@@ -89,6 +88,7 @@ export const removeKey =
     const finalAccounts = [];
     for (let i = 0; i < newAccounts.length; i++) {
       let tmp = newAccounts[i];
+      /* istanbul ignore if  */
       if (
         type === KeyType.ACTIVE &&
         tmp.keys.activePubkey === `@${activeAccount.name}`
@@ -96,6 +96,7 @@ export const removeKey =
         delete tmp.keys.activePubkey;
         delete tmp.keys.active;
       }
+      /* istanbul ignore if  */
       if (
         type === KeyType.POSTING &&
         tmp.keys.postingPubkey === `@${activeAccount.name}`
@@ -103,6 +104,7 @@ export const removeKey =
         delete tmp.keys.posting;
         delete tmp.keys.postingPubkey;
       }
+      /* istanbul ignore if  */
       if (
         type === KeyType.MEMO &&
         tmp.keys.memoPubkey === `@${activeAccount.name}`
@@ -125,6 +127,7 @@ export const removeKey =
 
     dispatch(action);
     if (finalAccounts) {
+      /* istanbul ignore else */
       if (
         finalAccounts
           .map((account: LocalAccount) => account.name)
