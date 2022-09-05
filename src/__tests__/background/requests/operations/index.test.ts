@@ -1,10 +1,12 @@
 import { performOperation } from '@background/requests/operations';
+import * as BroadCastTransferModule from '@background/requests/operations/ops/transfer';
 import { KeychainRequestTypes } from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import indexMocks from 'src/__tests__/background/requests/operations/mocks/index-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import testsI18n from 'src/__tests__/utils-for-testing/i18n/tests-i18n';
 describe('index tests:\n', () => {
   const { methods, constants, spies } = indexMocks;
   const { requestHandler, _data } = constants;
@@ -64,5 +66,31 @@ describe('index tests:\n', () => {
       expect(data.type).toBe(_data[i].type);
       spies.tabsSendMessage.mockClear();
     }
+  });
+  it('Must call logger on error & sendMessage', async () => {
+    const error = new TypeError('error on promise');
+    jest
+      .spyOn(BroadCastTransferModule, 'broadcastTransfer')
+      .mockRejectedValue(error);
+    const data = _data.filter(
+      (dat) => dat.type === KeychainRequestTypes.transfer,
+    )[0];
+    requestHandler.data.request_id = data.request_id;
+    await performOperation(requestHandler, data, 0, 'domain', false);
+    expect(spies.logger.error).toBeCalledWith(error);
+    expect(spies.sendMessage.mock.calls[0][0]).toEqual({
+      command: DialogCommand.SEND_DIALOG_ERROR,
+      msg: {
+        success: false,
+        error: 'TypeError: error on promise',
+        result: null,
+        publicKey: undefined,
+        data: data,
+        display_msg: testsI18n.get('unknown_error'),
+        message: testsI18n.get('unknown_error'),
+        request_id: data.request_id,
+      },
+      tab: 0,
+    });
   });
 });
