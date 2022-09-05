@@ -1,16 +1,17 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
+import { MessageType } from '@reference-data/message-type.enum';
 import { AxiosResponse } from 'axios';
 import * as tokenActions from 'src/popup/actions/token.actions';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
   initialEmptyStateStore,
   initialStateJustTokens,
 } from 'src/__tests__/utils-for-testing/initial-states';
-
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -48,6 +49,22 @@ describe('token.actions tests:\n', () => {
         expect(fakeStore.getState().tokens).toEqual(null);
       } catch (error) {
         expect(error).toEqual(newError);
+      }
+    });
+    it('Must dispatch tokens timeout message', async () => {
+      const errorTimeOut = new Error('There was a timeout');
+      HiveEngineUtils.getAllTokens = jest.fn().mockImplementation((...args) => {
+        throw errorTimeOut;
+      });
+      const fakeStore = getFakeStore(initialEmptyStateStore);
+      try {
+        await fakeStore.dispatch<any>(tokenActions.loadTokens());
+      } catch (error) {
+        expect(error).toEqual(errorTimeOut);
+        expect(fakeStore.getState().errorMessage).toEqual({
+          key: 'html_popup_tokens_timeout',
+          type: MessageType.ERROR,
+        });
       }
     });
   });
@@ -116,12 +133,27 @@ describe('token.actions tests:\n', () => {
       spyLoggerError.mockRestore();
     });
   });
-
   describe('loadTokenHistory tests:\n', () => {
     test('Must load tokenHistory', async () => {
       const currency = 'LEO';
       const axiosResponse1 = {
-        data: utilsT.fakeTokensGetAccountHistoryResponse,
+        data: [
+          ...utilsT.fakeTokensGetAccountHistoryResponse,
+          {
+            _id: '61674a248bae1252026e04ef',
+            blockNumber: 11274525,
+            transactionId: 'e3525c27349cd7b32903385d967b86273b987377',
+            timestamp: 1634159133,
+            operation: 'default_case',
+            authorperm: 're-theghost1980-20211215t195955670z',
+            from: 'fakeuser',
+            to: mk.user.one,
+            symbol: 'LEO',
+            quantity: '0.986',
+            memo: null,
+            account: mk.user.one,
+          },
+        ],
       } as AxiosResponse;
       const axiosResponse2 = {
         data: [],
@@ -139,6 +171,21 @@ describe('token.actions tests:\n', () => {
       );
       expect(fakeStore.getState().tokenHistory).toEqual([
         ...utilsT.expectedPayLoadloadTokenHistory,
+        {
+          _id: '61674a248bae1252026e04ef',
+          blockNumber: 11274525,
+          transactionId: 'e3525c27349cd7b32903385d967b86273b987377',
+          timestamp: 1634159133,
+          operation: 'default_case',
+          authorperm: 're-theghost1980-20211215t195955670z',
+          from: 'fakeuser',
+          to: mk.user.one,
+          symbol: 'LEO',
+          amount: '0.986 LEO',
+          quantity: '0.986',
+          memo: null,
+          account: mk.user.one,
+        },
       ]);
     });
     test('If error on response, will throw an unhandled error', async () => {
