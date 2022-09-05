@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import reducers from '@popup/reducers';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { applyMiddleware, createStore } from 'redux';
