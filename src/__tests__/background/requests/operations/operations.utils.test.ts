@@ -39,12 +39,19 @@ describe('operations.utils tests:\n', () => {
     });
     it('Must remove an exception on error and return bgd_ops_error', async () => {
       const error = new Error(
-        'Removed all around here, Exception:Private key not defined. Code 191',
+        'Removed all around here, Exception:Private key not defined. Code 191 .rethrow',
       );
       const errorMessage = await beautifyErrorMessage(error);
       expect(errorMessage).toBe(
-        message.error('Private key not defined. Code 191'),
+        message.error('Private key not defined. Code 191 .'),
       );
+    });
+    it('Must remove an exception on error', async () => {
+      const error = new Error(
+        'Removed all around here, Error :Custom not defined.',
+      );
+      const errorMessage = await beautifyErrorMessage(error);
+      expect(errorMessage).toBe(message.error('Custom not defined.'));
     });
     it('Must return an unknown_error', async () => {
       const error = new Error(' ');
