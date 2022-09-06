@@ -1,7 +1,7 @@
 import { Account } from '@hiveio/dhive';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
-
+/* istanbul ignore next */
 export const AccountReducer = (
   state: Account[] = [],
   { type, payload }: ActionPayload<any>,
