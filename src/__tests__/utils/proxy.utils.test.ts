@@ -1,8 +1,9 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import AccountUtils from 'src/utils/account.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -68,5 +69,13 @@ describe('proxy.utils tests:\n', () => {
     expect(mockGetExtendedAccount).toBeCalledTimes(2);
     mockGetExtendedAccount.mockReset();
     mockGetExtendedAccount.mockRestore();
+  });
+  it('Must return null if already found', async () => {
+    expect(
+      await ProxyUtils.findUserProxy({
+        ...accounts.extended,
+        proxy: mk.user.one,
+      }),
+    ).toEqual(null);
   });
 });
