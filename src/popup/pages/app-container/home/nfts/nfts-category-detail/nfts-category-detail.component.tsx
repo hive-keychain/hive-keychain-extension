@@ -1,4 +1,4 @@
-import { NFTCategory, NFTItem } from '@interfaces/ntf.interface';
+import { NFTCategory, NFTFilter, NFTItem } from '@interfaces/ntf.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { NftCardComponent } from '@popup/pages/app-container/home/nfts/nfts-category-detail/nft-card/nft-card.component';
 import { RootState } from '@popup/store';
@@ -8,19 +8,10 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import './nfts-category-detail.component.scss';
 
-const DEFAULT_FILTER: Filter = {
+const DEFAULT_FILTER: NFTFilter = {
   filterValue: '',
   otherFilters: {},
 };
-
-interface Filter {
-  filterValue: string;
-  otherFilters: {
-    [key: string]: {
-      [key: string]: boolean;
-    };
-  };
-}
 
 const splinterlandsFilters = [
   {
@@ -28,49 +19,41 @@ const splinterlandsFilters = [
     key: 'edition',
     items: [
       {
-        name: 'alpha',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-alpha.svg',
         key: 'alpha',
         value: 0,
       },
       {
-        name: 'beta',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-beta.svg',
         key: 'beta',
         value: 1,
       },
       {
-        name: 'promo',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-promo.svg',
         key: 'promo',
         value: 2,
       },
       {
-        name: 'reward',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-reward.svg',
         key: 'reward',
         value: 3,
       },
       {
-        name: 'untamed',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-untamed.svg',
         key: 'untamed',
         value: 4,
       },
       {
-        name: 'dice',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-dice.svg',
         key: 'dice',
         value: 5,
       },
       {
-        name: 'gladius',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-gladius.svg',
         key: 'gladius',
         value: 6,
       },
       {
-        name: 'chaos',
         url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-edition-chaos.svg',
         key: 'chaos',
         value: 7,
@@ -78,90 +61,109 @@ const splinterlandsFilters = [
     ],
     areItemsImages: true,
   },
-  // {
-  //   name: 'html_popup_nfts_filter_category_foil',
-  //   items: [
-  //     {
-  //       name: 'standard',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon_foil_standard.svg',
-  //     },
-  //     {
-  //       name: 'gold',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon_foil_gold.svg',
-  //     },
-  //   ],
-  //   areItemsImages: true,
-  // },
-  // {
-  //   name: 'html_popup_nfts_filter_category_role',
-  //   items: [
-  //     {
-  //       name: 'monster',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-type-monster.svg',
-  //     },
-  //     {
-  //       name: 'summoner',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-type-summoner.svg',
-  //     },
-  //   ],
-  //   areItemsImages: true,
-  // },
-  // {
-  //   name: 'html_popup_nfts_filter_category_rarity',
-  //   items: [
-  //     {
-  //       name: 'common',
-  //       url: '/assets/images/splinterlands/splinterlands-rarity-common.svg',
-  //     },
-  //     {
-  //       name: 'rare',
-  //       url: '/assets/images/splinterlands/splinterlands-rarity-rare.svg',
-  //     },
-  //     {
-  //       name: 'epic',
-  //       url: '/assets/images/splinterlands/splinterlands-rarity-epic.svg',
-  //     },
-  //     {
-  //       name: 'legendary',
-  //       url: '/assets/images/splinterlands/splinterlands-rarity-legendary.svg',
-  //     },
-  //   ],
-  //   areItemsImages: true,
-  // },
-  // {
-  //   name: 'html_popup_nfts_filter_category_element',
-  //   items: [
-  //     {
-  //       name: 'fire',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-fire-2.svg',
-  //     },
-  //     {
-  //       name: 'water',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-water-2.svg',
-  //     },
-  //     {
-  //       name: 'earth',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-earth-2.svg',
-  //     },
-  //     {
-  //       name: 'life',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-life-2.svg',
-  //     },
-  //     {
-  //       name: 'death',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-death-2.svg',
-  //     },
-  //     {
-  //       name: 'dragon',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-dragon-2.svg',
-  //     },
-  //     {
-  //       name: 'neutral',
-  //       url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-neutral-2.svg',
-  //     },
-  //   ],
-  //   areItemsImages: true,
-  // },
+  {
+    name: 'html_popup_nfts_filter_category_foil',
+    key: 'gold',
+    items: [
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon_foil_standard.svg',
+        key: 'standard',
+        value: false,
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon_foil_gold.svg',
+        key: 'gold',
+        value: true,
+      },
+    ],
+    areItemsImages: true,
+  },
+  {
+    name: 'html_popup_nfts_filter_category_role',
+    key: 'type',
+    items: [
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-type-monster.svg',
+        key: 'monster',
+        value: 'monster',
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-type-summoner.svg',
+        key: 'summoner',
+        value: 'summoner',
+      },
+    ],
+    areItemsImages: true,
+  },
+  {
+    name: 'html_popup_nfts_filter_category_rarity',
+    key: 'rarity',
+    items: [
+      {
+        url: '/assets/images/splinterlands/splinterlands-rarity-common.svg',
+        key: 'common',
+        value: 1,
+      },
+      {
+        url: '/assets/images/splinterlands/splinterlands-rarity-rare.svg',
+        key: 'rare',
+        value: 2,
+      },
+      {
+        url: '/assets/images/splinterlands/splinterlands-rarity-epic.svg',
+        key: 'epic',
+        value: 3,
+      },
+      {
+        url: '/assets/images/splinterlands/splinterlands-rarity-legendary.svg',
+        key: 'legendary',
+        value: 4,
+      },
+    ],
+    areItemsImages: true,
+  },
+  {
+    name: 'html_popup_nfts_filter_category_element',
+    key: 'element',
+    items: [
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-fire-2.svg',
+        key: 'fire',
+        value: 'fire',
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-water-2.svg',
+        key: 'water',
+        value: 'water',
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-earth-2.svg',
+        key: 'earth',
+        value: 'earth',
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-life-2.svg',
+        key: 'life',
+        value: 'life',
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-death-2.svg',
+        key: 'death',
+        value: 'death',
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-dragon-2.svg',
+        key: 'dragon',
+        value: 'dragon',
+      },
+      {
+        url: 'https://d36mxiodymuqjm.cloudfront.net/website/icons/icon-element-neutral-2.svg',
+        key: 'neutral',
+        value: 'neutral',
+      },
+    ],
+    areItemsImages: true,
+  },
 ];
 
 const NftsDetail = ({
@@ -170,9 +172,10 @@ const NftsDetail = ({
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   const [allMine, setAllMine] = useState<NFTItem[]>([]);
+  const [displayedNfts, setDisplayedNfts] = useState<NFTItem[]>([]);
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
   const list = useRef<HTMLDivElement>(null);
-  const [filter, setFilter] = useState<Filter>(DEFAULT_FILTER);
+  const [filter, setFilter] = useState<NFTFilter>(DEFAULT_FILTER);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -184,7 +187,9 @@ const NftsDetail = ({
   }, []);
 
   useEffect(() => {
-    // allMine.filter();
+    const newDisplayedValues = category.filter(allMine, filter);
+    console.log(newDisplayedValues);
+    setDisplayedNfts(newDisplayedValues);
   }, [filter]);
 
   const init = async () => {
@@ -193,7 +198,7 @@ const NftsDetail = ({
   };
 
   const initFilter = () => {
-    const newFilter: Filter = {
+    const newFilter: NFTFilter = {
       filterValue: '',
       otherFilters: {},
     };
@@ -206,7 +211,10 @@ const NftsDetail = ({
           newFilter.otherFilters[filterCategory.key][filterItem.key] ===
           undefined
         ) {
-          newFilter.otherFilters[filterCategory.key][filterItem.key] = true;
+          newFilter.otherFilters[filterCategory.key][filterItem.key] = {
+            referenceValue: filterItem.value,
+            selected: false,
+          };
         }
       }
     }
@@ -241,8 +249,13 @@ const NftsDetail = ({
     const newFilter = {
       ...filter,
     };
-    newFilter.otherFilters[category][key] =
-      !newFilter.otherFilters[category][key];
+
+    const itemValue = newFilter.otherFilters[category][key];
+
+    newFilter.otherFilters[category][key] = {
+      ...itemValue,
+      selected: !itemValue.selected,
+    };
     updateFilter(newFilter);
   };
 
@@ -258,7 +271,10 @@ const NftsDetail = ({
   };
 
   const isSelected = (category: string, key: string) => {
-    return filter.otherFilters[category] && filter.otherFilters[category][key];
+    return (
+      filter.otherFilters[category] &&
+      filter.otherFilters[category][key].selected
+    );
   };
 
   return (
@@ -304,8 +320,8 @@ const NftsDetail = ({
                       {!filterCategory.areItemsImages && (
                         <div
                           className="filter-option-button"
-                          key={`options-other-${categoryItem.name}-${index}`}>
-                          {chrome.i18n.getMessage(categoryItem.name)}
+                          key={`options-other-${categoryItem.key}-${index}`}>
+                          {chrome.i18n.getMessage(categoryItem.key)}
                         </div>
                       )}
                       {filterCategory.areItemsImages && (
@@ -317,7 +333,7 @@ const NftsDetail = ({
                           }`}>
                           <img
                             src={categoryItem.url}
-                            key={`options-other-${categoryItem.name}-${index}`}
+                            key={`options-other-${categoryItem.key}-${index}`}
                             onClick={() =>
                               toggleOtherFilters(
                                 filterCategory.key,
@@ -335,8 +351,9 @@ const NftsDetail = ({
           </div>
         </div>
       </div>
+      <div className="total">Displayed : {displayedNfts.length} </div>
       <div className="main-panel" ref={list}>
-        {allMine.map((item, index) => (
+        {displayedNfts.map((item, index) => (
           <NftCardComponent item={item} key={item.image + '-' + index} />
         ))}
       </div>
