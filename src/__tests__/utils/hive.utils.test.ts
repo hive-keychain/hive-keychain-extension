@@ -7,6 +7,7 @@ import {
   PrivateKey,
   TransactionConfirmation,
 } from '@hiveio/dhive';
+import * as hive from '@hiveio/hive-js';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { store } from '@popup/store';
@@ -19,6 +20,8 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
+import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 config.byDefault();
@@ -750,6 +753,14 @@ describe('hive.utils tests:\n', () => {
       expect(spyLoggerInfo).toBeCalledTimes(1);
       expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
     });
+    it('Must return false', async () => {
+      HiveUtils.getClient().broadcast.sendOperations = jest
+        .fn()
+        .mockRejectedValue('Error on pwerUp');
+      expect(await HiveUtils.powerUp(mk.user.one, mk.user.one, '1000')).toBe(
+        false,
+      );
+    });
   });
 
   describe('powerDown tests:\n', () => {
@@ -785,6 +796,12 @@ describe('hive.utils tests:\n', () => {
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
       expect(spyLoggerInfo).toBeCalledTimes(1);
       expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
+    });
+    it('Must return false', async () => {
+      HiveUtils.getClient().broadcast.sendOperations = jest
+        .fn()
+        .mockRejectedValue('Error on pwerUp');
+      expect(await HiveUtils.powerDown(mk.user.one, '1000')).toBe(false);
     });
   });
 
@@ -856,6 +873,29 @@ describe('hive.utils tests:\n', () => {
         'Transaction failed with status: error',
       );
     });
+    it('Must return false and call Logger', async () => {
+      const spies = {
+        logger: {
+          error: jest.spyOn(Logger, 'error'),
+        },
+      };
+      const error = new Error('error');
+      PrivateKey.fromString = jest.fn().mockImplementation((...args) => {
+        throw error;
+      });
+      expect(
+        await HiveUtils.transfer(
+          mk.user.one,
+          mk.user.two,
+          '1.000',
+          '',
+          true,
+          45,
+          3,
+        ),
+      ).toBe(false);
+      expect(spies.logger.error).toBeCalledWith(error, error);
+    });
   });
 
   describe('signMessage tests:\n', () => {
@@ -893,6 +933,16 @@ describe('hive.utils tests:\n', () => {
           }),
         );
       }
+    });
+    it('Must sign a valid buffer', () => {
+      expect(
+        HiveUtils.signMessage(
+          JSON.stringify([0x62, 0x75, 0x66, 0x66, 0x65, 0x72]),
+          userData.one.nonEncryptKeys.memo,
+        ),
+      ).toEqual(
+        '207839cafe0a94fa9f08ff1157160155b60b61d7013d86316f79087ba974e528fa076a2ef67a1de15a5ba141b03840e3e514b417ccb6fc250e8688455546290f82',
+      );
     });
   });
 
@@ -934,6 +984,34 @@ describe('hive.utils tests:\n', () => {
       expect(result).toBe(undefined);
       expect(spyLogger).toBeCalledTimes(1);
       expect(spyLogger).toBeCalledWith('Transaction failed with status: error');
+    });
+  });
+  describe('getPendingOutgoingUndelegation tests:\n', () => {
+    it('Must PendingOutgoingUndelegation empty array', async () => {
+      hive.api.callAsync = jest.fn().mockResolvedValue({ delegations: [] });
+      expect(
+        await HiveUtils.getPendingOutgoingUndelegation(mk.user.one),
+      ).toEqual([]);
+    });
+    it('Must PendingOutgoingUndelegation array', async () => {
+      hive.api.callAsync = jest.fn().mockResolvedValue({
+        delegations: [
+          {
+            delegator: 'theghost1980',
+            expiration: '10/10/2030',
+            vesting_shares: new Asset(1000000, 'VESTS'),
+          },
+        ],
+      });
+      expect(
+        await HiveUtils.getPendingOutgoingUndelegation(mk.user.one),
+      ).toEqual([
+        {
+          delegator: 'theghost1980',
+          expiration_date: '10/10/2030',
+          vesting_shares: 1,
+        },
+      ]);
     });
   });
 });

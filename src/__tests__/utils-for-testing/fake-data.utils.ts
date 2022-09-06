@@ -770,8 +770,11 @@ const votingPowerArrayTest = [
   },
   { votingPower: 20.0, expectedMessageArray: ['full_in', ['4 days']] },
   {
-    votingPower: 10.0,
-    expectedMessageArray: ['full_in', ['4 days common_and 12 hours']],
+    votingPower: 13.9,
+    expectedMessageArray: [
+      'full_in',
+      ['4 days, 7 hours common_and 19 minutes'],
+    ],
   },
   { votingPower: 0.0, expectedMessageArray: ['full_in', ['5 days']] },
 ];

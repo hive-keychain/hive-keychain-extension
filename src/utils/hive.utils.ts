@@ -232,7 +232,7 @@ export const getConversionRequests = async (name: string) => {
       new Date(b.conversion_date).getTime(),
   );
 };
-
+/* istanbul ignore next */
 const getDelegators = async (name: string) => {
   return (
     (await KeychainApi.get(`/hive/delegators/${name}`)).data as Delegator[]
@@ -691,6 +691,7 @@ const getProposalDailyBudget = async () => {
     ) / 100
   );
 };
+/* istanbul ignore next */
 /**
  * getClient().database.getDynamicGlobalProperties()
  */
@@ -698,12 +699,14 @@ const getDynamicGlobalProperties =
   async (): Promise<DynamicGlobalProperties> => {
     return getClient().database.getDynamicGlobalProperties();
   };
+/* istanbul ignore next */
 /**
  * getClient().database.getCurrentMedianHistoryPrice()
  */
 const getCurrentMedianHistoryPrice = async (): Promise<Price> => {
   return getClient().database.getCurrentMedianHistoryPrice();
 };
+/* istanbul ignore next */
 /**
  * getClient().database.call(method, params).
  * Fixed params: method 'get_reward_fund', params ['post]
