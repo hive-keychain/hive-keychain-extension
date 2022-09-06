@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 
 type LocaleStorageObject = Partial<Record<LocalStorageKeyEnum, any>>;
