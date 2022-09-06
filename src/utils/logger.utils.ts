@@ -1,5 +1,5 @@
 /* eslint-disable */
-
+/* istanbul ignore file */
 import moment from 'moment';
 
 function log(...message: any[]) {
