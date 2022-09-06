@@ -2,7 +2,7 @@ import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
 import Config from 'src/config';
-
+/* istanbul ignore next */
 const HiveEngineConfigReducer = (
   state: HiveEngineConfig = {
     rpc: Config.hiveEngine.rpc,
@@ -26,5 +26,5 @@ const HiveEngineConfigReducer = (
       return state;
   }
 };
-
+/* istanbul ignore next */
 export default HiveEngineConfigReducer;
