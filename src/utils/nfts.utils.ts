@@ -29,27 +29,28 @@ const filterSplinterlandsCards = (allCards: NFTItem[], filters: NFTFilter) => {
       card.id.toLowerCase().includes(lowerCaseFilterValue)
     ) {
       if (noOtherFilters) return true;
-
       for (const filterCategory in filters.otherFilters) {
         if (
           Object.values(filters.otherFilters[filterCategory]).every(
             (value) => value.selected === false,
           )
-        )
+        ) {
           continue;
+        }
         for (const key in filters.otherFilters[filterCategory]) {
           if (!filters.otherFilters[filterCategory][key].selected) continue;
           if (
-            filters.otherFilters[filterCategory][key].selected &&
-            card[filterCategory as keyof SplinterlandItem] ===
-              filters.otherFilters[filterCategory][key].referenceValue
+            card[filterCategory as keyof SplinterlandItem] !==
+            filters.otherFilters[filterCategory][key].referenceValue
           ) {
-            return true;
+            return false;
           }
         }
       }
+      return true;
+    } else {
+      return false;
     }
-    return false;
   });
 };
 
@@ -82,7 +83,6 @@ const getAllSplinterlandsCardOfUser = async (username: string) => {
     const cardFromCollection = collection.cards.find(
       (c: any) => c.uid === card.uid,
     );
-    console.log(card, cardFromCollection);
     const alreadyExisting = allCards.find(
       (c: SplinterlandItem) =>
         c.cardDetailId === cardFromCollection.card_detail_id &&

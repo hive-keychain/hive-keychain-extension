@@ -15,7 +15,7 @@ const DEFAULT_FILTER: NFTFilter = {
 
 const splinterlandsFilters = [
   {
-    name: 'html_popup_nfts_filter_category_edition',
+    name: 'html_popup_nfts_filter_sl_category_edition',
     key: 'edition',
     items: [
       {
@@ -62,7 +62,7 @@ const splinterlandsFilters = [
     areItemsImages: true,
   },
   {
-    name: 'html_popup_nfts_filter_category_foil',
+    name: 'html_popup_nfts_filter_sl_category_foil',
     key: 'gold',
     items: [
       {
@@ -79,7 +79,7 @@ const splinterlandsFilters = [
     areItemsImages: true,
   },
   {
-    name: 'html_popup_nfts_filter_category_role',
+    name: 'html_popup_nfts_filter_sl_category_role',
     key: 'type',
     items: [
       {
@@ -96,7 +96,7 @@ const splinterlandsFilters = [
     areItemsImages: true,
   },
   {
-    name: 'html_popup_nfts_filter_category_rarity',
+    name: 'html_popup_nfts_filter_sl_category_rarity',
     key: 'rarity',
     items: [
       {
@@ -123,7 +123,7 @@ const splinterlandsFilters = [
     areItemsImages: true,
   },
   {
-    name: 'html_popup_nfts_filter_category_element',
+    name: 'html_popup_nfts_filter_sl_category_element',
     key: 'element',
     items: [
       {
@@ -188,7 +188,6 @@ const NftsDetail = ({
 
   useEffect(() => {
     const newDisplayedValues = category.filter(allMine, filter);
-    console.log(newDisplayedValues);
     setDisplayedNfts(newDisplayedValues);
   }, [filter]);
 
@@ -218,7 +217,6 @@ const NftsDetail = ({
         }
       }
     }
-    console.log(newFilter);
     setFilter(newFilter);
   };
 
@@ -311,12 +309,11 @@ const NftsDetail = ({
             {splinterlandsFilters.map((filterCategory) => (
               <div className={`filter-category`} key={filterCategory.name}>
                 <div className="category-name">
-                  {/* {chrome.i18n.getMessage(filterCategory.name)} */}
-                  {filterCategory.name}
+                  {chrome.i18n.getMessage(filterCategory.name)}
                 </div>
                 <div className="category-options">
                   {filterCategory.items.map((categoryItem, index) => (
-                    <>
+                    <div key={`item-${categoryItem.key}${index}`}>
                       {!filterCategory.areItemsImages && (
                         <div
                           className="filter-option-button"
@@ -343,7 +340,7 @@ const NftsDetail = ({
                           />
                         </div>
                       )}
-                    </>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -351,7 +348,6 @@ const NftsDetail = ({
           </div>
         </div>
       </div>
-      <div className="total">Displayed : {displayedNfts.length} </div>
       <div className="main-panel" ref={list}>
         {displayedNfts.map((item, index) => (
           <NftCardComponent item={item} key={item.image + '-' + index} />

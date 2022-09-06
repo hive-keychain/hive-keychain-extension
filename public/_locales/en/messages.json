@@ -2365,5 +2365,25 @@
   "popup_html_nfts_filters_description": {
     "message": "This is the description for NFTs filter page. Will need to be changed because this is totally useless!",
     "description": "Nfts main page description"
+  },
+  "html_popup_nfts_filter_sl_category_edition": {
+    "message": "Edition",
+    "description": "Splinterland filter"
+  },
+  "html_popup_nfts_filter_sl_category_foil": {
+    "message": "Foil",
+    "description": "Splinterland filter"
+  },
+  "html_popup_nfts_filter_sl_category_role": {
+    "message": "Role",
+    "description": "Splinterland filter"
+  },
+  "html_popup_nfts_filter_sl_category_rarity": {
+    "message": "Rarity",
+    "description": "Splinterland filter"
+  },
+  "html_popup_nfts_filter_sl_category_element": {
+    "message": "Element",
+    "description": "Splinterland filter"
   }
 }
