@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 const fixPopupOnMacOs = () => {
   if (
     // From testing the following conditions seem to indicate that the popup was opened on a secondary monitor
