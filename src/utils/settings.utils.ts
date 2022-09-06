@@ -25,7 +25,7 @@ const exportSettings = async () => {
   a.download = 'settings.kc';
   a.click();
 };
-
+/* istanbul ignore next */
 const importSettings = async () => {
   chrome.windows.getCurrent(async (currentWindow) => {
     const win: chrome.windows.CreateData = {
@@ -43,7 +43,7 @@ const importSettings = async () => {
     chrome.runtime.onMessage.addListener(onSettingsUploadSuccessfulListener);
   });
 };
-
+/* istanbul ignore next */
 const onSettingsUploadSuccessfulListener = (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,
