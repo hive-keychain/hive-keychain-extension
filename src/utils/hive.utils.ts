@@ -240,7 +240,7 @@ const getDelegators = async (name: string) => {
     .filter((e) => e.vesting_shares !== 0)
     .sort((a, b) => b.vesting_shares - a.vesting_shares);
 };
-
+/* istanbul ignore next */
 const getDelegatees = async (name: string) => {
   return (await getClient().database.getVestingDelegations(name, '', 1000))
     .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
