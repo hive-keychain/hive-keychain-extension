@@ -3,7 +3,6 @@ import AccountUtils from 'src/utils/account.utils';
 
 const findUserProxy = async (user: ExtendedAccount): Promise<string | null> => {
   const previousChecked: string[] = [user.name!];
-  console.log('previousChecked', previousChecked);
   if (user.proxy.length === 0) return null;
   else {
     let proxy = user.proxy;
