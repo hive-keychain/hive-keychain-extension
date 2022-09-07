@@ -1,7 +1,9 @@
 import { addAccount } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -17,6 +19,7 @@ const SelectKeys = ({
   addAccount,
   setErrorMessage,
   setTitleContainerProperties,
+  navigateTo,
 }: PropsFromRedux) => {
   const [importActive, setImportActive] = useState(keys.active ? true : false);
   const [importPosting, setImportPosting] = useState(
@@ -50,6 +53,7 @@ const SelectKeys = ({
       setErrorMessage('popup_accounts_no_key_selected');
     } else {
       addAccount({ name: username, keys: keysToImport });
+      navigateTo(Screen.HOME_PAGE, true);
     }
   };
 
@@ -103,6 +107,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   addAccount,
   setTitleContainerProperties,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

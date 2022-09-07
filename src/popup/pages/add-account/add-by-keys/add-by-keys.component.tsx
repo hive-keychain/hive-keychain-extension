@@ -1,7 +1,10 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { addAccount } from '@popup/actions/account.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
@@ -21,6 +24,7 @@ const AddByKeys = ({
   addAccount,
   setTitleContainerProperties,
   setErrorMessage,
+  navigateTo,
 }: PropsType) => {
   const [username, setUsername] = useState('');
   const [privateKey, setPrivateKey] = useState('');
@@ -57,6 +61,7 @@ const AddByKeys = ({
       navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, { keys, username });
     } else {
       addAccount({ name: username, keys: keys });
+      navigateTo(Screen.HOME_PAGE, true);
     }
   };
 
@@ -108,6 +113,7 @@ const connector = connect(mapStateToProps, {
   addAccount,
   setTitleContainerProperties,
   setErrorMessage,
+  navigateTo,
 });
 type PropsType = ConnectedProps<typeof connector>;
 

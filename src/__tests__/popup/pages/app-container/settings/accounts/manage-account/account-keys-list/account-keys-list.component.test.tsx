@@ -79,28 +79,28 @@ describe('account-keys-list.component tests:\n', () => {
         localAccount: cloneLocalAccounts,
       });
     });
-    it('Must remove active key', async () => {
+    it('Must remove active key and go back', async () => {
       const ariaLabel =
         alIcon.keys.list.preFix.remove +
         methods.getKeyName('popup_html_active');
       await methods.clickNAssert(ariaLabel);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
+      // await methods.gotoManageAccounts();
+      // assertion.queryByLabel(ariaLabel, false);
     });
-    it('Must remove posting key', async () => {
+    it('Must remove posting key and go back', async () => {
       const ariaLabel =
         alIcon.keys.list.preFix.remove +
         methods.getKeyName('popup_html_posting');
       await methods.clickNAssert(ariaLabel);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
+      // await methods.gotoManageAccounts();
+      // assertion.queryByLabel(ariaLabel, false);
     });
-    it('Must remove memo key', async () => {
+    it('Must remove memo key and go back', async () => {
       const ariaLabel =
         alIcon.keys.list.preFix.remove + methods.getKeyName('popup_html_memo');
       await methods.clickNAssert(ariaLabel);
-      await methods.gotoManageAccounts();
-      assertion.queryByLabel(ariaLabel, false);
+      // await methods.gotoManageAccounts();
+      // assertion.queryByLabel(ariaLabel, false);
     });
   });
   describe('Using authorized account', () => {

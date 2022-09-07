@@ -31,6 +31,7 @@ const SignIn = ({
     if (await MkUtils.login(password)) {
       setMk(password, true);
       retrieveAccounts(password);
+      navigateTo(Screen.HOME_PAGE, true);
     } else {
       setErrorMessage('wrong_password');
     }

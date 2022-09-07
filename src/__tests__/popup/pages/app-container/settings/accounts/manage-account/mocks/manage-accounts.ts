@@ -160,7 +160,10 @@ const methods = {
     await clickAwait([ariaLabel]);
     assertion.getByLabelText(alComponent.confirmationPage);
     await clickAwait([alButton.dialog.confirm]);
-    await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+    await assertion.awaitFor(
+      alComponent.account.subMenu.manageAccount,
+      QueryDOM.BYLABEL,
+    );
   },
   clickNType: async (
     key: KeyNamePopupHtml,
