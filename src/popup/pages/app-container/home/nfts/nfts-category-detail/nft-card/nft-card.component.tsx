@@ -7,9 +7,13 @@ import './nft-card.component.scss';
 
 interface NftCardProps {
   item: NFTItem;
+  backgroundCardImage?: string;
 }
 
-const NftCard = ({ item }: PropsFromRedux & NftCardProps) => {
+const NftCard = ({
+  item,
+  backgroundCardImage,
+}: PropsFromRedux & NftCardProps) => {
   const [displayBack, setDisplayBack] = useState(false);
   useEffect(() => {}, []);
 
@@ -29,7 +33,16 @@ const NftCard = ({ item }: PropsFromRedux & NftCardProps) => {
           )}
           <img className="image" src={item.image} />
         </div>
-        <div className="flip-card-back">
+        <div
+          className="flip-card-back"
+          style={
+            backgroundCardImage
+              ? {
+                  background: `url(${backgroundCardImage})`,
+                  backgroundColor: 'unset',
+                }
+              : {}
+          }>
           <div className="info">
             <div className="name">{item.name}</div>
           </div>

@@ -5,14 +5,18 @@ import {
   OtherFilters,
   SplinterlandItem,
 } from '@interfaces/ntf.interface';
+import { Splinterlands } from '@reference-data/nfts-category.list';
 
 const getCategories = () => {
   return [
     {
       name: 'Splinterlands',
       image: 'https://images.hive.blog/u/steemmonsters/avatar',
+      cardBackgroundImage:
+        'https://d36mxiodymuqjm.cloudfront.net/website/bg_energy-cloud.jpg',
       getAllMine: getAllSplinterlandsCardOfUser,
       filter: filterSplinterlandsCards,
+      filters: Splinterlands,
     },
   ];
 };

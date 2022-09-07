@@ -18,8 +18,23 @@ export interface SplinterlandItem extends NFTItem {
 export interface NFTCategory {
   name: string;
   image: string;
-  getAllMine: (username: string) => NFTItem[];
-  filter: (allItems: NFTItem[], filter: NFTFilter) => NFTItem[];
+  cardBackgroundImage?: string;
+  getAllMine: (username: string) => Promise<unknown[]>;
+  filter: (allItems: unknown[], filter: NFTFilter) => unknown[];
+  filters: NFTFilterCategoryDefinition[];
+}
+
+export interface NFTFilterCategoryDefinition {
+  name: string;
+  key: string;
+  items: NFTFilterItemDefintion[];
+  areItemsImages: boolean;
+}
+
+export interface NFTFilterItemDefintion {
+  url: string;
+  key: string;
+  value: string | boolean | number;
 }
 
 export interface NFTFilter {
