@@ -10,7 +10,7 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import { NftsUtils } from 'src/utils/nfts.utils';
+import { NftsUtils } from 'src/utils/nfts/nfts.utils';
 import './nfts.component.scss';
 
 const Nfts = ({
