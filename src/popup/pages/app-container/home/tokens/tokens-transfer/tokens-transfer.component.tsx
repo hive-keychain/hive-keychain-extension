@@ -186,7 +186,7 @@ const TokensTransfer = ({
             symbol: symbol,
             to: receiverUsername,
             quantity: amount,
-            memo: memo,
+            memo: memoParam,
           },
         };
 
