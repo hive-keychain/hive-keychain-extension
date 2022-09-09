@@ -57,6 +57,7 @@ const PageTitle = ({
       </div>
       {!isCloseButtonDisabled && (
         <Icon
+          ariaLabel="icon-close-page"
           onClick={handleCloseButtonClick}
           name={Icons.CLOSE}
           type={IconType.OUTLINED}

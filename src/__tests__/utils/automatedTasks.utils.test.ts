@@ -203,29 +203,6 @@ describe('saveClaims tests', () => {
     expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
     expect(result).toBeUndefined();
   });
-  test.skip('When passed empty username, it returns empty key object with assigned value. Skipped as validation needed.', async () => {
-    expectedSendMessageObj.value.claimAccounts.workerjab1 = false;
-    expectedSendMessageObj.value.claimRewards.workerjab1 = false;
-
-    const result = await AutomatedTasksUtils.saveClaims(
-      false,
-      false,
-      false,
-      '',
-    );
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
-    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
-      '': false,
-    });
-    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
-      '': false,
-    });
-    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
-      '': false,
-    });
-    expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
-    expect(result).toBeUndefined();
-  });
   test('Passing (username, claimRewards = false, claimAccount = true) must return undefined and follow/pass the steps bellow', async () => {
     expectedSendMessageObj.value.claimAccounts.workerjab1 = true;
     expectedSendMessageObj.value.claimRewards.workerjab1 = false;

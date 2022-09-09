@@ -18,4 +18,13 @@ export default {
   memoOptional: 'input-memo-optional',
   filterBox: 'input-filter-box',
   textInput: 'input-text',
+  changePassword: {
+    old: 'input-old-password',
+    new: 'input-new-password',
+    confirmation: 'input-new-password-confirmation',
+  },
+  rpcNodes: {
+    uri: 'input-rpc-node-uri',
+    nodeChainId: 'input-node-chain-id',
+  },
 };

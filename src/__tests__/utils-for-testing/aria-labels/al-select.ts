@@ -13,4 +13,11 @@ export default {
       },
     },
   },
+  rpcNode: {
+    selected: 'selected-rpc-node-panel',
+    selectedRpcNode: 'selected-rpc-node',
+    selectItem: {
+      preFix: 'select-rpc-item-',
+    },
+  },
 };

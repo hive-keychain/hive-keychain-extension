@@ -70,4 +70,15 @@ export default {
       },
     },
   },
+  about: {
+    content: 'about-page-content',
+  },
+  keys: {
+    list: {
+      preFix: {
+        clickeableKey: 'clickeable-account-key-',
+      },
+      usingAuthorized: 'using-authorized-account',
+    },
+  },
 };

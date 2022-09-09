@@ -25,6 +25,7 @@ exports[`tokens-history.component tests:
           LEO history
         </div>
         <span
+          aria-label="icon-close-page"
           class="icon-component material-icons-outlined icon-button clickable"
         >
           clear
@@ -106,6 +107,7 @@ exports[`tokens-history.component tests:
           LEO history
         </div>
         <span
+          aria-label="icon-close-page"
           class="icon-component material-icons-outlined icon-button clickable"
         >
           clear

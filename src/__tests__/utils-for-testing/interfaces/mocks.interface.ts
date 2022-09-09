@@ -1,6 +1,8 @@
 import { ExtendedAccount, VestingDelegation } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { Autolock } from '@interfaces/autolock.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
@@ -85,6 +87,10 @@ export interface MockProxy {
 export interface CustomDataFromLocalStorage {
   accountHistoryApi?: string[];
   customRpcList?: string[];
+  customAutolock?: Autolock;
+  customSwitchAuto?: boolean;
+  customsRpcs?: Rpc[];
+  customAuthorizedOP?: NoConfirm;
 }
 
 export interface MocksOverwrite {

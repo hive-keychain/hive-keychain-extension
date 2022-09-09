@@ -1,5 +1,3 @@
-import configureMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import * as currencyPricesActions from 'src/popup/actions/currency-prices.actions';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import Logger from 'src/utils/logger.utils';
@@ -11,6 +9,9 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 describe('currency-prices.actions tests:\n', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   describe('loadCurrencyPrices tests:\n', () => {
     const mockedApiReply = {
       data: {

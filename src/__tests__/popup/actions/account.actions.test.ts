@@ -2,6 +2,7 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import * as accountActions from 'src/popup/actions/account.actions';
 import AccountUtils from 'src/utils/account.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -92,7 +93,7 @@ describe('account.actions tests:\n', () => {
         .mockResolvedValueOnce([accountAddedKey]);
       let fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(
-        accountActions.addKey(activePrivateKey, keyType),
+        accountActions.addKey(activePrivateKey, keyType, setErrorMessage),
       );
       expect(fakeStore.getState().accounts).toEqual([accountAddedKey]);
       expect(fakeStore.getState().activeAccount.keys.active).toBe(
@@ -103,7 +104,7 @@ describe('account.actions tests:\n', () => {
       jest.spyOn(AccountUtils, 'addKey').mockResolvedValueOnce(undefined);
       let fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(
-        accountActions.addKey(activePrivateKey, keyType),
+        accountActions.addKey(activePrivateKey, keyType, setErrorMessage),
       );
       expect(fakeStore.getState().accounts).toEqual(
         initialStateWOneKey.accounts,

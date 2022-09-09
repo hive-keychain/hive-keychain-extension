@@ -27,6 +27,12 @@ export enum KeyToUse {
   MASTER = 'master',
 }
 
+export enum KeyToUseNoMaster {
+  MEMO = 'memo',
+  ACTIVE = 'active',
+  POSTING = 'posting',
+}
+
 export enum InputField {
   PRIVATEKEY = 'private_key',
   USERNAME = 'username',

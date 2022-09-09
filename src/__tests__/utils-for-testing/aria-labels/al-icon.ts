@@ -34,4 +34,20 @@ export default {
     openFilter: 'open-tokens-filter',
   },
   expandMore: 'icon-expand-more',
+  keys: {
+    list: {
+      preFix: {
+        remove: 'icon-remove-key-',
+        add: 'icon-add-key-',
+      },
+    },
+  },
+  closePage: 'icon-close-page',
+  authorizedOperations: {
+    icon: {
+      delete: {
+        preFix: 'icon-delete-authorized-',
+      },
+    },
+  },
 };

@@ -1,4 +1,5 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
@@ -23,7 +24,7 @@ const hasKeys = (obj: {}) => {
  *
  * @param args
  * @param args[0] Is always used for the LocalStorageKeyEnum.
- * @param customData Used to pass custom readed value from LS.
+ * @param customData Used to pass custom readed value from LS. To use, assign dataMocks.customDataFromLocalStorage
  * @returns Null if not found or not mocked yet.
  * If debug needed, just uncomment the console.log after the default case.
  */
@@ -33,12 +34,14 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
   //console.log('being called with: ', args[0], customData);
   switch (args[0]) {
     case LocalStorageKeyEnum.AUTOLOCK:
-      return {
-        type: AutoLockType.DEFAULT,
-        mn: 1,
-      };
+      return hasKeys(customData)
+        ? customData.customAutolock
+        : {
+            type: AutoLockType.DEFAULT,
+            mn: 1,
+          };
     case LocalStorageKeyEnum.SWITCH_RPC_AUTO:
-      return true;
+      return hasKeys(customData) ? customData.customSwitchAuto : true;
     case LocalStorageKeyEnum.WALLET_HISTORY_FILTERS:
       return null;
     case LocalStorageKeyEnum.HIDE_SUGGESTION_PROXY:
@@ -53,10 +56,17 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
       return hasKeys(customData) ? customData.accountHistoryApi : [];
     case LocalStorageKeyEnum.HIVE_ENGINE_CUSTOM_RPC_LIST:
       return hasKeys(customData) ? customData.customRpcList : [];
+    case LocalStorageKeyEnum.KEYCHAINIFY_ENABLED:
+      return true;
+    case LocalStorageKeyEnum.RPC_LIST:
+      return hasKeys(customData) ? customData.customsRpcs : [];
+    case LocalStorageKeyEnum.NO_CONFIRM:
+      return hasKeys(customData)
+        ? customData.customAuthorizedOP
+        : ({} as NoConfirm);
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG
-      // - HIVE_ENGINE_CUSTOM_RPC_LIST
       // - __REQUEST_HANDLER
       // - LOCAL_STORAGE_VERSION
 
