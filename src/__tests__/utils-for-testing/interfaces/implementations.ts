@@ -1,14 +1,14 @@
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import { GetManifest } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 
 export interface KeyChainApiGetCustomData {
   witnessRanking?: { data: any };
   currenciesPrices?: { data: any };
   rpc?: { data: { rpc: Rpc } };
   phishingAccounts?: { data: string[] };
-  extensionVersion?: { data: GetManifest };
+  extensionVersion?: { data: WhatsNewContent };
   delegators?: { data: any };
 }
 

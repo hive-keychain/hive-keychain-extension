@@ -91,6 +91,7 @@ export interface CustomDataFromLocalStorage {
   customSwitchAuto?: boolean;
   customsRpcs?: Rpc[];
   customAuthorizedOP?: NoConfirm;
+  customlastVersionSeen?: string;
 }
 
 export interface MocksOverwrite {

@@ -50,4 +50,5 @@ export default {
     authorizedOperations: 'authorized-operations-page',
     automatedTasks: 'automated-tasks-page',
   },
+  whatsNew: 'whats-new-component',
 };
