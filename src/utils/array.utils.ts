@@ -1,5 +1,5 @@
 const mergeWithoutDuplicate = (a: any[], b: any[], key?: string) => {
-  var list = [...a, ...b];
+  let list = [...a, ...b];
   for (var i = 0; i < list.length; ++i) {
     for (var j = i + 1; j < list.length; ++j) {
       if (key) {
@@ -10,6 +10,14 @@ const mergeWithoutDuplicate = (a: any[], b: any[], key?: string) => {
     }
   }
 
+  return list;
+};
+
+const mergeArrayofArray = (array: any[][]) => {
+  let list: any[] = [];
+  for (let a of array) {
+    list = [...list, ...a];
+  }
   return list;
 };
 
@@ -35,6 +43,7 @@ const getMinValue = (list: any[], property?: string) => {
 
 const ArrayUtils = {
   mergeWithoutDuplicate,
+  mergeArrayofArray,
   getMaxValue,
   getMinValue,
 };

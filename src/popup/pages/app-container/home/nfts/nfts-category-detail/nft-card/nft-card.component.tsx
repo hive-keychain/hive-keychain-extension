@@ -1,6 +1,6 @@
 import { NFTItem } from '@interfaces/ntf.interface';
 import { RootState } from '@popup/store';
-import React, { useEffect, useState } from 'react';
+import React, { BaseSyntheticEvent, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Config from 'src/config';
 import './nft-card.component.scss';
@@ -16,6 +16,15 @@ const NftCard = ({
 }: PropsFromRedux & NftCardProps) => {
   const [displayBack, setDisplayBack] = useState(false);
   useEffect(() => {}, []);
+
+  const handleClickOnDuplicated = (
+    event: BaseSyntheticEvent,
+    duplicate: NFTItem,
+  ) => {
+    event.preventDefault();
+    event.stopPropagation();
+    console.log('handling click on duplicated ' + duplicate.id);
+  };
 
   return (
     <div
@@ -45,6 +54,25 @@ const NftCard = ({
           }>
           <div className="info">
             <div className="name">{item.name}</div>
+            <div className="duplicated">
+              <div
+                className="duplicate-item"
+                key={`duplicated-${item.key}}`}
+                onClick={($event) => handleClickOnDuplicated($event, item)}>
+                {item.id}
+              </div>
+              {item.duplicates.length > 1 &&
+                item.duplicates.map((duplicate, index) => (
+                  <div
+                    className="duplicate-item"
+                    key={`duplicated-${item.key}-${index}`}
+                    onClick={($event) =>
+                      handleClickOnDuplicated($event, duplicate)
+                    }>
+                    {duplicate.id}
+                  </div>
+                ))}
+            </div>
           </div>
         </div>
       </div>

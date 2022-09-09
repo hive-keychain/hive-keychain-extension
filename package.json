@@ -74,6 +74,7 @@
     "resolve-cwd": "^3.0.0",
     "sscjs": "^0.0.9",
     "url-loader": "^4.1.1",
+    "uuidv4": "^6.2.13",
     "valid-url": "^1.0.9"
   },
   "devDependencies": {

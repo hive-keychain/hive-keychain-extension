@@ -5,10 +5,13 @@ import {
   NFTItem,
 } from '@interfaces/ntf.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { Icons } from '@popup/icons.enum';
 import { NftCardComponent } from '@popup/pages/app-container/home/nfts/nfts-category-detail/nft-card/nft-card.component';
 import { RootState } from '@popup/store';
+import FlatList from 'flatlist-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import './nfts-category-detail.component.scss';
@@ -23,6 +26,7 @@ const NftsDetail = ({
   activeAccountName,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
+  const loading = false;
   const [allMine, setAllMine] = useState<NFTItem[]>([]);
   const [displayedNfts, setDisplayedNfts] = useState<NFTItem[]>([]);
   const [isFilterOpened, setIsFilterPanelOpened] = useState(false);
@@ -44,7 +48,12 @@ const NftsDetail = ({
   }, [filter]);
 
   const init = async () => {
-    setAllMine((await category.getAllMine(activeAccountName)) as NFTItem[]);
+    setAllMine(
+      (await category.getAllMine(
+        activeAccountName,
+        category.symbol,
+      )) as NFTItem[],
+    );
     initFilter();
   };
 
@@ -127,6 +136,16 @@ const NftsDetail = ({
     );
   };
 
+  const renderListItem = (item: NFTItem) => {
+    return (
+      <NftCardComponent
+        item={item}
+        backgroundCardImage={category.cardBackgroundImage}
+        key={item.key}
+      />
+    );
+  };
+
   return (
     <div className="nfts-detail-page">
       <div className="description">
@@ -203,13 +222,34 @@ const NftsDetail = ({
         </div>
       </div>
       <div className="main-panel" ref={list}>
-        {displayedNfts.map((item, index) => (
-          <NftCardComponent
-            item={item}
-            key={item.image + '-' + index}
-            backgroundCardImage={category.cardBackgroundImage}
-          />
-        ))}
+        <FlatList
+          list={displayedNfts}
+          renderItem={renderListItem}
+          renderOnScroll
+          renderWhenEmpty={() => {
+            if (loading) {
+              return <div></div>;
+            } else {
+              return (
+                <div className="empty-list">
+                  <Icon name={Icons.INBOX} type={IconType.OUTLINED}></Icon>
+                  <div className="labels">
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty',
+                      )}
+                    </span>
+                    <span>
+                      {chrome.i18n.getMessage(
+                        'popup_html_transaction_list_is_empty_try_clear_filter',
+                      )}
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+          }}
+        />
       </div>
     </div>
   );

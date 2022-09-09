@@ -62,7 +62,7 @@
         color: white;
         transform: rotateY(180deg);
         border: 1px solid white;
-        padding: 24px;
+        padding: 12px;
         box-sizing: border-box;
 
         .info {
@@ -81,6 +81,13 @@
 
           .submit-button {
             height: 32px;
+          }
+          .duplicates {
+            overflow: auto;
+            font-size: 12px;
+            .duplicate-item {
+              cursor: pointer;
+            }
           }
         }
       }

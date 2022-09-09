@@ -5,18 +5,49 @@ import {
   NFTItem,
   SplinterlandItem,
 } from '@interfaces/ntf.interface';
+import Config from 'src/config';
+import ArrayUtils from 'src/utils/array.utils';
 import { NftsUtils } from 'src/utils/nfts/nfts.utils';
+import { v4 as uuidv4 } from 'uuid';
 
 const getAll = async (username: string) => {
   const collection = (
-    await NftApis.SplinterlandsApi.get('/cards/collection/kiokizz')
+    await NftApis.SplinterlandsApi.get('/cards/collection/stoodmonsters')
   ).data;
   const allCardsId = collection.cards.map((card: any) => card.uid);
-  const cardsDetail = (
-    await NftApis.SplinterlandsApi.get(
-      `/cards/find?ids=${allCardsId.join(',')}`,
-    )
-  ).data;
+
+  const allCardsIdArray: string[][] = [[]];
+  const findDetailApi = '/cards/find?ids=';
+  const baseApiLength = (Config.nft.splinterlands.baseApi + findDetailApi)
+    .length;
+  let caractersRemaining = 2048 - baseApiLength;
+
+  for (const id of allCardsId) {
+    if (caractersRemaining - id.length <= 0) {
+      allCardsIdArray.push([]);
+      caractersRemaining = 2048 - baseApiLength;
+    }
+    allCardsIdArray[allCardsIdArray.length - 1].push(id);
+    caractersRemaining -= id.length;
+  }
+
+  const promises = [];
+  for (const array of allCardsIdArray) {
+    promises.push(
+      new Promise((resolve, reject) => {
+        const res = NftApis.SplinterlandsApi.get(
+          `${findDetailApi}${array.join(',')}`,
+        );
+        resolve(res);
+      }),
+    );
+  }
+
+  const result = (await Promise.all(promises)).map(
+    (promiseResult: any) => promiseResult.data,
+  );
+
+  const cardsDetail = ArrayUtils.mergeArrayofArray(result);
 
   const allCards: SplinterlandItem[] = [];
   for (const card of cardsDetail) {
@@ -26,31 +57,42 @@ const getAll = async (username: string) => {
     const alreadyExisting = allCards.find(
       (c: SplinterlandItem) =>
         c.cardDetailId === cardFromCollection.card_detail_id &&
-        c.gold === cardFromCollection.gold,
+        c.gold === cardFromCollection.gold &&
+        c.level === cardFromCollection.level,
     );
+    if (card.details.name.toLowerCase() === 'vera salacia') {
+      console.log(cardFromCollection);
+    }
+
+    const editionString = EDITION[card.edition];
+    const isGold = cardFromCollection.gold;
+
+    const item = {
+      key: uuidv4(),
+      id: card.uid,
+      cardDetailId: cardFromCollection.card_detail_id,
+      count: 1,
+      name: card.details.name,
+      level: cardFromCollection.level,
+      rarity: card.details.rarity,
+      edition: card.edition,
+      gold: isGold,
+      type: card.details.type.toLowerCase(),
+      element: ELEMENT_COLOR_MAPPING_TABLE[card.details.color],
+      image: `https://d36mxiodymuqjm.cloudfront.net/cards_by_level/${editionString.toLowerCase()}/${
+        card.details.name
+      }_lv${cardFromCollection.level}${isGold ? '_gold' : ''}.png`,
+      duplicates: [],
+    } as SplinterlandItem;
     if (alreadyExisting) {
       alreadyExisting.count++;
+      alreadyExisting.duplicates.push(item);
     } else {
-      const editionString = EDITION[card.edition];
-      const isGold = cardFromCollection.gold;
-      allCards.push({
-        id: card.uid,
-        cardDetailId: cardFromCollection.card_detail_id,
-        count: 1,
-        name: card.details.name,
-        level: cardFromCollection.level,
-        rarity: card.details.rarity,
-        edition: card.edition,
-        gold: isGold,
-        type: card.details.type.toLowerCase(),
-        element: ELEMENT_COLOR_MAPPING_TABLE[card.details.color],
-        image: `https://d36mxiodymuqjm.cloudfront.net/cards_by_level/${editionString.toLowerCase()}/${
-          card.details.name
-        }_lv${cardFromCollection.level}${isGold ? '_gold' : ''}.png`,
-      } as SplinterlandItem);
+      allCards.push(item);
     }
   }
   allCards.sort((a, b) => a.name.localeCompare(b.name));
+  console.log(allCards);
   return allCards;
 };
 

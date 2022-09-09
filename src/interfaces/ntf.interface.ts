@@ -1,8 +1,10 @@
 export interface NFTItem {
+  key: string;
   id: string;
   name: string;
   image: string;
   count: number;
+  duplicates: SplinterlandItem[];
 }
 
 export interface SplinterlandItem extends NFTItem {
@@ -19,7 +21,8 @@ export interface NFTCategory {
   name: string;
   image: string;
   cardBackgroundImage?: string;
-  getAllMine: (username: string) => Promise<unknown[]>;
+  symbol?: NFTSymbols;
+  getAllMine: (username: string, symbol?: NFTSymbols) => Promise<unknown[]>;
   filter: (allItems: unknown[], filter: NFTFilter) => unknown[];
   filters: NFTFilterCategoryDefinition[];
 }
@@ -49,4 +52,9 @@ export interface OtherFilters {
       selected: boolean;
     };
   };
+}
+
+export enum NFTSymbols {
+  RISING_STAR = 'STARinstances',
+  D_CITY = 'CITYinstances',
 }

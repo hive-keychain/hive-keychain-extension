@@ -1,4 +1,5 @@
-import { OtherFilters } from '@interfaces/ntf.interface';
+import { NFTSymbols, OtherFilters } from '@interfaces/ntf.interface';
+import { GlobalNFTsUtils } from 'src/utils/nfts/global.utils';
 import { SplinterlandsUtils } from 'src/utils/nfts/splinterlands.utils';
 
 const getCategories = () => {
@@ -9,6 +10,22 @@ const getCategories = () => {
       cardBackgroundImage:
         'https://d36mxiodymuqjm.cloudfront.net/website/bg_energy-cloud.jpg',
       getAllMine: SplinterlandsUtils.getAll,
+      filter: SplinterlandsUtils.filter,
+      filters: SplinterlandsUtils.filterDefinition,
+    },
+    {
+      name: 'Rising Star',
+      symbol: NFTSymbols.RISING_STAR,
+      image: 'https://images.hive.blog/u/risingstargame/avatar',
+      getAllMine: GlobalNFTsUtils.getAll,
+      filter: SplinterlandsUtils.filter,
+      filters: SplinterlandsUtils.filterDefinition,
+    },
+    {
+      name: 'DCity',
+      symbol: NFTSymbols.D_CITY,
+      image: 'https://images.hive.blog/u/risingstargame/avatar',
+      getAllMine: GlobalNFTsUtils.getAll,
       filter: SplinterlandsUtils.filter,
       filters: SplinterlandsUtils.filterDefinition,
     },
