@@ -14,11 +14,9 @@ export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;
   getCurrentRpc?: Rpc;
   getActiveAccountNameFromLocalStorage?: string;
-  //changed/added
   getRCMana?: Manabar;
   getAccount?: ExtendedAccount[];
   getExtendedAccount?: ExtendedAccount;
-  //END changed/added
   checkRpcStatus?: boolean;
   hasStoredAccounts?: boolean;
   getMkFromLocalStorage?: string;
@@ -76,6 +74,7 @@ export interface MocksToUse {
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
 }
+
 export interface MockVotingProposal {
   voteForProposal?: boolean;
   unvoteForProposal?: boolean;
@@ -93,7 +92,7 @@ export interface CustomDataFromLocalStorage {
   customsRpcs?: Rpc[];
   customAuthorizedOP?: NoConfirm;
 }
-//TODO remove all unused from overwrite + add the keychainApiget.
+
 export interface MocksOverwrite {
   app?: {
     getValueFromLocalStorage?: OverwriteMock;
