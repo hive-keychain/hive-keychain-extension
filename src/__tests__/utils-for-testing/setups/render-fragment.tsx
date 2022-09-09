@@ -10,9 +10,7 @@ interface Props {
 }
 
 const initialReducerState = initialEmptyStateStore;
-/**
- * App is fixed.
- */
+
 const render = ({
   initialState = initialReducerState,
   fakeStore = getFakeStore(initialState),

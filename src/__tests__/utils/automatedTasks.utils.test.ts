@@ -3,7 +3,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 jest.setTimeout(20000);
 const chrome = require('chrome-mock');
 global.chrome = chrome;
-
 afterEach(() => {
   jest.clearAllMocks();
 });

@@ -8,7 +8,6 @@ const byDefault = (jestTimeOut: number = 10000) => {
   global.chrome = chrome;
   jest.setTimeout(jestTimeOut);
 
-  //check if no errors by doing this
   afterAll(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();
