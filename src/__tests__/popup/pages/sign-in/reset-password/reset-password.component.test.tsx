@@ -38,7 +38,6 @@ describe('reset-password.component tests:\n', () => {
     afterTests.clean();
   });
   it.skip('Must clear all user data and navigate to sign up page', async () => {
-    //TODO waiting for modifications on AccountUtils.clearAllData() in store.dispatch
     await clickAwait([alLink.resetPassword, alButton.confirmResetPassword]);
     await assertion.awaitFor(alComponent.signUp, QueryDOM.BYLABEL);
   });

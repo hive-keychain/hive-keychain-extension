@@ -48,7 +48,7 @@ describe('home.component tests:\n', () => {
     expect(screen.getByText(home.methods.rcReadyIn())).toBeInTheDocument();
   });
   it('Must change active account to the selected one', async () => {
-    extraMocks.remockGetAccounts();
+    extraMocks.remockGetAccount();
     await clickAwait([
       alSelect.accountSelector,
       alSelect.itemSelectorPreFix + mk.user.two,

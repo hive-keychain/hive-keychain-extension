@@ -16,6 +16,7 @@ interface CheckboxProps {
   skipHintTranslation?: boolean;
   alignment?: LabelAlignment;
   ariaLabel?: string;
+  extraAriaLabelOnInput?: string;
 }
 
 const CheckboxComponent = (props: CheckboxProps) => {
@@ -26,6 +27,7 @@ const CheckboxComponent = (props: CheckboxProps) => {
       }`}>
       <div className="checkbox-and-label">
         <Checkbox
+          aria-label={props.extraAriaLabelOnInput}
           checked={props.checked}
           onChange={() => props.onChange(!props.checked)}></Checkbox>
         <div

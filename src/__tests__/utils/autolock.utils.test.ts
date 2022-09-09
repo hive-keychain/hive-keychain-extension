@@ -1,9 +1,7 @@
 import AutolockUtils from 'src/utils/autolock.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-//chrome
 const chrome = require('chrome-mock');
 global.chrome = chrome;
-//end Chrome
 
 describe('autolock.utils tests', () => {
   test('when called with a message must set sendMessage to the chrome.runtime', async () => {

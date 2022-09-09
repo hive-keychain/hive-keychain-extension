@@ -4,7 +4,6 @@ import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('format.utils tests:\n', () => {
   describe('withCommas tests:\n', () => {
-    //NOTE: U.S format returned i.e: 9,999.000
     test('Passing a currency value using a comma, must return same value in U.S format standards', () => {
       const result = FormatUtils.withCommas('12,38 HIVE');
       expect(result).toBe('12.000 HIVE');
@@ -46,12 +45,10 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe('12.9900901 HP');
     });
     test('Passing a currency value bad formatted(1 23 .45 HP), will return "1.000 23"', () => {
-      //Note: consider adding a validation for this case, if needed.
       const result = FormatUtils.withCommas('1 23 .45 HP');
       expect(result).toBe('1.000 23');
     });
     test('Passing a currency value bad formatted(1 23 .450 HP) with decimals, will return "1.0000 23"', () => {
-      //Note: consider adding a validation for this case, if needed.
       const result = FormatUtils.withCommas('1 23 .450 HP', 4);
       expect(result).toBe('1.0000 23');
     });

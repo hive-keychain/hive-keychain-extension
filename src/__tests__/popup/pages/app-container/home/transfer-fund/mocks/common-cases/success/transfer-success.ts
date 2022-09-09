@@ -35,6 +35,7 @@ const run = async (currency: string) => {
       event: EventType.CLICK,
     },
   ]);
+
   await assertion.awaitFor(
     constants.keyMessage.successTransfer([
       `@${constants.anotherUser}`,

@@ -7,6 +7,7 @@ export default {
   filter: {
     ranking: 'input-ranking-filter',
     walletHistory: 'input-filter-box',
+    token: 'input-filter-box',
   },
   receiver: 'input-receiver',
   clear: 'input-clear',
@@ -15,4 +16,6 @@ export default {
     iterations: 'input-recurrent-iterations',
   },
   memoOptional: 'input-memo-optional',
+  filterBox: 'input-filter-box',
+  textInput: 'input-text',
 };

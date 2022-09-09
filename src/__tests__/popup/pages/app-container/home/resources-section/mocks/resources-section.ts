@@ -46,7 +46,7 @@ const beforeEach = async (
   if (manabarRcZero) {
     mockPreset.setOrDefault({
       app: {
-        getAccounts: [constants.extendedZeroVotingMana],
+        getExtendedAccount: constants.extendedZeroVotingMana,
         getRCMana: constants.manabarZero,
       },
     });

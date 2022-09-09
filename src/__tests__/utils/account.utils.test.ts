@@ -3,16 +3,16 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import config from 'src/__tests__/utils-for-testing/setups/config';
 import accountUtilsMocks from 'src/__tests__/utils/mocks/account-utils-mocks';
 import { ActiveAccount } from '../../interfaces/active-account.interface';
 import { setErrorMessage } from '../../popup/actions/message.actions';
 import { store } from '../../popup/store';
 import AccountUtils from '../../utils/account.utils';
-
+config.byDefault();
 describe('account.utils tests:\n', () => {
   const userData = { ...utilsT.userData };
   const userDataKeys: Keys = {
@@ -59,7 +59,6 @@ describe('account.utils tests:\n', () => {
     },
   ];
   const { extraMocks } = accountUtilsMocks;
-  jest.setTimeout(10000);
   beforeEach(() => {
     store.dispatch = jest.fn();
   });
@@ -67,8 +66,7 @@ describe('account.utils tests:\n', () => {
     jest.clearAllMocks();
     jest.restoreAllMocks();
   });
-
-  describe('getKeys tests', () => {
+  describe('getKeys tests:\n', () => {
     test('Passing a public key must return null and dispatch an error message', async () => {
       extraMocks.getAccounts([dataAccounts.default.extended]);
       const getAccount = await AccountUtils.getKeys(
@@ -190,8 +188,7 @@ describe('account.utils tests:\n', () => {
       );
     });
   });
-
-  describe('verifyAccount tests', () => {
+  describe('verifyAccount tests:\n', () => {
     test('Passing an empty username must return null and dispatch MISSING_FIELDS error', async () => {
       const resultVerifyAccount = await AccountUtils.verifyAccount(
         '',
@@ -247,8 +244,7 @@ describe('account.utils tests:\n', () => {
       expect(resultValidDataNonExistingAccounts).toEqual(expected_obj_active);
     });
   });
-
-  describe('isAccountNameAlreadyExisting tests', () => {
+  describe('isAccountNameAlreadyExisting tests:\n', () => {
     const existingAccountsUserPresent = [
       { name: userData.username, keys: {} },
       { name: 'user2', keys: {} },
@@ -302,13 +298,11 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(true);
     });
   });
-
-  describe('hasStoredAccounts tests', () => {
+  describe('hasStoredAccounts tests:\n', () => {
     afterEach(() => {
       jest.fn().mockClear();
     });
     test('Test with getValueFromLocalStorage returning [] must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue([]);
@@ -317,7 +311,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning null, must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(null);
@@ -326,7 +319,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning undefined, must return false', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(undefined);
@@ -335,7 +327,6 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
     test('Test with getValueFromLocalStorage returning list with at least one element, must return true', async () => {
-      //mocks
       LocalStorageUtils.getValueFromLocalStorage = jest
         .fn()
         .mockResolvedValue(['atLeastOneElement']);
@@ -344,8 +335,7 @@ describe('account.utils tests:\n', () => {
       expect(LocalStorageUtils.getValueFromLocalStorage).toBeCalledTimes(1);
     });
   });
-
-  describe('addKey tests', () => {
+  describe('addKey tests:\n', () => {
     test('test with empty key must return null and setErrorMessage as  popup_accounts_fill', async () => {
       const result = await AccountUtils.addKey(
         activeAccountData,
@@ -364,8 +354,6 @@ describe('account.utils tests:\n', () => {
       });
     });
     test.skip('test with empty accounts array should return null and setErrorMessage as popup_accounts_fill?', async () => {
-      //the condition inside the function: AccountUtils.addKey is repeated and only check for the privateKey.length
-      //let me know if this case is needed.
       const result = await AccountUtils.addKey(
         activeAccountData,
         [],
@@ -386,7 +374,7 @@ describe('account.utils tests:\n', () => {
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.encryptKeys.active, //key passed as STM on pourpose.
+        userData.encryptKeys.active,
         KeyType.ACTIVE,
       );
       expect(result).toBeNull();
@@ -405,14 +393,14 @@ describe('account.utils tests:\n', () => {
         active: userData.nonEncryptKeys.active,
         activePubkey: userData.encryptKeys.active,
       };
-      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj);
       AccountUtils.saveAccounts = jest
         .fn()
         .mockResolvedValue('data saved mocked!');
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.nonEncryptKeys.active, //now a valid unencrypcted key
+        userData.nonEncryptKeys.active,
         KeyType.ACTIVE,
       );
       expect(result).toEqual(accounts);
@@ -427,14 +415,14 @@ describe('account.utils tests:\n', () => {
         posting: userData.nonEncryptKeys.posting,
         postingPubkey: userData.encryptKeys.posting,
       };
-      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj);
       AccountUtils.saveAccounts = jest
         .fn()
         .mockResolvedValue('data saved mocked!');
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.nonEncryptKeys.posting, //now a valid unencrypcted key
+        userData.nonEncryptKeys.posting,
         KeyType.POSTING,
       );
       expect(result).toEqual(accounts);
@@ -449,14 +437,14 @@ describe('account.utils tests:\n', () => {
         memo: userData.nonEncryptKeys.memo,
         memoPubkey: userData.encryptKeys.memo,
       };
-      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj); //returning an empty keys to make it fail
+      AccountUtils.getKeys = jest.fn().mockResolvedValue(passedKeyObj);
       AccountUtils.saveAccounts = jest
         .fn()
         .mockResolvedValue('data saved mocked!');
       const result = await AccountUtils.addKey(
         activeAccountData,
         accounts,
-        userData.nonEncryptKeys.memo, //now a valid unencrypcted key
+        userData.nonEncryptKeys.memo,
         KeyType.MEMO,
       );
       expect(result).toEqual(accounts);
@@ -467,8 +455,7 @@ describe('account.utils tests:\n', () => {
       expect(AccountUtils.saveAccounts).toBeCalledTimes(1);
     });
   });
-
-  describe('deleteKey tests', () => {
+  describe('deleteKey tests:\n', () => {
     test('KeyType.MEMO and username in the array, should return accounts with that key removed', () => {
       const _accounts: LocalAccount[] = [
         {
@@ -587,8 +574,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toEqual(_accounts);
     });
   });
-
-  describe('deleteAccount tests', () => {
+  describe('deleteAccount tests:\n', () => {
     test('when passed a localAccounts array with the accountName in it, must return the filtered array', () => {
       const _accounts: LocalAccount[] = [
         { name: 'workerjab1', keys: {} },
@@ -612,8 +598,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toEqual(expected_obj);
     });
   });
-
-  describe('isAccountListIdentical tests', () => {
+  describe('isAccountListIdentical tests:\n', () => {
     test('returns true if both lists are identical', () => {
       const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
       const _accounts2: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
@@ -624,8 +609,6 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(true);
     });
     test.skip('must returns true if both lists are identical, even on disorder lists, needs a sort function', () => {
-      //skipped for now as there is no function to sort the fielnd inside each list
-      //if you consider this is not need for this case I will remove it.
       const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
       const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
       const result = AccountUtils.isAccountListIdentical(
@@ -646,8 +629,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(false);
     });
   });
-
-  describe('getAccountValue tests', () => {
+  describe('getAccountValue tests:\n', () => {
     FormatUtils.withCommas = jest.fn().mockReturnValue(1.51);
     FormatUtils.toHP = jest.fn().mockReturnValue(1.51);
     const balances = {
@@ -697,8 +679,7 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(1.51);
     });
   });
-
-  describe('getPowerDown tests', () => {
+  describe('getPowerDown tests:\n', () => {
     test('must return a valid array as [withdrawn, total_withdrawing, next_vesting_withdrawal]', () => {
       const account_details = {
         withdrawn: '1.00',
@@ -716,8 +697,7 @@ describe('account.utils tests:\n', () => {
       expect(result_array).toEqual(['0', '0', '1.00']);
     });
   });
-
-  describe('doesAccountExist tests', () => {
+  describe('doesAccountExist tests:\n', () => {
     test('with a existing account must return true', async () => {
       extraMocks.getAccounts([dataAccounts.default.extended]);
       const result = await AccountUtils.doesAccountExist('theghost1980');
@@ -729,10 +709,8 @@ describe('account.utils tests:\n', () => {
       expect(result).toBe(false);
     });
   });
-
-  describe('addAuthorizedAccount tests', () => {
+  describe('addAuthorizedAccount tests:\n', () => {
     let _setErrorMessage = setErrorMessage;
-
     beforeEach(() => {
       _setErrorMessage = jest.fn();
     });
@@ -807,16 +785,13 @@ describe('account.utils tests:\n', () => {
       );
     });
     test('test with account with no authority', async () => {
-      HiveUtils.getClient().database.getAccounts = jest
+      AccountUtils.getAccount = jest
         .fn()
-        .mockImplementationOnce((...args: any) => [
-          utilsT.fakeQuentinAccResponseWithNoAuth,
-          'fakeData ;)',
-        ]);
+        .mockResolvedValue([utilsT.fakeQuentinAccResponseWithNoAuth]);
       const result_addAuthorizedAccount =
         await AccountUtils.addAuthorizedAccount(
-          'quentin', //account to add
-          'workerjab1', //main account
+          'quentin',
+          'workerjab1',
           [{ name: 'workerjab1', keys: userDataKeys }],
           _setErrorMessage,
         );
@@ -828,13 +803,9 @@ describe('account.utils tests:\n', () => {
       ]);
     });
     test('test with account with authority on posting/active keys, must return keys object as the requested account was added ', async () => {
-      HiveUtils.getClient().database.getAccounts = jest
+      AccountUtils.getAccount = jest
         .fn()
-        .mockImplementationOnce((...args: any) => [
-          utilsT.fakeQuentinAccResponseWithAuth,
-          'fakeData ;)',
-        ]);
-
+        .mockResolvedValue([utilsT.fakeQuentinAccResponseWithAuth]);
       const expectedKeysObject = {
         posting: userData.nonEncryptKeys.posting,
         postingPubkey: `@${userData.username}`,
@@ -843,8 +814,8 @@ describe('account.utils tests:\n', () => {
       };
       const result_addAuthorizedAccount =
         await AccountUtils.addAuthorizedAccount(
-          'quentin', //account to add
-          'keychain.tests', //main account
+          'quentin',
+          'keychain.tests',
           [{ name: 'keychain.tests', keys: userDataKeys }],
           _setErrorMessage,
         );
