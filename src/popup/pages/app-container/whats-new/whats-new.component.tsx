@@ -16,7 +16,8 @@ interface Props {
 
 const WhatsNew = ({ onOverlayClick, content }: Props) => {
   const [pageIndex, setPageIndex] = useState(0);
-  const [images, setImages] = useState<any[]>();
+  const [images, setImages] = useState<HTMLImageElement[]>();
+  const [ready, setReady] = useState(false);
   const locale = 'en'; // later use getUILanguage()
 
   useEffect(() => {
@@ -27,6 +28,9 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
       imgs.push(imageElement);
     }
     setImages(imgs);
+    imgs[0].onload = () => {
+      setReady(true);
+    };
   }, []);
 
   const next = () => {
@@ -63,70 +67,71 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
         }}></li>
     );
   };
-
-  return (
-    <div className="whats-new">
-      <div className="overlay"></div>
-      <div className="whats-new-container">
-        <div className="whats-new-title">
-          {chrome.i18n.getMessage('popup_html_whats_new', [content.version])}
-        </div>
-        {images && (
-          <Carousel
-            showArrows={false}
-            showIndicators={content.features[locale].length > 1}
-            selectedItem={pageIndex}
-            showThumbs={false}
-            showStatus={false}
-            renderIndicator={renderCustomIndicator}>
-            {content.features[locale].map((feature, index) => (
-              <div className="carousel-item" key={`feature-${index}`}>
-                <div className="image">
-                  <img src={images[index].src} />
+  if (!ready) return null;
+  else
+    return (
+      <div className="whats-new">
+        <div className="overlay"></div>
+        <div className="whats-new-container">
+          <div className="whats-new-title">
+            {chrome.i18n.getMessage('popup_html_whats_new', [content.version])}
+          </div>
+          {images && (
+            <Carousel
+              showArrows={false}
+              showIndicators={content.features[locale].length > 1}
+              selectedItem={pageIndex}
+              showThumbs={false}
+              showStatus={false}
+              renderIndicator={renderCustomIndicator}>
+              {content.features[locale].map((feature, index) => (
+                <div className="carousel-item" key={`feature-${index}`}>
+                  <div className="image">
+                    <img src={images[index].src} />
+                  </div>
+                  <div className="title">{feature.title}</div>
+                  <div className="description">{feature.description}</div>
+                  <div className="extra-information">
+                    {feature.extraInformation}
+                  </div>
+                  <a
+                    className="read-more-link"
+                    onClick={() =>
+                      navigateToArticle(`${content.url}#${feature.anchor}`)
+                    }>
+                    {chrome.i18n.getMessage('html_popup_read_more')}
+                  </a>
                 </div>
-                <div className="title">{feature.title}</div>
-                <div className="description">{feature.description}</div>
-                <div className="extra-information">
-                  {feature.extraInformation}
-                </div>
-                <a
-                  className="read-more-link"
-                  onClick={() =>
-                    navigateToArticle(`${content.url}#${feature.anchor}`)
-                  }>
-                  {chrome.i18n.getMessage('html_popup_read_more')}
-                </a>
-              </div>
-            ))}
-          </Carousel>
-        )}
+              ))}
+            </Carousel>
+          )}
 
-        <div className="button-panel">
-          {pageIndex > 0 && (
-            <ButtonComponent
-              type={ButtonType.STROKED}
-              label="popup_html_whats_new_previous"
-              onClick={() => previous()}
-            />
-          )}
-          {pageIndex === content.features[locale].length - 1 && (
-            <ButtonComponent
-              type={ButtonType.STROKED}
-              label="popup_html_whats_new_got_it"
-              onClick={() => finish()}
-            />
-          )}
-          {pageIndex < content.features[locale].length - 1 && (
-            <ButtonComponent
-              type={ButtonType.STROKED}
-              label="popup_html_whats_new_next"
-              onClick={() => next()}
-            />
-          )}
+          <div className="button-panel">
+            {pageIndex > 0 && (
+              <ButtonComponent
+                type={ButtonType.STROKED}
+                label="popup_html_whats_new_previous"
+                onClick={() => previous()}
+              />
+            )}
+            {pageIndex === content.features[locale].length - 1 && (
+              <ButtonComponent
+                type={ButtonType.STROKED}
+                label="popup_html_whats_new_got_it"
+                onClick={() => finish()}
+              />
+            )}
+            {pageIndex < content.features[locale].length - 1 && (
+              <ButtonComponent
+                type={ButtonType.STROKED}
+                label="popup_html_whats_new_next"
+                onClick={() => next()}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
 };
 
 export const WhatsNewComponent = WhatsNew;
