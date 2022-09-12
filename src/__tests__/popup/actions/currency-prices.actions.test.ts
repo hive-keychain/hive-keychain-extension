@@ -3,8 +3,6 @@ import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import Logger from 'src/utils/logger.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
 afterEach(() => {
   jest.clearAllMocks();
 });
