@@ -63,7 +63,7 @@ describe('currency-prices-utils tests', () => {
         },
       };
       axios.get = jest.fn().mockResolvedValueOnce(mockedBittrexApiReply);
-      const currencyToGet = 'HIVEKCH'; //Hive Key Chain Coin.
+      const currencyToGet = 'HIVEKCH';
       const result = await CurrencyPricesUtils.getBittrexCurrency(
         currencyToGet,
       );

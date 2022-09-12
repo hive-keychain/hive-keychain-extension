@@ -35,7 +35,7 @@ const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   mockPreset.setOrDefault({
-    app: { getAccounts: [constants.extendedNoVotes] },
+    app: { getExtendedAccount: constants.extendedNoVotes },
   });
   extraMocks(false);
   renders.wInitialState(component, constants.stateAs);

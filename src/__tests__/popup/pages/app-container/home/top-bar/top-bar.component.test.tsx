@@ -5,7 +5,10 @@ import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
+import {
+  actAdvanceTime,
+  clickAwait,
+} from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 describe('top-bar.component tests:/n', () => {
   const { constants, methods, extraMocks } = topBar;
@@ -22,8 +25,9 @@ describe('top-bar.component tests:/n', () => {
     });
     it('Must claim reward ans show updated balance', async () => {
       extraMocks.claimRewards();
-      extraMocks.getAccounts();
+      extraMocks.getAccount();
       await clickAwait([alIcon.reward]);
+      actAdvanceTime(3300);
       await assertion.awaitFor(constants.updatedBalance, QueryDOM.BYTEXT);
     });
   });

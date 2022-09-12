@@ -96,6 +96,7 @@ const Tokens = ({
         {!userTokens.loading && (
           <>
             <InputComponent
+              ariaLabel="input-filter-box"
               type={InputType.TEXT}
               placeholder="popup_html_search"
               value={filterValue}
@@ -103,6 +104,7 @@ const Tokens = ({
             />
 
             <Icon
+              ariaLabel="open-tokens-filter"
               onClick={() => navigateTo(Screen.TOKENS_FILTER)}
               name={Icons.FILTER}
               type={IconType.OUTLINED}
@@ -110,6 +112,7 @@ const Tokens = ({
           </>
         )}
         <Icon
+          ariaLabel="tokens-settings-icon"
           onClick={() => navigateTo(Screen.TOKENS_SETTINGS)}
           name={Icons.SETTINGS}
           type={IconType.OUTLINED}
@@ -121,6 +124,7 @@ const Tokens = ({
           <div className="my-tokens" aria-label="my-tokens">
             {filteredTokenList.map((token) => (
               <TokenItemComponent
+                ariaLabel="token-user-item"
                 key={token.symbol}
                 tokenBalance={token}
                 tokenInfo={allTokens.find((t) => t.symbol === token.symbol)!}

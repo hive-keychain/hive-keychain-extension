@@ -61,10 +61,10 @@ const beforeEach = async (
   actAdvanceTime(4300);
   let objData: MocksToUse = {};
   if (hasInitialProxy) {
-    objData = { app: { getAccounts: [constants.extendedWProxy] } };
+    objData = { app: { getExtendedAccount: constants.extendedWProxy } };
+    extraMocks({ findUserProxy: accountProxy });
   }
   mockPreset.setOrDefault(objData);
-  extraMocks({ findUserProxy: accountProxy });
   if (removeActiveKey === true) {
     delete constants.stateAs.accounts[0].keys.active;
     delete constants.stateAs.accounts[0].keys.activePubkey;

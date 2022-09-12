@@ -84,8 +84,9 @@ const TokensHistory = ({
   }, [tokenHistory, filterValue]);
 
   return (
-    <div className="tokens-history">
+    <div aria-label="tokens-history" className="tokens-history">
       <InputComponent
+        ariaLabel="input-filter-box"
         type={InputType.TEXT}
         placeholder="popup_html_search"
         value={filterValue}
@@ -94,6 +95,7 @@ const TokensHistory = ({
       <div className="item-list">
         {displayedTransactions.map((transaction: TokenTransaction) => (
           <TokenHistoryItemComponent
+            ariaLabel={`token-history-item-${transaction.symbol}`}
             key={transaction._id}
             transaction={transaction}></TokenHistoryItemComponent>
         ))}

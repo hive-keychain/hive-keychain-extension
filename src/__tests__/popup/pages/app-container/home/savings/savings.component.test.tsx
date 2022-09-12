@@ -22,6 +22,9 @@ describe('savings.component tests:\n', () => {
       assertion.getManyByText(constants.balances.HIVE);
     });
     describe('withdraw:\n', () => {
+      beforeEach(async () => {
+        await methods.clickToWithdraw();
+      });
       it('Must show withdraw message', () => {
         assertion.getOneByText(constants.texts.withdraw);
       });
@@ -67,6 +70,9 @@ describe('savings.component tests:\n', () => {
       assertion.getManyByText(constants.balances.HBD);
     });
     describe('withdraw:\n', () => {
+      beforeEach(async () => {
+        await methods.clickToWithdraw();
+      });
       it('Must show withdraw message', () => {
         assertion.getOneByText(constants.texts.withdraw);
       });

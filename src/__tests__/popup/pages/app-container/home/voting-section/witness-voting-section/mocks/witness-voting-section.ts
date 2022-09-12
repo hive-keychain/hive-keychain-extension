@@ -25,12 +25,10 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  maxVotesResponse: [
-    {
-      ...accounts.extended,
-      witnesses_voted_for: 30,
-    } as ExtendedAccount,
-  ],
+  maxVotesExtended: {
+    ...accounts.extended,
+    witnesses_voted_for: 30,
+  } as ExtendedAccount,
   textMessage: i18n.get('html_popup_made_with_love_by_stoodkev'),
   voting: {
     success: i18n.get('html_popup_vote_stoodkev_witness_success'),
@@ -50,7 +48,7 @@ const beforeEach = async (
   actAdvanceTime(4300);
   let remock: MocksToUse = {};
   if (toUse?.noVotesleft) {
-    remock = { app: { getAccounts: constants.maxVotesResponse } };
+    remock = { app: { getExtendedAccount: constants.maxVotesExtended } };
   }
   mockPreset.setOrDefault(remock);
   if (toUse?.removeActiveKey) {
