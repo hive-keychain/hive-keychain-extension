@@ -18,7 +18,7 @@ describe('estimated-account-value-section.component tests:\n', () => {
     beforeEach(async () => {
       await estimatedAccountValue.beforeEach(<App />, false);
     });
-    it('Must display the estimated account value', () => {
+    it('Must display the estimated account value', async () => {
       assertion.getByText([
         { arialabelOrText: constants.label, query: QueryDOM.BYTEXT },
         { arialabelOrText: constants.amountString, query: QueryDOM.BYTEXT },

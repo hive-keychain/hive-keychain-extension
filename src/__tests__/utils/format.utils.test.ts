@@ -4,7 +4,6 @@ import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('format.utils tests:\n', () => {
   describe('withCommas tests:\n', () => {
-    //NOTE: U.S format returned i.e: 9,999.000
     test('Passing a currency value using a comma, must return same value in U.S format standards', () => {
       const result = FormatUtils.withCommas('12,38 HIVE');
       expect(result).toBe('12.000 HIVE');
@@ -46,12 +45,10 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe('12.9900901 HP');
     });
     test('Passing a currency value bad formatted(1 23 .45 HP), will return "1.000 23"', () => {
-      //Note: consider adding a validation for this case, if needed.
       const result = FormatUtils.withCommas('1 23 .45 HP');
       expect(result).toBe('1.000 23');
     });
     test('Passing a currency value bad formatted(1 23 .450 HP) with decimals, will return "1.0000 23"', () => {
-      //Note: consider adding a validation for this case, if needed.
       const result = FormatUtils.withCommas('1 23 .450 HP', 4);
       expect(result).toBe('1.0000 23');
     });
@@ -60,7 +57,6 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe('1,200,990,098.9900901 HP');
     });
     test('Passing a currency value and decimals(negative), will thrown a RangeError', () => {
-      //Note: currently the error is not being handled on the source function code.
       const rangeError = new RangeError(
         'toFixed() digits argument must be between 0 and 100',
       );
@@ -72,7 +68,6 @@ describe('format.utils tests:\n', () => {
       }
     });
     test('Passing a currency value and decimals(greater than 100), will thrown a RangeError', () => {
-      //Note: currently the error is not being handled on the source function code.
       const rangeError = new RangeError(
         'toFixed() digits argument must be between 0 and 100',
       );
@@ -133,7 +128,6 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe(NaN);
     });
     test('Passing vesting balance and valid props(as declared in fake-data.utils), must return expected value defined bellow', () => {
-      //Note redefine this expected value when dynamicProps change
       const expectedValue: number = 0.5458633941648806;
       const vesting_balance = '1000.000 HIVE';
       const result = FormatUtils.toHP(
@@ -146,7 +140,6 @@ describe('format.utils tests:\n', () => {
 
   describe('fromHP tests:\n', () => {
     test('Passing hp and valid props(as declared in fake-data.utils), must return expected value defined bellow', () => {
-      //Note redefine this expected value when dynamicProps change
       const expectedValue: number = 1000;
       const hp = '0.5458633941648806';
       const result = FormatUtils.fromHP(hp, utilsT.dynamicPropertiesObj);
@@ -227,7 +220,6 @@ describe('format.utils tests:\n', () => {
   });
 
   describe('formatCurrencyValue tests:\n', () => {
-    //NOTE: U.S format returned i.e: 9,999.000
     test('Passing a valid new asset and no digits parameter, must return valid U.S currency format with 3 digits', () => {
       const value = new Asset(10, 'HBD');
       const result = FormatUtils.formatCurrencyValue(value);
@@ -244,13 +236,11 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe('10.899');
     });
     test('Passing a valid currency string(currency name in lowercase and digits) and no digits parameter, will return "10.899 hive"', () => {
-      //NOTE: right now is expecting currency name to be UpperCase, so if there no need of validation, this case may be deleted.
       const value = '10.899 hive';
       const result = FormatUtils.formatCurrencyValue(value);
       expect(result).toBe('10.899 hive');
     });
     test('Passing a valid currency string(currency name in lowercase and digits) and no digits parameter, will return "10.899 hbd"', () => {
-      //NOTE: right now is expecting currency name to be UpperCase, so if there no need of validation, this case may be deleted.
       const value = '10.899 hbd';
       const result = FormatUtils.formatCurrencyValue(value);
       expect(result).toBe('10.899 hbd');
@@ -266,7 +256,6 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe('100,099,000,900.899');
     });
     test('Passing a bad formatted currency string("100  .00 HIVE") and no digits parameter, will return "100.000"', () => {
-      //Note: if the function may get lowercase values on currency names or different currencies, then a validation is needed.
       const value = '100  .00 HIVE';
       const result = FormatUtils.formatCurrencyValue(value);
       expect(result).toBe('100.000');
@@ -277,7 +266,6 @@ describe('format.utils tests:\n', () => {
       expect(result).toBe('NaN');
     });
     test('Passing an currency string and digits parameter greater than limit, will thrown an error', () => {
-      //Note: currently the error is not being handled on the source function code.
       const rangeError = new RangeError(
         'toFixed() digits argument must be between 0 and 100',
       );
@@ -290,7 +278,6 @@ describe('format.utils tests:\n', () => {
       }
     });
     test('Passing an currency string and digits parameter smaller than limit, will thrown an error', () => {
-      //Note: currently the error is not being handled on the source function code.
       const rangeError = new RangeError(
         'toFixed() digits argument must be between 0 and 100',
       );

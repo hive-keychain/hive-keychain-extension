@@ -1,0 +1,420 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`tokens-history.component tests:
+ No history to show Must show no transactions: tokens-history.component NO DATA 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          LEO history
+        </div>
+        <span
+          aria-label="icon-close-page"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          aria-label="tokens-history"
+          class="tokens-history"
+        >
+          <div
+            class="custom-input"
+          >
+            <div
+              class="input-container no-logo   "
+            >
+              <input
+                aria-label="input-filter-box"
+                class=""
+                placeholder="Search "
+                type="text"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="item-list"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`tokens-history.component tests:
+ With history to show Must show LEO token history and equal snapshot: tokens-history.component 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          LEO history
+        </div>
+        <span
+          aria-label="icon-close-page"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          aria-label="tokens-history"
+          class="tokens-history"
+        >
+          <div
+            class="custom-input"
+          >
+            <div
+              class="input-container no-logo   "
+            >
+              <input
+                aria-label="input-filter-box"
+                class=""
+                placeholder="Search "
+                type="text"
+                value=""
+              />
+            </div>
+          </div>
+          <div
+            class="item-list"
+          >
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item has-memo"
+              id="61674a248bae1252026e04ef"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      10/13/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    Received 0.986 LEO as comment curation reward
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                >
+                  re-theghost1980-20211215t195955670z
+                </div>
+              </div>
+            </div>
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item has-memo"
+              id="61654d8f8bae125202648bbd"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      10/12/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    Received 0.985 LEO as author reward
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                >
+                  re-theghost1980-20211215t195955670z
+                </div>
+              </div>
+            </div>
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item "
+              id="615a3b378bae1252023114ba"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      10/03/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    Received 10000.985 LEO from mining lottery (10099)
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                />
+              </div>
+            </div>
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item has-memo"
+              id="6147d1928bae125202dd666e"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      09/19/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    Received 0.985 LEO from @contract_tokens
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                >
+                  Fake Memo tokens_transfer
+                </div>
+              </div>
+            </div>
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item "
+              id="613ef535780fd34f81d69aef"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      09/10/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    @contract_tokens staked 1000.986 LEO for @keychain.tests
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                />
+              </div>
+            </div>
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item "
+              id="6135cb1c187544f7ef365d21"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      08/21/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    Delegated 100000.985 LEO to @theghost1980
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                />
+              </div>
+            </div>
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item "
+              id="6135ca75187544f7ef2f3833"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      08/20/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    Canceled a 0.985 LEO delegation to @contract_tokens
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                />
+              </div>
+            </div>
+            <div
+              aria-label="token-history-item-LEO"
+              class="token-history-item "
+              id="6135999e187544f7efe79c78"
+            >
+              <div
+                class="transaction"
+              >
+                <div
+                  class="information-panel"
+                >
+                  <div
+                    class="top-row"
+                  >
+                    <div
+                      class="date"
+                    >
+                      05/08/2021
+                    </div>
+                  </div>
+                  <div
+                    class="bottom-row"
+                  >
+                    Canceled a delegation of 6.666 LEO LEO to @contract_tokens
+                  </div>
+                </div>
+                <div
+                  class="memo-panel closed"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

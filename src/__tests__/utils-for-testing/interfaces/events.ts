@@ -4,9 +4,11 @@ export interface TypeAwait {
   ariaLabel: string;
   text: string;
 }
-
+/**
+ * ClickOrType, when just need to skip an event, declare ariaLabel & event as 'none'.
+ */
 export interface ClickOrType {
-  ariaLabel: string;
-  event: EventType;
+  ariaLabel: string | 'none';
+  event: EventType | 'none';
   text?: string;
 }

@@ -1,5 +1,6 @@
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ReactElement } from 'react';
+import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -70,10 +71,10 @@ const extraMocks = {
   claimRewards: () => {
     HiveUtils.claimRewards = jest.fn().mockResolvedValue(true);
   },
-  getAccounts: () => {
-    HiveUtils.getClient().database.getAccounts = jest
+  getAccount: () => {
+    AccountUtils.getExtendedAccount = jest
       .fn()
-      .mockResolvedValue([constants.newExtendedAccount]);
+      .mockResolvedValue(constants.newExtendedAccount);
   },
 };
 

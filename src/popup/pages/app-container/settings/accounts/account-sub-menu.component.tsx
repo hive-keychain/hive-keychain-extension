@@ -6,7 +6,9 @@ import { MenuComponent } from 'src/common-ui/menu/menu.component';
 
 const AccountSubMenu = ({}: PropsFromRedux) => {
   return (
-    <div className="settings-account-sub-menu-page">
+    <div
+      aria-label="settings-account-sub-menu-page"
+      className="settings-account-sub-menu-page">
       <MenuComponent
         title="popup_html_accounts"
         isBackButtonEnable={true}
