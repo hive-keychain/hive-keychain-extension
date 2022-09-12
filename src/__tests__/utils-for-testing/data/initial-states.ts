@@ -11,6 +11,10 @@ const iniStateAs = {
     mk: mk.user.one,
     accounts: accounts.twoAccounts,
   } as RootState,
+  defaultExistentAllKeys: {
+    mk: mk.user.one,
+    accounts: [accounts.local.oneAllkeys, accounts.local.two],
+  },
   emptyState: {} as RootState,
 };
 

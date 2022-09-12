@@ -9,6 +9,7 @@ import {
 import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 import { ReactElement } from 'react';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
+import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
@@ -81,8 +82,8 @@ function fromArrayToAssert(
 const extraMocks = {
   getLastTransaction: () =>
     (TransactionUtils.getLastTransaction = jest.fn().mockResolvedValue(1)),
-  remockGetAccounts: () =>
-    (HiveUtils.getClient().database.getAccounts = jest
+  remockGetAccount: () =>
+    (AccountUtils.getAccount = jest
       .fn()
       .mockResolvedValue(constants.dataUserTwoLoaded)),
 };

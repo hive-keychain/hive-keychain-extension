@@ -1,23 +1,15 @@
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-//jest extra configurations
 jest.setTimeout(20000);
-
-//chrome
 const chrome = require('chrome-mock');
 global.chrome = chrome;
-//end Chrome
-
-//cleaning mocks
 afterEach(() => {
   jest.clearAllMocks();
 });
 
 describe('getClaims tests', () => {
-  //mocking getMultipleValueFromLocalStorage,
   const username = 'theghost1980';
   test('When passed a username, and no claims or rewards({}) found, must return {"claimAccounts": false, "claimRewards": false}', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({});
@@ -30,7 +22,6 @@ describe('getClaims tests', () => {
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, and claims and rewards undefined(see bellow) found, must return {claimAccounts: false, claimRewards: false}', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -47,7 +38,6 @@ describe('getClaims tests', () => {
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, and claims and rewards null(see bellow) found, must return {claimAccounts: false, claimRewards: false}', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -106,7 +96,6 @@ describe('getClaims tests', () => {
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, rewards undefined and claims found, must return valid object as { claimAccounts: true, claimRewards: false }', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -125,7 +114,6 @@ describe('getClaims tests', () => {
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, reward found and claim as null, must return valid object as { claimAccounts: false, claimRewards: true }', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -144,7 +132,6 @@ describe('getClaims tests', () => {
     expect(result).toEqual(expectedResults);
   });
   test('When passed a username, reward found and claim as undefined, must return valid object as { claimAccounts: false, claimRewards: true }', async () => {
-    //mocking storaged claims values
     LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue({
@@ -212,29 +199,6 @@ describe('saveClaims tests', () => {
     });
     expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
       workerjab1: false,
-    });
-    expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
-    expect(result).toBeUndefined();
-  });
-  test.skip('When passed empty username, it returns empty key object with assigned value. Skipped as validation needed.', async () => {
-    expectedSendMessageObj.value.claimAccounts.workerjab1 = false;
-    expectedSendMessageObj.value.claimRewards.workerjab1 = false;
-
-    const result = await AutomatedTasksUtils.saveClaims(
-      false,
-      false,
-      false,
-      '',
-    );
-    expect(spyLocalStorageUtilsSaveValue).toHaveBeenCalledTimes(3);
-    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimRewards', {
-      '': false,
-    });
-    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimAccounts', {
-      '': false,
-    });
-    expect(spyLocalStorageUtilsSaveValue).toBeCalledWith('claimSavings', {
-      '': false,
     });
     expect(spyChromeRuntimeSendMessage).toBeCalledWith(expectedSendMessageObj);
     expect(result).toBeUndefined();
@@ -518,7 +482,6 @@ describe('saveClaims tests', () => {
 });
 
 describe('initBackgroundClaims tests', () => {
-  //let spyLocalStorageUtilsSaveValue: jest.SpyInstance;
   let spyChromeRuntimeSendMessage: jest.SpyInstance;
   let spyOnGetAllClaimRewards: jest.SpyInstance;
   let spyOnGetAllClaimAccounts: jest.SpyInstance;
@@ -541,7 +504,6 @@ describe('initBackgroundClaims tests', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  //without mocking, will read undefined from getAllClaimRewards and getAllClaimAccounts
   test('On execution will call chrome.runtime.sendMessage after reading claim values and set values as undefined', async () => {
     const result = await AutomatedTasksUtils.initBackgroundClaims();
     expect(spyOnGetAllClaimAccounts).toBeCalledTimes(1);
@@ -557,7 +519,6 @@ describe('initBackgroundClaims tests', () => {
     });
     expect(result).toBeUndefined();
   });
-  //mocking stored values
   test('On execution will call chrome.runtime.sendMessage after reading claim values and set values as mocked', async () => {
     const mockClaimAccountsObj = {
       workerjab1: true,

@@ -134,6 +134,47 @@ const getOutgoingDelegations = async (
   });
 };
 
+/**
+ * SSCJS request using HiveEngineConfigUtils.getApi().find.
+ * @param {string} contract Fixed as 'tokens'
+ * @param {string} table Fixed as 'tokens
+ */
+const getAllTokens = async (
+  query: {},
+  limit: number,
+  offset: number,
+  indexes: {}[],
+): Promise<any> => {
+  return HiveEngineConfigUtils.getApi().find(
+    'tokens',
+    'tokens',
+    query,
+    limit,
+    offset,
+    indexes,
+  );
+};
+/**
+ * SSCJS request using HiveEngineConfigUtils.getApi().find.
+ * @param {string} contract Fixed as 'market'
+ * @param {string} table Fixed as 'metrics
+ */
+const getTokensMarket = async (
+  query: {},
+  limit: number,
+  offset: number,
+  indexes: {}[],
+): Promise<TokenMarket[]> => {
+  return HiveEngineConfigUtils.getApi().find(
+    'market',
+    'metrics',
+    query,
+    limit,
+    offset,
+    indexes,
+  );
+};
+
 const sendToken = (data: SendTokenProps, key: PrivateKey) => {
   const id = Config.hiveEngine.mainnet;
   const json = JSON.stringify({
@@ -174,6 +215,8 @@ const HiveEngineUtils = {
   cancelDelegationToken,
   getIncomingDelegations,
   getOutgoingDelegations,
+  getAllTokens,
+  getTokensMarket,
 };
 
 export default HiveEngineUtils;

@@ -65,7 +65,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
   };
 
   return (
-    <div className="whats-new">
+    <div aria-label="whats-new-component" className="whats-new">
       <div className="overlay"></div>
       <div className="whats-new-container">
         <div className="whats-new-title">
@@ -90,6 +90,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
                   {feature.extraInformation}
                 </div>
                 <a
+                  aria-label="link-whats-new-read-more"
                   className="read-more-link"
                   onClick={() =>
                     navigateToArticle(`${content.url}#${feature.anchor}`)
@@ -111,6 +112,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
           )}
           {pageIndex === content.features[locale].length - 1 && (
             <ButtonComponent
+              ariaLabel="button-last-page"
               type={ButtonType.STROKED}
               label="popup_html_whats_new_got_it"
               onClick={() => finish()}
@@ -118,6 +120,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
           )}
           {pageIndex < content.features[locale].length - 1 && (
             <ButtonComponent
+              ariaLabel="button-next-page"
               type={ButtonType.STROKED}
               label="popup_html_whats_new_next"
               onClick={() => next()}

@@ -101,7 +101,6 @@ const WalletHistory = ({
       ...filter?.selectedTransactionTypes,
       [transactionName]: !filter?.selectedTransactionTypes![transactionName],
     };
-
     updateFilter({
       ...filter,
       selectedTransactionTypes: newFilter,
@@ -201,6 +200,7 @@ const WalletHistory = ({
     }
     setFilterReady(true);
   };
+
   useEffect(() => {
     setPreviousTransactionLength(0);
     if (filterReady) {
@@ -353,6 +353,7 @@ const WalletHistory = ({
   const renderListItem = (transaction: Transaction) => {
     return (
       <WalletHistoryItemComponent
+        ariaLabel="wallet-history-item"
         key={transaction.key}
         transaction={transaction}></WalletHistoryItemComponent>
     );
@@ -390,6 +391,7 @@ const WalletHistory = ({
   return (
     <div className="wallet-history-page">
       <div
+        aria-label="wallet-history-filter-panel"
         className={
           'filter-panel ' + (isFilterOpened ? 'filter-opened' : 'filter-closed')
         }>
@@ -400,12 +402,16 @@ const WalletHistory = ({
         <div className="filters">
           <div className="search-panel">
             <InputComponent
+              ariaLabel="input-filter-box"
               type={InputType.TEXT}
               placeholder="popup_html_search"
               value={filter.filterValue}
               onChange={updateFilterValue}
             />
-            <div className={'filter-button'} onClick={() => clearFilters()}>
+            <div
+              aria-label="clear-filters"
+              className={'filter-button'}
+              onClick={() => clearFilters()}>
               {chrome.i18n.getMessage(`popup_html_clear_filters`)}
             </div>
           </div>
@@ -415,6 +421,7 @@ const WalletHistory = ({
                 Object.keys(filter.selectedTransactionTypes).map(
                   (filterOperationType) => (
                     <div
+                      aria-label={`filter-selector-${filterOperationType}`}
                       key={filterOperationType}
                       className={
                         'filter-button ' +
@@ -433,6 +440,7 @@ const WalletHistory = ({
             <div className="vertical-divider"></div>
             <div className="in-out-panel">
               <div
+                aria-label="filter-by-incoming"
                 className={
                   'filter-button ' +
                   (filter.inSelected ? 'selected' : 'not-selected')
@@ -441,6 +449,7 @@ const WalletHistory = ({
                 {chrome.i18n.getMessage(`popup_html_filter_in`)}
               </div>
               <div
+                aria-label="filter-by-outgoing"
                 className={
                   'filter-button ' +
                   (filter.outSelected ? 'selected' : 'not-selected')

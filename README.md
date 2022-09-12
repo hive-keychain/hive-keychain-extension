@@ -54,7 +54,7 @@ Before contributing to Hive Keychain, contact us on [Discord](https://discord.co
 
 ## Useful links
 
-- [Developers documentation](./documentation/README.md)
+- [Developers documentation](./documentation/README.md) for how to interact with Hive Keychain from your website
 - [Landing page](https://hive-keychain.com)
 - [Support Discord](https://discord.com/invite/3EM6YfRrGv)
 - [Keychain for Chromium browsers](https://chrome.google.com/webstore/detail/hive-keychain/jcacnejopjdphbnjgfaaobbfafkihpep?hl=en)

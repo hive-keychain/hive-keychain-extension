@@ -380,7 +380,7 @@
     "description": "on manage accounts, add a previously non stored key"
   },
   "popup_html_add_key_text": {
-    "message": "Add the <span></span> private key to your account. You can also add it by entering your master key.",
+    "message": "Add the <span>$1</span> private key to your account. You can also add it by entering your master key.",
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
@@ -1333,7 +1333,7 @@
     "description": "On savings menu"
   },
   "popup_html_withdraw_success": {
-    "message": "Successfully started a $1  withdrawal from savings",
+    "message": "Successfully started a $1 withdrawal from savings",
     "description": "On savings menu"
   },
   "popup_html_withdraw_fail": {
