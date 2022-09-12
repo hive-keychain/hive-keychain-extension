@@ -25,6 +25,7 @@ import { DepositSavingsTransactionComponent } from '@popup/pages/app-container/h
 import { FillCollateralizedConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-collateralized-convert-transaction/fill-collateralized-convert-transaction.component';
 import { FillConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-convert-transaction/fill-convert-transaction.component';
 import { FillRecurrentTransferTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-recurrent-transfer-transaction/fill-recurrent-transfer-transaction.component';
+import { FillWithdrawSavingsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-withdraw-savings-transaction copy/fill-withdraw-savings-transaction.component';
 import { PowerDownTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/power-down-transaction/power-down-transaction.component';
 import { PowerUpTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/power-up-transaction/power-up-transaction.component';
 import { ReceivedInterestsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/received-interests-transaction/received-interests-transaction.component';
@@ -102,7 +103,7 @@ const WalletTransactionInfo = ({
             );
           case 'fill_transfer_from_savings':
             return (
-              <WithdrawSavingsTransactionComponent
+              <FillWithdrawSavingsTransactionComponent
                 transaction={transaction as StartWithdrawSavings}
               />
             );
