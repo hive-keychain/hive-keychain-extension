@@ -1,5 +1,4 @@
 import { DefaultHiveEngineRpcs } from '@interfaces/hive-engine-rpc.interface';
-import { screen } from '@testing-library/react';
 import tokensSettings from 'src/__tests__/popup/pages/app-container/home/tokens/tokens-settings/mocks/tokens-settings';
 import alImg from 'src/__tests__/utils-for-testing/aria-labels/al-img';
 import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
@@ -84,7 +83,6 @@ describe('tokens-settings.component tests:\n', () => {
           'https://api.hive.keychain.com',
         );
         await assertion.awaitFor(messages.rpcNode.success, QueryDOM.BYTEXT);
-        screen.debug();
       });
     });
   });
