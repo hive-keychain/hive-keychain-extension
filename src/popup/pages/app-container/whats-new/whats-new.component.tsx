@@ -67,6 +67,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
         }}></li>
     );
   };
+
   if (!ready) return null;
   else
     return (
@@ -95,6 +96,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
                     {feature.extraInformation}
                   </div>
                   <a
+                    aria-label="link-whats-new-read-more"
                     className="read-more-link"
                     onClick={() =>
                       navigateToArticle(`${content.url}#${feature.anchor}`)

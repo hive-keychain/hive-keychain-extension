@@ -7,7 +7,9 @@ import './import-export-preferences.component.scss';
 
 const ImportExportPreferences = ({}: PropsFromRedux) => {
   return (
-    <div className="import-export-preferences-page">
+    <div
+      aria-label="import-export-preferences-page"
+      className="import-export-preferences-page">
       <MenuComponent
         title="popup_html_import_export_settings"
         isBackButtonEnable={true}

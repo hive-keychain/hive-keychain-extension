@@ -104,6 +104,7 @@ const AutomatedTasks = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}
@@ -124,7 +125,7 @@ const AutomatedTasks = ({
   };
 
   return (
-    <div className="automated-tasks-page">
+    <div aria-label="automated-tasks-page" className="automated-tasks-page">
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_automated_intro')}
       </div>
@@ -141,6 +142,7 @@ const AutomatedTasks = ({
       </div>
 
       <CheckboxComponent
+        ariaLabel="checkbox-autoclaim-rewards"
         title="popup_html_enable_autoclaim_rewards"
         checked={claimRewards}
         onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
@@ -148,6 +150,7 @@ const AutomatedTasks = ({
       />
       {activeAccount.rc.max_mana > Config.claims.freeAccount.MIN_RC && (
         <CheckboxComponent
+          ariaLabel="checkbox-autoclaim-accounts"
           title="popup_html_enable_autoclaim_accounts"
           checked={claimAccounts}
           onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
@@ -159,6 +162,7 @@ const AutomatedTasks = ({
         />
       )}
       <CheckboxComponent
+        ariaLabel="checkbox-autoclaim-savings"
         title="popup_html_enable_autoclaim_savings"
         checked={claimSavings}
         onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}

@@ -1,5 +1,5 @@
 import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
-import { LocalAccount } from '@interfaces/local-account.interface';
+import { Keys, LocalAccount } from '@interfaces/local-account.interface';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
 const extended = {
@@ -52,6 +52,17 @@ const local = {
     name: userData.two.username,
     keys: userData.two.keys,
   } as LocalAccount,
+  oneAllkeys: {
+    name: userData.one.username,
+    keys: {
+      active: userData.one.nonEncryptKeys.active,
+      activePubkey: userData.one.encryptKeys.active,
+      posting: userData.one.nonEncryptKeys.posting,
+      postingPubkey: userData.one.encryptKeys.posting,
+      memo: userData.one.nonEncryptKeys.memo,
+      memoPubkey: userData.one.encryptKeys.memo,
+    } as Keys,
+  },
 };
 
 const twoAccounts = [local.one, local.two];
