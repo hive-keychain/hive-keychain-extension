@@ -37,14 +37,6 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    tokens: {
-      with: {
-        transferIcons: 'tokens-transfer.component ICONS',
-      },
-      noBalances: 'tokens-transfer.component NO BALANCES',
-    },
-  },
   messages: {
     missingField: i18n.get('popup_accounts_fill'),
     negativeAmount: i18n.get('popup_html_need_positive_amount'),
