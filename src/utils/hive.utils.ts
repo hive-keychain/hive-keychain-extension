@@ -58,6 +58,14 @@ const setRpc = async (rpc: Rpc) => {
   );
 };
 
+const getAccountPrice = async () => {
+  return Asset.fromString(
+    (
+      await getClient().database.getChainProperties()
+    ).account_creation_fee.toString(),
+  ).amount;
+};
+
 const getVP = (account: ExtendedAccount) => {
   if (!account.name) {
     return null;
@@ -741,6 +749,7 @@ const HiveUtils = {
   getRecentClaims,
   getHivePrice,
   getVotePowerReserveRate,
+  getAccountPrice,
   getDynamicGlobalProperties,
   getCurrentMedianHistoryPrice,
   getRewardFund,
