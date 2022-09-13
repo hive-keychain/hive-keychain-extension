@@ -2451,6 +2451,10 @@
     "message": "Pending $1",
     "description": "Global"
   },
+  "popup_html_pending_currency_timestamp": {
+    "message": "This conversion will be filled on $1 at $2",
+    "description": "Global"
+  },
   "popup_html_pending_conversions": {
     "message": "You have $1 pending $2 conversion(s)",
     "description": "Global"
