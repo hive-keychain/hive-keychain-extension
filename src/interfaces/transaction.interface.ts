@@ -66,6 +66,9 @@ export interface DepositSavings extends Transaction {
   from: string;
 }
 
+export interface StartWithdrawSavings extends Transaction {
+  amount: any;
+}
 export interface WithdrawSavings extends Transaction {
   amount: any;
 }

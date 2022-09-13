@@ -22,10 +22,10 @@ const IncomingOutgoingPage = ({
   globalProperties,
   currencyLabels,
   totalPendingOutgoingUndelegation,
+  available,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   let header = '';
-
   switch (delegationType) {
     case DelegationType.INCOMING:
       header = 'popup_html_total_incoming';
@@ -136,9 +136,8 @@ const IncomingOutgoingPage = ({
                     : delegation.delegatee
                 }
                 amount={delegation.vesting_shares}
-                expirationDate={
-                  delegation.expiration_date
-                }></IncomingOutgoingItemComponent>
+                expirationDate={delegation.expiration_date}
+                maxAvailable={available}></IncomingOutgoingItemComponent>
             ))}
           </div>
         </div>
@@ -157,6 +156,7 @@ const mapStateToProps = (state: RootState) => {
     delegations: state.delegations,
     globalProperties: state.globalProperties.globals,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    available: state.navigation.stack[0].params.available,
   };
 };
 

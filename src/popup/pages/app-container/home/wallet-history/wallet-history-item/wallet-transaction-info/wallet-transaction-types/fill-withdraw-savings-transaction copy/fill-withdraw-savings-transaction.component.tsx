@@ -13,14 +13,15 @@ interface WithdrawSavingsTransactionProps {
   transaction: WithdrawSavings | StartWithdrawSavings;
 }
 
-const WithdrawSavingsTransaction = ({
+const FillWithdrawSavingsTransaction = ({
   transaction,
   activeAccountName,
 }: PropsFromRedux & WithdrawSavingsTransactionProps) => {
   const getDetail = () => {
-    return chrome.i18n.getMessage('popup_html_wallet_info_withdraw_savings', [
-      FormatUtils.withCommas(transaction.amount, 3),
-    ]);
+    return chrome.i18n.getMessage(
+      'popup_html_wallet_info_fill_withdraw_savings',
+      [FormatUtils.withCommas(transaction.amount, 3)],
+    );
   };
 
   return (
@@ -37,6 +38,6 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const WithdrawSavingsTransactionComponent = connector(
-  WithdrawSavingsTransaction,
+export const FillWithdrawSavingsTransactionComponent = connector(
+  FillWithdrawSavingsTransaction,
 );

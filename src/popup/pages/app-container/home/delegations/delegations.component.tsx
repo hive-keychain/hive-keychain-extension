@@ -74,11 +74,11 @@ const Delegations = ({
   const [incomingError, setIncomingError] = useState<string | null>(null);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
+    const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
     );
   };
 
@@ -169,6 +169,7 @@ const Delegations = ({
     navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
       delegationType: DelegationType.OUTGOING,
       totalPendingOutgoingUndelegation: totalPendingOutgoingUndelegation,
+      available: available,
     });
   };
 
