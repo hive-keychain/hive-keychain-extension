@@ -58,8 +58,6 @@ describe('hive-engine.utils tests:\n', () => {
 
     describe('stakeToken tests:\n', () => {
       test('Trying to stake using a public active password must generate an error on DHive, before submitting the json', async () => {
-        //NOTE: This test even when is not mocking do not rely on network connection as the failing condition will be catched by Dhive
-        //before submitting the json, so can be considered as local test.
         const symbolToken = 'HIVE';
         const amount = '1';
         const activeAccountName = utilsT.userData.username;
@@ -116,8 +114,6 @@ describe('hive-engine.utils tests:\n', () => {
 
     describe('unstakeToken tests:\n', () => {
       test('Trying to unstake a token but using a public key, will fire a Dhive error before transmitting the json', async () => {
-        //NOTE: This test even when is not mocking do not rely on network connection as the failing condition will be catched by Dhive
-        //before submitting the json, so can be considered as local test.
         const symbolToken = 'HIVE';
         const amount = '1';
         const activeAccountName = utilsT.userData.username;
@@ -172,8 +168,6 @@ describe('hive-engine.utils tests:\n', () => {
 
     describe('delegateToken tests:\n', () => {
       test('Trying to delegate a token but using a public key, will fire a Dhive error before transmitting the json', async () => {
-        //NOTE: This test even when is not mocking do not rely on network connection as the failing condition will be catched by Dhive
-        //before submitting the json, so can be considered as local test.
         const symbolToken = 'HIVE';
         const amount = '1000';
         const activeAccountName = utilsT.userData.username;
@@ -230,8 +224,6 @@ describe('hive-engine.utils tests:\n', () => {
 
     describe('cancelDelegationToken tests:\n', () => {
       test('Trying to cancel a delegation of a token but using a public key, will fire a Dhive error before transmitting the json', async () => {
-        //NOTE: This test even when is not mocking do not rely on network connection as the failing condition will be catched by Dhive
-        //before submitting the json, so can be considered as local test.
         const symbolToken = 'HIVE';
         const amount = '1000';
         const activeAccountName = utilsT.userData.username;

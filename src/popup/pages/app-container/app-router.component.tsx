@@ -23,6 +23,8 @@ import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { AboutPageComponent } from '@popup/pages/app-container/settings/about/about.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
+import { CreateAccountStepOneComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-one/create-account-step-one.component';
+import { CreateAccountStepTwoComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-two/create-account-step-two.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from '@popup/pages/app-container/settings/advanced-settings/advanced-settings.component';
@@ -136,6 +138,10 @@ const AppRouter = ({
         return <AutomatedTasksComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
+      case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:
+        return <CreateAccountStepOneComponent />;
+      case Screen.CREATE_ACCOUNT_PAGE_STEP_TWO:
+        return <CreateAccountStepTwoComponent />;
     }
   };
 

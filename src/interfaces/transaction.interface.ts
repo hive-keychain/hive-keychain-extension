@@ -66,6 +66,9 @@ export interface DepositSavings extends Transaction {
   from: string;
 }
 
+export interface StartWithdrawSavings extends Transaction {
+  amount: any;
+}
 export interface WithdrawSavings extends Transaction {
   amount: any;
 }
@@ -85,4 +88,15 @@ export interface FillConvert extends Transaction {
 export interface FillCollateralizedConvert extends Transaction {
   amount_in: string;
   amount_out: string;
+}
+
+export interface CreateClaimedAccount extends Transaction {
+  creator: string;
+  new_account_name: string;
+}
+
+export interface CreateAccount extends Transaction {
+  creator: string;
+  new_account_name: string;
+  fee: string;
 }

@@ -1,8 +1,11 @@
 import { ExtendedAccount, VestingDelegation } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { Autolock } from '@interfaces/autolock.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import { TokenDelegation } from '@interfaces/token-delegation.interface';
+import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
@@ -12,7 +15,8 @@ export interface MocksApp {
   getCurrentRpc?: Rpc;
   getActiveAccountNameFromLocalStorage?: string;
   getRCMana?: Manabar;
-  getAccounts?: ExtendedAccount[];
+  getAccount?: ExtendedAccount[];
+  getExtendedAccount?: ExtendedAccount;
   checkRpcStatus?: boolean;
   hasStoredAccounts?: boolean;
   getMkFromLocalStorage?: string;
@@ -21,36 +25,32 @@ export interface MocksApp {
   getVP?: number;
   getVotingDollarsPerAccount?: number;
 }
-
 export interface MocksHome {
   getAccountValue?: string | 0;
 }
-
 export interface MocksTopBar {
   hasReward?: boolean;
 }
-
 export interface MocksPowerUp {
   getVestingDelegations?: VestingDelegation[];
 }
-
 export interface MocksWalletHistory {
   getAccountTransactions?: [Transaction[], number];
 }
-
 export interface MocksTokens {
-  getTokens?: Token[];
   getUserBalance?: TokenBalance[];
+  getIncomingDelegations?: TokenDelegation[];
+  getOutgoingDelegations?: TokenDelegation[];
+  getAllTokens?: any[];
+  getTokensMarket?: TokenMarket[];
 }
 export interface MocksProposal {
   hasVotedForProposal?: boolean;
   voteForKeychainProposal?: boolean;
 }
-
 export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
 }
-
 export interface GetManifest {
   version: string;
   name: string;
@@ -63,7 +63,6 @@ export interface MocksChromeRunTime {
   getManifest?: GetManifest;
   sendMessage: jest.Mock;
 }
-
 export interface MocksToUse {
   app?: MocksApp;
   home?: MocksHome;
@@ -80,14 +79,21 @@ export interface MockVotingProposal {
   voteForProposal?: boolean;
   unvoteForProposal?: boolean;
 }
-
 export interface MockProxy {
   findUserProxy?: string | null;
   setAsProxy?: string | boolean | undefined;
   removeProxy?: boolean;
 }
+export interface CustomDataFromLocalStorage {
+  accountHistoryApi?: string[];
+  customRpcList?: string[];
+  customAutolock?: Autolock;
+  customSwitchAuto?: boolean;
+  customsRpcs?: Rpc[];
+  customAuthorizedOP?: NoConfirm;
+  customlastVersionSeen?: string;
+}
 
-//TODO remove all unused from overwrite + add the keychainApiget.
 export interface MocksOverwrite {
   app?: {
     getValueFromLocalStorage?: OverwriteMock;

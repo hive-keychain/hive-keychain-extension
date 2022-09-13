@@ -1,7 +1,7 @@
 import { ActionType } from '@popup/actions/action-type.enum';
 import { AppThunk } from '@popup/actions/interfaces';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
-import HiveUtils from 'src/utils/hive.utils';
+import AccountUtils from 'src/utils/account.utils';
 
 const TIME_REFERENCE = 1643236071000;
 
@@ -35,9 +35,9 @@ export const loadActiveAccount =
     if (account) {
       dispatch(refreshKeys(account));
       dispatch(getAccountRC(account.name));
-      const extendedAccount = (
-        await HiveUtils.getClient().database.getAccounts([account.name])
-      )[0];
+      const extendedAccount = await AccountUtils.getExtendedAccount(
+        account.name,
+      );
       dispatch({
         type: ActionType.SET_ACTIVE_ACCOUNT,
         payload: {
@@ -51,7 +51,7 @@ export const loadActiveAccount =
 export const getAccountRC =
   (username: string): AppThunk =>
   async (dispatch) => {
-    const rc = await HiveUtils.getClient().rc.getRCMana(username);
+    const rc = await AccountUtils.getRCMana(username);
     dispatch({
       type: ActionType.SET_ACTIVE_ACCOUNT_RC,
       payload: rc,

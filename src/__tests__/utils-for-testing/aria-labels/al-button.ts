@@ -52,9 +52,51 @@ export default {
     savings: {
       submit: 'submit-savings',
     },
+    transfer: {
+      send: 'send-transfer',
+    },
+    voteProposal: 'vote-key-chain-proposal',
+    voteStoodkevWitness: 'vote-for-stoodkev-witness',
+    tokens: {
+      preFix: 'token-button-operation-',
+      transfer: {
+        send: 'button-send-tokens-transfer',
+      },
+    },
   },
   panel: {
     close: 'button-panel-close',
   },
   save: 'button-save',
+  readProposal: 'button-read-proposal',
+  token: {
+    action: {
+      stake: 'button-token-stake',
+      unstake: 'button-token-unstake',
+      delegate: 'button-token-delegate',
+    },
+    delegations: {
+      goto: {
+        incoming: 'button-go-to-incoming-delegations',
+        outgoing: 'button-go-to-outgoing-delegations',
+      },
+    },
+  },
+  qrCode: {
+    toogle: 'button-toogle-qr-code',
+  },
+  accounts: {
+    manage: {
+      delete: 'button-delete-account',
+    },
+  },
+  rpcNodes: {
+    addRpc: 'button-add-rpc',
+  },
+  whatsNew: {
+    button: {
+      lastPage: 'button-last-page',
+      nextPage: 'button-next-page',
+    },
+  },
 };

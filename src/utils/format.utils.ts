@@ -93,6 +93,10 @@ const fromNaiAndSymbol = (obj: any) => {
   return `${(obj.amount / 1000).toFixed(obj.precision)} ${FormatUtils.getSymbol(
     obj.nai,
   )}`;
+ };
+  
+const removeHtmlTags = (str: string) => {
+  return str.replace(/<(?:.|\n)*?>/gm, '');
 };
 
 const FormatUtils = {
@@ -105,6 +109,7 @@ const FormatUtils = {
   toNumber,
   getSymbol,
   fromNaiAndSymbol,
+  removeHtmlTags,
 };
 
 export default FormatUtils;
