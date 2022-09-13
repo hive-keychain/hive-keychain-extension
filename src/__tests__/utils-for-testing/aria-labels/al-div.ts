@@ -29,4 +29,56 @@ export default {
     vm: 'resource-item-voting-mana',
     rc: 'resource-item-resource-credits',
   },
+  warning: {
+    message: 'warning-message',
+  },
+  proposalVotingSection: 'proposal-voting-section',
+  wallet: {
+    history: {
+      item: 'wallet-history-item',
+      filterPanel: 'wallet-history-filter-panel',
+      clearFilters: 'clear-filters',
+      filterSelector: {
+        preFix: 'filter-selector-',
+      },
+      byIn: 'filter-by-incoming',
+      byOut: 'filter-by-outgoing',
+    },
+  },
+  transactions: {
+    expandableArea: 'transaction-expandable-area',
+  },
+  token: {
+    user: {
+      item: 'token-user-item',
+      symbolPreFix: 'token-user-symbol-',
+      tokenInfo: {
+        gotoWebSite: 'token-info-go-to-website',
+        expandablePanel: 'token-info-expandable-panel',
+      },
+    },
+    list: {
+      preFix: 'token-list-item-',
+      item: {
+        description: 'token-list-item-description',
+        innerCheckBox: {
+          preFix: 'checkbox-checked-',
+        },
+        history: {
+          preFix: 'token-history-item-',
+        },
+      },
+    },
+  },
+  about: {
+    content: 'about-page-content',
+  },
+  keys: {
+    list: {
+      preFix: {
+        clickeableKey: 'clickeable-account-key-',
+      },
+      usingAuthorized: 'using-authorized-account',
+    },
+  },
 };

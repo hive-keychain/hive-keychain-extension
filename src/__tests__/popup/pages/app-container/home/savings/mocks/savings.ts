@@ -157,6 +157,12 @@ const methods = {
       alDropdown.select.savings.operation.deposit,
     ]);
   },
+  clickToWithdraw: async () => {
+    await clickAwait([
+      alDropdown.select.savings.operation.selector,
+      alDropdown.select.savings.operation.withdraw,
+    ]);
+  },
 };
 
 const extraMocks = {

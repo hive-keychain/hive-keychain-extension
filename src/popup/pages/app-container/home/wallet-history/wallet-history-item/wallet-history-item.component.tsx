@@ -7,11 +7,15 @@ import './wallet-history-item.component.scss';
 
 interface WalletHistoryItemProps {
   transaction: Transaction;
+  ariaLabel?: string;
 }
 
-const WalletHistoryItem = ({ transaction }: PropsFromRedux) => {
+const WalletHistoryItem = ({ transaction, ariaLabel }: PropsFromRedux) => {
   return (
-    <div id={`index-${transaction.index}`} className={`wallet-history-item`}>
+    <div
+      aria-label={ariaLabel}
+      id={`index-${transaction.index}`}
+      className={`wallet-history-item`}>
       <WalletTransactionInfoComponent
         transaction={transaction}></WalletTransactionInfoComponent>
     </div>

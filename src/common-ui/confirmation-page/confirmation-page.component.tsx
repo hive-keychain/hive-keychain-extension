@@ -39,7 +39,7 @@ const ConfirmationPage = ({
           }}></div>
 
         {warningMessage && (
-          <div className="warning-message">
+          <div aria-label="warning-message" className="warning-message">
             {skipWarningTranslation
               ? warningMessage
               : chrome.i18n.getMessage(warningMessage, warningParams)}

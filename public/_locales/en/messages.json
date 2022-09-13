@@ -380,7 +380,7 @@
     "description": "on manage accounts, add a previously non stored key"
   },
   "popup_html_add_key_text": {
-    "message": "Add the <span></span> private key to your account. You can also add it by entering your master key.",
+    "message": "Add the <span>$1</span> private key to your account. You can also add it by entering your master key.",
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
@@ -1938,7 +1938,11 @@
     "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
-    "message": "Withdrawn $1 from savings",
+    "message": "Started a $1 withdrawal from savings",
+    "description": "Wallet information withdraw from savings"
+  },
+  "popup_html_wallet_info_fill_withdraw_savings": {
+    "message": "Successfully withdrawn $1 from savings",
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
