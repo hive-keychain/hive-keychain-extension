@@ -1,4 +1,3 @@
-import KeychainApi from '@api/keychain';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { screen } from '@testing-library/react';
@@ -10,9 +9,7 @@ import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
-import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { EventType, Tab } from 'src/__tests__/utils-for-testing/enums/enums';
-import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import {
   MockProxy,
@@ -64,10 +61,10 @@ const beforeEach = async (
   actAdvanceTime(4300);
   let objData: MocksToUse = {};
   if (hasInitialProxy) {
-    objData = { app: { getAccounts: [constants.extendedWProxy] } };
+    objData = { app: { getExtendedAccount: constants.extendedWProxy } };
+    extraMocks({ findUserProxy: accountProxy });
   }
   mockPreset.setOrDefault(objData);
-  extraMocks({ findUserProxy: accountProxy });
   if (removeActiveKey === true) {
     delete constants.stateAs.accounts[0].keys.active;
     delete constants.stateAs.accounts[0].keys.activePubkey;
@@ -110,10 +107,7 @@ const extraMocks = (toUse: MockProxy) => {
   ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(toUse.findUserProxy);
   WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(toUse.setAsProxy);
   WitnessUtils.removeProxy = jest.fn().mockResolvedValueOnce(toUse.removeProxy);
-  KeychainApi.get = jest.fn().mockResolvedValue(witness.ranking);
 };
-
-mocks.helper();
 
 export default {
   beforeEach,

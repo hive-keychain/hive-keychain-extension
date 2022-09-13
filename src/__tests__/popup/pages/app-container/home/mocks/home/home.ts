@@ -1,3 +1,4 @@
+import { ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { MenuItem } from '@interfaces/menu-item.interface';
 import {
@@ -8,17 +9,19 @@ import {
 import SettingsMenuItems from '@popup/pages/app-container/settings/settings-main-page/settings-main-page-menu-items';
 import { ReactElement } from 'react';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
+import AccountUtils from 'src/utils/account.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alHomeInformation from 'src/__tests__/utils-for-testing/aria-labels/al-home-information';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import mocks from 'src/__tests__/utils-for-testing/helpers/mocks';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import { actAdvanceTime } from 'src/__tests__/utils-for-testing/setups/events';
@@ -36,6 +39,12 @@ const constants = {
     hbd: fromArrayToAssert(HBDDropdownMenuItems, alDropdown.itemPreFix),
     hp: fromArrayToAssert(HpDropdownMenuItems, alDropdown.itemPreFix),
   },
+  dataUserTwoLoaded: [
+    {
+      ...accounts.extended,
+      name: mk.user.two,
+    } as ExtendedAccount,
+  ],
 };
 
 const beforeEach = async (
@@ -49,12 +58,8 @@ const beforeEach = async (
     ...initialStates.iniState,
     accounts: accounts,
   });
+  await assertion.awaitFind(alComponent.homePage);
 };
-
-// const vpValue = mocksDefault._defaults._app.getVP!.toFixed(2).toString();
-// const resourceCredits = mocksDefault._defaults._app.getVotingDollarsPerAccount
-//   ?.toFixed(2)
-//   .toString();
 
 const methods = {
   manaReadyIn: () => HiveUtils.getTimeBeforeFull(manabar.percentage / 100),
@@ -74,8 +79,13 @@ function fromArrayToAssert(
   });
 }
 
-const extraMocks = () => {
-  TransactionUtils.getLastTransaction = jest.fn().mockResolvedValue(1);
+const extraMocks = {
+  getLastTransaction: () =>
+    (TransactionUtils.getLastTransaction = jest.fn().mockResolvedValue(1)),
+  remockGetAccount: () =>
+    (AccountUtils.getAccount = jest
+      .fn()
+      .mockResolvedValue(constants.dataUserTwoLoaded)),
 };
 
 /**
@@ -118,8 +128,6 @@ const userInformation = () => {
     },
   ]);
 };
-
-mocks.helper();
 
 export default {
   beforeEach,

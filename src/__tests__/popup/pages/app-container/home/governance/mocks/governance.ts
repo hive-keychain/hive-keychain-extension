@@ -1,4 +1,3 @@
-import KeychainApi from '@api/keychain';
 import { screen } from '@testing-library/react';
 import { ReactElement } from 'react';
 import ProposalUtils from 'src/utils/proposal.utils';
@@ -20,24 +19,14 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
 
-const fakeWitnessesRankingWInactive = {
-  data: [
-    ...witness.ranking.data,
-    {
-      name: 'theghost1980',
-      rank: '200',
-      votes: '1000',
-      votes_count: 1000,
-      signing_key: witness.inactiveKey,
-      url: 'https://saturnoman.com',
-    },
-  ],
-};
-
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
+  mockPreset.setOrDefault({
+    keyChainApiGet: {
+      customData: { witnessRanking: witness.rankingWInactive },
+    },
+  });
   extraMocks();
   renders.wInitialState(component, initialStates.iniStateAs.defaultExistent);
   await assertion.awaitMk(mk.user.one);
@@ -60,7 +49,6 @@ const methods = {
 };
 
 const extraMocks = () => {
-  KeychainApi.get = jest.fn().mockResolvedValue(fakeWitnessesRankingWInactive);
   ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
   ProposalUtils.getProposalList = jest
     .fn()

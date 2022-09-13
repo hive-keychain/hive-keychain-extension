@@ -20,7 +20,7 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import HiveUtils from 'src/utils/hive.utils';
+import AccountUtils from 'src/utils/account.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
@@ -94,20 +94,21 @@ const WitnessTab = ({
   }, [ranking, filterValue, displayVotedOnly, votedWitnesses, hideNonActive]);
 
   const initProxyVotes = async (proxy: string) => {
-    const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
-      proxy,
-    ]);
+    const hiveAccounts = await AccountUtils.getAccount(proxy);
     setVotedWitnesses(hiveAccounts[0].witness_votes);
   };
 
   const initWitnessRanking = async () => {
     setLoading(true);
-    const requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
-    if (requestResult.data !== '') {
-      const ranking = requestResult.data;
-      setRanking(ranking);
-      setFilteredRanking(ranking);
-    } else {
+    let requestResult;
+    try {
+      requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
+      if (requestResult?.data !== '') {
+        const ranking = requestResult?.data;
+        setRanking(ranking);
+        setFilteredRanking(ranking);
+      }
+    } catch (err) {
       setErrorMessage('popup_html_error_retrieving_witness_ranking');
       setHasError(true);
     }

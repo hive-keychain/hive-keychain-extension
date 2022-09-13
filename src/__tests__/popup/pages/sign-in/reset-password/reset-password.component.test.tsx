@@ -5,9 +5,9 @@ import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alLink from 'src/__tests__/utils-for-testing/aria-labels/al-link';
+import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
-import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -18,7 +18,6 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 config.byDefault();
-
 describe('reset-password.component tests:\n', () => {
   beforeEach(async () => {
     mockPreset.setOrDefault({
@@ -30,15 +29,23 @@ describe('reset-password.component tests:\n', () => {
     jest.useFakeTimers('legacy');
     actAdvanceTime(4300);
     customRender(<App />, {
-      initialState: initialEmptyStateStore,
+      initialState: initialStates.iniStateAs.emptyState,
     });
     await assertion.awaitFind(alLink.resetPassword);
   });
   afterEach(() => {
     afterTests.clean();
   });
-  it.skip('Must clear all user data and navigate to sign up page', async () => {
-    //TODO waiting for modifications on AccountUtils.clearAllData() in store.dispatch
+  it('Must clear all user data and navigate to sign up page', async () => {
+    mockPreset.setOrDefault({
+      app: {
+        getAccount: [],
+        getAccountsFromLocalStorage: [],
+        getMkFromLocalStorage: '',
+        getActiveAccountNameFromLocalStorage: '',
+        hasStoredAccounts: false,
+      },
+    });
     await clickAwait([alLink.resetPassword, alButton.confirmResetPassword]);
     await assertion.awaitFor(alComponent.signUp, QueryDOM.BYLABEL);
   });

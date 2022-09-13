@@ -1,20 +1,23 @@
 import { ExtendedAccount, VestingDelegation } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
-import { Delegator } from '@interfaces/delegations.interface';
+import { Autolock } from '@interfaces/autolock.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
-import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import { TokenDelegation } from '@interfaces/token-delegation.interface';
+import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
+import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 
 export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;
   getCurrentRpc?: Rpc;
   getActiveAccountNameFromLocalStorage?: string;
   getRCMana?: Manabar;
-  getAccounts?: ExtendedAccount[];
+  getAccount?: ExtendedAccount[];
+  getExtendedAccount?: ExtendedAccount;
   checkRpcStatus?: boolean;
-  setRpc?: Rpc;
   hasStoredAccounts?: boolean;
   getMkFromLocalStorage?: string;
   getAccountsFromLocalStorage?: LocalAccount[];
@@ -22,57 +25,73 @@ export interface MocksApp {
   getVP?: number;
   getVotingDollarsPerAccount?: number;
 }
-
 export interface MocksHome {
-  getPrices?: { data: {} };
   getAccountValue?: string | 0;
 }
-
 export interface MocksTopBar {
   hasReward?: boolean;
 }
-
 export interface MocksPowerUp {
   getVestingDelegations?: VestingDelegation[];
 }
-
-export interface MocksDelegations {
-  getDelegators?: { data: Delegator[] };
-}
-
 export interface MocksWalletHistory {
   getAccountTransactions?: [Transaction[], number];
 }
-
 export interface MocksTokens {
-  getTokens?: Token[];
   getUserBalance?: TokenBalance[];
+  getIncomingDelegations?: TokenDelegation[];
+  getOutgoingDelegations?: TokenDelegation[];
+  getAllTokens?: any[];
+  getTokensMarket?: TokenMarket[];
 }
 export interface MocksProposal {
   hasVotedForProposal?: boolean;
   voteForKeychainProposal?: boolean;
 }
-
+export interface MocksKeyChainApi {
+  customData?: KeyChainApiGetCustomData;
+}
+export interface GetManifest {
+  version: string;
+  name: string;
+}
+/**
+ * sendMessage, for now is the only mandatory default as jest.fn() = not implemented.
+ * Can be changed and customised in the future as required.
+ */
+export interface MocksChromeRunTime {
+  getManifest?: GetManifest;
+  sendMessage: jest.Mock;
+}
 export interface MocksToUse {
   app?: MocksApp;
   home?: MocksHome;
   topBar?: MocksTopBar;
   powerUp?: MocksPowerUp;
-  delegations?: MocksDelegations;
   walletHistory?: MocksWalletHistory;
   tokens?: MocksTokens;
   proposal?: MocksProposal;
+  chromeRunTime?: MocksChromeRunTime;
+  keyChainApiGet?: MocksKeyChainApi;
 }
 
 export interface MockVotingProposal {
   voteForProposal?: boolean;
   unvoteForProposal?: boolean;
 }
-
 export interface MockProxy {
   findUserProxy?: string | null;
   setAsProxy?: string | boolean | undefined;
   removeProxy?: boolean;
+}
+export interface CustomDataFromLocalStorage {
+  accountHistoryApi?: string[];
+  customRpcList?: string[];
+  customAutolock?: Autolock;
+  customSwitchAuto?: boolean;
+  customsRpcs?: Rpc[];
+  customAuthorizedOP?: NoConfirm;
+  customlastVersionSeen?: string;
 }
 
 export interface MocksOverwrite {

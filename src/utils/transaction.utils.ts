@@ -15,6 +15,7 @@ import {
   PowerUp,
   ReceivedInterests,
   RecurrentTransfer,
+  StartWithdrawSavings,
   Transaction,
   Transfer,
   WithdrawSavings,
@@ -57,6 +58,7 @@ const getAccountTransactions = async (
       op.interest,
       op.transfer_to_savings,
       op.transfer_from_savings,
+      op.fill_transfer_from_savings,
       op.claim_account,
       op.convert,
       op.fill_convert_request,
@@ -166,9 +168,15 @@ const getAccountTransactions = async (
             break;
           }
           case 'transfer_from_savings': {
-            specificTransaction = e[1].op[1] as WithdrawSavings;
+            specificTransaction = e[1].op[1] as StartWithdrawSavings;
             specificTransaction.type = 'savings';
             specificTransaction.subType = 'transfer_from_savings';
+            break;
+          }
+          case 'fill_transfer_from_savings': {
+            specificTransaction = e[1].op[1] as WithdrawSavings;
+            specificTransaction.type = 'savings';
+            specificTransaction.subType = 'fill_transfer_from_savings';
             break;
           }
           case 'claim_account': {

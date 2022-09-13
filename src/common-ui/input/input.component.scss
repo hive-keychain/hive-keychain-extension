@@ -43,6 +43,10 @@ $autoCompleteItemHeight: 30px;
         outline: none !important;
         border-color: white;
       }
+
+      &.has-max-button {
+        padding-right: 48px;
+      }
     }
 
     .autocomplete-panel {

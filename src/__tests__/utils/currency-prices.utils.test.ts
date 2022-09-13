@@ -2,10 +2,14 @@ import KeychainApi from '@api/keychain';
 import axios from 'axios';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-afterEach(() => {
+afterAll(() => {
   jest.clearAllMocks();
+  jest.restoreAllMocks();
 });
 describe('currency-prices-utils tests', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   describe('getPrices tests:\n', () => {
     test('Must get prices from Hive API', async () => {
       const mockedApiReply = {
@@ -59,7 +63,7 @@ describe('currency-prices-utils tests', () => {
         },
       };
       axios.get = jest.fn().mockResolvedValueOnce(mockedBittrexApiReply);
-      const currencyToGet = 'HIVEKCH'; //Hive Key Chain Coin.
+      const currencyToGet = 'HIVEKCH';
       const result = await CurrencyPricesUtils.getBittrexCurrency(
         currencyToGet,
       );

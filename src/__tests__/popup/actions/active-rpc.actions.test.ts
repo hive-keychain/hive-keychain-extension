@@ -6,6 +6,10 @@ import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
+afterAll(() => {
+  jest.clearAllMocks();
+  jest.restoreAllMocks();
+});
 describe('active-rpc.actions tests:\n', () => {
   describe('setActiveRpc tests:\n', () => {
     test('Must sendMessage to runtime and set rpc', async () => {

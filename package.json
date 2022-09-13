@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.0.10",
+  "version": "2.1.1",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -22,6 +22,7 @@
     "doc": "documentation build public/hive_keychain.js -f md -c documentation/build/documentation.yml -o documentation/README.md",
     "postinstall": "sed -i '' 's/require(\"cross-fetch\")/require(\"node-fetch\")/g' node_modules/@hiveio/dhive/lib/utils.js; echo 'Update dhive so that keychain background can use it directly'",
     "test": "jest --verbose",
+    "test:detect": "jest --verbose --detectOpenHandles",
     "test:watch": "jest --verbose --watch",
     "test:cov": "jest --verbose --coverage",
     "bump": "scripts/bump-version"
@@ -64,6 +65,7 @@
     "react-dropdown-select": "^4.7.4",
     "react-qr-code": "^2.0.1",
     "react-redux": "^7.2.4",
+    "react-responsive-carousel": "^3.2.23",
     "react-tabs": "^3.2.3",
     "react-toastify": "^8.1.0",
     "react-tooltip": "^4.2.21",

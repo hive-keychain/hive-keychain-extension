@@ -1,3 +1,4 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
@@ -17,6 +18,7 @@ import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -31,6 +33,8 @@ import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import './savings.component.scss';
 
 const SavingsPage = ({
@@ -57,11 +61,15 @@ const SavingsPage = ({
   const [savings, setSavings] = useState<string | number>('...');
   const [liquid, setLiquid] = useState<string | number>('...');
 
+  const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
+    [],
+  );
+
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
     useState<string>(
       formParams.selectedSavingOperationType
         ? formParams.selectedSavingOperationType
-        : SavingOperationType.WITHDRAW,
+        : SavingOperationType.DEPOSIT,
     );
   const [selectedCurrency, setSelectedCurrency] = useState<
     keyof CurrencyLabels
@@ -88,6 +96,7 @@ const SavingsPage = ({
   ];
 
   useEffect(() => {
+    loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
       title: 'popup_html_savings',
       isBackButtonEnabled: true,
@@ -122,6 +131,16 @@ const SavingsPage = ({
     }
     setText(text);
   }, [selectedCurrency, selectedSavingOperationType]);
+
+  const loadAutocompleteTransferUsernames = async () => {
+    const favoriteUsers: FavoriteUserItems =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.FAVORITE_USERS,
+      );
+    setAutoCompleteUsernames(
+      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
+    );
+  };
 
   const handleButtonClick = () => {
     if (
@@ -173,6 +192,7 @@ const SavingsPage = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          await TransferUtils.saveTransferRecipient(username, activeAccount);
           setSuccessMessage(
             selectedSavingOperationType === SavingOperationType.DEPOSIT
               ? 'popup_html_deposit_success'
@@ -213,6 +233,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label="select-currency-savings"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -224,6 +245,7 @@ const SavingsPage = ({
   const customOperationTypeLabelRender = (selectProps: SelectRenderer<any>) => {
     return (
       <div
+        aria-label="select-operation-type"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -237,6 +259,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label={`select-operation-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedSavingOperationType === selectProps.item.value
             ? 'selected'
@@ -255,6 +278,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedCurrency === selectProps.item.value ? 'selected' : ''
         }`}
@@ -291,16 +315,19 @@ const SavingsPage = ({
 
       {
         <InputComponent
+          ariaLabel="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_transfer_to"
           value={username}
           onChange={setUsername}
+          autocompleteValues={autoCompleteUsernames}
         />
       }
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -320,6 +347,7 @@ const SavingsPage = ({
       </div>
 
       <OperationButtonComponent
+        ariaLabel="submit-savings"
         requiredKey={KeychainKeyTypesLC.active}
         label={
           selectedSavingOperationType === SavingOperationType.WITHDRAW
