@@ -312,31 +312,6 @@ describe('account.utils tests:\n', () => {
         setErrorMessage,
       );
       expect(result).toBeNull();
-      expect(store.dispatch).toBeCalledWith({
-        payload: {
-          key: 'popup_accounts_fill',
-          params: [],
-          type: 'ERROR',
-        },
-        type: 'SET_MESSAGE',
-      });
-    });
-    test.skip('test with empty accounts array should return null and setErrorMessage as popup_accounts_fill?', async () => {
-      const result = await AccountUtils.addKey(
-        activeAccountData,
-        [],
-        'testaccount',
-        KeyType.ACTIVE,
-      );
-      expect(result).toBeNull();
-      expect(store.dispatch).toBeCalledWith({
-        payload: {
-          key: 'popup_accounts_fill',
-          params: [],
-          type: 'ERROR',
-        },
-        type: 'SET_MESSAGE',
-      });
     });
     test('test with public key (STM) must return null', async () => {
       const result = await AccountUtils.addKey(
@@ -550,15 +525,6 @@ describe('account.utils tests:\n', () => {
     test('returns true if both lists are identical', () => {
       const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
       const _accounts2: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
-      const result = AccountUtils.isAccountListIdentical(
-        _accounts1,
-        _accounts2,
-      );
-      expect(result).toBe(true);
-    });
-    test.skip('must returns true if both lists are identical, even on disorder lists, needs a sort function', () => {
-      const _accounts1: LocalAccount[] = [{ name: 'theghost1980', keys: {} }];
-      const _accounts2: LocalAccount[] = [{ keys: {}, name: 'theghost1980' }];
       const result = AccountUtils.isAccountListIdentical(
         _accounts1,
         _accounts2,
