@@ -49,6 +49,22 @@ const alltokens = [
     delegationEnabled: false,
     undelegationCooldown: 0,
   },
+  {
+    _id: 4,
+    issuer: 'leofinance',
+    symbol: 'LEO',
+    name: 'LEO tokens',
+    metadata:
+      '{"url":"https://leo.com","icon":"https://s3.amazonaws.com/steemmonsters/website/ui_elements/open_packs/img_essence-orb.png","desc":"Each ORB token represents one, unopened, promotional Splinterlands Essence Orb booster pack."}',
+    precision: 8,
+    maxSupply: '10000000000',
+    supply: '100000000',
+    circulatingSupply: '1000000',
+    stakingEnabled: true,
+    unstakingCooldown: 40,
+    delegationEnabled: true,
+    undelegationCooldown: 40,
+  },
 ] as any[];
 
 export default { alltokens };

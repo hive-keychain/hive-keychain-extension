@@ -21,15 +21,23 @@ const IncomingOutgoingPage = ({
   delegations,
   globalProperties,
   currencyLabels,
+  totalPendingOutgoingUndelegation,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
-  const header =
-    delegationType === DelegationType.INCOMING
-      ? 'popup_html_total_incoming'
-      : 'popup_html_total_outgoing';
+  let header = '';
+
+  switch (delegationType) {
+    case DelegationType.INCOMING:
+      header = 'popup_html_total_incoming';
+      break;
+    case DelegationType.OUTGOING:
+      header = 'popup_html_total_outgoing';
+      break;
+  }
 
   const [totalHP, setTotalHP] = useState<string | number>('...');
   const [delegationList, setDelegationList] = useState<any[]>([]);
+  const [pendingUndelegationsList, setPendingList] = useState<any[]>([]);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -38,6 +46,9 @@ const IncomingOutgoingPage = ({
     });
 
     let totalVests = 0;
+    let totalPendingOutgoingUndelegation = 0;
+
+    setPendingList(delegations.pendingOutgoingUndelegation);
 
     if (delegationType === DelegationType.INCOMING) {
       totalVests = delegations.incoming.reduce((prev, cur) => {
@@ -46,12 +57,19 @@ const IncomingOutgoingPage = ({
         );
       }, 0);
       setDelegationList(delegations.incoming);
-    } else {
+    } else if (delegationType === DelegationType.OUTGOING) {
       totalVests = delegations.outgoing.reduce((prev, cur) => {
         return (
           prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
         );
       }, 0);
+      totalPendingOutgoingUndelegation =
+        delegations.pendingOutgoingUndelegation.reduce(
+          (prev: any, cur: any) => {
+            return prev + cur.vesting_shares;
+          },
+          0,
+        );
       setDelegationList(delegations.outgoing);
     }
 
@@ -59,26 +77,71 @@ const IncomingOutgoingPage = ({
   }, []);
 
   return (
-    <div aria-label="incoming-outgoing-page" className="incoming-outgoing-page">
-      <div className="total">
-        <div className="label">{chrome.i18n.getMessage(header)}</div>
-        <div className="value">
-          {FormatUtils.withCommas(totalHP.toString())} {currencyLabels.hp}
-        </div>
-      </div>
+    <div className="incoming-outgoing-page" aria-label="incoming-outgoing-page">
+      {delegationType === DelegationType.OUTGOING &&
+        totalPendingOutgoingUndelegation > 0 && (
+          <div className="pending-disclaimer">
+            {chrome.i18n.getMessage(
+              'popup_html_undelegation_pending_until_message',
+            )}
+          </div>
+        )}
+      <div className="list-panel">
+        {delegationType === DelegationType.OUTGOING &&
+          totalPendingOutgoingUndelegation > 0 && (
+            <div className="panel pending-undelegations">
+              <div className="total">
+                <div className="label">
+                  {chrome.i18n.getMessage(
+                    'popup_html_total_pending_undelegate',
+                  )}
+                </div>
+                <div className="value">
+                  {FormatUtils.withCommas(
+                    totalPendingOutgoingUndelegation.toString(),
+                  )}{' '}
+                  {currencyLabels.hp}
+                </div>
+              </div>
 
-      <div className="list">
-        {delegationList.map((delegation, index) => (
-          <IncomingOutgoingItemComponent
-            key={index}
-            delegationType={delegationType}
-            username={
-              delegationType === DelegationType.INCOMING
-                ? delegation.delegator
-                : delegation.delegatee
-            }
-            amount={delegation.vesting_shares}></IncomingOutgoingItemComponent>
-        ))}
+              <div className="list">
+                {pendingUndelegationsList.map((pendingUndelegation, index) => (
+                  <IncomingOutgoingItemComponent
+                    key={index}
+                    delegationType={delegationType}
+                    amount={pendingUndelegation.vesting_shares.toString()}
+                    expirationDate={
+                      pendingUndelegation.expiration_date
+                    }></IncomingOutgoingItemComponent>
+                ))}
+              </div>
+            </div>
+          )}
+        <div className="panel">
+          <div className="total">
+            <div className="label">{chrome.i18n.getMessage(header)}</div>
+            <div className="value">
+              {FormatUtils.withCommas(totalHP.toString())} {currencyLabels.hp}
+            </div>
+          </div>
+
+          <div className="list">
+            {delegationList.map((delegation, index) => (
+              <IncomingOutgoingItemComponent
+                key={index}
+                delegationType={delegationType}
+                username={
+                  delegationType === DelegationType.INCOMING
+                    ? delegation.delegator
+                    : delegation.delegatee
+                }
+                amount={delegation.vesting_shares}
+                expirationDate={
+                  delegation.expiration_date
+                }></IncomingOutgoingItemComponent>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -89,6 +152,8 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     delegationType: state.navigation.stack[0].params
       .delegationType as DelegationType,
+    totalPendingOutgoingUndelegation:
+      state.navigation.stack[0].params.totalPendingOutgoingUndelegation,
     delegations: state.delegations,
     globalProperties: state.globalProperties.globals,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),

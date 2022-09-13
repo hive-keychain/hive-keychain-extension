@@ -7,7 +7,7 @@ import './advanced-settings.component.scss';
 
 const AdvancedSettingsPage = ({}: PropsFromRedux) => {
   return (
-    <div className="advanced-settings-page">
+    <div aria-label="advanced-settings-page" className="advanced-settings-page">
       <MenuComponent
         title="popup_html_advanced_settings"
         isBackButtonEnable={true}

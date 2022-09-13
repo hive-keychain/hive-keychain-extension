@@ -9,6 +9,7 @@ import {
   PowerDown,
   PowerUp,
   ReceivedInterests,
+  StartWithdrawSavings,
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
@@ -43,7 +44,7 @@ const filterPowerUpDown = (
 };
 
 const filterSavingsTransaction = (
-  transaction: WithdrawSavings | DepositSavings,
+  transaction: WithdrawSavings | DepositSavings | StartWithdrawSavings,
   filterValue: string,
 ) => {
   return transaction.amount.toLowerCase().includes(filterValue.toLowerCase());
