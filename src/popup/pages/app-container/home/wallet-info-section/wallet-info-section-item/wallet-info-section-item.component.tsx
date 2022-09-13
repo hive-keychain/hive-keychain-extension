@@ -13,6 +13,7 @@ interface WalletSectionInfoItemProps {
   subValue: string | Asset | number;
   subValueLabel: string;
   menuItems: DropdownMenuItemInterface[];
+  infoContent?: string;
 }
 
 const walletInfoSectionItem = ({
@@ -21,6 +22,7 @@ const walletInfoSectionItem = ({
   subValue,
   subValueLabel,
   menuItems,
+  infoContent,
 }: PropsFromRedux) => {
   const [isDropdownMenuOpen, setIsDropdownMenuOpen] = useState(false);
 
@@ -42,7 +44,18 @@ const walletInfoSectionItem = ({
         )}
       </div>
       <div className="currency">
-        <div className="balance">{mainValueLabel}</div>
+        <div className="balance">
+          {mainValueLabel}
+          {/* {infoContent && (
+            <Icon
+              name={Icons.INFO}
+              type={IconType.OUTLINED}
+              tooltipMessage={infoContent}
+              skipTooltipTranslation
+            />
+          )} */}
+        </div>
+
         {parseFloat(FormatUtils.formatCurrencyValue(subValue)) !== 0 && (
           <div className="savings">({subValueLabel})</div>
         )}

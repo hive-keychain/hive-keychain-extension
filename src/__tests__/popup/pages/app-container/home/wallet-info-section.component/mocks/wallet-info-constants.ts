@@ -64,6 +64,9 @@ const constants = {
     savings_hbd_balance: new Asset(0, 'HBD'),
     vesting_shares: new Asset(0, 'VESTS'),
   },
+  snapshots: {
+    allBalances: 'wallet-info-section.component All balances',
+  },
 };
 
 export default {

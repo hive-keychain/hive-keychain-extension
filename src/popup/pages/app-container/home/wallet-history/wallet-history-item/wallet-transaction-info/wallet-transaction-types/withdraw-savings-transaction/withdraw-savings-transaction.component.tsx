@@ -1,4 +1,7 @@
-import { WithdrawSavings } from '@interfaces/transaction.interface';
+import {
+  StartWithdrawSavings,
+  WithdrawSavings,
+} from '@interfaces/transaction.interface';
 import { GenericTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/generic-transaction/generic-transaction.component';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -7,7 +10,7 @@ import 'react-tabs/style/react-tabs.scss';
 import FormatUtils from 'src/utils/format.utils';
 
 interface WithdrawSavingsTransactionProps {
-  transaction: WithdrawSavings;
+  transaction: WithdrawSavings | StartWithdrawSavings;
 }
 
 const WithdrawSavingsTransaction = ({

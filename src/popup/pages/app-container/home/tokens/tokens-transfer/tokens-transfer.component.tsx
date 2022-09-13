@@ -97,8 +97,16 @@ const TokensTransfer = ({
   };
 
   const handleClickOnSend = async () => {
-    if (!(await AccountUtils.doesAccountExist(receiverUsername))) {
-      setErrorMessage('popup_no_such_account');
+    if (
+      String(receiverUsername).trim().length === 0 ||
+      amount.toString().trim().length === 0
+    ) {
+      setErrorMessage('popup_accounts_fill');
+      return;
+    }
+
+    if (parseFloat(amount.toString()) < 0) {
+      setErrorMessage('popup_html_need_positive_amount');
       return;
     }
 
@@ -106,6 +114,12 @@ const TokensTransfer = ({
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
+
+    if (!(await AccountUtils.doesAccountExist(receiverUsername))) {
+      setErrorMessage('popup_no_such_account');
+      return;
+    }
+
     const formattedAmount = `${parseFloat(amount.toString()).toFixed(
       3,
     )} ${symbol}`;
@@ -212,7 +226,7 @@ const TokensTransfer = ({
   };
 
   return (
-    <div className="transfer-tokens-page">
+    <div aria-label="transfer-tokens-page" className="transfer-tokens-page">
       <AvailableCurrentPanelComponent
         available={balance}
         availableCurrency={symbol}
@@ -222,6 +236,7 @@ const TokensTransfer = ({
         {chrome.i18n.getMessage('popup_html_tokens_send_text')}
       </div>
       <InputComponent
+        ariaLabel="input-username"
         type={InputType.TEXT}
         logo={Icons.AT}
         placeholder="popup_html_username"
@@ -232,6 +247,7 @@ const TokensTransfer = ({
       <div className="value-panel">
         <div className="value-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -244,12 +260,14 @@ const TokensTransfer = ({
       </div>
 
       <InputComponent
+        ariaLabel="input-memo-optional"
         type={InputType.TEXT}
         placeholder="popup_html_memo_optional"
         value={memo}
         onChange={setMemo}
       />
       <OperationButtonComponent
+        ariaLabel="button-send-tokens-transfer"
         requiredKey={KeychainKeyTypesLC.active}
         label={'popup_html_send_transfer'}
         onClick={handleClickOnSend}

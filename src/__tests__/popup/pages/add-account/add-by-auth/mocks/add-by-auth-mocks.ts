@@ -24,7 +24,7 @@ const reMockWith = (prop: string, data: [string, number][]) => {
   }
   mockPreset.setOrDefault({
     app: {
-      getAccounts: [
+      getAccount: [
         {
           ...accounts.extended,
           ...obj,

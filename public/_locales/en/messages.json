@@ -380,7 +380,7 @@
     "description": "on manage accounts, add a previously non stored key"
   },
   "popup_html_add_key_text": {
-    "message": "Add the <span></span> private key to your account. You can also add it by entering your master key.",
+    "message": "Add the <span>$1</span> private key to your account. You can also add it by entering your master key.",
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
@@ -1938,7 +1938,11 @@
     "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
-    "message": "Withdrawn $1 from savings",
+    "message": "Started a $1 withdrawal from savings",
+    "description": "Wallet information withdraw from savings"
+  },
+  "popup_html_wallet_info_fill_withdraw_savings": {
+    "message": "Successfully withdrawn $1 from savings",
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
@@ -1972,6 +1976,15 @@
   "popup_html_wallet_info_fill_collateralized_convert_request": {
     "message": "Filled conversion: $1 => $2",
     "description": "Wallet information receive conversion"
+  },
+  "popup_html_wallet_info_create_claimed_account": {
+    "message": "Claimed account @$1",
+    "description": "Wallet information created claimed account"
+  },
+
+  "popup_html_wallet_info_account_create": {
+    "message": "Paid $1 to create @$2",
+    "description": "Wallet information create account"
   },
 
   "popup_html_filter_in": {
@@ -2330,6 +2343,90 @@
     "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
     "description": "Token timeout error"
   },
+  "popup_html_create_account_buy_account": {
+    "message": "Buy account",
+    "description": "Create account => Buy account"
+  },
+  "popup_html_create_account_with_claim_tokens": {
+    "message": "Use claimed tokens",
+    "description": "Create account => Buy account"
+  },
+  "popup_html_create_account": {
+    "message": "Create account",
+    "description": "Create account"
+  },
+  "popup_html_master_password": {
+    "message": "Master password",
+    "description": "General"
+  },
+  "html_popup_create_account_username_too_short": {
+    "message": "Username is too short. Needs minimum 4 characters",
+    "description": "General"
+  },
+  "html_popup_create_account_username_already_used": {
+    "message": "Username is already used. Please pick a new one",
+    "description": "General"
+  },
+  "html_popup_create_account_account_name_not_valid": {
+    "message": "Account name is not valid",
+    "description": "General"
+  },
+  "html_popup_create_account_safely_copied_keys": {
+    "message": "I have safely copied my keys and saved them outside of Keychain",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_create_account_storage_understanding": {
+    "message": "I understand that Keychain should not be considered as the primary place of storage for my keys",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_copy": {
+    "message": "Copy",
+    "description": "General"
+  },
+  "html_popup_create": {
+    "message": "Create",
+    "description": "General"
+  },
+  "html_popup_price": {
+    "message": "Price",
+    "description": "General"
+  },
+  "html_popup_next": {
+    "message": "Next",
+    "description": "General"
+  },
+  "html_popup_ticket": {
+    "message": "$1 ticket",
+    "description": "claim account ticket (one word)"
+  },
+  "html_popup_account_creation_not_enough_found": {
+    "message": "You don't have enough HIVE to buy an account",
+    "description": "claim account ticket (one word)"
+  },
+  "html_popup_create_account_buy_method_message": {
+    "message": "I agree to pay $1 HIVE with account @$2 to create this account",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_claim_account_method_message": {
+    "message": "I agree to use one account creation ticket from @$1 to create this account",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_need_accept_terms_condition": {
+    "message": "You need to accept the terms and condition before creating account",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_successful": {
+    "message": "Your account has been successfully created and added to your Keychain",
+    "description": "Create account successful message"
+  },
+  "html_popup_creating_account": {
+    "message": "Creating account",
+    "description": "Creating account message"
+  },
+  "html_popup_create_account_failed": {
+    "message": "Your account creation has failed. Please try again later",
+    "description": "Create account failed message"
+  },
   "html_popup_read_more": {
     "message": "Read more",
     "description": "read more"
@@ -2353,5 +2450,21 @@
   "popup_html_transfer_from_saving_to_exchange_error": {
     "message": "You are trying to withdraw from your savings to an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
     "description": "Transfer from savings to an exchange platform warning message"
+  },
+  "popup_html_pending": {
+    "message": "Pending",
+    "description": "Global"
+  },
+  "popup_html_pending_currency": {
+    "message": "Pending $1",
+    "description": "Global"
+  },
+  "popup_html_pending_currency_timestamp": {
+    "message": "This conversion will be filled on $1 at $2",
+    "description": "Global"
+  },
+  "popup_html_pending_conversions": {
+    "message": "You have $1 pending $2 conversion(s)",
+    "description": "Global"
   }
 }

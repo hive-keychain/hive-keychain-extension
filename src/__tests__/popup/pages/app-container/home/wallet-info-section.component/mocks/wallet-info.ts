@@ -1,5 +1,4 @@
 import { screen } from '@testing-library/react';
-import { ReactElement } from 'react';
 import walletInfoImplementations from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/implementations';
 import walletInfoConstants from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/wallet-info-constants';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
@@ -8,23 +7,24 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import { actAdvanceTime } from 'src/__tests__/utils-for-testing/setups/events';
-import renders from 'src/__tests__/utils-for-testing/setups/renders';
+import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
 
 const constants = walletInfoConstants.constants;
 
-const beforeEach = async (
-  component: ReactElement,
-  toUse?: { zeroBalances?: boolean; reImplement18n?: boolean },
-) => {
+const beforeEach = async (toUse?: {
+  zeroBalances?: boolean;
+  reImplement18n?: boolean;
+}) => {
   let remock: MocksToUse = {};
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   if (toUse?.zeroBalances) {
     remock = {
       app: {
-        getAccounts: [
-          { ...constants.extendedAccount, ...constants.zeroBalances },
-        ],
+        getExtendedAccount: {
+          ...constants.extendedAccount,
+          ...constants.zeroBalances,
+        },
       },
     };
   }
@@ -34,8 +34,9 @@ const beforeEach = async (
       .fn()
       .mockImplementation(walletInfoImplementations.i18nGetMessageCustom);
   }
-  renders.wInitialState(component, constants.stateAs);
+  const { asFragment } = customRenderFixed({ initialState: constants.stateAs });
   await assertion.awaitMk(constants.username);
+  return asFragment;
 };
 
 const methods = {
@@ -66,6 +67,5 @@ const extraMocks = () => {};
 export default {
   beforeEach,
   methods,
-  constants,
   extraMocks,
 };

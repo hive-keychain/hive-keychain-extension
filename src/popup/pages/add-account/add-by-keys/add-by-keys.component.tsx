@@ -46,6 +46,7 @@ const AddByKeys = ({
       username.trim(),
       privateKey.trim(),
       localAccounts,
+      setErrorMessage,
     );
 
     if (!keys) {
