@@ -21,10 +21,6 @@ describe('home.component dropdown hbd tests:\n', () => {
     await clickAwait([alDropdown.arrow.hbd, alDropdown.span.send]);
     assertion.getByLabelText(alComponent.transfersFundsPage);
   });
-  it('Must load buy HBD options when clicking on buy', async () => {
-    await clickAwait([alDropdown.arrow.hbd, alDropdown.span.buy]);
-    assertion.getByLabelText(alComponent.buyCoinsPage);
-  });
   it('Must show convert page when clicking convert', async () => {
     await clickAwait([alDropdown.arrow.hbd, alDropdown.span.convert]);
     assertion.getByLabelText(alComponent.conversionPage);
