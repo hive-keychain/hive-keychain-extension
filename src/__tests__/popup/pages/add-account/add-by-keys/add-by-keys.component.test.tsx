@@ -33,7 +33,7 @@ describe('add-by-keys:\n', () => {
       ).toBeInTheDocument();
     });
     it('Must add valid posting key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.posting);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -41,7 +41,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must add valid memo key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.memo);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -49,7 +49,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must add valid active key and load homepage', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.active);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.homePage)).toBeDefined();
@@ -57,7 +57,7 @@ describe('add-by-keys:\n', () => {
       });
     });
     it('Must derivate all keys from master, and navigate to select keys page', async () => {
-      addByKeysMocks.extraMocks.getAccounts();
+      addByKeysMocks.extraMocks.getAccount();
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
       await waitFor(() => {
         expect(screen.getByLabelText(alComponent.selectPage)).toBeDefined();
@@ -68,8 +68,7 @@ describe('add-by-keys:\n', () => {
         );
       });
     });
-    it.skip('Must show error if empty username', async () => {
-      //TODO: waiting for fixes on dispatcher.
+    it('Must show error if empty username', async () => {
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_fill',
       );
@@ -79,8 +78,7 @@ describe('add-by-keys:\n', () => {
       );
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
-    it.skip('Must show error if empty password', async () => {
-      //TODO: waiting for fixes on dispatcher.
+    it('Must show error if empty password', async () => {
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_fill',
       );
@@ -90,8 +88,7 @@ describe('add-by-keys:\n', () => {
       );
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
-    it.skip('Must show error if empty username and empty password', async () => {
-      //TODO: waiting for fixes on dispatcher.
+    it('Must show error if empty username and empty password', async () => {
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_fill',
       );
@@ -101,29 +98,26 @@ describe('add-by-keys:\n', () => {
       ]);
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
-    it.skip('Must show error when using a public key', async () => {
-      //TODO: waiting for fixes on dispatcher.
+    it('Must show error when using a public key', async () => {
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_account_password_is_public_key',
       );
       await addByKeysMocks.typeAndSubmit(userData.one.encryptKeys.posting);
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
-    it.skip('Must show error when using an incorrect key', async () => {
-      //TODO: waiting for fixes on dispatcher.
+    it('Must show error when using an incorrect key', async () => {
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_incorrect_key',
       );
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.fakeKey);
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);
     });
-    it.skip('Must show error when using an incorrect username', async () => {
-      //TODO: waiting for fixes on dispatcher.
+    it('Must show error when using an incorrect username', async () => {
       const errorMessage = mocksImplementation.i18nGetMessageCustom(
         'popup_accounts_incorrect_user',
       );
       mockPreset.setOrDefault({
-        app: { getAccounts: [] },
+        app: { getAccount: [] },
       });
       await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.fakeKey);
       await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);

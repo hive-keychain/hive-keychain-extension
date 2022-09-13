@@ -15,7 +15,9 @@ const ManageAccount = ({ setTitleContainerProperties }: PropsFromRedux) => {
   });
 
   return (
-    <div className="settings-manage-account">
+    <div
+      aria-label="settings-manage-account"
+      className="settings-manage-account">
       <SelectAccountSectionComponent />
       <AccountKeysListComponent />
     </div>

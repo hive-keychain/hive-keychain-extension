@@ -30,6 +30,7 @@ import * as ValidUrl from 'valid-url';
 import './tokens-settings.component.scss';
 
 interface SelectOption {
+  panelType: string;
   label: string;
   value: string;
   isDefault: boolean;
@@ -63,13 +64,13 @@ const TokensSettings = ({
 
   const init = async () => {
     const customRpcs = await HiveEngineConfigUtils.getCustomRpcs();
-
     const rpcFullList = ArrayUtils.mergeWithoutDuplicate(
       customRpcs,
       DefaultHiveEngineRpcs,
     );
     const rpcOpts = rpcFullList.map((rpc) => {
       return {
+        panelType: 'rpc',
         label: rpc.replace('https://', '').split('/')[0],
         value: rpc,
         isDefault: HiveEngineConfigUtils.isRpcDefault(rpc),
@@ -87,6 +88,7 @@ const TokensSettings = ({
     );
     const accountHistoryApiOpts = accountHistoryApiFullList.map((api) => {
       return {
+        panelType: 'account-history-api',
         label: api.replace('https://', '').split('/')[0],
         value: api,
         isDefault: HiveEngineConfigUtils.isAccountHistoryApiDefault(api),
@@ -98,8 +100,9 @@ const TokensSettings = ({
     setAccountHistoryApiOptions(accountHistoryApiOpts);
   };
 
-  const createActiveValue = (str: string) => {
+  const createActiveValue = (str: string, panelType: string) => {
     return {
+      panelType: panelType,
       label: str.replace('https://', '').split('/')[0],
       value: str,
       isDefault: false,
@@ -139,6 +142,7 @@ const TokensSettings = ({
   const customLabelRender = (selectProps: SelectRenderer<SelectOption>) => {
     return (
       <div
+        aria-label={`selected-panel-${selectProps.props.values[0].panelType}`}
         className="selected-panel"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -150,6 +154,7 @@ const TokensSettings = ({
   const customItemRender = (selectProps: SelectItemRenderer<SelectOption>) => {
     return (
       <div
+        aria-label={`select-item-${selectProps.props.values[0].panelType}`}
         className={`select-item ${
           selectProps.item.label === selectProps.props.values[0]?.label
             ? 'selected'
@@ -163,6 +168,7 @@ const TokensSettings = ({
         {!selectProps.item.isDefault &&
           selectProps.item.label !== selectProps.props.values[0]?.label && (
             <img
+              aria-label="erase-rpc-img"
               src="/assets/images/clear.png"
               className="erase-button"
               onClick={($event) => {
@@ -208,12 +214,12 @@ const TokensSettings = ({
   };
 
   return (
-    <div className="tokens-settings">
+    <div aria-label="tokens-settings" className="tokens-settings">
       <div className="hive-engine-rpc-panel">
         <div className="select-title">Hive-Engine RPC node</div>
         <div className="select-panel">
           <Select
-            values={[createActiveValue(activeHERpc)]}
+            values={[createActiveValue(activeHERpc, 'rpc')]}
             options={rpcOptions}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
@@ -221,6 +227,7 @@ const TokensSettings = ({
             className="select-hive-engine-rpc-node-select"
           />
           <Icon
+            ariaLabel="icon-tokens-settings-add-rpc"
             name={Icons.ADD_CIRCLE}
             type={IconType.OUTLINED}
             onClick={() => setIsNewRpcPanelOpened(true)}
@@ -229,6 +236,7 @@ const TokensSettings = ({
         {isNewRpcPanelOpened && (
           <div className="new-account-history-panel new-item-panel">
             <InputComponent
+              ariaLabel="input-text"
               onChange={setNewRpc}
               value={newRpc}
               label="html_popup_new_rpc"
@@ -236,6 +244,7 @@ const TokensSettings = ({
               type={InputType.TEXT}
             />
             <Icon
+              ariaLabel="icon-tokens-settings-save-rpc"
               name={Icons.SAVE}
               type={IconType.OUTLINED}
               onClick={() => saveRpc()}
@@ -248,7 +257,10 @@ const TokensSettings = ({
         <div className="select-panel">
           <Select
             values={[
-              createActiveValue(activeAccountHistoryApi) as SelectOption,
+              createActiveValue(
+                activeAccountHistoryApi,
+                'account-history',
+              ) as SelectOption,
             ]}
             options={accountHistoryApiOptions}
             onChange={() => undefined}
@@ -257,6 +269,7 @@ const TokensSettings = ({
             className="select-account-history-api-select"
           />
           <Icon
+            ariaLabel="icon-tokens-settings-add-account-history"
             name={Icons.ADD_CIRCLE}
             type={IconType.OUTLINED}
             onClick={() => setIsNewAccountHistoryPanelOpened(true)}
@@ -265,6 +278,7 @@ const TokensSettings = ({
         {isNewAccountHistoryPanelOpened && (
           <div className="new-account-history-panel new-item-panel">
             <InputComponent
+              ariaLabel="input-text"
               onChange={setNewAccountHistory}
               value={newAccountHistory}
               label="html_popup_new_account_history"
@@ -272,6 +286,7 @@ const TokensSettings = ({
               type={InputType.TEXT}
             />
             <Icon
+              ariaLabel="icon-tokens-settings-save-account-history"
               name={Icons.SAVE}
               type={IconType.OUTLINED}
               onClick={() => saveAccountHistory()}

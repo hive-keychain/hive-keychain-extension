@@ -18,7 +18,6 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
 config.byDefault();
-
 describe('reset-password.component tests:\n', () => {
   beforeEach(async () => {
     mockPreset.setOrDefault({
@@ -37,8 +36,16 @@ describe('reset-password.component tests:\n', () => {
   afterEach(() => {
     afterTests.clean();
   });
-  it.skip('Must clear all user data and navigate to sign up page', async () => {
-    //TODO waiting for modifications on AccountUtils.clearAllData() in store.dispatch
+  it('Must clear all user data and navigate to sign up page', async () => {
+    mockPreset.setOrDefault({
+      app: {
+        getAccount: [],
+        getAccountsFromLocalStorage: [],
+        getMkFromLocalStorage: '',
+        getActiveAccountNameFromLocalStorage: '',
+        hasStoredAccounts: false,
+      },
+    });
     await clickAwait([alLink.resetPassword, alButton.confirmResetPassword]);
     await assertion.awaitFor(alComponent.signUp, QueryDOM.BYLABEL);
   });

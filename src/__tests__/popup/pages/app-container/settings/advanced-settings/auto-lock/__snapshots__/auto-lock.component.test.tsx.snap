@@ -1,0 +1,185 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`auto-lock.component tests:
+ General cases:
+ Must load autolock and match snapshot: auto-lock.component Default Idle Lock 1`] = `
+<DocumentFragment>
+  <div
+    class="App "
+  >
+    <div
+      class="app-router"
+      style="height: 100%; display: grid; grid-template-rows: 70px 1fr;"
+    >
+      <div
+        class="title-section"
+      >
+        <span
+          aria-label="arrow-back-icon"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          arrow_back
+        </span>
+        <div
+          class="title"
+        >
+          Auto lock
+        </div>
+        <span
+          aria-label="icon-close-page"
+          class="icon-component material-icons-outlined icon-button clickable"
+        >
+          clear
+        </span>
+      </div>
+      <div
+        class="page-content"
+        style="overflow: auto; display: flex; flex-direction: column;"
+      >
+        <div
+          aria-label="auto-lock-page"
+          class="auto-lock-page"
+        >
+          <div
+            class="checkbox-container align-top"
+          >
+            <div
+              class="checkbox-and-label"
+            >
+              <div
+                class="pretty p-default"
+              >
+                <input
+                  aria-checked="true"
+                  checked=""
+                  id="checkbox-auto-lock-default-inner-input"
+                  type="checkbox"
+                  value=""
+                />
+                <div
+                  class="state"
+                >
+                  <label
+                    for="checkbox-auto-lock-default-inner-input"
+                  />
+                </div>
+              </div>
+              <div
+                aria-label="checkbox-auto-lock-default"
+                class="label"
+              >
+                Default
+              </div>
+            </div>
+            <div
+              class="hint"
+            >
+              Lock Keychain manually.
+            </div>
+          </div>
+          <div
+            class="checkbox-container align-top"
+          >
+            <div
+              class="checkbox-and-label"
+            >
+              <div
+                class="pretty p-default"
+              >
+                <input
+                  aria-checked="false"
+                  id="checkbox-auto-lock-locked-inner-input"
+                  type="checkbox"
+                  value=""
+                />
+                <div
+                  class="state"
+                >
+                  <label
+                    for="checkbox-auto-lock-locked-inner-input"
+                  />
+                </div>
+              </div>
+              <div
+                aria-label="checkbox-auto-lock-locked"
+                class="label"
+              >
+                Device lock
+              </div>
+            </div>
+            <div
+              class="hint"
+            >
+              Auto-lock Keychain when the device locks.
+            </div>
+          </div>
+          <div
+            class="checkbox-container align-top"
+          >
+            <div
+              class="checkbox-and-label"
+            >
+              <div
+                class="pretty p-default"
+              >
+                <input
+                  aria-checked="false"
+                  id="checkbox-auto-lock-idle-inner-input"
+                  type="checkbox"
+                  value=""
+                />
+                <div
+                  class="state"
+                >
+                  <label
+                    for="checkbox-auto-lock-idle-inner-input"
+                  />
+                </div>
+              </div>
+              <div
+                aria-label="checkbox-auto-lock-idle"
+                class="label"
+              >
+                Idle lock
+              </div>
+            </div>
+            <div
+              class="hint"
+            >
+              Auto-lock Keychain after the browser window is idle for the specified number of minutes.
+            </div>
+          </div>
+          <button
+            aria-label="button-save"
+            class="submit-button default fix-to-bottom"
+          >
+            <div
+              class="button-label"
+            >
+              Save 
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div
+      class="Toastify"
+    />
+    <div
+      aria-label="proposal-voting-section"
+      class="proposal-voting-section hide closed"
+    >
+      <span
+        class="icon-component material-icons close clickable"
+      >
+        clear
+      </span>
+      <div
+        class="text"
+      >
+        Support Keychain development proposal
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
