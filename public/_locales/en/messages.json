@@ -2442,5 +2442,21 @@
   "popup_html_undelegation_pending_until_message": {
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
+  },
+  "popup_html_pending": {
+    "message": "Pending",
+    "description": "Global"
+  },
+  "popup_html_pending_currency": {
+    "message": "Pending $1",
+    "description": "Global"
+  },
+  "popup_html_pending_currency_timestamp": {
+    "message": "This conversion will be filled on $1 at $2",
+    "description": "Global"
+  },
+  "popup_html_pending_conversions": {
+    "message": "You have $1 pending $2 conversion(s)",
+    "description": "Global"
   }
 }
