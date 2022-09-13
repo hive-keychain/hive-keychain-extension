@@ -1978,7 +1978,7 @@
     "description": "Wallet information receive conversion"
   },
   "popup_html_wallet_info_create_claimed_account": {
-    "message": "Created @$1 using ticket",
+    "message": "Claimed account @$1",
     "description": "Wallet information created claimed account"
   },
 
