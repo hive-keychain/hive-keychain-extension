@@ -13,6 +13,7 @@ interface SwitchProps {
   skipRightTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
+  ariaLabel?: string;
 }
 
 const SwitchComponent = (props: SwitchProps) => {
@@ -25,6 +26,7 @@ const SwitchComponent = (props: SwitchProps) => {
             : chrome.i18n.getMessage(props.leftValueLabel)}
         </span>
         <Switch
+          aria-label={`switch-${props.ariaLabel}`}
           style={{ fontSize: 18 }}
           onChange={(e) => {
             props.onChange(

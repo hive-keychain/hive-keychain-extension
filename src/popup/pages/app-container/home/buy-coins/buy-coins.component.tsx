@@ -39,6 +39,7 @@ const BuyCoins = ({
   return (
     <div className="buy-coins-page" aria-label="buy-coins-page">
       <SwitchComponent
+        ariaLabel="buy-coins"
         onChange={changeSelectedCurrency}
         selectedValue={selectedCurrency}
         leftValue={BuyCoinType.BUY_HIVE}
@@ -52,9 +53,12 @@ const BuyCoins = ({
       <div className="list">
         {BuyCoinsListItem(selectedCurrency, activeAccountName).list.map(
           (item, index) => (
-            <>
-              <div className="card" key={`item-${index}`}>
-                <a href={item.link} key={item.image} target="_blank">
+            <React.Fragment key={`card=${index}`}>
+              <div className="card" key={`card-item-${index}`}>
+                <a
+                  href={item.link}
+                  key={item.image + `${index}`}
+                  target="_blank">
                   <img src={`/assets/images/${item.image}`} />
                 </a>
                 <span className="description">
@@ -72,7 +76,7 @@ const BuyCoins = ({
                   1 && (
                 <div className="separator" key={`separator-${index}`}></div>
               )}
-            </>
+            </React.Fragment>
           ),
         )}
         <div className="card">
@@ -80,8 +84,8 @@ const BuyCoins = ({
             {chrome.i18n.getMessage('html_popup_exchanges')}
           </div>
           {BuyCoinsListItem(selectedCurrency, activeAccountName).exchanges.map(
-            (item) => (
-              <div className="exchange-item">
+            (item, index) => (
+              <div className="exchange-item" key={`exchange-item-${index}`}>
                 <img
                   src={`/assets/images/${item.image}`}
                   onClick={() => goTo(item.link)}
