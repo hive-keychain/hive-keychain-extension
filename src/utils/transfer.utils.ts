@@ -1,6 +1,39 @@
+import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+
+const exchanges = [
+  { account: 'bittrex', tokens: ['HIVE', 'HBD'] },
+  { account: 'deepcrypto8', tokens: ['HIVE'] },
+  { account: 'binance-hot', tokens: [] },
+  { account: 'ionomy', tokens: ['HIVE', 'HBD'] },
+  { account: 'huobi-pro', tokens: ['HIVE'] },
+  { account: 'huobi-withdrawal', tokens: [] },
+  { account: 'blocktrades', tokens: ['HIVE', 'HBD'] },
+  { account: 'mxchive', tokens: ['HIVE'] },
+  { account: 'hot.dunamu', tokens: [] },
+  { account: 'probithive', tokens: ['HIVE'] },
+  { account: 'probitred', tokens: [] },
+  { account: 'upbitsteem', tokens: [] },
+];
+
+const getTransferFromToSavingsValidationWarning = (
+  account: string,
+  operation: SavingOperationType,
+) => {
+  if (exchanges.map((exchange) => exchange.account).includes(account)) {
+    if (operation === SavingOperationType.DEPOSIT) {
+      return chrome.i18n.getMessage(
+        'popup_html_transfer_to_saving_to_exchange_error',
+      );
+    } else {
+      return chrome.i18n.getMessage(
+        'popup_html_transfer_from_saving_to_exchange_error',
+      );
+    }
+  }
+};
 
 const getExchangeValidationWarning = async (
   account: string,
@@ -8,21 +41,6 @@ const getExchangeValidationWarning = async (
   hasMemo: any,
   isRecurrent?: boolean,
 ) => {
-  const exchanges = [
-    { account: 'bittrex', tokens: ['HIVE', 'HBD'] },
-    { account: 'deepcrypto8', tokens: ['HIVE'] },
-    { account: 'binance-hot', tokens: [] },
-    { account: 'ionomy', tokens: ['HIVE', 'HBD'] },
-    { account: 'huobi-pro', tokens: ['HIVE'] },
-    { account: 'huobi-withdrawal', tokens: [] },
-    { account: 'blocktrades', tokens: ['HIVE', 'HBD'] },
-    { account: 'mxchive', tokens: ['HIVE'] },
-    { account: 'hot.dunamu', tokens: [] },
-    { account: 'probithive', tokens: ['HIVE'] },
-    { account: 'probitred', tokens: [] },
-    { account: 'upbitsteem', tokens: [] },
-  ];
-
   const exchange = exchanges.find((exchange) => exchange.account === account);
   if (!exchange) return null;
   if (!exchange.tokens.includes(currency)) {
@@ -67,7 +85,8 @@ const saveFavoriteUser = async (
 
 const TransferUtils = {
   getExchangeValidationWarning,
-  saveTransferRecipient: saveFavoriteUser,
+  saveFavoriteUser,
+  getTransferFromToSavingsValidationWarning,
 };
 
 export default TransferUtils;

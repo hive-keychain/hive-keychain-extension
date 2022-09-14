@@ -205,7 +205,7 @@ const TokensTransfer = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           if (confirmationResult.confirmed) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveTransferRecipient(
+            await TransferUtils.saveFavoriteUser(
               receiverUsername,
               activeAccount,
             );

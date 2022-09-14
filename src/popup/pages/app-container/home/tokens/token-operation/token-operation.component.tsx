@@ -197,7 +197,7 @@ const TokensOperation = ({
               ]);
               goBack();
             } else {
-              await TransferUtils.saveTransferRecipient(
+              await TransferUtils.saveFavoriteUser(
                 receiverUsername,
                 activeAccount,
               );
