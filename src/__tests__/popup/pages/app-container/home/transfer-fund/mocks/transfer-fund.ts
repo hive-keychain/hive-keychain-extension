@@ -99,9 +99,7 @@ const methods = {
 const extraMocks = {
   transfer: (transfer: boolean) => {
     HiveUtils.transfer = jest.fn().mockResolvedValue(transfer);
-    TransferUtils.saveTransferRecipient = jest
-      .fn()
-      .mockResolvedValue(undefined);
+    TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined);
     AccountUtils.getPublicMemo = jest
       .fn()
       .mockResolvedValue(accounts.extended.memo_key);
