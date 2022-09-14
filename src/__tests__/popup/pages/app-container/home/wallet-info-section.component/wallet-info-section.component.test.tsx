@@ -18,7 +18,7 @@ describe('wallet-info-section.component tests:\n', () => {
     beforeEach(async () => {
       _asFragment = await walletInfo.beforeEach();
     });
-    it('Must show actual balances and match snapshot', () => {
+    it('Must show actual balances', () => {
       const { balanceRepeated, balanceCurrencies, delegations } = arraysInfo;
       const { repetitions } = arraysInfo;
       assertion.AllinArrayTextToHaveLength(balanceRepeated, repetitions);

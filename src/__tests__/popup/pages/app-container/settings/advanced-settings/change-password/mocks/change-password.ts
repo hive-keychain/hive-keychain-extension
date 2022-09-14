@@ -26,9 +26,6 @@ const i18n = {
 const constants = {
   mk: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    default: 'change-password.component Default',
-  },
   message: {
     wrongPassword: i18n.get('wrong_password'),
     passwordMismatch: i18n.get('popup_password_mismatch'),
@@ -40,6 +37,12 @@ const constants = {
     badConfirmation: ['{space}', 'not_the_same1234'],
     invalids: ['short12', '12345678', 'justlow1', 'JUSTwrong', '@#$^^&*!'],
   },
+  screenText: [
+    i18n.get('popup_html_change_password_text'),
+    i18n.get('popup_html_old_password'),
+    i18n.get('popup_html_new_password'),
+    i18n.get('popup_html_confirm'),
+  ],
 };
 
 const beforeEach = async () => {
