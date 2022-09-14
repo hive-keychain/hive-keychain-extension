@@ -8,5 +8,14 @@ const clean = () => {
   cleanup();
   jest.clearAllMocks();
 };
+/**
+ * afterAll already defined.
+ */
+const resetGlobalImage = () => {
+  const originalImage = globalThis.Image;
+  afterAll(() => {
+    globalThis.Image = originalImage;
+  });
+};
 
-export default { clean };
+export default { clean, resetGlobalImage };
