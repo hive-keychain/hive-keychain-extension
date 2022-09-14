@@ -17,6 +17,7 @@ const Config = {
     },
   },
   PROPOSAL: 216,
+  PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
   MIN_LOADING_TIME: 1000,
   rpc: {
     DEFAULT: { uri: 'https://api.hive.blog', testnet: false },
