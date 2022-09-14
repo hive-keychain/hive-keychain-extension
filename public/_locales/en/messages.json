@@ -224,7 +224,7 @@
     "description": "Generic button"
   },
   "popup_html_settings": {
-    "message": "Settings",
+    "message": "Menu",
     "description": "on settings page"
   },
   "popup_html_add_account": {
@@ -1437,7 +1437,7 @@
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
-    "message": "Advanced",
+    "message": "Advanced settings",
     "description": "Advanced settings sub menu"
   },
   "popup_html_rpc_node_text": {
@@ -2450,6 +2450,22 @@
   "popup_html_transfer_from_saving_to_exchange_error": {
     "message": "You are trying to withdraw from your savings to an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
     "description": "Transfer from savings to an exchange platform warning message"
+  },
+  "popup_html_buy": {
+    "message": "Buy",
+    "description": "Main page buy button"
+  },
+  "html_popup_transak_description": {
+    "message": "Transak helps you buy HIVE using fiat. It supports credit cards, bank transfers, Apple Pay and MobiKwik in more than 100 countries (options vary per country). You will receive your HIVE directly in your Hive Keychain wallet.",
+    "description": "Buy coin, transak description"
+  },
+  "html_popup_blocktrades_description": {
+    "message": "With Blocktrades, quickly swap between other major cryptocurrencies and HIVE/HBD.",
+    "description": "Buy coin, blocktrades description"
+  },
+  "html_popup_exchanges": {
+    "message": "Exchanges",
+    "description": "Buy coin exchanges"
   },
   "popup_html_pending": {
     "message": "Pending",
