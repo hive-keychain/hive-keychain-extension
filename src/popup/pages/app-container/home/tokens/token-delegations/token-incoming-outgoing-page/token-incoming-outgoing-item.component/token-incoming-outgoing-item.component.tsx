@@ -79,10 +79,7 @@ const TokenIncomingOutgoing = ({
               ]);
               goBack();
             } else {
-              await TransferUtils.saveTransferRecipient(
-                username,
-                activeAccount,
-              );
+              await TransferUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_cancel_delegation_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
             }
@@ -148,10 +145,7 @@ const TokenIncomingOutgoing = ({
               ]);
               goBack();
             } else {
-              await TransferUtils.saveTransferRecipient(
-                username,
-                activeAccount,
-              );
+              await TransferUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_delegate_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
             }

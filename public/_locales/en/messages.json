@@ -2443,6 +2443,14 @@
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
   },
+  "popup_html_transfer_to_saving_to_exchange_error": {
+    "message": "You are trying to transfer to the savings of an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
+    "description": "Transfer to savings of exchange platform warning message"
+  },
+  "popup_html_transfer_from_saving_to_exchange_error": {
+    "message": "You are trying to withdraw from your savings to an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
+    "description": "Transfer from savings to an exchange platform warning message"
+  },
   "popup_html_buy": {
     "message": "Buy",
     "description": "Main page buy button"

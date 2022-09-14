@@ -158,9 +158,7 @@ const extraMocks = {
   sendCustomJson: (result: string | true | undefined) =>
     (HiveUtils.sendCustomJson = jest.fn().mockResolvedValue(result)),
   saveTransferRecipient: () =>
-    (TransferUtils.saveTransferRecipient = jest
-      .fn()
-      .mockResolvedValue(undefined)),
+    (TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined)),
   tryConfirmTransaction: (result: TransactionConfirmationResult) =>
     (BlockchainTransactionUtils.tryConfirmTransaction = jest
       .fn()

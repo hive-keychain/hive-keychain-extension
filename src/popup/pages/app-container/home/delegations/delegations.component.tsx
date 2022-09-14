@@ -211,7 +211,7 @@ const Delegations = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage('popup_html_delegation_successful');
         } else {
           setErrorMessage('popup_html_delegation_fail');
@@ -243,7 +243,7 @@ const Delegations = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage('popup_html_cancel_delegation_successful');
         } else {
           setErrorMessage('popup_html_cancel_delegation_fail');
