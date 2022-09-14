@@ -8,7 +8,6 @@ import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 
 const spanElementsHive = [
   alDropdown.span.send,
-  alDropdown.span.buy,
   alDropdown.span.powerUp,
   alDropdown.span.convert,
   alDropdown.span.savings,
@@ -16,7 +15,6 @@ const spanElementsHive = [
 
 const pagesToAssertHive = [
   alComponent.transfersFundsPage,
-  alComponent.buyCoinsPage,
   alComponent.powerUpDownPage,
   alComponent.conversionPage,
   alComponent.savingsPage,
@@ -27,10 +25,10 @@ const constants = {
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
   extendedAccount: { ...accounts.extended } as ExtendedAccount,
   arraysInfo: {
-    balanceRepeated: ['1,000.000', '+ 10,000.000', '(savings)'],
+    balanceRepeated: ['1,000.000', '10,000.000', '(savings)'],
     repetitions: 2,
     balanceCurrencies: ['HIVE', 'HBD'],
-    delegatios: ['5.459', '+ 10.863', 'HP', '(Deleg.)'],
+    delegations: ['5.459', '10.863', 'HP', '(Deleg.)'],
     dropDownElements: [
       alDropdown.arrow.hbd,
       alDropdown.arrow.hive,
@@ -63,9 +61,6 @@ const constants = {
     hbd_balance: new Asset(0, 'HBD'),
     savings_hbd_balance: new Asset(0, 'HBD'),
     vesting_shares: new Asset(0, 'VESTS'),
-  },
-  snapshots: {
-    allBalances: 'wallet-info-section.component All balances',
   },
 };
 

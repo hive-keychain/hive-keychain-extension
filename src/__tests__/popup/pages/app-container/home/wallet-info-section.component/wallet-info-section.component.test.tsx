@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import { screen } from '@testing-library/react';
 import walletInfoImplementations from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/implementations';
 import walletInfo from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/wallet-info';
 import walletInfoConstants from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/wallet-info-constants';
@@ -18,7 +19,11 @@ describe('wallet-info-section.component tests:\n', () => {
       _asFragment = await walletInfo.beforeEach();
     });
     it('Must show actual balances and match snapshot', () => {
-      expect(_asFragment()).toMatchSnapshot(constants.snapshots.allBalances);
+      const { balanceRepeated, balanceCurrencies, delegations } = arraysInfo;
+      const { repetitions } = arraysInfo;
+      assertion.AllinArrayTextToHaveLength(balanceRepeated, repetitions);
+      assertion.AllinArrayTextToHaveLength(balanceCurrencies, 1);
+      assertion.AllinArrayTextToHaveLength(delegations, 1);
     });
     it('Must show 3 dropdown arrow items', () => {
       methods.assertManyByLabel(arraysInfo.dropDownElements);
@@ -66,7 +71,7 @@ describe('wallet-info-section.component tests:\n', () => {
         _asFragment = await walletInfo.beforeEach({ zeroBalances: true });
       });
       it('Must not display any savings subvalue', () => {
-        assertion.queryByText(arraysInfo.balanceRepeated[2], false);
+        expect(screen.queryAllByText('0.000', { exact: false }).length).toBe(3);
       });
     });
     describe('Short popup_html_delegations message:\n', () => {
