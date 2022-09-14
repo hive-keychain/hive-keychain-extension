@@ -199,7 +199,9 @@ const CreateAccountStepOne = ({
   };
 
   return (
-    <div className="create-account-step-one">
+    <div
+      aria-label="settings-create-account-step-one"
+      className="create-account-step-one">
       {selectedAccount && accountOptions && (
         <Select
           values={[selectedAccount]}
