@@ -26,10 +26,6 @@ describe('transaction.utils tests:\n', () => {
         (HiveUtils.getClient().database.getAccountHistory = jest
           .fn()
           .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryResponse));
-      const spyGetAccountHistory = jest.spyOn(
-        HiveUtils.getClient().database,
-        'getAccountHistory',
-      );
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
@@ -40,15 +36,6 @@ describe('transaction.utils tests:\n', () => {
       }
       expect(result).toEqual(utilsT.expectedDataGetAccountHistory);
       expect(mockGetAccountHistory).toBeCalledTimes(1);
-      expect(spyGetAccountHistory).toBeCalledTimes(1);
-      expect(spyGetAccountHistory).toBeCalledWith(
-        callingData.accountName,
-        callingData.start,
-        1000,
-        ['38000784012476700', '655360'],
-      );
-      spyGetAccountHistory.mockReset();
-      spyGetAccountHistory.mockRestore();
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
