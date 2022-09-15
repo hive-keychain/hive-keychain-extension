@@ -106,7 +106,11 @@ const PowerUpDown = ({
       ) - (powerType === PowerType.POWER_UP ? 0 : 5)
     ).toFixed(3);
 
-    setAvailable(powerType === PowerType.POWER_UP ? hiveBalance : hpBalance);
+    setAvailable(
+      powerType === PowerType.POWER_UP
+        ? hiveBalance
+        : Math.max(Number(hpBalance), 0),
+    );
     setCurrent(powerType === PowerType.POWER_UP ? hpBalance : hiveBalance);
   }, [activeAccount, delegations]);
 
