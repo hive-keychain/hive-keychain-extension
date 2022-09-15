@@ -5,7 +5,11 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import {
+  TokenBalance,
+  TokenMarket,
+  TokenTransaction,
+} from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
@@ -43,6 +47,7 @@ export interface MocksTokens {
   getOutgoingDelegations?: TokenDelegation[];
   getAllTokens?: any[];
   getTokensMarket?: TokenMarket[];
+  getTokenHistory?: TokenTransaction[];
 }
 export interface MocksProposal {
   hasVotedForProposal?: boolean;
