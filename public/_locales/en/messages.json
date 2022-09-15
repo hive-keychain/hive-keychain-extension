@@ -2396,7 +2396,7 @@
     "description": "General"
   },
   "html_popup_ticket": {
-    "message": "$1 ticket",
+    "message": "$1 account creation ticket",
     "description": "claim account ticket (one word)"
   },
   "html_popup_account_creation_not_enough_found": {
