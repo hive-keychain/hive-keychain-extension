@@ -28,16 +28,6 @@ import phishing from 'src/__tests__/popup/pages/app-container/home/transfer-fund
 import transferFund from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/transfer-fund';
 import { KeyToUse } from 'src/__tests__/utils-for-testing/enums/enums';
 import config from 'src/__tests__/utils-for-testing/setups/config';
-//TODO important:
-//  - change the config.byDefault to:
-//    - add byDefault = {} 2 choices for now.
-//    - using timers:
-//      - jest.useFakeTimers('legacy'); + all nedded from byDefault.
-//  - change so we can have clearTests = {}
-//      - usingTimers():
-//        - jest.runOnlyPendingTimers();
-//        - jest.useRealTimers();
-//        - jest.clearAllMocks();
 describe('transfer-fund.component tests:\n', () => {
   config.byDefault();
   const { methods } = transferFund;

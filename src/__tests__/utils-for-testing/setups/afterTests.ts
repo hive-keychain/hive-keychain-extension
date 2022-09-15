@@ -8,6 +8,14 @@ const clean = () => {
   cleanup();
   jest.clearAllMocks();
 };
+
+const cleanWithoutRunPendingTimers = () => {
+  jest.clearAllTimers();
+  jest.useRealTimers();
+  jest.clearAllMocks();
+  cleanup();
+};
+
 /**
  * afterAll already defined.
  */
@@ -18,4 +26,4 @@ const resetGlobalImage = () => {
   });
 };
 
-export default { clean, resetGlobalImage };
+export default { clean, resetGlobalImage, cleanWithoutRunPendingTimers };
