@@ -107,6 +107,8 @@ const WitnessTab = ({
         const ranking = requestResult?.data;
         setRanking(ranking);
         setFilteredRanking(ranking);
+      } else {
+        throw new Error('Witness-ranks data error');
       }
     } catch (err) {
       setErrorMessage('popup_html_error_retrieving_witness_ranking');

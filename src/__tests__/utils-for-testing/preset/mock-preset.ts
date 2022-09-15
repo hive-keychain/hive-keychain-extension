@@ -165,6 +165,12 @@ const setOrDefault = (toUse: MocksToUse) => {
       (proposal && proposal.voteForKeychainProposal) ??
         _proposal.voteForKeychainProposal,
     );
+  ProposalUtils.isRequestingProposalVotes = jest
+    .fn()
+    .mockResolvedValue(
+      (proposal && proposal.isRequestingProposalVotes) ??
+        _proposal.isRequestingProposalVotes,
+    );
 };
 
 export default { setOrDefault };

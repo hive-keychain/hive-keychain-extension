@@ -67,6 +67,7 @@ const _defaults = {
   _proposal: {
     hasVotedForProposal: true,
     voteForKeychainProposal: true,
+    isRequestingProposalVotes: false,
   } as MocksProposal,
   _chromeRunTime: {
     getManifest: {

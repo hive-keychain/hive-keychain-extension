@@ -7,4 +7,8 @@ const panel = {
   witness,
 };
 
-export default { panel };
+const buyCoins = {
+  buyCoins: 'switch-buy-coins',
+};
+
+export default { panel, buyCoins };

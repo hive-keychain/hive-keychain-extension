@@ -38,10 +38,6 @@ const minningOperationData = tokenHistory.leoToken.filter(
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    withData: 'tokens-history.component',
-    noData: 'tokens-history.component NO DATA',
-  },
   message: {
     item: {
       miningLottery: i18n.get('popup_html_token_wallet_info_mining_lottery', [

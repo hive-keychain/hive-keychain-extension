@@ -69,7 +69,8 @@ const beforeEach = async (
 
 const methods = {
   afterEach: afterEach(() => {
-    afterTests.clean();
+    //afterTests.clean();
+    afterTests.cleanWithoutRunPendingTimers();
   }),
   clickArrowTo: async (dropDownTo: string) => {
     let ariaLabels = [alDropdown.span.send];

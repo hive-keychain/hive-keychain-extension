@@ -47,6 +47,7 @@ export interface MocksTokens {
 export interface MocksProposal {
   hasVotedForProposal?: boolean;
   voteForKeychainProposal?: boolean;
+  isRequestingProposalVotes?: boolean;
 }
 export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
