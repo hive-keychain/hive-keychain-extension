@@ -1,4 +1,4 @@
-import HiveUtils from 'src/utils/hive.utils';
+import AccountUtils from 'src/utils/account.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -13,10 +13,10 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 
 const extraMocks = {
-  getAccounts: () => {
-    HiveUtils.getClient().database.getAccounts = jest
+  getAccount: () => {
+    AccountUtils.getAccount = jest
       .fn()
-      .mockResolvedValue([accounts.extended]);
+      .mockResolvedValue(accounts.asArray.extended);
   },
 };
 /**

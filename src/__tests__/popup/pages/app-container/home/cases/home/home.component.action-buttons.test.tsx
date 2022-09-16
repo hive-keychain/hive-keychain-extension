@@ -36,9 +36,4 @@ describe('home.component action-buttons tests:\n', () => {
     actRunAllTimers();
     await assertion.awaitFor(alComponent.userTokens, QueryDOM.BYLABEL);
   });
-  it('Must show governance page when clicking on governance', async () => {
-    await clickAwait([alButton.actionBtn.governance]);
-    actRunAllTimers();
-    assertion.getByLabelText(alComponent.governancePage);
-  });
 });

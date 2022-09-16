@@ -21,4 +21,35 @@ export default {
   proxySuggestion: 'proxy-suggestion',
   addByKeysPage: 'add-by-keys-page',
   addByAuthPage: 'add-by-auth-page',
+  tokensSettings: 'tokens-settings',
+  tokensHistory: 'tokens-history',
+  tokensTransfer: 'transfer-tokens-page',
+  tokensOperationPage: 'tokens-operation-page',
+  tokensFilter: 'tokens-filter',
+  peoplePage: 'settings-account-sub-menu-page',
+  tunePage: 'user-preferences-page',
+  settingsPage: 'advanced-settings-page',
+  infoPage: 'about-page',
+  advanceSettings: {
+    rpcNodes: 'rpc-nodes-page',
+    autoLock: 'auto-lock-page',
+    changePassword: 'change-password-page',
+    link: 'keychainify-page',
+    importExport: 'import-export-preferences-page',
+    clearAllData: 'clear-all-data-page',
+  },
+  account: {
+    subMenu: {
+      addAccount: {
+        router: 'settings-add-account-router-page',
+      },
+      manageAccounts: 'settings-manage-account',
+      createAccountsStepOne: 'settings-create-account-step-one',
+    },
+  },
+  userPreferences: {
+    authorizedOperations: 'authorized-operations-page',
+    automatedTasks: 'automated-tasks-page',
+  },
+  whatsNew: 'whats-new-component',
 };

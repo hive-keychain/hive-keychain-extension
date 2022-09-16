@@ -5,6 +5,7 @@ import { ReactElement } from 'react';
 import ProxyUtils from 'src/utils/proxy.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -21,6 +22,7 @@ import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import {
   actAdvanceTime,
   actRunAllTimers,
+  clickAwait,
   clickTypeAwait,
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
@@ -61,10 +63,10 @@ const beforeEach = async (
   actAdvanceTime(4300);
   let objData: MocksToUse = {};
   if (hasInitialProxy) {
-    objData = { app: { getAccounts: [constants.extendedWProxy] } };
+    objData = { app: { getExtendedAccount: constants.extendedWProxy } };
+    extraMocks({ findUserProxy: accountProxy });
   }
   mockPreset.setOrDefault(objData);
-  extraMocks({ findUserProxy: accountProxy });
   if (removeActiveKey === true) {
     delete constants.stateAs.accounts[0].keys.active;
     delete constants.stateAs.accounts[0].keys.activePubkey;
@@ -81,9 +83,7 @@ const methods = {
     afterTests.clean();
   }),
   clickGovernance: async () => {
-    await userEventPendingTimers.click(
-      screen.getByLabelText(alButton.actionBtn.governance),
-    );
+    await clickAwait([alButton.menu, alButton.menuPreFix + alIcon.governance]);
   },
   gotoTab: async (tab: Tab) => {
     await userEventPendingTimers.click(screen.getAllByRole('tab')[tab]);

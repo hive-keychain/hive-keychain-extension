@@ -69,14 +69,16 @@ const TokensFilter = ({
   }, [tokens, filterValue]);
 
   return (
-    <div className="tokens-filter">
+    <div aria-label="tokens-filter" className="tokens-filter">
       <div
+        aria-label="tokens-filter-disclaimer"
         className="disclaimer"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_tokens_settings_text'),
         }}></div>
 
       <InputComponent
+        ariaLabel="input-filter-box"
         type={InputType.TEXT}
         placeholder="popup_html_search"
         value={filterValue}
@@ -85,13 +87,20 @@ const TokensFilter = ({
 
       <div className="tokens-list">
         {filteredTokens.map((token) => (
-          <div className="token" key={token.symbol}>
+          <div
+            aria-label={`token-list-item-${token.symbol}`}
+            className="token"
+            key={token.symbol}>
             <CheckboxComponent
+              ariaLabel={`checkbox-select-token-${token.symbol}`}
+              extraAriaLabelOnInput={`checkbox-checked-${token.symbol}`}
               checked={!hiddenTokens.includes(token.symbol)}
               onChange={() => {
                 toggleHiddenToken(token.symbol);
               }}></CheckboxComponent>
-            <div className="description">
+            <div
+              aria-label="token-list-item-description"
+              className="description">
               <div className="name">{token.name}</div>
               <div className="detail">
                 {token.issuer && (

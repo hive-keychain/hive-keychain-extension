@@ -57,6 +57,7 @@ const WitnessVotingSection = ({
       </div>
       {shouldDisplayWitnessVoting && (
         <OperationButtonComponent
+          ariaLabel="vote-for-stoodkev-witness"
           onClick={handleVoteForWitnessClicked}
           label={'html_popup_vote_for_witness'}
           requiredKey={KeychainKeyTypesLC.active}

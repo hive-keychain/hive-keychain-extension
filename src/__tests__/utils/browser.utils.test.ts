@@ -3,7 +3,6 @@ const env = process.env;
 
 describe('sendResponse tests', () => {
   test('While mocking the env variable IS_FIREFOX it must return resolvedMessage', async () => {
-    //mocking env
     process.env = {
       ...env,
       IS_FIREFOX: 'true',
@@ -16,7 +15,6 @@ describe('sendResponse tests', () => {
     );
     expect(result).not.toBeUndefined();
     expect(result).toBe('It is been returned');
-    //returning env to its initial state
     process.env = env;
   });
   test('While not mocking env variables, it should execute the consoleLogA function and return undefined', () => {

@@ -50,7 +50,9 @@ const AuthorizedOperations = ({
   };
 
   return (
-    <div className="authorized-operations-page">
+    <div
+      aria-label="authorized-operations-page"
+      className="authorized-operations-page">
       <div
         className="introduction"
         dangerouslySetInnerHTML={{
@@ -79,6 +81,7 @@ const AuthorizedOperations = ({
                         )}
                       </div>
                       <Icon
+                        ariaLabel={`icon-delete-authorized-${operation}-${website}`}
                         onClick={() =>
                           handleEraseButtonClick(website, operation)
                         }

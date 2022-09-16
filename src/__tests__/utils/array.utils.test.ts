@@ -70,7 +70,6 @@ describe('mergeWithoutDuplicate tests:\n', () => {
   });
 
   test('Not providing the key name(undefined instead), will just merge two arrays with duplicates', () => {
-    //NOTE: this may need a validation on case that passing key name as undefined.
     const array1 = [
       { name: 'theghost1980', age: 100 },
       { name: 'aggroed', age: 100 },
@@ -93,9 +92,6 @@ describe('mergeWithoutDuplicate tests:\n', () => {
 });
 
 describe('getMaxValue tests', () => {
-  //Notes about the functions:
-  // 1. It can return max value when value: number.
-  // 2. It will return the numeric value within the property asked.
   test('Not providing a property name and passing a list, will return the max element in that array', () => {
     const list = [1, 2, 4, 5, 0];
     const maxValue = ArrayUtils.getMaxValue(list, undefined);
@@ -146,9 +142,6 @@ describe('getMaxValue tests', () => {
 });
 
 describe('getMinValue', () => {
-  //Notes about the functions:
-  // 1. It can return min value when value: number.
-  // 2. It will return the numeric value within the property asked.
   test('Not providing a property name and passing a list, will return the min element in that array', () => {
     const list = [1, 2, 4, 5, 120];
     const maxValue = ArrayUtils.getMinValue(list, undefined);

@@ -1,9 +1,11 @@
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
+import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
+import tokenMarket from 'src/__tests__/utils-for-testing/data/tokens/token-market';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -17,7 +19,7 @@ import {
   MocksTopBar,
   MocksWalletHistory,
 } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
-//TODO remove comments when all works
+
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
 };
@@ -29,12 +31,13 @@ const _defaults = {
     getValueFromLocalStorage: jest
       .fn()
       .mockImplementation((...args: any[]) =>
-        mocksImplementation.getValuefromLS(args),
+        mocksImplementation.getValuefromLS(args[0]),
       ),
     getCurrentRpc: rpc.defaultRpc,
     getActiveAccountNameFromLocalStorage: mk.user.one,
     getRCMana: manabar,
-    getAccounts: accounts.asArray.extended,
+    getAccount: accounts.asArray.extended,
+    getExtendedAccount: accounts.extended,
     checkRpcStatus: true,
     hasStoredAccounts: true,
     getMkFromLocalStorage: mk.user.one,
@@ -56,12 +59,17 @@ const _defaults = {
     getAccountTransactions: [historyCurrency.transfers, 1000],
   } as MocksWalletHistory,
   _tokens: {
-    getTokens: tokensList.alltokens,
     getUserBalance: tokensUser.balances,
+    getIncomingDelegations: tokensUser.incomingDelegations,
+    getOutgoingDelegations: tokensUser.outcomingDelegations,
+    getAllTokens: tokensList.alltokens,
+    getTokensMarket: tokenMarket.all,
+    getTokenHistory: tokenHistory.leoToken,
   } as MocksTokens,
   _proposal: {
     hasVotedForProposal: true,
     voteForKeychainProposal: true,
+    isRequestingProposalVotes: false,
   } as MocksProposal,
   _chromeRunTime: {
     getManifest: {
