@@ -2,9 +2,7 @@ import {
   MiningLotteryTransaction,
   OperationsHiveEngine,
 } from '@interfaces/tokens.interface';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
-import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -12,6 +10,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -60,16 +59,16 @@ const beforeEach = async (noTokenHistoryData: boolean = false) => {
   let _asFragment: () => DocumentFragment;
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
-  extraMocks.getAccountHistoryApi(noTokenHistoryData);
+  let remock: MocksToUse = {};
+  if (noTokenHistoryData) {
+    remock = { tokens: { getTokenHistory: [] } };
+  }
+  mockPreset.setOrDefault(remock);
   _asFragment = customRenderFixed({
     initialState: constants.stateAs,
   }).asFragment;
   await assertion.awaitMk(constants.username);
-  await clickAwait([
-    alButton.actionBtn.tokens,
-    alIcon.tokens.prefix.history + 'LEO',
-  ]);
+  await clickAwait([alButton.actionBtn.tokens]);
   return _asFragment;
 };
 
@@ -88,17 +87,8 @@ const methods = {
   },
 };
 
-const extraMocks = {
-  getAccountHistoryApi: (noData: boolean) =>
-    (HiveEngineConfigUtils.getAccountHistoryApi().get = jest
-      .fn()
-      .mockResolvedValueOnce({ data: noData ? [] : tokenHistory.leoToken })
-      .mockResolvedValueOnce({ data: [] })),
-};
-
 export default {
   beforeEach,
   methods,
   constants,
-  extraMocks,
 };

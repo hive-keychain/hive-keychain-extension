@@ -1,6 +1,7 @@
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -153,6 +154,14 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
     );
+  //added getTokensHistory
+  HiveEngineConfigUtils.getAccountHistoryApi().get = jest
+    .fn()
+    .mockResolvedValueOnce({
+      data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
+    })
+    .mockResolvedValueOnce({ data: [] });
+  //to remove comments when tested.
   ProposalUtils.hasVotedForProposal = jest
     .fn()
     .mockResolvedValue(

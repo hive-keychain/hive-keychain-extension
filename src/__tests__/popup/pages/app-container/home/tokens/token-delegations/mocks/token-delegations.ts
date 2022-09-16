@@ -3,6 +3,7 @@ import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
@@ -43,7 +44,13 @@ const constants = {
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
+  mockPreset.setOrDefault({
+    tokens: {
+      getUserBalance: tokensUser.balances.filter(
+        (token) => token.symbol === 'LEO',
+      ),
+    },
+  });
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(constants.username);
   await clickAwait([alButton.actionBtn.tokens]);
