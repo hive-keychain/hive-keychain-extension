@@ -31,7 +31,7 @@ const AddAccountRouter = ({
 
   return (
     <div
-      aria-label="add-account-router-page"
+      aria-label="settings-add-account-router-page"
       className="add-account-router-page"
       style={{
         height: '100%',

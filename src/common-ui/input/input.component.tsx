@@ -24,6 +24,7 @@ interface InputProps {
   required?: boolean;
   hasError?: boolean;
   ariaLabel?: string;
+  disabled?: boolean;
 }
 
 const InputComponent = (props: InputProps) => {

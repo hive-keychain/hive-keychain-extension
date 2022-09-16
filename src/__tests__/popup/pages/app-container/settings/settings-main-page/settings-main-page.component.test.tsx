@@ -3,10 +3,14 @@ import { Icons } from '@popup/icons.enum';
 import React from 'react';
 import settingsMainPage from 'src/__tests__/popup/pages/app-container/settings/settings-main-page/mocks/settings-main-page';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
-import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
+import {
+  actPendingTimers,
+  clickAwait,
+} from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 describe('settings-main-page.component tests:\n', () => {
   const { menuPages, constants, methods } = settingsMainPage;
@@ -34,5 +38,10 @@ describe('settings-main-page.component tests:\n', () => {
   it('Must open a new window when clicking support', async () => {
     await clickAwait([alButton.menuPreFix + Icons.SUPPORT]);
     expect(methods.spyChromeTabs()).toBeCalledWith(menuItems.urlSupport);
+  });
+  it('Must open governance page', async () => {
+    await clickAwait([alButton.menuPreFix + alIcon.governance]);
+    await actPendingTimers();
+    await assertion.awaitOneByLabel(alComponent.governancePage);
   });
 });

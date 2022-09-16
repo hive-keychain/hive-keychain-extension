@@ -8,6 +8,7 @@ export enum ButtonType {
   RAISED = 'raised',
   IMPORTANT = 'important',
   DEFAULT = 'default',
+  REVERSE = 'reverse',
 }
 
 export interface ButtonProps {

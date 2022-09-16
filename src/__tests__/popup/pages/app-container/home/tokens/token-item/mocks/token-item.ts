@@ -1,5 +1,4 @@
 import { ReactElement } from 'react';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
@@ -67,8 +66,9 @@ const constants = {
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
-  extraMocks();
+  mockPreset.setOrDefault({
+    tokens: { getTokenHistory: [] },
+  });
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(constants.username);
   await clickAwait([alButton.actionBtn.tokens]);
@@ -82,11 +82,7 @@ const methods = {
   spyOnTabs: () => jest.spyOn(chrome.tabs, 'create'),
 };
 
-const extraMocks = () => {
-  HiveEngineConfigUtils.getAccountHistoryApi().get = jest
-    .fn()
-    .mockResolvedValue({ data: [] });
-};
+const extraMocks = () => {};
 
 export default {
   beforeEach,

@@ -133,6 +133,12 @@ const allToHaveLength = async (ariaLabel: string, length: number) => {
   });
 };
 
+const AllinArrayTextToHaveLength = (textArray: string[], length: number) => {
+  textArray.forEach((item) => {
+    expect(screen.queryAllByText(item, { exact: false }).length).toBe(length);
+  });
+};
+
 export default {
   awaitMk,
   awaitFor,
@@ -150,4 +156,5 @@ export default {
   getManyByText,
   allToHaveLength,
   queryByText,
+  AllinArrayTextToHaveLength,
 };

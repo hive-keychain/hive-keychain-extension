@@ -1,7 +1,10 @@
+import { waitFor } from '@testing-library/react';
 import tokensTransfer from 'src/__tests__/popup/pages/app-container/home/tokens/tokens-transfer/mocks/tokens-transfer';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
+import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import {
   KeyToUse,
   QueryDOM,
@@ -10,31 +13,33 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
+const { methods, constants, extraMocks } = tokensTransfer;
+const { messages, selectedToken, memo } = constants;
+let _asFragment: () => {};
 describe('tokens-transfer.component tests:\n', () => {
   const { methods, constants, extraMocks } = tokensTransfer;
-  const { snapshotName, messages, selectedToken, memo } = constants;
+  const { messages, selectedToken, memo } = constants;
   let _asFragment: () => {};
   methods.afterEach;
-  describe('Snapshot cases:\n', () => {
-    describe('Having balances:\n', () => {
-      beforeEach(async () => {
-        _asFragment = await tokensTransfer.beforeEach();
-      });
-      it('Must show tokens balances with send icon', () => {
-        expect(_asFragment()).toMatchSnapshot(
-          snapshotName.tokens.with.transferIcons,
-        );
+  describe('Having balances:\n', () => {
+    beforeEach(async () => {
+      _asFragment = await tokensTransfer.beforeEach();
+    });
+    it('Must show tokens balances', async () => {
+      await assertion.allToHaveLength(
+        alDiv.token.user.item,
+        tokensUser.balances.length,
+      );
+    });
+  });
+  describe('No tokens balances:\n', () => {
+    beforeEach(async () => {
+      _asFragment = await tokensTransfer.beforeEach({
+        noTokensBalance: true,
       });
     });
-    describe('No tokens balances:\n', () => {
-      beforeEach(async () => {
-        _asFragment = await tokensTransfer.beforeEach({
-          noTokensBalance: true,
-        });
-      });
-      it('Must show no balances', () => {
-        expect(_asFragment()).toMatchSnapshot(snapshotName.tokens.noBalances);
-      });
+    it('Must show no balances', () => {
+      assertion.queryByLabel(alDiv.token.user.item, false);
     });
   });
   describe('With tokens balances:\n', () => {
@@ -107,6 +112,7 @@ describe('tokens-transfer.component tests:\n', () => {
         hasMemo: true,
         confirm: true,
       });
+      await waitFor(() => {});
       await assertion.awaitFor(messages.timeOut, QueryDOM.BYTEXT);
     });
     it('Must show error if transfer fails', async () => {

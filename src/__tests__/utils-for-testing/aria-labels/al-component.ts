@@ -41,9 +41,10 @@ export default {
   account: {
     subMenu: {
       addAccount: {
-        router: 'add-account-router-page',
+        router: 'settings-add-account-router-page',
       },
-      manageAccount: 'settings-manage-account',
+      manageAccounts: 'settings-manage-account',
+      createAccountsStepOne: 'settings-create-account-step-one',
     },
   },
   userPreferences: {
