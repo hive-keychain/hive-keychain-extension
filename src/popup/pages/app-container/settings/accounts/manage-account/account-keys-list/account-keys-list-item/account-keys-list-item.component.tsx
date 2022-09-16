@@ -90,6 +90,7 @@ const AccountKeysListItem = ({
         <div className="key-name">{chrome.i18n.getMessage(keyName)}</div>
         {publicKey && privateKey && canDelete && (
           <Icon
+            ariaLabel={`icon-remove-key-${chrome.i18n.getMessage(keyName)}`}
             onClick={() => handleClickOnRemoveKey()}
             name={Icons.DELETE}
             type={IconType.OUTLINED}
@@ -99,6 +100,7 @@ const AccountKeysListItem = ({
 
       {!privateKey && !publicKey && (
         <Icon
+          ariaLabel={`icon-add-key-${chrome.i18n.getMessage(keyName)}`}
           onClick={() => navigateToWithParams(Screen.SETTINGS_ADD_KEY, keyType)}
           name={Icons.ADD_CIRCLE}
           type={IconType.OUTLINED}
@@ -110,6 +112,9 @@ const AccountKeysListItem = ({
           {!isAuthorizedAccount && (
             <>
               <div
+                aria-label={`clickeable-account-key-${chrome.i18n.getMessage(
+                  keyName,
+                )}`}
                 className={`private-key key-field ${
                   isPrivateHidden ? 'hidden' : 'show'
                 }`}
@@ -131,6 +136,7 @@ const AccountKeysListItem = ({
           )}
           {isAuthorizedAccount && publicKey && (
             <div
+              aria-label="using-authorized-account"
               className="using-authorized-account"
               onClick={() => goToAccount(publicKey)}>
               {chrome.i18n.getMessage('html_popup_using_authorized_account', [

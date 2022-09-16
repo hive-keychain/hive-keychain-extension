@@ -7,7 +7,7 @@ import './user-preferences.component.scss';
 
 const UserPreferencesPage = ({}: PropsFromRedux) => {
   return (
-    <div className="user-preferences-page">
+    <div aria-label="user-preferences-page" className="user-preferences-page">
       <MenuComponent
         title="popup_html_user_preferences"
         isBackButtonEnable={true}

@@ -4,6 +4,8 @@ import {
   ClaimReward,
   CollateralizedConvert,
   Convert,
+  CreateAccount,
+  CreateClaimedAccount,
   Delegation,
   DepositSavings,
   FillCollateralizedConvert,
@@ -13,6 +15,7 @@ import {
   PowerUp,
   ReceivedInterests,
   RecurrentTransfer,
+  StartWithdrawSavings,
   Transaction,
   Transfer,
   WithdrawSavings,
@@ -55,11 +58,14 @@ const getAccountTransactions = async (
       op.interest,
       op.transfer_to_savings,
       op.transfer_from_savings,
+      op.fill_transfer_from_savings,
       op.claim_account,
       op.convert,
       op.fill_convert_request,
       op.collateralized_convert,
       op.fill_collateralized_convert_request,
+      op.account_create,
+      op.create_claimed_account,
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
@@ -162,9 +168,15 @@ const getAccountTransactions = async (
             break;
           }
           case 'transfer_from_savings': {
-            specificTransaction = e[1].op[1] as WithdrawSavings;
+            specificTransaction = e[1].op[1] as StartWithdrawSavings;
             specificTransaction.type = 'savings';
             specificTransaction.subType = 'transfer_from_savings';
+            break;
+          }
+          case 'fill_transfer_from_savings': {
+            specificTransaction = e[1].op[1] as WithdrawSavings;
+            specificTransaction.type = 'savings';
+            specificTransaction.subType = 'fill_transfer_from_savings';
             break;
           }
           case 'claim_account': {
@@ -193,6 +205,14 @@ const getAccountTransactions = async (
             specificTransaction = e[1].op[1] as FillCollateralizedConvert;
             specificTransaction.type = 'convert';
             specificTransaction.subType = 'fill_collateralized_convert_request';
+            break;
+          }
+          case 'create_claimed_account': {
+            specificTransaction = e[1].op[1] as CreateClaimedAccount;
+            break;
+          }
+          case 'account_create': {
+            specificTransaction = e[1].op[1] as CreateAccount;
             break;
           }
         }

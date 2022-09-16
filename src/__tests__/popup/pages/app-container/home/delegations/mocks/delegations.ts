@@ -105,7 +105,7 @@ const extraMocks = (delegateVestingShares: boolean) => {
   HiveUtils.delegateVestingShares = jest
     .fn()
     .mockResolvedValue(delegateVestingShares);
-  TransferUtils.saveTransferRecipient = jest.fn();
+  TransferUtils.saveFavoriteUser = jest.fn();
 };
 
 /**
@@ -113,7 +113,11 @@ const extraMocks = (delegateVestingShares: boolean) => {
  */
 const userInformation = {
   onScreen: {
-    total: { incoming: 'Total Incoming', outgoing: 'Total Outgoing' },
+    total: {
+      incoming: 'Total Incoming',
+      outgoing: 'Total Outgoing',
+      pendingOutgoingUndelegation: [],
+    },
   },
   delegation: { maxAmount: '0.459' },
 };

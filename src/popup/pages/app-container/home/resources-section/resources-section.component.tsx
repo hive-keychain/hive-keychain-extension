@@ -19,7 +19,7 @@ const ResourcesSection = ({
   useEffect(() => {
     if (
       activeAccount?.account?.voting_manabar?.current_mana !== undefined &&
-      activeAccount.rc?.percentage
+      activeAccount.rc?.percentage !== undefined
     ) {
       const hasMana =
         activeAccount?.account?.voting_manabar?.current_mana !== 0;
@@ -56,6 +56,7 @@ const ResourcesSection = ({
   return (
     <div className="resources-section">
       <ResourceItemComponent
+        ariaLabel="resource-item-voting-mana"
         label={'popup_html_vm'}
         value={votingMana}
         secondaryValue={votingValue}
@@ -63,6 +64,7 @@ const ResourcesSection = ({
         tooltipText={manaReadyIn}
       />
       <ResourceItemComponent
+        ariaLabel="resource-item-resource-credits"
         label={'popup_html_rc'}
         value={rc}
         icon={Icons.RC}

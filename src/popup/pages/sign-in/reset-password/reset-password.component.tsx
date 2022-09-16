@@ -1,3 +1,6 @@
+import { resetAccount } from '@popup/actions/account.actions';
+import { resetActiveAccount } from '@popup/actions/active-account.actions';
+import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { RootState } from '@popup/store';
@@ -11,6 +14,9 @@ import './reset-password.component.scss';
 const ResetPasswordPage = ({
   setTitleContainerProperties,
   navigateTo,
+  resetAccount,
+  forgetMk,
+  resetActiveAccount,
 }: PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
@@ -20,7 +26,7 @@ const ResetPasswordPage = ({
   }, []);
 
   const reset = () => {
-    AccountUtils.clearAllData();
+    AccountUtils.clearAllData(resetAccount, forgetMk, resetActiveAccount);
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 
@@ -51,6 +57,9 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   navigateTo,
+  resetAccount,
+  forgetMk,
+  resetActiveAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
