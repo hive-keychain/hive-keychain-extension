@@ -2,9 +2,9 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import * as accountActions from 'src/popup/actions/account.actions';
 import AccountUtils from 'src/utils/account.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
@@ -12,7 +12,9 @@ import {
   initialStateWAccountsWActiveAccountStore,
   initialStateWOneKey,
 } from 'src/__tests__/utils-for-testing/initial-states';
-
+import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
+import config from 'src/__tests__/utils-for-testing/setups/config';
+config.byDefault();
 afterEach(() => {
   jest.clearAllMocks();
 });
@@ -48,7 +50,6 @@ describe('account.actions tests:\n', () => {
       spyGetAccountsFromLocalStorage.mockRestore();
     });
   });
-
   describe('addAccount tests:\n', () => {
     test('Must add the new account', async () => {
       let fakeStore = getFakeStore(initialEmptyStateStore);
@@ -60,7 +61,6 @@ describe('account.actions tests:\n', () => {
       expect(fakeStore.getState().accounts).toEqual([account]);
     });
   });
-
   describe('resetAccount tests:\n', () => {
     test('Must delete accounts', async () => {
       let fakeStore = getFakeStore(initialStateWAccountsWActiveAccountStore);
@@ -68,7 +68,6 @@ describe('account.actions tests:\n', () => {
       expect(fakeStore.getState().accounts).toEqual([]);
     });
   });
-
   describe('setAccounts tests:\n', () => {
     test('Must set accounts', async () => {
       const accounts = [
@@ -80,7 +79,6 @@ describe('account.actions tests:\n', () => {
       expect(fakeStore.getState().accounts).toEqual(accounts);
     });
   });
-
   describe('addKey tests:\n', () => {
     const activePrivateKey =
       '5AAR76THISBLbISkmFAKEMND95bMveeEu8jPSZWLh5X6DhcnKzM';
@@ -95,7 +93,7 @@ describe('account.actions tests:\n', () => {
         .mockResolvedValueOnce([accountAddedKey]);
       let fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(
-        accountActions.addKey(activePrivateKey, keyType),
+        accountActions.addKey(activePrivateKey, keyType, setErrorMessage),
       );
       expect(fakeStore.getState().accounts).toEqual([accountAddedKey]);
       expect(fakeStore.getState().activeAccount.keys.active).toBe(
@@ -106,14 +104,13 @@ describe('account.actions tests:\n', () => {
       jest.spyOn(AccountUtils, 'addKey').mockResolvedValueOnce(undefined);
       let fakeStore = getFakeStore(initialStateWOneKey);
       await fakeStore.dispatch<any>(
-        accountActions.addKey(activePrivateKey, keyType),
+        accountActions.addKey(activePrivateKey, keyType, setErrorMessage),
       );
       expect(fakeStore.getState().accounts).toEqual(
         initialStateWOneKey.accounts,
       );
     });
   });
-
   describe('removeKey tests:\n', () => {
     const fakeExtendedAccountResponse = [
       {
@@ -133,12 +130,12 @@ describe('account.actions tests:\n', () => {
       jest
         .spyOn(AccountUtils, 'deleteKey')
         .mockReturnValueOnce(initialStateWOneKey.accounts);
-      HiveUtils.getClient().database.getAccounts = jest
-        .fn()
-        .mockResolvedValueOnce(fakeExtendedAccountResponse);
-      HiveUtils.getClient().rc.getRCMana = jest
-        .fn()
-        .mockResolvedValueOnce(fakeManaBarResponse);
+      mockPreset.setOrDefault({
+        app: {
+          getAccount: fakeExtendedAccountResponse,
+          getRCMana: fakeManaBarResponse,
+        },
+      });
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));
       expect(fakeStore.getState().accounts).toEqual(
         initialStateWOneKey.accounts,

@@ -2,6 +2,8 @@ import {
   ClaimAccount,
   ClaimReward,
   Convert,
+  CreateAccount,
+  CreateClaimedAccount,
   Delegation,
   DepositSavings,
   FillCollateralizedConvert,
@@ -11,6 +13,7 @@ import {
   PowerUp,
   ReceivedInterests,
   RecurrentTransfer,
+  StartWithdrawSavings,
   Transaction,
   Transfer,
   WithdrawSavings,
@@ -19,11 +22,14 @@ import { ClaimAccountTransactionComponent } from '@popup/pages/app-container/hom
 import { ClaimRewardsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/claim-rewards-transaction/claim-rewards-transaction.component';
 import { CollateralizedConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/collateralized-convert-transaction/collateralized-convert-transaction.component';
 import { ConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/convert-transaction/convert-transaction.component';
+import { CreateAccountTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/create-account-transaction/create-account-transaction.component';
+import { CreateClaimedAccountTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/create-claimed-account-transaction/create-claimed-account-transaction.component';
 import { DelegationTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/delegation-transaction/delegation-transaction.component';
 import { DepositSavingsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/deposit-savings-transaction/deposit-savings-transaction.component';
 import { FillCollateralizedConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-collateralized-convert-transaction/fill-collateralized-convert-transaction.component';
 import { FillConvertTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-convert-transaction/fill-convert-transaction.component';
 import { FillRecurrentTransferTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-recurrent-transfer-transaction/fill-recurrent-transfer-transaction.component';
+import { FillWithdrawSavingsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/fill-withdraw-savings-transaction copy/fill-withdraw-savings-transaction.component';
 import { PowerDownTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/power-down-transaction/power-down-transaction.component';
 import { PowerUpTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/power-up-transaction/power-up-transaction.component';
 import { ReceivedInterestsTransactionComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history-item/wallet-transaction-info/wallet-transaction-types/received-interests-transaction/received-interests-transaction.component';
@@ -99,6 +105,12 @@ const WalletTransactionInfo = ({
                 transaction={transaction as WithdrawSavings}
               />
             );
+          case 'fill_transfer_from_savings':
+            return (
+              <FillWithdrawSavingsTransactionComponent
+                transaction={transaction as StartWithdrawSavings}
+              />
+            );
         }
       }
       case 'power_up_down': {
@@ -145,6 +157,19 @@ const WalletTransactionInfo = ({
             );
         }
       }
+
+      case 'account_create':
+        return (
+          <CreateAccountTransactionComponent
+            transaction={transaction as CreateAccount}
+          />
+        );
+      case 'create_claimed_account':
+        return (
+          <CreateClaimedAccountTransactionComponent
+            transaction={transaction as CreateClaimedAccount}
+          />
+        );
     }
   };
   return (

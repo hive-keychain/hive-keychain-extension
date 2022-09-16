@@ -1,4 +1,6 @@
+import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
 const balances = [
@@ -9,8 +11,8 @@ const balances = [
     balance: '38.861',
     stake: '1.060',
     pendingUnstake: '0',
-    delegationsIn: '0',
-    delegationsOut: '0',
+    delegationsIn: '1',
+    delegationsOut: '1',
     pendingUndelegations: '0',
   },
   {
@@ -37,4 +39,26 @@ const balances = [
   },
 ] as TokenBalance[];
 
-export default { balances };
+const incomingDelegations = [
+  {
+    from: 'theghost1980',
+    quantity: '100',
+    symbol: 'LEO',
+    to: mk.user.one,
+    created: 1657742138,
+    updated: 1657742138,
+  },
+] as TokenDelegation[];
+
+const outcomingDelegations = [
+  {
+    from: mk.user.one,
+    quantity: '200',
+    symbol: 'LEO',
+    to: 'cedricguillas',
+    created: 1657742138,
+    updated: 1657742138,
+  },
+] as TokenDelegation[];
+
+export default { balances, incomingDelegations, outcomingDelegations };

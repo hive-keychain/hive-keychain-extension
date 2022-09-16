@@ -124,7 +124,7 @@ describe('transfer.utils tests:\n', () => {
     // });
   });
 
-  describe('saveTransferRecipient tests:\n', () => {
+  describe('saveFavoriteUser tests:\n', () => {
     const enumCallingGetvalue = LocalStorageKeyEnum.FAVORITE_USERS;
     const enumCallingSaveValue = LocalStorageKeyEnum.FAVORITE_USERS;
     test('Passing empty data and getting undefined from localStorage, will save undefined object on localStorage and return undefined', async () => {
@@ -138,7 +138,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveTransferRecipient(username, activeAccount),
+        await TransferUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -162,7 +162,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveTransferRecipient(username, activeAccount),
+        await TransferUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -190,7 +190,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveTransferRecipient(username, activeAccount),
+        await TransferUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -216,7 +216,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveTransferRecipient(username, activeAccount),
+        await TransferUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
