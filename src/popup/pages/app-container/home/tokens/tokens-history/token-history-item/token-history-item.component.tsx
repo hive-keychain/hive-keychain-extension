@@ -21,11 +21,13 @@ import './token-history-item.component.scss';
 
 interface TokenHistoryItemProps {
   transaction: TokenTransaction;
+  ariaLabel?: string;
 }
 
 const TokenHistoryItem = ({
   transaction,
   activeAccountName,
+  ariaLabel,
 }: PropsFromRedux) => {
   const [isMemoOpened, setIsMemoOpened] = useState(false);
 
@@ -164,6 +166,7 @@ const TokenHistoryItem = ({
 
   return (
     <div
+      aria-label={ariaLabel}
       id={transaction._id}
       className={`token-history-item ${getMemo() ? 'has-memo' : ''}`}
       onClick={() => setIsMemoOpened(!isMemoOpened)}>

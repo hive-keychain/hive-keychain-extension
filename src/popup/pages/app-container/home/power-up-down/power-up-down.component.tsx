@@ -191,7 +191,7 @@ const PowerUpDown = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(receiver, activeAccount);
+          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
           ]);
@@ -233,7 +233,7 @@ const PowerUpDown = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(receiver, activeAccount);
+          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
           setSuccessMessage('popup_html_cancel_power_down_success');
         } else {
           setErrorMessage('popup_html_cancel_power_down_fail');

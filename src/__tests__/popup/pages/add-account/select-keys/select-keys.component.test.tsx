@@ -28,7 +28,7 @@ describe('select-keys.component tests:\n', () => {
   beforeEach(async () => {
     await addByKeysBeforeEach.beforeEach(<App />, [], false);
     await assertion.awaitFind(alButton.addByKeys);
-    addByKeysMocks.extraMocks.getAccounts();
+    addByKeysMocks.extraMocks.getAccount();
     await addByKeysMocks.typeAndSubmit(userData.one.nonEncryptKeys.master);
     await deselectAll();
   });

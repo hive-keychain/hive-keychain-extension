@@ -15,7 +15,10 @@ import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
 import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentationNeeded';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
-
+/**
+ * @param app.getExtendedAccount ExtendedAccount Used by refresh_account, loadActiveAccount. The main one to mock when using any process within the HomePage.
+ * @param app.getAccount ExtendedAccount[] Used by processes as: add-by-auth.
+ */
 const setOrDefault = (toUse: MocksToUse) => {
   const {
     app,
@@ -38,6 +41,9 @@ const setOrDefault = (toUse: MocksToUse) => {
     _topBar,
     _chromeRunTime,
   } = mocksDefault._defaults;
+
+  initialMocks.noImplentationNeeded();
+  withFixedValues();
   LocalStorageUtils.getValueFromLocalStorage = jest
     .fn()
     .mockImplementation(
@@ -52,12 +58,23 @@ const setOrDefault = (toUse: MocksToUse) => {
       (app && app.getActiveAccountNameFromLocalStorage) ??
         _app.getActiveAccountNameFromLocalStorage,
     );
-  HiveUtils.getClient().rc.getRCMana = jest
+  AccountUtils.getAccount = jest
+    .fn()
+    .mockResolvedValue((app && app.getAccount) ?? _app.getAccount);
+  AccountUtils.getRCMana = jest
     .fn()
     .mockResolvedValue((app && app.getRCMana) ?? _app.getRCMana);
-  HiveUtils.getClient().database.getAccounts = jest
+  AccountUtils.getExtendedAccount = jest
     .fn()
-    .mockResolvedValue((app && app.getAccounts) ?? _app.getAccounts);
+    .mockResolvedValue(
+      (app && app.getExtendedAccount) ?? _app.getExtendedAccount,
+    );
+  HiveUtils.getDelegatees = jest
+    .fn()
+    .mockResolvedValue(
+      (powerUp && powerUp.getVestingDelegations) ??
+        _powerUp.getVestingDelegations,
+    );
   RpcUtils.checkRpcStatus = jest
     .fn()
     .mockResolvedValue((app && app.checkRpcStatus) ?? _app.checkRpcStatus);
@@ -87,11 +104,9 @@ const setOrDefault = (toUse: MocksToUse) => {
       (app && app.getVotingDollarsPerAccount) ??
         _app.getVotingDollarsPerAccount,
     );
-
   AccountUtils.getAccountValue = jest
     .fn()
     .mockReturnValue((home && home.getAccountValue) ?? _home.getAccountValue);
-
   chrome.runtime.getManifest = jest
     .fn()
     .mockReturnValue(
@@ -100,37 +115,53 @@ const setOrDefault = (toUse: MocksToUse) => {
     );
   chrome.runtime.sendMessage =
     (chromeRunTime && chromeRunTime.sendMessage) ?? _chromeRunTime.sendMessage;
-
   KeychainApi.get = jest
     .fn()
     .mockImplementation((...args: any[]) =>
       mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
     );
-
   ActiveAccountUtils.hasReward = jest
     .fn()
     .mockReturnValue((topBar && topBar.hasReward) ?? _topBar.hasReward);
-  HiveUtils.getClient().database.getVestingDelegations = jest
-    .fn()
-    .mockResolvedValue(
-      (powerUp && powerUp.getVestingDelegations) ??
-        _powerUp.getVestingDelegations,
-    );
-
   TransactionUtils.getAccountTransactions = jest
     .fn()
     .mockResolvedValue(
       (walletHistory && walletHistory.getAccountTransactions) ??
         _walletHistory.getAccountTransactions,
     );
-  HiveEngineConfigUtils.getApi().find = jest
-    .fn()
-    .mockResolvedValue((tokens && tokens.getTokens) ?? _tokens.getTokens);
   HiveEngineUtils.getUserBalance = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getUserBalance) ?? _tokens.getUserBalance,
     );
+  HiveEngineUtils.getIncomingDelegations = jest
+    .fn()
+    .mockResolvedValue(
+      (tokens && tokens.getIncomingDelegations) ??
+        _tokens.getIncomingDelegations,
+    );
+  HiveEngineUtils.getOutgoingDelegations = jest
+    .fn()
+    .mockResolvedValue(
+      (tokens && tokens.getOutgoingDelegations) ??
+        _tokens.getOutgoingDelegations,
+    );
+  HiveEngineUtils.getAllTokens = jest
+    .fn()
+    .mockResolvedValue((tokens && tokens.getAllTokens) ?? _tokens.getAllTokens);
+  HiveEngineUtils.getTokensMarket = jest
+    .fn()
+    .mockResolvedValue(
+      (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
+    );
+  //added getTokensHistory
+  HiveEngineConfigUtils.getAccountHistoryApi().get = jest
+    .fn()
+    .mockResolvedValueOnce({
+      data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
+    })
+    .mockResolvedValueOnce({ data: [] });
+  //to remove comments when tested.
   ProposalUtils.hasVotedForProposal = jest
     .fn()
     .mockResolvedValue(
@@ -143,8 +174,12 @@ const setOrDefault = (toUse: MocksToUse) => {
       (proposal && proposal.voteForKeychainProposal) ??
         _proposal.voteForKeychainProposal,
     );
-  initialMocks.noImplentationNeeded();
-  withFixedValues();
+  ProposalUtils.isRequestingProposalVotes = jest
+    .fn()
+    .mockResolvedValue(
+      (proposal && proposal.isRequestingProposalVotes) ??
+        _proposal.isRequestingProposalVotes,
+    );
 };
 
 export default { setOrDefault };

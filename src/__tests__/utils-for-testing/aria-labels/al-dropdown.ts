@@ -14,4 +14,17 @@ export default {
     powerDown: 'dropdown-menu-item-arrow_downward',
   },
   itemPreFix: 'dropdown-menu-item-',
+  select: {
+    savings: {
+      currency: 'select-currency-savings',
+      operation: {
+        selector: 'select-operation-type',
+        withdraw: 'select-operation-Withdraw',
+        deposit: 'select-operation-Deposit',
+      },
+    },
+    preFix: {
+      accountItem: 'select-account-item-',
+    },
+  },
 };
