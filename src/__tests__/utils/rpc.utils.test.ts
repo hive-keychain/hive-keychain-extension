@@ -190,7 +190,7 @@ describe('rpc.utils tests:\n', () => {
         .mockResolvedValueOnce(fakeResponse);
       expect(await RpcUtils.checkRpcStatus('DEFAULT')).toBe(true);
       expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith('api.hive.blog/health');
+      expect(spyAxiosGet).toBeCalledWith('https://api.hive.blog/health');
     });
     test('Checking on a hardcoded uri, will check on "uri/health" and return status', async () => {
       const spyAxiosGet = jest
