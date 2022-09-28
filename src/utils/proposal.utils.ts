@@ -1,9 +1,6 @@
 import * as hive from '@hiveio/hive-js';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import {
-  FundedOption,
-  Proposal,
-} from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
+import { FundedOption, Proposal } from '@interfaces/proposal.interface';
 import { store } from '@popup/store';
 import moment from 'moment';
 import Config from 'src/config';
