@@ -42,7 +42,13 @@ const beforeEach = async (
   const initialState = constants.stateAs;
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
-  mockPreset.setOrDefault({});
+  mockPreset.setOrDefault({
+    tokens: {
+      getUserBalance: tokensUser.balances.filter(
+        (token) => token.symbol === 'LEO',
+      ),
+    },
+  });
   extraMocks.saveTransferRecipient();
   if (removeActiveKey) {
     delete initialState.accounts[0].keys.active;

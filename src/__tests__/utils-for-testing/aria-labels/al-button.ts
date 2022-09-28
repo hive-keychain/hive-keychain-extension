@@ -16,6 +16,7 @@ export default {
     history: 'action-button-history',
     tokens: 'action-button-tokens',
     governance: 'action-button-gov.',
+    buy: 'action-button-buy',
   },
   dropdownMenu: {
     item: {

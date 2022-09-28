@@ -26,10 +26,6 @@ describe('home.component dropdown hive tests:\n', () => {
     await clickAwait([alDropdown.span.powerUp]);
     assertion.getByLabelText(alComponent.powerUpDownPage);
   });
-  it('Must load buy HIVE options when clicking on buy', async () => {
-    await clickAwait([alDropdown.span.buy]);
-    assertion.getByLabelText(alComponent.buyCoinsPage);
-  });
   it('Must show convert page when clicking convert', async () => {
     await clickAwait([alDropdown.span.convert]);
     assertion.getByLabelText(alComponent.conversionPage);

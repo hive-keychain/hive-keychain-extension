@@ -8,6 +8,7 @@ import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-componen
 import alDiv from 'src/__tests__/utils-for-testing/aria-labels/al-div';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
+import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import { EventType } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
@@ -17,8 +18,7 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 const { methods, constants } = tokens;
-const { messages, data, typeValue } = constants;
-const { tokensFilter } = data;
+const { messages, typeValue } = constants;
 describe('tokens-filter.component tests:\n', () => {
   methods.afterEach;
   beforeEach(async () => {
@@ -30,9 +30,9 @@ describe('tokens-filter.component tests:\n', () => {
   describe('Opening the filter:\n', () => {
     beforeEach(async () => await methods.clickOnFilter());
     it('Must load tokens filter and show disclaimer, tokens list', async () => {
-      tokensFilter.list.asDisplayed.forEach((token) => {
-        assertion.getManyByText([token.name, token.issuedBy, token.supply]);
-      });
+      expect(
+        screen.queryAllByText(constants.asShown.supply(tokensUser.balances[0])),
+      );
       expect(screen.queryByDisplayValue(messages.tokenFilter.disclaimer));
       assertion.getByLabelText(alComponent.tokensFilter);
     });

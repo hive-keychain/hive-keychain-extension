@@ -3,6 +3,7 @@ import { ReactElement } from 'react';
 import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
@@ -15,6 +16,7 @@ import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import {
   actAdvanceTime,
   actRunAllTimers,
+  clickAwait,
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
@@ -39,9 +41,7 @@ const methods = {
     afterTests.clean();
   }),
   clickGovernance: async () => {
-    await userEventPendingTimers.click(
-      screen.getByLabelText(alButton.actionBtn.governance),
-    );
+    await clickAwait([alButton.menu, alButton.menuPreFix + alIcon.governance]);
   },
   gotoTab: async (tab: Tab) => {
     await userEventPendingTimers.click(screen.getAllByRole('tab')[tab]);

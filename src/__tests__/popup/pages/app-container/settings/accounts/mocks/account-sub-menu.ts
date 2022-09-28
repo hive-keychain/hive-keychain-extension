@@ -17,7 +17,8 @@ import renders from 'src/__tests__/utils-for-testing/setups/renders';
 
 const ariaLabelPage = [
   alComponent.account.subMenu.addAccount.router,
-  alComponent.account.subMenu.manageAccount,
+  alComponent.account.subMenu.createAccountsStepOne,
+  alComponent.account.subMenu.manageAccounts,
 ];
 
 const constants = {

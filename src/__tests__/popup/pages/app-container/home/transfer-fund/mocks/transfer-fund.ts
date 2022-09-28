@@ -69,7 +69,8 @@ const beforeEach = async (
 
 const methods = {
   afterEach: afterEach(() => {
-    afterTests.clean();
+    //afterTests.clean();
+    afterTests.cleanWithoutRunPendingTimers();
   }),
   clickArrowTo: async (dropDownTo: string) => {
     let ariaLabels = [alDropdown.span.send];
@@ -99,9 +100,7 @@ const methods = {
 const extraMocks = {
   transfer: (transfer: boolean) => {
     HiveUtils.transfer = jest.fn().mockResolvedValue(transfer);
-    TransferUtils.saveTransferRecipient = jest
-      .fn()
-      .mockResolvedValue(undefined);
+    TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined);
     AccountUtils.getPublicMemo = jest
       .fn()
       .mockResolvedValue(accounts.extended.memo_key);

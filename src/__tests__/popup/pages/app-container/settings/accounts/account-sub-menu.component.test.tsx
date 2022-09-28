@@ -1,6 +1,7 @@
 import App from '@popup/App';
 import { Icons } from '@popup/icons.enum';
 import AccountSubMenuItems from '@popup/pages/app-container/settings/accounts/account-sub-menu-items';
+import { waitFor } from '@testing-library/react';
 import React from 'react';
 import accountSubMenu from 'src/__tests__/popup/pages/app-container/settings/accounts/mocks/account-sub-menu';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
@@ -28,6 +29,7 @@ describe('account-sub-menu.component tests:\n', () => {
       const icon = filteredSubMenu[i].icon;
       const ariaLabel = alButton.menuPreFix + icon;
       await clickAwait([ariaLabel]);
+      await waitFor(() => {});
       assertion.getByLabelText(ariaLabelPage[i]);
       await clickAwait([alIcon.arrowBack]);
     }

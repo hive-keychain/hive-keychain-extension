@@ -38,7 +38,8 @@ const constants = {
   menuItems: {
     settings: SettingsMenuItems,
     settingsFiltered: SettingsMenuItems.filter(
-      (menuItem) => menuItem.icon !== Icons.SUPPORT,
+      (menuItem) =>
+        menuItem.icon !== Icons.SUPPORT && menuItem.icon !== 'hive-brands.svg',
     ),
     urlSupport: { url: 'https://discord.gg/E6P6Gjv9MC' },
   },
@@ -60,12 +61,9 @@ const methods = {
   spyChromeTabs: () => jest.spyOn(chrome.tabs, 'create'),
 };
 
-const extraMocks = () => {};
-
 export default {
   beforeEach,
   methods,
   constants,
-  extraMocks,
   menuPages,
 };

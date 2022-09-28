@@ -9,7 +9,7 @@ export const DefaultHiveEngineRpcs: HiveEngineConfig['rpc'][] = [
   'https://api2.hive-engine.com/rpc',
   'https://ha.herpc.dtools.dev/',
   'https://herpc.dtools.dev',
-  'https://us.engine.rishipanthee.com',
+  'https://engine.rishipanthee.com',
 ];
 export const DefaultAccountHistoryApis: HiveEngineConfig['accountHistoryApi'][] =
   [

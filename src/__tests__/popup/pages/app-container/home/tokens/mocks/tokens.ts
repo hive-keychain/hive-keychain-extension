@@ -79,6 +79,14 @@ const constants = {
       nonExistent: 'keyChain Token',
     },
   },
+  asShown: {
+    supply: (token: any) =>
+      i18n.get('popup_token_supply') +
+      ' : ' +
+      FormatUtils.nFormatter(parseFloat(token.supply), 3) +
+      '/' +
+      FormatUtils.nFormatter(parseFloat(token.maxSupply), 3),
+  },
 };
 
 const beforeEach = async (

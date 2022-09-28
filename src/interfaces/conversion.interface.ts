@@ -4,4 +4,5 @@ export interface Conversion {
   id: number;
   owner: string;
   requestid: number;
+  collaterized: boolean;
 }
