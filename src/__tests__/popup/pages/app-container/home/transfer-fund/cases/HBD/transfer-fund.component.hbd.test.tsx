@@ -28,8 +28,8 @@ import phishing from 'src/__tests__/popup/pages/app-container/home/transfer-fund
 import transferFund from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/transfer-fund';
 import { KeyToUse } from 'src/__tests__/utils-for-testing/enums/enums';
 import config from 'src/__tests__/utils-for-testing/setups/config';
-config.byDefault();
 describe('transfer-fund.component tests:\n', () => {
+  config.byDefault();
   const { methods } = transferFund;
   methods.afterEach;
   describe('HBD cases:\n', () => {

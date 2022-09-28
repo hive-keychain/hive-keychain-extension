@@ -10,7 +10,6 @@ const byDefault = (jestTimeOut: number = 10000) => {
 
   jest.setTimeout(jestTimeOut);
 
-  //check if no errors by doing this
   afterAll(() => {
     jest.resetAllMocks();
     jest.restoreAllMocks();

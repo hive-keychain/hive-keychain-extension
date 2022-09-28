@@ -26,6 +26,7 @@ import Select, {
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
@@ -66,9 +67,9 @@ const SavingsPage = ({
   );
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
-    useState<string>(
+    useState<SavingOperationType>(
       formParams.selectedSavingOperationType
-        ? formParams.selectedSavingOperationType
+        ? (formParams.selectedSavingOperationType as SavingOperationType)
         : SavingOperationType.DEPOSIT,
     );
   const [selectedCurrency, setSelectedCurrency] = useState<
@@ -161,6 +162,11 @@ const SavingsPage = ({
 
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
 
+    let warning = TransferUtils.getTransferFromToSavingsValidationWarning(
+      username,
+      selectedSavingOperationType,
+    );
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         selectedSavingOperationType === SavingOperationType.WITHDRAW
@@ -168,6 +174,8 @@ const SavingsPage = ({
           : 'popup_html_confirm_savings_deposit',
         [currency],
       ),
+      warningMessage: warning,
+      skipWarningTranslation: true,
       title: operationString,
       skipTitleTranslation: true,
       fields: [
@@ -192,7 +200,7 @@ const SavingsPage = ({
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage(
             selectedSavingOperationType === SavingOperationType.DEPOSIT
               ? 'popup_html_deposit_success'
@@ -208,7 +216,7 @@ const SavingsPage = ({
           );
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const getFormParams = () => {
@@ -266,7 +274,7 @@ const SavingsPage = ({
             : ''
         }`}
         onClick={() => {
-          setSelectedSavingOperationType(selectProps.item.value as string);
+          setSelectedSavingOperationType(selectProps.item.value);
           selectProps.methods.dropDown('close');
         }}>
         <div className="currency">{selectProps.item.label}</div>

@@ -1,4 +1,6 @@
+import { Asset } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { fetchConversionRequests } from '@popup/actions/conversion.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -40,11 +42,16 @@ const Conversion = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  fetchConversionRequests,
 }: PropsFromRedux) => {
   const [value, setValue] = useState<string | number>(
     formParams.value ? formParams.value : 0,
   );
   const [available, setAvailable] = useState<string | number>('...');
+  const [totalPending, setTotalPending] = useState<number>(0);
+  const [pendingConversions, setPendingConversions] = useState<Conversion[]>(
+    [],
+  );
 
   const currency =
     conversionType === ConversionType.CONVERT_HIVE_TO_HBD
@@ -56,6 +63,8 @@ const Conversion = ({
   }, []);
 
   useEffect(() => {
+    fetchConversionRequests(activeAccount.name!);
+
     const hiveBalance = FormatUtils.toNumber(activeAccount.account.balance);
     const hbdBalance = FormatUtils.toNumber(activeAccount.account.hbd_balance);
 
@@ -65,6 +74,23 @@ const Conversion = ({
         : hbdBalance,
     );
   }, [activeAccount]);
+
+  useEffect(() => {
+    const conv: Conversion[] = conversions.filter((conversion) => {
+      return (
+        (conversionType === ConversionType.CONVERT_HIVE_TO_HBD &&
+          conversion.collaterized) ||
+        (conversionType === ConversionType.CONVERT_HBD_TO_HIVE &&
+          !conversion.collaterized)
+      );
+    });
+
+    setPendingConversions(conv);
+    const total = conv.reduce((previous, current) => {
+      return previous + Asset.fromString(current.amount).amount;
+    }, 0);
+    setTotalPending(total);
+  }, [conversions]);
 
   const title =
     conversionType === ConversionType.CONVERT_HIVE_TO_HBD
@@ -132,13 +158,33 @@ const Conversion = ({
     };
   };
 
+  const goToPendingConversion = () => {
+    navigateToWithParams(Screen.PENDING_CONVERSION_PAGE, {
+      pendingConversions: pendingConversions,
+      currency: currency,
+    });
+  };
+
   return (
     <div className="conversion-page" aria-label="conversion-page">
-      <AvailableCurrentPanelComponent
-        available={available}
-        availableCurrency={currency}
-        availableLabel={'popup_html_available'}
-      />
+      {totalPending > 0 && (
+        <AvailableCurrentPanelComponent
+          current={available}
+          currentCurrency={currency}
+          currentLabel={'popup_html_available'}
+          available={totalPending}
+          availableCurrency={currency}
+          availableLabel={'popup_html_pending'}
+          onAvailablePanelClick={goToPendingConversion}
+        />
+      )}
+      {totalPending === 0 && (
+        <AvailableCurrentPanelComponent
+          available={available}
+          availableCurrency={currency}
+          availableLabel={'popup_html_available'}
+        />
+      )}
       <div className="text">{chrome.i18n.getMessage(text)}</div>
 
       <div className="amount-panel">
@@ -161,6 +207,7 @@ const Conversion = ({
         label={title}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
+        fixToBottom
       />
     </div>
   );
@@ -187,6 +234,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  fetchConversionRequests,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
