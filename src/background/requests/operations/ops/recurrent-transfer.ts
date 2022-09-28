@@ -40,7 +40,7 @@ export const recurrentTransfer = async (
         username!,
         KeychainKeyTypesLC.memo,
       )[0];
-      if (!receiver && !memoKey) {
+      if (!receiver || !memoKey) {
         throw new Error('Could not encode memo.');
       }
       const memoReceiver = receiver.memo_key;
