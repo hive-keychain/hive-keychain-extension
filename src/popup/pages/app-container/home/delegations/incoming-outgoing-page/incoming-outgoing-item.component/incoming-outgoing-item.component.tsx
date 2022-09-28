@@ -28,6 +28,7 @@ interface IncomingOutgoingProps {
   username?: string;
   amount: string;
   expirationDate?: string;
+  maxAvailable?: string;
 }
 
 const IncomingOutgoing = ({
@@ -38,6 +39,7 @@ const IncomingOutgoing = ({
   globalProperties,
   currencyLabels,
   expirationDate,
+  maxAvailable,
   navigateToWithParams,
   navigateTo,
   setErrorMessage,
@@ -132,6 +134,12 @@ const IncomingOutgoing = ({
     });
   };
 
+  const setToMax = () => {
+    if (maxAvailable) {
+      setValue((parseFloat(amountHP) + parseFloat(maxAvailable)).toFixed(3));
+    }
+  };
+
   return (
     <div className="delegation-row" key={username}>
       {username && (
@@ -154,7 +162,8 @@ const IncomingOutgoing = ({
                 value={value}
                 type={InputType.NUMBER}
                 onChange={setValue}
-                placeholder=""></InputComponent>
+                placeholder=""
+                onSetToMaxClicked={() => setToMax()}></InputComponent>
             )}
             {delegationType === DelegationType.OUTGOING &&
               !editModeActivated && (

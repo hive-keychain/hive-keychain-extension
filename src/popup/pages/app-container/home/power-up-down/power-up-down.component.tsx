@@ -106,7 +106,11 @@ const PowerUpDown = ({
       ) - (powerType === PowerType.POWER_UP ? 0 : 5)
     ).toFixed(3);
 
-    setAvailable(powerType === PowerType.POWER_UP ? hiveBalance : hpBalance);
+    setAvailable(
+      powerType === PowerType.POWER_UP
+        ? hiveBalance
+        : Math.max(Number(hpBalance), 0),
+    );
     setCurrent(powerType === PowerType.POWER_UP ? hpBalance : hiveBalance);
   }, [activeAccount, delegations]);
 
@@ -187,7 +191,7 @@ const PowerUpDown = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(receiver, activeAccount);
+          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
           setSuccessMessage('popup_html_power_up_down_success', [
             operationString,
           ]);
@@ -229,7 +233,7 @@ const PowerUpDown = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(receiver, activeAccount);
+          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
           setSuccessMessage('popup_html_cancel_power_down_success');
         } else {
           setErrorMessage('popup_html_cancel_power_down_fail');

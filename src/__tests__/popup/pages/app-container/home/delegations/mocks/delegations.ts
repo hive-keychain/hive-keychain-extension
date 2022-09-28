@@ -105,7 +105,7 @@ const extraMocks = (delegateVestingShares: boolean) => {
   HiveUtils.delegateVestingShares = jest
     .fn()
     .mockResolvedValue(delegateVestingShares);
-  TransferUtils.saveTransferRecipient = jest.fn();
+  TransferUtils.saveFavoriteUser = jest.fn();
 };
 
 /**

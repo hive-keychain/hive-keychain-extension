@@ -20,9 +20,7 @@ const mocks = {
       .fn()
       .mockResolvedValue(tokenOperation.constants.tokenOperationResult)),
   saveTransferRecipient: () =>
-    (TransferUtils.saveTransferRecipient = jest
-      .fn()
-      .mockResolvedValue(undefined)),
+    (TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined)),
   tryConfirmTransaction: (result: FakeOperationResult) =>
     (BlockchainTransactionUtils.tryConfirmTransaction = jest
       .fn()

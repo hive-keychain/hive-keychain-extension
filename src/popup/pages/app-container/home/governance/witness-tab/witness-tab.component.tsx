@@ -100,12 +100,17 @@ const WitnessTab = ({
 
   const initWitnessRanking = async () => {
     setLoading(true);
-    const requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
-    if (requestResult.data !== '') {
-      const ranking = requestResult.data;
-      setRanking(ranking);
-      setFilteredRanking(ranking);
-    } else {
+    let requestResult;
+    try {
+      requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
+      if (requestResult?.data !== '') {
+        const ranking = requestResult?.data;
+        setRanking(ranking);
+        setFilteredRanking(ranking);
+      } else {
+        throw new Error('Witness-ranks data error');
+      }
+    } catch (err) {
       setErrorMessage('popup_html_error_retrieving_witness_ranking');
       setHasError(true);
     }

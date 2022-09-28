@@ -8,13 +8,14 @@ describe('change-password.component tests:\n', () => {
   let _asFragment: () => {};
   const { methods, constants, extraMocks } = changePassword;
   const { clickNType } = methods;
-  const { message, input, mk } = constants;
+  const { message, input, mk, screenText } = constants;
   methods.afterEach;
   beforeEach(async () => {
     _asFragment = await changePassword.beforeEach();
   });
   it('Must show message and inputs', () => {
-    expect(_asFragment()).toMatchSnapshot(constants.snapshotName.default);
+    assertion.getManyByText(screenText);
+    assertion.getByLabelText(alComponent.advanceSettings.changePassword);
   });
   describe('Click cases:\n', () => {
     it('Must show error when wrong old password after click', async () => {

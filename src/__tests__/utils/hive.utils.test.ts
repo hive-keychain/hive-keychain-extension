@@ -290,7 +290,7 @@ describe('hive.utils tests:\n', () => {
   });
 
   describe('getConversionRequests tests:\n', () => {
-    test('Fecthing 2 arrays(hbdConversions, hiveConversions) must order them by convertion_date and reestructure hiveConversions Array, and return one new array', async () => {
+    it('Must return ordered array', async () => {
       const expectedNewArray = [
         {
           amount: '22.500 HIVE',
@@ -302,6 +302,7 @@ describe('hive.utils tests:\n', () => {
         },
         {
           amount: '2.500 HBD',
+          collaterized: false,
           conversion_date: '2022-05-15T11:02:09',
           id: 275431,
           owner: 'wesp05',
