@@ -1,6 +1,7 @@
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
+import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
@@ -63,10 +64,12 @@ const _defaults = {
     getOutgoingDelegations: tokensUser.outcomingDelegations,
     getAllTokens: tokensList.alltokens,
     getTokensMarket: tokenMarket.all,
+    getTokenHistory: tokenHistory.leoToken,
   } as MocksTokens,
   _proposal: {
     hasVotedForProposal: true,
     voteForKeychainProposal: true,
+    isRequestingProposalVotes: false,
   } as MocksProposal,
   _chromeRunTime: {
     getManifest: {

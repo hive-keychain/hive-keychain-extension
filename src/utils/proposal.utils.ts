@@ -104,12 +104,53 @@ const getProposalList = async (accountName: string): Promise<Proposal[]> => {
   });
 };
 
+const isRequestingProposalVotes = async () => {
+  let dailyBudget = await HiveUtils.getProposalDailyBudget();
+
+  const proposals = (
+    await hive.api.callAsync('database_api.list_proposals', {
+      start: [-1],
+      limit: 1000,
+      order: 'by_total_votes',
+      order_direction: 'descending',
+      status: 'votable',
+    })
+  ).proposals.map((proposal: any) => {
+    let fundedOption = FundedOption.NOT_FUNDED;
+    if (dailyBudget > 0) {
+      if (dailyBudget - parseFloat(proposal.daily_pay.amount) / 1000 >= 0) {
+        fundedOption = FundedOption.TOTALLY_FUNDED;
+      } else {
+        fundedOption = FundedOption.PARTIALLY_FUNDED;
+      }
+    }
+    proposal.fundedOption = fundedOption;
+    proposal.totalVotes = FormatUtils.toHP(
+      (parseFloat(proposal.total_votes) / 1000000).toString(),
+      store.getState().globalProperties.globals,
+    );
+    return proposal;
+  });
+
+  const keychainProposal = proposals.find(
+    (proposal: any) => proposal.id === Config.PROPOSAL,
+  );
+  const returnProposal = proposals.find(
+    (proposal: any) => proposal.fundedOption == FundedOption.PARTIALLY_FUNDED,
+  );
+
+  const voteDifference =
+    keychainProposal.totalVotes - returnProposal.totalVotes;
+  return voteDifference < Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
+};
+
 const ProposalUtils = {
   hasVotedForProposal,
   voteForProposal,
   voteForKeychainProposal,
   getProposalList,
   unvoteProposal,
+  isRequestingProposalVotes,
 };
 
 export default ProposalUtils;

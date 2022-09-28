@@ -142,6 +142,11 @@ const extraMocks = {
     (TransactionUtils.getLastTransaction = jest
       .fn()
       .mockResolvedValue(lastTransaction)),
+  getAccountTransactions: () => {
+    TransactionUtils.getAccountTransactions = jest
+      .fn()
+      .mockResolvedValue([[], 1000]);
+  },
   scrollToNotImpl: () => {
     Element.prototype.scrollTo = jest.fn();
   },

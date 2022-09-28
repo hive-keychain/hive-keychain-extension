@@ -31,7 +31,9 @@ const ProposalVotingSection = ({
   }, [activeAccount]);
 
   const initHasVotedForProposal = async () => {
-    sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount));
+    if (await ProposalUtils.isRequestingProposalVotes()) {
+      sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount));
+    }
   };
 
   const handleVoteForProposalClicked = async () => {

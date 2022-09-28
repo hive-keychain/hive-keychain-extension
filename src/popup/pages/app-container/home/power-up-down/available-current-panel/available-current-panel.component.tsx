@@ -11,6 +11,8 @@ interface PanelProps {
   currentCurrency?: string;
   availableLabel: string;
   availableCurrency: string;
+  onAvailablePanelClick?: () => void;
+  onCurrentPanelClick?: () => void;
 }
 
 const AvailableCurrentPanel = ({
@@ -20,11 +22,29 @@ const AvailableCurrentPanel = ({
   available,
   availableLabel,
   availableCurrency,
+  onAvailablePanelClick,
+  onCurrentPanelClick,
 }: PropsType) => {
+  const handleClickCurrentPanel = () => {
+    if (onCurrentPanelClick) {
+      onCurrentPanelClick();
+    }
+  };
+
+  const handleClickAvailablePanel = () => {
+    if (onAvailablePanelClick) {
+      onAvailablePanelClick();
+    }
+  };
+
   return (
     <div className="power-up-down-top-panel">
       {current !== null && current !== undefined && currentLabel && (
-        <div className="current panel-row">
+        <div
+          className={`current panel-row ${
+            onCurrentPanelClick ? 'clickable' : ''
+          }`}
+          onClick={() => handleClickCurrentPanel()}>
           <div className="current-title">
             {chrome.i18n.getMessage(currentLabel)}
           </div>
@@ -39,7 +59,11 @@ const AvailableCurrentPanel = ({
           </div>
         </div>
       )}
-      <div className="available panel-row">
+      <div
+        className={`available panel-row ${
+          onAvailablePanelClick ? 'clickable' : ''
+        }`}
+        onClick={() => handleClickAvailablePanel()}>
         <div className="available-title">
           {chrome.i18n.getMessage(availableLabel)}
         </div>

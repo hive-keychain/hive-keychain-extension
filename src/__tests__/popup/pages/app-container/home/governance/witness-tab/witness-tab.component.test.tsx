@@ -85,7 +85,7 @@ describe('witness tab:\n', () => {
       await witness.beforeEach(<App />, true, null);
     });
     it('Must show 2 errors if request data fails', async () => {
-      expect(screen.getAllByText(constants.rankingError).length).toBe(
+      expect((await screen.findAllByText(constants.rankingError)).length).toBe(
         constants.rankingErrors,
       );
     });

@@ -1,32 +1,28 @@
 @import '/src/popup/variable.scss';
 
-.pretty.p-switch {
-  .state {
-    &::before {
-      border-color: white !important;
-    }
-  }
-}
-
-.pretty.p-switch input ~ .state label:after {
-  background-color: white !important;
-}
-
-.pretty.p-switch.checked {
-  .state {
-    &::before {
-      border-color: $red-dark !important;
-    }
-  }
-}
-
-.pretty.p-switch input:checked ~ .state label:after {
-  background-color: $red-dark !important;
-}
-
 .switch-container {
+  padding: 4px 0px;
+  .switch-panel {
+    display: flex;
+    column-gap: 8px;
+    align-items: center;
+    font-size: 16px;
+  }
+
   .hint {
     margin-top: 8px;
     font-size: 14px;
+  }
+
+  .pretty.p-switch {
+    .state {
+      &::before {
+        border-color: white !important;
+      }
+    }
+  }
+
+  .pretty.p-switch input ~ .state label:after {
+    background-color: white !important;
   }
 }

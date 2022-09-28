@@ -50,4 +50,5 @@ export default {
       },
     },
   },
+  governance: 'hive-brands.svg',
 };

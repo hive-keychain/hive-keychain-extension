@@ -1,5 +1,4 @@
 import { Icons } from '@popup/icons.enum';
-import { BuyCoinType } from '@popup/pages/app-container/home/buy-coins/buy-coin-type.enum';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { DropdownMenuItemInterface } from 'src/common-ui/dropdown-menu/dropdown-menu-item/dropdown-menu-item.interface';
@@ -18,12 +17,6 @@ export const HiveDropdownMenuItems: DropdownMenuItemInterface[] = [
     icon: Icons.ARROW_UPWARDS,
     nextScreen: Screen.POWER_UP_PAGE,
     nextScreenParams: { powerType: PowerType.POWER_UP },
-  },
-  {
-    label: 'popup_html_buy_hive',
-    icon: Icons.BUY,
-    nextScreen: Screen.BUY_COINS_PAGE,
-    nextScreenParams: { buyCoinType: BuyCoinType.BUY_HIVE },
   },
   {
     label: 'popup_html_convert_hive',
@@ -45,12 +38,6 @@ export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
     icon: Icons.SEND,
     nextScreen: Screen.TRANSFER_FUND_PAGE,
     nextScreenParams: { selectedCurrency: 'hbd' },
-  },
-  {
-    label: 'popup_html_buy_hbd',
-    icon: Icons.BUY,
-    nextScreen: Screen.BUY_COINS_PAGE,
-    nextScreenParams: { buyCoinType: BuyCoinType.BUY_HDB },
   },
   {
     label: 'popup_html_convert_hbd',

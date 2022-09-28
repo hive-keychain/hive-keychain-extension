@@ -4,6 +4,7 @@ import ProxyUtils from 'src/utils/proxy.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -18,6 +19,7 @@ import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import {
   actAdvanceTime,
   actRunAllTimers,
+  clickAwait,
   clickTypeAwait,
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
@@ -69,7 +71,9 @@ const beforeEach = async (
   actAdvanceTime(4300);
   if (errorWitnessData === true) {
     remock = {
-      keyChainApiGet: { customData: { witnessRanking: { data: '' } } },
+      keyChainApiGet: {
+        customData: { witnessRanking: { data: '' } },
+      },
     };
   }
   mockPreset.setOrDefault(remock);
@@ -85,9 +89,7 @@ const methods = {
     afterTests.clean();
   }),
   clickGovernance: async () => {
-    await userEventPendingTimers.click(
-      screen.getByLabelText(alButton.actionBtn.governance),
-    );
+    await clickAwait([alButton.menu, alButton.menuPreFix + alIcon.governance]);
   },
   filterBox: async (toSearch: string) => {
     await clickTypeAwait([
