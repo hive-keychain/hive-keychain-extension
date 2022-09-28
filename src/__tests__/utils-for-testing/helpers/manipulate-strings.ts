@@ -23,4 +23,8 @@ const removeHtmlTags = (str: string) => {
   return str;
 };
 
-export default { replace, removeExtraSpaces, removeHtmlTags };
+const removeTabs = (str: string) => {
+  return str.replace(/\s/g, '');
+};
+
+export default { replace, removeExtraSpaces, removeHtmlTags, removeTabs };
