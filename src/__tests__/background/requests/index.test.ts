@@ -2,7 +2,7 @@ import { RequestsHandler } from '@background/requests';
 import { Client } from '@hiveio/dhive';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import Config from 'src/config';
-import indexMocks from 'src/__tests__/background/requests/logic/mocks';
+import indexMocks from 'src/__tests__/background/requests/mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 describe('index tests:\n', () => {
   const { spies, constants, methods } = indexMocks;
