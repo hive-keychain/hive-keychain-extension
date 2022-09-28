@@ -15,12 +15,14 @@ import './token-item.component.scss';
 interface TokenItemProps {
   tokenBalance: TokenBalance;
   tokenInfo: Token;
+  ariaLabel?: string;
 }
 
 const TokenItem = ({
   tokenBalance,
   tokens,
   tokenInfo,
+  ariaLabel,
   navigateToWithParams,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpen, setExpandablePanelOpen] = useState(false);
@@ -77,8 +79,9 @@ const TokenItem = ({
   };
 
   return (
-    <div className="token-item">
+    <div aria-label={ariaLabel} className="token-item">
       <div
+        aria-label={`token-user-symbol-${tokenBalance.symbol}`}
         className="token"
         onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}>
         <CustomTooltip
@@ -93,6 +96,7 @@ const TokenItem = ({
         </CustomTooltip>
         <div className="symbol">{tokenBalance.symbol}</div>
         <Icon
+          ariaLabel={`icon-token-history-${tokenBalance.symbol}`}
           name={Icons.HISTORY}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_HISTORY, { tokenBalance })
@@ -100,6 +104,7 @@ const TokenItem = ({
           additionalClassName="history"
           type={IconType.OUTLINED}></Icon>
         <Icon
+          ariaLabel={`icon-send-history-${tokenBalance.symbol}`}
           name={Icons.SEND}
           onClick={() =>
             navigateToWithParams(Screen.TOKENS_TRANSFER, { tokenBalance })
@@ -107,6 +112,7 @@ const TokenItem = ({
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>
         <Icon
+          ariaLabel={`icon-expand-more-${tokenBalance.symbol}`}
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpen(!isExpandablePanelOpen)}
           additionalClassName={`more ${
@@ -116,13 +122,17 @@ const TokenItem = ({
       </div>
       {token && (
         <div
+          aria-label="token-info-expandable-panel"
           className={
             isExpandablePanelOpen
               ? 'expandable-panel opened'
               : 'expandable-panel closed'
           }>
           <div className="token-info">
-            <div className="token-description" onClick={goToTokenWebsite}>
+            <div
+              aria-label="token-info-go-to-website"
+              className="token-description"
+              onClick={goToTokenWebsite}>
               <img
                 className="token-icon"
                 src={
@@ -164,6 +174,7 @@ const TokenItem = ({
               )}
             {token.delegationEnabled && (
               <div
+                aria-label="button-go-to-incoming-delegations"
                 className="delegation-line"
                 onClick={goToIncomingDelegations}>
                 {chrome.i18n.getMessage('popup_html_token_delegation_in')} :{' '}
@@ -175,6 +186,7 @@ const TokenItem = ({
             )}
             {token.delegationEnabled && (
               <div
+                aria-label="button-go-to-outgoing-delegations"
                 className="delegation-line"
                 onClick={goToOutgoingDelegations}>
                 <div>
@@ -199,12 +211,16 @@ const TokenItem = ({
           {token && (token.delegationEnabled || token.stakingEnabled) && (
             <div className="button-panel">
               {token.stakingEnabled && (
-                <div className="action-button stake" onClick={() => stake()}>
+                <div
+                  aria-label="button-token-stake"
+                  className="action-button stake"
+                  onClick={() => stake()}>
                   {chrome.i18n.getMessage('popup_html_token_stake')}
                 </div>
               )}
               {token.stakingEnabled && (
                 <div
+                  aria-label="button-token-unstake"
                   className="action-button unstake"
                   onClick={() => unstake()}>
                   {chrome.i18n.getMessage('popup_html_token_unstake')}
@@ -212,6 +228,7 @@ const TokenItem = ({
               )}
               {token.delegationEnabled && (
                 <div
+                  aria-label="button-token-delegate"
                   className="action-button delegate"
                   onClick={() => delegate()}>
                   {chrome.i18n.getMessage('popup_html_token_delegate')}

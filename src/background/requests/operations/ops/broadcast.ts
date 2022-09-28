@@ -25,18 +25,20 @@ export const broadcastOperations = async (
       typeof data.operations === 'string'
         ? JSON.parse(data.operations)
         : data.operations;
-
     for (const op of operations) {
       if (op[0] === 'transfer') {
         const memo = op[1].memo;
         if (memo && memo.length > 0 && memo[0] == '#') {
           const receiver = await client.database.getAccounts([op[1].to]);
+          if (!receiver.length) {
+            throw new Error('Failed to load receiver memo key');
+          }
           const memoKey: string = requestHandler.getUserKey(
             data.username!,
             KeychainKeyTypesLC.memo,
           )[0];
-          if (!receiver) {
-            throw new Error('Failed to load receiver memo key');
+          if (!memoKey) {
+            throw new Error('Failed to load user memo key');
           }
           const memoReceiver = receiver[0].memo_key;
           op[1].memo = encode(memoKey, memoReceiver, memo);

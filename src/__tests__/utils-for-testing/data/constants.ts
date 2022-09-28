@@ -19,8 +19,9 @@ export const toOverWriteFuntions: any = {
   getCurrentRpc: () => (RpcUtils.getCurrentRpc = jest.fn()),
   getActiveAccountNameFromLocalStorage: () =>
     (ActiveAccountUtils.getActiveAccountNameFromLocalStorage = jest.fn()),
-  getRCMana: () => (HiveUtils.getClient().rc.getRCMana = jest.fn()),
-  getAccounts: () => (HiveUtils.getClient().database.getAccounts = jest.fn()),
+  getRCMana: () => (AccountUtils.getRCMana = jest.fn()),
+  getAccount: () => (AccountUtils.getExtendedAccount = jest.fn()),
+  getExtendedAccount: () => (AccountUtils.getAccount = jest.fn()),
   checkRpcStatus: () => (RpcUtils.checkRpcStatus = jest.fn()),
   setRpc: () => (HiveUtils.setRpc = jest.fn()),
   hasStoredAccounts: () => (AccountUtils.hasStoredAccounts = jest.fn()),
@@ -31,9 +32,11 @@ export const toOverWriteFuntions: any = {
   getPrices: () => (CurrencyPricesUtils.getPrices = jest.fn()),
   getAccountValue: () => (AccountUtils.getAccountValue = jest.fn()),
   hasReward: () => (ActiveAccountUtils.hasReward = jest.fn()),
+  //TODO fix these 2
   getVestingDelegations: () =>
     (HiveUtils.getClient().database.getVestingDelegations = jest.fn()),
   getDelegators: () => (KeychainApi.get = jest.fn()),
+  //TIL here
   getAccountTransactions: () =>
     (TransactionUtils.getAccountTransactions = jest.fn()),
   getTokens: () => (HiveEngineConfigUtils.getApi().find = jest.fn()),

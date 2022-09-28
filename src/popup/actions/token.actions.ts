@@ -15,21 +15,14 @@ import Logger from 'src/utils/logger.utils';
 export const loadTokens = (): AppThunk => async (dispatch) => {
   let tokens;
   try {
-    tokens = (
-      await HiveEngineConfigUtils.getApi().find(
-        'tokens',
-        'tokens',
-        {},
-        1000,
-        0,
-        [],
-      )
-    ).map((t: any) => {
-      return {
-        ...t,
-        metadata: JSON.parse(t.metadata),
-      };
-    });
+    tokens = (await HiveEngineUtils.getAllTokens({}, 1000, 0, [])).map(
+      (t: any) => {
+        return {
+          ...t,
+          metadata: JSON.parse(t.metadata),
+        };
+      },
+    );
   } catch (err: any) {
     if (err.message.includes('timeout')) {
       dispatch({
@@ -50,14 +43,7 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
   const action: ActionPayload<TokenMarket[]> = {
     type: ActionType.LOAD_TOKENS_MARKET,
-    payload: await HiveEngineConfigUtils.getApi().find(
-      'market',
-      'metrics',
-      {},
-      1000,
-      0,
-      [],
-    ),
+    payload: await HiveEngineUtils.getTokensMarket({}, 1000, 0, []),
   };
   dispatch(action);
 };

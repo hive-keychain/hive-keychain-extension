@@ -181,22 +181,23 @@ const TokensOperation = ({
             break;
         }
 
-        if (tokenOperationResult.id) {
+        if (tokenOperationResult && tokenOperationResult.id) {
           addToLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList(`popup_html_${operationType}_tokens`);
           let confirmationResult: any =
             await BlockchainTransactionUtils.tryConfirmTransaction(
               tokenOperationResult.id,
             );
+
           removeFromLoadingList('html_popup_confirm_transaction_operation');
-          if (confirmationResult.confirmed) {
+          if (confirmationResult && confirmationResult.confirmed) {
             if (confirmationResult.error) {
               setErrorMessage('popup_html_hive_engine_error', [
                 confirmationResult.error,
               ]);
               goBack();
             } else {
-              await TransferUtils.saveTransferRecipient(
+              await TransferUtils.saveFavoriteUser(
                 receiverUsername,
                 activeAccount,
               );
@@ -228,7 +229,7 @@ const TokensOperation = ({
   };
 
   return (
-    <div className="transfer-tokens-page">
+    <div aria-label="tokens-operation-page" className="transfer-tokens-page">
       <AvailableCurrentPanelComponent
         available={balance}
         availableCurrency={symbol}
@@ -247,6 +248,7 @@ const TokensOperation = ({
         )}
       {operationType === TokenOperationType.DELEGATE && (
         <InputComponent
+          ariaLabel="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
           placeholder="popup_html_username"
@@ -258,6 +260,7 @@ const TokensOperation = ({
       <div className="value-panel">
         <div className="value-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -269,6 +272,7 @@ const TokensOperation = ({
         <div className="symbol">{symbol}</div>
       </div>
       <OperationButtonComponent
+        ariaLabel={`token-button-operation-${operationType}`}
         requiredKey={KeychainKeyTypesLC.active}
         label={getSubmitButtonLabel()}
         onClick={handleClickOnSend}

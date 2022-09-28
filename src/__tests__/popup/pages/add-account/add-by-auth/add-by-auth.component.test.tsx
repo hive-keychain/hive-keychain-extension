@@ -22,8 +22,6 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
 config.useChrome();
-jest.setTimeout(10000);
-
 describe('add-by-auth tests:\n', () => {
   beforeEach(async () => {
     jest.useFakeTimers('legacy');
@@ -107,7 +105,7 @@ describe('add-by-auth tests:\n', () => {
       { ariaLabel: alInput.authorizedAccount, text: userData.one.username },
     ]);
     mockPreset.setOrDefault({
-      app: { getAccounts: [] },
+      app: { getAccount: [] },
     });
     await clickAwait([alButton.submit]);
     await assertion.awaitFor(errorMessage, QueryDOM.BYTEXT);

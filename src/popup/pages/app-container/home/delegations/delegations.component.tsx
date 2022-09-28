@@ -74,11 +74,11 @@ const Delegations = ({
   const [incomingError, setIncomingError] = useState<string | null>(null);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
+    const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
     );
   };
 
@@ -169,6 +169,7 @@ const Delegations = ({
     navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
       delegationType: DelegationType.OUTGOING,
       totalPendingOutgoingUndelegation: totalPendingOutgoingUndelegation,
+      available: available,
     });
   };
 
@@ -210,7 +211,7 @@ const Delegations = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage('popup_html_delegation_successful');
         } else {
           setErrorMessage('popup_html_delegation_fail');
@@ -242,7 +243,7 @@ const Delegations = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage('popup_html_cancel_delegation_successful');
         } else {
           setErrorMessage('popup_html_cancel_delegation_fail');

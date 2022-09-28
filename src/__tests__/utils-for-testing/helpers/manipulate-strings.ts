@@ -15,4 +15,16 @@ const removeExtraSpaces = (value: string) => {
     .join(' ');
 };
 
-export default { replace, removeExtraSpaces };
+const removeHtmlTags = (str: string) => {
+  let match = str.match(/\<(.*?)\>/g);
+  match?.forEach((toRemove) => {
+    str = str.replace(toRemove, '');
+  });
+  return str;
+};
+
+const removeTabs = (str: string) => {
+  return str.replace(/\s/g, '');
+};
+
+export default { replace, removeExtraSpaces, removeHtmlTags, removeTabs };

@@ -4,7 +4,9 @@ import {
   ClaimRewardBalanceOperation,
   Client,
   CollateralizedConvertOperation,
+  DynamicGlobalProperties,
   ExtendedAccount,
+  Price,
   PrivateKey,
   RecurrentTransferOperation,
   TransactionConfirmation,
@@ -30,7 +32,10 @@ import {
   Delegator,
   PendingOutgoingUndelegation,
 } from 'src/interfaces/delegations.interface';
-import { GlobalProperties } from 'src/interfaces/global-properties.interface';
+import {
+  GlobalProperties,
+  RewardFund,
+} from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -52,6 +57,14 @@ const setRpc = async (rpc: Rpc) => {
       ? (await KeychainApi.get('/hive/rpc')).data.rpc
       : rpc.uri,
   );
+};
+
+const getAccountPrice = async () => {
+  return Asset.fromString(
+    (
+      await getClient().database.getChainProperties()
+    ).account_creation_fee.toString(),
+  ).amount;
 };
 
 const getVP = (account: ExtendedAccount) => {
@@ -206,22 +219,27 @@ const getTimeBeforeFull = (votingPower: number) => {
   }
 };
 
-export const getConversionRequests = async (name: string) => {
+export const getConversionRequests = async (
+  name: string,
+): Promise<Conversion[]> => {
   const [hbdConversions, hiveConversions] = await Promise.all([
     getClient().database.call('get_conversion_requests', [name]),
     getClient().database.call('get_collateralized_conversion_requests', [name]),
   ]);
 
   return [
-    ...hiveConversions.map((e: CollateralizedConversion) => ({
-      amount: e.collateral_amount,
-      conversion_date: e.conversion_date,
-      id: e.id,
-      owner: e.owner,
-      requestid: e.requestid,
+    ...hiveConversions.map((conv: CollateralizedConversion) => ({
+      amount: conv.collateral_amount,
+      conversion_date: conv.conversion_date,
+      id: conv.id,
+      owner: conv.owner,
+      requestid: conv.requestid,
       collaterized: true,
     })),
-    ...hbdConversions,
+    ...hbdConversions.map((conv: any) => ({
+      ...conv,
+      collaterized: false,
+    })),
   ].sort(
     (a, b) =>
       new Date(a.conversion_date).getTime() -
@@ -661,6 +679,26 @@ const getProposalDailyBudget = async () => {
     ) / 100
   );
 };
+/**
+ * getClient().database.getDynamicGlobalProperties()
+ */
+const getDynamicGlobalProperties =
+  async (): Promise<DynamicGlobalProperties> => {
+    return getClient().database.getDynamicGlobalProperties();
+  };
+/**
+ * getClient().database.getCurrentMedianHistoryPrice()
+ */
+const getCurrentMedianHistoryPrice = async (): Promise<Price> => {
+  return getClient().database.getCurrentMedianHistoryPrice();
+};
+/**
+ * getClient().database.call(method, params).
+ * Fixed params: method 'get_reward_fund', params ['post]
+ */
+const getRewardFund = async (): Promise<RewardFund> => {
+  return getClient().database.call('get_reward_fund', ['post']);
+};
 
 const HiveUtils = {
   getClient,
@@ -690,6 +728,10 @@ const HiveUtils = {
   getRecentClaims,
   getHivePrice,
   getVotePowerReserveRate,
+  getAccountPrice,
+  getDynamicGlobalProperties,
+  getCurrentMedianHistoryPrice,
+  getRewardFund,
   getDelegatees,
   getDelegators,
   getPendingOutgoingUndelegation,

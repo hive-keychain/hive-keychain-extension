@@ -17,11 +17,16 @@ const Config = {
     },
   },
   PROPOSAL: 216,
+  PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
   MIN_LOADING_TIME: 1000,
   rpc: {
     DEFAULT: { uri: 'https://api.hive.blog', testnet: false },
   },
   governanceReminderDelayInSeconds: 30 * 24 * 3600, //days
+  transak: {
+    apiKey:
+      process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
+  },
 };
 
 export default Config;
