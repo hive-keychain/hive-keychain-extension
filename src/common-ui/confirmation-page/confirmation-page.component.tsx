@@ -9,6 +9,18 @@ import ButtonComponent, {
 import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirmation-field.interface';
 import './confirmation-page.component.scss';
 
+export interface ConfirmationPageParams {
+  fields: any;
+  message: string;
+  warningMessage?: string;
+  warningParams?: string[];
+  skipWarningTranslation?: boolean;
+  title: string;
+  skipTitleTranslation?: boolean;
+  afterConfirmAction: () => {};
+  formParams?: any;
+}
+
 const ConfirmationPage = ({
   fields,
   message,

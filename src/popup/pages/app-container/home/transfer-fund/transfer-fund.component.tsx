@@ -255,10 +255,7 @@ const TransferFunds = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(
-            receiverUsername,
-            activeAccount,
-          );
+          await TransferUtils.saveFavoriteUser(receiverUsername, activeAccount);
 
           if (!isRecurrent) {
             setSuccessMessage('popup_html_transfer_successful', [

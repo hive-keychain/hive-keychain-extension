@@ -69,18 +69,17 @@ const Tokens = ({
       // addToLoadingList('html_popup_loading_tokens_operation');
     } else if (userTokens.list && market.length) {
       // removeFromLoadingList('html_popup_loading_tokens_operation');
-      setFilteredTokenList(
-        userTokens.list
-          .filter((token) => !hiddenTokens.includes(token.symbol))
-          .filter((token) =>
-            token.symbol.toLowerCase().includes(filterValue.toLowerCase()),
-          )
-          .sort(
-            (a, b) =>
-              getHiveEngineTokenValue(b, market) -
-              getHiveEngineTokenValue(a, market),
-          ),
-      );
+      const orderedFiltered = userTokens.list
+        .filter((token) => !hiddenTokens.includes(token.symbol))
+        .filter((token) =>
+          token.symbol.toLowerCase().includes(filterValue.toLowerCase()),
+        )
+        .sort(
+          (a, b) =>
+            getHiveEngineTokenValue(b, market) -
+            getHiveEngineTokenValue(a, market),
+        );
+      setFilteredTokenList(orderedFiltered);
     }
   }, [userTokens, market, filterValue]);
 

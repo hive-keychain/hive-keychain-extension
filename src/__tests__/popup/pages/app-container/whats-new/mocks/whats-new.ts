@@ -25,13 +25,10 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    withData: 'whats-new.component With Data',
-  },
   versionLog: {
     data: {
       url: 'https://hive-keychain.com',
-      version: '2.1',
+      version: '2.2',
       features: {
         en: [
           {
@@ -80,7 +77,6 @@ const beforeEach = async (differVersions: boolean = false) => {
         customData: { extensionVersion: constants.versionLog },
       },
     };
-    //VersionLogUtils.getLastVersion = jest.fn().mockResolvedValue();
   }
   mockPreset.setOrDefault(remock);
   _asFragment = customRenderFixed({

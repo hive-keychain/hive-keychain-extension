@@ -56,6 +56,17 @@
     }
   }
 
+  &.reverse {
+    background: white;
+    color: black;
+    border: 1px solid black;
+
+    &:hover {
+      background: black;
+      color: white;
+    }
+  }
+
   &.fix-to-bottom {
     position: fixed;
     bottom: 32px;

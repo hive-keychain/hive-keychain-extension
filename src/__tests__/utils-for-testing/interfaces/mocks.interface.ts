@@ -5,7 +5,11 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import {
+  TokenBalance,
+  TokenMarket,
+  TokenTransaction,
+} from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import { OverwriteMock } from 'src/__tests__/utils-for-testing/enums/enums';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
@@ -14,11 +18,9 @@ export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;
   getCurrentRpc?: Rpc;
   getActiveAccountNameFromLocalStorage?: string;
-  //changed/added
   getRCMana?: Manabar;
   getAccount?: ExtendedAccount[];
   getExtendedAccount?: ExtendedAccount;
-  //END changed/added
   checkRpcStatus?: boolean;
   hasStoredAccounts?: boolean;
   getMkFromLocalStorage?: string;
@@ -45,10 +47,12 @@ export interface MocksTokens {
   getOutgoingDelegations?: TokenDelegation[];
   getAllTokens?: any[];
   getTokensMarket?: TokenMarket[];
+  getTokenHistory?: TokenTransaction[];
 }
 export interface MocksProposal {
   hasVotedForProposal?: boolean;
   voteForKeychainProposal?: boolean;
+  isRequestingProposalVotes?: boolean;
 }
 export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
@@ -76,6 +80,7 @@ export interface MocksToUse {
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
 }
+
 export interface MockVotingProposal {
   voteForProposal?: boolean;
   unvoteForProposal?: boolean;
@@ -101,7 +106,7 @@ export interface CustomDataFromLocalStorage {
   customMK?: string;
   customAccounts?: string;
 }
-//TODO remove all unused from overwrite + add the keychainApiget.
+
 export interface MocksOverwrite {
   app?: {
     getValueFromLocalStorage?: OverwriteMock;

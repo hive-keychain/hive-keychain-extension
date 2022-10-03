@@ -1,0 +1,82 @@
+@import '/src/popup/variable.scss';
+.create-account-step-one {
+  display: flex;
+  flex-direction: column;
+  padding: 0px 24px;
+  row-gap: 16px;
+  .master-password-panel {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 16px;
+
+    .input-container {
+      input {
+        padding-left: 36px;
+      }
+    }
+
+    .submit-button {
+      height: 36px;
+      min-width: 100px;
+      align-self: flex-end;
+    }
+  }
+
+  .price-panel {
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid white;
+    border-radius: 8px;
+    min-width: 70px;
+    font-size: 16px;
+    text-align: center;
+    row-gap: 4px;
+    padding: 4px 8px;
+    margin-bottom: 30px;
+    min-height: 42px;
+    .label {
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+  }
+
+  .react-dropdown-select {
+    &,
+    &:hover,
+    &:focus {
+      box-shadow: unset !important;
+      border: unset !important;
+    }
+
+    .selected-account-panel {
+      padding: 12px 0px;
+    }
+
+    .select-account-item {
+      display: flex;
+      align-items: center;
+      column-gap: 16px;
+      padding: 12px 26px;
+      box-sizing: border-box;
+      background: $black-transparent;
+
+      &:hover,
+      &.selected {
+        background: $red-dark;
+      }
+    }
+  }
+
+  .react-dropdown-select-dropdown {
+    border: unset !important;
+    .select-account-item {
+      background: $black;
+    }
+  }
+
+  .button-panel {
+    display: flex;
+    column-gap: 16px;
+  }
+}
