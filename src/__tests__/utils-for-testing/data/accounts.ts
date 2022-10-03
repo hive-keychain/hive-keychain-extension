@@ -91,4 +91,16 @@ const active = {
 
 const twoAccounts = [local.one, local.two];
 
-export default { extended, local, twoAccounts, asArray, active };
+const encrypted = {
+  noHash: {
+    oneAccount: {
+      msg: process.env._TEST_USER_ENCRYPTED_ACCOUNTS || 'error',
+      mkUsed: process.env._TEST_USER_PWD || 'error',
+      original: {
+        list: [local.justTwoKeys],
+      },
+    },
+  },
+};
+
+export default { extended, local, twoAccounts, asArray, active, encrypted };
