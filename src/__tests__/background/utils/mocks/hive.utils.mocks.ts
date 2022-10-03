@@ -94,9 +94,7 @@ const errorClaimSavings = [
       using: spies.logger.error,
       callingParams: [
         `Error while claiming savings for @${accounts.active.name}`,
-        new TypeError(
-          "Cannot read properties of undefined (reading 'broadcast')",
-        ),
+        new TypeError("Cannot read property 'broadcast' of undefined"),
       ],
     },
   },

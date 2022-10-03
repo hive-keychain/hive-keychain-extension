@@ -15,9 +15,7 @@ export const errorClaimAccounts = [
     },
   },
   {
-    description: new TypeError(
-      "Cannot read properties of undefined (reading 'broadcast')",
-    ),
+    description: new TypeError("Cannot read property 'broadcast' of undefined"),
     params: constants.tuple.claimAccounts,
     mocks: () => {
       mocks.getClient(undefined);

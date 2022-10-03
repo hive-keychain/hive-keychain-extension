@@ -24,7 +24,7 @@ describe('delegation tests:\n', () => {
     );
     const result = await broadcastDelegation(requestHandler, data);
     const { request_id, ...datas } = data;
-    const errorTitle = "Cannot read properties of undefined (reading 'split')";
+    const errorTitle = "Cannot read property 'split' of undefined";
     expect(result).toEqual(
       messages.error.answerError(
         new TypeError(errorTitle),

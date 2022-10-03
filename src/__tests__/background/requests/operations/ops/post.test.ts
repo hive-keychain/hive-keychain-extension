@@ -11,7 +11,7 @@ describe('post tests:\n', () => {
       const result = await broadcastPost(requestHandler, data);
       methods.assertMsgError(
         result,
-        new TypeError(),
+        new TypeError('private key should be a Buffer'),
         data,
         `${chrome.i18n.getMessage(
           'bgd_ops_error',

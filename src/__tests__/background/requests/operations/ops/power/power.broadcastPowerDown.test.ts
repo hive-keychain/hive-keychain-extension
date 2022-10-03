@@ -13,7 +13,7 @@ describe('power tests:\n', () => {
       mocks.client.database.getDynamicGlobalProperties(
         {} as DynamicGlobalProperties,
       );
-      const error = "Cannot read properties of undefined (reading 'split')";
+      const error = "Cannot read property 'split' of undefined";
       const result = await broadcastPowerDown(requestHandler, data.powerDown);
       const { request_id, ...datas } = data.powerDown;
       expect(result).toEqual(
