@@ -417,6 +417,10 @@ const getRCMana = async (username: string) => {
   return HiveUtils.getClient().rc.getRCMana(username);
 };
 
+const getExtendedAccounts = async (usernames: string[]) => {
+  return await HiveUtils.getClient().database.getAccounts(usernames);
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -437,6 +441,7 @@ const AccountUtils = {
   getExtendedAccount,
   AccountErrorMessages,
   isAccountNameAlreadyExisting,
+  getExtendedAccounts,
   getRCMana,
   getAccount,
 };
