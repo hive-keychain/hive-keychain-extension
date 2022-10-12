@@ -16,6 +16,7 @@ import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Analytics } from 'src/analytics/analytics';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -28,7 +29,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import RpcUtils from 'src/utils/rpc.utils';
-import '../analytics/analytics/data-layer';
 import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from './pages/app-container/app-router.component';
@@ -53,6 +53,7 @@ const App = ({
   loadGlobalProperties,
   displayProxySuggestion,
   initHiveEngineConfigFromStorage,
+  navigationStack,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
@@ -64,25 +65,14 @@ const App = ({
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
-    initGoogleAnalytics();
+    Analytics.initialize();
   }, []);
 
-  const initGoogleAnalytics = () => {
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function gtag() {
-      window.dataLayer.push(arguments); // eslint-disable-line
-    };
-    console.log(process.env.GOOGLE_ANALYTICS_TAG_ID);
-    window.gtag('config', process.env.GOOGLE_ANALYTICS_TAG_ID, {
-      legacyDimensionMetric: false,
-    });
-    window.gtag('set', 'checkProtocolTask', () => {}); // Disables file protocol checking.
-    window.gtag('js', new Date());
-
-    window.gtag('event', 'navigation', {
-      page: 'homepage',
-    });
-  };
+  useEffect(() => {
+    if (navigationStack.length > 0) {
+      Analytics.sendNavigationEvent(navigationStack[0].currentPage);
+    }
+  }, [navigationStack]);
 
   useEffect(() => {
     onActiveRpcRefreshed();
@@ -269,6 +259,7 @@ const mapStateToProps = (state: RootState) => {
       state.activeAccount.account &&
       state.activeAccount.account.proxy === '' &&
       state.activeAccount.account.witnesses_voted_for === 0,
+    navigationStack: state.navigation.stack,
   };
 };
 

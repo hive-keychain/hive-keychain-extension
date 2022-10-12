@@ -12284,13 +12284,11 @@
     rz = function () {
       var a = 'www';
       uz && tz && (a = tz);
-      console.log('should be here');
       return 'https://' + a + '.google-analytics.com/g/collect';
     },
     qz = function () {
       var a;
       uz && tz && (a = tz);
-      console.log('should be here 2');
 
       return 'https://' + (a ? a + '.' : '') + 'analytics.google.com/g/collect';
     },
@@ -12414,8 +12412,6 @@
       );
     },
     Ez = function (a) {
-      console.log('should be here 3');
-
       var b = {},
         c = '',
         d = a.pathname.indexOf('/g/collect');
@@ -12486,7 +12482,6 @@
         l = b.Yj,
         n = b.Kk,
         p = b.Xj;
-      console.log('before d');
       if (d || e || n) {
         var q = [];
         c('tid');

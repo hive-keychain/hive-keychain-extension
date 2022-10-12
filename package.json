@@ -86,6 +86,7 @@
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "14.4.3",
+    "@types/gtag.js": "^0.0.12",
     "@types/jest": "27.5.2",
     "@types/md5": "2.3.2",
     "@types/node": "17.0.45",
