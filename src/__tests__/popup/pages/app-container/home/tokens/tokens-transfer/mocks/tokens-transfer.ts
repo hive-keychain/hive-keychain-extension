@@ -63,12 +63,7 @@ const constants = {
   },
   phishingAccount: phishing.accounts.data[1],
 };
-/**
- * Intended to use App component as default.
- * You must use only inner params to handle different data/initialState.
- * Also it will return the fragment to use the snapshots feature.
- * @link https://jestjs.io/docs/snapshot-testing or https://goo.gl/fbAQLP
- */
+
 const beforeEach = async (toUse?: {
   noTokensBalance?: boolean;
   noKey?: KeyToUse;

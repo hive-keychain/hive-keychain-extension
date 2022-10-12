@@ -1,3 +1,4 @@
+import { Proposal } from '@interfaces/proposal.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -7,7 +8,6 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
-import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { RootState } from '@popup/store';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';

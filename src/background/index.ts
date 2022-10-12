@@ -19,11 +19,11 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { BackgroundMessage } from './background-message.interface';
 import MkModule from './mk.module';
-
+/* istanbul ignore next */
 chrome.runtime.onStartup.addListener(() => {
   LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
 });
-
+/* istanbul ignore next */
 (async () => {
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
@@ -35,10 +35,10 @@ chrome.runtime.onStartup.addListener(() => {
     ),
   );
 })();
-
+/* istanbul ignore next */
 //@ts-ignore
 chrome.i18n.getMessage = getMessage;
-
+/* istanbul ignore next */
 const chromeMessageHandler = async (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,

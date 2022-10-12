@@ -1,4 +1,4 @@
-import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
+import { Proposal } from '@interfaces/proposal.interface';
 import { screen } from '@testing-library/react';
 import { ReactElement } from 'react';
 import ProposalUtils from 'src/utils/proposal.utils';
