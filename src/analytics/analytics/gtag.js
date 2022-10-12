@@ -1,6 +1,6 @@
 // Copyright 2012 Google Inc. All rights reserved.
+
 (function () {
-  console.log('test inside gtag');
   var data = {
     resource: {
       version: '1',
@@ -12284,11 +12284,14 @@
     rz = function () {
       var a = 'www';
       uz && tz && (a = tz);
+      console.log('should be here');
       return 'https://' + a + '.google-analytics.com/g/collect';
     },
     qz = function () {
       var a;
       uz && tz && (a = tz);
+      console.log('should be here 2');
+
       return 'https://' + (a ? a + '.' : '') + 'analytics.google.com/g/collect';
     },
     Bz = function (a, b, c) {
@@ -12411,6 +12414,8 @@
       );
     },
     Ez = function (a) {
+      console.log('should be here 3');
+
       var b = {},
         c = '',
         d = a.pathname.indexOf('/g/collect');
@@ -12481,6 +12486,7 @@
         l = b.Yj,
         n = b.Kk,
         p = b.Xj;
+      console.log('before d');
       if (d || e || n) {
         var q = [];
         c('tid');
@@ -12696,7 +12702,10 @@
         b && b.blacklisted && (N(34), (a.K = !0));
       }
       var c = H.location.protocol;
-      'http:' != c && 'https:' != c && (N(29), (a.K = !0));
+      'chrome-extension:' != c &&
+        'http:' != c &&
+        'https:' != c &&
+        (N(29), (a.K = !0));
       Mb && 'preview' == Mb.loadPurpose && (N(30), (a.K = !0));
       var d = Vg.grl;
       d || ((d = kz()), (Vg.grl = d));

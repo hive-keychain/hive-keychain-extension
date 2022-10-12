@@ -1,4 +1,7 @@
+import './gtag';
+
 window.dataLayer = window.dataLayer || [];
+console.log(window.ga, window.gtag);
 function gtag() {
   window.dataLayer.push(arguments);
   console.log(window.dataLayer, 'window.datalayer');

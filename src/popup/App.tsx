@@ -28,7 +28,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import RpcUtils from 'src/utils/rpc.utils';
-// import './../analytics/analytics/gtag';
+import '../analytics/analytics/data-layer';
 import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from './pages/app-container/app-router.component';
