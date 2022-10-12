@@ -145,6 +145,8 @@ const TokenHistoryItem = ({
           'popup_html_token_wallet_info_pegged_buy',
           [transaction.amount],
         );
+      default:
+        return null;
     }
   };
 
@@ -164,7 +166,8 @@ const TokenHistoryItem = ({
     }
   };
 
-  return (
+  const label = getLabel();
+  return label ? (
     <div
       aria-label={ariaLabel}
       id={transaction._id}
@@ -177,7 +180,7 @@ const TokenHistoryItem = ({
               {moment(transaction.timestamp * 1000).format('L')}
             </div>
           </div>
-          <div className="bottom-row">{getLabel()}</div>
+          <div className="bottom-row">{label}</div>
         </div>
         <div
           className={isMemoOpened ? 'memo-panel opened' : 'memo-panel closed'}>
@@ -185,7 +188,7 @@ const TokenHistoryItem = ({
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 const mapStateToProps = (state: RootState) => {

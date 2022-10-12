@@ -14,7 +14,7 @@ export const broadcastTransfer = async (
   data: RequestTransfer & RequestId,
 ) => {
   let result,
-    err,
+    err: any,
     err_message = null;
   try {
     const { username, to } = data;
@@ -31,7 +31,7 @@ export const broadcastTransfer = async (
     if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
       const receiver = (await client.database.getAccounts([to]))[0];
 
-      if (!receiver) {
+      if (!receiver || !memoKey) {
         throw new Error('Could not encode memo.');
       }
       const memoReceiver = receiver.memo_key;
@@ -60,12 +60,14 @@ export const broadcastTransfer = async (
       return message;
     } else {
       err = e;
-      if (!(err as any)?.data?.stack[0]?.context?.method)
+      if (!err['jse_info']) {
         err_message = await chrome.i18n.getMessage(
           'bgd_ops_error_broadcasting',
         );
-      else {
-        switch ((err as any).data.stack[0].context.method) {
+      } else {
+        const { jse_info } = err; //hiveoio sending a custom error.
+        const { stack } = jse_info;
+        switch (stack[0].context.method) {
           case 'adjust_balance':
             err_message = await chrome.i18n.getMessage(
               'bgd_ops_transfer_adjust_balance',
