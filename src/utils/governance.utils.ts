@@ -16,7 +16,7 @@ const addToIgnoreRenewal = async (usernames: string[]) => {
     ignored = {};
   }
   for (const username of usernames) {
-    ignored[username] = moment().utc();
+    ignored[username] = moment().utc().toString();
   }
   await LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,
@@ -87,7 +87,7 @@ const getGovernanceReminderList = async (usernames: string[]) => {
     return (
       !ignoredAccounts[extendedAccounts.name] ||
       moment(moment().utc()).diff(
-        ignoredAccounts[extendedAccounts.name],
+        moment(ignoredAccounts[extendedAccounts.name]),
         'year',
       ) >= 1
     );
