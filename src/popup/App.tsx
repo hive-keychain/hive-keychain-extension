@@ -28,6 +28,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import RpcUtils from 'src/utils/rpc.utils';
+// import './../analytics/analytics/gtag';
 import './App.scss';
 import { AddAccountRouterComponent } from './pages/add-account/add-account-router/add-account-router.component';
 import { AppRouterComponent } from './pages/app-container/app-router.component';
@@ -63,7 +64,25 @@ const App = ({
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
+    initGoogleAnalytics();
   }, []);
+
+  const initGoogleAnalytics = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments); // eslint-disable-line
+    };
+    console.log(process.env.GOOGLE_ANALYTICS_TAG_ID);
+    window.gtag('config', process.env.GOOGLE_ANALYTICS_TAG_ID, {
+      legacyDimensionMetric: false,
+    });
+    window.gtag('set', 'checkProtocolTask', () => {}); // Disables file protocol checking.
+    window.gtag('js', new Date());
+
+    window.gtag('event', 'navigation', {
+      page: 'homepage',
+    });
+  };
 
   useEffect(() => {
     onActiveRpcRefreshed();

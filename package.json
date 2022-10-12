@@ -109,6 +109,7 @@
     "fs": "0.0.1-security",
     "identity-obj-proxy": "3.0.0",
     "jest": "27.5.1",
+    "jest-chrome": "0.7.2",
     "node-sass": "7.0.1",
     "react-hot-loader": "4.13.0",
     "redux-mock-store": "1.5.4",
@@ -124,8 +125,7 @@
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.9.0",
-    "webpack-merge": "5.8.0",
-    "jest-chrome": "0.7.2"
+    "webpack-merge": "5.8.0"
   },
   "overrides": {
     "sass-graph": {

@@ -6,10 +6,28 @@ import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
 import Unlock from 'src/dialog/pages/unlock';
 import BrowserUtils from 'src/utils/browser.utils';
+import './../analytics/analytics/gtag';
 import './dialog.scss';
 
 const App = () => {
+  const initGoogleAnalytics = () => {
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() {
+      window.dataLayer.push(arguments); // eslint-disable-line
+    };
+    window.gtag('js', new Date());
+    window.gtag('config', process.env.GOOGLE_ANALYTICS_TAG_ID, {
+      page_path: '/popup',
+    });
+    window.gtag('set', 'checkProtocolTask', () => {}); // Disables file protocol checking.
+
+    window.gtag('event', 'navigation', {
+      page: 'dialog',
+    });
+  };
+
   useEffect(() => {
+    initGoogleAnalytics();
     chrome.runtime.onMessage.addListener(async function (
       data,
       sender,
