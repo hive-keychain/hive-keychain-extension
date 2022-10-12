@@ -17,6 +17,9 @@ const { methods, constants, extraMocks } = tokensTransfer;
 const { messages, selectedToken, memo } = constants;
 let _asFragment: () => {};
 describe('tokens-transfer.component tests:\n', () => {
+  const { methods, constants, extraMocks } = tokensTransfer;
+  const { messages, selectedToken, memo } = constants;
+  let _asFragment: () => {};
   methods.afterEach;
   describe('Having balances:\n', () => {
     beforeEach(async () => {

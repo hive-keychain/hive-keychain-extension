@@ -2268,7 +2268,7 @@
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_issue": {
-    "message": "Issued $1",
+    "message": "Received $1",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_pegged_buy": {
@@ -2442,6 +2442,30 @@
   "popup_html_undelegation_pending_until_message": {
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
+  },
+  "html_popup_governance_renewal_title": {
+    "message": "Governance renewal",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renewal_introduction": {
+    "message": "Your governance votes are about to expire for the following accounts.<br/>If you want to keep them active, click on the renew button. To cancel the expiry, we will help you vote/unvote the return proposal. If you would rather review your votes manually, uncheck the checkbox to ignore.",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renew": {
+    "message": "Renew",
+    "description": "Governance expiration renew"
+  },
+  "html_popup_governance_ignore": {
+    "message": "Ignore",
+    "description": "Governance expiration ignore"
+  },
+  "html_popup_governance_expiration_read_more": {
+    "message": "Read more about governance expiration",
+    "description": "Governance expiration description"
+  },
+  "html_popup_governance_renewing": {
+    "message": "Renewing",
+    "description": "Governance expiration description"
   },
   "popup_html_transfer_to_saving_to_exchange_error": {
     "message": "You are trying to transfer to the savings of an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",

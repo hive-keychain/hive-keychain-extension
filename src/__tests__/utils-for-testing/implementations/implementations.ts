@@ -64,11 +64,18 @@ const getValuefromLS = async (...args: any[]): Promise<any> => {
       return hasKeys(customData)
         ? customData.customAuthorizedOP
         : ({} as NoConfirm);
+    case LocalStorageKeyEnum.LOCAL_STORAGE_VERSION:
+      return hasKeys(customData) ? customData.customStorageVersion : undefined;
+    case LocalStorageKeyEnum.CURRENT_RPC:
+      return hasKeys(customData) ? customData.customCurrentRpc : undefined;
+    case LocalStorageKeyEnum.__MK:
+      return hasKeys(customData) ? customData.customMK : undefined;
+    case LocalStorageKeyEnum.ACCOUNTS:
+      return hasKeys(customData) ? customData.customAccounts : undefined;
     default:
       //Cases not being handled yet:
       // - HIVE_ENGINE_ACTIVE_CONFIG
       // - __REQUEST_HANDLER
-      // - LOCAL_STORAGE_VERSION
 
       //console.log('Not handled and being called by: ', args[0]);
       return undefined;

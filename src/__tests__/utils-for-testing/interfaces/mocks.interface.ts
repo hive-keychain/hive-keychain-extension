@@ -90,14 +90,21 @@ export interface MockProxy {
   setAsProxy?: string | boolean | undefined;
   removeProxy?: boolean;
 }
+/**
+ * Some needed as string, to being able to stringify & parse.
+ */
 export interface CustomDataFromLocalStorage {
   accountHistoryApi?: string[];
-  customRpcList?: string[];
-  customAutolock?: Autolock;
+  customRpcList?: string[] | string;
+  customAutolock?: Autolock | string;
   customSwitchAuto?: boolean;
   customsRpcs?: Rpc[];
-  customAuthorizedOP?: NoConfirm;
+  customAuthorizedOP?: NoConfirm | string;
   customlastVersionSeen?: string;
+  customStorageVersion?: string;
+  customCurrentRpc?: Rpc;
+  customMK?: string;
+  customAccounts?: string;
 }
 
 export interface MocksOverwrite {
