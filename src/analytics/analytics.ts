@@ -1,5 +1,4 @@
 import { Screen } from '@reference-data/screen.enum';
-// import './analytics/data-layer';
 import './analytics/gtag.js';
 window.dataLayer = window.dataLayer || [];
 
