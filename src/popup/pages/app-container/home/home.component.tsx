@@ -128,7 +128,7 @@ const Home = ({
         </div>
       )}
 
-      {displayLoader && (
+      {(displayLoader || activeRpc?.uri === 'NULL') && (
         <div className="loading">
           <RotatingLogoComponent></RotatingLogoComponent>
           <div className="caption">HIVE KEYCHAIN</div>
