@@ -1,3 +1,4 @@
+import { Rpc } from '@interfaces/rpc.interface';
 import {
   loadActiveAccount,
   refreshActiveAccount,
@@ -12,6 +13,8 @@ import { ResourcesSectionComponent } from '@popup/pages/app-container/home/resou
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { TopBarComponent } from '@popup/pages/app-container/home/top-bar/top-bar.component';
 import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-section.component';
+import { SurveyComponent } from '@popup/pages/app-container/survey/survey.component';
+import { Survey } from '@popup/pages/app-container/survey/survey.interface';
 import { WhatsNewComponent } from '@popup/pages/app-container/whats-new/whats-new.component';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { RootState } from '@popup/store';
@@ -23,6 +26,7 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { SurveyUtils } from 'src/utils/survey.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import './home.component.scss';
 
@@ -43,6 +47,7 @@ const Home = ({
     string[]
   >([]);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
+  const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();
@@ -51,6 +56,7 @@ const Home = ({
       refreshActiveAccount();
     }
     initWhatsNew();
+    initSurvey();
   }, []);
 
   useEffect(() => {
@@ -87,6 +93,10 @@ const Home = ({
     setGovernanceAccountsToExpire(accountsToRemind);
   };
 
+  const initSurvey = async () => {
+    setSurveyToDisplay(await SurveyUtils.getSurvey());
+  };
+
   const initWhatsNew = async () => {
     const lastVersionSeen = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.LAST_VERSION_UPDATE,
@@ -115,6 +125,36 @@ const Home = ({
     loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
   };
 
+  const renderPopup = (
+    displayLoader: boolean,
+    activeRpc: Rpc | undefined,
+    displayWhatsNew: boolean,
+    governanceAccountsToExpire: string[],
+    surveyToDisplay: Survey | undefined,
+  ) => {
+    if (displayLoader || activeRpc?.uri === 'NULL') {
+      return (
+        <div className="loading">
+          <RotatingLogoComponent></RotatingLogoComponent>
+          <div className="caption">HIVE KEYCHAIN</div>
+        </div>
+      );
+    } else if (displayWhatsNew) {
+      return (
+        <WhatsNewComponent
+          onOverlayClick={() => setDisplayWhatsNew(false)}
+          content={whatsNewContent!}
+        />
+      );
+    } else if (governanceAccountsToExpire.length > 0) {
+      return (
+        <GovernanceRenewalComponent accountNames={governanceAccountsToExpire} />
+      );
+    } else if (surveyToDisplay) {
+      return <SurveyComponent survey={surveyToDisplay} />;
+    }
+  };
+
   return (
     <div className="home-page">
       {!displayLoader && activeRpc && activeRpc.uri !== 'NULL' && (
@@ -128,26 +168,13 @@ const Home = ({
         </div>
       )}
 
-      {(displayLoader || activeRpc?.uri === 'NULL') && (
-        <div className="loading">
-          <RotatingLogoComponent></RotatingLogoComponent>
-          <div className="caption">HIVE KEYCHAIN</div>
-        </div>
+      {renderPopup(
+        displayLoader,
+        activeRpc,
+        displayWhatsNew,
+        governanceAccountsToExpire,
+        surveyToDisplay,
       )}
-
-      {!displayLoader && displayWhatsNew && (
-        <WhatsNewComponent
-          onOverlayClick={() => setDisplayWhatsNew(false)}
-          content={whatsNewContent!}
-        />
-      )}
-      {!displayLoader &&
-        !displayWhatsNew &&
-        governanceAccountsToExpire.length > 0 && (
-          <GovernanceRenewalComponent
-            accountNames={governanceAccountsToExpire}
-          />
-        )}
     </div>
   );
 };
