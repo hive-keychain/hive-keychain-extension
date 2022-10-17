@@ -28,6 +28,7 @@ import { GovernanceUtils } from 'src/utils/governance.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
+import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 import './home.component.scss';
 
 const Home = ({
@@ -101,6 +102,12 @@ const Home = ({
     const lastVersionSeen = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.LAST_VERSION_UPDATE,
     );
+
+    if (!lastVersionSeen) {
+      WhatsNewUtils.saveLastSeen();
+      return;
+    }
+
     const versionLog = await VersionLogUtils.getLastVersion();
     const extensionVersion = chrome.runtime
       .getManifest()
