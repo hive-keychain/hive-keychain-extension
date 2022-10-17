@@ -5,8 +5,6 @@ import { Provider } from 'react-redux';
 
 import App from './App';
 
-// Analytics.initialize();
-
 ReactDOM.render(
   <Provider store={store}>
     <App />

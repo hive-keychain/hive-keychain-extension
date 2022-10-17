@@ -2482,5 +2482,29 @@
   "popup_html_pending_conversions": {
     "message": "You have $1 pending $2 conversion(s)",
     "description": "Global"
+  },
+  "popup_html_analytics": {
+    "message": "Analytics",
+    "description": "Analytics menu item"
+  },
+  "popup_html_analytics_allow_ga": {
+    "message": "Allow Google Analytics",
+    "description": "Allow google analytics checkbox label"
+  },
+  "popup_html_analytics_allow_ga_hint": {
+    "message": "Allow us to record your activity on Google Analytics to help us improve the user experience on Hive Keychain",
+    "description": "Allow google analytics hint"
+  },
+  "popup_html_analytics_accept": {
+    "message": "Accept",
+    "description": "accept button on analytics popup"
+  },
+  "popup_html_analytics_reject": {
+    "message": "Reject",
+    "description": "Reject button on analytics popup"
+  },
+  "popup_html_analytics_thank_you": {
+    "message": "Thank you for your help",
+    "description": "Thank you for your help"
   }
 }
