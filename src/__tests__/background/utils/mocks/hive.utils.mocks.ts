@@ -71,7 +71,10 @@ const method = {
       mocks();
       const activeAccount = method.reset(usingBalance, param);
       expect(await BgdHiveUtils.claimSavings(activeAccount)).toBe(false);
-      expect(spies.using).toBeCalledWith(...spies.callingParams);
+      const { calls } = spies.using.mock;
+      expect(calls[0][0]).toBe(
+        `Error while claiming savings for @${accounts.active.name}`,
+      );
       spies.using.mockReset();
     }
   },
