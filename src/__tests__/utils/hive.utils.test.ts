@@ -446,7 +446,8 @@ describe('hive.utils tests:\n', () => {
       );
       expect(result).toBe(false);
       expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith(...loggerCallParams);
+      const { calls } = spyLogger.mock;
+      expect(calls[0][0]).toBe('Error while claiming rewards');
       expect(store.dispatch).toBeCalledTimes(1);
       expect(store.dispatch).toBeCalledWith(dispatchCallParams);
     });
