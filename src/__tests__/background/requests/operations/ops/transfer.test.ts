@@ -18,7 +18,12 @@ describe('transfer tests:\n', () => {
       it('Must return error if no key on handler', async () => {
         const errorMsg = chrome.i18n.getMessage('bgd_ops_error_broadcasting');
         const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.error(result, new TypeError(), data, errorMsg);
+        methods.assert.error(
+          result,
+          new TypeError('private key should be a Buffer'),
+          data,
+          errorMsg,
+        );
       });
       it('Must return error if receiver not found', async () => {
         data.currency = 'HIVE';

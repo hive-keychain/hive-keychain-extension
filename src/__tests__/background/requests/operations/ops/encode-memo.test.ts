@@ -16,8 +16,7 @@ describe('encode-memo tests:\n', () => {
     data.message = memo._default.decoded;
     const result = await encodeMessage(requestHandler, data);
     const { request_id, ...datas } = data;
-    const errorTitle =
-      "Cannot read properties of undefined (reading 'memo_key')";
+    const errorTitle = "Cannot read property 'memo_key' of undefined";
     expect(result).toEqual(
       messages.error.answerError(
         new AssertionError({
@@ -38,8 +37,7 @@ describe('encode-memo tests:\n', () => {
     data.message = memo._default.decoded;
     const result = await encodeMessage(requestHandler, data);
     const { request_id, ...datas } = data;
-    const errorTitle =
-      "Cannot read properties of undefined (reading 'memo_key')";
+    const errorTitle = "Cannot read property 'memo_key' of undefined";
     expect(result).toEqual(
       messages.error.answerError(
         new TypeError(errorTitle),

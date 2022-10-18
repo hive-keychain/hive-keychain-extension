@@ -32,7 +32,7 @@ describe('proxy.utils tests:\n', () => {
       expect(result).toBe(requestedProxyAccountName);
     } catch (error) {
       expect(error).toEqual(
-        new TypeError("Cannot read properties of undefined (reading 'length')"),
+        new TypeError("Cannot read property 'length' of undefined"),
       );
     }
   });

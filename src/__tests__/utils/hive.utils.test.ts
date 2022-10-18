@@ -427,7 +427,7 @@ describe('hive.utils tests:\n', () => {
     test('Passing an empty ActiveAccount with rewards to claim must call Logger, dispatch a TypeError and return false', async () => {
       loggerCallParams = [
         'Error while claiming rewards',
-        "TypeError: Cannot read properties of undefined (reading 'posting')",
+        "TypeError: Cannot read property 'posting' of undefined",
       ];
       dispatchCallParams = {
         payload: {

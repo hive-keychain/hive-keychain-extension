@@ -29,7 +29,7 @@ describe('manage-account.component tests:\n', () => {
     beforeEach(async () => {
       _asFragment = await manageAccounts.beforeEach();
     });
-    it.skip('Must display manage-account and match snapshot', () => {
+    it('Must display manage-account and match snapshot', () => {
       expect(_asFragment()).toMatchSnapshot(snapshotName.withData.default);
     });
     it('Must change to selected account', async () => {
