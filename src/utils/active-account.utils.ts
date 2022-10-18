@@ -4,7 +4,9 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const isEmpty = (activeAccount: ActiveAccount) => {
-  return Object.keys(activeAccount.account).length === 0;
+  return (
+    !activeAccount.account || Object.keys(activeAccount.account).length === 0
+  );
 };
 /* istanbul ignore next */
 const saveActiveAccountNameInLocalStorage = (activeAccountName: string) => {
