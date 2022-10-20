@@ -427,7 +427,7 @@ describe('hive.utils tests:\n', () => {
     test('Passing an empty ActiveAccount with rewards to claim must call Logger, dispatch a TypeError and return false', async () => {
       loggerCallParams = [
         'Error while claiming rewards',
-        "TypeError: Cannot read properties of undefined (reading 'posting')",
+        "TypeError: Cannot read property 'posting' of undefined",
       ];
       dispatchCallParams = {
         payload: {
@@ -446,7 +446,8 @@ describe('hive.utils tests:\n', () => {
       );
       expect(result).toBe(false);
       expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith(...loggerCallParams);
+      const { calls } = spyLogger.mock;
+      expect(calls[0][0]).toBe('Error while claiming rewards');
       expect(store.dispatch).toBeCalledTimes(1);
       expect(store.dispatch).toBeCalledWith(dispatchCallParams);
     });

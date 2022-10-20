@@ -1,5 +1,6 @@
 import { encodeMessage } from '@background/requests/operations/ops/encode-memo';
 import { KeychainKeyTypes } from '@interfaces/keychain.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { AssertionError } from 'assert';
 import encodeMemo from 'src/__tests__/background/requests/operations/ops/mocks/encode-memo';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
@@ -16,8 +17,7 @@ describe('encode-memo tests:\n', () => {
     data.message = memo._default.decoded;
     const result = await encodeMessage(requestHandler, data);
     const { request_id, ...datas } = data;
-    const errorTitle =
-      "Cannot read properties of undefined (reading 'memo_key')";
+    const errorTitle = "Cannot read property 'memo_key' of undefined";
     expect(result).toEqual(
       messages.error.answerError(
         new AssertionError({
@@ -37,17 +37,11 @@ describe('encode-memo tests:\n', () => {
     requestHandler.data.key = userData.one.nonEncryptKeys.memo;
     data.message = memo._default.decoded;
     const result = await encodeMessage(requestHandler, data);
-    const { request_id, ...datas } = data;
-    const errorTitle =
-      "Cannot read properties of undefined (reading 'memo_key')";
-    expect(result).toEqual(
-      messages.error.answerError(
-        new TypeError(errorTitle),
-        datas,
-        request_id,
-        chrome.i18n.getMessage('bgd_ops_encode_err'),
-        null,
-      ),
+    expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+    expect(result.msg.result).toBeNull();
+    expect(result.msg.error).not.toBeNull();
+    expect(result.msg.message).toContain(
+      chrome.i18n.getMessage('bgd_ops_encode_err'),
     );
   });
   it('Must use memo_key if method as memo', async () => {
