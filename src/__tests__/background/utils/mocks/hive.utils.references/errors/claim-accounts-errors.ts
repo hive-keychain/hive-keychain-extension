@@ -15,9 +15,7 @@ export const errorClaimAccounts = [
     },
   },
   {
-    description: new TypeError(
-      "Cannot read properties of undefined (reading 'broadcast')",
-    ),
+    description: 'broadcast',
     params: constants.tuple.claimAccounts,
     mocks: () => {
       mocks.getClient(undefined);
@@ -28,7 +26,7 @@ export const errorClaimAccounts = [
     },
   },
   {
-    description: new TypeError('Expected String'),
+    description: 'String',
     params: [
       manabar,
       method.removeKey(

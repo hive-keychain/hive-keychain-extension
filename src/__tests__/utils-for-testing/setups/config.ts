@@ -11,6 +11,7 @@ const byDefault = (jestTimeOut: number = 10000) => {
   jest.setTimeout(jestTimeOut);
 
   afterAll(() => {
+    jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
   });
