@@ -1,6 +1,7 @@
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
@@ -23,16 +24,11 @@ describe('delegation tests:\n', () => {
       {} as DynamicGlobalProperties,
     );
     const result = await broadcastDelegation(requestHandler, data);
-    const { request_id, ...datas } = data;
-    const errorTitle = "Cannot read properties of undefined (reading 'split')";
-    expect(result).toEqual(
-      messages.error.answerError(
-        new TypeError(errorTitle),
-        datas,
-        request_id,
-        chrome.i18n.getMessage('bgd_ops_error') + ' : ' + errorTitle,
-        undefined,
-      ),
+    expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+    expect(result.msg.result).toBeUndefined();
+    expect(result.msg.error).not.toBeNull();
+    expect(result.msg.message).toContain(
+      chrome.i18n.getMessage('bgd_ops_error'),
     );
   });
   it('Must return error if no key on handler', async () => {

@@ -31,9 +31,7 @@ describe('proxy.utils tests:\n', () => {
       } as ExtendedAccount);
       expect(result).toBe(requestedProxyAccountName);
     } catch (error) {
-      expect(error).toEqual(
-        new TypeError("Cannot read properties of undefined (reading 'length')"),
-      );
+      expect((error as TypeError).message).toContain('length');
     }
   });
   test('Passing valid data values, must return the requested proxy account name', async () => {

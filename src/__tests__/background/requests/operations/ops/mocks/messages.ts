@@ -28,7 +28,7 @@ export default {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new TypeError(),
+          error: new TypeError('private key should be a Buffer'),
           result: undefined,
           data: datas,
           message: `${chrome.i18n.getMessage(

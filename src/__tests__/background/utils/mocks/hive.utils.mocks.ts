@@ -71,7 +71,10 @@ const method = {
       mocks();
       const activeAccount = method.reset(usingBalance, param);
       expect(await BgdHiveUtils.claimSavings(activeAccount)).toBe(false);
-      expect(spies.using).toBeCalledWith(...spies.callingParams);
+      const { calls } = spies.using.mock;
+      expect(calls[0][0]).toBe(
+        `Error while claiming savings for @${accounts.active.name}`,
+      );
       spies.using.mockReset();
     }
   },
@@ -94,9 +97,7 @@ const errorClaimSavings = [
       using: spies.logger.error,
       callingParams: [
         `Error while claiming savings for @${accounts.active.name}`,
-        new TypeError(
-          "Cannot read properties of undefined (reading 'broadcast')",
-        ),
+        new TypeError("Cannot read property 'broadcast' of undefined"),
       ],
     },
   },
