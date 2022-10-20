@@ -133,7 +133,7 @@
     "message": "Power down"
   },
   "popup_html_delegate": {
-    "message": "Delegations"
+    "message": "HP Delegations"
   },
   "popup_html_estimation": {
     "message": "Estimated Account Value",
@@ -2506,5 +2506,12 @@
   "popup_html_pending_conversions": {
     "message": "You have $1 pending $2 conversion(s)",
     "description": "Global"
+  },
+  "popup_html_delegate_rc": {
+    "message": "RC Delegations"
+  },
+  "popup_html_rc_delegations_text": {
+    "message": "You may delegate your Resource Credit (RC) to another user. Click on the Outgoing amount to review or make changes.",
+    "description": "Main page > Delegate RC"
   }
 }

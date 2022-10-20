@@ -22,6 +22,8 @@ export enum Icons {
   COPY = 'file_copy',
   CREATE_ACCOUNT = 'group_add',
   DELEGATIONS = 'swap_horiz',
+  DELEGATIONS_RC = 'rc-delegation.svg',
+  DELEGATIONS_HP = 'hp-delegation.svg',
   DELETE = 'delete',
   DONE = 'done',
   EDIT = 'edit',
