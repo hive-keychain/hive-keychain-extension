@@ -2512,7 +2512,7 @@
     "description": "No thanks button on survey popup"
   },
   "popup_html_survey_help_us": {
-    "message": "Help us!",
+    "message": "Let's go!",
     "description": "Help us button on survey popup"
   }
 }

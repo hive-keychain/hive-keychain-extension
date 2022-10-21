@@ -28,13 +28,19 @@
     position: fixed;
     display: flex;
     flex-direction: column;
-
+    .survey-title {
+      font-weight: bold;
+      font-size: 20px;
+      margin-top: 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
     .description {
-      font-size: 16px;
+      font-size: 17px;
       padding: 0px 16px;
       margin-top: 16px;
       flex: 1;
-      text-align: center;
+      text-align: justify;
     }
 
     .image {
@@ -47,13 +53,6 @@
         height: auto;
         width: 240px;
       }
-    }
-
-    .survey-title {
-      margin-top: 24px;
-      font-size: 18px;
-      text-align: center;
-      margin-bottom: 16px;
     }
 
     .button-panel {

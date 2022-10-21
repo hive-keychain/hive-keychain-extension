@@ -26,6 +26,7 @@ const Survey = ({ survey }: Props) => {
 
   const noThanks = () => {
     SurveyUtils.setCurrentAsSeen();
+    setReady(false);
   };
 
   const helpUs = () => {
@@ -48,7 +49,7 @@ const Survey = ({ survey }: Props) => {
           <div className="description">{survey.description}</div>
           <div className="button-panel">
             <ButtonComponent
-              type={ButtonType.STROKED}
+              type={ButtonType.NO_BORDER}
               label="popup_html_survey_no_thanks"
               onClick={() => noThanks()}
             />
