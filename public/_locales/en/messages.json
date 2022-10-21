@@ -2513,5 +2513,13 @@
   "popup_html_rc_delegations_text": {
     "message": "You may delegate your Resource Credit (RC) to another user. Click on the Outgoing amount to review or make changes.",
     "description": "Main page > Delegate RC"
+  },
+  "popup_html_username_missing": {
+    "message": "Username is missing",
+    "description": "In any form, when username is missing"
+  },
+  "html_popup_delegate_rc_operation": {
+    "message": "Delegating RC",
+    "description": "delegate rc operation"
   }
 }

@@ -1,5 +1,9 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { RCDelegationValue } from '@interfaces/rc-delegation.interface';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
@@ -24,6 +28,8 @@ const RCDelegations = ({
   properties,
   setTitleContainerProperties,
   setErrorMessage,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState('');
   const [value, setValue] = useState<RCDelegationValue>({
@@ -92,7 +98,17 @@ const RCDelegations = ({
   };
 
   const handleButtonClick = async () => {
-    console.log('handle click');
+    if (username.trim().length === 0) {
+      setErrorMessage('popup_html_username_missing');
+      return;
+    }
+    addToLoadingList('html_popup_delegate_rc_operation');
+    const res = await RcDelegationsUtils.sendDelegation(
+      RcDelegationsUtils.gigaRcToRc(parseFloat(value.rcValue)),
+      username,
+      activeAccount,
+    );
+    removeFromLoadingList('html_popup_delegate_rc_operation');
   };
 
   const loadAutocompleteTransferUsernames = async () => {
@@ -254,6 +270,8 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
