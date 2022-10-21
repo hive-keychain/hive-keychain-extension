@@ -41,12 +41,37 @@ const RCDelegations = ({
     setTitleContainerProperties({ title: 'popup_html_delegate_rc' });
     initRCDelegations();
     loadAutocompleteTransferUsernames();
+    console.log(activeAccount);
   }, []);
 
   const initRCDelegations = async () => {
-    setTotalIncoming({ hpValue: '100.000', rcValue: '200' });
-    setTotalOutgoing({ hpValue: '100.000', rcValue: '200' });
-    setAvailable({ hpValue: '100.000', rcValue: '200' });
+    setTotalIncoming({
+      hpValue: RcDelegationsUtils.gigaRcToHp(
+        activeAccount.rc.received_delegated_rc.toString(),
+        properties,
+      ),
+      rcValue: RcDelegationsUtils.rcToGigaRc(
+        activeAccount.rc.received_delegated_rc,
+      ),
+    });
+    setTotalOutgoing({
+      hpValue: RcDelegationsUtils.gigaRcToHp(
+        activeAccount.rc.delegated_rc.toString(),
+        properties,
+      ),
+      rcValue: RcDelegationsUtils.rcToGigaRc(activeAccount.rc.delegated_rc),
+    });
+
+    const availableRc =
+      (activeAccount.rc.max_rc * activeAccount.rc.percentage) / 100;
+
+    setAvailable({
+      hpValue: RcDelegationsUtils.gigaRcToHp(
+        availableRc.toString(),
+        properties,
+      ),
+      rcValue: RcDelegationsUtils.rcToGigaRc(availableRc),
+    });
   };
 
   const handleValueChange = (value: string) => {
@@ -109,7 +134,7 @@ const RCDelegations = ({
                   totalIncoming.hpValue.toString(),
                 )} ${currencyLabels.hp}`}>
                 <span className="rc-value">
-                  + {FormatUtils.withCommas(totalIncoming.rcValue.toString())}{' '}
+                  + {FormatUtils.withCommas(totalIncoming.rcValue.toString())} G
                   RC
                 </span>
               </CustomTooltip>
@@ -133,7 +158,7 @@ const RCDelegations = ({
                   totalOutgoing.hpValue.toString(),
                 )} ${currencyLabels.hp}`}>
                 <span className="rc-value">
-                  - {FormatUtils.withCommas(totalOutgoing.rcValue.toString())}{' '}
+                  - {FormatUtils.withCommas(totalOutgoing.rcValue.toString())} G
                   RC
                 </span>
               </CustomTooltip>
@@ -154,7 +179,7 @@ const RCDelegations = ({
                   available.hpValue.toString(),
                 )} ${currencyLabels.hp}`}>
                 <span className="rc-value">
-                  {FormatUtils.withCommas(available?.hpValue.toString())} RC
+                  {FormatUtils.withCommas(available?.rcValue.toString())} G RC
                 </span>
               </CustomTooltip>
             )}

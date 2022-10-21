@@ -29,8 +29,8 @@ const getHivePerVests = (properties: GlobalProperties) => {
 const gigaRcToHp = (value: string, properties: GlobalProperties) => {
   const rc = Number(value);
   return (
-    ((rc * RcDelegationsUtils.getHivePerVests(properties)) / 1000000) *
-    1000000000
+    (rc * RcDelegationsUtils.getHivePerVests(properties)) /
+    1000000
   ).toFixed(3);
 };
 
@@ -42,6 +42,10 @@ const hpToGigaRc = (value: string, properties: GlobalProperties) => {
   ).toFixed(3);
 };
 
+const rcToGigaRc = (rc: number) => {
+  return (rc / 1000000000).toFixed(3);
+};
+
 export const RcDelegationsUtils = {
   getAllIncomingDelegations,
   getAllOutgoingDelegations,
@@ -49,4 +53,5 @@ export const RcDelegationsUtils = {
   getHivePerVests,
   gigaRcToHp,
   hpToGigaRc,
+  rcToGigaRc,
 };
