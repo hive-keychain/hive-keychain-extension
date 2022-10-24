@@ -23,14 +23,6 @@ const getAllOutgoingDelegations = async (
       })
     : [];
 
-  // list = [...list, ...list];
-  // list = [...list, ...list];
-  // list = [...list, ...list];
-  // list = [...list, ...list];
-  // list = [...list, ...list];
-  // list = [...list, ...list];
-  // list = [...list, ...list];
-
   return list;
 };
 
@@ -66,7 +58,6 @@ const sendDelegation = async (
     const result = await HiveUtils.sendOperationWithConfirmation(
       transactionConfirmation,
     );
-    console.log(result);
   } catch (err) {
     return false;
   }
