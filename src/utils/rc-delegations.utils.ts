@@ -55,9 +55,7 @@ const sendDelegation = async (
       },
       PrivateKey.fromString(activeAccount.keys.posting as string),
     );
-    const result = await HiveUtils.sendOperationWithConfirmation(
-      transactionConfirmation,
-    );
+    await HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
   } catch (err) {
     return false;
   }
