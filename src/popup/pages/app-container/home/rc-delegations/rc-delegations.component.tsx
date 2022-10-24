@@ -1,14 +1,26 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { RCDelegationValue } from '@interfaces/rc-delegation.interface';
+import {
+  RcDelegation,
+  RCDelegationValue,
+} from '@interfaces/rc-delegation.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
+import { DelegationType } from '@popup/pages/app-container/home/delegations/delegation-type.enum';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
@@ -19,6 +31,7 @@ import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { RcDelegationsUtils } from 'src/utils/rc-delegations.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 
 import './rc-delegations.component.scss';
 
@@ -26,15 +39,25 @@ const RCDelegations = ({
   activeAccount,
   currencyLabels,
   properties,
+  formParams,
   setTitleContainerProperties,
+  setSuccessMessage,
   setErrorMessage,
   addToLoadingList,
   removeFromLoadingList,
+  navigateToWithParams,
+  navigateTo,
 }: PropsFromRedux) => {
-  const [username, setUsername] = useState('');
+  const [username, setUsername] = useState(
+    formParams ? formParams?.delegatee : '',
+  );
   const [value, setValue] = useState<RCDelegationValue>({
-    hpValue: '0.000',
-    rcValue: '',
+    hpValue: formParams
+      ? RcDelegationsUtils.rcToHp(formParams?.value, properties)
+      : '0.000',
+    rcValue: formParams
+      ? RcDelegationsUtils.rcToGigaRc(Number(formParams?.value))
+      : '',
   });
   const [available, setAvailable] = useState<RCDelegationValue>();
 
@@ -43,16 +66,22 @@ const RCDelegations = ({
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
     useState([]);
 
+  const [outgoingDelegations, setOutgoingDelegations] = useState<
+    RcDelegation[]
+  >([]);
+
   useEffect(() => {
-    setTitleContainerProperties({ title: 'popup_html_delegate_rc' });
+    setTitleContainerProperties({
+      title: 'popup_html_delegate_rc',
+      isBackButtonEnabled: true,
+    });
     initRCDelegations();
     loadAutocompleteTransferUsernames();
-    console.log(activeAccount);
   }, []);
 
   const initRCDelegations = async () => {
     setTotalIncoming({
-      hpValue: RcDelegationsUtils.gigaRcToHp(
+      hpValue: RcDelegationsUtils.rcToHp(
         activeAccount.rc.received_delegated_rc.toString(),
         properties,
       ),
@@ -61,7 +90,7 @@ const RCDelegations = ({
       ),
     });
     setTotalOutgoing({
-      hpValue: RcDelegationsUtils.gigaRcToHp(
+      hpValue: RcDelegationsUtils.rcToHp(
         activeAccount.rc.delegated_rc.toString(),
         properties,
       ),
@@ -72,12 +101,14 @@ const RCDelegations = ({
       (activeAccount.rc.max_rc * activeAccount.rc.percentage) / 100;
 
     setAvailable({
-      hpValue: RcDelegationsUtils.gigaRcToHp(
-        availableRc.toString(),
-        properties,
-      ),
+      hpValue: RcDelegationsUtils.rcToHp(availableRc.toString(), properties),
       rcValue: RcDelegationsUtils.rcToGigaRc(availableRc),
     });
+
+    const outgoingDelegations =
+      await RcDelegationsUtils.getAllOutgoingDelegations(activeAccount.name!);
+
+    setOutgoingDelegations(outgoingDelegations);
   };
 
   const handleValueChange = (value: string) => {
@@ -87,14 +118,19 @@ const RCDelegations = ({
     });
   };
 
-  useEffect(() => console.log(value), [value]);
-
-  const goToIncomings = () => {
-    console.log('goToIncoming');
+  const getFormParams = () => {
+    return {
+      delegator: activeAccount.name!,
+      delegatee: username,
+      value: RcDelegationsUtils.gigaRcToRc(Number(value.rcValue)).toString(),
+    } as RcDelegation;
   };
 
   const goToOutgoings = () => {
-    console.log('goToOutgoings');
+    navigateToWithParams(Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE, {
+      delegationType: DelegationType.OUTGOING,
+      delegations: outgoingDelegations,
+    });
   };
 
   const handleButtonClick = async () => {
@@ -102,13 +138,66 @@ const RCDelegations = ({
       setErrorMessage('popup_html_username_missing');
       return;
     }
-    addToLoadingList('html_popup_delegate_rc_operation');
-    const res = await RcDelegationsUtils.sendDelegation(
-      RcDelegationsUtils.gigaRcToRc(parseFloat(value.rcValue)),
-      username,
-      activeAccount,
-    );
-    removeFromLoadingList('html_popup_delegate_rc_operation');
+
+    const isCancel = Number(value.rcValue) === 0;
+
+    const fields = [
+      { label: 'popup_html_rc_delegation_to', value: `@${username}` },
+      {
+        label: 'popup_html_rc_delegation_value',
+        value: `${value.rcValue} G RC (≈ ${value.hpValue} ${currencyLabels.hp})`,
+      },
+    ];
+
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage(
+        isCancel
+          ? 'popup_html_cancel_rc_delegation_confirm_text'
+          : 'popup_html_rc_delegation_confirm_text',
+      ),
+      fields: fields,
+      title: isCancel
+        ? 'popup_html_cancel_rc_delegation_title'
+        : 'popup_html_rc_delegation_title',
+      formParams: getFormParams(),
+      afterConfirmAction: async () => {
+        addToLoadingList(
+          isCancel
+            ? 'html_popup_cancel_delegate_rc_operation'
+            : 'html_popup_delegate_rc_operation',
+        );
+        let success = false;
+
+        success = await RcDelegationsUtils.sendDelegation(
+          RcDelegationsUtils.gigaRcToRc(parseFloat(value.rcValue)),
+          username,
+          activeAccount,
+        );
+
+        removeFromLoadingList(
+          isCancel
+            ? 'html_popup_cancel_delegate_rc_operation'
+            : 'html_popup_delegate_rc_operation',
+        );
+
+        if (success) {
+          navigateTo(Screen.HOME_PAGE, true);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
+
+          if (!isCancel) {
+            setSuccessMessage('popup_html_rc_delegation_successful', [
+              `@${username}`,
+            ]);
+          } else {
+            setSuccessMessage('popup_html_cancel_rc_delegation_successful', [
+              `@${username}`,
+            ]);
+          }
+        } else {
+          setErrorMessage('popup_html_rc_delegation_failed');
+        }
+      },
+    });
   };
 
   const loadAutocompleteTransferUsernames = async () => {
@@ -134,10 +223,7 @@ const RCDelegations = ({
       </div>
 
       <div className="rc-delegations-summary" aria-label="delegations-summary">
-        <div
-          className="total-incoming"
-          onClick={goToIncomings}
-          aria-label="total-incoming">
+        <div className="total-incoming" aria-label="total-incoming">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
@@ -234,16 +320,16 @@ const RCDelegations = ({
 
         <div className="preset-button-panels">
           <div className="preset-button" onClick={() => setToPresetValue(5)}>
-            5 HP
+            5 {currencyLabels.hp}
           </div>
           <div className="preset-button" onClick={() => setToPresetValue(10)}>
-            10 HP
+            10 {currencyLabels.hp}
           </div>
           <div className="preset-button" onClick={() => setToPresetValue(50)}>
-            50 HP
+            50 {currencyLabels.hp}
           </div>
           <div className="preset-button" onClick={() => setToPresetValue(100)}>
-            100 HP
+            100 {currencyLabels.hp}
           </div>
         </div>
       </div>
@@ -264,14 +350,20 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     properties: state.globalProperties,
+    formParams:
+      state.navigation.stack[0].params?.formParams ||
+      (state.navigation.stack[0].previousParams?.formParams as RcDelegation),
   };
 };
 
 const connector = connect(mapStateToProps, {
   setTitleContainerProperties,
   setErrorMessage,
+  setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  navigateToWithParams,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

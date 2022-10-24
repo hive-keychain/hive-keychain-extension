@@ -656,7 +656,11 @@ const sendOperationWithConfirmation = async (
     );
     await sleep(500);
   } while (['within_mempool', 'unknown'].includes(transaction.status));
-  if (transaction.status === 'within_reversible_block') {
+  if (
+    ['within_reversible_block', 'within_irreversible_block'].includes(
+      transaction.status,
+    )
+  ) {
     Logger.info('Transaction confirmed');
     return transactionConfirmation.id || true;
   } else {

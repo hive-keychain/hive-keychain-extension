@@ -11,6 +11,7 @@ import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/d
 import { GovernanceComponent } from '@popup/pages/app-container/home/governance/governance.component';
 import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
+import { IncomingOutgoingRcPageComponent } from '@popup/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-page.component';
 import { RcDelegationsComponent } from '@popup/pages/app-container/home/rc-delegations/rc-delegations.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
@@ -82,6 +83,8 @@ const AppRouter = ({
         return <IncomingOutgoingPageComponent />;
       case Screen.RC_DELEGATIONS_PAGE:
         return <RcDelegationsComponent />;
+      case Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE:
+        return <IncomingOutgoingRcPageComponent />;
       //Tokens
       case Screen.TOKENS_PAGE:
         return <TokensComponent />;
