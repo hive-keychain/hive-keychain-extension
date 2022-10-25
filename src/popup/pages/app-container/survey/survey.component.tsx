@@ -46,7 +46,11 @@ const Survey = ({ survey }: Props) => {
               <img src={image.src} />
             </div>
           )}
-          <div className="description">{survey.description}</div>
+          <div className="description">
+            {survey.description.map((desc) => (
+              <p>{desc}</p>
+            ))}
+          </div>
           <div className="button-panel">
             <ButtonComponent
               type={ButtonType.NO_BORDER}

@@ -2,7 +2,7 @@ export interface Survey {
   id: number;
   title: string;
   image: string;
-  description: string;
+  description: string[];
   link: string;
   expirationDate: Date;
 }
