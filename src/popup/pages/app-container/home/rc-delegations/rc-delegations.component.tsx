@@ -55,7 +55,7 @@ const RCDelegations = ({
     hpValue: formParams
       ? RcDelegationsUtils.rcToHp(formParams?.value, properties)
       : '0.000',
-    rcValue: formParams
+    gigaRcValue: formParams
       ? RcDelegationsUtils.rcToGigaRc(Number(formParams?.value))
       : '',
   });
@@ -85,7 +85,7 @@ const RCDelegations = ({
         activeAccount.rc.received_delegated_rc.toString(),
         properties,
       ),
-      rcValue: RcDelegationsUtils.rcToGigaRc(
+      gigaRcValue: RcDelegationsUtils.rcToGigaRc(
         activeAccount.rc.received_delegated_rc,
       ),
     });
@@ -94,7 +94,7 @@ const RCDelegations = ({
         activeAccount.rc.delegated_rc.toString(),
         properties,
       ),
-      rcValue: RcDelegationsUtils.rcToGigaRc(activeAccount.rc.delegated_rc),
+      gigaRcValue: RcDelegationsUtils.rcToGigaRc(activeAccount.rc.delegated_rc),
     });
 
     const availableRc =
@@ -102,7 +102,7 @@ const RCDelegations = ({
 
     setAvailable({
       hpValue: RcDelegationsUtils.rcToHp(availableRc.toString(), properties),
-      rcValue: RcDelegationsUtils.rcToGigaRc(availableRc),
+      gigaRcValue: RcDelegationsUtils.rcToGigaRc(availableRc),
     });
 
     const outgoingDelegations =
@@ -114,7 +114,7 @@ const RCDelegations = ({
   const handleValueChange = (value: string) => {
     setValue({
       hpValue: RcDelegationsUtils.gigaRcToHp(value, properties),
-      rcValue: value,
+      gigaRcValue: value,
     });
   };
 
@@ -122,7 +122,9 @@ const RCDelegations = ({
     return {
       delegator: activeAccount.name!,
       delegatee: username,
-      value: RcDelegationsUtils.gigaRcToRc(Number(value.rcValue)).toString(),
+      value: RcDelegationsUtils.gigaRcToRc(
+        Number(value.gigaRcValue),
+      ).toString(),
     } as RcDelegation;
   };
 
@@ -139,13 +141,16 @@ const RCDelegations = ({
       return;
     }
 
-    const isCancel = Number(value.rcValue) === 0;
+    const isCancel = Number(value.gigaRcValue) === 0;
 
     const fields = [
       { label: 'popup_html_rc_delegation_to', value: `@${username}` },
       {
         label: 'popup_html_rc_delegation_value',
-        value: `${value.rcValue} G RC (≈ ${value.hpValue} ${currencyLabels.hp})`,
+        value: `${RcDelegationsUtils.formatRcWithUnit(
+          value.gigaRcValue,
+          true,
+        )} (≈ ${value.hpValue} ${currencyLabels.hp})`,
       },
     ];
 
@@ -169,7 +174,7 @@ const RCDelegations = ({
         let success = false;
 
         success = await RcDelegationsUtils.sendDelegation(
-          RcDelegationsUtils.gigaRcToRc(parseFloat(value.rcValue)),
+          RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),
           username,
           activeAccount,
         );
@@ -212,7 +217,7 @@ const RCDelegations = ({
   const setToPresetValue = (value: number) => {
     setValue({
       hpValue: value.toFixed(3),
-      rcValue: RcDelegationsUtils.hpToGigaRc(value.toString(), properties),
+      gigaRcValue: RcDelegationsUtils.hpToGigaRc(value.toString(), properties),
     });
   };
 
@@ -236,8 +241,9 @@ const RCDelegations = ({
                   totalIncoming.hpValue.toString(),
                 )} ${currencyLabels.hp}`}>
                 <span className="rc-value">
-                  + {FormatUtils.withCommas(totalIncoming.rcValue.toString())} G
-                  RC
+                  +{' '}
+                  {FormatUtils.withCommas(totalIncoming.gigaRcValue.toString())}{' '}
+                  G RC
                 </span>
               </CustomTooltip>
             )}
@@ -260,8 +266,9 @@ const RCDelegations = ({
                   totalOutgoing.hpValue.toString(),
                 )} ${currencyLabels.hp}`}>
                 <span className="rc-value">
-                  - {FormatUtils.withCommas(totalOutgoing.rcValue.toString())} G
-                  RC
+                  -{' '}
+                  {FormatUtils.withCommas(totalOutgoing.gigaRcValue.toString())}{' '}
+                  G RC
                 </span>
               </CustomTooltip>
             )}
@@ -281,7 +288,8 @@ const RCDelegations = ({
                   available.hpValue.toString(),
                 )} ${currencyLabels.hp}`}>
                 <span className="rc-value">
-                  {FormatUtils.withCommas(available?.rcValue.toString())} G RC
+                  {FormatUtils.withCommas(available?.gigaRcValue.toString())} G
+                  RC
                 </span>
               </CustomTooltip>
             )}
@@ -310,7 +318,7 @@ const RCDelegations = ({
               skipPlaceholderTranslation={true}
               hint={`≈ ${value?.hpValue} ${currencyLabels.hp}`}
               skipHintTranslation
-              value={value?.rcValue}
+              value={value?.gigaRcValue}
               step={Number(RcDelegationsUtils.hpToGigaRc('5', properties))}
               onChange={handleValueChange}
             />

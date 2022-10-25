@@ -70,11 +70,16 @@
           }
 
           .actions {
-            display: flex;
+            display: none;
             column-gap: 12px;
             .icon {
               height: 20px;
               cursor: pointer;
+            }
+          }
+          &:hover {
+            .actions {
+              display: flex;
             }
           }
         }

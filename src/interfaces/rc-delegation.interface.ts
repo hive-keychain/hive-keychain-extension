@@ -6,7 +6,7 @@ export interface RcDelegation {
 
 export interface RCDelegationValue {
   hpValue: string;
-  rcValue: string;
+  gigaRcValue: string;
 }
 
 export interface RcDelegationsInfo {

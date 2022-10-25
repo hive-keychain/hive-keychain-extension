@@ -34,6 +34,9 @@ const IncomingOutgoingRcPage = ({
   navigateToWithParams,
   removeFromLoadingList,
   addToLoadingList,
+  navigateTo,
+  setSuccessMessage,
+  setErrorMessage,
 }: PropsFromRedux) => {
   let header = '';
   switch (delegationType) {
@@ -47,7 +50,6 @@ const IncomingOutgoingRcPage = ({
 
   const [totalRC, setTotalRC] = useState<RCDelegationValue>();
   const [delegationList, setDelegationList] = useState<RcDelegation[]>([]);
-  const [opened, setOpened] = useState<number | undefined>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -73,7 +75,7 @@ const IncomingOutgoingRcPage = ({
     totalRC = RcDelegationsUtils.rcToGigaRc(totalRC);
 
     setTotalRC({
-      rcValue: totalRC.toString(),
+      gigaRcValue: totalRC.toString(),
       hpValue: RcDelegationsUtils.gigaRcToHp(totalRC, globalProperties!),
     } as RCDelegationValue);
   }, []);
@@ -140,7 +142,12 @@ const IncomingOutgoingRcPage = ({
             <div className="label">{chrome.i18n.getMessage(header)}</div>
             {totalRC && (
               <div className="value">
-                <span className="rc-value">{totalRC.rcValue} G RC</span>
+                <span className="rc-value">
+                  {RcDelegationsUtils.formatRcWithUnit(
+                    totalRC.gigaRcValue,
+                    true,
+                  )}
+                </span>
                 <span className="hp-value">
                   ≈ {totalRC.hpValue} {currencyLabels.hp}
                 </span>
@@ -155,17 +162,14 @@ const IncomingOutgoingRcPage = ({
 
           <div className="list">
             {delegationList.map((delegation, index) => (
-              <div
-                className="item"
-                key={`rcdelegation-${index}`}
-                onClick={() => setOpened(index)}>
+              <div className="item" key={`rcdelegation-${index}`}>
                 <div className="username">@{delegation.delegatee}</div>
                 <div className="value">
                   <span className="rc-value">
-                    {RcDelegationsUtils.rcToGigaRc(
-                      parseFloat(delegation.value),
-                    )}{' '}
-                    G RC
+                    {RcDelegationsUtils.formatRcWithUnit(
+                      delegation.value,
+                      false,
+                    )}
                   </span>
                   <span className="hp-value">
                     ≈{' '}
@@ -176,24 +180,22 @@ const IncomingOutgoingRcPage = ({
                     {currencyLabels.hp}
                   </span>
                 </div>
-                {opened === index && (
-                  <div className="actions">
-                    {delegationType === DelegationType.OUTGOING && (
-                      <img
-                        className="icon edit-delegation"
-                        src="/assets/images/edit.png"
-                        onClick={() => goToEdit(delegation)}
-                      />
-                    )}
-                    {delegationType === DelegationType.OUTGOING && (
-                      <img
-                        className="icon erase-delegation"
-                        src="/assets/images/clear.png"
-                        onClick={() => cancelDelegation(delegation)}
-                      />
-                    )}
-                  </div>
-                )}
+                <div className="actions">
+                  {delegationType === DelegationType.OUTGOING && (
+                    <img
+                      className="icon edit-delegation"
+                      src="/assets/images/edit.png"
+                      onClick={() => goToEdit(delegation)}
+                    />
+                  )}
+                  {delegationType === DelegationType.OUTGOING && (
+                    <img
+                      className="icon erase-delegation"
+                      src="/assets/images/clear.png"
+                      onClick={() => cancelDelegation(delegation)}
+                    />
+                  )}
+                </div>
               </div>
             ))}
           </div>

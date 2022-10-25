@@ -22,7 +22,6 @@ const getAllOutgoingDelegations = async (
         };
       })
     : [];
-
   return list;
 };
 
@@ -93,6 +92,22 @@ const rcToGigaRc = (rc: number) => {
   return (rc / GIGA).toFixed(3);
 };
 
+const formatRcWithUnit = (value: string, fromGiga?: boolean) => {
+  let valueNumber = Number(value);
+  if (fromGiga) {
+    valueNumber = gigaRcToRc(valueNumber);
+  }
+  if (valueNumber / GIGA < 1000) {
+    return `${(valueNumber / GIGA).toFixed(3)} G RC`;
+  }
+  valueNumber = valueNumber / 1000;
+  if (valueNumber / GIGA < 1000) {
+    return `${(valueNumber / GIGA).toFixed(3)} T RC`;
+  }
+  valueNumber = valueNumber / 1000;
+  return `${(valueNumber / GIGA).toFixed(3)} P RC`;
+};
+
 const gigaRcToRc = (gigaRc: number) => {
   return gigaRc * GIGA;
 };
@@ -111,4 +126,5 @@ export const RcDelegationsUtils = {
   gigaRcToRc,
   rcToHp,
   cancelDelegation,
+  formatRcWithUnit,
 };
