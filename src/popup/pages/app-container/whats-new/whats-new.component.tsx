@@ -1,12 +1,11 @@
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { WhatsNewUtils } from 'src/utils/whats-new.utils';
 import './whats-new.component.scss';
 
 interface Props {
@@ -45,10 +44,7 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
   };
 
   const finish = () => {
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.LAST_VERSION_UPDATE,
-      content.version,
-    );
+    WhatsNewUtils.saveLastSeen();
     onOverlayClick();
   };
 
