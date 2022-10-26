@@ -2506,5 +2506,13 @@
   "popup_html_pending_conversions": {
     "message": "You have $1 pending $2 conversion(s)",
     "description": "Global"
+  },
+  "popup_html_survey_no_thanks": {
+    "message": "No thanks",
+    "description": "No thanks button on survey popup"
+  },
+  "popup_html_survey_help_us": {
+    "message": "Let's go!",
+    "description": "Help us button on survey popup"
   }
 }
