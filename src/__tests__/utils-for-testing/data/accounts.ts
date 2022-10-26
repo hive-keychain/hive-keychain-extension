@@ -1,5 +1,8 @@
 import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
+import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Keys, LocalAccount } from '@interfaces/local-account.interface';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
 const extended = {
@@ -63,8 +66,41 @@ const local = {
       memoPubkey: userData.one.encryptKeys.memo,
     } as Keys,
   },
+  justTwoKeys: {
+    name: mk.user.one,
+    keys: {
+      active: userData.one.nonEncryptKeys.active,
+      posting: userData.one.nonEncryptKeys.posting,
+      activePubkey: userData.one.encryptKeys.active,
+      postingPubkey: userData.one.encryptKeys.posting,
+    },
+  },
 };
+
+const active = {
+  account: extended,
+  keys: {
+    active: userData.one.nonEncryptKeys.active,
+    posting: userData.one.nonEncryptKeys.posting,
+    activePubkey: userData.one.encryptKeys.active,
+    postingPubkey: userData.one.encryptKeys.posting,
+  },
+  rc: { current_mana: 10000000, max_mana: 100, percentage: 100 } as Manabar,
+  name: extended.name,
+} as ActiveAccount;
 
 const twoAccounts = [local.one, local.two];
 
-export default { extended, local, twoAccounts, asArray };
+const encrypted = {
+  noHash: {
+    oneAccount: {
+      msg: process.env._TEST_USER_ENCRYPTED_ACCOUNTS || 'error',
+      mkUsed: process.env._TEST_USER_PWD || 'error',
+      original: {
+        list: [local.justTwoKeys],
+      },
+    },
+  },
+};
+
+export default { extended, local, twoAccounts, asArray, active, encrypted };

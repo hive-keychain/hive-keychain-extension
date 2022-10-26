@@ -45,7 +45,12 @@
       color: white;
     }
   }
-
+  &.no-border {
+    background: none;
+    border: none;
+    color: white;
+    text-decoration: underline;
+  }
   &.raised {
     background: white;
     border: none;
@@ -72,5 +77,11 @@
     bottom: 32px;
     left: 24px;
     width: calc(100% - 48px);
+  }
+
+  &.no-border {
+    background: none;
+    border: none;
+    color: white;
   }
 }

@@ -38,6 +38,7 @@ import {
 } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -614,38 +615,14 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
     ),
   );
 };
-/* istanbul ignore next */
-const voteForProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, true);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
-/* istanbul ignore next */
-const unvoteProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, false);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
+
 /* istanbul ignore next */
 const updateProposalVote = async (
   activeAccount: ActiveAccount,
   proposalId: number,
   vote: boolean,
 ) => {
+  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
   return await sendOperationWithConfirmation(
     getClient().broadcast.sendOperations(
       [
@@ -659,9 +636,7 @@ const updateProposalVote = async (
           },
         ] as UpdateProposalVotesOperation,
       ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
-      ),
+      PrivateKey.fromString(activeAccount.keys.active as string),
     ),
   );
 };
@@ -677,7 +652,11 @@ const sendOperationWithConfirmation = async (
     );
     await sleep(500);
   } while (['within_mempool', 'unknown'].includes(transaction.status));
-  if (transaction.status === 'within_reversible_block') {
+  if (
+    ['within_reversible_block', 'within_irreversible_block'].includes(
+      transaction.status,
+    )
+  ) {
     Logger.info('Transaction confirmed');
     return transactionConfirmation.id || true;
   } else {
@@ -745,11 +724,10 @@ const HiveUtils = {
   delegateVestingShares,
   sendCustomJson,
   signMessage,
-  voteForProposal,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
-  unvoteProposal,
   getProposalDailyBudget,
+  updateProposalVote,
   getRewardBalance,
   getRecentClaims,
   getHivePrice,

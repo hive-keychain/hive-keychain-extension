@@ -56,9 +56,6 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockRestore();
     });
     test('if an error occurs(wrong transfers data received, missing proper format in .op), must call Logger', async () => {
-      let errorCatched = new TypeError(
-        "Cannot read properties of undefined (reading 'stack')",
-      );
       const spyLoggerError = jest.spyOn(Logger, 'error');
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       const mockGetAccountHistory =
@@ -76,11 +73,8 @@ describe('transaction.utils tests:\n', () => {
           ),
         ).toBe(1);
       } catch (error) {
-        expect(error).toEqual(errorCatched);
+        expect((error as Error).message).toContain('stack');
         expect(spyLoggerError).toBeCalledTimes(1);
-        errorCatched.message =
-          "Cannot read properties of undefined (reading '0')";
-        expect(spyLoggerError).toBeCalledWith(errorCatched, errorCatched);
       }
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();

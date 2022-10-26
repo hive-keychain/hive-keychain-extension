@@ -29,5 +29,9 @@ module.exports = {
     'othercases',
   ],
   //until here
-  //working configuration until here
+  //working configuration until here E2E/utils/actions tests.
+
+  //added new config for background section
+  setupFilesAfterEnv: ['./jest.setup.js'], //only for jest-chrome
+  //end added
 };

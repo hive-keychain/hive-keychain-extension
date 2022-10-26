@@ -68,13 +68,17 @@ const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
   }
 };
 
+/* istanbul ignore next */
+const hasBalance = (balance: string | Asset, greaterOrEqualTo: number) => {
+  return typeof balance === 'string'
+    ? Asset.fromString(balance as string).amount >= greaterOrEqualTo
+    : balance.amount >= greaterOrEqualTo;
+};
+
 const claimSavings = async (activeAccount: ActiveAccount) => {
-  const hasHbd =
-    Asset.fromString(activeAccount.account.hbd_balance as string).amount >=
-    0.001;
-  const hasSavings =
-    Asset.fromString(activeAccount?.account.savings_hbd_balance as string)
-      .amount > 0.001;
+  const { hbd_balance, savings_hbd_balance } = activeAccount.account;
+  const hasHbd = hasBalance(hbd_balance, 0.001);
+  const hasSavings = hasBalance(savings_hbd_balance, 0.001);
   if (hasHbd) {
     try {
       const client = await RPCModule.getClient();

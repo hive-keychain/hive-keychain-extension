@@ -20,7 +20,6 @@ export const broadcastAddAccountAuthority = async (
   let err, result;
   const { username, authorizedUsername } = data;
   let role = data.role.toLowerCase();
-
   let { weight } = data;
   try {
     const client = requestHandler.getHiveClient();
@@ -33,6 +32,7 @@ export const broadcastAddAccountAuthority = async (
     const authorizedAccounts = updatedAuthority.account_auths.map(
       (auth) => auth[0],
     );
+
     const hasAuthority = authorizedAccounts.indexOf(authorizedUsername) !== -1;
     if (hasAuthority) {
       throw new Error('Already has authority');
@@ -164,7 +164,7 @@ export const broadcastAddKeyAuthority = async (
     const authorizedKeys = updatedAuthority.key_auths.map((auth) => auth[0]);
     const hasAuthority = authorizedKeys.indexOf(authorizedKey) !== -1;
     if (hasAuthority) {
-      throw new Error('already has authority');
+      throw new Error('Already has authority');
     }
 
     /** Use weight_thresold as default weight */

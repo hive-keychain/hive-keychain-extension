@@ -98,7 +98,6 @@ const getNextRequestID = async (username: string, client: Client) => {
     'get_collateralized_conversion_requests',
     [username],
   );
-
   if (!collateralized_conversions) collateralized_conversions = [];
   const conv = [...conversions, ...collateralized_conversions];
 
