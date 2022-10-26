@@ -16,9 +16,9 @@
     flex-direction: column;
     row-gap: 32px;
     height: 100%;
+    overflow-y: scroll;
     .panel {
       flex: 1;
-      overflow: hidden;
       padding: 0 24px;
       height: 100%;
       .tooltip-container {
@@ -43,7 +43,6 @@
         margin: 0px -24px;
         margin: 0px -24px;
         max-height: calc(100% - 24px);
-        overflow: auto;
       }
     }
   }
