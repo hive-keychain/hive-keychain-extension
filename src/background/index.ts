@@ -1,4 +1,5 @@
 import AccountModule from '@background/account';
+import { AnalyticsModule } from '@background/analytics.module';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
@@ -34,6 +35,7 @@ chrome.runtime.onStartup.addListener(() => {
       LocalStorageKeyEnum.AUTOLOCK,
     ),
   );
+  AnalyticsModule.start();
 })();
 /* istanbul ignore next */
 //@ts-ignore

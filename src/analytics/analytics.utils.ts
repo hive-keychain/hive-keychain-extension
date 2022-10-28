@@ -21,13 +21,29 @@ const initializeGoogleAnalytics = () => {
     send_page_view: false,
   });
   window.gtag('send', 'pageview', '/popup'); // Set page, avoiding rejection due
+  console.log(document.cookie);
+  const gaId = document.cookie
+    .split('; ')
+    .find((cookie: string) => cookie.startsWith('_ga'))
+    ?.split('=')[1];
+  console.log(gaId);
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.GA_CLIENT_ID,
+    gaId,
+  );
 };
 
 const sendNavigationEvent = async (page: Screen) => {
   if (!analyticsSettings || !analyticsSettings?.allowGoogleAnalytics) return;
-  console.log(`Sending navigation event for ${page}`);
   window.gtag('event', 'navigation', {
     page: page,
+  });
+};
+
+const sendRequestEvent = async (request: string) => {
+  if (!analyticsSettings || !analyticsSettings?.allowGoogleAnalytics) return;
+  window.gtag('event', 'request', {
+    request: request,
   });
 };
 
@@ -56,7 +72,6 @@ const saveSettings = (settings: AnalyticsSettings) => {
     settings,
   );
   analyticsSettings = settings;
-  console.log(settings);
 };
 
 const initializeSettings = async () => {
@@ -68,7 +83,6 @@ const initializeSettings = async () => {
     : ({
         allowGoogleAnalytics: false,
       } as AnalyticsSettings);
-  if (!settings) saveSettings(analyticsSettings);
 
   if (analyticsSettings.allowGoogleAnalytics) initializeGoogleAnalytics();
   return !!settings ? false : true;
@@ -77,6 +91,7 @@ const initializeSettings = async () => {
 export const AnalyticsUtils = {
   initializeGoogleAnalytics,
   sendNavigationEvent,
+  sendRequestEvent,
   acceptAll,
   rejectAll,
   saveSettings,

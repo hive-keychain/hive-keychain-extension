@@ -2506,5 +2506,13 @@
   "popup_html_analytics_thank_you": {
     "message": "Thank you for your help",
     "description": "Thank you for your help"
+  },
+  "popup_html_analytics_title": {
+    "message": "Help us make Keychain better",
+    "description": "Analytics popup title"
+  },
+  "popup_html_analytics_message": {
+    "message": "Enable Keychain to gather anonymous non-sensitive data on the extension usage. This data will be used to enhance your user experience. You can opt out at any time from the 'Advanced Settings' section.",
+    "description": "Analytics popup message"
   }
 }

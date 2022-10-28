@@ -35,10 +35,10 @@ const AnalyticsPopup = ({
       <div className="overlay"></div>
       <div className="popup-container">
         <div className="why-analytics">
-          short explanation of why we need analytics
+          {chrome.i18n.getMessage('popup_html_analytics_title')}
         </div>
         <div className="text">
-          You can always change those settings going to Settings then Analytics
+          {chrome.i18n.getMessage('popup_html_analytics_message')}
         </div>
         <div className="buttons-panel">
           <ButtonComponent
