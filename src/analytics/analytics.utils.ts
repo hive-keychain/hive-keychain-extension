@@ -2,6 +2,7 @@ import { AnalyticsSettings } from '@interfaces/analytics.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import './analytics/gtag.js';
 window.dataLayer = window.dataLayer || [];
 
@@ -13,7 +14,7 @@ function gtag() {
 
 const initializeGoogleAnalytics = () => {
   const debug_mode = process.env.GOOGLE_ANALYTICS_DEV_MODE ? true : false;
-  console.log('---- Initialize Analytics -----------');
+  Logger.info('---- Initialize Analytics -----------');
   window.gtag = window.gtag || gtag;
   window.gtag('js', new Date());
   window.gtag('config', process.env.GOOGLE_ANALYTICS_TAG_ID as string, {
@@ -21,12 +22,10 @@ const initializeGoogleAnalytics = () => {
     send_page_view: false,
   });
   window.gtag('send', 'pageview', '/popup'); // Set page, avoiding rejection due
-  console.log(document.cookie);
   const gaId = document.cookie
     .split('; ')
     .find((cookie: string) => cookie.startsWith('_ga'))
     ?.split('=')[1];
-  console.log(gaId);
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.GA_CLIENT_ID,
     gaId,

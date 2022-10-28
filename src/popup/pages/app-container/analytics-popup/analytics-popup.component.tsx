@@ -3,10 +3,11 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
-import React from 'react';
+import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import './analytics-popup.component.scss';
 
 interface Props {
@@ -17,6 +18,17 @@ const AnalyticsPopup = ({
   onAnswered,
   setSuccessMessage,
 }: PropsFromRedux & Props) => {
+  const [accepted, setAccepted] = useState(true);
+
+  const save = () => {
+    console.log(accepted);
+    if (accepted) {
+      accept();
+    } else {
+      reject();
+    }
+  };
+
   const accept = () => {
     AnalyticsUtils.acceptAll();
     setSuccessMessage('popup_html_analytics_thank_you');
@@ -40,15 +52,13 @@ const AnalyticsPopup = ({
         <div className="text">
           {chrome.i18n.getMessage('popup_html_analytics_message')}
         </div>
+        <CheckboxComponent
+          onChange={() => setAccepted(!accepted)}
+          checked={accepted}
+          title="popup_html_analytics_accept_to_share"
+        />
         <div className="buttons-panel">
-          <ButtonComponent
-            onClick={accept}
-            label={'popup_html_analytics_accept'}
-          />
-          <ButtonComponent
-            onClick={reject}
-            label={'popup_html_analytics_reject'}
-          />
+          <ButtonComponent onClick={save} label={'popup_html_analytics_save'} />
         </div>
       </div>
     </div>

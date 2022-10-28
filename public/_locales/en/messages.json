@@ -2495,13 +2495,13 @@
     "message": "Allow us to record your activity on Google Analytics to help us improve the user experience on Hive Keychain",
     "description": "Allow google analytics hint"
   },
-  "popup_html_analytics_accept": {
-    "message": "Accept",
+  "popup_html_analytics_save": {
+    "message": "Save",
     "description": "accept button on analytics popup"
   },
-  "popup_html_analytics_reject": {
-    "message": "Reject",
-    "description": "Reject button on analytics popup"
+  "popup_html_analytics_accept_to_share": {
+    "message": "I agree to share some analytics with Keychain",
+    "description": "accept on analytics popup"
   },
   "popup_html_analytics_thank_you": {
     "message": "Thank you for your help",
