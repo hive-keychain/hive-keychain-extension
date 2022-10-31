@@ -9,6 +9,7 @@ import messages from 'src/__tests__/background/requests/operations/ops/mocks/mes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('authority tests:\n', () => {
   const { methods, constants, mocks } = authority;
   const { requestHandler, confirmed } = constants;
@@ -24,20 +25,27 @@ describe('authority tests:\n', () => {
       mocks.client.broadcast.updateAccount(confirmed);
     });
     it('Must throw error if account exists in auths', async () => {
-      const result = await broadcastAddAccountAuthority(requestHandler, data);
-      const { request_id, ...datas } = data;
-      expect(result).toEqual(messages.error.hasAuthority(datas, request_id));
+      const resultOperation = (await broadcastAddAccountAuthority(
+        requestHandler,
+        data,
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toBe('Already has authority');
     });
     it('Must return error if no key on handler', async () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
-      const result = await broadcastAddAccountAuthority(
+      const resultOperation = (await broadcastAddAccountAuthority(
         requestHandler,
         cloneData,
-      );
-      const { request_id, ...datas } = cloneData;
-      expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toContain('private key');
     });
     it('Must broadcast update account using active key', async () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
