@@ -9,6 +9,10 @@ import {
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { store } from '@popup/store';
 import { AssertionError } from 'assert';
 import {
@@ -443,6 +447,9 @@ describe('hive.utils tests:\n', () => {
         '1.000 HIVE',
         '1.000 HBD',
         '1.000 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(false);
       expect(spyLogger).toBeCalledTimes(1);
@@ -474,6 +481,9 @@ describe('hive.utils tests:\n', () => {
         '1.000 HIVE',
         '1.000 HBD',
         '1.000 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(false);
       expect(spyLogger).toBeCalledTimes(1);
@@ -544,6 +554,9 @@ describe('hive.utils tests:\n', () => {
         '1.00 HIVE',
         '0.00 HBD',
         '0.00 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(true);
       expect(mockedGetClientSendOperations).toBeCalledTimes(1);
@@ -627,6 +640,9 @@ describe('hive.utils tests:\n', () => {
         '10.00 HIVE',
         '11.00 HBD',
         '12.00 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(true);
       expect(mockedGetClientSendOperations).toBeCalledTimes(1);
@@ -699,6 +715,9 @@ describe('hive.utils tests:\n', () => {
         '10.00 HIVE',
         '11.00 HBD',
         '12.00 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(false);
       expect(mockedGetClientSendOperations).toBeCalledTimes(1);
@@ -745,6 +764,11 @@ describe('hive.utils tests:\n', () => {
         utilsT.userData.username,
         utilsT.userData.username,
         '0.001 HIVE',
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
@@ -781,6 +805,11 @@ describe('hive.utils tests:\n', () => {
       const result = await HiveUtils.powerDown(
         utilsT.userData.username,
         '0.1 HIVE',
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
@@ -818,6 +847,11 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       expect(result).toBe(true);
       expect(spyLoggerInfo).toBeCalledTimes(1);
@@ -849,6 +883,11 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       //expect(result).toBe(false);
       console.log(result);

@@ -174,6 +174,7 @@ const PowerUpDown = ({
               activeAccount.name!,
               receiver,
               valueS,
+              activeAccount,
             );
             removeFromLoadingList('html_popup_power_up_operation');
             break;
@@ -185,6 +186,7 @@ const PowerUpDown = ({
                 Number(value).toFixed(3),
                 globalProperties.globals!,
               ).toFixed(6)} VESTS`,
+              activeAccount,
             );
             removeFromLoadingList('html_popup_power_down_operation');
         }
@@ -227,6 +229,7 @@ const PowerUpDown = ({
           `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
             6,
           )} VESTS`,
+          activeAccount,
         );
 
         removeFromLoadingList('html_popup_cancel_power_down_operation');

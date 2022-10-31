@@ -40,7 +40,10 @@ describe('proposal.utils tests:\n', () => {
         .fn()
         .mockResolvedValueOnce(utilsT.fakeDailyBudgetResponse));
 
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        utilsT.dynamicPropertiesObj,
+      );
       if (showResult) {
         console.log(result);
       }
@@ -82,7 +85,10 @@ describe('proposal.utils tests:\n', () => {
         .fn()
         .mockResolvedValueOnce(utilsT.fakeDailyBudgetResponse));
 
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        utilsT.dynamicPropertiesObj,
+      );
       if (showResult) {
         console.log(result);
       }

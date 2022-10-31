@@ -1,5 +1,4 @@
 import { Transfer } from '@interfaces/transaction.interface';
-import { store } from '@popup/store';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
@@ -21,7 +20,6 @@ describe('transaction.utils tests:\n', () => {
     });
     test('Getting data from an account that has transfers, must return a new sorted array with added fields', async () => {
       const showOutPutData = false;
-      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       const mockGetAccountHistory =
         (HiveUtils.getClient().database.getAccountHistory = jest
           .fn()
@@ -29,6 +27,7 @@ describe('transaction.utils tests:\n', () => {
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
+        utilsT.dynamicPropertiesObj,
         callingData.memoKey,
       );
       if (showOutPutData) {
@@ -40,7 +39,6 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockRestore();
     });
     test('Getting data from an account that has no transfers, must return [[], start]', async () => {
-      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       const mockGetAccountHistory =
         (HiveUtils.getClient().database.getAccountHistory = jest
           .fn()
@@ -49,6 +47,7 @@ describe('transaction.utils tests:\n', () => {
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
           callingData.start,
+          utilsT.dynamicPropertiesObj,
           callingData.memoKey,
         ),
       ).toEqual([[], callingData.start]);
@@ -60,7 +59,6 @@ describe('transaction.utils tests:\n', () => {
         "Cannot read properties of undefined (reading 'stack')",
       );
       const spyLoggerError = jest.spyOn(Logger, 'error');
-      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       const mockGetAccountHistory =
         (HiveUtils.getClient().database.getAccountHistory = jest
           .fn()
@@ -72,6 +70,7 @@ describe('transaction.utils tests:\n', () => {
           await TransactionUtils.getAccountTransactions(
             callingData.accountName,
             callingData.start,
+            utilsT.dynamicPropertiesObj,
             callingData.memoKey,
           ),
         ).toBe(1);
@@ -88,7 +87,6 @@ describe('transaction.utils tests:\n', () => {
       spyLoggerError.mockRestore();
     });
     test('Getting one transaction with id(0x40), must return the expected output bellow', async () => {
-      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       const mockGetAccountHistory =
         (HiveUtils.getClient().database.getAccountHistory = jest
           .fn()
@@ -97,6 +95,7 @@ describe('transaction.utils tests:\n', () => {
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
           callingData.start,
+          utilsT.dynamicPropertiesObj,
           callingData.memoKey,
         ),
       ).toEqual([utilsT.expectedOutputId0, callingData.start]);
@@ -105,7 +104,6 @@ describe('transaction.utils tests:\n', () => {
     });
     test('Must return the expected results, for the rest of cases', async () => {
       const showResults = false;
-      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       const mockGetAccountHistory =
         (HiveUtils.getClient().database.getAccountHistory = jest
           .fn()
@@ -115,6 +113,7 @@ describe('transaction.utils tests:\n', () => {
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
+        utilsT.dynamicPropertiesObj,
         callingData.memoKey,
       );
       if (showResults) {

@@ -2,6 +2,7 @@ import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { store } from '@popup/store';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -303,6 +304,7 @@ describe('account.utils tests:\n', () => {
     });
   });
   describe('addKey tests:\n', () => {
+    const mk = store.getState().mk;
     test('test with empty key must return null', async () => {
       const result = await AccountUtils.addKey(
         activeAccountData,
@@ -310,6 +312,7 @@ describe('account.utils tests:\n', () => {
         '',
         KeyType.ACTIVE,
         setErrorMessage,
+        mk,
       );
       expect(result).toBeNull();
     });
@@ -320,6 +323,7 @@ describe('account.utils tests:\n', () => {
         userData.encryptKeys.active,
         KeyType.ACTIVE,
         setErrorMessage,
+        mk,
       );
       expect(result).toBeNull();
     });
@@ -338,6 +342,7 @@ describe('account.utils tests:\n', () => {
         userData.nonEncryptKeys.active,
         KeyType.ACTIVE,
         setErrorMessage,
+        mk,
       );
       expect(result).toEqual(accounts);
     });
@@ -356,6 +361,7 @@ describe('account.utils tests:\n', () => {
         userData.nonEncryptKeys.posting,
         KeyType.POSTING,
         setErrorMessage,
+        mk,
       );
       expect(result).toEqual(accounts);
     });
@@ -374,11 +380,13 @@ describe('account.utils tests:\n', () => {
         userData.nonEncryptKeys.memo,
         KeyType.MEMO,
         setErrorMessage,
+        mk,
       );
       expect(result).toEqual(accounts);
     });
   });
   describe('deleteKey tests:\n', () => {
+    const mk = store.getState().mk;
     test('KeyType.MEMO and username in the array, should return accounts with that key removed', () => {
       const _accounts: LocalAccount[] = [
         {
@@ -397,6 +405,7 @@ describe('account.utils tests:\n', () => {
         KeyType.MEMO,
         _accounts,
         activeAccountData,
+        mk,
       );
       const expected_obj = [
         {
@@ -429,6 +438,7 @@ describe('account.utils tests:\n', () => {
         KeyType.POSTING,
         _accounts,
         activeAccountData,
+        mk,
       );
       const expected_obj = [
         {
@@ -461,6 +471,7 @@ describe('account.utils tests:\n', () => {
         KeyType.ACTIVE,
         _accounts,
         activeAccountData,
+        mk,
       );
       const expected_obj = [
         {
@@ -493,6 +504,7 @@ describe('account.utils tests:\n', () => {
         KeyType.ACTIVE,
         _accounts,
         activeAccountData,
+        mk,
       );
       expect(result).toEqual(_accounts);
     });

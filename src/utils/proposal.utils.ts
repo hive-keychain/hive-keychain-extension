@@ -1,10 +1,10 @@
+import { DynamicGlobalProperties } from '@hiveio/dhive';
 import * as hive from '@hiveio/hive-js';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   FundedOption,
   Proposal,
 } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
-import { store } from '@popup/store';
 import moment from 'moment';
 import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
@@ -43,7 +43,10 @@ const unvoteProposal = async (
   return await HiveUtils.unvoteProposal(activeAccount, proposalId);
 };
 
-const getProposalList = async (accountName: string): Promise<Proposal[]> => {
+const getProposalList = async (
+  accountName: string,
+  globals: DynamicGlobalProperties,
+): Promise<Proposal[]> => {
   const result = await hive.api.callAsync('database_api.list_proposals', {
     start: [-1],
     limit: 1000,
@@ -91,7 +94,7 @@ const getProposalList = async (accountName: string): Promise<Proposal[]> => {
       totalVotes: `${FormatUtils.nFormatter(
         FormatUtils.toHP(
           (parseFloat(proposal.total_votes) / 1000000).toString(),
-          store.getState().globalProperties.globals,
+          globals,
         ),
         2,
       )} HP`,
@@ -104,7 +107,7 @@ const getProposalList = async (accountName: string): Promise<Proposal[]> => {
   });
 };
 
-const isRequestingProposalVotes = async () => {
+const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
   let dailyBudget = await HiveUtils.getProposalDailyBudget();
 
   const proposals = (
@@ -127,7 +130,7 @@ const isRequestingProposalVotes = async () => {
     proposal.fundedOption = fundedOption;
     proposal.totalVotes = FormatUtils.toHP(
       (parseFloat(proposal.total_votes) / 1000000).toString(),
-      store.getState().globalProperties.globals,
+      globals,
     );
     return proposal;
   });

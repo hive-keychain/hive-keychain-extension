@@ -4,7 +4,6 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { ErrorMessage } from '@interfaces/errorMessage.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
-import { store } from '@popup/store';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { Keys, KeyType } from 'src/interfaces/keys.interface';
@@ -218,6 +217,7 @@ const addKey = async (
   privateKey: string,
   keyType: KeyType,
   showError: (key: string, params?: string[]) => ActionPayload<ErrorMessage>,
+  mk: string,
 ) => {
   const setSuccessMessage = showError;
   if (privateKey.length === 0 || privateKey.length === 0) {
@@ -266,7 +266,7 @@ const addKey = async (
         account.keys.memoPubkey = keys.memoPubkey;
         break;
     }
-    AccountUtils.saveAccounts(accounts, store.getState().mk);
+    AccountUtils.saveAccounts(accounts, mk);
     setSuccessMessage('import_html_success');
     return accounts;
   }
@@ -276,6 +276,7 @@ const deleteKey = (
   keyType: KeyType,
   accounts: LocalAccount[],
   activeAccount: ActiveAccount,
+  mk: string,
 ): LocalAccount[] => {
   const account = accounts.find(
     (account: LocalAccount) => account.name === activeAccount.name,
@@ -296,7 +297,7 @@ const deleteKey = (
         delete account?.keys.memoPubkey;
         break;
     }
-    AccountUtils.saveAccounts(accounts, store.getState().mk);
+    AccountUtils.saveAccounts(accounts, mk);
     return accounts;
   } else {
     Logger.error('Cannot delete the last key');
@@ -320,9 +321,9 @@ const isAccountListIdentical = (
   return JSON.stringify(a) === JSON.stringify(b);
 };
 /* istanbul ignore next */
-const downloadAccounts = async () => {
-  const accounts = { list: store.getState().accounts };
-  var data = new Blob([await encryptAccounts(accounts, store.getState().mk)], {
+const downloadAccounts = async (accounts: LocalAccount[], mk: string) => {
+  const accountsToDownload = { list: accounts };
+  var data = new Blob([await encryptAccounts(accountsToDownload, mk)], {
     type: 'text/plain',
   });
   var url = window.URL.createObjectURL(data);
