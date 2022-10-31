@@ -46,6 +46,28 @@ const sendRequestEvent = async (request: string) => {
   });
 };
 
+const sendAddFirstAccountEvent = async () => {
+  const alreadySent = await wasAddFirstAccountSend();
+  console.log(alreadySent);
+  if (alreadySent) return;
+  if (!analyticsSettings || !analyticsSettings?.allowGoogleAnalytics) return;
+
+  console.log('send add_first_account');
+
+  window.gtag('event', 'add_first_account', {});
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.ANALYTICS_FIRST_ACCOUNT_EVENT_SENT,
+    true,
+  );
+};
+
+const wasAddFirstAccountSend = async () => {
+  const savedValue: boolean = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.ANALYTICS_FIRST_ACCOUNT_EVENT_SENT,
+  );
+  return savedValue;
+};
+
 const acceptAll = () => {
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ANALYTICS_SETTINGS,
@@ -91,8 +113,10 @@ export const AnalyticsUtils = {
   initializeGoogleAnalytics,
   sendNavigationEvent,
   sendRequestEvent,
+  sendAddFirstAccountEvent,
   acceptAll,
   rejectAll,
   saveSettings,
   initializeSettings,
+  wasAddFirstAccountSend,
 };

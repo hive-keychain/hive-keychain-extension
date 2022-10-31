@@ -1,12 +1,6 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
-const start = () => {
-  //   Logger.info(`Will send analytics every ${Config.analytics.frequency}mn`);
-  //   chrome.alarms.create({ periodInMinutes: Config.analytics.frequency });
-  //   AnalyticsModule.sendData();
-};
-
 const sendData = async (request: string, domain: string) => {
   const gaClientId = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.GA_CLIENT_ID,
@@ -14,7 +8,7 @@ const sendData = async (request: string, domain: string) => {
 
   const baseUri = `https://www.google-analytics.com/${
     process.env.GOOGLE_ANALYTICS_DEV_MODE ? 'debug/' : ''
-  }mp/collect?api_secret=odAmImcoTiqGtaKqD71mjQ&measurement_id=${
+  }mp/collect?api_secret=${process.env.ANALYTICS_API_SECRET}&measurement_id=${
     process.env.GOOGLE_ANALYTICS_TAG_ID
   }`;
 
@@ -41,6 +35,5 @@ const sendData = async (request: string, domain: string) => {
 };
 
 export const AnalyticsModule = {
-  start,
   sendData,
 };

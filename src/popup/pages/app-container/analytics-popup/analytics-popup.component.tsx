@@ -21,7 +21,6 @@ const AnalyticsPopup = ({
   const [accepted, setAccepted] = useState(true);
 
   const save = () => {
-    console.log(accepted);
     if (accepted) {
       accept();
     } else {
