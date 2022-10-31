@@ -9,6 +9,7 @@ import messages from 'src/__tests__/background/requests/operations/ops/mocks/mes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('authority tests:/n', () => {
   const { methods, constants, mocks } = authority;
   const { requestHandler, confirmed } = constants;
@@ -27,13 +28,16 @@ describe('authority tests:/n', () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
-      const result = await broadcastRemoveAccountAuthority(
+      const resultOperation = (await broadcastRemoveAccountAuthority(
         requestHandler,
         data,
-      );
-      const { request_id, ...datas } = data;
-      expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toContain('private key');
     });
+
     it('Must return error if user not authorized', async () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
@@ -42,13 +46,16 @@ describe('authority tests:/n', () => {
         userData.one.nonEncryptKeys.active,
         userData.one.encryptKeys.active,
       );
-      const result = await broadcastRemoveAccountAuthority(
+      const resultOperation = (await broadcastRemoveAccountAuthority(
         requestHandler,
         cloneData,
-      );
-      const { request_id, ...datas } = cloneData;
-      expect(result).toEqual(messages.error.nothingToRemove(datas, request_id));
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toBe('Nothing to remove');
     });
+
     it('Must broadcast update account using active key', async () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
@@ -66,6 +73,7 @@ describe('authority tests:/n', () => {
         messages.success.removedAuth(confirmed, datas, request_id),
       );
     });
+
     it('Must broadcast update account using posting key', async () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
