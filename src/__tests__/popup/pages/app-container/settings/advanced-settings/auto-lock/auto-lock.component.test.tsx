@@ -26,8 +26,8 @@ describe('auto-lock.component tests:\n', () => {
       _asFragment = await autoLock.beforeEach();
       await methods.gotoAutoLock();
     });
-    it('Must load autolock and match snapshot', () => {
-      expect(_asFragment()).toMatchSnapshot(constants.snapshotName.default);
+    it('Must load autolock page', () => {
+      assertion.getByLabelText(alComponent.advanceSettings.autoLock);
     });
     it('Must set autolock by click, show message and goback to advanced menu', async () => {
       await clickAwait([
