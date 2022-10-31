@@ -1,4 +1,5 @@
 import KeychainApi from '@api/keychain';
+import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
@@ -30,6 +31,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     proposal,
     chromeRunTime,
     keyChainApiGet,
+    googleAnalytics,
   } = toUse;
   const {
     _app,
@@ -40,6 +42,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     _tokens,
     _topBar,
     _chromeRunTime,
+    _googleAnalytics,
   } = mocksDefault._defaults;
 
   initialMocks.noImplentationNeeded();
@@ -180,6 +183,17 @@ const setOrDefault = (toUse: MocksToUse) => {
       (proposal && proposal.isRequestingProposalVotes) ??
         _proposal.isRequestingProposalVotes,
     );
+
+  //TODO implement when writing tests for new feature.
+  if (_googleAnalytics.initializeGoogleAnalytics === 'bypass') {
+    AnalyticsUtils.initializeSettings = jest.fn().mockResolvedValue(true);
+    window.gtag = jest.fn().mockImplementation((...args) => undefined);
+    AnalyticsUtils.initializeGoogleAnalytics = jest
+      .fn()
+      .mockImplementation(() => undefined);
+    AnalyticsUtils.acceptAll = jest.fn().mockImplementation(() => undefined);
+    AnalyticsUtils.rejectAll = jest.fn().mockImplementation(() => undefined);
+  }
 };
 
 export default { setOrDefault };

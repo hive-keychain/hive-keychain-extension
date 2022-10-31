@@ -69,6 +69,10 @@ export interface MocksChromeRunTime {
   getManifest?: GetManifest;
   sendMessage: jest.Mock;
 }
+
+export interface MocksGoogleAnalytics {
+  initializeGoogleAnalytics?: string; //To be used for now as 'bypass' to just mock without impl.
+}
 export interface MocksToUse {
   app?: MocksApp;
   home?: MocksHome;
@@ -79,6 +83,7 @@ export interface MocksToUse {
   proposal?: MocksProposal;
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
+  googleAnalytics?: MocksGoogleAnalytics;
 }
 
 export interface MockVotingProposal {

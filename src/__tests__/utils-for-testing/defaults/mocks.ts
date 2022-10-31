@@ -12,6 +12,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import {
   MocksApp,
   MocksChromeRunTime,
+  MocksGoogleAnalytics,
   MocksHome,
   MocksPowerUp,
   MocksProposal,
@@ -78,6 +79,9 @@ const _defaults = {
     },
     sendMessage: jest.fn(),
   } as MocksChromeRunTime,
+  _googleAnalytics: {
+    initializeGoogleAnalytics: 'bypass',
+  } as MocksGoogleAnalytics,
 };
 
 const mocksDefault = {
