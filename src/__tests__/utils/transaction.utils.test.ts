@@ -54,10 +54,7 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
-    test('if an error occurs(wrong transfers data received, missing proper format in .op), must call Logger', async () => {
-      let errorCatched = new TypeError(
-        "Cannot read properties of undefined (reading 'stack')",
-      );
+    test('if an error occurs must call Logger', async () => {
       const spyLoggerError = jest.spyOn(Logger, 'error');
       const mockGetAccountHistory =
         (HiveUtils.getClient().database.getAccountHistory = jest
@@ -75,11 +72,9 @@ describe('transaction.utils tests:\n', () => {
           ),
         ).toBe(1);
       } catch (error) {
-        expect(error).toEqual(errorCatched);
-        expect(spyLoggerError).toBeCalledTimes(1);
-        errorCatched.message =
-          "Cannot read properties of undefined (reading '0')";
-        expect(spyLoggerError).toBeCalledWith(errorCatched, errorCatched);
+        expect((error as TypeError).message).toContain('stack');
+        const { calls } = spyLoggerError.mock;
+        expect((calls[0][0] as TypeError).message).toContain('0');
       }
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
