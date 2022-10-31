@@ -3,6 +3,7 @@ import { ActiveAccount } from '@interfaces/active-account.interface';
 import moment from 'moment';
 import HiveUtils from 'src/utils/hive.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
+import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 afterEach(() => {
@@ -33,12 +34,17 @@ describe('proposal.utils tests:\n', () => {
       const showResult = false;
       const mockHiveApi = (hive.api.callAsync = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeProposalListResponse)
-        .mockResolvedValueOnce(utilsT.fakeListProposalVotesResponse));
+        .mockResolvedValueOnce(
+          proposal.expectedResponsesProposalUtilsTests.fakeProposalListResponse,
+        )
+        .mockResolvedValueOnce(
+          proposal.expectedResponsesProposalUtilsTests
+            .fakeListProposalVotesResponse,
+        ));
 
       const mockDailyBudgetApi = (HiveUtils.getProposalDailyBudget = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeDailyBudgetResponse));
+        .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse));
 
       const result = await ProposalUtils.getProposalList(
         'theghost1980',
@@ -47,19 +53,22 @@ describe('proposal.utils tests:\n', () => {
       if (showResult) {
         console.log(result);
       }
-      expect(result).toEqual(utilsT.expectedResultProposal);
+      expect(result).toEqual(
+        proposal.expectedResponsesProposalUtilsTests.expectedResultProposal,
+      );
       expect(mockHiveApi).toBeCalledTimes(2);
       expect(mockDailyBudgetApi).toBeCalledTimes(1);
     });
     test('Passing a user that has voted on the keychain proposal, must return a list of proposal with one voted proposal', async () => {
       const withKeyChainProposal = {
         proposals: [
-          ...utilsT.fakeProposalListResponse.proposals,
-          utilsT.fakeProposalKeyChain,
+          ...proposal.expectedResponsesProposalUtilsTests
+            .fakeProposalListResponse.proposals,
+          proposal.fakeProposalKeyChain,
         ],
       };
       const expectedResultProposalWithkeyChain = [
-        ...utilsT.expectedResultProposal,
+        ...proposal.expectedResponsesProposalUtilsTests.expectedResultProposal,
         {
           id: 216,
           creator: 'keychain',
@@ -68,7 +77,7 @@ describe('proposal.utils tests:\n', () => {
           endDate: moment('2023-05-15T00:00:00'),
           dailyPay: '390 HBD',
           subject: 'Hive Keychain development',
-          totalVotes: '0 HP',
+          totalVotes: '33.43M HP',
           link: 'https://peakd.com/proposals/216',
           proposalId: 216,
           voted: true,
