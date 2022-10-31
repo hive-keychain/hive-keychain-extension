@@ -3,6 +3,7 @@ import { DynamicGlobalProperties } from '@hiveio/dhive';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('power tests:\n', () => {
   const { methods, constants, mocks } = powerMocks;
   const { requestHandler, data, confirmed } = constants;
@@ -13,33 +14,27 @@ describe('power tests:\n', () => {
       mocks.client.database.getDynamicGlobalProperties(
         {} as DynamicGlobalProperties,
       );
-      const error = "Cannot read properties of undefined (reading 'split')";
-      const result = await broadcastPowerDown(requestHandler, data.powerDown);
-      const { request_id, ...datas } = data.powerDown;
-      expect(result).toEqual(
-        messages.error.answerError(
-          new TypeError(error),
-          datas,
-          request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${error}`,
-          undefined,
-        ),
-      );
+      const resultOperation = (await broadcastPowerDown(
+        requestHandler,
+        data.powerDown,
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toContain('split');
     });
+
     it('Must return error if no key on handler', async () => {
-      const error = 'private key should be a Buffer';
-      const result = await broadcastPowerDown(requestHandler, data.powerDown);
-      const { request_id, ...datas } = data.powerDown;
-      expect(result).toEqual(
-        messages.error.answerError(
-          new TypeError(error),
-          datas,
-          request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${error}`,
-          undefined,
-        ),
-      );
+      const resultOperation = (await broadcastPowerDown(
+        requestHandler,
+        data.powerDown,
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toContain('private key');
     });
+
     it('Must return success', async () => {
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       const result = await broadcastPowerDown(requestHandler, data.powerDown);
