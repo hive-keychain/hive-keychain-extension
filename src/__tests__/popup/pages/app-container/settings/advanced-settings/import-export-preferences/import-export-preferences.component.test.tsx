@@ -1,6 +1,8 @@
 import { Icons } from '@popup/icons.enum';
 import importExportPreferences from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/import-export-preferences/mocks/import-export-preferences';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
+import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
@@ -11,8 +13,9 @@ describe('import-export-preferences.component tests:\n', () => {
   beforeEach(async () => {
     _asFragment = await importExportPreferences.beforeEach();
   });
-  it('Must load import-export page and match snapshot', () => {
-    expect(_asFragment()).toMatchSnapshot(constants.snapshotName.default);
+  it('Must load import-export page and show info', () => {
+    assertion.getByLabelText(alComponent.advanceSettings.importExport);
+    assertion.getOneByText(constants.message.import);
   });
   it('Must open import window', async () => {
     await clickAwait([alButton.menuPreFix + Icons.IMPORT]);
