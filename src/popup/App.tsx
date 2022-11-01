@@ -142,7 +142,7 @@ const App = ({
   const initApplication = async () => {
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
-    initActiveRpc(rpc);
+    await initActiveRpc(rpc);
     initHiveEngineConfigFromStorage();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
