@@ -51,7 +51,7 @@ describe('hive.utils tests:\n', () => {
         uri: 'DEFAULT',
         testnet: true,
       };
-      expect(HiveUtils.getClient().address).toBe('https://api.hive.blog');
+      expect(HiveUtils.getClient().address).toBe(rpc.fake.uri);
       const result = await HiveUtils.setRpc(fakeRpc);
       expect(result).toBeUndefined();
       expect(HiveUtils.getClient().address).toBe(returnedUriValue);
@@ -63,7 +63,7 @@ describe('hive.utils tests:\n', () => {
         uri: overridingValue,
         testnet: true,
       };
-      expect(HiveUtils.getClient().address).toBe('https://api.hive.blog');
+      expect(HiveUtils.getClient().address).toBe(rpc.fake.uri);
       const result = await HiveUtils.setRpc(fakeRpc);
       expect(result).toBeUndefined();
       expect(HiveUtils.getClient().address).toBe(overridingValue);
