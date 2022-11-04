@@ -80,8 +80,6 @@ const checkRpcStatus = async (uri: string) => {
       },
     );
 
-    console.log(result);
-
     return true;
   } catch (err) {
     Logger.error(err);

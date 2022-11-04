@@ -66,7 +66,7 @@ const App = ({
   }, []);
 
   useEffect(() => {
-    onActiveRpcRefreshed();
+    if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
 
   const onActiveRpcRefreshed = async () => {
