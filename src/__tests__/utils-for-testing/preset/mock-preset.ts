@@ -32,6 +32,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     chromeRunTime,
     keyChainApiGet,
     survey,
+    convertions,
   } = toUse;
   const {
     _app,
@@ -43,6 +44,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     _topBar,
     _chromeRunTime,
     _survey,
+    _convertions,
   } = mocksDefault._defaults;
 
   initialMocks.noImplentationNeeded();
@@ -72,12 +74,20 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (app && app.getExtendedAccount) ?? _app.getExtendedAccount,
     );
+  AccountUtils.getExtendedAccounts = jest
+    .fn()
+    .mockResolvedValue(
+      (app && app.getExtendedAccounts) ?? _app.getExtendedAccounts,
+    );
   HiveUtils.getDelegatees = jest
     .fn()
     .mockResolvedValue(
       (powerUp && powerUp.getVestingDelegations) ??
         _powerUp.getVestingDelegations,
     );
+  HiveUtils.getConversionRequests = jest
+    .fn()
+    .mockResolvedValue(convertions ?? _convertions.getConversionRequests);
   RpcUtils.checkRpcStatus = jest
     .fn()
     .mockResolvedValue((app && app.checkRpcStatus) ?? _app.checkRpcStatus);
@@ -181,7 +191,7 @@ const setOrDefault = (toUse: MocksToUse) => {
       (proposal && proposal.isRequestingProposalVotes) ??
         _proposal.isRequestingProposalVotes,
     );
-  //Survey by passed for now.
+  //Survey bypassed for now.
   if (_survey.byPassing) {
     SurveyUtils.getSurvey = jest.fn().mockResolvedValue(undefined);
     SurveyUtils.setCurrentAsSeen = jest.fn().mockImplementation(() => {});

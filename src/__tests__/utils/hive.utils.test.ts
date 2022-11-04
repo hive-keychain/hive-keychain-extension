@@ -19,6 +19,7 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 config.byDefault();
@@ -29,6 +30,9 @@ describe('hive.utils tests:\n', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await resetClient();
+  });
+  beforeEach(async () => {
+    await HiveUtils.setRpc(rpc.fake);
   });
   describe('getClient tests:\n', () => {
     test('calling getclient must return an instance of Client', () => {

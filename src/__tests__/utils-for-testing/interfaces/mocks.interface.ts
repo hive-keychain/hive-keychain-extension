@@ -1,6 +1,7 @@
 import { ExtendedAccount, VestingDelegation } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { Autolock } from '@interfaces/autolock.interface';
+import { Conversion } from '@interfaces/conversion.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -21,6 +22,7 @@ export interface MocksApp {
   getRCMana?: Manabar;
   getAccount?: ExtendedAccount[];
   getExtendedAccount?: ExtendedAccount;
+  getExtendedAccounts?: ExtendedAccount[];
   checkRpcStatus?: boolean;
   hasStoredAccounts?: boolean;
   getMkFromLocalStorage?: string;
@@ -57,6 +59,7 @@ export interface MocksProposal {
 export interface MocksKeyChainApi {
   customData?: KeyChainApiGetCustomData;
 }
+
 export interface GetManifest {
   version: string;
   name: string;
@@ -74,6 +77,10 @@ export interface MocksSurvey {
   byPassing: boolean;
 }
 
+export interface MocksConvertionRequests {
+  getConversionRequests: Conversion[];
+}
+
 export interface MocksToUse {
   app?: MocksApp;
   home?: MocksHome;
@@ -85,6 +92,7 @@ export interface MocksToUse {
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
   survey?: MocksSurvey;
+  convertions?: MocksConvertionRequests;
 }
 
 export interface MockVotingProposal {

@@ -12,6 +12,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import {
   MocksApp,
   MocksChromeRunTime,
+  MocksConvertionRequests,
   MocksHome,
   MocksPowerUp,
   MocksProposal,
@@ -39,6 +40,7 @@ const _defaults = {
     getRCMana: manabar,
     getAccount: accounts.asArray.extended,
     getExtendedAccount: accounts.extended,
+    getExtendedAccounts: [accounts.extended],
     checkRpcStatus: true,
     hasStoredAccounts: true,
     getMkFromLocalStorage: mk.user.one,
@@ -82,6 +84,9 @@ const _defaults = {
   _survey: {
     byPassing: true, //as default
   } as MocksSurvey,
+  _convertions: {
+    getConversionRequests: [], //as default
+  } as MocksConvertionRequests,
 };
 
 const mocksDefault = {
