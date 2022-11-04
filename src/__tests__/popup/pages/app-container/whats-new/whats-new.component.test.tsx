@@ -18,11 +18,11 @@ describe('whats-new.component tests:\n', () => {
   const { methods, constants, extraMocks } = whatsNew;
   const { versionLog } = constants;
   methods.afterEach;
-  beforeEach(async () => {
-    _asFragment = await whatsNew.beforeEach();
-    actAdvanceTime(1000);
-  });
   describe('Same app versions:\n', () => {
+    beforeEach(async () => {
+      _asFragment = await whatsNew.beforeEach();
+      actAdvanceTime(1000);
+    });
     it('Must not show whats new component', () => {
       assertion.queryByLabel(alComponent.whatsNew, false);
     });
@@ -53,8 +53,8 @@ describe('whats-new.component tests:\n', () => {
     });
     ////////
     beforeEach(async () => {
-      // addOnLoadOnImage();
       _asFragment = await whatsNew.beforeEach(true);
+      actAdvanceTime(1000);
     });
     it('Must show whats new component', async () => {
       act(() => {

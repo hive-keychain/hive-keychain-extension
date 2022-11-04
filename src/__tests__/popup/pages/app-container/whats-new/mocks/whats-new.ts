@@ -8,7 +8,10 @@ import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import {
+  MocksChromeRunTime,
+  MocksToUse,
+} from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import { actAdvanceTime } from 'src/__tests__/utils-for-testing/setups/events';
@@ -76,6 +79,9 @@ const beforeEach = async (differVersions: boolean = false) => {
       keyChainApiGet: {
         customData: { extensionVersion: constants.versionLog },
       },
+      chromeRunTime: {
+        getManifest: { version: '2.2.0', name: 'KeyChain Extension' },
+      } as MocksChromeRunTime,
     };
   }
   mockPreset.setOrDefault(remock);
