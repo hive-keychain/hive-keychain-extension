@@ -32,7 +32,14 @@ describe('hive.utils tests:\n', () => {
         const element = errorClaimAccounts[i];
         element.mocks();
         await BgdHiveUtils.claimAccounts(...element.params);
-        expect(element.spies.using).toBeCalledWith(element.description);
+        const { calls } = element.spies.using.mock;
+        if (typeof calls[0][0] === 'string') {
+          expect(calls[0][0]).toContain(element.description);
+        } else {
+          expect((calls[0][0] as TypeError).message).toContain(
+            element.description,
+          );
+        }
         element.spies.using.mockReset();
       }
     });

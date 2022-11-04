@@ -2563,5 +2563,13 @@
   "popup_html_rc_delegation_failed": {
     "message": "Rc Delegation failed",
     "description": "RC delegation failed"
+  },
+  "popup_html_survey_no_thanks": {
+    "message": "No thanks",
+    "description": "No thanks button on survey popup"
+  },
+  "popup_html_survey_help_us": {
+    "message": "Let's go!",
+    "description": "Help us button on survey popup"
   }
 }
