@@ -605,11 +605,15 @@ const delegateVestingShares = async (
   }
 };
 /* istanbul ignore next */
-const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
+const sendCustomJson = async (
+  json: any,
+  activeAccount: ActiveAccount,
+  mainnet?: string,
+) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
       {
-        id: Config.hiveEngine.mainnet,
+        id: mainnet ? mainnet : Config.hiveEngine.mainnet,
         required_auths: [activeAccount.name!],
         required_posting_auths: activeAccount.keys.active
           ? []

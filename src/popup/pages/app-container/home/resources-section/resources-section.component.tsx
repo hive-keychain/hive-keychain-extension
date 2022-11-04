@@ -17,6 +17,7 @@ const ResourcesSection = ({
   const [rcReadyIn, setRcReadyIn] = useState('');
 
   useEffect(() => {
+    console.log(activeAccount);
     if (
       activeAccount?.account?.voting_manabar?.current_mana !== undefined &&
       activeAccount.rc?.percentage !== undefined
@@ -32,7 +33,7 @@ const ResourcesSection = ({
         false,
       ) as string;
       const voting = parseFloat(manaValue);
-      const resources = activeAccount.rc.percentage / 100;
+      const resources = activeAccount.rc.percentage;
 
       if (hasMana) {
         setVotingMana(mana?.toFixed(2) + ' %');
