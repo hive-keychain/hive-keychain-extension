@@ -7,6 +7,7 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import {
+  actAdvanceTime,
   clickAwait,
   clickAwaitOnFound,
 } from 'src/__tests__/utils-for-testing/setups/events';
@@ -17,10 +18,11 @@ describe('whats-new.component tests:\n', () => {
   const { methods, constants, extraMocks } = whatsNew;
   const { versionLog } = constants;
   methods.afterEach;
+  beforeEach(async () => {
+    _asFragment = await whatsNew.beforeEach();
+    actAdvanceTime(1000);
+  });
   describe('Same app versions:\n', () => {
-    beforeEach(async () => {
-      _asFragment = await whatsNew.beforeEach();
-    });
     it('Must not show whats new component', () => {
       assertion.queryByLabel(alComponent.whatsNew, false);
     });
@@ -62,6 +64,7 @@ describe('whats-new.component tests:\n', () => {
         assertion.getByLabelText(alComponent.whatsNew);
       });
     });
+
     it('Must open whats new, url link', async () => {
       act(() => {
         imageOnload();
@@ -71,6 +74,7 @@ describe('whats-new.component tests:\n', () => {
         url: versionLog.data.url + '#' + versionLog.data.features.en[0].anchor,
       });
     });
+
     it('Must close whats new', async () => {
       act(() => {
         imageOnload();

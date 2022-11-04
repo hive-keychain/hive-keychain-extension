@@ -109,6 +109,7 @@ const Home = ({
     }
 
     const versionLog = await VersionLogUtils.getLastVersion();
+    console.log({ versionLog }); //TODO to remove
     const extensionVersion = chrome.runtime
       .getManifest()
       .version.split('.')

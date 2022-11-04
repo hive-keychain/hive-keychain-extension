@@ -9,6 +9,7 @@ import MkUtils from 'src/utils/mk.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import RpcUtils from 'src/utils/rpc.utils';
+import { SurveyUtils } from 'src/utils/survey.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
@@ -30,6 +31,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     proposal,
     chromeRunTime,
     keyChainApiGet,
+    survey,
   } = toUse;
   const {
     _app,
@@ -40,6 +42,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     _tokens,
     _topBar,
     _chromeRunTime,
+    _survey,
   } = mocksDefault._defaults;
 
   initialMocks.noImplentationNeeded();
@@ -154,14 +157,12 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
     );
-  //added getTokensHistory
   HiveEngineConfigUtils.getAccountHistoryApi().get = jest
     .fn()
     .mockResolvedValueOnce({
       data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
     })
     .mockResolvedValueOnce({ data: [] });
-  //to remove comments when tested.
   ProposalUtils.hasVotedForProposal = jest
     .fn()
     .mockResolvedValue(
@@ -180,6 +181,11 @@ const setOrDefault = (toUse: MocksToUse) => {
       (proposal && proposal.isRequestingProposalVotes) ??
         _proposal.isRequestingProposalVotes,
     );
+  //Survey by passed for now.
+  if (_survey.byPassing) {
+    SurveyUtils.getSurvey = jest.fn().mockResolvedValue(undefined);
+    SurveyUtils.setCurrentAsSeen = jest.fn().mockImplementation(() => {});
+  }
 };
 
 export default { setOrDefault };

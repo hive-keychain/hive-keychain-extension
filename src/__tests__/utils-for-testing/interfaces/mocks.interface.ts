@@ -69,6 +69,11 @@ export interface MocksChromeRunTime {
   getManifest?: GetManifest;
   sendMessage: jest.Mock;
 }
+//TODO implement as dataMocks/CustomDataFromLocalStorage, when coding tests for survey.
+export interface MocksSurvey {
+  byPassing: boolean;
+}
+
 export interface MocksToUse {
   app?: MocksApp;
   home?: MocksHome;
@@ -79,6 +84,7 @@ export interface MocksToUse {
   proposal?: MocksProposal;
   chromeRunTime?: MocksChromeRunTime;
   keyChainApiGet?: MocksKeyChainApi;
+  survey?: MocksSurvey;
 }
 
 export interface MockVotingProposal {

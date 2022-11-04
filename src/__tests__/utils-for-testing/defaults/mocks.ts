@@ -15,6 +15,7 @@ import {
   MocksHome,
   MocksPowerUp,
   MocksProposal,
+  MocksSurvey,
   MocksTokens,
   MocksTopBar,
   MocksWalletHistory,
@@ -78,6 +79,9 @@ const _defaults = {
     },
     sendMessage: jest.fn(),
   } as MocksChromeRunTime,
+  _survey: {
+    byPassing: true, //as default
+  } as MocksSurvey,
 };
 
 const mocksDefault = {
