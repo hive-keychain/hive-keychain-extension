@@ -52,7 +52,7 @@ const beforeEach = async (
   accounts: LocalAccount[],
 ) => {
   jest.useFakeTimers('legacy');
-  actAdvanceTime(4300);
+  actAdvanceTime(6300);
   mockPreset.setOrDefault({});
   renders.wInitialState(component, {
     ...initialStates.iniState,
