@@ -109,7 +109,6 @@ const Home = ({
     }
 
     const versionLog = await VersionLogUtils.getLastVersion();
-    console.log(chrome.runtime.getManifest().version);
     const extensionVersion = chrome.runtime
       .getManifest()
       .version.split('.')
@@ -122,7 +121,6 @@ const Home = ({
       setWhatsNewContent(versionLog);
       setDisplayWhatsNew(true);
     }
-    console.log(versionLog, extensionVersion);
   };
 
   const initActiveAccount = async () => {
