@@ -49,6 +49,7 @@ const Home = ({
   >([]);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
+
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();
@@ -65,13 +66,11 @@ const Home = ({
       Object.keys(globalProperties).length > 0 &&
       !ActiveAccountUtils.isEmpty(activeAccount)
     ) {
-      setTimeout(() => {
-        setDisplayLoader(false);
-        console.log('displayLoader set as FALSE!'); //TODO to remove
-      }, 1000);
+      // setTimeout(() => { TODO talk to quentin about this...
+      setDisplayLoader(false);
+      // }, 1000);
     } else {
       setDisplayLoader(true);
-      console.log('displayLoader set as TRUE!'); //TODO to remove
     }
   }, [globalProperties, activeAccount]);
 
@@ -141,20 +140,11 @@ const Home = ({
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
   ) => {
-    console.log('Executing renderPopup w: ', {
-      displayLoader,
-      activeRpc,
-      displayWhatsNew,
-      governanceAccountsToExpire,
-      surveyToDisplay,
-    }); //TODO to remove
-    if (displayLoader || activeRpc?.uri === 'NULL') {
+    if (displayLoader === true || activeRpc?.uri === 'NULL') {
       return (
         <div className="loading">
           <RotatingLogoComponent></RotatingLogoComponent>
-          <div className="caption">
-            HIVE KEYCHAIN ---{displayLoader.toString()}----
-          </div>
+          <div className="caption">HIVE KEYCHAIN</div>
         </div>
       );
     } else if (displayWhatsNew) {

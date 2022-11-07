@@ -13,6 +13,7 @@ import {
   MocksApp,
   MocksChromeRunTime,
   MocksConvertionRequests,
+  MocksGovernance,
   MocksHome,
   MocksPowerUp,
   MocksProposal,
@@ -87,6 +88,10 @@ const _defaults = {
   _convertions: {
     getConversionRequests: [], //as default
   } as MocksConvertionRequests,
+  _governance: {
+    bypass: true,
+    accountsToRemind: [], //as default
+  } as MocksGovernance,
 };
 
 const mocksDefault = {

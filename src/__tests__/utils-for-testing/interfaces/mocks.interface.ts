@@ -81,6 +81,11 @@ export interface MocksConvertionRequests {
   getConversionRequests: Conversion[];
 }
 
+export interface MocksGovernance {
+  bypass: boolean;
+  accountsToRemind: string[];
+}
+
 export interface MocksToUse {
   app?: MocksApp;
   home?: MocksHome;
@@ -93,6 +98,7 @@ export interface MocksToUse {
   keyChainApiGet?: MocksKeyChainApi;
   survey?: MocksSurvey;
   convertions?: MocksConvertionRequests;
+  governance?: MocksGovernance;
 }
 
 export interface MockVotingProposal {

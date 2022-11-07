@@ -1,6 +1,7 @@
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -33,6 +34,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     keyChainApiGet,
     survey,
     convertions,
+    governance,
   } = toUse;
   const {
     _app,
@@ -45,6 +47,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     _chromeRunTime,
     _survey,
     _convertions,
+    _governance,
   } = mocksDefault._defaults;
 
   initialMocks.noImplentationNeeded();
@@ -195,6 +198,22 @@ const setOrDefault = (toUse: MocksToUse) => {
   if (_survey.byPassing) {
     SurveyUtils.getSurvey = jest.fn().mockResolvedValue(undefined);
     SurveyUtils.setCurrentAsSeen = jest.fn().mockImplementation(() => {});
+  }
+  //Governance utils related bypassed for now.
+  if (_governance.bypass) {
+    GovernanceUtils.addToIgnoreRenewal = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve(undefined));
+    GovernanceUtils.getGovernanceReminderList = jest.fn().mockResolvedValue([]);
+    GovernanceUtils.getGovernanceRenewalIgnored = jest
+      .fn()
+      .mockResolvedValue([]);
+    GovernanceUtils.removeFromIgnoreRenewal = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve(undefined));
+    GovernanceUtils.renewUsersGovernance = jest
+      .fn()
+      .mockImplementation(() => Promise.resolve(undefined));
   }
 };
 

@@ -1,4 +1,3 @@
-import { screen } from '@testing-library/react';
 import { ReactElement } from 'react';
 import HiveUtils from 'src/utils/hive.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
@@ -6,6 +5,7 @@ import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown'
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import {
   EventType,
   QueryDOM,
@@ -24,11 +24,12 @@ import renders from 'src/__tests__/utils-for-testing/setups/renders';
 
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
-  actAdvanceTime(4300);
-  // actRunAllTimers();
-  mockPreset.setOrDefault({});
+  actAdvanceTime(6300);
+  mockPreset.setOrDefault({
+    app: { getCurrentRpc: rpc.fake },
+  });
   renders.wInitialState(component, initialStates.iniStateAs.defaultExistent);
-  expect(await screen.findByText(mk.user.one)).toBeDefined();
+  await assertion.awaitMk(mk.user.one);
 };
 
 const methods = {
