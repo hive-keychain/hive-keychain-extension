@@ -1,6 +1,7 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { MenuItem } from '@interfaces/menu-item.interface';
+import { Icons } from '@popup/icons.enum';
 import {
   HBDDropdownMenuItems,
   HiveDropdownMenuItems,
@@ -26,6 +27,33 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import { actAdvanceTime } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
+
+const hpDropdownLabelPage = [
+  {
+    ariaLabelPreFixed:
+      alDropdown.walletInfo.preFix +
+      HpDropdownMenuItems.filter(
+        (item) => item.icon === Icons.DELEGATIONS_HP,
+      )[0].icon,
+    pageComponent: alComponent.delegationsPage,
+  },
+  {
+    ariaLabelPreFixed:
+      alDropdown.walletInfo.preFix +
+      HpDropdownMenuItems.filter(
+        (item) => item.icon === Icons.DELEGATIONS_RC,
+      )[0].icon,
+    pageComponent: alComponent.rcDelegationsPage,
+  },
+  {
+    ariaLabelPreFixed:
+      alDropdown.walletInfo.preFix +
+      HpDropdownMenuItems.filter(
+        (item) => item.icon === Icons.ARROW_DOWNWARDS,
+      )[0].icon,
+    pageComponent: alComponent.powerUpDownPage,
+  },
+];
 
 const constants = {
   vpValue: mocksDefault._defaults._app.getVP!.toFixed(2).toString(),
@@ -135,4 +163,5 @@ export default {
   methods,
   constants,
   extraMocks,
+  hpDropdownLabelPage,
 };

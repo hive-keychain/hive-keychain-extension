@@ -2,8 +2,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
-import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import tokenMarket from 'src/__tests__/utils-for-testing/data/tokens/token-market';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
@@ -37,7 +37,7 @@ const _defaults = {
       ),
     getCurrentRpc: rpc.defaultRpc,
     getActiveAccountNameFromLocalStorage: mk.user.one,
-    getRCMana: manabar,
+    getRCMana: fake_RC.rc,
     getAccount: accounts.asArray.extended,
     getExtendedAccount: accounts.extended,
     getExtendedAccounts: [accounts.extended],

@@ -80,6 +80,7 @@ const RCDelegations = ({
   }, []);
 
   const initRCDelegations = async () => {
+    console.log({ activeAccount }); //TODO to remove
     setTotalIncoming({
       hpValue: RcDelegationsUtils.rcToHp(
         activeAccount.rc.received_delegated_rc.toString(),

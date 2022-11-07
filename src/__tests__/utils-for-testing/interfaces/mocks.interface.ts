@@ -1,5 +1,5 @@
 import { ExtendedAccount, VestingDelegation } from '@hiveio/dhive';
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { RC } from '@interfaces/active-account.interface';
 import { Autolock } from '@interfaces/autolock.interface';
 import { Conversion } from '@interfaces/conversion.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -19,7 +19,7 @@ export interface MocksApp {
   getValueFromLocalStorage?: jest.Mock;
   getCurrentRpc?: Rpc;
   getActiveAccountNameFromLocalStorage?: string;
-  getRCMana?: Manabar;
+  getRCMana?: RC;
   getAccount?: ExtendedAccount[];
   getExtendedAccount?: ExtendedAccount;
   getExtendedAccounts?: ExtendedAccount[];

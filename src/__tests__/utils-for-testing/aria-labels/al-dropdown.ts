@@ -27,4 +27,7 @@ export default {
       accountItem: 'select-account-item-',
     },
   },
+  walletInfo: {
+    preFix: 'dropdown-menu-item-',
+  },
 };
