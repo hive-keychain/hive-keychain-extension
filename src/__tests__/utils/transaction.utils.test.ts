@@ -3,11 +3,15 @@ import { store } from '@popup/store';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 jest.setTimeout(50000);
 describe('transaction.utils tests:\n', () => {
+  beforeEach(() => {
+    HiveUtils.setRpc(rpc.fake);
+  });
   describe('getAccountTransactions tests:\n', () => {
     const callingData = {
       accountName: utilsT.userData.username,
