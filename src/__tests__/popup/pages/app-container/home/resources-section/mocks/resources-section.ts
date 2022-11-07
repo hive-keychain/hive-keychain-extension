@@ -22,10 +22,11 @@ const constants = {
   username: mk.user.one,
   noMana: '--',
   zeroRc: 'speedResource Credits0.00 %',
-  wMana: '1.00 % (1.00 $)',
-  wRc: '1.00 %',
+  wMana: 'arrow_circle_upVoting Mana1.00 % (1.00 $)',
+  wRc: 'speedResource Credits100.00 %',
   toolTip: {
-    fullIn: 'Full in 4 days, 22 hours and 48 minutes',
+    fullIn: 'Already full!',
+    fullInDays: 'Full in 4 days, 22 hours and 48 minutes',
     noHp: i18n.get('html_popup_voting_no_hp'),
   },
   manabarZero: {
