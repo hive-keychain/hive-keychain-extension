@@ -25,6 +25,7 @@ import renders from 'src/__tests__/utils-for-testing/setups/renders';
 const beforeEach = async (component: ReactElement) => {
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
+  // actRunAllTimers();
   mockPreset.setOrDefault({});
   renders.wInitialState(component, initialStates.iniStateAs.defaultExistent);
   expect(await screen.findByText(mk.user.one)).toBeDefined();
