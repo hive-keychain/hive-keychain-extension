@@ -150,10 +150,6 @@ const userInformation = () => {
       arialabelOrText: 'Resource Credits',
       query: QueryDOM.BYTEXT,
     },
-    {
-      arialabelOrText: `${constants.resourceCredits} %`,
-      query: QueryDOM.BYTEXT,
-    },
   ]);
 };
 
