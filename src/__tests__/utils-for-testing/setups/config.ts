@@ -27,12 +27,12 @@ interface SetTimeOutConfigValues {
 }
 
 const adjustSetTimeOutValues = (values: SetTimeOutConfigValues) => {
-  const initialHideLoaderAfterMsValue = Config.setTimeOut.hideLoaderAfterMs;
+  const minDurationLoader = Config.loader.minDuration;
   beforeAll(() => {
-    Config.setTimeOut.hideLoaderAfterMs = values.hideLoaderAfterMs!;
+    Config.loader.minDuration = values.hideLoaderAfterMs!;
   });
   afterAll(() => {
-    Config.setTimeOut.hideLoaderAfterMs = initialHideLoaderAfterMsValue;
+    Config.loader.minDuration = minDurationLoader;
   });
 };
 

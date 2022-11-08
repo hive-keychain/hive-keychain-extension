@@ -69,7 +69,7 @@ const Home = ({
     ) {
       setTimeout(() => {
         setDisplayLoader(false);
-      }, Config.setTimeOut.hideLoaderAfterMs);
+      }, Config.loader.minDuration);
     } else {
       setDisplayLoader(true);
     }
