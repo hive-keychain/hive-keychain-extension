@@ -22,6 +22,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -66,9 +67,9 @@ const Home = ({
       Object.keys(globalProperties).length > 0 &&
       !ActiveAccountUtils.isEmpty(activeAccount)
     ) {
-      // setTimeout(() => { TODO talk to quentin about this...
-      setDisplayLoader(false);
-      // }, 1000);
+      setTimeout(() => {
+        setDisplayLoader(false);
+      }, Config.setTimeOut.hideLoaderAfterMs);
     } else {
       setDisplayLoader(true);
     }
