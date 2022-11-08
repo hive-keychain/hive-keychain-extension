@@ -28,7 +28,7 @@ const Config = {
       process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
   },
   setTimeOut: {
-    hideLoaderAfterMs: 1000, //1 sec as minimun time to hide the loading component
+    hideLoaderAfterMs: process.env.DEV_SET_TIME_OUT_LOADER_TIME || 1000,
   },
 };
 
