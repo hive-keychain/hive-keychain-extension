@@ -87,10 +87,20 @@ const App = ({
 
   useEffect(() => {
     initHasStoredAccounts();
-    if (isAppReady && navigationStack.length === 0) {
+    const found = navigationStack.find(
+      (navigation) =>
+        navigation.currentPage === 'ACCOUNT_PAGE_INIT_ACCOUNT' ||
+        navigation.currentPage === 'SETTINGS_MANAGE_ACCOUNTS' ||
+        navigation.currentPage === 'SIGN_IN_PAGE',
+    );
+    if (
+      isAppReady &&
+      (navigationStack.length === 0 || found) &&
+      hasStoredAccounts
+    ) {
       selectComponent(mk, accounts);
     }
-  }, [isAppReady, mk, accounts]);
+  }, [isAppReady, mk, accounts, hasStoredAccounts]);
 
   const initHasStoredAccounts = async () => {
     const storedAccounts = await AccountUtils.hasStoredAccounts();
