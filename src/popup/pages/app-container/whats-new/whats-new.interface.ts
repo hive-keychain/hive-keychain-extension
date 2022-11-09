@@ -1,9 +1,11 @@
 export interface Feature {
-  anchor: string;
+  anchor?: string;
   image: string;
   title: string;
   description: string;
   extraInformation: string;
+  externalUrl?: string;
+  overrideReadMoreLabel?: string;
 }
 
 export interface Features {
