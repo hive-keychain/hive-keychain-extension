@@ -52,6 +52,7 @@ const App = ({
   loadGlobalProperties,
   displayProxySuggestion,
   initHiveEngineConfigFromStorage,
+  navigationStack,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
@@ -86,7 +87,7 @@ const App = ({
 
   useEffect(() => {
     initHasStoredAccounts();
-    if (isAppReady) {
+    if (isAppReady && navigationStack.length === 0) {
       selectComponent(mk, accounts);
     }
   }, [isAppReady, mk, accounts]);
@@ -266,6 +267,7 @@ const mapStateToProps = (state: RootState) => {
       state.activeAccount.account &&
       state.activeAccount.account.proxy === '' &&
       state.activeAccount.account.witnesses_voted_for === 0,
+    navigationStack: state.navigation.stack,
   };
 };
 
