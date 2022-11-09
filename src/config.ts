@@ -27,6 +27,9 @@ const Config = {
     apiKey:
       process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
   },
+  loader: {
+    minDuration: +(process.env.TEST_LOADER_MIN_DURATION || 1000),
+  },
 };
 
 export default Config;

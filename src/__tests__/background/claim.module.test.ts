@@ -23,6 +23,7 @@ describe('claim.module tests:\n', () => {
       periodInMinutes: Config.claims.FREQUENCY,
     });
   });
+
   it('Must call Logger with error on each case', async () => {
     for (let i = 0; i < nonValidClaims.length; i++) {
       mocks.getMultipleValueFromLocalStorage(nonValidClaims[i]);
@@ -31,6 +32,7 @@ describe('claim.module tests:\n', () => {
       spies.logger.error.mockReset();
     }
   });
+
   it('Must call logger with nothing to claim', async () => {
     mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
     mocks.getAccounts(noAvailableSavings);
@@ -43,6 +45,7 @@ describe('claim.module tests:\n', () => {
     );
     expect(spies.claimSavings(undefined)).not.toBeCalled();
   });
+
   it('Must call logger with no time to claim', async () => {
     mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
     mocks.getAccounts(availableSavings);
@@ -56,6 +59,7 @@ describe('claim.module tests:\n', () => {
     );
     expect(spies.claimSavings(undefined)).not.toBeCalled();
   });
+
   describe('Same local accounts:\n', () => {
     beforeEach(() => {
       mocks.getAccounts([accounts.extended]);
@@ -101,16 +105,19 @@ describe('claim.module tests:\n', () => {
       mocks.getAccounts([accounts.extended]);
       mocks.getAccountsFromLocalStorage(differentAccount);
     });
+
     it('Must not claim accounts', async () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ accounts: true }));
       await ClaimModule.start();
       expect(spies.claimAccounts).not.toBeCalled();
     });
+
     it('Must not claim rewards', async () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ rewards: true }));
       await ClaimModule.start();
       expect(spies.claimRewards).not.toBeCalled();
     });
+
     it('Must not claim savings', async () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
       await ClaimModule.start();
