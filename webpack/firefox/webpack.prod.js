@@ -13,7 +13,7 @@ module.exports = merge(common, {
     filename: '[name]Bundle.js',
   },
   plugins: [
-    new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
+    // new WebpackBundleAnalyzer.BundleAnalyzerPlugin(),
     new DefinePlugin({
       'process.env': JSON.stringify({ IS_FIREFOX: true }),
     }),

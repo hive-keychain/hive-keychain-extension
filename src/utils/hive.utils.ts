@@ -38,6 +38,7 @@ import {
 } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -45,7 +46,8 @@ const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
 const HIVE_100_PERCENT = 10000;
 
-let client = new Client(DEFAULT_RPC);
+// let client = new Client(DEFAULT_RPC);
+let client: Client;
 
 const getClient = (): Client => {
   return client;
@@ -265,11 +267,9 @@ const getDelegatees = async (name: string) => {
 
 const getPendingOutgoingUndelegation = async (name: string) => {
   return (
-    await hive.api.callAsync(
-      'database_api.find_vesting_delegation_expirations',
-      {
-        account: name,
-      },
+    await HiveUtils.getClient().database.call(
+      'find_vesting_delegation_expirations',
+      [name],
     )
   ).delegations.map((pendingUndelegation: any) => {
     return {
@@ -507,9 +507,12 @@ const deposit = async (
   amount: string,
   receiver: string,
 ) => {
-  const savings = await hive.api.getSavingsWithdrawFromAsync(
-    activeAccount.name,
+  const savings = await HiveUtils.getClient().call(
+    'condenser_api',
+    'get_savings_withdraw_from',
+    [activeAccount.name],
   );
+
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
   try {
     await sendOperationWithConfirmation(
@@ -542,9 +545,12 @@ const withdraw = async (
   amount: string,
   to: string,
 ) => {
-  const savings = await hive.api.getSavingsWithdrawFromAsync(
-    activeAccount.name,
+  const savings = await HiveUtils.getClient().call(
+    'condenser_api',
+    'get_savings_withdraw_from',
+    [activeAccount.name],
   );
+
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
 
   try {
@@ -599,11 +605,15 @@ const delegateVestingShares = async (
   }
 };
 /* istanbul ignore next */
-const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
+const sendCustomJson = async (
+  json: any,
+  activeAccount: ActiveAccount,
+  mainnet?: string,
+) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
       {
-        id: Config.hiveEngine.mainnet,
+        id: mainnet ? mainnet : Config.hiveEngine.mainnet,
         required_auths: [activeAccount.name!],
         required_posting_auths: activeAccount.keys.active
           ? []
@@ -614,38 +624,14 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
     ),
   );
 };
-/* istanbul ignore next */
-const voteForProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, true);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
-/* istanbul ignore next */
-const unvoteProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, false);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
+
 /* istanbul ignore next */
 const updateProposalVote = async (
   activeAccount: ActiveAccount,
   proposalId: number,
   vote: boolean,
 ) => {
+  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
   return await sendOperationWithConfirmation(
     getClient().broadcast.sendOperations(
       [
@@ -659,9 +645,7 @@ const updateProposalVote = async (
           },
         ] as UpdateProposalVotesOperation,
       ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
-      ),
+      PrivateKey.fromString(activeAccount.keys.active as string),
     ),
   );
 };
@@ -677,7 +661,11 @@ const sendOperationWithConfirmation = async (
     );
     await sleep(500);
   } while (['within_mempool', 'unknown'].includes(transaction.status));
-  if (transaction.status === 'within_reversible_block') {
+  if (
+    ['within_reversible_block', 'within_irreversible_block'].includes(
+      transaction.status,
+    )
+  ) {
     Logger.info('Transaction confirmed');
     return transactionConfirmation.id || true;
   } else {
@@ -745,11 +733,10 @@ const HiveUtils = {
   delegateVestingShares,
   sendCustomJson,
   signMessage,
-  voteForProposal,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
-  unvoteProposal,
   getProposalDailyBudget,
+  updateProposalVote,
   getRewardBalance,
   getRecentClaims,
   getHivePrice,

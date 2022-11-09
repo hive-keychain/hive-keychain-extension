@@ -73,7 +73,13 @@ const checkRpcStatus = async (uri: string) => {
     },
   );
   try {
-    await axios.get(`${uri === 'DEFAULT' ? 'api.hive.blog' : uri}/health`);
+    const result = await axios.get(
+      `${uri === 'DEFAULT' ? 'https://api.hive.blog' : uri}/health`,
+      {
+        timeout: 10000,
+      },
+    );
+
     return true;
   } catch (err) {
     Logger.error(err);

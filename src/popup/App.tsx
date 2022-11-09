@@ -66,7 +66,7 @@ const App = ({
   }, []);
 
   useEffect(() => {
-    onActiveRpcRefreshed();
+    if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
 
   const onActiveRpcRefreshed = async () => {
@@ -142,7 +142,7 @@ const App = ({
   const initApplication = async () => {
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
-    initActiveRpc(rpc);
+    await initActiveRpc(rpc);
     initHiveEngineConfigFromStorage();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
@@ -203,22 +203,19 @@ const App = ({
     }
   };
 
-  const tryNewRpc = () => {
-    setActiveRpc(switchToRpc!);
-    setDisplayChangeRpcPopup(false);
-  };
-  return (
-    <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {activeRpc && renderMainLayoutNav()}
-      <MessageContainerComponent />
-      <ProposalVotingSectionComponent />
-      {(loading || !activeRpc) && (
-        <LoadingComponent operations={loadingOperation} />
-      )}
-      {displayProxySuggestion && (
-        <ProxySuggestionComponent></ProxySuggestionComponent>
-      )}
-      {displayChangeRpcPopup && activeRpc && switchToRpc && (
+  const renderPopup = (
+    loading: number,
+    activeRpc: Rpc | undefined,
+    displayProxySuggestion: boolean,
+    displayChangeRpcPopup: boolean,
+    switchToRpc: Rpc | undefined,
+  ) => {
+    if (loading || !activeRpc) {
+      return <LoadingComponent operations={loadingOperation} />;
+    } else if (displayProxySuggestion) {
+      return <ProxySuggestionComponent />;
+    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+      return (
         <div className="change-rpc-popup">
           <div className="message">
             {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
@@ -230,6 +227,25 @@ const App = ({
             label="popup_html_switch_rpc"
             onClick={tryNewRpc}></ButtonComponent>
         </div>
+      );
+    }
+  };
+
+  const tryNewRpc = () => {
+    setActiveRpc(switchToRpc!);
+    setDisplayChangeRpcPopup(false);
+  };
+  return (
+    <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
+      {activeRpc && renderMainLayoutNav()}
+      <MessageContainerComponent />
+      <ProposalVotingSectionComponent />
+      {renderPopup(
+        loading,
+        activeRpc,
+        displayProxySuggestion,
+        displayChangeRpcPopup,
+        switchToRpc,
       )}
     </div>
   );

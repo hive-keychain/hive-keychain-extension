@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.2.0",
+  "version": "2.3",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -25,7 +25,9 @@
     "test:detect": "jest --verbose --detectOpenHandles",
     "test:watch": "jest --verbose --watch",
     "test:cov": "jest --verbose --coverage",
-    "bump": "scripts/bump-version"
+    "bump": "scripts/bump-version",
+    "release": "scripts/release.sh",
+    "release-beta": "scripts/release-beta.sh"
   },
   "repository": {
     "type": "git",
@@ -125,7 +127,8 @@
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.9.0",
-    "webpack-merge": "5.8.0"
+    "webpack-merge": "5.8.0",
+    "jest-chrome": "0.7.2"
   },
   "overrides": {
     "sass-graph": {

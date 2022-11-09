@@ -60,6 +60,7 @@ export default async (
     const accounts = items.accounts
       ? (EncryptUtils.decryptToJson(items.accounts, mk!).list as LocalAccount[])
       : [];
+
     await requestHandler.initializeParameters(
       accounts,
       rpc,
