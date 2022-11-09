@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@hiveio/dhive": "^1.2.3",
+    "@hiveio/dhive": "1.2.3",
     "@hiveio/hive-js": "2.0.4",
     "@types/chrome": "0.0.177",
     "@types/crypto-js": "4.1.1",
@@ -112,7 +112,7 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "27.5.1",
     "node-sass": "7.0.1",
-    "patch-package": "^6.4.7",
+    "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",
     "redux-mock-store": "1.5.4",
     "remote-redux-devtools": "0.5.16",
