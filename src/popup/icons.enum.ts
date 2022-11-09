@@ -25,6 +25,7 @@ export enum Icons {
   DELEGATIONS_RC = 'rc-delegation.svg',
   DELEGATIONS_HP = 'hp-delegation.svg',
   DELETE = 'delete',
+  DISCORD = 'discord.svg',
   DONE = 'done',
   EDIT = 'edit',
   ERROR = 'error',
@@ -33,6 +34,7 @@ export enum Icons {
   FILTER = 'filter_alt',
   HIDDEN = 'visibility_off',
   HISTORY = 'history',
+  HIVE = 'hive-brands.svg',
   INBOX = 'inbox',
   INFO = 'info',
   IMPORT = 'file_upload',
@@ -62,6 +64,7 @@ export enum Icons {
   SUPPORT = 'contact_support',
   TIMELAPSE = 'timelapse',
   TOKENS = 'generating_tokens',
+  TWITTER = 'twitter.svg',
   VISIBLE = 'visibility',
   WARNING = 'warning',
 }
