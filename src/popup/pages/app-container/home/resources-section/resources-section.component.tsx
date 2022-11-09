@@ -17,7 +17,6 @@ const ResourcesSection = ({
   const [rcReadyIn, setRcReadyIn] = useState('');
 
   useEffect(() => {
-    console.log(activeAccount);
     if (
       activeAccount?.account?.voting_manabar?.current_mana !== undefined &&
       activeAccount.rc?.percentage !== undefined

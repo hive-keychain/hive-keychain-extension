@@ -25,7 +25,9 @@
     "test:detect": "jest --verbose --detectOpenHandles",
     "test:watch": "jest --verbose --watch",
     "test:cov": "jest --verbose --coverage",
-    "bump": "scripts/bump-version"
+    "bump": "scripts/bump-version",
+    "release": "scripts/release.sh",
+    "release-beta": "scripts/release-beta.sh"
   },
   "repository": {
     "type": "git",
