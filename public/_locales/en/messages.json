@@ -2571,5 +2571,9 @@
   "popup_html_survey_help_us": {
     "message": "Let's go!",
     "description": "Help us button on survey popup"
+  },
+  "popup_html_public_key_not_matching": {
+    "message": "The public key doesn't match the public key on the blockchain. It might have been updated",
+    "description": "Help us button on survey popup"
   }
 }
