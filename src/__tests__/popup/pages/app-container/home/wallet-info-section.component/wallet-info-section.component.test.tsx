@@ -1,8 +1,10 @@
+import { HpDropdownMenuItems } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-dropdown-menus.list';
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import walletInfoImplementations from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/implementations';
 import walletInfo from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/wallet-info';
 import walletInfoConstants from 'src/__tests__/popup/pages/app-container/home/wallet-info-section.component/mocks/wallet-info-constants';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
@@ -36,10 +38,6 @@ describe('wallet-info-section.component tests:\n', () => {
       await clickAwait([alDropdown.arrow.hbd]);
       methods.assertManyByLabel(arraysInfo.span.hbd);
     });
-    it('Must show hp menus', async () => {
-      await clickAwait([alDropdown.arrow.hp]);
-      methods.assertManyByLabel(arraysInfo.span.hp);
-    });
     it('Must navigate to each page on hive dropdown', async () => {
       const pages = arraysInfo.pages.tofindOn.hive;
       for (let i = 0; i < pages.length; i++) {
@@ -57,10 +55,17 @@ describe('wallet-info-section.component tests:\n', () => {
       }
     });
     it('Must navigate to each page on hp dropdown', async () => {
-      const pages = arraysInfo.pages.tofindOn.hp;
-      for (let i = 0; i < pages.length; i++) {
-        await clickAwait([alDropdown.arrow.hp, arraysInfo.span.hp[i]]);
-        await assertion.awaitOneByLabel(pages[i]);
+      const ariaLabelPage = [
+        alComponent.delegationsPage,
+        alComponent.rcDelegationsPage,
+        alComponent.powerUpDownPage,
+      ];
+      for (let i = 0; i < HpDropdownMenuItems.length; i++) {
+        await clickAwait([alDropdown.arrow.hp]);
+        const element = HpDropdownMenuItems[i];
+        const ariaLabel = alDropdown.itemPreFix + element.icon;
+        await clickAwait([ariaLabel]);
+        assertion.getByLabelText(ariaLabelPage[i]);
         await clickAwait([alIcon.arrowBack]);
       }
     });

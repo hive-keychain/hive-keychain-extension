@@ -12,10 +12,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actPendingTimers,
-  clickAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
+import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 const deselectAll = async () => {
   await clickAwait([
@@ -47,18 +44,33 @@ describe('select-keys.component tests:\n', () => {
   });
   it('Must import the  selected active key', async () => {
     await clickAwait([alCheckbox.selectKeys.import.activeKey, alButton.save]);
-    await actPendingTimers();
-    await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+    // await actPendingTimers();
+    const importSuccessFullMessage = mocksImplementation
+      .i18nGetMessageCustom('popup_html_import_success')
+      .split('<br>')[0];
+    await waitFor(() => {
+      expect(screen.getByText(importSuccessFullMessage, { exact: false }));
+    });
   });
   it('Must import the selected posting key', async () => {
     await clickAwait([alCheckbox.selectKeys.import.postingkey, alButton.save]);
-    await actPendingTimers();
-    await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+    // await actPendingTimers();
+    const importSuccessFullMessage = mocksImplementation
+      .i18nGetMessageCustom('popup_html_import_success')
+      .split('<br>')[0];
+    await waitFor(() => {
+      expect(screen.getByText(importSuccessFullMessage, { exact: false }));
+    });
   });
   it('Must import the selected memo key', async () => {
     await clickAwait([alCheckbox.selectKeys.import.memoKey, alButton.save]);
-    await actPendingTimers();
-    await assertion.awaitFor(alComponent.homePage, QueryDOM.BYLABEL);
+    // await actPendingTimers();
+    const importSuccessFullMessage = mocksImplementation
+      .i18nGetMessageCustom('popup_html_import_success')
+      .split('<br>')[0];
+    await waitFor(() => {
+      expect(screen.getByText(importSuccessFullMessage, { exact: false }));
+    });
   });
   it('Must show error if no key selected', async () => {
     const errorMessage = mocksImplementation.i18nGetMessageCustom(

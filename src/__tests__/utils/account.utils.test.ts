@@ -41,6 +41,9 @@ describe('account.utils tests:\n', () => {
       current_mana: 1000,
       max_mana: 1000,
       percentage: 100,
+      delegated_rc: 0,
+      received_delegated_rc: 0,
+      max_rc: 1000000000000,
     },
     name: userData.username,
   };

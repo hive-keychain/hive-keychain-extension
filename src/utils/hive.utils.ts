@@ -46,7 +46,8 @@ const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
 const HIVE_100_PERCENT = 10000;
 
-let client = new Client(DEFAULT_RPC);
+// let client = new Client(DEFAULT_RPC);
+let client: Client;
 
 const getClient = (): Client => {
   return client;
@@ -266,11 +267,9 @@ const getDelegatees = async (name: string) => {
 
 const getPendingOutgoingUndelegation = async (name: string) => {
   return (
-    await hive.api.callAsync(
-      'database_api.find_vesting_delegation_expirations',
-      {
-        account: name,
-      },
+    await HiveUtils.getClient().database.call(
+      'find_vesting_delegation_expirations',
+      [name],
     )
   ).delegations.map((pendingUndelegation: any) => {
     return {
@@ -508,9 +507,12 @@ const deposit = async (
   amount: string,
   receiver: string,
 ) => {
-  const savings = await hive.api.getSavingsWithdrawFromAsync(
-    activeAccount.name,
+  const savings = await HiveUtils.getClient().call(
+    'condenser_api',
+    'get_savings_withdraw_from',
+    [activeAccount.name],
   );
+
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
   try {
     await sendOperationWithConfirmation(
@@ -543,9 +545,12 @@ const withdraw = async (
   amount: string,
   to: string,
 ) => {
-  const savings = await hive.api.getSavingsWithdrawFromAsync(
-    activeAccount.name,
+  const savings = await HiveUtils.getClient().call(
+    'condenser_api',
+    'get_savings_withdraw_from',
+    [activeAccount.name],
   );
+
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
 
   try {
@@ -600,11 +605,15 @@ const delegateVestingShares = async (
   }
 };
 /* istanbul ignore next */
-const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
+const sendCustomJson = async (
+  json: any,
+  activeAccount: ActiveAccount,
+  mainnet?: string,
+) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
       {
-        id: Config.hiveEngine.mainnet,
+        id: mainnet ? mainnet : Config.hiveEngine.mainnet,
         required_auths: [activeAccount.name!],
         required_posting_auths: activeAccount.keys.active
           ? []

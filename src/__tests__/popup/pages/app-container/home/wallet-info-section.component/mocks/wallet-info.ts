@@ -17,7 +17,7 @@ const beforeEach = async (toUse?: {
 }) => {
   let remock: MocksToUse = {};
   jest.useFakeTimers('legacy');
-  actAdvanceTime(4300);
+  actAdvanceTime(6300);
   if (toUse?.zeroBalances) {
     remock = {
       app: {
