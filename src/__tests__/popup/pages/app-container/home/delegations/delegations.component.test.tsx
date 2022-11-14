@@ -74,7 +74,7 @@ describe('delegations.component tests:\n', () => {
       await assertion.awaitFor(message.success.cancelation, QueryDOM.BYTEXT);
       assertion.getByLabelText(alComponent.homePage);
     });
-    it('Must show error message if cancellation fails', async () => {
+    it('Must show error message if cancellation fail', async () => {
       delegations.extraMocks(false);
       await delegations.methods.typeNClick('theghost1980', '', true, true);
       await assertion.awaitFor(message.error.cancellation, QueryDOM.BYTEXT);
