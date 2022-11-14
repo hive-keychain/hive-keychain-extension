@@ -10,6 +10,7 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
+// import { LedgerUtils } from 'src/utils/ledger.utils';
 import './add-key.component.scss';
 
 const AddKey = ({
@@ -37,6 +38,28 @@ const AddKey = ({
     goBack();
   };
 
+  const navigateToUseLedger = async () => {
+    const extensionId = (await chrome.management.getSelf()).id;
+    chrome.tabs.create({
+      url: `chrome-extension://${extensionId}/connect-ledger.html`,
+    });
+    // chrome.windows.getCurrent(async (currentWindow) => {
+    //   const win: chrome.windows.CreateData = {
+    //     url: chrome.runtime.getURL('connect-ledger.html'),
+    //     type: 'popup',
+    //     height: 566,
+    //     width: 350,
+    //     left: currentWindow.width! - 350 + currentWindow.left!,
+    //     top: currentWindow.top,
+    //   };
+    //   // Except on Firefox
+    //   //@ts-ignore
+    //   if (typeof InstallTrigger === undefined) win.focused = true;
+    //   const window = await chrome.windows.create(win);
+    //   // setImportWindow(window.id);
+    // });
+  };
+
   return (
     <div className="add-key-page">
       <p
@@ -57,6 +80,13 @@ const AddKey = ({
         onChange={setPrivateKey}
         onEnterPress={importKey}
       />
+
+      {navParams === KeyType.ACTIVE && (
+        <div className="add-using-ledger" onClick={navigateToUseLedger}>
+          {chrome.i18n.getMessage('popup_html_add_using_ledger')}
+        </div>
+      )}
+
       <ButtonComponent
         ariaLabel="import-keys-button"
         label="popup_html_import_key"

@@ -11,6 +11,7 @@ const config = {
     background: './src/background/index.ts',
     importAccounts: './src/import/import-accounts.tsx',
     importSettings: './src/import/import-settings.tsx',
+    connectLedger: './src/connect-ledger/index.tsx',
     web_interface: './src/content-scripts/web-interface/index.ts',
     keychainify: './src/content-scripts/keychainify/index.ts',
   },

@@ -11,6 +11,7 @@ import {
   sendResponse,
 } from 'src/content-scripts/web-interface/response.logic';
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 
 let req: KeychainRequest | null = null;
@@ -27,8 +28,10 @@ const setupInjection = () => {
     Logger.error('Hive Keychain injection failed.', e);
   }
 };
-
+console.log('content script');
+console.log('hello');
 setupInjection();
+LedgerUtils.detect();
 
 // Answering the handshakes
 document.addEventListener('swHandshake_hive', () => {

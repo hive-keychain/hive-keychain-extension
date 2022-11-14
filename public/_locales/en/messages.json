@@ -2574,6 +2574,14 @@
   },
   "popup_html_public_key_not_matching": {
     "message": "The public key doesn't match the public key on the blockchain. It might have been updated",
-    "description": "Help us button on survey popup"
+    "description": "select keys => public not matching"
+  },
+  "popup_html_add_using_ledger": {
+    "message": "Add using Ledger",
+    "description": "Add using ledger link"
+  },
+  "popup_html_ledger_not_detected": {
+    "message": "Ledger not detected",
+    "description": "Ledger not detected error message"
   }
 }

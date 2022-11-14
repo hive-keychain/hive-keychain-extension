@@ -45,8 +45,11 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
+    "@engrave/ledger-app-hive": "^3.4.0",
     "@hiveio/dhive": "1.2.3",
     "@hiveio/hive-js": "2.0.4",
+    "@ledgerhq/hw-transport": "6.24.1",
+    "@ledgerhq/hw-transport-webusb": "6.20.0",
     "@types/chrome": "0.0.177",
     "@types/crypto-js": "4.1.1",
     "@types/yargs": "17.0.11",
@@ -111,6 +114,7 @@
     "fs": "0.0.1-security",
     "identity-obj-proxy": "3.0.0",
     "jest": "27.5.1",
+    "jest-chrome": "0.7.2",
     "node-sass": "7.0.1",
     "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",
@@ -127,8 +131,7 @@
     "webpack-bundle-analyzer": "4.5.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.9.0",
-    "webpack-merge": "5.8.0",
-    "jest-chrome": "0.7.2"
+    "webpack-merge": "5.8.0"
   },
   "overrides": {
     "sass-graph": {
