@@ -414,7 +414,16 @@ const getAccount = async (username: string) => {
  * HiveUtils.getClient().rc.getRCMana(username)
  */
 const getRCMana = async (username: string) => {
-  return HiveUtils.getClient().rc.getRCMana(username);
+  const result = await HiveUtils.getClient().rc.call('find_rc_accounts', {
+    accounts: [username],
+  });
+
+  const mana = await HiveUtils.getClient().rc.getRCMana(username);
+  return {
+    ...result.rc_accounts[0],
+    ...mana,
+    percentage: mana.percentage / 100.0,
+  };
 };
 
 const getExtendedAccounts = async (usernames: string[]) => {

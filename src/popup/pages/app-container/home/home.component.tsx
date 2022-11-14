@@ -22,6 +22,7 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -49,6 +50,7 @@ const Home = ({
   >([]);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
+
   useEffect(() => {
     resetTitleContainerProperties();
     loadBittrexPrices();
@@ -67,7 +69,7 @@ const Home = ({
     ) {
       setTimeout(() => {
         setDisplayLoader(false);
-      }, 1000);
+      }, Config.loader.minDuration);
     } else {
       setDisplayLoader(true);
     }
@@ -139,7 +141,7 @@ const Home = ({
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
   ) => {
-    if (displayLoader || activeRpc?.uri === 'NULL') {
+    if (displayLoader === true || activeRpc?.uri === 'NULL') {
       return (
         <div className="loading">
           <RotatingLogoComponent></RotatingLogoComponent>

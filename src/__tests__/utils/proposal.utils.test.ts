@@ -1,27 +1,31 @@
-import * as hive from '@hiveio/hive-js';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import moment from 'moment';
 import HiveUtils from 'src/utils/hive.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
-import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import proposal from 'src/__tests__/utils-for-testing/data/proposal';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 
 afterEach(() => {
   jest.clearAllMocks();
 });
 describe('proposal.utils tests:\n', () => {
+  beforeEach(() => {
+    HiveUtils.setRpc(rpc.fake);
+  });
   describe('hasVotedForProposal tests:\n', () => {
-    test('Passing an account which voted for keychain proposal, must return true', async () => {
-      hive.api.listProposalVotesAsync = jest
+    test('Must return true if voted', async () => {
+      HiveUtils.getClient().database.call = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeVotedAccountResponse);
+        .mockResolvedValue(proposal.fakeVotedAccountResponse);
       const account = { name: 'theghost1980' } as ActiveAccount;
       const result = await ProposalUtils.hasVotedForProposal(account);
       expect(result).toBe(true);
     });
-    test('Passing an account which has not voted for keychain proposal, must return false', async () => {
-      hive.api.listProposalVotesAsync = jest
+
+    test('Must return false if not voted', async () => {
+      HiveUtils.getClient().database.call = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeVotedAccountResponse);
+        .mockResolvedValue(proposal.fakeVotedAccountResponse);
       const account = { name: 'no_voted_acount' } as ActiveAccount;
       const result = await ProposalUtils.hasVotedForProposal(account);
       expect(result).toBe(false);
@@ -30,33 +34,27 @@ describe('proposal.utils tests:\n', () => {
 
   describe('getProposalList tests:\n', () => {
     test('Passing a user that hasnt voted on any proposal, must return a list of proposal with a field false on each one', async () => {
-      const showResult = false;
-      const mockHiveApi = (hive.api.callAsync = jest
+      HiveUtils.getClient().database.call = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeProposalListResponse)
-        .mockResolvedValueOnce(utilsT.fakeListProposalVotesResponse));
+        .mockResolvedValueOnce(proposal.fakeProposalListResponse)
+        .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);
 
-      const mockDailyBudgetApi = (HiveUtils.getProposalDailyBudget = jest
+      HiveUtils.getProposalDailyBudget = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeDailyBudgetResponse));
+        .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
 
       const result = await ProposalUtils.getProposalList('theghost1980');
-      if (showResult) {
-        console.log(result);
-      }
-      expect(result).toEqual(utilsT.expectedResultProposal);
-      expect(mockHiveApi).toBeCalledTimes(2);
-      expect(mockDailyBudgetApi).toBeCalledTimes(1);
+      expect(result).toEqual(proposal.expectedResultProposal);
     });
     test('Passing a user that has voted on the keychain proposal, must return a list of proposal with one voted proposal', async () => {
       const withKeyChainProposal = {
         proposals: [
-          ...utilsT.fakeProposalListResponse.proposals,
-          utilsT.fakeProposalKeyChain,
+          ...proposal.fakeProposalListResponse.proposals,
+          proposal.fakeProposalKeyChain,
         ],
       };
       const expectedResultProposalWithkeyChain = [
-        ...utilsT.expectedResultProposal,
+        ...proposal.expectedResultProposal,
         {
           id: 216,
           creator: 'keychain',
@@ -72,23 +70,18 @@ describe('proposal.utils tests:\n', () => {
           funded: 'totally_funded',
         },
       ];
-      const showResult = false;
-      const mockHiveApi = (hive.api.callAsync = jest
+
+      HiveUtils.getClient().database.call = jest
         .fn()
         .mockResolvedValueOnce(withKeyChainProposal)
-        .mockResolvedValueOnce(utilsT.fakeListProposalVotesResponse));
+        .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);
 
-      const mockDailyBudgetApi = (HiveUtils.getProposalDailyBudget = jest
+      HiveUtils.getProposalDailyBudget = jest
         .fn()
-        .mockResolvedValueOnce(utilsT.fakeDailyBudgetResponse));
+        .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
 
       const result = await ProposalUtils.getProposalList('theghost1980');
-      if (showResult) {
-        console.log(result);
-      }
       expect(result).toEqual(expectedResultProposalWithkeyChain);
-      expect(mockHiveApi).toBeCalledTimes(2);
-      expect(mockDailyBudgetApi).toBeCalledTimes(1);
     });
   });
 });

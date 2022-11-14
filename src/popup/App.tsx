@@ -52,6 +52,7 @@ const App = ({
   loadGlobalProperties,
   displayProxySuggestion,
   initHiveEngineConfigFromStorage,
+  navigationStack,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
@@ -66,7 +67,7 @@ const App = ({
   }, []);
 
   useEffect(() => {
-    onActiveRpcRefreshed();
+    if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
 
   const onActiveRpcRefreshed = async () => {
@@ -86,10 +87,20 @@ const App = ({
 
   useEffect(() => {
     initHasStoredAccounts();
-    if (isAppReady) {
+    const found = navigationStack.find(
+      (navigation) =>
+        navigation.currentPage === 'ACCOUNT_PAGE_INIT_ACCOUNT' ||
+        navigation.currentPage === 'SETTINGS_MANAGE_ACCOUNTS' ||
+        navigation.currentPage === 'SIGN_IN_PAGE',
+    );
+    if (
+      isAppReady &&
+      (navigationStack.length === 0 || found) &&
+      hasStoredAccounts
+    ) {
       selectComponent(mk, accounts);
     }
-  }, [isAppReady, mk, accounts]);
+  }, [isAppReady, mk, accounts, hasStoredAccounts]);
 
   const initHasStoredAccounts = async () => {
     const storedAccounts = await AccountUtils.hasStoredAccounts();
@@ -142,7 +153,7 @@ const App = ({
   const initApplication = async () => {
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
-    initActiveRpc(rpc);
+    await initActiveRpc(rpc);
     initHiveEngineConfigFromStorage();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
@@ -266,6 +277,7 @@ const mapStateToProps = (state: RootState) => {
       state.activeAccount.account &&
       state.activeAccount.account.proxy === '' &&
       state.activeAccount.account.witnesses_voted_for === 0,
+    navigationStack: state.navigation.stack,
   };
 };
 

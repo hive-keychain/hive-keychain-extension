@@ -45,7 +45,6 @@ describe('home.component tests:\n', () => {
       screen.getByLabelText(alToolTip.custom.resources.resourceCredits),
     );
     expect(screen.getByLabelText(alToolTip.content)).toBeInTheDocument();
-    expect(screen.getByText(home.methods.rcReadyIn())).toBeInTheDocument();
   });
   it('Must change active account to the selected one', async () => {
     extraMocks.remockGetAccount();

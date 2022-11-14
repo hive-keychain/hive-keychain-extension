@@ -133,7 +133,14 @@ describe('account.actions tests:\n', () => {
       mockPreset.setOrDefault({
         app: {
           getAccount: fakeExtendedAccountResponse,
-          getRCMana: fakeManaBarResponse,
+          getRCMana: {
+            current_mana: 99,
+            received_delegated_rc: 0,
+            max_mana: 100,
+            max_rc: 100,
+            delegated_rc: 0,
+            percentage: 100,
+          },
         },
       });
       await fakeStore.dispatch<any>(accountActions.removeKey(keyType));

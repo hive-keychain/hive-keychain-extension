@@ -2,7 +2,7 @@ import RPCModule from '@background/rpc.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import BgdHiveUtils from '@background/utils/hive.utils';
 import { Asset, ExtendedAccount } from '@hiveio/dhive/lib/index-browser';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import { ActiveAccount, RC } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -192,11 +192,17 @@ const createActiveAccount = async (
 };
 
 const getRC = async (accountName: string) => {
-  const rcAcc = await (
-    await RPCModule.getClient()
-  ).rc.findRCAccounts([accountName]);
-  const rc = await (await RPCModule.getClient()).rc.calculateRCMana(rcAcc[0]);
-  return rc;
+  const client = await RPCModule.getClient();
+
+  const rcAcc = await client.rc.call('find_rc_accounts', {
+    accounts: [accountName],
+  });
+  const rc = await client.rc.calculateRCMana(rcAcc[0]);
+  return {
+    ...rc,
+    delegated_rc: rcAcc.delegated_rc,
+    received_delegated_rc: rcAcc.received_delegated_rc,
+  } as RC;
 };
 
 const ClaimModule = {

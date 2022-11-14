@@ -27,7 +27,7 @@ describe('resources-section.component tests:\n', () => {
         { ariaLabel: alDiv.resources.vm, event: EventType.HOVER },
       ]);
       expect(screen.getByLabelText(alToolTip.content)).toHaveTextContent(
-        constants.toolTip.fullIn,
+        constants.toolTip.fullInDays,
       );
     });
     it('Must show tool tip when hover on credits', async () => {

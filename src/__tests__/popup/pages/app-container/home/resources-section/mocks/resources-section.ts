@@ -1,5 +1,5 @@
 import { ExtendedAccount } from '@hiveio/dhive';
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { RC } from '@interfaces/active-account.interface';
 import { ReactElement } from 'react';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -22,13 +22,21 @@ const constants = {
   username: mk.user.one,
   noMana: '--',
   zeroRc: 'speedResource Credits0.00 %',
-  wMana: '1.00 % (1.00 $)',
-  wRc: '1.00 %',
+  wMana: 'arrow_circle_upVoting Mana1.00 % (1.00 $)',
+  wRc: 'speedResource Credits100.00 %',
   toolTip: {
-    fullIn: 'Full in 4 days, 22 hours and 48 minutes',
+    fullIn: 'Already full!',
+    fullInDays: 'Full in 4 days, 22 hours and 48 minutes',
     noHp: i18n.get('html_popup_voting_no_hp'),
   },
-  manabarZero: { current_mana: 0, percentage: 0 } as Manabar,
+  manabarZero: {
+    current_mana: 0,
+    percentage: 0,
+    delegated_rc: 0,
+    received_delegated_rc: 0,
+    max_rc: 0,
+    max_mana: 0,
+  } as RC,
   extendedZeroVotingMana: {
     ...accounts.extended,
     voting_manabar: {
