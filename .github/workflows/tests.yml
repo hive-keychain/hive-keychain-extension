@@ -37,4 +37,4 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run build:chromium --if-present
-      - run: npm test -- -u --bail 1
+      - run: npm test -- -u --bail true
