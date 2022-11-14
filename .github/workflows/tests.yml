@@ -21,7 +21,7 @@ env:
   _TEST_MASTER: ${{secrets._TEST_MASTER}}
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:
