@@ -8,3 +8,4 @@ dist-*
 stats.json
 coverage
 *.code-workspace
+_releases

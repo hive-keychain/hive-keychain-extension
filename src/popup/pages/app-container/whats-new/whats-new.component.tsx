@@ -1,4 +1,7 @@
-import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
+import {
+  Feature,
+  WhatsNewContent,
+} from '@popup/pages/app-container/whats-new/whats-new.interface';
 import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-responsive-carousel';
 import 'react-responsive-carousel/lib/styles/carousel.min.css';
@@ -37,6 +40,14 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
   };
   const previous = () => {
     setPageIndex(pageIndex - 1);
+  };
+
+  const handleOnClick = (content: WhatsNewContent, feature: Feature) => {
+    if (feature.externalUrl) {
+      chrome.tabs.create({ url: feature.externalUrl });
+    } else {
+      navigateToArticle(`${content.url}#${feature.anchor}`);
+    }
   };
 
   const navigateToArticle = (url: string) => {
@@ -94,10 +105,9 @@ const WhatsNew = ({ onOverlayClick, content }: Props) => {
                   <a
                     aria-label="link-whats-new-read-more"
                     className="read-more-link"
-                    onClick={() =>
-                      navigateToArticle(`${content.url}#${feature.anchor}`)
-                    }>
-                    {chrome.i18n.getMessage('html_popup_read_more')}
+                    onClick={() => handleOnClick(content, feature)}>
+                    {feature.overrideReadMoreLabel ??
+                      chrome.i18n.getMessage('html_popup_read_more')}
                   </a>
                 </div>
               ))}

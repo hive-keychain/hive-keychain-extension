@@ -4,8 +4,8 @@ import React from 'react';
 import home from 'src/__tests__/popup/pages/app-container/home/mocks/home/home';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
+import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import config from 'src/__tests__/utils-for-testing/setups/config';
@@ -16,24 +16,40 @@ import {
 config.byDefault();
 describe('home.component action-buttons tests:\n', () => {
   beforeEach(async () => {
+    home.extraMocks.getLastTransaction();
     await home.beforeEach(<App />, accounts.twoAccounts);
   });
   afterEach(() => {
     afterTests.clean();
   });
-  it('Must open transfer funds page when clicking on send', async () => {
-    await clickAwait([alButton.actionBtn.send]);
-    assertion.getByLabelText(alComponent.transfersFundsPage);
-  });
-  it('Must show wallet history when clicking on history', async () => {
-    home.extraMocks.getLastTransaction();
-    await clickAwait([alButton.actionBtn.history]);
-    actRunAllTimers();
-    await assertion.awaitFor(alComponent.walletItemList, QueryDOM.BYLABEL);
-  });
-  it('Must show tokens page when clicking on tokens', async () => {
-    await clickAwait([alButton.actionBtn.tokens]);
-    actRunAllTimers();
-    await assertion.awaitFor(alComponent.userTokens, QueryDOM.BYLABEL);
+  it('Must open each page on each action button', async () => {
+    /**
+     * Note: add or remove more actions buttons & ariaLabels page when needed here.
+     */
+    const actionButtonLabelPage = [
+      {
+        ariaLabel: alButton.actionBtn.send,
+        pageComponent: alComponent.transfersFundsPage,
+      },
+      {
+        ariaLabel: alButton.actionBtn.history,
+        pageComponent: alComponent.walletItemList,
+      },
+      {
+        ariaLabel: alButton.actionBtn.buy,
+        pageComponent: alComponent.buyCoinsPage,
+      },
+      {
+        ariaLabel: alButton.actionBtn.send,
+        pageComponent: alComponent.transfersFundsPage,
+      },
+    ];
+    for (let i = 0; i < actionButtonLabelPage.length; i++) {
+      const { ariaLabel, pageComponent } = actionButtonLabelPage[i];
+      await clickAwait([ariaLabel]);
+      actRunAllTimers();
+      assertion.getByLabelText(pageComponent);
+      await clickAwait([alIcon.arrowBack]);
+    }
   });
 });

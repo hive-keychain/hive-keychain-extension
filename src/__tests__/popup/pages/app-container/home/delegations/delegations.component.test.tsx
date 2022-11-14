@@ -17,6 +17,7 @@ describe('delegations.component tests:\n', () => {
   const { message } = delegations.constants;
   const { onScreen } = delegations.userInformation;
   delegations.methods.after;
+  //TODO fix errors here, possible missing mockings + waitFor in assertions
   describe('handling errors on load:\n', () => {
     beforeEach(async () => {
       await delegations.beforeEach(<App />, true);

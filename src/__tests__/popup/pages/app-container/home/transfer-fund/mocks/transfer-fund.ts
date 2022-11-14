@@ -54,7 +54,7 @@ const beforeEach = async (
   },
 ) => {
   jest.useFakeTimers('legacy');
-  actAdvanceTime(4300);
+  actAdvanceTime(6300);
   mockPreset.setOrDefault({});
   if (remove?.activeKey) {
     methods.removeKey(remove.activeKey);
@@ -69,8 +69,7 @@ const beforeEach = async (
 
 const methods = {
   afterEach: afterEach(() => {
-    //afterTests.clean();
-    afterTests.cleanWithoutRunPendingTimers();
+    afterTests.clean();
   }),
   clickArrowTo: async (dropDownTo: string) => {
     let ariaLabels = [alDropdown.span.send];

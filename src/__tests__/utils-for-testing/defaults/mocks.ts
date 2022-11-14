@@ -2,8 +2,8 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
 import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
-import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
+import fake_RC from 'src/__tests__/utils-for-testing/data/rc';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import tokenMarket from 'src/__tests__/utils-for-testing/data/tokens/token-market';
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
@@ -12,9 +12,12 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 import {
   MocksApp,
   MocksChromeRunTime,
+  MocksConvertionRequests,
+  MocksGovernance,
   MocksHome,
   MocksPowerUp,
   MocksProposal,
+  MocksSurvey,
   MocksTokens,
   MocksTopBar,
   MocksWalletHistory,
@@ -35,9 +38,10 @@ const _defaults = {
       ),
     getCurrentRpc: rpc.defaultRpc,
     getActiveAccountNameFromLocalStorage: mk.user.one,
-    getRCMana: manabar,
+    getRCMana: fake_RC.rc,
     getAccount: accounts.asArray.extended,
     getExtendedAccount: accounts.extended,
+    getExtendedAccounts: [accounts.extended],
     checkRpcStatus: true,
     hasStoredAccounts: true,
     getMkFromLocalStorage: mk.user.one,
@@ -78,6 +82,16 @@ const _defaults = {
     },
     sendMessage: jest.fn(),
   } as MocksChromeRunTime,
+  _survey: {
+    byPassing: true, //as default
+  } as MocksSurvey,
+  _convertions: {
+    getConversionRequests: [], //as default
+  } as MocksConvertionRequests,
+  _governance: {
+    bypass: true,
+    accountsToRemind: [], //as default
+  } as MocksGovernance,
 };
 
 const mocksDefault = {

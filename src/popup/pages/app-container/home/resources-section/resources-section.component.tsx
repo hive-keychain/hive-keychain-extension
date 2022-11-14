@@ -32,7 +32,7 @@ const ResourcesSection = ({
         false,
       ) as string;
       const voting = parseFloat(manaValue);
-      const resources = activeAccount.rc.percentage / 100;
+      const resources = activeAccount.rc.percentage;
 
       if (hasMana) {
         setVotingMana(mana?.toFixed(2) + ' %');

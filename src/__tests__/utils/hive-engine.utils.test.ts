@@ -3,9 +3,13 @@ import { AssertionError } from 'assert';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('hive-engine.utils tests:\n', () => {
+  beforeEach(() => {
+    HiveUtils.setRpc(rpc.fake);
+  });
   describe('Mocking HIVE APIs:\n', () => {
     afterAll(() => {
       jest.clearAllMocks();

@@ -1,15 +1,14 @@
 import { ExtendedAccount } from '@hiveio/dhive';
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
-import { ActiveAccount } from 'src/interfaces/active-account.interface';
+import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
 import { Keys } from 'src/interfaces/local-account.interface';
 
 export const ActiveAccountReducer = (
   state: ActiveAccount = {
     account: {} as ExtendedAccount,
     keys: {} as Keys,
-    rc: {} as Manabar,
+    rc: {} as RC,
   },
   { type, payload }: ActionPayload<any>,
 ): ActiveAccount => {
@@ -21,7 +20,11 @@ export const ActiveAccountReducer = (
     case ActionType.FORGET_ACCOUNT:
     case ActionType.FORGET_ACCOUNTS:
     case ActionType.RESET_ACTIVE_ACCOUNT:
-      return { account: {} as ExtendedAccount, keys: {}, rc: {} as Manabar };
+      return {
+        account: {} as ExtendedAccount,
+        keys: {},
+        rc: {} as RC,
+      };
     default:
       return state;
   }

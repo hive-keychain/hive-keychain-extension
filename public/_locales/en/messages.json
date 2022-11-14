@@ -133,7 +133,7 @@
     "message": "Power down"
   },
   "popup_html_delegate": {
-    "message": "Delegations"
+    "message": "HP Delegations"
   },
   "popup_html_estimation": {
     "message": "Estimated Account Value",
@@ -2506,6 +2506,63 @@
   "popup_html_pending_conversions": {
     "message": "You have $1 pending $2 conversion(s)",
     "description": "Global"
+  },
+  "popup_html_delegate_rc": {
+    "message": "RC Delegations"
+  },
+  "popup_html_rc_delegations_text": {
+    "message": "You may delegate your Resource Credit (RC) to another user. Click on the Outgoing amount to review or make changes.",
+    "description": "Main page > Delegate RC"
+  },
+  "popup_html_username_missing": {
+    "message": "Username is missing",
+    "description": "In any form, when username is missing"
+  },
+  "html_popup_delegate_rc_operation": {
+    "message": "Delegating RC",
+    "description": "delegate rc operation"
+  },
+  "html_popup_cancel_delegate_rc_operation": {
+    "message": "Canceling RC delegation",
+    "description": "cancel delegate rc operation"
+  },
+  "popup_html_rc_delegation_confirm_text": {
+    "message": "Please confirm your RC delegation.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_confirm_text": {
+    "message": "Please confirm your want to cancel your RC delegation.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_title": {
+    "message": "RC Delegation",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_title": {
+    "message": "Cancel RC Delegation",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_successful": {
+    "message": "You successfully delegated RC to $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_successful": {
+    "message": "You successfully canceled your delegation to $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_failed": {
+    "message": "Your cancel delegation operation has failed",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_to": {
+    "message": "To"
+  },
+  "popup_html_rc_delegation_value": {
+    "message": "Value"
+  },
+  "popup_html_rc_delegation_failed": {
+    "message": "Rc Delegation failed",
+    "description": "RC delegation failed"
   },
   "popup_html_survey_no_thanks": {
     "message": "No thanks",
