@@ -56,7 +56,6 @@ const AddByKeys = ({
     if (KeysUtils.keysCount(keys) > 2) {
       navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, { keys, username });
     } else {
-      console.log('about to actionate addAccount'); //TODO to remove
       addAccount({ name: username, keys: keys });
     }
   };
