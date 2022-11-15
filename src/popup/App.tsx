@@ -151,11 +151,6 @@ const App = ({
   };
 
   const initApplication = async () => {
-    const rpc = await RpcUtils.getCurrentRpc();
-    setInitialRpc(rpc);
-    await initActiveRpc(rpc);
-    initHiveEngineConfigFromStorage();
-
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
 
@@ -172,8 +167,13 @@ const App = ({
       setAccounts(accountsFromStorage);
     }
 
-    setAppReady(true);
     selectComponent(mkFromStorage, accountsFromStorage);
+    setAppReady(true);
+
+    const rpc = await RpcUtils.getCurrentRpc();
+    setInitialRpc(rpc);
+    await initActiveRpc(rpc);
+    initHiveEngineConfigFromStorage();
   };
 
   const selectComponent = async (
@@ -221,7 +221,7 @@ const App = ({
     displayChangeRpcPopup: boolean,
     switchToRpc: Rpc | undefined,
   ) => {
-    if (loading || !activeRpc) {
+    if (loading || !activeRpc || !isAppReady) {
       return <LoadingComponent operations={loadingOperation} />;
     } else if (displayProxySuggestion) {
       return <ProxySuggestionComponent />;
