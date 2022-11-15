@@ -28,6 +28,11 @@ const getLedgerError = (errorName: string) => {
         name: 'TransportInterfaceNotAvailable',
         message: 'html_ledger_not_available',
       };
+    case 'TransportOpenUserCancelled':
+      return {
+        name: 'TransportOpenUserCancelled',
+        message: 'html_ledger_user_canceled',
+      };
     default:
       return {
         name: 'UnknownError',
@@ -59,13 +64,6 @@ const getSettings = () => {
   if (hiveLedger) {
     return hiveLedger.getSettings();
   }
-};
-
-const getActivePublicKey = () => {
-  const slipNetwork = 13;
-  const path = `m/${48}' /${13}' /${1}' /${0}' /${0}'`;
-  console.log(path);
-  return hiveLedger.getPublicKey(path);
 };
 
 const getAllKeys = async () => {
@@ -114,7 +112,6 @@ const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
 export const LedgerUtils = {
   detect,
   getSettings,
-  getActivePublicKey,
   getAllKeys,
   buildDerivationPath,
 };

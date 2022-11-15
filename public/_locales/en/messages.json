@@ -2583,5 +2583,25 @@
   "popup_html_ledger_not_detected": {
     "message": "Ledger not detected",
     "description": "Ledger not detected error message"
+  },
+  "popup_html_ledger_detected": {
+    "message": "Ledger  detected",
+    "description": "Ledger detected message"
+  },
+  "html_ledger_not_supported": {
+    "message": "Ledger not supported",
+    "description": "Ledger not detected error message"
+  },
+  "html_ledger_not_available": {
+    "message": "Ledger not available",
+    "description": "Ledger not available error message"
+  },
+  "html_ledger_user_canceled": {
+    "message": "User canceled",
+    "description": "Ledger user canceled error message"
+  },
+  "html_ledger_unknown_error": {
+    "message": "Unknown error",
+    "description": "Ledger unknown error"
   }
 }

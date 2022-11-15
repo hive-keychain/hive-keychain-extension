@@ -7,11 +7,7 @@ const ConnectLedger = () => {
   const initializeLedger = async () => {
     try {
       if (await LedgerUtils.detect()) {
-        console.log('ledger detected');
-        console.log(await LedgerUtils.getSettings());
-        console.log(await LedgerUtils.getAllKeys());
       } else {
-        console.log('error while init Ledger');
         return;
       }
     } catch (err: any) {
