@@ -13,19 +13,24 @@ body {
   margin: 0px;
   height: 100%;
   #root {
-    display: block;
+    display: flex;
     height: 100%;
+    background: linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0%
+      no-repeat padding-box !important;
+    align-items: center;
+    justify-content: center;
   }
 }
 
 .connect-ledger {
+  border: solid 1px grey;
+  border-radius: 8px;
+  width: 350px;
+  height: 600px;
   font-family: Futura !important;
-  height: 100%;
   font-weight: 400;
   background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
-      padding-box,
-    linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0% no-repeat
-      padding-box !important;
+    padding-box;
   color: white;
   padding: 24px;
   box-sizing: border-box;

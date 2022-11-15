@@ -3,7 +3,7 @@
   "description": "__MSG_description__",
   "default_locale": "en",
   "version": "2.3",
-  "permissions": ["storage", "idle", "alarms"],
+  "permissions": ["storage", "idle", "alarms", "notifications"],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
   "browser_action": {
     "default_popup": "popup.html",

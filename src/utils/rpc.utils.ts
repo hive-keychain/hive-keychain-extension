@@ -79,6 +79,7 @@ const checkRpcStatus = async (uri: string) => {
         timeout: 10000,
       },
     );
+    console.log(result);
 
     return true;
   } catch (err) {

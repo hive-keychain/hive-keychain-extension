@@ -1,18 +1,21 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import './connect-ledger.component.scss';
 
 const ConnectLedger = () => {
-  useEffect(() => {
-    initializeLedger();
-  }, []);
-
   const initializeLedger = async () => {
-    if (!(await LedgerUtils.detect())) {
-      console.log('error while init liedger');
-      return;
-    } else {
-      console.log('ledger detected');
+    try {
+      if (await LedgerUtils.detect()) {
+        console.log('ledger detected');
+        console.log(await LedgerUtils.getSettings());
+        console.log(await LedgerUtils.getAllKeys());
+      } else {
+        console.log('error while init Ledger');
+        return;
+      }
+    } catch (err: any) {
+      console.log(err);
     }
   };
 
@@ -20,7 +23,11 @@ const ConnectLedger = () => {
     <div className="connect-ledger">
       <div className="title-panel">
         <img src="/assets/images/iconhive.png" />
-        toto
+        <ButtonComponent
+          label="detect"
+          skipLabelTranslation
+          onClick={initializeLedger}
+        />
         <div className="title">
           {chrome.i18n.getMessage('html_connect_ledger')}
         </div>
