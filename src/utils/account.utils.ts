@@ -430,6 +430,8 @@ const getExtendedAccounts = async (usernames: string[]) => {
   return await HiveUtils.getClient().database.getAccounts(usernames);
 };
 
+const addKeyFromLedger = async (username: string, keys: Keys) => {};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -437,6 +439,7 @@ const AccountUtils = {
   hasStoredAccounts,
   addAuthorizedAccount,
   addKey,
+  addKeyFromLedger,
   deleteKey,
   isAccountListIdentical,
   deleteAccount,

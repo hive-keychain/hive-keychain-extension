@@ -14,7 +14,8 @@ import { KeyType } from 'src/interfaces/keys.interface';
 import './add-key.component.scss';
 
 const AddKey = ({
-  navParams,
+  keyType,
+  activeAccountName,
   goBack,
   addKey,
   setTitleContainerProperties,
@@ -34,30 +35,15 @@ const AddKey = ({
       setErrorMessage('popup_accounts_fill');
       return;
     }
-    addKey(privateKey.trim(), navParams, setErrorMessage);
+    addKey(privateKey.trim(), keyType, setErrorMessage);
     goBack();
   };
 
   const navigateToUseLedger = async () => {
     const extensionId = (await chrome.management.getSelf()).id;
     chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/connect-ledger.html`,
+      url: `chrome-extension://${extensionId}/connect-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
     });
-    // chrome.windows.getCurrent(async (currentWindow) => {
-    //   const win: chrome.windows.CreateData = {
-    //     url: chrome.runtime.getURL('connect-ledger.html'),
-    //     type: 'popup',
-    //     height: 566,
-    //     width: 350,
-    //     left: currentWindow.width! - 350 + currentWindow.left!,
-    //     top: currentWindow.top,
-    //   };
-    //   // Except on Firefox
-    //   //@ts-ignore
-    //   if (typeof InstallTrigger === undefined) win.focused = true;
-    //   const window = await chrome.windows.create(win);
-    //   // setImportWindow(window.id);
-    // });
   };
 
   return (
@@ -67,7 +53,7 @@ const AddKey = ({
         className="introduction"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_add_key_text', [
-            navParams.substring(0, 1) + navParams.substring(1).toLowerCase(),
+            keyType.substring(0, 1) + keyType.substring(1).toLowerCase(),
           ]),
         }}></p>
 
@@ -81,7 +67,7 @@ const AddKey = ({
         onEnterPress={importKey}
       />
 
-      {navParams === KeyType.ACTIVE && (
+      {keyType === KeyType.ACTIVE && (
         <div className="add-using-ledger" onClick={navigateToUseLedger}>
           {chrome.i18n.getMessage('popup_html_add_using_ledger')}
         </div>
@@ -99,7 +85,8 @@ const AddKey = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    navParams: state.navigation.stack[0].params as KeyType,
+    keyType: state.navigation.stack[0].params as KeyType,
+    activeAccountName: state.activeAccount.name,
   };
 };
 

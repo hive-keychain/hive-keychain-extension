@@ -1,5 +1,7 @@
 import RPCModule from '@background/rpc.module';
 import LedgerHiveApp from '@engrave/ledger-app-hive';
+import { KeyType } from '@interfaces/keys.interface';
+import { Keys } from '@interfaces/local-account.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
 
 let hiveLedger: LedgerHiveApp;
@@ -48,7 +50,6 @@ const detect = async (): Promise<boolean> => {
       console.log(transport);
       hiveLedger = new LedgerHiveApp(transport);
       console.log(hiveLedger);
-
       return true;
     } else {
       throw getLedgerError('LedgerNotSupported');
@@ -60,19 +61,48 @@ const detect = async (): Promise<boolean> => {
 };
 
 const getSettings = () => {
-  console.log(hiveLedger);
   if (hiveLedger) {
     return hiveLedger.getSettings();
   }
 };
 
-const getAllKeys = async () => {
+const getKeyFromDerivationPath = async (path: string) => {
+  return hiveLedger.getPublicKey(path);
+};
+
+const getKeyForAccount = async (
+  keyType: KeyType,
+  username: string,
+): Promise<Keys> => {
+  const keys = await LedgerUtils.getKeysForAccount(username);
+  if (keys) {
+    switch (keyType) {
+      case KeyType.ACTIVE:
+        return {
+          active: keys.active,
+          activePubkey: keys.activePubkey,
+        };
+      case KeyType.POSTING:
+        return {
+          posting: keys.posting,
+          postingPubkey: keys.postingPubkey,
+        };
+      case KeyType.MEMO:
+        return {
+          memo: keys.memo,
+          memoPubkey: keys.memoPubkey,
+        };
+    }
+  }
+  return {};
+};
+
+const getKeysForAccount = async (username: string) => {
   let stillHas = true;
 
   let accountIndex = 0;
   do {
     try {
-      const ownerPath = buildDerivationPath(LedgerKeyType.OWNER, accountIndex);
       const activePath = buildDerivationPath(
         LedgerKeyType.ACTIVE,
         accountIndex,
@@ -82,15 +112,37 @@ const getAllKeys = async () => {
         accountIndex,
       );
       const memoPath = buildDerivationPath(LedgerKeyType.MEMO, accountIndex);
-      const owner = await hiveLedger.getPublicKey(ownerPath);
       const active = await hiveLedger.getPublicKey(activePath);
       const posting = await hiveLedger.getPublicKey(postingPath);
       const memo = await hiveLedger.getPublicKey(memoPath);
-      console.log(owner, active, posting, memo);
       const client = await RPCModule.getClient();
-      const results = await client.keys.getKeyReferences([owner]);
+      const results = await client.keys.getKeyReferences([active]);
       console.log(results.accounts[0][0]);
-      if (!results.accounts && results.accounts[0] && results.accounts[0][0]) {
+
+      if (
+        results.accounts &&
+        results.accounts[0] &&
+        results.accounts[0][0] &&
+        (results.accounts[0][0] as string).length
+      ) {
+        if (results.accounts[0][0] === username) {
+          console.log({
+            active: `#${activePath}`,
+            activePubkey: active,
+            posting: `#${postingPath}`,
+            postingPubkey: posting,
+            memo: `#${memoPath}`,
+            memoPubkey: memo,
+          });
+          return {
+            active: `#${activePath}`,
+            activePubkey: active,
+            posting: `#${postingPath}`,
+            postingPubkey: posting,
+            memo: `#${memoPath}`,
+            memoPubkey: memo,
+          } as Keys;
+        }
         stillHas = true;
       } else {
         stillHas = false;
@@ -112,6 +164,8 @@ const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
 export const LedgerUtils = {
   detect,
   getSettings,
-  getAllKeys,
+  getKeyForAccount,
+  getKeysForAccount,
   buildDerivationPath,
+  getKeyFromDerivationPath,
 };
