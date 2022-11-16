@@ -82,12 +82,13 @@ const Home = ({
   }, []);
 
   useEffect(() => {
-    initGovernanceExpirationReminder(
-      accounts
-        .filter((localAccount: LocalAccount) => localAccount.keys.active)
-        .map((localAccount: LocalAccount) => localAccount.name),
-    );
-  }, [accounts]);
+    if (activeRpc && activeRpc.uri !== 'NULL')
+      initGovernanceExpirationReminder(
+        accounts
+          .filter((localAccount: LocalAccount) => localAccount.keys.active)
+          .map((localAccount: LocalAccount) => localAccount.name),
+      );
+  }, [accounts, activeRpc]);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
     const accountsToRemind = await GovernanceUtils.getGovernanceReminderList(

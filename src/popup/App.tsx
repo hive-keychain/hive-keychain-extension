@@ -221,7 +221,7 @@ const App = ({
     displayChangeRpcPopup: boolean,
     switchToRpc: Rpc | undefined,
   ) => {
-    if (loading || !activeRpc || !isAppReady) {
+    if (loading || !activeRpc) {
       return <LoadingComponent operations={loadingOperation} />;
     } else if (displayProxySuggestion) {
       return <ProxySuggestionComponent />;
