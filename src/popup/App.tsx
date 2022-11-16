@@ -6,6 +6,7 @@ import {
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
+import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
@@ -19,6 +20,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -36,29 +39,31 @@ import { SignInRouterComponent } from './pages/sign-in/sign-in-router.component'
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
 const App = ({
-  setMk,
   mk,
   accounts,
-  navigateTo,
   activeAccountUsername,
   activeRpc,
-  refreshActiveAccount,
-  loadActiveAccount,
   loading,
   loadingOperation,
-  setActiveRpc,
   isCurrentPageHomePage,
+  displayProxySuggestion,
+  navigationStack,
+  setMk,
+  navigateTo,
+  loadActiveAccount,
+  refreshActiveAccount,
+  setActiveRpc,
+  initHiveEngineConfigFromStorage,
   setAccounts,
   loadGlobalProperties,
-  displayProxySuggestion,
-  initHiveEngineConfigFromStorage,
-  navigationStack,
+  loadCurrencyPrices,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+  const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -98,6 +103,7 @@ const App = ({
       (navigationStack.length === 0 || found) &&
       hasStoredAccounts
     ) {
+      console.log('ici');
       selectComponent(mk, accounts);
     }
   }, [isAppReady, mk, accounts, hasStoredAccounts]);
@@ -151,6 +157,9 @@ const App = ({
   };
 
   const initApplication = async () => {
+    loadCurrencyPrices();
+    loadGlobalProperties();
+
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
 
@@ -167,13 +176,14 @@ const App = ({
       setAccounts(accountsFromStorage);
     }
 
-    selectComponent(mkFromStorage, accountsFromStorage);
-    setAppReady(true);
-
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
     await initActiveRpc(rpc);
     initHiveEngineConfigFromStorage();
+
+    await selectComponent(mkFromStorage, accountsFromStorage);
+
+    setAppReady(true);
   };
 
   const selectComponent = async (
@@ -194,22 +204,23 @@ const App = ({
     } else {
       navigateTo(Screen.SIGN_IN_PAGE);
     }
+    setTimeout(() => {
+      setDisplaySplashscreen(false);
+    }, Config.loader.minDuration);
   };
 
   const renderMainLayoutNav = () => {
-    if (isAppReady) {
-      if (!mk || mk.length === 0) {
-        if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-          return <SignUpComponent />;
-        } else {
-          return <SignInRouterComponent />;
-        }
+    if (!mk || mk.length === 0) {
+      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
+        return <SignUpComponent />;
       } else {
-        if (accounts && accounts.length === 0) {
-          return <AddAccountRouterComponent />;
-        } else {
-          return <AppRouterComponent />;
-        }
+        return <SignInRouterComponent />;
+      }
+    } else {
+      if (accounts && accounts.length === 0) {
+        return <AddAccountRouterComponent />;
+      } else {
+        return <AppRouterComponent />;
       }
     }
   };
@@ -242,6 +253,10 @@ const App = ({
     }
   };
 
+  useEffect(() => {
+    console.log(displaySplashscreen);
+  }, [displaySplashscreen]);
+
   const tryNewRpc = () => {
     setActiveRpc(switchToRpc!);
     setDisplayChangeRpcPopup(false);
@@ -257,6 +272,12 @@ const App = ({
         displayProxySuggestion,
         displayChangeRpcPopup,
         switchToRpc,
+      )}
+      {displaySplashscreen && (
+        <div className="splashscreen">
+          <RotatingLogoComponent></RotatingLogoComponent>
+          <div className="caption">HIVE KEYCHAIN</div>
+        </div>
       )}
     </div>
   );
@@ -291,6 +312,7 @@ const connector = connect(mapStateToProps, {
   loadActiveAccount,
   loadGlobalProperties,
   initHiveEngineConfigFromStorage,
+  loadCurrencyPrices,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
