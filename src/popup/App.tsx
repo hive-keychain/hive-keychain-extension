@@ -89,9 +89,9 @@ const App = ({
     initHasStoredAccounts();
     const found = navigationStack.find(
       (navigation) =>
-        navigation.currentPage === 'ACCOUNT_PAGE_INIT_ACCOUNT' ||
-        navigation.currentPage === 'SETTINGS_MANAGE_ACCOUNTS' ||
-        navigation.currentPage === 'SIGN_IN_PAGE',
+        navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
+        navigation.currentPage === Screen.SETTINGS_MANAGE_ACCOUNTS ||
+        navigation.currentPage === Screen.SIGN_IN_PAGE,
     );
     if (
       isAppReady &&
