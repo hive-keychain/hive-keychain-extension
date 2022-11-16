@@ -1,5 +1,4 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
-console.log(process.env.NODE_ENV);
 const Config = {
   hiveEngine: {
     mainnet: 'ssc-mainnet-hive',
