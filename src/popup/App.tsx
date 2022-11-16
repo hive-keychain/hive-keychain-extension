@@ -103,7 +103,6 @@ const App = ({
       (navigationStack.length === 0 || found) &&
       hasStoredAccounts
     ) {
-      console.log('ici');
       selectComponent(mk, accounts);
     }
   }, [isAppReady, mk, accounts, hasStoredAccounts]);
@@ -158,7 +157,6 @@ const App = ({
 
   const initApplication = async () => {
     loadCurrencyPrices();
-    loadGlobalProperties();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
@@ -179,11 +177,25 @@ const App = ({
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
     await initActiveRpc(rpc);
+    loadGlobalProperties();
     initHiveEngineConfigFromStorage();
 
     await selectComponent(mkFromStorage, accountsFromStorage);
 
+    if (accountsFromStorage.length > 0) {
+      initActiveAccount(accountsFromStorage);
+    }
+
     setAppReady(true);
+  };
+
+  const initActiveAccount = async (accounts: LocalAccount[]) => {
+    const lastActiveAccountName =
+      await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
+    const lastActiveAccount = accounts.find(
+      (account: LocalAccount) => lastActiveAccountName === account.name,
+    );
+    loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
   };
 
   const selectComponent = async (
@@ -252,10 +264,6 @@ const App = ({
       );
     }
   };
-
-  useEffect(() => {
-    console.log(displaySplashscreen);
-  }, [displaySplashscreen]);
 
   const tryNewRpc = () => {
     setActiveRpc(switchToRpc!);

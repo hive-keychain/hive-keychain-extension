@@ -1,7 +1,4 @@
-import {
-  loadActiveAccount,
-  refreshActiveAccount,
-} from '@popup/actions/active-account.actions';
+import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
@@ -33,7 +30,6 @@ const Home = ({
   accounts,
   activeRpc,
   refreshActiveAccount,
-  loadActiveAccount,
   resetTitleContainerProperties,
 }: PropsFromRedux) => {
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
@@ -56,12 +52,6 @@ const Home = ({
         .filter((localAccount: LocalAccount) => localAccount.keys.active)
         .map((localAccount: LocalAccount) => localAccount.name),
     );
-  }, []);
-
-  useEffect(() => {
-    if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
-      initActiveAccount();
-    }
   }, []);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
@@ -98,15 +88,6 @@ const Home = ({
       setWhatsNewContent(versionLog);
       setDisplayWhatsNew(true);
     }
-  };
-
-  const initActiveAccount = async () => {
-    const lastActiveAccountName =
-      await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
-    const lastActiveAccount = accounts.find(
-      (account: LocalAccount) => lastActiveAccountName === account.name,
-    );
-    loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
   };
 
   const renderPopup = (
@@ -165,7 +146,6 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  loadActiveAccount,
   loadCurrencyPrices,
   refreshActiveAccount,
   resetTitleContainerProperties,
