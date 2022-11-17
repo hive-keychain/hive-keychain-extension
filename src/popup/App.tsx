@@ -63,7 +63,7 @@ const App = ({
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
-  const [displaySplashscreen, setDisplaySplashscreen] = useState(true);
+  const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -103,6 +103,9 @@ const App = ({
       (navigationStack.length === 0 || found) &&
       hasStoredAccounts
     ) {
+      if (accounts.length > 0) {
+        initActiveAccount(accounts);
+      }
       selectComponent(mk, accounts);
     }
   }, [isAppReady, mk, accounts, hasStoredAccounts]);
@@ -180,11 +183,11 @@ const App = ({
     loadGlobalProperties();
     initHiveEngineConfigFromStorage();
 
-    await selectComponent(mkFromStorage, accountsFromStorage);
-
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
     }
+
+    await selectComponent(mkFromStorage, accountsFromStorage);
 
     setAppReady(true);
   };
@@ -203,6 +206,7 @@ const App = ({
     accounts: LocalAccount[],
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
+      setDisplaySplashscreen(true);
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk && mk.length > 0) {
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
@@ -271,7 +275,7 @@ const App = ({
   };
   return (
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {activeRpc && renderMainLayoutNav()}
+      {isAppReady && renderMainLayoutNav()}
       <MessageContainerComponent />
       <ProposalVotingSectionComponent />
       {renderPopup(
