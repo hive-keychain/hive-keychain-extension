@@ -177,6 +177,9 @@ const App = ({
       setAccounts(accountsFromStorage);
     }
 
+    setAppReady(true);
+    await selectComponent(mkFromStorage, accountsFromStorage);
+
     const rpc = await RpcUtils.getCurrentRpc();
     setInitialRpc(rpc);
     await initActiveRpc(rpc);
@@ -186,10 +189,6 @@ const App = ({
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
     }
-
-    await selectComponent(mkFromStorage, accountsFromStorage);
-
-    setAppReady(true);
   };
 
   const initActiveAccount = async (accounts: LocalAccount[]) => {
