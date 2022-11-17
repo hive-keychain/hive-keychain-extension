@@ -6,6 +6,7 @@ import {
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
+import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
@@ -48,6 +49,7 @@ const App = ({
   isCurrentPageHomePage,
   displayProxySuggestion,
   navigationStack,
+  appStatus,
   setMk,
   navigateTo,
   loadActiveAccount,
@@ -106,9 +108,9 @@ const App = ({
       if (accounts.length > 0) {
         initActiveAccount(accounts);
       }
-      selectComponent(mk, accounts);
+      if (!appStatus.processingDecryptAccount) selectComponent(mk, accounts);
     }
-  }, [isAppReady, mk, accounts, hasStoredAccounts]);
+  }, [isAppReady, mk, accounts, hasStoredAccounts, appStatus]);
 
   const initHasStoredAccounts = async () => {
     const storedAccounts = await AccountUtils.hasStoredAccounts();
@@ -310,6 +312,7 @@ const mapStateToProps = (state: RootState) => {
       state.activeAccount.account.proxy === '' &&
       state.activeAccount.account.witnesses_voted_for === 0,
     navigationStack: state.navigation.stack,
+    appStatus: state.appStatus,
   };
 };
 
@@ -324,6 +327,7 @@ const connector = connect(mapStateToProps, {
   loadGlobalProperties,
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
+  setProcessingDecryptAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

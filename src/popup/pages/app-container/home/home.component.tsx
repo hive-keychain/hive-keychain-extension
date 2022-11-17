@@ -47,12 +47,16 @@ const Home = ({
     }
     initWhatsNew();
     initSurvey();
-    initGovernanceExpirationReminder(
-      accounts
-        .filter((localAccount: LocalAccount) => localAccount.keys.active)
-        .map((localAccount: LocalAccount) => localAccount.name),
-    );
   }, []);
+
+  useEffect(() => {
+    if (activeRpc && activeRpc.uri !== 'NULL')
+      initGovernanceExpirationReminder(
+        accounts
+          .filter((localAccount: LocalAccount) => localAccount.keys.active)
+          .map((localAccount: LocalAccount) => localAccount.name),
+      );
+  }, [activeRpc]);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
     const accountsToRemind = await GovernanceUtils.getGovernanceReminderList(
