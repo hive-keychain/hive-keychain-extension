@@ -88,7 +88,6 @@ const App = ({
           (account: LocalAccount) => account.name === lastActiveAccountName,
         )!,
       );
-      loadGlobalProperties();
     }
   };
 
@@ -108,10 +107,25 @@ const App = ({
       if (accounts.length > 0) {
         initActiveAccount(accounts);
       }
-      if (!appStatus.processingDecryptAccount && appStatus.priceLoaded)
-        selectComponent(mk, accounts);
+      if (!appStatus.processingDecryptAccount) selectComponent(mk, accounts);
     }
-  }, [isAppReady, mk, accounts, hasStoredAccounts, appStatus]);
+  }, [
+    isAppReady,
+    mk,
+    accounts,
+    hasStoredAccounts,
+    appStatus.processingDecryptAccount,
+  ]);
+
+  useEffect(() => {
+    if (displaySplashscreen) {
+      if (appStatus.priceLoaded && appStatus.globalPropertiesLoaded) {
+        setTimeout(() => {
+          setDisplaySplashscreen(false);
+        }, Config.loader.minDuration);
+      }
+    }
+  }, [appStatus, displaySplashscreen]);
 
   const initHasStoredAccounts = async () => {
     const storedAccounts = await AccountUtils.hasStoredAccounts();
@@ -222,9 +236,6 @@ const App = ({
     } else {
       navigateTo(Screen.SIGN_IN_PAGE);
     }
-    setTimeout(() => {
-      setDisplaySplashscreen(false);
-    }, Config.loader.minDuration);
   };
 
   const renderMainLayoutNav = () => {

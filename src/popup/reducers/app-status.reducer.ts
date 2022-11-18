@@ -4,10 +4,12 @@ import { ActionPayload } from '@popup/actions/interfaces';
 export interface AppStatus {
   processingDecryptAccount: boolean;
   priceLoaded: boolean;
+  globalPropertiesLoaded: boolean;
 }
 const INITIAL_STATE: AppStatus = {
   processingDecryptAccount: false,
   priceLoaded: false,
+  globalPropertiesLoaded: false,
 };
 
 export const AppStatusReducer = (
