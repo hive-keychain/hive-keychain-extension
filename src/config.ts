@@ -30,6 +30,9 @@ const Config = {
   loader: {
     minDuration: process.env.NODE_ENV ? 0 : 1000,
   },
+  transactions: {
+    expirationTimeInMinutes: 10,
+  },
 };
 
 export default Config;

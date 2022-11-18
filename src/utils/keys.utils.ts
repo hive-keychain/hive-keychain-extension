@@ -89,6 +89,10 @@ const isAuthorizedAccount = (key: Key): boolean => {
   return key!.toString().startsWith('@');
 };
 
+const isUsingLedger = (key: Key): boolean => {
+  return key!.toString().startsWith('#');
+};
+
 export const KeysUtils = {
   isAuthorizedAccount,
   getPublicKeyFromPrivateKeyString,
@@ -99,4 +103,5 @@ export const KeysUtils = {
   hasActive,
   hasPosting,
   hasMemo,
+  isUsingLedger,
 };

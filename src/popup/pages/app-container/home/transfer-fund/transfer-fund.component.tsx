@@ -241,7 +241,7 @@ const TransferFunds = ({
           }
         }
 
-        success = await HiveUtils.transfer(
+        success = await TransferUtils.sendTransfer(
           activeAccount.name!,
           receiverUsername,
           formattedAmount,
@@ -249,6 +249,7 @@ const TransferFunds = ({
           isRecurrent,
           isCancelRecurrent ? 2 : +iteration,
           isCancelRecurrent ? 24 : +frequency,
+          activeAccount,
         );
 
         removeFromLoadingList('html_popup_transfer_fund_operation');

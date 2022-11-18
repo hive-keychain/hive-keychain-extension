@@ -1,7 +1,9 @@
 import { KeyType } from '@interfaces/keys.interface';
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
+import AccountUtils from 'src/utils/account.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
+import Logger from 'src/utils/logger.utils';
 import './connect-ledger.component.scss';
 
 interface QueryParams {
@@ -10,27 +12,25 @@ interface QueryParams {
 
 const ConnectLedger = () => {
   const initializeLedger = async () => {
-    console.log(window, await chrome.tabs.getCurrent());
     const queryParamsTable = window.location.search.replace('?', '').split('&');
     const queryParams = {} as QueryParams;
     for (let params of queryParamsTable) {
       const splitParams = params.split('=');
       queryParams[splitParams[0]] = splitParams[1];
     }
-    console.log(queryParams);
     try {
-      if (await LedgerUtils.detect()) {
-        console.log(
-          await LedgerUtils.getKeyForAccount(
-            queryParams['keyType'] as KeyType,
-            queryParams['username'],
-          ),
+      if (await LedgerUtils.init()) {
+        const keysToAdd = await LedgerUtils.getKeyForAccount(
+          queryParams['keyType'] as KeyType,
+          queryParams['username'],
         );
+        await AccountUtils.addKeyFromLedger(queryParams['username'], keysToAdd);
       } else {
+        console.log('unable to detect ledger');
         return;
       }
     } catch (err: any) {
-      console.log(err);
+      Logger.log(err);
     }
   };
 

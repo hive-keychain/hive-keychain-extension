@@ -1,7 +1,17 @@
+import {
+  PrivateKey,
+  RecurrentTransferOperation,
+  TransferOperation,
+} from '@hiveio/dhive';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
+import HiveUtils from 'src/utils/hive.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
+import TransactionUtils from 'src/utils/transaction.utils';
 
 const exchanges = [
   { account: 'bittrex', tokens: ['HIVE', 'HBD'] },
@@ -83,10 +93,167 @@ const saveFavoriteUser = async (
   );
 };
 
+const sendTransfer = (
+  sender: string,
+  receiver: string,
+  amount: string,
+  memo: string,
+  recurrent: boolean,
+  iterations: number,
+  frequency: number,
+  activeAccount: ActiveAccount,
+) => {
+  if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
+    return TransferUtils.sendTransferWithLedger(
+      sender,
+      receiver,
+      amount,
+      memo,
+      recurrent,
+      iterations,
+      frequency,
+      activeAccount,
+    );
+  } else {
+    return TransferUtils.sendRegularTransfer(
+      sender,
+      receiver,
+      amount,
+      memo,
+      recurrent,
+      iterations,
+      frequency,
+      activeAccount,
+    );
+  }
+};
+
+const sendTransferWithLedger = async (
+  sender: string,
+  receiver: string,
+  amount: string,
+  memo: string,
+  recurrent: boolean,
+  iterations: number,
+  frequency: number,
+  activeAccount: ActiveAccount,
+) => {
+  try {
+    let signedTransaction;
+    if (!recurrent) {
+      signedTransaction = await LedgerUtils.signTransaction(
+        {
+          operations: [
+            [
+              'transfer',
+              { from: sender, to: receiver, amount: amount, memo: memo },
+            ] as TransferOperation,
+          ],
+          ref_block_num: 0,
+          ref_block_prefix: 0,
+          expiration: TransactionUtils.getExpirationTime(),
+          extensions: [],
+        },
+        activeAccount.keys.active!,
+      );
+    } else {
+      signedTransaction = await LedgerUtils.signTransaction(
+        {
+          operations: [
+            [
+              'recurrent_transfer',
+              {
+                from: sender,
+                to: receiver,
+                amount: amount,
+                memo: memo,
+                recurrence: frequency,
+                executions: iterations,
+                extensions: [],
+              },
+            ] as RecurrentTransferOperation,
+          ],
+          ref_block_num: 0,
+          ref_block_prefix: 0,
+          expiration: '',
+          extensions: [],
+        },
+        activeAccount.keys.active!,
+      );
+    }
+
+    console.log(signedTransaction);
+    if (signedTransaction) {
+      await HiveUtils.sendOperationWithConfirmation(
+        HiveUtils.getClient().broadcast.send(signedTransaction),
+      );
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+const sendRegularTransfer = async (
+  sender: string,
+  receiver: string,
+  amount: string,
+  memo: string,
+  recurrent: boolean,
+  iterations: number,
+  frequency: number,
+  activeAccount: ActiveAccount,
+) => {
+  try {
+    if (!recurrent) {
+      await HiveUtils.sendOperationWithConfirmation(
+        HiveUtils.getClient().broadcast.transfer(
+          {
+            from: sender,
+            to: receiver,
+            amount: amount,
+            memo: memo,
+          },
+          PrivateKey.fromString(activeAccount.keys.active as string),
+        ),
+      );
+    } else {
+      await HiveUtils.sendOperationWithConfirmation(
+        HiveUtils.getClient().broadcast.sendOperations(
+          [
+            [
+              'recurrent_transfer',
+              {
+                from: sender,
+                to: receiver,
+                amount: amount,
+                memo: memo,
+                recurrence: frequency,
+                executions: iterations,
+                extensions: [],
+              },
+            ] as RecurrentTransferOperation,
+          ],
+          PrivateKey.fromString(activeAccount.keys.active as string),
+        ),
+      );
+    }
+    return true;
+  } catch (err) {
+    Logger.error(err, err);
+    return false;
+  }
+};
+
 const TransferUtils = {
   getExchangeValidationWarning,
   saveFavoriteUser,
   getTransferFromToSavingsValidationWarning,
+  sendTransfer,
+  sendTransferWithLedger,
+  sendRegularTransfer,
 };
 
 export default TransferUtils;

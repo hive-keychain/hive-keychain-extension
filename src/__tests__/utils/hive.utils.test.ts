@@ -18,6 +18,7 @@ import {
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -815,7 +816,7 @@ describe('hive.utils tests:\n', () => {
           id: transactionObj.id,
           status: 'within_reversible_block',
         });
-      const result = await HiveUtils.transfer(
+      const result = await TransferUtils.sendTransfer(
         utilsT.userData.username,
         'blocktrades',
         '100.000 HBD',
@@ -823,6 +824,7 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
+        {} as ActiveAccount, // TODO Fix
       );
       expect(result).toBe(true);
       expect(spyLoggerInfo).toBeCalledTimes(1);
@@ -846,7 +848,7 @@ describe('hive.utils tests:\n', () => {
           id: transactionObj.id,
           status: 'error',
         });
-      const result = await HiveUtils.transfer(
+      const result = await TransferUtils.sendTransfer(
         utilsT.userData.username,
         'blocktrades',
         '100.000 HBD',
@@ -854,6 +856,7 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
+        {} as ActiveAccount, // TODO Fix
       );
       //expect(result).toBe(false);
       console.log(result);

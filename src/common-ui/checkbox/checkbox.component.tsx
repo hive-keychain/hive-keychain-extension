@@ -30,7 +30,6 @@ const handleClick = (props: CheckboxProps) => {
 };
 
 const getCheckbox = (props: CheckboxProps) => {
-  console.log(props);
   return (
     <div
       className={`checkbox-container ${

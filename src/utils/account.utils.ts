@@ -14,6 +14,7 @@ import EncryptUtils from 'src/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
+import MkUtils from 'src/utils/mk.utils';
 import HiveUtils from './hive.utils';
 import LocalStorageUtils from './localStorage.utils';
 
@@ -430,7 +431,34 @@ const getExtendedAccounts = async (usernames: string[]) => {
   return await HiveUtils.getClient().database.getAccounts(usernames);
 };
 
-const addKeyFromLedger = async (username: string, keys: Keys) => {};
+const addKeyFromLedger = async (username: string, keys: Keys) => {
+  const mk = await MkUtils.getMkFromLocalStorage();
+  console.log(mk);
+  let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  let account = accounts.find(
+    (account: LocalAccount) => account.name === username,
+  );
+  if (account) {
+    account.keys = { ...account.keys, ...keys };
+  }
+  await AccountUtils.saveAccounts(accounts, mk);
+};
+
+const generateQRCode = (account: LocalAccount) => {
+  if (account.keys.active?.startsWith('#')) {
+    delete account.keys.active;
+    delete account.keys.memoPubkey;
+  }
+  if (account.keys.posting?.startsWith('#')) {
+    delete account.keys.posting;
+    delete account.keys.postingPubkey;
+  }
+  if (account.keys.memo?.startsWith('#')) {
+    delete account.keys.memo;
+    delete account.keys.memoPubkey;
+  }
+  return JSON.stringify(account);
+};
 
 const AccountUtils = {
   verifyAccount,
@@ -456,6 +484,7 @@ const AccountUtils = {
   getExtendedAccounts,
   getRCMana,
   getAccount,
+  generateQRCode,
 };
 
 export const BackgroundAccountUtils = {

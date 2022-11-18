@@ -8,7 +8,6 @@ import {
   ExtendedAccount,
   Price,
   PrivateKey,
-  RecurrentTransferOperation,
   TransactionConfirmation,
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
@@ -377,59 +376,6 @@ const powerDown = async (username: string, amount: string) => {
   }
 };
 
-const transfer = async (
-  sender: string,
-  receiver: string,
-  amount: string,
-  memo: string,
-  recurrent: boolean,
-  iterations: number,
-  frequency: number,
-) => {
-  try {
-    if (!recurrent) {
-      await sendOperationWithConfirmation(
-        getClient().broadcast.transfer(
-          {
-            from: sender,
-            to: receiver,
-            amount: amount,
-            memo: memo,
-          },
-          PrivateKey.fromString(
-            store.getState().activeAccount.keys.active as string,
-          ),
-        ),
-      );
-    } else {
-      await sendOperationWithConfirmation(
-        getClient().broadcast.sendOperations(
-          [
-            [
-              'recurrent_transfer',
-              {
-                from: sender,
-                to: receiver,
-                amount: amount,
-                memo: memo,
-                recurrence: frequency,
-                executions: iterations,
-                extensions: [],
-              },
-            ] as RecurrentTransferOperation,
-          ],
-          PrivateKey.fromString(
-            store.getState().activeAccount.keys.active as string,
-          ),
-        ),
-      );
-    }
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
 /* istanbul ignore next */
 const convertOperation = async (
   activeAccount: ActiveAccount,
@@ -724,7 +670,6 @@ const HiveUtils = {
   claimRewards,
   powerUp,
   powerDown,
-  transfer,
   encodeMemo,
   decodeMemo,
   convertOperation,

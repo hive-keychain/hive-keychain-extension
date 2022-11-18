@@ -1,6 +1,5 @@
 import { ReactElement } from 'react';
 import AccountUtils from 'src/utils/account.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import keyMessage from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/keyMessages/keyMessage';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
@@ -98,7 +97,7 @@ const methods = {
 
 const extraMocks = {
   transfer: (transfer: boolean) => {
-    HiveUtils.transfer = jest.fn().mockResolvedValue(transfer);
+    TransferUtils.sendTransfer = jest.fn().mockResolvedValue(transfer);
     TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined);
     AccountUtils.getPublicMemo = jest
       .fn()

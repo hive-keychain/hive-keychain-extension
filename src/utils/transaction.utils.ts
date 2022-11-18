@@ -21,6 +21,7 @@ import {
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
 import { store } from '@popup/store';
+import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
@@ -295,10 +296,16 @@ const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
   return transfer;
 };
 
+const getExpirationTime = () => {
+  const now = moment();
+  return now.add(10, 'minutes').toString();
+};
+
 const TransactionUtils = {
   getAccountTransactions,
   getLastTransaction,
   decodeMemoIfNeeded,
+  getExpirationTime,
 };
 
 export default TransactionUtils;

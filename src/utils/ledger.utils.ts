@@ -1,8 +1,10 @@
 import RPCModule from '@background/rpc.module';
 import LedgerHiveApp from '@engrave/ledger-app-hive';
-import { KeyType } from '@interfaces/keys.interface';
+import { Transaction } from '@hiveio/dhive';
+import { Key, KeyType } from '@interfaces/keys.interface';
 import { Keys } from '@interfaces/local-account.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
+import Logger from 'src/utils/logger.utils';
 
 let hiveLedger: LedgerHiveApp;
 
@@ -43,7 +45,7 @@ const getLedgerError = (errorName: string) => {
   }
 };
 
-const detect = async (): Promise<boolean> => {
+const init = async (): Promise<boolean> => {
   try {
     if (await TransportWebUsb.isSupported()) {
       const transport = await TransportWebUsb.create();
@@ -117,7 +119,6 @@ const getKeysForAccount = async (username: string) => {
       const memo = await hiveLedger.getPublicKey(memoPath);
       const client = await RPCModule.getClient();
       const results = await client.keys.getKeyReferences([active]);
-      console.log(results.accounts[0][0]);
 
       if (
         results.accounts &&
@@ -126,14 +127,6 @@ const getKeysForAccount = async (username: string) => {
         (results.accounts[0][0] as string).length
       ) {
         if (results.accounts[0][0] === username) {
-          console.log({
-            active: `#${activePath}`,
-            activePubkey: active,
-            posting: `#${postingPath}`,
-            postingPubkey: posting,
-            memo: `#${memoPath}`,
-            memoPubkey: memo,
-          });
           return {
             active: `#${activePath}`,
             activePubkey: active,
@@ -161,11 +154,42 @@ const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
   return `m/${PURPOSE}' /${HIVE_NETWORK}' /${keyType}' /${accountIndex}' /${0}'`;
 };
 
+const getLedgerInstance = async (): Promise<LedgerHiveApp> => {
+  if (!hiveLedger) {
+    await LedgerUtils.init();
+  }
+  return hiveLedger;
+};
+
+const signTransaction = async (
+  transaction: Transaction,
+  key: Key,
+  chainId?: string,
+) => {
+  try {
+    const ledger = await LedgerUtils.getLedgerInstance();
+    return ledger.signTransaction(
+      transaction,
+      LedgerUtils.getPathFromString(key!.toString()),
+      chainId,
+    );
+  } catch (err) {
+    Logger.error(err);
+  }
+};
+
+const getPathFromString = (s: string) => {
+  return s.replace('#', '');
+};
+
 export const LedgerUtils = {
-  detect,
+  init,
   getSettings,
   getKeyForAccount,
   getKeysForAccount,
   buildDerivationPath,
   getKeyFromDerivationPath,
+  getLedgerInstance,
+  signTransaction,
+  getPathFromString,
 };

@@ -2603,5 +2603,9 @@
   "html_ledger_unknown_error": {
     "message": "Unknown error",
     "description": "Ledger unknown error"
+  },
+  "html_popup_using_ledger": {
+    "message": "Key saved on Ledger",
+    "description": "key using ledger label"
   }
 }

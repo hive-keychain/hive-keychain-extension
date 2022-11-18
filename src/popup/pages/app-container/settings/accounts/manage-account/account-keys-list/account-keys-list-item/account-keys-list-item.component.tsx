@@ -40,6 +40,7 @@ const AccountKeysListItem = ({
 }: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
   const [isAuthorizedAccount, setIsAuthorizedAccount] = useState(false);
+  const [isUsingLedger, setIsUsingLedger] = useState(false);
 
   useEffect(() => {
     setIsPrivateHidden(true);
@@ -48,6 +49,9 @@ const AccountKeysListItem = ({
   useEffect(() => {
     if (publicKey) {
       setIsAuthorizedAccount(KeysUtils.isAuthorizedAccount(publicKey));
+    }
+    if (privateKey) {
+      setIsUsingLedger(KeysUtils.isUsingLedger(privateKey));
     }
   }, [publicKey]);
 
@@ -109,7 +113,7 @@ const AccountKeysListItem = ({
 
       {(publicKey || privateKey) && (
         <div className="keys-panel">
-          {!isAuthorizedAccount && (
+          {!isAuthorizedAccount && !isUsingLedger && (
             <>
               <div
                 aria-label={`clickeable-account-key-${chrome.i18n.getMessage(
@@ -143,6 +147,20 @@ const AccountKeysListItem = ({
                 publicKey,
               ])}
             </div>
+          )}
+          {isUsingLedger && privateKey && (
+            <>
+              <div
+                aria-label="using-authorized-account"
+                className="using-authorized-account">
+                {chrome.i18n.getMessage('html_popup_using_ledger')}
+              </div>
+              <div
+                className="public-key key-field"
+                onClick={() => copyToClipboard(publicKey)}>
+                {publicKey}
+              </div>
+            </>
           )}
         </div>
       )}
