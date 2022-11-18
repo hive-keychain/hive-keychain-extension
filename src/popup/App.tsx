@@ -108,7 +108,8 @@ const App = ({
       if (accounts.length > 0) {
         initActiveAccount(accounts);
       }
-      if (!appStatus.processingDecryptAccount) selectComponent(mk, accounts);
+      if (!appStatus.processingDecryptAccount && appStatus.priceLoaded)
+        selectComponent(mk, accounts);
     }
   }, [isAppReady, mk, accounts, hasStoredAccounts, appStatus]);
 

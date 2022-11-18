@@ -3,9 +3,11 @@ import { ActionPayload } from '@popup/actions/interfaces';
 
 export interface AppStatus {
   processingDecryptAccount: boolean;
+  priceLoaded: boolean;
 }
 const INITIAL_STATE: AppStatus = {
   processingDecryptAccount: false,
+  priceLoaded: false,
 };
 
 export const AppStatusReducer = (
