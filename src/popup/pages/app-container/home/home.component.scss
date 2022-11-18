@@ -11,17 +11,3 @@
     margin-left: -10px !important;
   }
 }
-
-.loading {
-  display: flex;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  row-gap: 32px;
-
-  .caption {
-    font-size: 32px;
-    color: white;
-  }
-}

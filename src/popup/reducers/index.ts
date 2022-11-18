@@ -1,5 +1,6 @@
 import { ActiveAccountReducer } from '@popup/reducers/active-account.reducer';
 import { ActiveRpcReducer } from '@popup/reducers/active-rpc.reducer';
+import { AppStatusReducer } from '@popup/reducers/app-status.reducer';
 import ConversionsReducer from '@popup/reducers/conversion.reducer';
 import CurrencyPricesReducer from '@popup/reducers/currency-prices.reducer';
 import DelegationsReducer from '@popup/reducers/delegation.reducer';
@@ -39,4 +40,5 @@ export default combineReducers({
   loading: LoadingReducer,
   titleContainer: TitleContainerReducer,
   hiveEngineConfig: HiveEngineConfigReducer,
+  appStatus: AppStatusReducer,
 });

@@ -1,10 +1,5 @@
-import { Rpc } from '@interfaces/rpc.interface';
-import {
-  loadActiveAccount,
-  refreshActiveAccount,
-} from '@popup/actions/active-account.actions';
+import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
-import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ActionsSectionComponent } from '@popup/pages/app-container/home/actions-section/actions-section.component';
 import { EstimatedAccountValueSectionComponent } from '@popup/pages/app-container/home/estimated-account-value-section/estimated-account-value-section.component';
@@ -21,8 +16,6 @@ import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -34,16 +27,11 @@ import './home.component.scss';
 
 const Home = ({
   activeAccount,
-  loadActiveAccount,
   accounts,
   activeRpc,
-  loadBittrexPrices,
-  loadGlobalProperties,
   refreshActiveAccount,
-  globalProperties,
   resetTitleContainerProperties,
 }: PropsFromRedux) => {
-  const [displayLoader, setDisplayLoader] = useState(false);
   const [displayWhatsNew, setDisplayWhatsNew] = useState(false);
   const [governanceAccountsToExpire, setGovernanceAccountsToExpire] = useState<
     string[]
@@ -53,8 +41,7 @@ const Home = ({
 
   useEffect(() => {
     resetTitleContainerProperties();
-    loadBittrexPrices();
-    loadGlobalProperties();
+
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       refreshActiveAccount();
     }
@@ -63,31 +50,13 @@ const Home = ({
   }, []);
 
   useEffect(() => {
-    if (
-      Object.keys(globalProperties).length > 0 &&
-      !ActiveAccountUtils.isEmpty(activeAccount)
-    ) {
-      setTimeout(() => {
-        setDisplayLoader(false);
-      }, Config.loader.minDuration);
-    } else {
-      setDisplayLoader(true);
-    }
-  }, [globalProperties, activeAccount]);
-
-  useEffect(() => {
-    if (ActiveAccountUtils.isEmpty(activeAccount) && accounts.length) {
-      initActiveAccount();
-    }
-  }, []);
-
-  useEffect(() => {
-    initGovernanceExpirationReminder(
-      accounts
-        .filter((localAccount: LocalAccount) => localAccount.keys.active)
-        .map((localAccount: LocalAccount) => localAccount.name),
-    );
-  }, [accounts]);
+    if (activeRpc && activeRpc.uri !== 'NULL')
+      initGovernanceExpirationReminder(
+        accounts
+          .filter((localAccount: LocalAccount) => localAccount.keys.active)
+          .map((localAccount: LocalAccount) => localAccount.name),
+      );
+  }, [activeRpc]);
 
   const initGovernanceExpirationReminder = async (accountNames: string[]) => {
     const accountsToRemind = await GovernanceUtils.getGovernanceReminderList(
@@ -125,30 +94,12 @@ const Home = ({
     }
   };
 
-  const initActiveAccount = async () => {
-    const lastActiveAccountName =
-      await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
-    const lastActiveAccount = accounts.find(
-      (account: LocalAccount) => lastActiveAccountName === account.name,
-    );
-    loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
-  };
-
   const renderPopup = (
-    displayLoader: boolean,
-    activeRpc: Rpc | undefined,
     displayWhatsNew: boolean,
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
   ) => {
-    if (displayLoader === true || activeRpc?.uri === 'NULL') {
-      return (
-        <div className="loading">
-          <RotatingLogoComponent></RotatingLogoComponent>
-          <div className="caption">HIVE KEYCHAIN</div>
-        </div>
-      );
-    } else if (displayWhatsNew) {
+    if (displayWhatsNew) {
       return (
         <WhatsNewComponent
           onOverlayClick={() => setDisplayWhatsNew(false)}
@@ -166,7 +117,7 @@ const Home = ({
 
   return (
     <div className="home-page">
-      {!displayLoader && activeRpc && activeRpc.uri !== 'NULL' && (
+      {activeRpc && activeRpc.uri !== 'NULL' && (
         <div aria-label="home-page-component">
           <TopBarComponent />
           <SelectAccountSectionComponent />
@@ -178,8 +129,6 @@ const Home = ({
       )}
 
       {renderPopup(
-        displayLoader,
-        activeRpc,
         displayWhatsNew,
         governanceAccountsToExpire,
         surveyToDisplay,
@@ -201,9 +150,7 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  loadActiveAccount,
-  loadBittrexPrices: loadCurrencyPrices,
-  loadGlobalProperties,
+  loadCurrencyPrices,
   refreshActiveAccount,
   resetTitleContainerProperties,
 });
