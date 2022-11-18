@@ -1,5 +1,6 @@
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
+import { AppStatus } from '@popup/reducers/app-status.reducer';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
@@ -17,6 +18,10 @@ export const loadGlobalProperties = (): AppThunk => async (dispatch) => {
       payload: props,
     };
     dispatch(action);
+    dispatch({
+      type: ActionType.SET_APP_STATUS,
+      payload: { globalPropertiesLoaded: true } as AppStatus,
+    });
   } catch (err) {
     Logger.error(err);
   }
