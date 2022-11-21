@@ -1,8 +1,10 @@
 import {
+  DynamicGlobalProperties,
   PrivateKey,
   RecurrentTransferOperation,
   TransferOperation,
 } from '@hiveio/dhive';
+import { BroadcastAPI } from '@hiveio/dhive/lib/helpers/broadcast';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -102,6 +104,7 @@ const sendTransfer = (
   iterations: number,
   frequency: number,
   activeAccount: ActiveAccount,
+  globalProperties: DynamicGlobalProperties,
 ) => {
   if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
     return TransferUtils.sendTransferWithLedger(
@@ -113,6 +116,7 @@ const sendTransfer = (
       iterations,
       frequency,
       activeAccount,
+      globalProperties,
     );
   } else {
     return TransferUtils.sendRegularTransfer(
@@ -137,47 +141,34 @@ const sendTransferWithLedger = async (
   iterations: number,
   frequency: number,
   activeAccount: ActiveAccount,
+  globalProperties: DynamicGlobalProperties,
 ) => {
   try {
     let signedTransaction;
     if (!recurrent) {
+      BroadcastAPI;
       signedTransaction = await LedgerUtils.signTransaction(
-        {
-          operations: [
-            [
-              'transfer',
-              { from: sender, to: receiver, amount: amount, memo: memo },
-            ] as TransferOperation,
-          ],
-          ref_block_num: 0,
-          ref_block_prefix: 0,
-          expiration: TransactionUtils.getExpirationTime(),
-          extensions: [],
-        },
+        TransactionUtils.createTransaction(globalProperties, [
+          'transfer',
+          { from: sender, to: receiver, amount: amount, memo: memo },
+        ] as TransferOperation),
         activeAccount.keys.active!,
       );
     } else {
       signedTransaction = await LedgerUtils.signTransaction(
-        {
-          operations: [
-            [
-              'recurrent_transfer',
-              {
-                from: sender,
-                to: receiver,
-                amount: amount,
-                memo: memo,
-                recurrence: frequency,
-                executions: iterations,
-                extensions: [],
-              },
-            ] as RecurrentTransferOperation,
-          ],
-          ref_block_num: 0,
-          ref_block_prefix: 0,
-          expiration: '',
-          extensions: [],
-        },
+        TransactionUtils.createTransaction(globalProperties, [
+          'recurrent_transfer',
+          {
+            from: sender,
+            to: receiver,
+            amount: amount,
+            memo: memo,
+            recurrence: frequency,
+            executions: iterations,
+            extensions: [],
+          },
+        ] as RecurrentTransferOperation),
+
         activeAccount.keys.active!,
       );
     }

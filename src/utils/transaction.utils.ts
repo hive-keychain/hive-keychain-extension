@@ -1,4 +1,9 @@
-import { utils as dHiveUtils } from '@hiveio/dhive';
+import {
+  DynamicGlobalProperties,
+  Operation,
+  Transaction as DHiveTransaction,
+  utils as dHiveUtils,
+} from '@hiveio/dhive';
 import {
   ClaimAccount,
   ClaimReward,
@@ -21,7 +26,6 @@ import {
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
 import { store } from '@popup/store';
-import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
@@ -297,8 +301,23 @@ const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
 };
 
 const getExpirationTime = () => {
-  const now = moment();
-  return now.add(10, 'minutes').toString();
+  return new Date(Date.now() + 60 * 1000).toISOString().slice(0, -5);
+};
+
+export const createTransaction = (
+  globalProperties: DynamicGlobalProperties,
+  operation: Operation,
+): DHiveTransaction => {
+  return {
+    ref_block_num: globalProperties.head_block_number,
+    ref_block_prefix: Buffer.from(
+      globalProperties.head_block_id,
+      'hex',
+    ).readUInt32LE(4),
+    expiration: new Date(Date.now() + 60 * 1000).toISOString().slice(0, -5),
+    operations: [operation],
+    extensions: [],
+  };
 };
 
 const TransactionUtils = {
@@ -306,6 +325,7 @@ const TransactionUtils = {
   getLastTransaction,
   decodeMemoIfNeeded,
   getExpirationTime,
+  createTransaction,
 };
 
 export default TransactionUtils;

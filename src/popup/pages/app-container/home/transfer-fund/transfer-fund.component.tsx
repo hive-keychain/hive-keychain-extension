@@ -44,6 +44,7 @@ const TransferFunds = ({
   currencyLabels,
   phishing,
   formParams,
+  globalProperties,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -250,6 +251,7 @@ const TransferFunds = ({
           isCancelRecurrent ? 2 : +iteration,
           isCancelRecurrent ? 24 : +frequency,
           activeAccount,
+          globalProperties.globals!,
         );
 
         removeFromLoadingList('html_popup_transfer_fund_operation');
@@ -413,6 +415,7 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
+    globalProperties: state.globalProperties,
   };
 };
 
