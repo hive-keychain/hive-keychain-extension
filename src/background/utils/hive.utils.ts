@@ -43,9 +43,10 @@ const claimRewards = async (
 const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
   try {
     const freeAccountConfig = Config.claims.freeAccount;
+
     if (
-      rc.percentage / 100 > freeAccountConfig.MIN_RC_PCT &&
-      rc.max_mana > freeAccountConfig.MIN_RC
+      rc.percentage > freeAccountConfig.MIN_RC_PCT &&
+      rc.current_mana > freeAccountConfig.MIN_RC
     ) {
       const client = await RPCModule.getClient();
       await client.broadcast.sendOperations(
