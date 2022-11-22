@@ -23,25 +23,13 @@ export enum LedgerKeyType {
 const getLedgerError = (errorName: string) => {
   switch (errorName) {
     case 'LedgerNotSupported':
-      return {
-        name: 'LedgerNotSupported',
-        message: 'html_ledger_not_supported',
-      };
+      return new Error('html_ledger_not_supported');
     case 'TransportInterfaceNotAvailable':
-      return {
-        name: 'TransportInterfaceNotAvailable',
-        message: 'html_ledger_not_available',
-      };
+      return new Error('html_ledger_not_available');
     case 'TransportOpenUserCancelled':
-      return {
-        name: 'TransportOpenUserCancelled',
-        message: 'html_ledger_user_canceled',
-      };
+      return new Error('html_ledger_user_canceled');
     default:
-      return {
-        name: 'UnknownError',
-        message: 'html_ledger_unknown_error',
-      };
+      return new Error('html_ledger_unknown_error');
   }
 };
 
@@ -49,15 +37,13 @@ const init = async (): Promise<boolean> => {
   try {
     if (await TransportWebUsb.isSupported()) {
       const transport = await TransportWebUsb.create();
-      console.log(transport);
       hiveLedger = new LedgerHiveApp(transport);
-      console.log(hiveLedger);
       return true;
     } else {
       throw getLedgerError('LedgerNotSupported');
     }
   } catch (err: any) {
-    console.error(err);
+    Logger.error(err);
     throw getLedgerError(err.name);
   }
 };

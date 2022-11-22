@@ -60,7 +60,7 @@ const sendWitnessOperation = async (
       activeAccount.keys.active!,
     );
     if (!signedTransaction) return false;
-    return !!(await await HiveUtils.sendOperationWithConfirmation(
+    return !!(await HiveUtils.sendOperationWithConfirmation(
       HiveUtils.getClient().broadcast.send(signedTransaction),
     ));
   } else {
@@ -88,23 +88,52 @@ const getWitnessVoteOperation = (
   ] as AccountWitnessVoteOperation;
 };
 
-const setAsProxy = async (proxyName: string, activeAccount: ActiveAccount) => {
+const setAsProxy = async (
+  proxyName: string,
+  activeAccount: ActiveAccount,
+  globalProperties: DynamicGlobalProperties,
+) => {
   GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
-  return HiveUtils.sendOperationWithConfirmation(
-    HiveUtils.getClient().broadcast.sendOperations(
-      [
-        [
-          'account_witness_proxy',
-          { account: activeAccount.name, proxy: proxyName },
-        ] as AccountWitnessProxyOperation,
-      ],
-      PrivateKey.fromString(activeAccount.keys.active as string),
-    ),
-  );
+
+  if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
+    const signedTransaction = await LedgerUtils.signTransaction(
+      TransactionUtils.createTransaction(
+        globalProperties,
+        getSetProxyOperation(proxyName, activeAccount),
+      ),
+      activeAccount.keys.active!,
+    );
+    if (!signedTransaction) return false;
+    else {
+      return HiveUtils.sendOperationWithConfirmation(
+        HiveUtils.getClient().broadcast.send(signedTransaction),
+      );
+    }
+  } else {
+    return HiveUtils.sendOperationWithConfirmation(
+      HiveUtils.getClient().broadcast.sendOperations(
+        [WitnessUtils.getSetProxyOperation(proxyName, activeAccount)],
+        PrivateKey.fromString(activeAccount.keys.active as string),
+      ),
+    );
+  }
 };
 
-const removeProxy = async (activeAccount: ActiveAccount) => {
-  return setAsProxy('', activeAccount);
+const getSetProxyOperation = (
+  proxyName: string,
+  activeAccount: ActiveAccount,
+) => {
+  return [
+    'account_witness_proxy',
+    { account: activeAccount.name, proxy: proxyName },
+  ] as AccountWitnessProxyOperation;
+};
+
+const removeProxy = async (
+  activeAccount: ActiveAccount,
+  globalProperties: DynamicGlobalProperties,
+) => {
+  return setAsProxy('', activeAccount, globalProperties);
 };
 
 const WitnessUtils = {
@@ -113,6 +142,7 @@ const WitnessUtils = {
   setAsProxy,
   removeProxy,
   getWitnessVoteOperation,
+  getSetProxyOperation,
   sendWitnessOperation,
 };
 

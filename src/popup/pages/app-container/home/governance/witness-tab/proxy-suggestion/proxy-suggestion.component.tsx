@@ -20,6 +20,7 @@ const ProxySuggestion = ({
   setErrorMessage,
   isMessageContainerDisplayed,
   refreshActiveAccount,
+  globalProperties,
 }: PropsType) => {
   const [forceClosed, setForcedClosed] = useState(false);
 
@@ -40,7 +41,11 @@ const ProxySuggestion = ({
   };
 
   const handleSetProxy = async () => {
-    const success = await WitnessUtils.setAsProxy('keychain', activeAccount);
+    const success = await WitnessUtils.setAsProxy(
+      'keychain',
+      activeAccount,
+      globalProperties.globals!,
+    );
     if (success) {
       setSuccessMessage('popup_success_proxy', ['keychain']);
       handleClose();
@@ -93,6 +98,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     isMessageContainerDisplayed: state.errorMessage.key.length > 0,
+    globalProperties: state.globalProperties,
   };
 };
 
