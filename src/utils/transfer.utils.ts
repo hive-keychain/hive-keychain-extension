@@ -173,7 +173,6 @@ const sendTransferWithLedger = async (
       );
     }
 
-    console.log(signedTransaction);
     if (signedTransaction) {
       await HiveUtils.sendOperationWithConfirmation(
         HiveUtils.getClient().broadcast.send(signedTransaction),
@@ -182,7 +181,7 @@ const sendTransferWithLedger = async (
     }
     return false;
   } catch (err) {
-    console.log(err);
+    Logger.error(err);
     return false;
   }
 };

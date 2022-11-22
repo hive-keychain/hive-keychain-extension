@@ -31,6 +31,7 @@ const MAX_WITNESS_VOTE = 30;
 
 const WitnessTab = ({
   activeAccount,
+  globalProperties,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
@@ -123,7 +124,11 @@ const WitnessTab = ({
     }
     if (activeAccount.account.witness_votes.includes(witness.name)) {
       addToLoadingList('html_popup_unvote_witness_operation');
-      const success = await WitnessUtils.unvoteWitness(witness, activeAccount);
+      const success = await WitnessUtils.unvoteWitness(
+        witness,
+        activeAccount,
+        globalProperties.globals!,
+      );
       addToLoadingList('html_popup_confirm_transaction_operation');
       removeFromLoadingList('html_popup_unvote_witness_operation');
       await BlockchainTransactionUtils.delayRefresh();
@@ -138,7 +143,11 @@ const WitnessTab = ({
       removeFromLoadingList('html_popup_confirm_transaction_operation');
     } else {
       addToLoadingList('html_popup_vote_witness_operation');
-      const success = await WitnessUtils.voteWitness(witness, activeAccount);
+      const success = await WitnessUtils.voteWitness(
+        witness,
+        activeAccount,
+        globalProperties.globals!,
+      );
       addToLoadingList('html_popup_confirm_transaction_operation');
       removeFromLoadingList('html_popup_vote_witness_operation');
       await BlockchainTransactionUtils.delayRefresh();
@@ -311,7 +320,10 @@ const WitnessTab = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return {
+    activeAccount: state.activeAccount,
+    globalProperties: state.globalProperties,
+  };
 };
 
 const connector = connect(mapStateToProps, {

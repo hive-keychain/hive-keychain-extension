@@ -29,6 +29,7 @@ const WitnessVotingSection = ({
   addToLoadingList,
   removeFromLoadingList,
   shouldDisplayWitnessVoting,
+  globalProperties,
 }: PropsFromRedux) => {
   const handleVoteForWitnessClicked = async () => {
     if (activeAccount.account.witnesses_voted_for === 30) {
@@ -38,6 +39,7 @@ const WitnessVotingSection = ({
       const transactionConfirmed = await WitnessUtils.voteWitness(
         STOODKEV_WITNESS,
         activeAccount,
+        globalProperties.globals!,
       );
       addToLoadingList('html_popup_confirm_transaction_operation');
       removeFromLoadingList('html_popup_vote_witness_operation');
@@ -73,6 +75,7 @@ const mapStateToProps = (state: RootState) => {
     shouldDisplayWitnessVoting:
       state.activeAccount.account.proxy.length === 0 &&
       !state.activeAccount.account.witness_votes.includes('stoodkev'),
+    globalProperties: state.globalProperties,
   };
 };
 
