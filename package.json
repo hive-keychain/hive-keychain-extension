@@ -140,5 +140,8 @@
   },
   "browser": {
     "crypto": false
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

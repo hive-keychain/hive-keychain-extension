@@ -18,7 +18,6 @@ describe('encrypt.utils tests:\n', () => {
       expect(result.length).toBe(152);
     });
     test('Passing a valid LocalAccount obj and encryptPassword as "new key" must return a string and pass all conditions bellow', async () => {
-      const showResult = false;
       const spyGetMk = jest
         .spyOn(MkModule, 'getMk')
         .mockResolvedValueOnce('new key');
@@ -32,9 +31,6 @@ describe('encrypt.utils tests:\n', () => {
       };
       const content = { list: newAccount };
       const result = EncryptUtils.encryptJson(content, mk);
-      if (showResult) {
-        console.log(result);
-      }
       expect(spyGetMk).toBeCalledTimes(1);
       expect(result).not.toBeNull();
       expect(result).not.toBeUndefined();
@@ -120,7 +116,6 @@ describe('encrypt.utils tests:\n', () => {
       jest.clearAllMocks();
     });
     test('Passing an empty message and an empty password must throw error as SyntaxError', () => {
-      const showError = false;
       const spyLogger = jest.spyOn(Logger, 'error');
       const errorMessage = 'Error while decrypting';
       const encodedMessage = '';
@@ -133,14 +128,10 @@ describe('encrypt.utils tests:\n', () => {
           errorMessage,
           new SyntaxError('Unexpected end of JSON input'),
         );
-        if (showError) {
-          console.log(error);
-        }
       }
     });
 
     test('Passing an empty message and a password must throw error as SyntaxError', () => {
-      const showError = false;
       const spyLogger = jest.spyOn(Logger, 'error');
       const errorMessage = 'Error while decrypting';
       const encodedMessage = '';
@@ -153,9 +144,6 @@ describe('encrypt.utils tests:\n', () => {
           errorMessage,
           new SyntaxError('Unexpected end of JSON input'),
         );
-        if (showError) {
-          console.log(error);
-        }
       }
     });
 
@@ -191,14 +179,10 @@ describe('encrypt.utils tests:\n', () => {
 
   describe('encrypt tests:\n', () => {
     test('Passing a string and a password must return a 108 length string', () => {
-      const showResult = true;
       const content = 'Test String to Encrypt!';
       const passwordUsed = '12345678';
       const result = EncryptUtils.encrypt(content, passwordUsed);
       expect(result.length).toBe(108);
-      if (showResult) {
-        console.log(result);
-      }
     });
 
     test('Passing empty content and password must return a 88 length string', () => {

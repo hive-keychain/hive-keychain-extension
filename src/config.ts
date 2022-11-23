@@ -1,5 +1,4 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
-
 const Config = {
   hiveEngine: {
     mainnet: 'ssc-mainnet-hive',
@@ -28,7 +27,7 @@ const Config = {
       process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
   },
   loader: {
-    minDuration: process.env.NODE_ENV ? 0 : 1000,
+    minDuration: process.env.NODE_ENV === 'test' ? 0 : 1000,
   },
   transactions: {
     expirationTimeInMinutes: 10,
