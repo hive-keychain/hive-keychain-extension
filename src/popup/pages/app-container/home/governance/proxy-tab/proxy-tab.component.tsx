@@ -21,7 +21,6 @@ import './proxy-tab.component.scss';
 
 const ProxyTab = ({
   activeAccount,
-  globalProperties,
   refreshActiveAccount,
   setErrorMessage,
   setSuccessMessage,
@@ -35,13 +34,7 @@ const ProxyTab = ({
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
     addToLoadingList('popup_html_setting_proxy');
-    if (
-      await WitnessUtils.setAsProxy(
-        proxyUsername,
-        activeAccount,
-        globalProperties.globals!,
-      )
-    ) {
+    if (await WitnessUtils.setAsProxy(proxyUsername, activeAccount)) {
       setSuccessMessage('popup_success_proxy', [proxyUsername]);
       refreshActiveAccount();
     } else {
@@ -54,9 +47,7 @@ const ProxyTab = ({
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
     addToLoadingList('popup_html_clearing_proxy');
-    if (
-      await WitnessUtils.removeProxy(activeAccount, globalProperties.globals!)
-    ) {
+    if (await WitnessUtils.removeProxy(activeAccount)) {
       refreshActiveAccount();
       setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
     } else {
@@ -118,7 +109,6 @@ const ProxyTab = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
-    globalProperties: state.globalProperties,
   };
 };
 

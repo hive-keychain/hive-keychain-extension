@@ -7,6 +7,7 @@ import {
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
@@ -88,35 +89,37 @@ const getWitnessVoteOperation = (
   ] as AccountWitnessVoteOperation;
 };
 
-const setAsProxy = async (
-  proxyName: string,
-  activeAccount: ActiveAccount,
-  globalProperties: DynamicGlobalProperties,
-) => {
+const setAsProxy = async (proxyName: string, activeAccount: ActiveAccount) => {
   GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
 
-  if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
-    const signedTransaction = await LedgerUtils.signTransaction(
-      TransactionUtils.createTransaction(
-        globalProperties,
-        getSetProxyOperation(proxyName, activeAccount),
-      ),
-      activeAccount.keys.active!,
-    );
-    if (!signedTransaction) return false;
-    else {
-      return HiveUtils.sendOperationWithConfirmation(
-        HiveUtils.getClient().broadcast.send(signedTransaction),
-      );
-    }
-  } else {
-    return HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [WitnessUtils.getSetProxyOperation(proxyName, activeAccount)],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    );
-  }
+  console.log(` ------------ requete 1 avec "${proxyName}"--------------`);
+  return await HiveTxUtils.sendOperation(
+    [getSetProxyOperation(proxyName, activeAccount)],
+    activeAccount.keys.active!,
+  );
+
+  // if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
+  //   const signedTransaction = await LedgerUtils.signTransaction(
+  //     TransactionUtils.createTransaction(
+  //       globalProperties,
+  //       getSetProxyOperation(proxyName, activeAccount),
+  //     ),
+  //     activeAccount.keys.active!,
+  //   );
+  //   if (!signedTransaction) return false;
+  //   else {
+  //     return HiveUtils.sendOperationWithConfirmation(
+  //       HiveUtils.getClient().broadcast.send(signedTransaction),
+  //     );
+  //   }
+  // } else {
+  //   return HiveUtils.sendOperationWithConfirmation(
+  //     HiveUtils.getClient().broadcast.sendOperations(
+  //       [WitnessUtils.getSetProxyOperation(proxyName, activeAccount)],
+  //       PrivateKey.fromString(activeAccount.keys.active as string),
+  //     ),
+  //   );
+  // }
 };
 
 const getSetProxyOperation = (
@@ -129,11 +132,8 @@ const getSetProxyOperation = (
   ] as AccountWitnessProxyOperation;
 };
 
-const removeProxy = async (
-  activeAccount: ActiveAccount,
-  globalProperties: DynamicGlobalProperties,
-) => {
-  return setAsProxy('', activeAccount, globalProperties);
+const removeProxy = async (activeAccount: ActiveAccount) => {
+  return setAsProxy('', activeAccount);
 };
 
 const WitnessUtils = {
