@@ -1,22 +1,15 @@
 import {
   AccountWitnessProxyOperation,
   AccountWitnessVoteOperation,
-  DynamicGlobalProperties,
-  PrivateKey,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import HiveUtils from 'src/utils/hive.utils';
-import { KeysUtils } from 'src/utils/keys.utils';
-import { LedgerUtils } from 'src/utils/ledger.utils';
-import TransactionUtils from 'src/utils/transaction.utils';
 
 const voteWitness = async (
   witness: Witness,
   activeAccount: ActiveAccount,
-  globalProperties: DynamicGlobalProperties,
 ): Promise<boolean> => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     true,
@@ -24,17 +17,12 @@ const voteWitness = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(
-    witnessOperation,
-    activeAccount,
-    globalProperties,
-  );
+  return WitnessUtils.sendWitnessOperation(witnessOperation, activeAccount);
 };
 
 const unvoteWitness = async (
   witness: Witness,
   activeAccount: ActiveAccount,
-  globalProperties: DynamicGlobalProperties,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     false,
@@ -42,36 +30,19 @@ const unvoteWitness = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(
-    witnessOperation,
-    activeAccount,
-    globalProperties,
-  );
+  return WitnessUtils.sendWitnessOperation(witnessOperation, activeAccount);
 };
 
 const sendWitnessOperation = async (
   witnessOperation: AccountWitnessVoteOperation,
   activeAccount: ActiveAccount,
-  globalProperties: DynamicGlobalProperties,
 ) => {
   GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
-  if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
-    const signedTransaction = await LedgerUtils.signTransaction(
-      TransactionUtils.createTransaction(globalProperties, witnessOperation),
-      activeAccount.keys.active!,
-    );
-    if (!signedTransaction) return false;
-    return !!(await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.send(signedTransaction),
-    ));
-  } else {
-    return !!(await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [witnessOperation],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    ));
-  }
+
+  return await HiveTxUtils.sendOperation(
+    [witnessOperation],
+    activeAccount.keys.active!,
+  );
 };
 
 const getWitnessVoteOperation = (

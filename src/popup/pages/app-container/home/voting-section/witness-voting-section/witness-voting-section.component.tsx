@@ -29,25 +29,30 @@ const WitnessVotingSection = ({
   addToLoadingList,
   removeFromLoadingList,
   shouldDisplayWitnessVoting,
-  globalProperties,
 }: PropsFromRedux) => {
   const handleVoteForWitnessClicked = async () => {
     if (activeAccount.account.witnesses_voted_for === 30) {
       setErrorMessage('html_popup_vote_stoodkev_witness_error_30_votes');
     } else {
-      addToLoadingList('html_popup_vote_witness_operation');
-      const transactionConfirmed = await WitnessUtils.voteWitness(
-        STOODKEV_WITNESS,
-        activeAccount,
-        globalProperties.globals!,
-      );
-      addToLoadingList('html_popup_confirm_transaction_operation');
-      removeFromLoadingList('html_popup_vote_witness_operation');
-      if (transactionConfirmed) {
-        await BlockchainTransactionUtils.delayRefresh();
+      try {
+        addToLoadingList('html_popup_vote_witness_operation');
+        const transactionConfirmed = await WitnessUtils.voteWitness(
+          STOODKEV_WITNESS,
+          activeAccount,
+        );
+        addToLoadingList('html_popup_confirm_transaction_operation');
+        removeFromLoadingList('html_popup_vote_witness_operation');
+        if (transactionConfirmed) {
+          await BlockchainTransactionUtils.delayRefresh();
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
+          refreshActiveAccount();
+          setSuccessMessage('html_popup_vote_stoodkev_witness_success');
+        }
+      } catch (err: any) {
+        setErrorMessage(err.message);
+      } finally {
+        removeFromLoadingList('html_popup_vote_witness_operation');
         removeFromLoadingList('html_popup_confirm_transaction_operation');
-        refreshActiveAccount();
-        setSuccessMessage('html_popup_vote_stoodkev_witness_success');
       }
     }
   };
@@ -75,7 +80,6 @@ const mapStateToProps = (state: RootState) => {
     shouldDisplayWitnessVoting:
       state.activeAccount.account.proxy.length === 0 &&
       !state.activeAccount.account.witness_votes.includes('stoodkev'),
-    globalProperties: state.globalProperties,
   };
 };
 
