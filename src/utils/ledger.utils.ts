@@ -8,11 +8,6 @@ import Logger from 'src/utils/logger.utils';
 
 let hiveLedger: LedgerHiveApp;
 
-interface LedgerError {
-  name: string;
-  message: string;
-}
-
 export enum LedgerKeyType {
   OWNER = 0,
   ACTIVE = 1,
@@ -115,7 +110,7 @@ const getKeysForAccount = async (username: string) => {
       }
       accountIndex++;
     } catch (err) {
-      console.log(err);
+      Logger.error(err);
       stillHas = false;
     }
   } while (stillHas);

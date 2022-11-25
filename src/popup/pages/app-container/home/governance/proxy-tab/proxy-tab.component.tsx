@@ -34,13 +34,18 @@ const ProxyTab = ({
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
     addToLoadingList('popup_html_setting_proxy');
-    if (await WitnessUtils.setAsProxy(proxyUsername, activeAccount)) {
-      setSuccessMessage('popup_success_proxy', [proxyUsername]);
-      refreshActiveAccount();
-    } else {
-      setErrorMessage('html_popup_set_as_proxy_error');
+    try {
+      if (await WitnessUtils.setAsProxy(proxyUsername, activeAccount)) {
+        setSuccessMessage('popup_success_proxy', [proxyUsername]);
+        refreshActiveAccount();
+      } else {
+        setErrorMessage('html_popup_set_as_proxy_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_setting_proxy');
     }
-    removeFromLoadingList('popup_html_setting_proxy');
   };
 
   const removeProxy = async () => {

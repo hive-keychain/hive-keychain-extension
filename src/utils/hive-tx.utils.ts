@@ -40,13 +40,17 @@ const sendOperation = async (operations: Operation[], key: Key) => {
     operations,
     key,
   );
-  return await HiveTxUtils.confirmTransaction(transactionId);
+  if (transactionId) {
+    return await HiveTxUtils.confirmTransaction(transactionId);
+  } else {
+    return false;
+  }
 };
 
 const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
-): Promise<string> => {
+): Promise<string | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations);
   if (KeysUtils.isUsingLedger(key)) {
@@ -72,7 +76,12 @@ const createSignAndBroadcastTransaction = async (
   try {
     const response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastErrorResponse).error) {
-      throw new Error('html_popup_error_while_broadcasting');
+      Logger.error(
+        'Error during broadcast',
+        (response as HiveTxBroadcastErrorResponse).error,
+      );
+      return;
+      //   throw new Error('html_popup_error_while_broadcasting');
     } else {
       return (response as HiveTxBroadcastSuccessResponse).result.tx_id;
     }

@@ -40,13 +40,16 @@ const ProxySuggestion = ({
   };
 
   const handleSetProxy = async () => {
-    const success = await WitnessUtils.setAsProxy('keychain', activeAccount);
-    if (success) {
-      setSuccessMessage('popup_success_proxy', ['keychain']);
-      handleClose();
-      refreshActiveAccount();
-    } else {
-      setErrorMessage('popup_error_proxy', ['keychain']);
+    try {
+      if (await WitnessUtils.setAsProxy('keychain', activeAccount)) {
+        setSuccessMessage('popup_success_proxy', ['keychain']);
+        handleClose();
+        refreshActiveAccount();
+      } else {
+        setErrorMessage('popup_error_proxy', ['keychain']);
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
     }
   };
 
