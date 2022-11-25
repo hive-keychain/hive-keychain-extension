@@ -47,38 +47,39 @@ const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
 ): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    let tx = new HiveTransaction();
-    tx.create(operations).then((transaction) => {
-      console.log(transaction);
-      try {
-        if (KeysUtils.isUsingLedger(key)) {
-          tx = new HiveTransaction(
-            LedgerUtils.signTransaction(transaction, key),
-          );
-        } else {
-          const privateKey = PrivateKey.fromString(key!.toString());
-          tx.sign(privateKey);
-        }
-      } catch (err) {
-        console.log(err);
-        reject('html_popup_error_while_signing_transaction');
-        return;
-      }
-      try {
-        tx.broadcast().then((response) => {
-          if ((response as HiveTxBroadcastErrorResponse).error) {
-            reject('html_popup_error_while_broadcasting');
-          } else {
-            resolve((response as HiveTxBroadcastSuccessResponse).result.tx_id);
-          }
-        });
-      } catch (err) {
-        console.log(err);
-        reject('html_popup_error_while_broadcasting');
-      }
-    });
-  });
+  let hiveTransaction = new HiveTransaction();
+  let transaction = await hiveTransaction.create(operations);
+  if (KeysUtils.isUsingLedger(key)) {
+    try {
+      const signedTransactionFromLedger = await LedgerUtils.signTransaction(
+        transaction,
+        key,
+      );
+      hiveTransaction.addSignature(signedTransactionFromLedger!.signatures[0]);
+    } catch (err) {
+      Logger.error(err);
+      throw new Error('html_ledger_error_while_signing');
+    }
+  } else {
+    try {
+      const privateKey = PrivateKey.fromString(key!.toString());
+      hiveTransaction.sign(privateKey);
+    } catch (err) {
+      Logger.error(err);
+      throw new Error('html_popup_error_while_signing_transaction');
+    }
+  }
+  try {
+    const response = await hiveTransaction.broadcast();
+    if ((response as HiveTxBroadcastErrorResponse).error) {
+      throw new Error('html_popup_error_while_broadcasting');
+    } else {
+      return (response as HiveTxBroadcastSuccessResponse).result.tx_id;
+    }
+  } catch (err) {
+    Logger.error(err);
+    throw new Error('html_popup_error_while_broadcasting');
+  }
 };
 
 const confirmTransaction = async (transactionId: string) => {

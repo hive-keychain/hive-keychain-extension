@@ -20,19 +20,6 @@ export enum LedgerKeyType {
   MEMO = 4,
 }
 
-const getLedgerError = (errorName: string) => {
-  switch (errorName) {
-    case 'LedgerNotSupported':
-      return new Error('html_ledger_not_supported');
-    case 'TransportInterfaceNotAvailable':
-      return new Error('html_ledger_not_available');
-    case 'TransportOpenUserCancelled':
-      return new Error('html_ledger_user_canceled');
-    default:
-      return new Error('html_ledger_unknown_error');
-  }
-};
-
 const init = async (): Promise<boolean> => {
   try {
     if (await TransportWebUsb.isSupported()) {
@@ -40,11 +27,11 @@ const init = async (): Promise<boolean> => {
       hiveLedger = new LedgerHiveApp(transport);
       return true;
     } else {
-      throw getLedgerError('LedgerNotSupported');
+      throw new Error('html_ledger_not_supported');
     }
   } catch (err: any) {
-    Logger.error(err);
-    throw getLedgerError(err.name);
+    Logger.log(err);
+    throw new Error('html_ledger_error_while_connecting');
   }
 };
 
@@ -152,15 +139,16 @@ const signTransaction = async (
   key: Key,
   chainId?: string,
 ) => {
+  const ledger = await LedgerUtils.getLedgerInstance();
   try {
-    const ledger = await LedgerUtils.getLedgerInstance();
     return ledger.signTransaction(
       transaction,
       LedgerUtils.getPathFromString(key!.toString()),
       chainId,
     );
-  } catch (err) {
+  } catch (err: any) {
     Logger.error(err);
+    throw new Error('html_ledger_error_while_signing');
   }
 };
 

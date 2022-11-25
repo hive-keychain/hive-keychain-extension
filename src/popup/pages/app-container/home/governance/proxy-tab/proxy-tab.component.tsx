@@ -42,18 +42,24 @@ const ProxyTab = ({
     }
     removeFromLoadingList('popup_html_setting_proxy');
   };
+
   const removeProxy = async () => {
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
     addToLoadingList('popup_html_clearing_proxy');
-    if (await WitnessUtils.removeProxy(activeAccount)) {
-      refreshActiveAccount();
-      setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
-    } else {
-      setErrorMessage('html_popup_clear_proxy_error');
+    try {
+      if (await WitnessUtils.removeProxy(activeAccount)) {
+        refreshActiveAccount();
+        setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
+      } else {
+        setErrorMessage('html_popup_clear_proxy_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_clearing_proxy');
     }
-    removeFromLoadingList('popup_html_clearing_proxy');
   };
 
   return (

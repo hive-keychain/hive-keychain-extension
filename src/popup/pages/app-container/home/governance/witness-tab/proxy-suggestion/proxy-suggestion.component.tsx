@@ -16,9 +16,9 @@ import './proxy-suggestion.component.scss';
 
 const ProxySuggestion = ({
   activeAccount,
+  isMessageContainerDisplayed,
   setSuccessMessage,
   setErrorMessage,
-  isMessageContainerDisplayed,
   refreshActiveAccount,
 }: PropsType) => {
   const [forceClosed, setForcedClosed] = useState(false);

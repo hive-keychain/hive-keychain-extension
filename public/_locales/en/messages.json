@@ -2585,7 +2585,7 @@
     "description": "Ledger not detected error message"
   },
   "popup_html_ledger_detected": {
-    "message": "Ledger  detected",
+    "message": "Ledger detected",
     "description": "Ledger detected message"
   },
   "html_ledger_not_supported": {
@@ -2596,9 +2596,9 @@
     "message": "Ledger not available",
     "description": "Ledger not available error message"
   },
-  "html_ledger_user_canceled": {
-    "message": "User canceled",
-    "description": "Ledger user canceled error message"
+  "html_ledger_no_device_selected": {
+    "message": "No Ledger device selected",
+    "description": "Ledger not selected error message"
   },
   "html_ledger_unknown_error": {
     "message": "Unknown error",
@@ -2607,5 +2607,13 @@
   "html_popup_using_ledger": {
     "message": "Key saved on Ledger",
     "description": "key using ledger label"
+  },
+  "html_ledger_error_while_signing": {
+    "message": "Error while signing transaction with Ledger",
+    "description": "Error while signing transaction with Ledger"
+  },
+  "html_ledger_error_while_connecting": {
+    "message": "Error while connecting to Ledger. Please make sure your Ledger is connected and Hive application is running",
+    "description": "Error while connecting to Ledger"
   }
 }

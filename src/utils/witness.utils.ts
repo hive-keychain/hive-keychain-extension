@@ -91,35 +91,10 @@ const getWitnessVoteOperation = (
 
 const setAsProxy = async (proxyName: string, activeAccount: ActiveAccount) => {
   GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
-
-  console.log(` ------------ requete 1 avec "${proxyName}"--------------`);
   return await HiveTxUtils.sendOperation(
     [getSetProxyOperation(proxyName, activeAccount)],
     activeAccount.keys.active!,
   );
-
-  // if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
-  //   const signedTransaction = await LedgerUtils.signTransaction(
-  //     TransactionUtils.createTransaction(
-  //       globalProperties,
-  //       getSetProxyOperation(proxyName, activeAccount),
-  //     ),
-  //     activeAccount.keys.active!,
-  //   );
-  //   if (!signedTransaction) return false;
-  //   else {
-  //     return HiveUtils.sendOperationWithConfirmation(
-  //       HiveUtils.getClient().broadcast.send(signedTransaction),
-  //     );
-  //   }
-  // } else {
-  //   return HiveUtils.sendOperationWithConfirmation(
-  //     HiveUtils.getClient().broadcast.sendOperations(
-  //       [WitnessUtils.getSetProxyOperation(proxyName, activeAccount)],
-  //       PrivateKey.fromString(activeAccount.keys.active as string),
-  //     ),
-  //   );
-  // }
 };
 
 const getSetProxyOperation = (
