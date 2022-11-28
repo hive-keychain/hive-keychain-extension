@@ -10,6 +10,7 @@ import messages from 'src/__tests__/background/requests/operations/ops/mocks/mes
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('authority tests:\n', () => {
   const { methods, constants, mocks } = authority;
   const { requestHandler, confirmed } = constants;
@@ -25,17 +26,27 @@ describe('authority tests:\n', () => {
       mocks.client.broadcast.updateAccount(confirmed);
     });
     it('Must return error if key authorized', async () => {
-      const result = await broadcastAddKeyAuthority(requestHandler, data);
-      const { request_id, ...datas } = data;
-      expect(result).toEqual(messages.error.hasAuthority(datas, request_id));
+      const resultOperation = (await broadcastAddKeyAuthority(
+        requestHandler,
+        data,
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toBe('Already has authority');
     });
     it('Must return error if no key on handler', async () => {
       const cloneData = objects.clone(data) as RequestAddKeyAuthority &
         RequestId;
       cloneData.authorizedKey = '';
-      const result = await broadcastAddKeyAuthority(requestHandler, cloneData);
-      const { request_id, ...datas } = cloneData;
-      expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
+      const resultOperation = (await broadcastAddKeyAuthority(
+        requestHandler,
+        cloneData,
+      )) as ResultOperation;
+      const { success, result, error, ...datas } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toContain('private key');
     });
     it('Must broadcast update account active key', async () => {
       const cloneAccountExtended = objects.clone(

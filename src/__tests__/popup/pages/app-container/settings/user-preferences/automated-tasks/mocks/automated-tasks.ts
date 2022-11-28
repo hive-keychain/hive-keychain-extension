@@ -5,7 +5,6 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
-import manabar from 'src/__tests__/utils-for-testing/data/manabar';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -60,8 +59,12 @@ const beforeEach = async (toUse?: {
     remock = {
       app: {
         getRCMana: {
-          ...manabar,
+          current_mana: 1000,
+          percentage: 100,
           max_mana: Config.claims.freeAccount.MIN_RC + 1,
+          received_delegated_rc: 0,
+          max_rc: 0,
+          delegated_rc: 0,
         },
       },
     };

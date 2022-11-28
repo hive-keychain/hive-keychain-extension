@@ -15,7 +15,7 @@ import {
   userEventPendingTimers,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
-
+config.adjustSetTimeOutValues({ hideLoaderAfterMs: 0 });
 config.useChrome();
 jest.setTimeout(10000);
 

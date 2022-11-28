@@ -29,14 +29,11 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    switchAuto: 'rpc-nodes.component Switch Auto',
-    noSwitchAuto: 'rpc-nodes.component No Switch Auto',
-  },
   message: {
     missingFields: i18n.get('popup_html_rpc_missing_fields'),
     existingUri: i18n.get('popup_html_rpc_uri_already_existing'),
     invalidUri: i18n.get('html_popup_url_not_valid'),
+    intro: i18n.get('popup_html_rpc_node_text'),
   },
   data: {
     invalidUri: 'www.www.rpcNode',

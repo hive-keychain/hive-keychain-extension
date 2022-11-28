@@ -8,10 +8,7 @@ import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
-import {
-  actPendingTimers,
-  clickAwait,
-} from 'src/__tests__/utils-for-testing/setups/events';
+import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 describe('delegations.component tests:\n', () => {
   const { message } = delegations.constants;
@@ -68,21 +65,18 @@ describe('delegations.component tests:\n', () => {
     it('Must make a delegation, show message and go home page', async () => {
       delegations.extraMocks(true);
       await delegations.methods.typeNClick('theghost1980', '0.1', true);
-      await actPendingTimers();
       await assertion.awaitFor(message.success.delegation, QueryDOM.BYTEXT);
       assertion.getByLabelText(alComponent.homePage);
     });
     it('Must cancel a delegation, show message and navigate to home', async () => {
       delegations.extraMocks(true);
       await delegations.methods.typeNClick('theghost1980', '', true, true);
-      await actPendingTimers();
       await assertion.awaitFor(message.success.cancelation, QueryDOM.BYTEXT);
       assertion.getByLabelText(alComponent.homePage);
     });
-    it('Must show error message if cancellation fails', async () => {
+    it('Must show error message if cancellation fail', async () => {
       delegations.extraMocks(false);
       await delegations.methods.typeNClick('theghost1980', '', true, true);
-      await actPendingTimers();
       await assertion.awaitFor(message.error.cancellation, QueryDOM.BYTEXT);
     });
   });

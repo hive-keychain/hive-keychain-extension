@@ -2,11 +2,15 @@ import { Transfer } from '@interfaces/transaction.interface';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 jest.setTimeout(50000);
 describe('transaction.utils tests:\n', () => {
+  beforeEach(() => {
+    HiveUtils.setRpc(rpc.fake);
+  });
   describe('getAccountTransactions tests:\n', () => {
     const callingData = {
       accountName: utilsT.userData.username,
@@ -54,10 +58,7 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
-    test('if an error occurs(wrong transfers data received, missing proper format in .op), must call Logger', async () => {
-      let errorCatched = new TypeError(
-        "Cannot read properties of undefined (reading 'stack')",
-      );
+    test('if an error occurs must call Logger', async () => {
       const spyLoggerError = jest.spyOn(Logger, 'error');
       const mockGetAccountHistory =
         (HiveUtils.getClient().database.getAccountHistory = jest
@@ -75,11 +76,9 @@ describe('transaction.utils tests:\n', () => {
           ),
         ).toBe(1);
       } catch (error) {
-        expect(error).toEqual(errorCatched);
-        expect(spyLoggerError).toBeCalledTimes(1);
-        errorCatched.message =
-          "Cannot read properties of undefined (reading '0')";
-        expect(spyLoggerError).toBeCalledWith(errorCatched, errorCatched);
+        expect((error as TypeError).message).toContain('stack');
+        const { calls } = spyLoggerError.mock;
+        expect((calls[0][0] as TypeError).message).toContain('0');
       }
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();

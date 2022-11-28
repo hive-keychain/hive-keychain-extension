@@ -55,8 +55,15 @@ export const HBDDropdownMenuItems: DropdownMenuItemInterface[] = [
 export const HpDropdownMenuItems: DropdownMenuItemInterface[] = [
   {
     label: 'popup_html_delegate',
-    icon: Icons.DELEGATIONS,
+    icon: Icons.DELEGATIONS_HP,
+    importedIcon: true,
     nextScreen: Screen.DELEGATION_PAGE,
+  },
+  {
+    label: 'popup_html_delegate_rc',
+    icon: Icons.DELEGATIONS_RC,
+    importedIcon: true,
+    nextScreen: Screen.RC_DELEGATIONS_PAGE,
   },
   {
     label: 'dialog_title_powerdown',

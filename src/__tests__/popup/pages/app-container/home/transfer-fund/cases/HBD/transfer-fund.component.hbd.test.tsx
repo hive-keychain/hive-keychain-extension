@@ -1,4 +1,5 @@
 import App from '@popup/App';
+import { waitFor } from '@testing-library/react';
 import React from 'react';
 import clickCancel from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/confirmation/click-cancel';
 import recurrentCancellationConfirmation from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/confirmation/recurrent-cancellation-confirmation';
@@ -38,66 +39,88 @@ describe('transfer-fund.component tests:\n', () => {
       beforeEach(async () => {
         await transferFund.beforeEach(<App />, currency);
       });
-      it('Must show transfer fund page and user data', () => {
-        assertBalance.run(currency);
+      it('Must show transfer fund page and user data', async () => {
+        await waitFor(() => {
+          assertBalance.run(currency);
+        });
       });
+
       it('Must show error if no amount', async () => {
         await noAmount.run();
       });
+
       it('Must show error if no receiverUsername', async () => {
         await noReceiverUsername.run();
       });
+
       it('Must show error if empty receiverUsername', async () => {
         await emptyReceiverUsername.run();
       });
+
       it('Must show error if negative amount', async () => {
         await negativeAmount.run();
       });
+
       it('Must show error if not enough balance', async () => {
         await notEnoughBalance.run();
       });
+
       it('Must show error if no frequency', async () => {
         await noFrequency.run();
       });
+
       it('Must show error if no iteration', async () => {
         await noIterations.run();
       });
+
       it('Must show warningMessage if exchange do not accepts currency', async () => {
         await exchangeNotAccept.run(currency);
       });
+
       it('Must show memo warning when transferring to exchange account', async () => {
         await exchangeNeedsMemo.run();
       });
+
       it('Must show phishing warning', async () => {
         await phishing.run();
       });
+
       it('Must load confimation page on recurrent cancelation', async () => {
         await recurrentCancellationConfirmation.run();
       });
+
       it('Must show confirmation page on transfer with blank memo', async () => {
         await transferBlankMemo.run();
       });
+
       it('Must return to transfer page after clicking cancel confirmation', async () => {
         await clickCancel.run();
       });
+
       it('Must encode memo', async () => {
         await encodeMemo.run();
       });
+
       it('Must show success message on transfer', async () => {
         await transferSuccess.run(currency);
       });
+
       it('Must show success message on recurrent cancellation', async () => {
         await recurrentCancellationSuccess.run();
       });
+
       it('Must show success message on recurrent', async () => {
         await recurrentSuccess.run(currency);
       });
+
       it('Must show error when failed transaction', async () => {
         await transactionFailed.run();
       });
+
       it('Must show error on failed recurrent transfer', async () => {
         await recurrentFailed.run();
       });
+
       it('Must show error on failed recurrent cancellation', async () => {
         await recurrentCancellationFailed.run();
       });

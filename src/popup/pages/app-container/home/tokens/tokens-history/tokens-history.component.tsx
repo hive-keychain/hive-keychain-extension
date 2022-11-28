@@ -82,7 +82,6 @@ const TokensHistory = ({
       }),
     );
   }, [tokenHistory, filterValue]);
-
   return (
     <div aria-label="tokens-history" className="tokens-history">
       <InputComponent

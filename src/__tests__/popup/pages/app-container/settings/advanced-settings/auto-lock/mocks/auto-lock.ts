@@ -24,9 +24,6 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    default: 'auto-lock.component Default Idle Lock',
-  },
   message: {
     saved: i18n.get('popup_html_save_successful'),
   },
@@ -55,6 +52,10 @@ const beforeEach = async (customAutolock?: Autolock) => {
 const methods = {
   afterEach: afterEach(() => {
     afterTests.clean();
+  }),
+  afterAll: afterAll(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
   }),
   gotoAutoLock: async () => {
     await clickAwait([

@@ -64,6 +64,27 @@
     width: 6px;
     background-color: transparent;
   }
+  .splashscreen {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 32px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: url(/assets/images/hive-watermark.png) 0% 0% no-repeat
+        padding-box,
+      linear-gradient(to bottom, #000000, #59626c, #000000) 0% 0% no-repeat
+        padding-box !important;
+
+    .caption {
+      font-size: 32px;
+      color: white;
+    }
+  }
 }
 
 .react-dropdown-select-dropdown-handle {

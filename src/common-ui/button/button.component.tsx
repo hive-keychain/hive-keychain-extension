@@ -9,6 +9,7 @@ export enum ButtonType {
   IMPORTANT = 'important',
   DEFAULT = 'default',
   REVERSE = 'reverse',
+  NO_BORDER = 'no-border',
 }
 
 export interface ButtonProps {

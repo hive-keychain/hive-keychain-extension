@@ -133,7 +133,7 @@
     "message": "Power down"
   },
   "popup_html_delegate": {
-    "message": "Delegations"
+    "message": "HP Delegations"
   },
   "popup_html_estimation": {
     "message": "Estimated Account Value",
@@ -2268,7 +2268,7 @@
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_issue": {
-    "message": "Issued $1",
+    "message": "Received $1",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_pegged_buy": {
@@ -2443,6 +2443,30 @@
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
   },
+  "html_popup_governance_renewal_title": {
+    "message": "Governance renewal",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renewal_introduction": {
+    "message": "Your governance votes are about to expire for the following accounts.<br/>If you want to keep them active, click on the renew button. To cancel the expiry, we will help you vote/unvote the return proposal. If you would rather review your votes manually, uncheck the checkbox to ignore.",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renew": {
+    "message": "Renew",
+    "description": "Governance expiration renew"
+  },
+  "html_popup_governance_ignore": {
+    "message": "Ignore",
+    "description": "Governance expiration ignore"
+  },
+  "html_popup_governance_expiration_read_more": {
+    "message": "Read more about governance expiration",
+    "description": "Governance expiration description"
+  },
+  "html_popup_governance_renewing": {
+    "message": "Renewing",
+    "description": "Governance expiration description"
+  },
   "popup_html_transfer_to_saving_to_exchange_error": {
     "message": "You are trying to transfer to the savings of an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
     "description": "Transfer to savings of exchange platform warning message"
@@ -2514,5 +2538,70 @@
   "popup_html_analytics_message": {
     "message": "Enable Keychain to gather anonymous non-sensitive data on the extension usage. This data will be used to enhance your user experience. You can opt out at any time from the 'Advanced Settings' section.",
     "description": "Analytics popup message"
+  },
+  "popup_html_delegate_rc": {
+    "message": "RC Delegations"
+  },
+  "popup_html_rc_delegations_text": {
+    "message": "You may delegate your Resource Credit (RC) to another user. Click on the Outgoing amount to review or make changes.",
+    "description": "Main page > Delegate RC"
+  },
+  "popup_html_username_missing": {
+    "message": "Username is missing",
+    "description": "In any form, when username is missing"
+  },
+  "html_popup_delegate_rc_operation": {
+    "message": "Delegating RC",
+    "description": "delegate rc operation"
+  },
+  "html_popup_cancel_delegate_rc_operation": {
+    "message": "Canceling RC delegation",
+    "description": "cancel delegate rc operation"
+  },
+  "popup_html_rc_delegation_confirm_text": {
+    "message": "Please confirm your RC delegation.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_confirm_text": {
+    "message": "Please confirm your want to cancel your RC delegation.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_title": {
+    "message": "RC Delegation",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_title": {
+    "message": "Cancel RC Delegation",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_successful": {
+    "message": "You successfully delegated RC to $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_successful": {
+    "message": "You successfully canceled your delegation to $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_failed": {
+    "message": "Your cancel delegation operation has failed",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_to": {
+    "message": "To"
+  },
+  "popup_html_rc_delegation_value": {
+    "message": "Value"
+  },
+  "popup_html_rc_delegation_failed": {
+    "message": "Rc Delegation failed",
+    "description": "RC delegation failed"
+  },
+  "popup_html_survey_no_thanks": {
+    "message": "No thanks",
+    "description": "No thanks button on survey popup"
+  },
+  "popup_html_survey_help_us": {
+    "message": "Let's go!",
+    "description": "Help us button on survey popup"
   }
 }
