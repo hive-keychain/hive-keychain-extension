@@ -18,9 +18,6 @@ describe('rpc-nodes.component tests:\n', () => {
     beforeEach(async () => {
       _asFragment = await rpcNodes.beforeEach();
     });
-    it('Must load component and match snapshot', () => {
-      expect(_asFragment()).toMatchSnapshot(constants.snapshotName.switchAuto);
-    });
 
     it('Must show add rpc button', async () => {
       await clickAwait([alCheckbox.rpcNodes.select.automaticMode]);
@@ -34,12 +31,7 @@ describe('rpc-nodes.component tests:\n', () => {
         customsRpcs: [{ uri: 'https://saturnoman.com/rpc', testnet: false }],
       });
     });
-    it('Must load component and match snapshot', async () => {
-      await clickAwait([alSelect.rpcNode.selected]);
-      expect(_asFragment()).toMatchSnapshot(
-        constants.snapshotName.noSwitchAuto,
-      );
-    });
+
     it('Must hide add rpc button', async () => {
       await clickAwait([alCheckbox.rpcNodes.select.automaticMode]);
       assertion.queryByLabel(alButton.rpcNodes.addRpc, false);

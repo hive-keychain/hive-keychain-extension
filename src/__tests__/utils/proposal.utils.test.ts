@@ -1,6 +1,7 @@
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import moment from 'moment';
+import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
@@ -35,6 +36,7 @@ describe('proposal.utils tests:\n', () => {
 
   describe('getProposalList tests:\n', () => {
     test('Passing a user that hasnt voted on any proposal, must return a list of proposal with a field false on each one', async () => {
+      FormatUtils.toHP = jest.fn().mockReturnValue(33430000);
       HiveUtils.getClient().database.call = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeProposalListResponse)
@@ -83,6 +85,8 @@ describe('proposal.utils tests:\n', () => {
       HiveUtils.getProposalDailyBudget = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
+
+      FormatUtils.toHP = jest.fn().mockReturnValue(33430000);
 
       const result = await ProposalUtils.getProposalList(
         'theghost1980',
