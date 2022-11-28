@@ -60,7 +60,10 @@ const beforeEach = async (component: ReactElement, passErrorData: boolean) => {
 
 const methods = {
   clickToDelegations: async () => {
-    await clickAwait([alDropdown.arrow.hp, alDropdown.span.delegations]);
+    await clickAwait([
+      alDropdown.arrow.hp,
+      'dropdown-menu-item-hp-delegation.svg',
+    ]);
   },
   after: afterEach(() => {
     afterTests.clean();

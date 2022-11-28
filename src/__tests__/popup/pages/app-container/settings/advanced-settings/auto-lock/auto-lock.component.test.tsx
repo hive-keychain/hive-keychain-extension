@@ -1,6 +1,7 @@
 import { AutoLockType } from '@interfaces/autolock.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import autoLock from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/auto-lock/mocks/auto-lock';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
@@ -21,8 +22,11 @@ describe('auto-lock.component tests:\n', () => {
   const { methods, constants } = autoLock;
   let _asFragment: () => {};
   methods.afterEach;
+  methods.afterAll;
   describe('General cases:\n', () => {
     beforeEach(async () => {
+      chrome.runtime.sendMessage = jest.fn();
+      LocalStorageUtils.saveValueInLocalStorage = jest.fn();
       _asFragment = await autoLock.beforeEach();
       await methods.gotoAutoLock();
     });
@@ -42,9 +46,10 @@ describe('auto-lock.component tests:\n', () => {
       assertion.getByLabelText(alComponent.settingsPage);
     });
     it('Must show input when click', async () => {
-      assertion.queryByLabel(alInput.amount, false);
       await clickAwait([alCheckbox.autoLock.preFix + AutoLockType.IDLE_LOCK]);
-      assertion.queryByLabel(alInput.amount);
+      await waitFor(() => {
+        assertion.queryByLabel(alInput.amount);
+      });
     });
     it('Must set autolock by enter, show message and goback to advanced menu', async () => {
       await clickTypeAwait([
@@ -54,12 +59,16 @@ describe('auto-lock.component tests:\n', () => {
         },
         { ariaLabel: alInput.amount, event: EventType.TYPE, text: '0{enter}' },
       ]);
-      expect(methods.spy.saveValueInLocalStorage().mock.calls[1]).toEqual([
-        LocalStorageKeyEnum.AUTOLOCK,
-        { mn: '10', type: AutoLockType.IDLE_LOCK },
-      ]);
+      await waitFor(() => {
+        expect(methods.spy.saveValueInLocalStorage().mock.calls[1]).toEqual([
+          LocalStorageKeyEnum.AUTOLOCK,
+          { mn: '10', type: AutoLockType.IDLE_LOCK },
+        ]);
+      });
       await assertion.awaitFor(constants.message.saved, QueryDOM.BYTEXT);
-      assertion.getByLabelText(alComponent.settingsPage);
+      await waitFor(() => {
+        assertion.getByLabelText(alComponent.settingsPage);
+      });
     });
   });
   describe('Custom stored data:\n', () => {

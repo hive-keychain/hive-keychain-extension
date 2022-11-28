@@ -16,6 +16,7 @@ export default {
   conversionPage: 'conversion-page',
   savingsPage: 'savings-page',
   delegationsPage: 'delegations-page',
+  rcDelegationsPage: 'rc-delegations-page',
   confirmationPage: 'confirmation-page',
   incomingOutgoingPage: 'incoming-outgoing-page',
   proxySuggestion: 'proxy-suggestion',

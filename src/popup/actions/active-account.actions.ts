@@ -32,7 +32,11 @@ export const refreshKeys = (localAccount: LocalAccount) => {
 export const loadActiveAccount =
   (account: LocalAccount): AppThunk =>
   async (dispatch, getState) => {
-    if (account) {
+    if (
+      account &&
+      getState().activeRpc &&
+      getState().activeRpc?.uri !== 'NULL'
+    ) {
       dispatch(refreshKeys(account));
       dispatch(getAccountRC(account.name));
       const extendedAccount = await AccountUtils.getExtendedAccount(

@@ -23,6 +23,7 @@ import {
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
+import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 config.byDefault();
@@ -33,6 +34,9 @@ describe('hive.utils tests:\n', () => {
   afterEach(async () => {
     jest.clearAllMocks();
     await resetClient();
+  });
+  beforeEach(async () => {
+    await HiveUtils.setRpc(rpc.fake);
   });
   describe('getClient tests:\n', () => {
     test('calling getclient must return an instance of Client', () => {
@@ -51,7 +55,7 @@ describe('hive.utils tests:\n', () => {
         uri: 'DEFAULT',
         testnet: true,
       };
-      expect(HiveUtils.getClient().address).toBe('https://api.hive.blog');
+      expect(HiveUtils.getClient().address).toBe(rpc.fake.uri);
       const result = await HiveUtils.setRpc(fakeRpc);
       expect(result).toBeUndefined();
       expect(HiveUtils.getClient().address).toBe(returnedUriValue);
@@ -63,7 +67,7 @@ describe('hive.utils tests:\n', () => {
         uri: overridingValue,
         testnet: true,
       };
-      expect(HiveUtils.getClient().address).toBe('https://api.hive.blog');
+      expect(HiveUtils.getClient().address).toBe(rpc.fake.uri);
       const result = await HiveUtils.setRpc(fakeRpc);
       expect(result).toBeUndefined();
       expect(HiveUtils.getClient().address).toBe(overridingValue);

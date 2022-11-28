@@ -1,6 +1,7 @@
 import { broadcastDelegation } from '@background/requests/operations/ops/delegation';
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
@@ -23,14 +24,13 @@ describe('delegation tests:\n', () => {
     mocks.client.database.getDynamicGlobalProperties(
       {} as DynamicGlobalProperties,
     );
-    const resultOperation = (await broadcastDelegation(
-      requestHandler,
-      data,
-    )) as ResultOperation;
-    const { success, result, error, ...datas } = resultOperation.msg;
-    expect(success).toBe(false);
-    expect(result).toBeUndefined();
-    expect((error as TypeError).message).toContain('split');
+    const result = await broadcastDelegation(requestHandler, data);
+    expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+    expect(result.msg.result).toBeUndefined();
+    expect(result.msg.error).not.toBeNull();
+    expect(result.msg.message).toContain(
+      chrome.i18n.getMessage('bgd_ops_error'),
+    );
   });
   it('Must return error if no key on handler', async () => {
     mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);

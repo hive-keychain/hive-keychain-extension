@@ -3,6 +3,7 @@ import {
   loadActiveAccount,
   refreshKeys,
 } from '@popup/actions/active-account.actions';
+import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
@@ -19,6 +20,7 @@ export const retrieveAccounts =
     };
     if (accounts) {
       dispatch(action);
+      dispatch(setProcessingDecryptAccount(false));
     }
   };
 

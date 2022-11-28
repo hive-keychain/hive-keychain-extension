@@ -53,6 +53,10 @@ const methods = {
   afterEach: afterEach(() => {
     afterTests.clean();
   }),
+  afterAll: afterAll(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  }),
   gotoAutoLock: async () => {
     await clickAwait([
       alButton.menu,

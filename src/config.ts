@@ -1,5 +1,4 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
-
 const Config = {
   hiveEngine: {
     mainnet: 'ssc-mainnet-hive',
@@ -25,9 +24,13 @@ const Config = {
   rpc: {
     DEFAULT: { uri: 'https://api.hive.blog', testnet: false },
   },
+  governanceReminderDelayInSeconds: 30 * 24 * 3600, //days
   transak: {
     apiKey:
       process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
+  },
+  loader: {
+    minDuration: process.env.NODE_ENV === 'test' ? 0 : 1000,
   },
 };
 

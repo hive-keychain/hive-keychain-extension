@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.2.0",
+  "version": "2.3",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -20,12 +20,14 @@
     "crowdin:pull": "crowdin download",
     "crowdin:push": "crowdin upload sources",
     "doc": "documentation build public/hive_keychain.js -f md -c documentation/build/documentation.yml -o documentation/README.md",
-    "postinstall": "sed -i '' 's/require(\"cross-fetch\")/require(\"node-fetch\")/g' node_modules/@hiveio/dhive/lib/utils.js; echo 'Update dhive so that keychain background can use it directly'",
+    "postinstall": "patch-package",
     "test": "jest --verbose",
     "test:detect": "jest --verbose --detectOpenHandles",
     "test:watch": "jest --verbose --watch",
     "test:cov": "jest --verbose --coverage",
-    "bump": "scripts/bump-version"
+    "bump": "scripts/bump-version",
+    "release": "scripts/release.sh",
+    "release-beta": "scripts/release-beta.sh"
   },
   "repository": {
     "type": "git",
@@ -112,6 +114,7 @@
     "jest": "27.5.1",
     "jest-chrome": "0.7.2",
     "node-sass": "7.0.1",
+    "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",
     "redux-mock-store": "1.5.4",
     "remote-redux-devtools": "0.5.16",
@@ -135,5 +138,8 @@
   },
   "browser": {
     "crypto": false
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

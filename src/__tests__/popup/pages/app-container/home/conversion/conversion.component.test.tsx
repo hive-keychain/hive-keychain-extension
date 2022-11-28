@@ -23,26 +23,32 @@ describe('conversion.component tests:\n', () => {
   beforeEach(async () => {
     await conversion.beforeEach(<App />);
   });
-  afterEach(() => {
-    afterTests.clean();
-  });
   describe('HIVE to HBD:\n', () => {
     beforeEach(async () => {
       await conversion.methods.clickAwaitDrop(alDropdown.arrow.hive);
     });
-    it('Must show error if wrong requested value', async () => {
-      await conversion.methods.typeNClick('2000', false);
-      await assertion.awaitFor(
-        conversion.methods.message('popup_html_power_up_down_error'),
-        QueryDOM.BYTEXT,
-      );
+    afterEach(() => {
+      afterTests.clean();
     });
-    it('Must show confirmation page and after cancel go back', async () => {
-      await conversion.methods.typeNClick('500', false);
-      await assertion.awaitFor(alComponent.confirmationPage, QueryDOM.BYLABEL);
-      await clickAwait([alButton.dialog.cancel]);
-      assertion.getByLabelText(alComponent.conversionPage);
+    describe('To remove testing more than 1 case', () => {
+      it('Must show error if wrong requested value', async () => {
+        await conversion.methods.typeNClick('2000', false);
+        await assertion.awaitFor(
+          conversion.methods.message('popup_html_power_up_down_error'),
+          QueryDOM.BYTEXT,
+        );
+      });
+      it('Must show confirmation page and after cancel go back', async () => {
+        await conversion.methods.typeNClick('500', false);
+        await assertion.awaitFor(
+          alComponent.confirmationPage,
+          QueryDOM.BYLABEL,
+        );
+        await clickAwait([alButton.dialog.cancel]);
+        assertion.getByLabelText(alComponent.conversionPage);
+      });
     });
+
     it('Must navigate to home page after successful conversion and show message', async () => {
       conversion.extraMocks(true);
       await conversion.methods.typeNClick('500', true);

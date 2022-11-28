@@ -192,11 +192,18 @@ const createActiveAccount = async (
 };
 
 const getRC = async (accountName: string) => {
-  const rcAcc = await (
-    await RPCModule.getClient()
-  ).rc.findRCAccounts([accountName]);
-  const rc = await (await RPCModule.getClient()).rc.calculateRCMana(rcAcc[0]);
-  return rc;
+  const client = await RPCModule.getClient();
+
+  const result = await client.rc.call('find_rc_accounts', {
+    accounts: [accountName],
+  });
+
+  const mana = await client.rc.getRCMana(accountName);
+  return {
+    ...result.rc_accounts[0],
+    ...mana,
+    percentage: mana.percentage / 100.0,
+  };
 };
 
 const ClaimModule = {

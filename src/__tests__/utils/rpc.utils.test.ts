@@ -190,7 +190,9 @@ describe('rpc.utils tests:\n', () => {
         .mockResolvedValueOnce(fakeResponse);
       expect(await RpcUtils.checkRpcStatus('DEFAULT')).toBe(true);
       expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith('https://api.hive.blog/health');
+      expect(spyAxiosGet).toBeCalledWith('https://api.hive.blog/health', {
+        timeout: 10000,
+      });
     });
     test('Checking on a hardcoded uri, will check on "uri/health" and return status', async () => {
       const spyAxiosGet = jest
@@ -198,7 +200,9 @@ describe('rpc.utils tests:\n', () => {
         .mockResolvedValueOnce(fakeResponse);
       expect(await RpcUtils.checkRpcStatus(hardCodedUri)).toBe(true);
       expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`);
+      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`, {
+        timeout: 10000,
+      });
     });
     test('If the checked uri returns an error, an error will be thrown by the interceptor as "RPC NOK" and will return false', async () => {
       const error = new Error('RPC NOK');
@@ -208,7 +212,9 @@ describe('rpc.utils tests:\n', () => {
         .mockImplementationOnce((...args) => Promise.reject(error));
       expect(await RpcUtils.checkRpcStatus(hardCodedUri)).toBe(false);
       expect(spyAxiosGet).toBeCalledTimes(1);
-      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`);
+      expect(spyAxiosGet).toBeCalledWith(`${hardCodedUri}/health`, {
+        timeout: 10000,
+      });
       expect(spyLoggerError).toBeCalledTimes(1);
       expect(spyLoggerError).toBeCalledWith(error);
     });

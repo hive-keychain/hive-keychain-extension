@@ -2,6 +2,7 @@ import KeychainApi from '@api/keychain';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -10,6 +11,7 @@ import MkUtils from 'src/utils/mk.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import RpcUtils from 'src/utils/rpc.utils';
+import { SurveyUtils } from 'src/utils/survey.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
@@ -32,6 +34,9 @@ const setOrDefault = (toUse: MocksToUse) => {
     chromeRunTime,
     keyChainApiGet,
     googleAnalytics,
+    survey,
+    convertions,
+    governance,
   } = toUse;
   const {
     _app,
@@ -43,6 +48,9 @@ const setOrDefault = (toUse: MocksToUse) => {
     _topBar,
     _chromeRunTime,
     _googleAnalytics,
+    _survey,
+    _convertions,
+    _governance,
   } = mocksDefault._defaults;
 
   initialMocks.noImplentationNeeded();
@@ -72,12 +80,20 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (app && app.getExtendedAccount) ?? _app.getExtendedAccount,
     );
+  AccountUtils.getExtendedAccounts = jest
+    .fn()
+    .mockResolvedValue(
+      (app && app.getExtendedAccounts) ?? _app.getExtendedAccounts,
+    );
   HiveUtils.getDelegatees = jest
     .fn()
     .mockResolvedValue(
       (powerUp && powerUp.getVestingDelegations) ??
         _powerUp.getVestingDelegations,
     );
+  HiveUtils.getConversionRequests = jest
+    .fn()
+    .mockResolvedValue(convertions ?? _convertions.getConversionRequests);
   RpcUtils.checkRpcStatus = jest
     .fn()
     .mockResolvedValue((app && app.checkRpcStatus) ?? _app.checkRpcStatus);
@@ -157,14 +173,12 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
     );
-  //added getTokensHistory
   HiveEngineConfigUtils.getAccountHistoryApi().get = jest
     .fn()
     .mockResolvedValueOnce({
       data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
     })
     .mockResolvedValueOnce({ data: [] });
-  //to remove comments when tested.
   ProposalUtils.hasVotedForProposal = jest
     .fn()
     .mockResolvedValue(
@@ -193,7 +207,29 @@ const setOrDefault = (toUse: MocksToUse) => {
       .mockImplementation(() => undefined);
     AnalyticsUtils.acceptAll = jest.fn().mockImplementation(() => undefined);
     AnalyticsUtils.rejectAll = jest.fn().mockImplementation(() => undefined);
+    //Survey bypassed for now.
+    if (_survey.byPassing) {
+      SurveyUtils.getSurvey = jest.fn().mockResolvedValue(undefined);
+      SurveyUtils.setCurrentAsSeen = jest.fn().mockImplementation(() => {});
+    }
+    //Governance utils related bypassed for now.
+    if (_governance.bypass) {
+      GovernanceUtils.addToIgnoreRenewal = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(undefined));
+      GovernanceUtils.getGovernanceReminderList = jest
+        .fn()
+        .mockResolvedValue([]);
+      GovernanceUtils.getGovernanceRenewalIgnored = jest
+        .fn()
+        .mockResolvedValue([]);
+      GovernanceUtils.removeFromIgnoreRenewal = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(undefined));
+      GovernanceUtils.renewUsersGovernance = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(undefined));
+    }
   }
 };
-
 export default { setOrDefault };

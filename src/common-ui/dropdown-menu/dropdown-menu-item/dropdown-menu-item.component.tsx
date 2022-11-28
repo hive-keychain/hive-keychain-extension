@@ -23,11 +23,11 @@ const DropdownMenuItem = ({
   return (
     <div
       className="dropdown-menu-item"
+      aria-label={`dropdown-menu-item-${icon}`}
       onClick={(event) => handleClickOnMenuItem(event)}>
       {importedIcon && <img className="icon" src={`/assets/images/${icon}`} />}
       {!importedIcon && (
         <Icon
-          ariaLabel={`dropdown-menu-item-${icon}`}
           name={icon}
           type={IconType.STROKED}
           additionalClassName="icon"></Icon>
