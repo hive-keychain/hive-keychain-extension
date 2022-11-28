@@ -17,12 +17,21 @@ const getDelegators = async (name: string) => {
 };
 
 const getDelegatees = async (name: string) => {
-  //   return (await getClient().database.getVestingDelegations(name, '', 1000))
-  //     .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
-  //     .sort(
-  //       (a, b) =>
-  //         parseFloat(b.vesting_shares + '') - parseFloat(a.vesting_shares + ''),
-  //     );
+  const LIMIT = 1000;
+  let delegatees: any[] = [];
+  let from = '';
+  const response = await HiveTxUtils.getData(
+    'condenser_api.get_vesting_delegations',
+    [name, from, LIMIT],
+  );
+  delegatees = response.result;
+
+  return delegatees
+    .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
+    .sort(
+      (a, b) =>
+        parseFloat(b.vesting_shares + '') - parseFloat(a.vesting_shares + ''),
+    );
 };
 
 const getPendingOutgoingUndelegation = async (name: string) => {

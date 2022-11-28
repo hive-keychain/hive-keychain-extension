@@ -112,10 +112,15 @@ const confirmTransaction = async (transactionId: string) => {
   }
 };
 
+const getData = async (method: string, params: any[]) => {
+  const response = await call(method, params);
+  return response;
+};
 export const HiveTxUtils = {
   sendOperation,
   createSignAndBroadcastTransaction,
   confirmTransaction,
+  getData,
 };
 
 // When ready will replace HiveTx

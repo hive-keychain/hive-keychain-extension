@@ -19,8 +19,8 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import './incoming-outgoing-item.component.scss';
 
 interface IncomingOutgoingProps {
@@ -65,7 +65,7 @@ const IncomingOutgoing = ({
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
+        let success = await DelegationUtils.delegateVestingShares(
           activeAccount,
           username!,
           '0.000000 VESTS',
@@ -116,7 +116,7 @@ const IncomingOutgoing = ({
       ],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
+        let success = await DelegationUtils.delegateVestingShares(
           activeAccount,
           username!,
           FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
