@@ -11,9 +11,7 @@ import {
   TransactionConfirmation,
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
-  TransferToVestingOperation,
   UpdateProposalVotesOperation,
-  WithdrawVestingOperation,
 } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import * as hive from '@hiveio/hive-js';
@@ -327,55 +325,6 @@ const claimRewards = async (
   }
 };
 
-const powerUp = async (from: string, to: string, amount: string) => {
-  try {
-    await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [
-          [
-            'transfer_to_vesting',
-            {
-              from: from,
-              to: to,
-              amount: amount,
-            },
-          ] as TransferToVestingOperation,
-        ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-
-const powerDown = async (username: string, amount: string) => {
-  try {
-    await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [
-          [
-            'withdraw_vesting',
-            {
-              account: username,
-              vesting_shares: amount,
-            },
-          ] as WithdrawVestingOperation,
-        ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-
 /* istanbul ignore next */
 const convertOperation = async (
   activeAccount: ActiveAccount,
@@ -668,8 +617,6 @@ const HiveUtils = {
   getTimeBeforeFull,
   getConversionRequests,
   claimRewards,
-  powerUp,
-  powerDown,
   encodeMemo,
   decodeMemo,
   convertOperation,

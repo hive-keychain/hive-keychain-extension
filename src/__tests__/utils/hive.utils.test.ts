@@ -18,6 +18,7 @@ import {
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
+import { PowerUtils } from 'src/utils/power.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
@@ -747,10 +748,11 @@ describe('hive.utils tests:\n', () => {
         HiveUtils,
         'sendOperationWithConfirmation',
       );
-      const result = await HiveUtils.powerUp(
+      const result = await PowerUtils.powerUp(
         utilsT.userData.username,
         utilsT.userData.username,
         '0.001 HIVE',
+        {} as ActiveAccount, // TODO : fix
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
@@ -784,9 +786,10 @@ describe('hive.utils tests:\n', () => {
         HiveUtils,
         'sendOperationWithConfirmation',
       );
-      const result = await HiveUtils.powerDown(
+      const result = await PowerUtils.powerDown(
         utilsT.userData.username,
         '0.1 HIVE',
+        {} as ActiveAccount, // TODO : Fix
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);

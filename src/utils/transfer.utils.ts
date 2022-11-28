@@ -85,7 +85,7 @@ const saveFavoriteUser = async (
   );
 };
 
-const sendTransfer = async (
+const sendTransfer = (
   sender: string,
   receiver: string,
   amount: string,
@@ -96,12 +96,12 @@ const sendTransfer = async (
   activeAccount: ActiveAccount,
 ) => {
   if (!recurrent) {
-    return await HiveTxUtils.sendOperation(
+    return HiveTxUtils.sendOperation(
       [getTransferOperation(sender, receiver, amount, memo)],
       activeAccount.keys.active!,
     );
   } else {
-    return await HiveTxUtils.sendOperation(
+    return HiveTxUtils.sendOperation(
       [
         getRecurrentTransferOperation(
           sender,

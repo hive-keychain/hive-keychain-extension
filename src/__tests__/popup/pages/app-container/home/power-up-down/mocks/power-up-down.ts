@@ -1,7 +1,7 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { ReactElement } from 'react';
-import HiveUtils from 'src/utils/hive.utils';
+import { PowerUtils } from 'src/utils/power.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -148,10 +148,10 @@ const methods = {
 
 const extraMocks = {
   powerUp: (powerUp: boolean) => {
-    HiveUtils.powerUp = jest.fn().mockResolvedValue(powerUp);
+    PowerUtils.powerUp = jest.fn().mockResolvedValue(powerUp);
   },
   powerDown: (powerDown: boolean) => {
-    HiveUtils.powerDown = jest.fn().mockResolvedValue(powerDown);
+    PowerUtils.powerDown = jest.fn().mockResolvedValue(powerDown);
   },
 };
 

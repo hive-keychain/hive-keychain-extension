@@ -28,8 +28,8 @@ import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { PowerUtils } from 'src/utils/power.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './power-up-down.component.scss';
 
@@ -167,36 +167,42 @@ const PowerUpDown = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
-        switch (powerType) {
-          case PowerType.POWER_UP:
-            addToLoadingList('html_popup_power_up_operation');
-            success = await HiveUtils.powerUp(
-              activeAccount.name!,
-              receiver,
-              valueS,
-            );
-            removeFromLoadingList('html_popup_power_up_operation');
-            break;
-          case PowerType.POWER_DOWN:
-            addToLoadingList('html_popup_power_down_operation');
-            success = await HiveUtils.powerDown(
-              activeAccount.name!,
-              `${FormatUtils.fromHP(
-                Number(value).toFixed(3),
-                globalProperties.globals!,
-              ).toFixed(6)} VESTS`,
-            );
-            removeFromLoadingList('html_popup_power_down_operation');
-        }
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
-          setSuccessMessage('popup_html_power_up_down_success', [
-            operationString,
-          ]);
-        } else {
-          setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+        try {
+          switch (powerType) {
+            case PowerType.POWER_UP:
+              addToLoadingList('html_popup_power_up_operation');
+              success = await PowerUtils.powerUp(
+                activeAccount.name!,
+                receiver,
+                valueS,
+                activeAccount,
+              );
+              break;
+            case PowerType.POWER_DOWN:
+              addToLoadingList('html_popup_power_down_operation');
+              success = await PowerUtils.powerDown(
+                activeAccount.name!,
+                `${FormatUtils.fromHP(
+                  Number(value).toFixed(3),
+                  globalProperties.globals!,
+                ).toFixed(6)} VESTS`,
+                activeAccount,
+              );
+          }
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await TransferUtils.saveFavoriteUser(receiver, activeAccount);
+            setSuccessMessage('popup_html_power_up_down_success', [
+              operationString,
+            ]);
+          } else {
+            setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_power_up_operation');
+          removeFromLoadingList('html_popup_power_down_operation');
         }
       },
     });
@@ -222,21 +228,26 @@ const PowerUpDown = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_power_down_operation');
-        let success = await HiveUtils.powerDown(
-          receiver,
-          `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
-            6,
-          )} VESTS`,
-        );
+        try {
+          let success = await PowerUtils.powerDown(
+            receiver,
+            `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
+              6,
+            )} VESTS`,
+            activeAccount,
+          );
 
-        removeFromLoadingList('html_popup_cancel_power_down_operation');
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
-          setSuccessMessage('popup_html_cancel_power_down_success');
-        } else {
-          setErrorMessage('popup_html_cancel_power_down_fail');
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await TransferUtils.saveFavoriteUser(receiver, activeAccount);
+            setSuccessMessage('popup_html_cancel_power_down_success');
+          } else {
+            setErrorMessage('popup_html_cancel_power_down_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_cancel_power_down_operation');
         }
       },
     });
