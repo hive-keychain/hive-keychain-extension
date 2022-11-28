@@ -2,7 +2,6 @@ import KeychainApi from '@api/keychain';
 import {
   Asset,
   Client,
-  DynamicGlobalProperties,
   ExtendedAccount,
   Price,
   PrivateKey,
@@ -826,7 +825,6 @@ describe('hive.utils tests:\n', () => {
         0,
         0,
         {} as ActiveAccount, // TODO Fix
-        {} as DynamicGlobalProperties,
       );
       expect(result).toBe(true);
       expect(spyLoggerInfo).toBeCalledTimes(1);
@@ -859,7 +857,6 @@ describe('hive.utils tests:\n', () => {
         0,
         0,
         {} as ActiveAccount, // TODO Fix
-        {} as DynamicGlobalProperties, // TODO Fix
       );
       //expect(result).toBe(false);
       console.log(result);

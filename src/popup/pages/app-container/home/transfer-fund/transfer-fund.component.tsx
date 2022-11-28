@@ -44,7 +44,6 @@ const TransferFunds = ({
   currencyLabels,
   phishing,
   formParams,
-  globalProperties,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -242,44 +241,55 @@ const TransferFunds = ({
           }
         }
 
-        success = await TransferUtils.sendTransfer(
-          activeAccount.name!,
-          receiverUsername,
-          formattedAmount,
-          memoParam,
-          isRecurrent,
-          isCancelRecurrent ? 2 : +iteration,
-          isCancelRecurrent ? 24 : +frequency,
-          activeAccount,
-          globalProperties.globals!,
-        );
+        try {
+          success = await TransferUtils.sendTransfer(
+            activeAccount.name!,
+            receiverUsername,
+            formattedAmount,
+            memoParam,
+            isRecurrent,
+            isCancelRecurrent ? 2 : +iteration,
+            isCancelRecurrent ? 24 : +frequency,
+            activeAccount,
+          );
 
-        removeFromLoadingList('html_popup_transfer_fund_operation');
+          removeFromLoadingList('html_popup_transfer_fund_operation');
 
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(receiverUsername, activeAccount);
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await TransferUtils.saveFavoriteUser(
+              receiverUsername,
+              activeAccount,
+            );
 
-          if (!isRecurrent) {
-            setSuccessMessage('popup_html_transfer_successful', [
-              `@${receiverUsername}`,
-              formattedAmount,
-            ]);
+            if (!isRecurrent) {
+              setSuccessMessage('popup_html_transfer_successful', [
+                `@${receiverUsername}`,
+                formattedAmount,
+              ]);
+            } else {
+              isCancelRecurrent
+                ? setSuccessMessage(
+                    'popup_html_cancel_transfer_recurrent_successful',
+                    [`@${receiverUsername}`],
+                  )
+                : setSuccessMessage(
+                    'popup_html_transfer_recurrent_successful',
+                    [
+                      `@${receiverUsername}`,
+                      formattedAmount,
+                      frequency,
+                      iteration,
+                    ],
+                  );
+            }
           } else {
-            isCancelRecurrent
-              ? setSuccessMessage(
-                  'popup_html_cancel_transfer_recurrent_successful',
-                  [`@${receiverUsername}`],
-                )
-              : setSuccessMessage('popup_html_transfer_recurrent_successful', [
-                  `@${receiverUsername}`,
-                  formattedAmount,
-                  frequency,
-                  iteration,
-                ]);
+            setErrorMessage('popup_html_transfer_failed');
           }
-        } else {
-          setErrorMessage('popup_html_transfer_failed');
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_transfer_fund_operation');
         }
       },
     });
@@ -415,7 +425,6 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
-    globalProperties: state.globalProperties,
   };
 };
 
