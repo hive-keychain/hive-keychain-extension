@@ -15,6 +15,7 @@ import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
+import { ConversionUtils } from 'src/utils/conversion.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -325,7 +326,7 @@ describe('hive.utils tests:\n', () => {
             return utilsT.fakeHiveConversionsResponse;
           }
         });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual(expectedNewArray);
     });
     test('Fetching 1 arrays(hiveConversions) will reestructure hiveConversions Array, and return one new array', async () => {
@@ -348,7 +349,7 @@ describe('hive.utils tests:\n', () => {
             return utilsT.fakeHiveConversionsResponse;
           }
         });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual(expectedNewArray);
     });
     test('Fetching 2 empty arrays will return an empty array', async () => {
@@ -361,7 +362,7 @@ describe('hive.utils tests:\n', () => {
             return [];
           }
         });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual([]);
     });
     test('If hiveConversions lack one of the used properties, will return an array with undefined values', async () => {
@@ -374,7 +375,7 @@ describe('hive.utils tests:\n', () => {
             return [{ anyOther: 'anyOther' }];
           }
         });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual([
         {
           amount: undefined,

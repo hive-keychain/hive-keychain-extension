@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import HiveUtils from 'src/utils/hive.utils';
+import { ConversionUtils } from 'src/utils/conversion.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -60,7 +60,7 @@ const methods = {
 };
 
 const extraMocks = (convertOperation: boolean) => {
-  HiveUtils.convertOperation = jest.fn().mockResolvedValue(convertOperation);
+  ConversionUtils.sendConvert = jest.fn().mockResolvedValue(convertOperation);
 };
 
 mocks.helper();

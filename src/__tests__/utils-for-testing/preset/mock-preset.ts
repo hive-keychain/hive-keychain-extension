@@ -1,6 +1,7 @@
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { ConversionUtils } from 'src/utils/conversion.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
@@ -89,7 +90,7 @@ const setOrDefault = (toUse: MocksToUse) => {
       (powerUp && powerUp.getVestingDelegations) ??
         _powerUp.getVestingDelegations,
     );
-  HiveUtils.getConversionRequests = jest
+  ConversionUtils.getConversionRequests = jest
     .fn()
     .mockResolvedValue(convertions ?? _convertions.getConversionRequests);
   RpcUtils.checkRpcStatus = jest

@@ -3,7 +3,6 @@ import {
   Asset,
   ClaimRewardBalanceOperation,
   Client,
-  CollateralizedConvertOperation,
   DynamicGlobalProperties,
   ExtendedAccount,
   Price,
@@ -19,12 +18,9 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { store } from '@popup/store';
 import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
-import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
-import { Conversion } from 'src/interfaces/conversion.interface';
 import {
   GlobalProperties,
   RewardFund,
@@ -213,34 +209,6 @@ const getTimeBeforeFull = (votingPower: number) => {
   }
 };
 
-export const getConversionRequests = async (
-  name: string,
-): Promise<Conversion[]> => {
-  const [hbdConversions, hiveConversions] = await Promise.all([
-    getClient().database.call('get_conversion_requests', [name]),
-    getClient().database.call('get_collateralized_conversion_requests', [name]),
-  ]);
-
-  return [
-    ...hiveConversions.map((conv: CollateralizedConversion) => ({
-      amount: conv.collateral_amount,
-      conversion_date: conv.conversion_date,
-      id: conv.id,
-      owner: conv.owner,
-      requestid: conv.requestid,
-      collaterized: true,
-    })),
-    ...hbdConversions.map((conv: any) => ({
-      ...conv,
-      collaterized: false,
-    })),
-  ].sort(
-    (a, b) =>
-      new Date(a.conversion_date).getTime() -
-      new Date(b.conversion_date).getTime(),
-  );
-};
-
 const claimRewards = async (
   activeAccount: ActiveAccount,
   rewardHive: string | Asset,
@@ -288,38 +256,6 @@ const claimRewards = async (
   }
 };
 
-/* istanbul ignore next */
-const convertOperation = async (
-  activeAccount: ActiveAccount,
-  conversions: Conversion[],
-  amount: string,
-  conversionType: ConversionType,
-) => {
-  const requestid = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
-  try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
-        [
-          [
-            conversionType,
-            {
-              owner: activeAccount.name,
-              requestid: requestid,
-              amount: amount,
-            },
-          ] as CollateralizedConvertOperation,
-        ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
-      ),
-    );
-    return true;
-  } catch (err) {
-    Logger.error(err);
-    return false;
-  }
-};
 /* istanbul ignore next */
 const encodeMemo = (
   memo: string,
@@ -553,11 +489,9 @@ const HiveUtils = {
   getRC,
   getVotingDollarsPerAccount,
   getTimeBeforeFull,
-  getConversionRequests,
   claimRewards,
   encodeMemo,
   decodeMemo,
-  convertOperation,
   withdraw,
   deposit,
   sendCustomJson,

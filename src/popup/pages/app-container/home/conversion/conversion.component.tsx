@@ -24,9 +24,9 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Conversion } from 'src/interfaces/conversion.interface';
 import { Screen } from 'src/reference-data/screen.enum';
+import { ConversionUtils } from 'src/utils/conversion.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import './conversion.component.scss';
 
 const Conversion = ({
@@ -122,27 +122,32 @@ const Conversion = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_conversion_operation');
-        let success = await HiveUtils.convertOperation(
-          activeAccount,
-          conversions,
-          valueS,
-          conversionType,
-        );
-        removeFromLoadingList('html_popup_conversion_operation');
+        try {
+          let success = await ConversionUtils.sendConvert(
+            activeAccount,
+            conversions,
+            valueS,
+            conversionType,
+          );
 
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          setSuccessMessage(
-            conversionType === ConversionType.CONVERT_HBD_TO_HIVE
-              ? 'popup_html_hbd_to_hive_conversion_success'
-              : 'popup_html_hive_to_hbd_conversion_success',
-          );
-        } else {
-          setErrorMessage(
-            conversionType === ConversionType.CONVERT_HBD_TO_HIVE
-              ? 'popup_html_hbd_to_hive_conversion_fail'
-              : 'popup_html_hive_to_hbd_conversion_fail',
-          );
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            setSuccessMessage(
+              conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+                ? 'popup_html_hbd_to_hive_conversion_success'
+                : 'popup_html_hive_to_hbd_conversion_success',
+            );
+          } else {
+            setErrorMessage(
+              conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+                ? 'popup_html_hbd_to_hive_conversion_fail'
+                : 'popup_html_hive_to_hbd_conversion_fail',
+            );
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_conversion_operation');
         }
       },
     });
