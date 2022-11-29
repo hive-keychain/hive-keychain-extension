@@ -1,6 +1,7 @@
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { AppThunk } from '@popup/actions/interfaces';
+import { store } from '@popup/store';
 import TransactionUtils from 'src/utils/transaction.utils';
 
 export const initAccountTransactions =
@@ -12,7 +13,8 @@ export const initAccountTransactions =
     const result = await TransactionUtils.getAccountTransactions(
       accountName,
       -1,
-      memoKey,
+      store.getState().globalProperties.globals!,
+      memoKey!,
     );
 
     dispatch({
@@ -30,7 +32,8 @@ export const fetchAccountTransactions =
     const result = await TransactionUtils.getAccountTransactions(
       accountName,
       start,
-      memoKey,
+      store.getState().globalProperties.globals!,
+      memoKey!,
     );
     dispatch({
       type: ActionType.ADD_TRANSACTIONS,

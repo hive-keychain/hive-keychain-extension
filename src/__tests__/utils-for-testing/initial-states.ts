@@ -6,7 +6,12 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
-export const initialEmptyStateStore = {} as RootState;
+export const initialEmptyStateStore = {
+  activeRpc: {
+    testnet: false,
+    uri: 'api.hive.blog',
+  },
+} as RootState;
 
 export const initialStateWAccountsWActiveAccountStore = {
   accounts: [
@@ -23,6 +28,10 @@ export const initialStateWAccountsWActiveAccountStore = {
     } as ExtendedAccount,
     keys: utilsT.keysUserData1 as Keys,
     rc: {},
+  },
+  activeRpc: {
+    testnet: false,
+    uri: 'api.hive.blog',
   },
 } as RootState;
 
@@ -73,6 +82,10 @@ export const initialStateWOneKey = {
     keys: utilsT.secondAccountOnState.keys,
     rc: {},
   },
+  activeRpc: {
+    testnet: false,
+    uri: 'api.hive.blog',
+  },
 } as RootState;
 
 export const initialStateNoKeys = {
@@ -89,6 +102,10 @@ export const initialStateNoKeys = {
     },
     keys: {},
     rc: {},
+  },
+  activeRpc: {
+    testnet: false,
+    uri: 'api.hive.blog',
   },
 } as RootState;
 
@@ -107,7 +124,7 @@ export const initialStateDifferentAccounts = {
     keys: utilsT.secondAccountOnState.keys,
     rc: {},
   },
-} as RootState;
+} as unknown as RootState;
 
 export const initialStateJustTokens = {
   userTokens: { loading: false, list: [utilsT.fakeGetUserBalanceResponse[0]] },

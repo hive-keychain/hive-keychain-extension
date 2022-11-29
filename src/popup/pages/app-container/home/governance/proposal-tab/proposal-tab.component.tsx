@@ -19,6 +19,7 @@ import './proposal-tab.component.scss';
 
 const ProposalTab = ({
   activeAccount,
+  globalProperties,
   addToLoadingList,
   removeFromLoadingList,
 }: PropsFromRedux) => {
@@ -41,6 +42,7 @@ const ProposalTab = ({
     }
     proposals = await ProposalUtils.getProposalList(
       proxy ?? activeAccount.name!,
+      globalProperties.globals!,
     );
 
     setProposals(proposals);
@@ -98,7 +100,10 @@ const ProposalTab = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return {
+    activeAccount: state.activeAccount,
+    globalProperties: state.globalProperties,
+  };
 };
 
 const connector = connect(mapStateToProps, {

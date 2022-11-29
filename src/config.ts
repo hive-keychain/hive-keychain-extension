@@ -1,5 +1,4 @@
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
-
 const Config = {
   hiveEngine: {
     mainnet: 'ssc-mainnet-hive',
@@ -16,6 +15,9 @@ const Config = {
       delay: +(process.env.DEV_CLAIM_SAVINGS_DELAY || 30),
     },
   },
+  analytics: {
+    frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
+  },
   PROPOSAL: 216,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
   MIN_LOADING_TIME: 1000,
@@ -28,7 +30,7 @@ const Config = {
       process.env.TRANSAK_DEV_API_KEY || '716078e4-939c-445a-8c6d-534614cd31b1',
   },
   loader: {
-    minDuration: process.env.NODE_ENV ? 0 : 1000,
+    minDuration: process.env.NODE_ENV === 'test' ? 0 : 1000,
   },
 };
 

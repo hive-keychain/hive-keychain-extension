@@ -61,6 +61,22 @@ describe('claim.module tests:\n', () => {
   });
 
   describe('Same local accounts:\n', () => {
+    const addedParams = {
+      max_rc_creation_adjustment: {
+        amount: '5491893317',
+        nai: '@@000000037',
+        precision: 6,
+      },
+      rc_manabar: {
+        current_mana: '58990650660',
+        last_update_time: 1669382499,
+      },
+      percentage: 100,
+    };
+    const rcWithAddedParams = {
+      ...accounts.active.rc,
+      ...addedParams,
+    };
     beforeEach(() => {
       mocks.getAccounts([accounts.extended]);
       mocks.getAccountsFromLocalStorage([accounts.local.justTwoKeys]);
@@ -72,8 +88,8 @@ describe('claim.module tests:\n', () => {
       mocks.resetMin_RC;
       await ClaimModule.start();
       expect(spies.claimAccounts).toBeCalledWith(
-        accounts.active.rc,
-        accounts.active,
+        { ...rcWithAddedParams },
+        { ...accounts.active, rc: { ...rcWithAddedParams } },
       );
     });
     it('Must claim rewards', async () => {
@@ -83,7 +99,7 @@ describe('claim.module tests:\n', () => {
         `Claiming rewards for @${accounts.extended.name}`,
       );
       expect(spies.claimRewards).toBeCalledWith(
-        accounts.active,
+        { ...accounts.active, rc: { ...rcWithAddedParams } },
         accounts.extended.reward_hive_balance,
         accounts.extended.reward_hbd_balance,
         accounts.extended.reward_vesting_balance,

@@ -1,4 +1,5 @@
 import { retrieveAccounts } from '@popup/actions/account.actions';
+import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
@@ -20,6 +21,7 @@ const SignIn = ({
   navigateTo,
   resetTitleContainerProperties,
   retrieveAccounts,
+  setProcessingDecryptAccount,
 }: PropsFromRedux) => {
   const [password, setPassword] = useState('');
 
@@ -29,6 +31,7 @@ const SignIn = ({
 
   const login = async () => {
     if (await MkUtils.login(password)) {
+      setProcessingDecryptAccount(true);
       setMk(password, true);
       retrieveAccounts(password);
     } else {
@@ -84,6 +87,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   resetTitleContainerProperties,
   retrieveAccounts,
+  setProcessingDecryptAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

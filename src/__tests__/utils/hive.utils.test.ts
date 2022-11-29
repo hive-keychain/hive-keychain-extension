@@ -9,13 +9,17 @@ import {
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
+import * as MessageActions from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { store } from '@popup/store';
 import { AssertionError } from 'assert';
 import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
-import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
@@ -422,52 +426,35 @@ describe('hive.utils tests:\n', () => {
     let spyLogger = jest.spyOn(Logger, 'error');
     let loggerCallParams: any[] = [];
     let dispatchCallParams: {};
+    const spySetErrorMessage = jest.spyOn(MessageActions, 'setErrorMessage');
+    const spySetSuccessMessage = jest.spyOn(
+      MessageActions,
+      'setSuccessMessage',
+    );
     beforeEach(() => {
       store.dispatch = jest.fn();
     });
     afterEach(() => {
       jest.clearAllMocks();
     });
-    test('Passing an empty ActiveAccount with rewards to claim must call Logger, dispatch a TypeError and return false', async () => {
-      loggerCallParams = [
-        'Error while claiming rewards',
-        "TypeError: Cannot read property 'posting' of undefined",
-      ];
-      dispatchCallParams = {
-        payload: {
-          key: 'popup_html_claim_error',
-          params: [],
-          type: 'ERROR',
-        },
-        type: 'SET_MESSAGE',
-      };
+    test('Must call Logger, setErrorMessage and return false if empty obj', async () => {
       const activeAccountEmpty = {} as ActiveAccount;
       const result = await HiveUtils.claimRewards(
         activeAccountEmpty,
         '1.000 HIVE',
         '1.000 HBD',
         '1.000 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(false);
-      expect(spyLogger).toBeCalledTimes(1);
       const { calls } = spyLogger.mock;
       expect(calls[0][0]).toBe('Error while claiming rewards');
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(dispatchCallParams);
+      expect(calls[0][1]).toContain('posting');
+      expect(spySetErrorMessage).toBeCalledWith('popup_html_claim_error');
     });
-    test('Passing an ActiveAccount with active key, must dispatch a TypeError and return false', async () => {
-      loggerCallParams = [
-        'Error while claiming rewards',
-        'TypeError: Expected String',
-      ];
-      dispatchCallParams = {
-        payload: {
-          key: 'popup_html_claim_error',
-          params: [],
-          type: 'ERROR',
-        },
-        type: 'SET_MESSAGE',
-      };
+    test('Must call Logger, setErrorMessage and return false if empty key', async () => {
       const activeAccountUsingActivekey = {
         keys: {
           active: utilsT.userData.nonEncryptKeys.active,
@@ -479,20 +466,17 @@ describe('hive.utils tests:\n', () => {
         '1.000 HIVE',
         '1.000 HBD',
         '1.000 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(false);
-      expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith(...loggerCallParams);
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(dispatchCallParams);
+      const { calls } = spyLogger.mock;
+      expect(calls[0][0]).toBe('Error while claiming rewards');
+      expect(calls[0][1]).toContain('Expected String');
+      expect(spySetErrorMessage).toBeCalledWith('popup_html_claim_error');
     });
-    test('Passing valid Data with reward_hive, must pass the steps bellow and return true', async () => {
-      //Steps:
-      // 1. Broadcast the claim and get a valid transaction Object with an id property with status as 'within_mempool'.
-      // 2. Wait for a valid TransactionStatus from getClient().transaction.findTransaction, as 'within_reversible_block', using the id from step 1.
-      // 3. Call Logger.info with the message 'Transaction confirmed'
-      // 4. Dispatch a successMessage as 'popup_html_claim_success' containing the claimedResources.
-      // 5. Return true
+    test('Must claim rewards', async () => {
       const transactionObjWaiting = {
         id: '001199xxdass990',
         status: 'within_mempool',
@@ -549,6 +533,9 @@ describe('hive.utils tests:\n', () => {
         '1.00 HIVE',
         '0.00 HBD',
         '0.00 VESTS',
+        utilsT.dynamicPropertiesObj,
+        setErrorMessage,
+        setSuccessMessage,
       );
       expect(result).toBe(true);
       expect(mockedGetClientSendOperations).toBeCalledTimes(1);
@@ -560,164 +547,9 @@ describe('hive.utils tests:\n', () => {
         transactionObjWaiting.id,
       );
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith(loggerInfoConfirmedMessage);
-
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(expectedDispatchSuccessParams);
-    });
-    test('Passing valid Data with all rewards, must pass the steps bellow and return true', async () => {
-      //Steps:
-      // 1. Broadcast the claim and get a valid transaction Object with an id property with status as 'within_mempool'.
-      // 2. Wait for a valid TransactionStatus from getClient().transaction.findTransaction, as 'within_reversible_block', using the id from step 1.
-      // 3. Call Logger.info with the message 'Transaction confirmed'
-      // 4. Dispatch a successMessage as 'popup_html_claim_success' containing the claimedResources.
-      // 5. Return true
-      const transactionObjWaiting = {
-        id: '002299xxdass990',
-        status: 'within_mempool',
-      };
-      const transactionObjConfirmed = {
-        id: '002299xxdass990',
-        status: 'within_reversible_block',
-      };
-      const sendOperationCallParams: any[] = [
-        [
-          [
-            'claim_reward_balance',
-            {
-              account: 'keychain.tests',
-              reward_hive: '10.00 HIVE',
-              reward_hbd: '11.00 HBD',
-              reward_vests: '12.00 VESTS',
-            },
-          ],
-        ],
-        PrivateKey.fromString(utilsT.userData.nonEncryptKeys.posting as string),
-      ];
-      const loggerInfoConfirmedMessage = 'Transaction confirmed';
-      const expectedDispatchSuccessParams = {
-        payload: {
-          key: 'popup_html_claim_success',
-          params: ['11.00 HBD, 10.00 HIVE, 12.000 HP'],
-          type: 'SUCCESS',
-        },
-        type: 'SET_MESSAGE',
-      };
-      const mockedGetClientSendOperations =
-        (HiveUtils.getClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValueOnce(transactionObjWaiting));
-      const mockedGetClientFindTransaction =
-        (HiveUtils.getClient().transaction.findTransaction = jest
-          .fn()
-          .mockResolvedValueOnce(transactionObjConfirmed));
-      const mockFormatUtilsToHP = (FormatUtils.toHP = jest
-        .fn()
-        .mockReturnValueOnce(12));
-      const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
-      );
-      const spyLoggerInfo = jest.spyOn(Logger, 'info');
-      const activeAccountusingActivekey = {
-        name: utilsT.userData.username,
-        keys: {
-          posting: utilsT.userData.nonEncryptKeys.posting,
-          postingPubkey: utilsT.userData.encryptKeys.posting,
-        },
-      } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
-        activeAccountusingActivekey,
-        '10.00 HIVE',
-        '11.00 HBD',
-        '12.00 VESTS',
-      );
-      expect(result).toBe(true);
-      expect(mockedGetClientSendOperations).toBeCalledTimes(1);
-      expect(mockedGetClientSendOperations).toBeCalledWith(
-        ...sendOperationCallParams,
-      );
-      expect(mockedGetClientFindTransaction).toBeCalledTimes(1);
-      expect(mockedGetClientFindTransaction).toBeCalledWith(
-        transactionObjWaiting.id,
-      );
-      expect(mockFormatUtilsToHP).toBeCalledTimes(1);
-
-      expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith(loggerInfoConfirmedMessage);
-
-      expect(store.dispatch).toBeCalledTimes(1);
-      expect(store.dispatch).toBeCalledWith(expectedDispatchSuccessParams);
-    });
-
-    test('Passing all valid Data, but making fail sendOperationWithConfirmation must return false and pass steps bellow', async () => {
-      //Steps:
-      //1. Call Logger.info(`Transaction failed with status: ${transaction.status}`);
-      //2. Return as false.
-      const transactionObjWaiting = {
-        id: '002299xxdass990',
-        status: 'within_mempool',
-      };
-      const transactionObjConfirmed = {
-        id: '002299xxdass990',
-        status: 'error_message',
-      };
-      const sendOperationCallParams: any[] = [
-        [
-          [
-            'claim_reward_balance',
-            {
-              account: 'keychain.tests',
-              reward_hive: '10.00 HIVE',
-              reward_hbd: '11.00 HBD',
-              reward_vests: '12.00 VESTS',
-            },
-          ],
-        ],
-        PrivateKey.fromString(utilsT.userData.nonEncryptKeys.posting as string),
-      ];
-      const loggerInfoErrorMessage = `Transaction failed with status: ${transactionObjConfirmed.status}`;
-      const mockedGetClientSendOperations =
-        (HiveUtils.getClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValueOnce(transactionObjWaiting));
-      const mockedGetClientFindTransaction =
-        (HiveUtils.getClient().transaction.findTransaction = jest
-          .fn()
-          .mockResolvedValueOnce(transactionObjConfirmed));
-      const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
-      );
-      const spyLoggerInfo = jest.spyOn(Logger, 'info');
-      const activeAccountusingActivekey = {
-        name: utilsT.userData.username,
-        keys: {
-          posting: utilsT.userData.nonEncryptKeys.posting,
-          postingPubkey: utilsT.userData.encryptKeys.posting,
-        },
-      } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
-        activeAccountusingActivekey,
-        '10.00 HIVE',
-        '11.00 HBD',
-        '12.00 VESTS',
-      );
-      expect(result).toBe(false);
-      expect(mockedGetClientSendOperations).toBeCalledTimes(1);
-      expect(mockedGetClientSendOperations).toBeCalledWith(
-        ...sendOperationCallParams,
-      );
-      expect(mockedGetClientFindTransaction).toBeCalledTimes(1);
-      expect(mockedGetClientFindTransaction).toBeCalledWith(
-        transactionObjWaiting.id,
-      );
-
-      expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith(loggerInfoErrorMessage);
+      expect(spySetSuccessMessage).toBeCalledWith('popup_html_claim_success', [
+        '1.00 HIVE',
+      ]);
     });
   });
 
@@ -750,6 +582,11 @@ describe('hive.utils tests:\n', () => {
         utilsT.userData.username,
         utilsT.userData.username,
         '0.001 HIVE',
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
@@ -786,6 +623,11 @@ describe('hive.utils tests:\n', () => {
       const result = await HiveUtils.powerDown(
         utilsT.userData.username,
         '0.1 HIVE',
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
@@ -823,6 +665,11 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       expect(result).toBe(true);
       expect(spyLoggerInfo).toBeCalledTimes(1);
@@ -854,6 +701,11 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
+        {
+          keys: {
+            active: utilsT.userData.encryptKeys.active,
+          },
+        } as ActiveAccount,
       );
       //expect(result).toBe(false);
       console.log(result);

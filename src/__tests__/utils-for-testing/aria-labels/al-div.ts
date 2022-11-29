@@ -81,4 +81,7 @@ export default {
       usingAuthorized: 'using-authorized-account',
     },
   },
+  authorizedOperations: {
+    item: 'whitelisted-operation-item',
+  },
 };

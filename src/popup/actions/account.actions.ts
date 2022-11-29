@@ -3,6 +3,7 @@ import {
   loadActiveAccount,
   refreshKeys,
 } from '@popup/actions/active-account.actions';
+import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
@@ -19,6 +20,7 @@ export const retrieveAccounts =
     };
     if (accounts) {
       dispatch(action);
+      dispatch(setProcessingDecryptAccount(false));
     }
   };
 
@@ -52,7 +54,7 @@ export const addKey =
     ) => ActionPayload<ErrorMessage>,
   ): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts } = getState();
+    const { activeAccount, accounts, mk } = getState();
 
     const newAccounts = await AccountUtils.addKey(
       activeAccount,
@@ -60,6 +62,7 @@ export const addKey =
       privateKey,
       keyType,
       setErrorMessage,
+      mk,
     );
 
     if (newAccounts && newAccounts?.length > 0) {
@@ -78,13 +81,13 @@ export const addKey =
 export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts } = getState();
+    const { activeAccount, accounts, mk } = getState();
 
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
 
-    let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount);
+    let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount, mk);
 
     const finalAccounts = [];
     for (let i = 0; i < newAccounts.length; i++) {
@@ -128,10 +131,10 @@ export const removeKey =
       if (
         finalAccounts
           .map((account: LocalAccount) => account.name)
-          .includes(activeLocalAccount.name)
+          .includes(activeLocalAccount!.name)
       ) {
         const updated = finalAccounts.filter(
-          (account: LocalAccount) => account.name === activeLocalAccount.name,
+          (account: LocalAccount) => account.name === activeLocalAccount!.name,
         );
         dispatch(refreshKeys(updated[0]));
       } else {

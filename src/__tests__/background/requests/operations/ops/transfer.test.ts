@@ -3,6 +3,7 @@ import transferMocks from 'src/__tests__/background/requests/operations/ops/mock
 import { RPCError } from 'src/__tests__/utils-for-testing/classes/errors/rpc';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('transfer tests:\n', () => {
   const { methods, constants, spies, mocks } = transferMocks;
   const { requestHandler, data, params, confirmed } = constants;
@@ -17,13 +18,14 @@ describe('transfer tests:\n', () => {
       });
       it('Must return error if no key on handler', async () => {
         const errorMsg = chrome.i18n.getMessage('bgd_ops_error_broadcasting');
-        const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.error(
-          result,
-          new TypeError('private key should be a Buffer'),
+        const resultOperation = (await broadcastTransfer(
+          requestHandler,
           data,
-          errorMsg,
-        );
+        )) as ResultOperation;
+        const { success, result, error } = resultOperation.msg;
+        expect(success).toBe(false);
+        expect(result).toBeUndefined();
+        expect((error as TypeError).message).toContain('private key');
       });
       it('Must return error if receiver not found', async () => {
         data.currency = 'HIVE';

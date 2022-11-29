@@ -18,12 +18,9 @@ import {
 } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import * as hive from '@hiveio/hive-js';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/actions/message.actions';
+import { ErrorMessage } from '@interfaces/errorMessage.interface';
+import { ActionPayload } from '@popup/actions/interfaces';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
-import { store } from '@popup/store';
 import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
@@ -286,6 +283,15 @@ const claimRewards = async (
   rewardHive: string | Asset,
   rewardHBD: string | Asset,
   rewardVests: string | Asset,
+  globals: DynamicGlobalProperties,
+  setErrorMessage: (
+    key: string,
+    params?: string[],
+  ) => ActionPayload<ErrorMessage>,
+  setSuccessMessage: (
+    key: string,
+    params?: string[],
+  ) => ActionPayload<ErrorMessage>,
 ): Promise<boolean> => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
@@ -308,27 +314,30 @@ const claimRewards = async (
       FormatUtils.withCommas(
         FormatUtils.toHP(
           rewardVests.toString().replace('VESTS', ''),
-          store.getState().globalProperties.globals,
+          globals,
         ).toString(),
       ) + ' HP';
     let claimedResources = [rewardHBD, rewardHive, rewardHp].filter(
       (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
     );
 
-    store.dispatch(
-      setSuccessMessage('popup_html_claim_success', [
-        claimedResources.join(', '),
-      ]),
-    );
+    setSuccessMessage('popup_html_claim_success', [
+      claimedResources.join(', '),
+    ]);
     return true;
   } catch (err: any) {
     Logger.error('Error while claiming rewards', err.toString());
-    store.dispatch(setErrorMessage('popup_html_claim_error'));
+    setErrorMessage('popup_html_claim_error');
     return false;
   }
 };
 
-const powerUp = async (from: string, to: string, amount: string) => {
+const powerUp = async (
+  from: string,
+  to: string,
+  amount: string,
+  activeAccount: ActiveAccount,
+) => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
       HiveUtils.getClient().broadcast.sendOperations(
@@ -342,9 +351,7 @@ const powerUp = async (from: string, to: string, amount: string) => {
             },
           ] as TransferToVestingOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -353,7 +360,11 @@ const powerUp = async (from: string, to: string, amount: string) => {
   }
 };
 
-const powerDown = async (username: string, amount: string) => {
+const powerDown = async (
+  username: string,
+  amount: string,
+  activeAccount: ActiveAccount,
+) => {
   try {
     await HiveUtils.sendOperationWithConfirmation(
       HiveUtils.getClient().broadcast.sendOperations(
@@ -366,9 +377,7 @@ const powerDown = async (username: string, amount: string) => {
             },
           ] as WithdrawVestingOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -385,6 +394,7 @@ const transfer = async (
   recurrent: boolean,
   iterations: number,
   frequency: number,
+  activeAccount: ActiveAccount,
 ) => {
   try {
     if (!recurrent) {
@@ -396,9 +406,7 @@ const transfer = async (
             amount: amount,
             memo: memo,
           },
-          PrivateKey.fromString(
-            store.getState().activeAccount.keys.active as string,
-          ),
+          PrivateKey.fromString(activeAccount.keys.active as string),
         ),
       );
     } else {
@@ -418,9 +426,7 @@ const transfer = async (
               },
             ] as RecurrentTransferOperation,
           ],
-          PrivateKey.fromString(
-            store.getState().activeAccount.keys.active as string,
-          ),
+          PrivateKey.fromString(activeAccount.keys.active as string),
         ),
       );
     }
@@ -451,9 +457,7 @@ const convertOperation = async (
             },
           ] as CollateralizedConvertOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -529,9 +533,7 @@ const deposit = async (
             },
           ] as TransferToSavingsOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -568,9 +570,7 @@ const withdraw = async (
             },
           ] as TransferFromSavingsOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -592,9 +592,7 @@ const delegateVestingShares = async (
           delegator: activeAccount.name!,
           vesting_shares: vestingShares,
         },
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
 
