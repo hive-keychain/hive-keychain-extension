@@ -9,7 +9,6 @@ export const MessageReducer = (
 ): ErrorMessage => {
   switch (type) {
     case ActionType.SET_MESSAGE:
-      console.log(payload);
       return payload!;
     default:
       return state;

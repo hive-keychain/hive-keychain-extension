@@ -81,7 +81,6 @@ const createSignAndBroadcastTransaction = async (
         (response as HiveTxBroadcastErrorResponse).error,
       );
       return;
-      //   throw new Error('html_popup_error_while_broadcasting');
     } else {
       return (response as HiveTxBroadcastSuccessResponse).result.tx_id;
     }
