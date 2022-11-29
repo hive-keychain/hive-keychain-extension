@@ -12698,6 +12698,7 @@
       }
       var c = H.location.protocol;
       'chrome-extension:' != c &&
+        'moz-extension:' != c &&
         'http:' != c &&
         'https:' != c &&
         (N(29), (a.K = !0));
