@@ -16,7 +16,7 @@ export const refreshActiveAccount =
         (localAccount: LocalAccount) =>
           localAccount.name === getState().activeAccount.name,
       );
-      dispatch(loadActiveAccount(account));
+      dispatch(loadActiveAccount(account!));
     }, delay);
   };
 

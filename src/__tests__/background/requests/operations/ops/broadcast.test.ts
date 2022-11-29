@@ -11,6 +11,7 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import operation from 'src/__tests__/utils-for-testing/data/operation';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('broadcast tests:\n', () => {
   const { methods, constants, mocks } = broadcast;
   const { requestHandler, data, confirmed } = constants;
@@ -68,8 +69,14 @@ describe('broadcast tests:\n', () => {
         },
       },
     ];
-    const result = await broadcastOperations(requestHandler, cloneData);
-    expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
+    const resultOperation = (await broadcastOperations(
+      requestHandler,
+      cloneData,
+    )) as ResultOperation;
+    const { success, result, error } = resultOperation.msg;
+    expect(success).toBe(false);
+    expect(result).toBeUndefined();
+    expect((error as TypeError).message).toContain('private key');
   });
   it('Must return success on transfer', async () => {
     mocks.client.database.getAccounts([accounts.extended]);

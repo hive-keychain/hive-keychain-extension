@@ -7,6 +7,7 @@ import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
@@ -17,16 +18,13 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
 
+const i18n = {
+  get: (key: string) => mocksImplementation.i18nGetMessageCustom(key),
+};
+
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    storedData: {
-      maxManaGreater: 'automated-tasks.component With Data Mana Greater',
-      maxManaLower: 'automated-tasks.component With Data Mana Lower',
-    },
-    noData: 'automated-tasks.component No Data',
-  },
   data: {
     getClaims: {
       claimAccounts: {
@@ -39,6 +37,10 @@ const constants = {
         'keychain.tests': true,
       },
     },
+  },
+  message: {
+    intro: i18n.get('popup_html_automated_intro'),
+    autoClaims: i18n.get('popup_html_enable_autoclaim_accounts'),
   },
 };
 

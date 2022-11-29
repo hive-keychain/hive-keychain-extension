@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.3",
+  "version": "2.3.1",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
@@ -88,6 +88,7 @@
     "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "12.1.5",
     "@testing-library/user-event": "14.4.3",
+    "@types/gtag.js": "^0.0.12",
     "@types/jest": "27.5.2",
     "@types/md5": "2.3.2",
     "@types/node": "17.0.45",
@@ -112,7 +113,6 @@
     "identity-obj-proxy": "3.0.0",
     "jest": "27.5.1",
     "jest-chrome": "0.7.2",
-    "lerna": "^6.0.3",
     "node-sass": "7.0.1",
     "patch-package": "6.4.7",
     "react-hot-loader": "4.13.0",

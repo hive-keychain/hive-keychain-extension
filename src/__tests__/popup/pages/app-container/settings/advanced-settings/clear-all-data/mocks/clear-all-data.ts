@@ -3,6 +3,7 @@ import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
@@ -12,11 +13,16 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
 
+const i18n = {
+  get: (key: string, options?: string[] | undefined) =>
+    mocksImplementation.i18nGetMessageCustom(key, options),
+};
+
 const constants = {
   mk: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    default: 'clear-all-data.component Default',
+  message: {
+    intro: i18n.get('popup_html_clear_all_data_desc'),
   },
 };
 

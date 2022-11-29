@@ -1,5 +1,7 @@
+import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import moment from 'moment';
+import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
@@ -34,6 +36,7 @@ describe('proposal.utils tests:\n', () => {
 
   describe('getProposalList tests:\n', () => {
     test('Passing a user that hasnt voted on any proposal, must return a list of proposal with a field false on each one', async () => {
+      FormatUtils.toHP = jest.fn().mockReturnValue(33430000);
       HiveUtils.getClient().database.call = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeProposalListResponse)
@@ -43,7 +46,10 @@ describe('proposal.utils tests:\n', () => {
         .fn()
         .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
 
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        {} as DynamicGlobalProperties,
+      );
       expect(result).toEqual(proposal.expectedResultProposal);
     });
     test('Passing a user that has voted on the keychain proposal, must return a list of proposal with one voted proposal', async () => {
@@ -63,7 +69,7 @@ describe('proposal.utils tests:\n', () => {
           endDate: moment('2023-05-15T00:00:00'),
           dailyPay: '390 HBD',
           subject: 'Hive Keychain development',
-          totalVotes: '0 HP',
+          totalVotes: '33.43M HP',
           link: 'https://peakd.com/proposals/216',
           proposalId: 216,
           voted: true,
@@ -80,7 +86,12 @@ describe('proposal.utils tests:\n', () => {
         .fn()
         .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
 
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      FormatUtils.toHP = jest.fn().mockReturnValue(33430000);
+
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        {} as DynamicGlobalProperties,
+      );
       expect(result).toEqual(expectedResultProposalWithkeyChain);
     });
   });
