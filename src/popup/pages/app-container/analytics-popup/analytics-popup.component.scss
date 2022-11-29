@@ -1,0 +1,63 @@
+@import '../../../variable.scss';
+
+.analytics-popup {
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 36px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  .overlay {
+    height: 100%;
+    width: 100%;
+    opacity: 0.25;
+    background: white;
+    position: fixed;
+    margin: -36px;
+  }
+
+  .popup-container {
+    height: auto;
+    width: calc(100% - 120px);
+    background: $black;
+    border-radius: 8px;
+    border: white;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 16px;
+    padding: 24px;
+
+    .why-analytics,
+    .text {
+      font-size: 17px;
+    }
+
+    .why-analytics {
+      align-self: flex-start;
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    .buttons-panel {
+      width: 100%;
+      display: flex;
+      gap: 16px;
+    }
+
+    .pp {
+      font-size: 16px;
+      color: white;
+      a {
+        color: white;
+        font-weight: bold;
+        text-decoration: underline;
+      }
+    }
+  }
+}

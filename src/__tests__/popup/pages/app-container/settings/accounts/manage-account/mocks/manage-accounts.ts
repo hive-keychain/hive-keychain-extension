@@ -73,11 +73,6 @@ const constants = {
     accounts.local.two,
   ] as LocalAccount[],
   localAccountDeletedOne: [accounts.local.two] as LocalAccount[],
-  snapshotName: {
-    withData: {
-      default: 'manage-account.component ALL KEYS',
-    },
-  },
   dataUserTwoLoaded: [
     {
       ...accounts.extended,

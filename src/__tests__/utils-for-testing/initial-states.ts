@@ -124,7 +124,7 @@ export const initialStateDifferentAccounts = {
     keys: utilsT.secondAccountOnState.keys,
     rc: {},
   },
-} as RootState;
+} as unknown as RootState;
 
 export const initialStateJustTokens = {
   userTokens: { loading: false, list: [utilsT.fakeGetUserBalanceResponse[0]] },

@@ -125,7 +125,6 @@ const fakeProposalKeyChain = {
   total_votes: '61237185339413554',
   status: 'active',
 };
-
 const fakeProposal2 = {
   id: 140,
   proposal_id: 140,
@@ -161,7 +160,7 @@ const expectedResultProposal = [
     proposalId: 214,
     receiver: 'howo',
     subject: 'Core development of hive and communities year 3',
-    totalVotes: '0 HP',
+    totalVotes: '33.43M HP',
     voted: false,
   },
   {
@@ -175,7 +174,7 @@ const expectedResultProposal = [
     proposalId: 185,
     receiver: 'hivewatchers',
     subject: 'The Hivewatchers & Spaminator Operational Proposal',
-    totalVotes: '0 HP',
+    totalVotes: '33.43M HP',
     voted: false,
   },
   {
@@ -190,7 +189,7 @@ const expectedResultProposal = [
     receiver: 'v4vapp.dhf',
     subject:
       'Continuation: Hive to Value 4 Value - The Hive <> Bitcoin Lightning Bridge',
-    totalVotes: '0 HP',
+    totalVotes: '33.43M HP',
     voted: false,
   },
 ];

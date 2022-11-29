@@ -17,6 +17,7 @@ import './proposal-voting-section.component.scss';
 const ProposalVotingSection = ({
   activeAccount,
   isMessageContainerDisplayed,
+  globalProperties,
   setSuccessMessage,
   setErrorMessage,
 }: PropsFromRedux) => {
@@ -31,7 +32,9 @@ const ProposalVotingSection = ({
   }, [activeAccount]);
 
   const initHasVotedForProposal = async () => {
-    if (await ProposalUtils.isRequestingProposalVotes()) {
+    if (
+      await ProposalUtils.isRequestingProposalVotes(globalProperties.globals!)
+    ) {
       sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount));
     }
   };
@@ -94,6 +97,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     isMessageContainerDisplayed: state.errorMessage.key.length > 0,
+    globalProperties: state.globalProperties,
   };
 };
 

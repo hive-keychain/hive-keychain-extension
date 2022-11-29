@@ -52,7 +52,7 @@ const beforeEach = async (
   mockPreset.setOrDefault(remock);
   if (toUse?.removeActiveKey) {
     delete constants.stateAs.accounts[0].keys.active;
-    delete constants.stateAs.accounts[0].keys.activePubKey;
+    delete constants.stateAs.accounts[0].keys.activePubkey;
   }
   renders.wInitialState(component, constants.stateAs);
   await assertion.awaitMk(constants.username);

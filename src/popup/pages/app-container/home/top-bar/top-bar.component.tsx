@@ -4,7 +4,10 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -29,6 +32,7 @@ const TopBar = ({
   removeFromLoadingList,
   loadGlobalProperties,
   setErrorMessage,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -73,6 +77,9 @@ const TopBar = ({
       activeAccount.account.reward_hive_balance,
       activeAccount.account.reward_hbd_balance,
       activeAccount.account.reward_vesting_balance,
+      globalProperties.globals!,
+      setErrorMessage,
+      setSuccessMessage,
     );
     removeFromLoadingList('popup_html_claiming_rewards');
     if (claimSuccessful) {
@@ -130,6 +137,7 @@ const connector = connect(mapStateToProps, {
   removeFromLoadingList,
   loadGlobalProperties,
   setErrorMessage,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

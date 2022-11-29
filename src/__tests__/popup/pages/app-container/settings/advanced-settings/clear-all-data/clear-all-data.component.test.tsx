@@ -13,8 +13,9 @@ describe('clear-all-data.component tests:\n', () => {
   beforeEach(async () => {
     _asFragment = await clearAllData.beforeEach();
   });
-  it('Must show page and match snapshot', () => {
-    expect(_asFragment()).toMatchSnapshot(constants.snapshotName.default);
+  it('Must show page and message', () => {
+    assertion.getByLabelText(alComponent.advanceSettings.clearAllData);
+    assertion.getOneByText(constants.message.intro);
   });
   it('Must go back when pressing cancel', async () => {
     await clickAwait([alButton.dialog.cancel]);

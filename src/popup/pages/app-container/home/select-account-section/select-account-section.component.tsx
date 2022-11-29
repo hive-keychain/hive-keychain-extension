@@ -27,7 +27,7 @@ const SelectAccountSection = ({
         return { label: account.name, value: account.name };
       }),
     );
-    setSelectedLocalAccount(activeAccount.name);
+    setSelectedLocalAccount(activeAccount.name!);
   }, [accounts, activeAccount]);
 
   const [options, setOptions] = useState(defaultOptions);
@@ -39,7 +39,7 @@ const SelectAccountSection = ({
     const itemClicked = accounts.find(
       (account: LocalAccount) => account.name === accountName,
     );
-    loadActiveAccount(itemClicked);
+    loadActiveAccount(itemClicked!);
   };
 
   const customLabelRender = (
@@ -114,7 +114,7 @@ const SelectAccountSection = ({
       {selectedLocalAccount && options && (
         <div className="select-account-section">
           <Select
-            values={[selectedLocalAccount]}
+            values={[selectedLocalAccount as any]}
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}
