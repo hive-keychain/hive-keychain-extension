@@ -2507,6 +2507,46 @@
     "message": "You have $1 pending $2 conversion(s)",
     "description": "Global"
   },
+  "popup_html_analytics": {
+    "message": "Analytics",
+    "description": "Analytics menu item"
+  },
+  "popup_html_analytics_allow_ga": {
+    "message": "Collect Usage Data",
+    "description": "Allow google analytics checkbox label"
+  },
+  "popup_html_analytics_allow_ga_hint": {
+    "message": "Allow us to record your activity on Google Analytics to help us improve the user experience on Hive Keychain",
+    "description": "Allow google analytics hint"
+  },
+  "popup_html_analytics_save": {
+    "message": "Save",
+    "description": "accept button on analytics popup"
+  },
+  "popup_html_analytics_accept_to_share": {
+    "message": "I agree to share usage data with Keychain",
+    "description": "accept on analytics popup"
+  },
+  "popup_html_analytics_thank_you": {
+    "message": "Thank you for your help",
+    "description": "Thank you for your help"
+  },
+  "popup_html_analytics_title": {
+    "message": "Help us improve Keychain",
+    "description": "Analytics popup title"
+  },
+  "popup_html_analytics_message": {
+    "message": "Enable Keychain to gather anonymous non-sensitive data on the extension usage. This data will be used to enhance your user experience. You can opt out at any time from the 'Advanced Settings' section.",
+    "description": "Analytics popup message"
+  },
+  "popup_html_analytics_privacy_policy_text": {
+    "message": "By continuing, you are accepting our",
+    "description": "Followed by 'Privacy Policy'"
+  },
+  "popup_html_analytics_privacy_policy": {
+    "message": "Privacy Policy",
+    "description": "By continuing, your are accepting our [...]"
+  },
   "popup_html_delegate_rc": {
     "message": "RC Delegations"
   },

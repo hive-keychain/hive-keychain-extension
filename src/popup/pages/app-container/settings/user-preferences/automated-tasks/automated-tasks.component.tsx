@@ -45,7 +45,7 @@ const AutomatedTasks = ({
       }),
     );
 
-    setSelectedLocalAccount(activeAccount.name);
+    setSelectedLocalAccount(activeAccount.name!);
   }, [accounts, activeAccount]);
 
   const saveClaims = async (
@@ -76,7 +76,7 @@ const AutomatedTasks = ({
     const itemClicked = accounts.find(
       (account: LocalAccount) => account.name === accountName,
     );
-    loadActiveAccount(itemClicked);
+    loadActiveAccount(itemClicked!);
   };
 
   const customLabelRender = (
@@ -132,7 +132,7 @@ const AutomatedTasks = ({
 
       <div className="select">
         <Select
-          values={[selectedLocalAccount]}
+          values={[selectedLocalAccount as any]}
           options={options}
           onChange={() => undefined}
           contentRenderer={customLabelRender}

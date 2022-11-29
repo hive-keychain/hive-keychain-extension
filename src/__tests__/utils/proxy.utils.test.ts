@@ -2,7 +2,6 @@ import { ExtendedAccount } from '@hiveio/dhive';
 import AccountUtils from 'src/utils/account.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
-
 afterEach(() => {
   jest.clearAllMocks();
 });

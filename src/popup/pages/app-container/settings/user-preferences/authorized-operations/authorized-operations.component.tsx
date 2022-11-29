@@ -71,7 +71,10 @@ const AuthorizedOperations = ({
               {Object.keys(websites[website]).map((operation) => {
                 return (
                   websites[website][operation] && (
-                    <div className="operation" key={operation}>
+                    <div
+                      aria-label={'whitelisted-operation-item'}
+                      className="operation"
+                      key={operation}>
                       <div className="operation-name">
                         {chrome.i18n.getMessage(
                           `popup_${operation
