@@ -131,10 +131,10 @@ export const removeKey =
       if (
         finalAccounts
           .map((account: LocalAccount) => account.name)
-          .includes(activeLocalAccount.name)
+          .includes(activeLocalAccount!.name)
       ) {
         const updated = finalAccounts.filter(
-          (account: LocalAccount) => account.name === activeLocalAccount.name,
+          (account: LocalAccount) => account.name === activeLocalAccount!.name,
         );
         dispatch(refreshKeys(updated[0]));
       } else {

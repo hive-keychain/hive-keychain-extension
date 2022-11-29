@@ -122,6 +122,7 @@ const getAccountTransactions = async (
             break;
           }
           case 'claim_reward_balance': {
+            console.log({ globals });
             specificTransaction = e[1].op[1] as ClaimReward;
             specificTransaction.hbd = e[1].op[1].reward_hbd;
             specificTransaction.hive = e[1].op[1].reward_hive;
