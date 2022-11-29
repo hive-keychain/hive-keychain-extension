@@ -134,7 +134,8 @@ const signTransaction = async (
   key: Key,
   chainId?: string,
 ) => {
-  const ledger = await LedgerUtils.getLedgerInstance();
+  let ledger = await LedgerUtils.getLedgerInstance();
+  if (!ledger) throw new Error('html_ledger_error_while_connecting');
   try {
     return ledger.signTransaction(
       transaction,

@@ -62,7 +62,7 @@ const createSignAndBroadcastTransaction = async (
       hiveTransaction.addSignature(signedTransactionFromLedger!.signatures[0]);
     } catch (err) {
       Logger.error(err);
-      throw new Error('html_ledger_error_while_signing');
+      throw err;
     }
   } else {
     try {
