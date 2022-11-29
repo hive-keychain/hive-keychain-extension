@@ -27,15 +27,17 @@ const initializeGoogleAnalytics = () => {
   );
 
   window.gtag('send', 'pageview', '/popup'); // Set page, avoiding rejection due
-  const gaId = document.cookie
-    .split('; ')
-    .find((cookie: string) => cookie.startsWith('_ga'))
-    ?.split('=')[1];
+  setTimeout(() => {
+    const gaId = document.cookie
+      .split('; ')
+      .find((cookie: string) => cookie.startsWith('_ga'))
+      ?.split('=')[1];
 
-  LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.GA_CLIENT_ID,
-    gaId,
-  );
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.GA_CLIENT_ID,
+      gaId,
+    );
+  }, 3000);
 };
 
 const sendNavigationEvent = async (page: Screen) => {
