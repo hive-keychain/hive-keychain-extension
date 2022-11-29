@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import HiveUtils from 'src/utils/hive.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -105,7 +105,7 @@ const methods = {
 };
 
 const extraMocks = (delegateVestingShares: boolean) => {
-  HiveUtils.delegateVestingShares = jest
+  DelegationUtils.delegateVestingShares = jest
     .fn()
     .mockResolvedValue(delegateVestingShares);
   TransferUtils.saveFavoriteUser = jest.fn();

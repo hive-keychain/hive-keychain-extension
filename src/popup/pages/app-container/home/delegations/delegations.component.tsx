@@ -30,8 +30,8 @@ import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './delegations.component.scss';
@@ -201,7 +201,7 @@ const Delegations = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
+        let success = await DelegationUtils.delegateVestingShares(
           activeAccount,
           username,
           FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
@@ -233,7 +233,7 @@ const Delegations = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
+        let success = await DelegationUtils.delegateVestingShares(
           activeAccount,
           username,
           '0.000000 VESTS',

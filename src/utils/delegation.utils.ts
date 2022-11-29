@@ -6,12 +6,11 @@ import {
   PendingOutgoingUndelegation,
 } from '@interfaces/delegations.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import HiveUtils from 'src/utils/hive.utils';
 
 const getDelegators = async (name: string) => {
-  return (
-    (await KeychainApi.get(`/hive/delegators/${name}`)).data as Delegator[]
-  )
+  const delegators = (await KeychainApi.get(`/hive/delegators/${name}`))
+    .data as Delegator[];
+  return delegators
     .filter((e) => e.vesting_shares !== 0)
     .sort((a, b) => b.vesting_shares - a.vesting_shares);
 };
@@ -20,11 +19,10 @@ const getDelegatees = async (name: string) => {
   const LIMIT = 1000;
   let delegatees: any[] = [];
   let from = '';
-  const response = await HiveTxUtils.getData(
+  delegatees = await HiveTxUtils.getData(
     'condenser_api.get_vesting_delegations',
     [name, from, LIMIT],
   );
-  delegatees = response.result;
 
   return delegatees
     .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
@@ -35,12 +33,12 @@ const getDelegatees = async (name: string) => {
 };
 
 const getPendingOutgoingUndelegation = async (name: string) => {
-  return (
-    await HiveUtils.getClient().database.call(
-      'find_vesting_delegation_expirations',
-      [name],
-    )
-  ).delegations.map((pendingUndelegation: any) => {
+  const pendingDelegations = await HiveTxUtils.getData(
+    'database_api.find_vesting_delegation_expirations',
+    { account: name },
+    'delegations',
+  );
+  return pendingDelegations.map((pendingUndelegation: any) => {
     return {
       delegator: pendingUndelegation.delegator,
       expiration_date: pendingUndelegation.expiration,

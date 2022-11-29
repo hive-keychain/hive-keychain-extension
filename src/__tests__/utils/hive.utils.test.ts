@@ -15,6 +15,7 @@ import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
@@ -389,33 +390,33 @@ describe('hive.utils tests:\n', () => {
 
   describe('getDelegators tests:\n', () => {
     test('Passing an account with delegators must return an array of results', async () => {
-      HiveUtils.getDelegators = jest
+      DelegationUtils.getDelegators = jest
         .fn()
         .mockResolvedValue(delegations.delegators);
       const username = 'blocktrades';
-      const result = await HiveUtils.getDelegators(username);
+      const result = await DelegationUtils.getDelegators(username);
       expect(result).toEqual(delegations.delegators);
     });
     test('Passing an account with No delegators must return an Empty array', async () => {
-      HiveUtils.getDelegators = jest.fn().mockResolvedValue([]);
+      DelegationUtils.getDelegators = jest.fn().mockResolvedValue([]);
       const username = 'blocktrades';
-      const result = await HiveUtils.getDelegators(username);
+      const result = await DelegationUtils.getDelegators(username);
       expect(result).toEqual([]);
     });
   });
 
   describe('getDelegatees tests:\n', () => {
     test('Passing an account with delegatees must return an array', async () => {
-      HiveUtils.getDelegatees = jest
+      DelegationUtils.getDelegatees = jest
         .fn()
         .mockResolvedValue(delegations.delegatees);
-      const results = await HiveUtils.getDelegatees('string');
+      const results = await DelegationUtils.getDelegatees('string');
       expect(results).toEqual(delegations.delegatees);
     });
     test('Passing an account with No delegatees must return an Empty array', async () => {
-      HiveUtils.getDelegatees = jest.fn().mockResolvedValue([]);
+      DelegationUtils.getDelegatees = jest.fn().mockResolvedValue([]);
       const username = 'theghost1980';
-      const result = await HiveUtils.getDelegatees(username);
+      const result = await DelegationUtils.getDelegatees(username);
       expect(result.length).toBe(0);
     });
   });

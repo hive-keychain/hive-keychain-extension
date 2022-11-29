@@ -1,6 +1,7 @@
 import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import HiveEngineUtils from 'src/utils/hive-engine.utils';
@@ -82,7 +83,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (app && app.getExtendedAccounts) ?? _app.getExtendedAccounts,
     );
-  HiveUtils.getDelegatees = jest
+  DelegationUtils.getDelegatees = jest
     .fn()
     .mockResolvedValue(
       (powerUp && powerUp.getVestingDelegations) ??

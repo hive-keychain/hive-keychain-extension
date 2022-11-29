@@ -112,9 +112,16 @@ const confirmTransaction = async (transactionId: string) => {
   }
 };
 
-const getData = async (method: string, params: any[]) => {
+const getData = async (
+  method: string,
+  params: any[] | object,
+  key?: string,
+) => {
   const response = await call(method, params);
-  return response;
+  if (response.result) {
+    return key ? response.result[key] : response.result;
+  } else
+    throw new Error('html_popup_error_while_retrieving data from ' + method);
 };
 export const HiveTxUtils = {
   sendOperation,
