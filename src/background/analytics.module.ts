@@ -1,10 +1,14 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 
 const sendData = async (request: string, domain: string) => {
-  const gaClientId = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.GA_CLIENT_ID,
-  );
+  const { ANALYTICS_SETTINGS, GA_CLIENT_ID: gaClientId } =
+    await LocalStorageUtils.getMultipleValueFromLocalStorage([
+      LocalStorageKeyEnum.GA_CLIENT_ID,
+      LocalStorageKeyEnum.ANALYTICS_SETTINGS,
+    ]);
+  if (!ANALYTICS_SETTINGS.allowGoogleAnalytics) return;
 
   const baseUri = `https://www.google-analytics.com/${
     process.env.GOOGLE_ANALYTICS_DEV_MODE ? 'debug/' : ''
@@ -26,12 +30,15 @@ const sendData = async (request: string, domain: string) => {
       },
     ],
   };
-
-  fetch(encodeURI(baseUri), {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    headers: { 'content-type': 'application/json' },
-  });
+  try {
+    fetch(encodeURI(baseUri), {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: { 'content-type': 'application/json' },
+    });
+  } catch (e) {
+    Logger.error('Error sending to GA', e);
+  }
 };
 
 export const AnalyticsModule = {

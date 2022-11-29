@@ -54,7 +54,7 @@ const Analytics = ({
       <CheckboxComponent
         ariaLabel={`checkbox-allow-ga`}
         title="popup_html_analytics_allow_ga"
-        hint="popup_html_analytics_allow_ga_hint"
+        hint="popup_html_analytics_message"
         checked={allowGoogleAnalytics}
         onChange={() => {
           setAllowGoogleAnalytics(!allowGoogleAnalytics);

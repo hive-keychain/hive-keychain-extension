@@ -56,6 +56,13 @@ const AnalyticsPopup = ({
           checked={accepted}
           title="popup_html_analytics_accept_to_share"
         />
+        <div className="pp">
+          {chrome.i18n.getMessage('popup_html_analytics_privacy_policy_text') +
+            ' '}
+          <a href="https://hive-keychain.com/#/privacy" target="__blank">
+            {chrome.i18n.getMessage('popup_html_analytics_privacy_policy')}
+          </a>
+        </div>
         <div className="buttons-panel">
           <ButtonComponent onClick={save} label={'popup_html_analytics_save'} />
         </div>

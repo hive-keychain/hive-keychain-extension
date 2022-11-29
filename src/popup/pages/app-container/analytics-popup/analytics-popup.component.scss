@@ -35,17 +35,29 @@
 
     .why-analytics,
     .text {
-      font-size: 18px;
+      font-size: 17px;
     }
 
     .why-analytics {
       align-self: flex-start;
+      font-weight: bold;
+      font-size: 20px;
     }
 
     .buttons-panel {
       width: 100%;
       display: flex;
       gap: 16px;
+    }
+
+    .pp {
+      font-size: 16px;
+      color: white;
+      a {
+        color: white;
+        font-weight: bold;
+        text-decoration: underline;
+      }
     }
   }
 }
