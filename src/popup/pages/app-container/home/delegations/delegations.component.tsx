@@ -201,20 +201,24 @@ const Delegations = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');
-        let success = await DelegationUtils.delegateVestingShares(
-          activeAccount,
-          username,
-          FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
-            ' VESTS',
-        );
-        removeFromLoadingList('html_popup_delegation_operation');
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(username, activeAccount);
-          setSuccessMessage('popup_html_delegation_successful');
-        } else {
-          setErrorMessage('popup_html_delegation_fail');
+        try {
+          let success = await DelegationUtils.delegateVestingShares(
+            activeAccount,
+            username,
+            FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
+              ' VESTS',
+          );
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            setSuccessMessage('popup_html_delegation_successful');
+          } else {
+            setErrorMessage('popup_html_delegation_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_delegation_operation');
         }
       },
     });
@@ -233,20 +237,24 @@ const Delegations = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');
-        let success = await DelegationUtils.delegateVestingShares(
-          activeAccount,
-          username,
-          '0.000000 VESTS',
-        );
 
-        removeFromLoadingList('html_popup_cancel_delegation_operation');
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(username, activeAccount);
-          setSuccessMessage('popup_html_cancel_delegation_successful');
-        } else {
-          setErrorMessage('popup_html_cancel_delegation_fail');
+        try {
+          let success = await DelegationUtils.delegateVestingShares(
+            activeAccount,
+            username,
+            '0.000000 VESTS',
+          );
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            setSuccessMessage('popup_html_cancel_delegation_successful');
+          } else {
+            setErrorMessage('popup_html_cancel_delegation_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
     });
@@ -342,7 +350,11 @@ const Delegations = ({
 
       <OperationButtonComponent
         ariaLabel="delegate-operation-submit-button"
-        label={'popup_html_delegate_to_user'}
+        label={
+          value.toString().length > 0 && Number(value) === 0
+            ? 'popup_html_cancel_delegation'
+            : 'popup_html_delegate_to_user'
+        }
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
         fixToBottom
