@@ -12,6 +12,7 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
+import { AnalyticsPopupComponent } from '@popup/pages/app-container/analytics-popup/analytics-popup.component';
 import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
@@ -268,6 +269,11 @@ const App = ({
     }
   };
 
+  const onAnalyticsAnswered = () => {
+    AnalyticsUtils.initializeSettings();
+    setDisplayAnalyticsPopup(false);
+  };
+
   const renderPopup = (
     loading: number,
     activeRpc: Rpc | undefined,
@@ -293,6 +299,8 @@ const App = ({
             onClick={tryNewRpc}></ButtonComponent>
         </div>
       );
+    } else if (displayAnalyticsPopup) {
+      return <AnalyticsPopupComponent onAnswered={onAnalyticsAnswered} />;
     }
   };
 
