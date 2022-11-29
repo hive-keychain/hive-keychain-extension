@@ -48,11 +48,8 @@ const sendRequestEvent = async (request: string) => {
 
 const sendAddFirstAccountEvent = async () => {
   const alreadySent = await wasAddFirstAccountSend();
-  console.log(alreadySent);
   if (alreadySent) return;
   if (!analyticsSettings || !analyticsSettings?.allowGoogleAnalytics) return;
-
-  console.log('send add_first_account');
 
   window.gtag('event', 'add_first_account', {});
   LocalStorageUtils.saveValueInLocalStorage(
