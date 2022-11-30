@@ -84,7 +84,6 @@ const App = ({
   }, [navigationStack]);
 
   useEffect(() => {
-    onActiveRpcRefreshed();
     if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
 
@@ -103,6 +102,7 @@ const App = ({
           (account: LocalAccount) => account.name === lastActiveAccountName,
         )!,
       );
+      loadGlobalProperties();
     }
   };
 
@@ -160,7 +160,8 @@ const App = ({
       for (const rpc of RpcUtils.getFullList().filter(
         (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
       )) {
-        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
+        const status = await RpcUtils.checkRpcStatus(rpc.uri);
+        if (status) {
           if (switchAuto) {
             setActiveRpc(rpc);
           } else {
@@ -285,7 +286,8 @@ const App = ({
       return <LoadingComponent operations={loadingOperation} />;
     } else if (displayProxySuggestion) {
       return <ProxySuggestionComponent />;
-    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+    }
+    if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
         <div className="change-rpc-popup">
           <div className="message">
