@@ -33,8 +33,8 @@ import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { SavingsUtils } from 'src/utils/savings.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './savings.component.scss';
 
@@ -184,36 +184,49 @@ const SavingsPage = ({
       ],
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        let success = false;
-        switch (selectedSavingOperationType) {
-          case SavingOperationType.DEPOSIT:
-            addToLoadingList('html_popup_deposit_to_savings_operation');
-            success = await HiveUtils.deposit(activeAccount, valueS, username);
-            removeFromLoadingList('html_popup_deposit_to_savings_operation');
-            break;
-          case SavingOperationType.WITHDRAW:
-            addToLoadingList('html_popup_withdraw_from_savings_operation');
-            success = await HiveUtils.withdraw(activeAccount, valueS, username);
-            removeFromLoadingList('html_popup_withdraw_from_savings_operation');
-            break;
-        }
+        try {
+          let success = false;
+          switch (selectedSavingOperationType) {
+            case SavingOperationType.DEPOSIT:
+              addToLoadingList('html_popup_deposit_to_savings_operation');
+              success = await SavingsUtils.deposit(
+                activeAccount,
+                valueS,
+                username,
+              );
+              break;
+            case SavingOperationType.WITHDRAW:
+              addToLoadingList('html_popup_withdraw_from_savings_operation');
+              success = await SavingsUtils.withdraw(
+                activeAccount,
+                valueS,
+                username,
+              );
+              break;
+          }
 
-        navigateTo(Screen.HOME_PAGE, true);
-        if (success) {
-          await TransferUtils.saveFavoriteUser(username, activeAccount);
-          setSuccessMessage(
-            selectedSavingOperationType === SavingOperationType.DEPOSIT
-              ? 'popup_html_deposit_success'
-              : 'popup_html_withdraw_success',
-            [`${value} ${selectedCurrency.toUpperCase()}`],
-          );
-        } else {
-          setErrorMessage(
-            selectedSavingOperationType === SavingOperationType.DEPOSIT
-              ? 'popup_html_deposit_fail'
-              : 'popup_html_withdraw_fail',
-            [selectedCurrency.toUpperCase()],
-          );
+          navigateTo(Screen.HOME_PAGE, true);
+          if (success) {
+            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            setSuccessMessage(
+              selectedSavingOperationType === SavingOperationType.DEPOSIT
+                ? 'popup_html_deposit_success'
+                : 'popup_html_withdraw_success',
+              [`${value} ${selectedCurrency.toUpperCase()}`],
+            );
+          } else {
+            setErrorMessage(
+              selectedSavingOperationType === SavingOperationType.DEPOSIT
+                ? 'popup_html_deposit_fail'
+                : 'popup_html_withdraw_fail',
+              [selectedCurrency.toUpperCase()],
+            );
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_deposit_to_savings_operation');
+          removeFromLoadingList('html_popup_withdraw_from_savings_operation');
         }
       },
     } as ConfirmationPageParams);

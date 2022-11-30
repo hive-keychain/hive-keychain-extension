@@ -8,8 +8,6 @@ import {
   Price,
   PrivateKey,
   TransactionConfirmation,
-  TransferFromSavingsOperation,
-  TransferToSavingsOperation,
   UpdateProposalVotesOperation,
 } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
@@ -295,83 +293,6 @@ const signMessage = (message: string, privateKey: string) => {
   }
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
-/* istanbul ignore next */
-const deposit = async (
-  activeAccount: ActiveAccount,
-  amount: string,
-  receiver: string,
-) => {
-  const savings = await HiveUtils.getClient().call(
-    'condenser_api',
-    'get_savings_withdraw_from',
-    [activeAccount.name],
-  );
-
-  const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
-  try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
-        [
-          [
-            'transfer_to_savings',
-            {
-              amount: amount,
-              from: activeAccount.name,
-              memo: '',
-              request_id: requestId,
-              to: receiver,
-            },
-          ] as TransferToSavingsOperation,
-        ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-/* istanbul ignore next */
-const withdraw = async (
-  activeAccount: ActiveAccount,
-  amount: string,
-  to: string,
-) => {
-  const savings = await HiveUtils.getClient().call(
-    'condenser_api',
-    'get_savings_withdraw_from',
-    [activeAccount.name],
-  );
-
-  const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
-
-  try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
-        [
-          [
-            'transfer_from_savings',
-            {
-              amount: amount,
-              from: activeAccount.name,
-              memo: '',
-              request_id: requestId,
-              to,
-            },
-          ] as TransferFromSavingsOperation,
-        ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
 
 /* istanbul ignore next */
 const sendCustomJson = async (
@@ -492,8 +413,6 @@ const HiveUtils = {
   claimRewards,
   encodeMemo,
   decodeMemo,
-  withdraw,
-  deposit,
   sendCustomJson,
   signMessage,
   getDelayedTransactionInfo,
