@@ -1,5 +1,9 @@
 import KeychainApi from '@api/keychain';
 import { Operation } from '@hiveio/dhive';
+import {
+  HiveTxBroadcastErrorResponse,
+  HiveTxBroadcastSuccessResponse,
+} from '@interfaces/hive-tx.interface';
 import { Key } from '@interfaces/keys.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import {
@@ -12,16 +16,6 @@ import { AsyncUtils } from 'src/utils/async.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
-
-interface HiveTxBroadcastSuccessResponse {
-  id: number;
-  jsonrpc: string;
-  result: { tx_id: string; status: string };
-}
-
-interface HiveTxBroadcastErrorResponse {
-  error: object;
-}
 
 const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
@@ -58,8 +52,13 @@ const createSignAndBroadcastTransaction = async (
       const signedTransactionFromLedger = await LedgerUtils.signTransaction(
         transaction,
         key,
+        HiveTxConfig.chain_id,
       );
-      hiveTransaction.addSignature(signedTransactionFromLedger!.signatures[0]);
+      console.log(
+        hiveTransaction.addSignature(
+          signedTransactionFromLedger!.signatures[0],
+        ),
+      );
     } catch (err) {
       Logger.error(err);
       throw err;
@@ -67,7 +66,7 @@ const createSignAndBroadcastTransaction = async (
   } else {
     try {
       const privateKey = PrivateKey.fromString(key!.toString());
-      hiveTransaction.sign(privateKey);
+      console.log(hiveTransaction.sign(privateKey));
     } catch (err) {
       Logger.error(err);
       throw new Error('html_popup_error_while_signing_transaction');
@@ -106,7 +105,7 @@ const confirmTransaction = async (transactionId: string) => {
     Logger.info('Transaction confirmed');
     return true;
   } else {
-    Logger.info(`Transaction failed with status: ${response.result.status}`);
+    Logger.error(`Transaction failed with status: ${response.result.status}`);
     return false;
   }
 };
@@ -129,4 +128,4 @@ export const HiveTxUtils = {
   getData,
 };
 
-// When ready will replace HiveTx
+//TODO : When ready will replace HiveTx

@@ -24,8 +24,8 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { getHiveEngineTokenValue } from 'src/utils/hive-engine.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { getHiveEngineTokenValue } from 'src/utils/tokens.utils';
 import './tokens.component.scss';
 
 const Tokens = ({

@@ -2,8 +2,8 @@ import { TokenBalance } from '@interfaces/tokens.interface';
 import { AxiosResponse } from 'axios';
 import * as tokenActions from 'src/popup/actions/token.actions';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
@@ -68,7 +68,7 @@ describe('token.actions tests:\n', () => {
     test('Must clear current userTokens and load user tokens', async () => {
       const newUserTokenBalances =
         utilsT.fakeGetUserBalanceResponse as TokenBalance[];
-      HiveEngineUtils.getUserBalance = jest
+      TokensUtils.getUserBalance = jest
         .fn()
         .mockResolvedValueOnce(newUserTokenBalances);
       const fakeStore = getFakeStore(initialStateJustTokens);
@@ -86,7 +86,7 @@ describe('token.actions tests:\n', () => {
         utilsT.fakeGetUserBalanceResponse[2],
         tokenObjZeroBalance,
       ] as TokenBalance[];
-      HiveEngineUtils.getUserBalance = jest
+      TokensUtils.getUserBalance = jest
         .fn()
         .mockResolvedValueOnce(newUserTokenBalances);
       const fakeStore = getFakeStore(initialStateJustTokens);
@@ -103,7 +103,7 @@ describe('token.actions tests:\n', () => {
       const userTokensReseted = { list: [], loading: true };
       const promiseError = new Error('Custom Message');
       const spyLoggerError = jest.spyOn(Logger, 'error');
-      HiveEngineUtils.getUserBalance = jest
+      TokensUtils.getUserBalance = jest
         .fn()
         .mockRejectedValueOnce(promiseError);
       const fakeStore = getFakeStore(initialStateJustTokens);

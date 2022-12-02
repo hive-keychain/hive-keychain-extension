@@ -17,7 +17,6 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { store } from '@popup/store';
-import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import {
   GlobalProperties,
@@ -295,27 +294,6 @@ const signMessage = (message: string, privateKey: string) => {
 };
 
 /* istanbul ignore next */
-const sendCustomJson = async (
-  json: any,
-  activeAccount: ActiveAccount,
-  mainnet?: string,
-) => {
-  return await sendOperationWithConfirmation(
-    getClient().broadcast.json(
-      {
-        id: mainnet ? mainnet : Config.hiveEngine.mainnet,
-        required_auths: [activeAccount.name!],
-        required_posting_auths: activeAccount.keys.active
-          ? []
-          : [activeAccount.name!],
-        json: JSON.stringify(json),
-      },
-      PrivateKey.fromString(activeAccount.keys.active as string),
-    ),
-  );
-};
-
-/* istanbul ignore next */
 const updateProposalVote = async (
   activeAccount: ActiveAccount,
   proposalId: number,
@@ -413,7 +391,6 @@ const HiveUtils = {
   claimRewards,
   encodeMemo,
   decodeMemo,
-  sendCustomJson,
   signMessage,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,

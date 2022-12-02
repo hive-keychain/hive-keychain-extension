@@ -125,7 +125,12 @@ const getTransferOperation = (
 ) => {
   return [
     'transfer',
-    { from: sender, to: receiver, amount: amount, memo: memo },
+    {
+      from: sender,
+      to: receiver,
+      amount: amount,
+      memo: memo,
+    },
   ] as TransferOperation;
 };
 const getRecurrentTransferOperation = (

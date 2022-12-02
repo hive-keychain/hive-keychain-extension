@@ -1,7 +1,7 @@
 import { act, screen } from '@testing-library/react';
 import { ReactElement } from 'react';
+import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';

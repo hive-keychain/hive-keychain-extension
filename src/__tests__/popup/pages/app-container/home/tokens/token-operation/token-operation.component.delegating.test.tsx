@@ -2,7 +2,7 @@ import App from '@popup/App';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -65,7 +65,7 @@ describe('token-operation Delegating tests:\n', () => {
   });
   it('Must show loading delegating transaction', async () => {
     extraMocks.doesAccountExist(true);
-    HiveEngineUtils.delegateToken = jest.fn();
+    TokensUtils.delegateToken = jest.fn();
     await methods.userInteraction(balance.min, operationType, true, true);
     await waitFor(() => {
       assertion.getManyByText([

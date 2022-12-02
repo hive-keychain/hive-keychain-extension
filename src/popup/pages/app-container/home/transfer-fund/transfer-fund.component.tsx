@@ -224,24 +224,24 @@ const TransferFunds = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_transfer_fund_operation');
-        let success = false;
-        let memoParam = memo;
-        if (memo.length) {
-          if (memo.startsWith('#')) {
-            if (!activeAccount.keys.memo) {
-              setErrorMessage('popup_html_memo_key_missing');
-              return;
-            } else {
-              memoParam = HiveUtils.encodeMemo(
-                memo,
-                activeAccount.keys.memo.toString(),
-                await AccountUtils.getPublicMemo(receiverUsername),
-              );
+        try {
+          let success = false;
+          let memoParam = memo;
+          if (memo.length) {
+            if (memo.startsWith('#')) {
+              if (!activeAccount.keys.memo) {
+                setErrorMessage('popup_html_memo_key_missing');
+                return;
+              } else {
+                memoParam = HiveUtils.encodeMemo(
+                  memo,
+                  activeAccount.keys.memo.toString(),
+                  await AccountUtils.getPublicMemo(receiverUsername),
+                );
+              }
             }
           }
-        }
 
-        try {
           success = await TransferUtils.sendTransfer(
             activeAccount.name!,
             receiverUsername,

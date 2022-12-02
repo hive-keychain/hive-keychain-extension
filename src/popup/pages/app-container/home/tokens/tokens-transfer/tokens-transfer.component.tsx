@@ -29,7 +29,7 @@ import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './tokens-transfer.component.scss';
 
@@ -163,63 +163,57 @@ const TokensTransfer = ({
       title: 'popup_html_transfer_tokens',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        let memoParam = memo;
-        if (memo.length) {
-          if (memo.startsWith('#')) {
-            if (!activeAccount.keys.memo) {
-              setErrorMessage('popup_html_memo_key_missing');
-              return;
-            } else {
-              memoParam = HiveUtils.encodeMemo(
-                memo,
-                activeAccount.keys.memo.toString(),
-                await AccountUtils.getPublicMemo(receiverUsername),
-              );
+        try {
+          let memoParam = memo;
+          if (memo.length) {
+            if (memo.startsWith('#')) {
+              if (!activeAccount.keys.memo) {
+                setErrorMessage('popup_html_memo_key_missing');
+                return;
+              } else {
+                memoParam = HiveUtils.encodeMemo(
+                  memo,
+                  activeAccount.keys.memo.toString(),
+                  await AccountUtils.getPublicMemo(receiverUsername),
+                );
+              }
             }
           }
-        }
 
-        const json = {
-          contractName: 'tokens',
-          contractAction: 'transfer',
-          contractPayload: {
-            symbol: symbol,
-            to: receiverUsername,
-            quantity: amount,
-            memo: memo,
-          },
-        };
+          addToLoadingList('html_popup_transfer_token_operation');
+          const transactionStatus = await TokensUtils.sendToken(
+            symbol,
+            receiverUsername,
+            amount,
+            memoParam,
+            activeAccount,
+          );
+          if (transactionStatus.broadcasted) {
+            addToLoadingList('html_popup_confirm_transaction_operation');
+            removeFromLoadingList('html_popup_transfer_token_operation');
 
-        addToLoadingList('html_popup_transfer_token_operation');
-        let sendTokenResult: any = await HiveUtils.sendCustomJson(
-          json,
-          activeAccount,
-        );
-        if (!!sendTokenResult) {
-          addToLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList('html_popup_transfer_token_operation');
-          let confirmationResult: any =
-            await BlockchainTransactionUtils.tryConfirmTransaction(
-              sendTokenResult,
-            );
-          removeFromLoadingList('html_popup_confirm_transaction_operation');
-          if (confirmationResult.confirmed) {
-            navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(
-              receiverUsername,
-              activeAccount,
-            );
+            if (transactionStatus.confirmed) {
+              navigateTo(Screen.HOME_PAGE, true);
+              await TransferUtils.saveFavoriteUser(
+                receiverUsername,
+                activeAccount,
+              );
 
-            setSuccessMessage('popup_html_transfer_successful', [
-              `@${receiverUsername}`,
-              formattedAmount,
-            ]);
+              setSuccessMessage('popup_html_transfer_successful', [
+                `@${receiverUsername}`,
+                formattedAmount,
+              ]);
+            } else {
+              setErrorMessage('popup_token_timeout');
+            }
           } else {
-            setErrorMessage('popup_token_timeout');
+            setErrorMessage('popup_html_transfer_failed');
           }
-        } else {
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
           removeFromLoadingList('html_popup_transfer_token_operation');
-          setErrorMessage('popup_html_transfer_failed');
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
     });

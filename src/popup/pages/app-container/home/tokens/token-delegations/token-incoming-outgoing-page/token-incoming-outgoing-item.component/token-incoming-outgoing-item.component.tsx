@@ -18,8 +18,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './token-incoming-outgoing-item.component.scss';
 
@@ -56,38 +55,31 @@ const TokenIncomingOutgoing = ({
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');
-        let tokenOperationResult = await HiveEngineUtils.cancelDelegationToken(
-          activeAccount.keys.active as string,
-          username,
-          symbol,
-          amount.toString(),
-          activeAccount.name!,
-        );
 
-        if (tokenOperationResult.id) {
-          addToLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList(`html_popup_cancel_delegation_operation`);
-          let confirmationResult: any =
-            await BlockchainTransactionUtils.tryConfirmTransaction(
-              tokenOperationResult.id,
-            );
-          removeFromLoadingList('html_popup_confirm_transaction_operation');
-          if (confirmationResult.confirmed) {
-            if (confirmationResult.error) {
-              setErrorMessage('popup_html_hive_engine_error', [
-                confirmationResult.error,
-              ]);
-              goBack();
-            } else {
+        try {
+          let tokenOperationResult = await TokensUtils.cancelDelegationToken(
+            username,
+            symbol,
+            amount.toString(),
+            activeAccount,
+          );
+          if (tokenOperationResult.broadcasted) {
+            addToLoadingList('html_popup_confirm_transaction_operation');
+            if (tokenOperationResult.confirmed) {
               await TransferUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_cancel_delegation_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
+            } else {
+              setErrorMessage('popup_token_timeout');
             }
           } else {
-            setErrorMessage('popup_token_timeout');
+            setErrorMessage(`popup_html_cancel_delegation_tokens_failed`);
           }
-        } else {
-          setErrorMessage(`popup_html_cancel_delegation_tokens_failed`);
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList(`html_popup_cancel_delegation_operation`);
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
     });
@@ -122,38 +114,34 @@ const TokenIncomingOutgoing = ({
       ],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');
-        let tokenOperationResult = await HiveEngineUtils.delegateToken(
-          activeAccount.keys.active as string,
-          username,
-          symbol,
-          value.toString(),
-          activeAccount.name!,
-        );
 
-        if (tokenOperationResult.id) {
-          addToLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList(`html_popup_delegation_operation`);
-          let confirmationResult: any =
-            await BlockchainTransactionUtils.tryConfirmTransaction(
-              tokenOperationResult.id,
-            );
-          removeFromLoadingList('html_popup_confirm_transaction_operation');
-          if (confirmationResult.confirmed) {
-            if (confirmationResult.error) {
-              setErrorMessage('popup_html_hive_engine_error', [
-                confirmationResult.error,
-              ]);
-              goBack();
-            } else {
+        try {
+          let tokenOperationResult = await TokensUtils.delegateToken(
+            username,
+            symbol,
+            value.toString(),
+            activeAccount,
+          );
+
+          if (tokenOperationResult.broadcasted) {
+            addToLoadingList('html_popup_confirm_transaction_operation');
+            removeFromLoadingList(`html_popup_delegation_operation`);
+            removeFromLoadingList('html_popup_confirm_transaction_operation');
+            if (tokenOperationResult.confirmed) {
               await TransferUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_delegate_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
+            } else {
+              setErrorMessage('popup_token_timeout');
             }
           } else {
-            setErrorMessage('popup_token_timeout');
+            setErrorMessage(`popup_html_delegate_tokens_failed`);
           }
-        } else {
-          setErrorMessage(`popup_html_delegate_tokens_failed`);
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList(`html_popup_delegation_operation`);
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
     });

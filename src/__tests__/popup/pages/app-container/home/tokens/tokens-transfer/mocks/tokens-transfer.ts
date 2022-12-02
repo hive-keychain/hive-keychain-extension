@@ -1,8 +1,6 @@
 import AccountUtils from 'src/utils/account.utils';
-import HiveUtils from 'src/utils/hive.utils';
-import BlockchainTransactionUtils, {
-  TransactionConfirmationResult,
-} from 'src/utils/tokens.utils';
+import { CustomJsonUtils } from 'src/utils/custom-json.utils';
+import { HiveEngineUtilsV2 } from 'src/utils/hive-engine-v2.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -143,11 +141,13 @@ const extraMocks = {
       .fn()
       .mockResolvedValue(userData.one.encryptKeys.memo)),
   sendCustomJson: (result: string | true | undefined) =>
-    (HiveUtils.sendCustomJson = jest.fn().mockResolvedValue(result)),
+    (CustomJsonUtils.send = jest.fn().mockResolvedValue(result)),
   saveTransferRecipient: () =>
     (TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined)),
-  tryConfirmTransaction: (result: TransactionConfirmationResult) =>
-    (BlockchainTransactionUtils.tryConfirmTransaction = jest
+  tryConfirmTransaction: (
+    result: any, // TODO : Fix any
+  ) =>
+    (HiveEngineUtilsV2.tryConfirmTransaction = jest
       .fn()
       .mockResolvedValue(result)),
 };

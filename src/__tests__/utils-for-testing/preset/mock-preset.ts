@@ -5,7 +5,6 @@ import { ConversionUtils } from 'src/utils/conversion.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -13,6 +12,7 @@ import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
@@ -147,27 +147,27 @@ const setOrDefault = (toUse: MocksToUse) => {
       (walletHistory && walletHistory.getAccountTransactions) ??
         _walletHistory.getAccountTransactions,
     );
-  HiveEngineUtils.getUserBalance = jest
+  TokensUtils.getUserBalance = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getUserBalance) ?? _tokens.getUserBalance,
     );
-  HiveEngineUtils.getIncomingDelegations = jest
+  TokensUtils.getIncomingDelegations = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getIncomingDelegations) ??
         _tokens.getIncomingDelegations,
     );
-  HiveEngineUtils.getOutgoingDelegations = jest
+  TokensUtils.getOutgoingDelegations = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getOutgoingDelegations) ??
         _tokens.getOutgoingDelegations,
     );
-  HiveEngineUtils.getAllTokens = jest
+  TokensUtils.getAllTokens = jest
     .fn()
     .mockResolvedValue((tokens && tokens.getAllTokens) ?? _tokens.getAllTokens);
-  HiveEngineUtils.getTokensMarket = jest
+  TokensUtils.getTokensMarket = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,

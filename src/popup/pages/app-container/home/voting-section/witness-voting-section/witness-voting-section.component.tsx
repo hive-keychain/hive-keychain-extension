@@ -13,7 +13,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
+import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './witness-voting-section.component.scss';
 
