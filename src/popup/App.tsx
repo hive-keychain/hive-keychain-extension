@@ -13,7 +13,6 @@ import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-conf
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { AnalyticsPopupComponent } from '@popup/pages/app-container/analytics-popup/analytics-popup.component';
-import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -284,8 +283,6 @@ const App = ({
   ) => {
     if (loading || !activeRpc) {
       return <LoadingComponent operations={loadingOperation} />;
-    } else if (displayProxySuggestion) {
-      return <ProxySuggestionComponent />;
     }
     if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
