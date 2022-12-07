@@ -47,7 +47,7 @@ const ProposalVotingSection = ({
 
   const handleReadClicked = () => {
     chrome.tabs.create({
-      url: `https://peakd.com/me/proposals/${Config.PROPOSAL}`,
+      url: `https://peakd.com/me/proposals/${Config.KEYCHAIN_PROPOSAL}`,
     });
   };
 

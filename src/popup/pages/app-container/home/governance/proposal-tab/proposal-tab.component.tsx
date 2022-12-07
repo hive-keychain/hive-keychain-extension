@@ -83,13 +83,7 @@ const ProposalTab = ({
         </>
       )}
       {isLoading && (
-        <div
-          style={{
-            height: '400px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-          }}>
+        <div className="loading-panel">
           <RotatingLogoComponent></RotatingLogoComponent>
         </div>
       )}

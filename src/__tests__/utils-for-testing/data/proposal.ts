@@ -1,9 +1,10 @@
+import { Asset } from '@hiveio/dhive';
 import moment from 'moment';
 
 const expectedResponse = [
   {
     creator: 'howo',
-    dailyPay: '330 HBD',
+    dailyPay: Asset.fromString('330 HBD'),
     endDate: moment('2023-04-27T00:00:00'),
     startDate: moment('2022-04-27T00:00:00'),
     funded: 'totally_funded',
@@ -17,7 +18,7 @@ const expectedResponse = [
   },
   {
     creator: 'hivewatchers',
-    dailyPay: '330 HBD',
+    dailyPay: Asset.fromString('330 HBD'),
     endDate: moment('2022-07-31T00:00:00'),
     startDate: moment('2021-08-01T00:00:00'),
     funded: 'totally_funded',
@@ -31,7 +32,7 @@ const expectedResponse = [
   },
   {
     creator: 'brianoflondon',
-    dailyPay: '330 HBD',
+    dailyPay: Asset.fromString('330 HBD'),
     endDate: moment('2022-05-23T00:00:00'),
     startDate: moment('2022-01-23T00:00:00'),
     funded: 'totally_funded',
@@ -152,7 +153,7 @@ const fakeDailyBudgetResponse = 16259983.208;
 const expectedResultProposal = [
   {
     creator: 'howo',
-    dailyPay: '330 HBD',
+    dailyPay: Asset.fromString('330 HBD'),
     endDate: moment('2023-04-27T00:00:00'),
     startDate: moment('2022-04-27T00:00:00'),
     funded: 'totally_funded',
@@ -166,7 +167,7 @@ const expectedResultProposal = [
   },
   {
     creator: 'hivewatchers',
-    dailyPay: '330 HBD',
+    dailyPay: Asset.fromString('330 HBD'),
     endDate: moment('2022-07-31T00:00:00'),
     startDate: moment('2021-08-01T00:00:00'),
     funded: 'totally_funded',
@@ -180,7 +181,7 @@ const expectedResultProposal = [
   },
   {
     creator: 'brianoflondon',
-    dailyPay: '330 HBD',
+    dailyPay: Asset.fromString('330 HBD'),
     endDate: moment('2022-05-23T00:00:00'),
     startDate: moment('2022-01-23T00:00:00'),
     funded: 'totally_funded',

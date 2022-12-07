@@ -12,6 +12,7 @@ import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -403,7 +404,9 @@ const doesAccountExist = async (username: string) => {
 };
 /* istanbul ignore next */
 const getExtendedAccount = async (username: string) => {
-  return (await HiveUtils.getClient().database.getAccounts([username]))[0];
+  return (
+    await HiveTxUtils.getData('condenser_api.get_accounts', [[username]])
+  )[0];
 };
 /**
  * getClient().database.getAccounts([username])

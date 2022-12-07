@@ -39,7 +39,7 @@ describe('proposal.utils tests:\n', () => {
         .mockResolvedValueOnce(proposal.fakeProposalListResponse)
         .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);
 
-      HiveUtils.getProposalDailyBudget = jest
+      ProposalUtils.getProposalDailyBudget = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
 
@@ -76,7 +76,7 @@ describe('proposal.utils tests:\n', () => {
         .mockResolvedValueOnce(withKeyChainProposal)
         .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);
 
-      HiveUtils.getProposalDailyBudget = jest
+      ProposalUtils.getProposalDailyBudget = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
 

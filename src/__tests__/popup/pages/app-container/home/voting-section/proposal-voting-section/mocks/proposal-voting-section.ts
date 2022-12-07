@@ -26,7 +26,7 @@ const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
   urlProposal: {
-    url: `https://peakd.com/me/proposals/${Config.PROPOSAL}`,
+    url: `https://peakd.com/me/proposals/${Config.KEYCHAIN_PROPOSAL}`,
   },
   textRequest: i18n.get('popup_html_proposal_request'),
   voting: {

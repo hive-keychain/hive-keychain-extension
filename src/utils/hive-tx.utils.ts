@@ -26,7 +26,9 @@ const setRpc = async (rpc: Rpc) => {
     rpc.uri === 'DEFAULT'
       ? (await KeychainApi.get('/hive/rpc')).data.rpc
       : rpc.uri;
-  HiveTxConfig.chain_id = rpc.chainId ?? '';
+  if (rpc.chainId) {
+    HiveTxConfig.chain_id = rpc.chainId;
+  }
 };
 
 const sendOperation = async (operations: Operation[], key: Key) => {
@@ -52,12 +54,7 @@ const createSignAndBroadcastTransaction = async (
       const signedTransactionFromLedger = await LedgerUtils.signTransaction(
         transaction,
         key,
-        HiveTxConfig.chain_id,
-      );
-      console.log(
-        hiveTransaction.addSignature(
-          signedTransactionFromLedger!.signatures[0],
-        ),
+        // HiveTxConfig.chain_id,
       );
     } catch (err) {
       Logger.error(err);
@@ -66,7 +63,6 @@ const createSignAndBroadcastTransaction = async (
   } else {
     try {
       const privateKey = PrivateKey.fromString(key!.toString());
-      console.log(hiveTransaction.sign(privateKey));
     } catch (err) {
       Logger.error(err);
       throw new Error('html_popup_error_while_signing_transaction');
@@ -126,6 +122,7 @@ export const HiveTxUtils = {
   createSignAndBroadcastTransaction,
   confirmTransaction,
   getData,
+  setRpc,
 };
 
 //TODO : When ready will replace HiveTx

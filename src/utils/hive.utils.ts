@@ -8,7 +8,6 @@ import {
   Price,
   PrivateKey,
   TransactionConfirmation,
-  UpdateProposalVotesOperation,
 } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import * as hive from '@hiveio/hive-js';
@@ -24,7 +23,6 @@ import {
 } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
-import { GovernanceUtils } from 'src/utils/governance.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -293,31 +291,6 @@ const signMessage = (message: string, privateKey: string) => {
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
 
-/* istanbul ignore next */
-const updateProposalVote = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-  vote: boolean,
-) => {
-  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
-  return await sendOperationWithConfirmation(
-    getClient().broadcast.sendOperations(
-      [
-        [
-          'update_proposal_votes',
-          {
-            voter: activeAccount.name!,
-            proposal_ids: [proposalId],
-            approve: vote,
-            extensions: [],
-          },
-        ] as UpdateProposalVotesOperation,
-      ],
-      PrivateKey.fromString(activeAccount.keys.active as string),
-    ),
-  );
-};
-
 const sendOperationWithConfirmation = async (
   transactionConfirmationPromise: Promise<TransactionConfirmation>,
 ) => {
@@ -350,16 +323,7 @@ const getDelayedTransactionInfo = (trxID: string) => {
     }, 500);
   });
 };
-/* istanbul ignore next */
-const getProposalDailyBudget = async () => {
-  return (
-    parseFloat(
-      (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
-        .toString()
-        .split(' ')[0],
-    ) / 100
-  );
-};
+
 /**
  * getClient().database.getDynamicGlobalProperties()
  */
@@ -394,8 +358,6 @@ const HiveUtils = {
   signMessage,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
-  getProposalDailyBudget,
-  updateProposalVote,
   getRewardBalance,
   getRecentClaims,
   getHivePrice,

@@ -180,7 +180,7 @@ const ProposalItem = ({
               <div>
                 <Icon name={Icons.ATTACH_MONEY} type={IconType.OUTLINED} />
                 <div>
-                  {FormatUtils.withCommas(proposal.dailyPay)}/
+                  {FormatUtils.withCommas(proposal.dailyPay.toString())}/
                   {chrome.i18n.getMessage('day')}
                 </div>
               </div>
