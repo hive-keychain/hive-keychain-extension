@@ -90,6 +90,18 @@ const getUpdateProposalVoteOperation = (
   ] as UpdateProposalVotesOperation;
 };
 
+const getFundedOption = (dailyPay: number, dailyBudget: number) => {
+  let fundedOption = FundedOption.NOT_FUNDED;
+  if (dailyBudget > 0) {
+    if (dailyBudget - dailyPay >= 0) {
+      fundedOption = FundedOption.TOTALLY_FUNDED;
+    } else {
+      fundedOption = FundedOption.PARTIALLY_FUNDED;
+    }
+  }
+  return fundedOption;
+};
+
 const getProposalList = async (accountName: string): Promise<Proposal[]> => {
   const listProposals = await HiveTxUtils.getData(
     'condenser_api.list_proposals',
@@ -106,42 +118,42 @@ const getProposalList = async (accountName: string): Promise<Proposal[]> => {
     .map((item: any) => item.proposal);
 
   let dailyBudget = await ProposalUtils.getProposalDailyBudget();
-  return listProposals.map((proposal: any) => {
-    const dailyPay = Asset.fromString(proposal.daily_pay);
-    let fundedOption = FundedOption.NOT_FUNDED;
-    if (dailyBudget > 0) {
-      if (dailyBudget - dailyPay.amount / 1000 >= 0) {
-        fundedOption = FundedOption.TOTALLY_FUNDED;
-      } else {
-        fundedOption = FundedOption.PARTIALLY_FUNDED;
-      }
-    }
 
-    dailyBudget = dailyBudget - parseFloat(proposal.daily_pay.amount) / 1000;
-    return {
-      id: proposal.id,
-      creator: proposal.creator,
-      proposalId: proposal.proposal_id,
-      subject: proposal.subject,
-      receiver: proposal.receiver,
+  const proposals: Proposal[] = [];
+  for (const p of listProposals) {
+    const dailyPay = Asset.fromString(p.daily_pay);
+    const fundedOption = ProposalUtils.getFundedOption(
+      dailyPay.amount,
+      dailyBudget,
+    );
+    proposals.push({
+      id: p.id,
+      creator: p.creator,
+      proposalId: p.proposal_id,
+      subject: p.subject,
+      receiver: p.receiver,
       dailyPay: dailyPay,
-      link: `https://peakd.com/proposals/${proposal.proposal_id}`,
-      startDate: moment(proposal.start_date),
-      endDate: moment(proposal.end_date),
+      link: `https://peakd.com/proposals/${p.proposal_id}`,
+      startDate: moment(p.start_date),
+      endDate: moment(p.end_date),
       totalVotes: `${FormatUtils.nFormatter(
         FormatUtils.toHP(
-          (parseFloat(proposal.total_votes) / 1000000).toString(),
+          (parseFloat(p.total_votes) / 1000000).toString(),
           store.getState().globalProperties.globals,
         ),
         2,
       )} HP`,
       voted:
         listProposalVotes.find(
-          (p: any) => p.proposal_id === proposal.proposal_id,
+          (votedProposal: any) => votedProposal.proposal_id === p.proposal_id,
         ) !== undefined,
       funded: fundedOption,
-    } as Proposal;
-  });
+    } as Proposal);
+
+    dailyBudget = dailyBudget - dailyPay.amount;
+  }
+
+  return proposals;
 };
 
 const isRequestingProposalVotes = async () => {
@@ -205,6 +217,7 @@ const ProposalUtils = {
   isRequestingProposalVotes,
   getUpdateProposalVoteOperation,
   getProposalDailyBudget,
+  getFundedOption,
 };
 
 export default ProposalUtils;
