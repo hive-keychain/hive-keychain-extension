@@ -204,7 +204,7 @@ describe('rpc.utils tests:\n', () => {
         timeout: 10000,
       });
     });
-    test('If the checked uri returns an error, an error will be thrown by the interceptor as "RPC NOK" and will return false', async () => {
+    test('Must throw error & return false', async () => {
       const error = new Error('RPC NOK');
       const spyLoggerError = jest.spyOn(Logger, 'error');
       const spyAxiosGet = jest
@@ -216,7 +216,7 @@ describe('rpc.utils tests:\n', () => {
         timeout: 10000,
       });
       expect(spyLoggerError).toBeCalledTimes(1);
-      expect(spyLoggerError).toBeCalledWith(error);
+      expect(spyLoggerError).toBeCalledWith('error', error);
     });
   });
 });
