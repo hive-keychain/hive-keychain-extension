@@ -69,7 +69,7 @@ const checkRpcStatus = async (uri: string) => {
       return response;
     },
     (error) => {
-      throw new Error('RPC NOK');
+      throw new Error('RPC NOK' + uri);
     },
   );
   try {
@@ -79,10 +79,9 @@ const checkRpcStatus = async (uri: string) => {
         timeout: 10000,
       },
     );
-
     return true;
   } catch (err) {
-    Logger.error(err);
+    Logger.error('error', err);
     return false;
   }
 };

@@ -13,7 +13,6 @@ import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-conf
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { AnalyticsPopupComponent } from '@popup/pages/app-container/analytics-popup/analytics-popup.component';
-import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -84,7 +83,6 @@ const App = ({
   }, [navigationStack]);
 
   useEffect(() => {
-    onActiveRpcRefreshed();
     if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
 
@@ -103,6 +101,7 @@ const App = ({
           (account: LocalAccount) => account.name === lastActiveAccountName,
         )!,
       );
+      loadGlobalProperties();
     }
   };
 
@@ -160,7 +159,8 @@ const App = ({
       for (const rpc of RpcUtils.getFullList().filter(
         (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
       )) {
-        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
+        const status = await RpcUtils.checkRpcStatus(rpc.uri);
+        if (status) {
           if (switchAuto) {
             setActiveRpc(rpc);
           } else {
@@ -283,9 +283,8 @@ const App = ({
   ) => {
     if (loading || !activeRpc) {
       return <LoadingComponent operations={loadingOperation} />;
-    } else if (displayProxySuggestion) {
-      return <ProxySuggestionComponent />;
-    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+    }
+    if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
         <div className="change-rpc-popup">
           <div className="message">
