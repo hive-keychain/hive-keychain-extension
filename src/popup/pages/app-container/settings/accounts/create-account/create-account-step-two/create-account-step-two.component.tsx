@@ -34,6 +34,7 @@ const CreateAccountStepTwo = ({
   addAccount,
   addToLoadingList,
   removeFromLoadingList,
+  navigateTo,
 }: PropsFromRedux) => {
   const emptyKeys = {
     owner: { public: '', private: '' },
@@ -168,20 +169,26 @@ const CreateAccountStepTwo = ({
       notPrimaryStorageUnderstanding
     ) {
       addToLoadingList('html_popup_creating_account');
-      const result = await AccountCreationUtils.createAccount(
-        creationType,
-        price,
-        accountName,
-        selectedAccount,
-        keys,
-      );
-      removeFromLoadingList('html_popup_creating_account');
-      if (result) {
-        setSuccessMessage('html_popup_create_account_successful');
-        addAccount(result as LocalAccount);
-        navigateTo(Screen.HOME_PAGE, true);
-      } else {
-        setErrorMessage('html_popup_create_account_failed');
+      try {
+        const result = await AccountCreationUtils.createAccount(
+          creationType,
+          price,
+          accountName,
+          selectedAccount,
+          keys,
+        );
+
+        if (result) {
+          setSuccessMessage('html_popup_create_account_successful');
+          addAccount(result as LocalAccount);
+          navigateTo(Screen.HOME_PAGE, true);
+        } else {
+          setErrorMessage('html_popup_create_account_failed');
+        }
+      } catch (err: any) {
+        setErrorMessage(err.message);
+      } finally {
+        removeFromLoadingList('html_popup_creating_account');
       }
     } else {
       setErrorMessage('html_popup_create_account_need_accept_terms_condition');

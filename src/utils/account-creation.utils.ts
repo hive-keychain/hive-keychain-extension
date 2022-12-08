@@ -1,8 +1,12 @@
-import { ChangeRecoveryAccountOperation, PrivateKey } from '@hiveio/dhive';
+import {
+  ChangeRecoveryAccountOperation,
+  Operation,
+  PrivateKey,
+} from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
-import HiveUtils from 'src/utils/hive.utils';
-import Logger from 'src/utils/logger.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 export enum AccountCreationType {
   USING_TICKET = 'USING_TICKET',
@@ -45,44 +49,39 @@ const createAccount = async (
   parentAccount: LocalAccount,
   keys: GeneratedKeys,
 ) => {
-  let transactionConfirmation = null;
-  try {
-    switch (creationType) {
-      case AccountCreationType.BUYING: {
-        transactionConfirmation = await createPayingAccount(
-          keys,
-          newUsername,
-          parentAccount,
-          price,
-        );
-        break;
-      }
-      case AccountCreationType.USING_TICKET: {
-        transactionConfirmation = await createAccountUsingTicket(
-          keys,
-          newUsername,
-          parentAccount,
-        );
-        break;
-      }
+  let success = null;
+  switch (creationType) {
+    case AccountCreationType.BUYING: {
+      success = await createPayingAccount(
+        keys,
+        newUsername,
+        parentAccount,
+        price,
+      );
+      break;
     }
-    if (transactionConfirmation !== undefined) {
-      return {
-        name: newUsername,
-        keys: {
-          active: keys.active.private,
-          activePubkey: keys.active.public,
-          posting: keys.posting.private,
-          postingPubkey: keys.posting.public,
-          memo: keys.memo.private,
-          memoPubkey: keys.memo.public,
-        },
-      } as LocalAccount;
-    } else {
-      return false;
+    case AccountCreationType.USING_TICKET: {
+      success = await createAccountUsingTicket(
+        keys,
+        newUsername,
+        parentAccount,
+      );
+      break;
     }
-  } catch (err: any) {
-    Logger.error('Error while creating account', err);
+  }
+  if (success) {
+    return {
+      name: newUsername,
+      keys: {
+        active: keys.active.private,
+        activePubkey: keys.active.public,
+        posting: keys.posting.private,
+        postingPubkey: keys.posting.public,
+        memo: keys.memo.private,
+        memoPubkey: keys.memo.public,
+      },
+    } as LocalAccount;
+  } else {
     return false;
   }
 };
@@ -92,23 +91,21 @@ const createAccountUsingTicket = (
   newUsername: string,
   parentAccount: LocalAccount,
 ) => {
-  const transactionConfirmation =
-    HiveUtils.getClient().broadcast.sendOperations(
+  return HiveTxUtils.sendOperation(
+    [
       [
-        [
-          'create_claimed_account',
-          {
-            creator: parentAccount.name!,
-            new_account_name: newUsername,
-            json_metadata: '{}',
-            extensions: [],
-            ...generateKeyObject(keys),
-          },
-        ],
+        'create_claimed_account',
+        {
+          creator: parentAccount.name!,
+          new_account_name: newUsername,
+          json_metadata: '{}',
+          extensions: [],
+          ...generateKeyObject(keys),
+        },
       ],
-      PrivateKey.fromString(parentAccount.keys.active as string),
-    );
-  return HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
+    ],
+    parentAccount.keys.active!,
+  );
 };
 
 const createPayingAccount = (
@@ -117,23 +114,21 @@ const createPayingAccount = (
   parentAccount: LocalAccount,
   price: number,
 ) => {
-  const transactionConfirmation =
-    HiveUtils.getClient().broadcast.sendOperations(
+  return HiveTxUtils.sendOperation(
+    [
       [
-        [
-          'account_create',
-          {
-            fee: `${price.toFixed(3)} HIVE`,
-            creator: parentAccount.name!,
-            new_account_name: newUsername,
-            json_metadata: '{}',
-            ...generateKeyObject(keys),
-          },
-        ],
-      ],
-      PrivateKey.fromString(parentAccount.keys.active as string),
-    );
-  return HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
+        'account_create',
+        {
+          fee: `${price.toFixed(3)} HIVE`,
+          creator: parentAccount.name!,
+          new_account_name: newUsername,
+          json_metadata: '{}',
+          ...generateKeyObject(keys),
+        },
+      ] as Operation,
+    ],
+    parentAccount.keys.active!,
+  );
 };
 
 const generateKeyObject = (keys: GeneratedKeys) => {
@@ -162,21 +157,19 @@ const setRecoveryAccountOperation = (
   newRecoveryAccount: string,
   ownerKey: string,
 ) => {
-  const transactionConfirmation =
-    HiveUtils.getClient().broadcast.sendOperations(
+  return HiveTxUtils.sendOperation(
+    [
       [
-        [
-          'change_recovery_account',
-          {
-            account_to_recover: accountName,
-            new_recovery_account: newRecoveryAccount,
-            extensions: [],
-          },
-        ] as ChangeRecoveryAccountOperation,
-      ],
-      PrivateKey.fromString(ownerKey as string),
-    );
-  return HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
+        'change_recovery_account',
+        {
+          account_to_recover: accountName,
+          new_recovery_account: newRecoveryAccount,
+          extensions: [],
+        },
+      ] as ChangeRecoveryAccountOperation,
+    ],
+    ownerKey as Key,
+  );
 };
 
 export const AccountCreationUtils = {
