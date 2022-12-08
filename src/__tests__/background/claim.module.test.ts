@@ -68,8 +68,8 @@ describe('claim.module tests:\n', () => {
         precision: 6,
       },
       rc_manabar: {
-        current_mana: '58990650660',
-        last_update_time: 1669382499,
+        current_mana: '58577278689', // '58990650660',
+        last_update_time: 1670427927, // 1669382499,
       },
       percentage: 100,
     };
@@ -116,6 +116,7 @@ describe('claim.module tests:\n', () => {
       );
     });
   });
+
   describe('Different local accounts:\n', () => {
     beforeEach(() => {
       mocks.getAccounts([accounts.extended]);
