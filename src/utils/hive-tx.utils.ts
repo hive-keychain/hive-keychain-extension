@@ -141,7 +141,11 @@ const getData = async (
   if (response.result) {
     return key ? response.result[key] : response.result;
   } else
-    throw new Error('html_popup_error_while_retrieving data from ' + method);
+    throw new Error(
+      `Error while retrieving data from ${method} : ${JSON.stringify(
+        response.error,
+      )}`,
+    );
 };
 export const HiveTxUtils = {
   sendOperation,

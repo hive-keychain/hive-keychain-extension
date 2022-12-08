@@ -27,6 +27,7 @@ import {
 } from '@interfaces/transaction.interface';
 import { store } from '@popup/store';
 import FormatUtils from 'src/utils/format.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -76,16 +77,15 @@ const getAccountTransactions = async (
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
 
     if (limit <= 0) return [[], 0];
-
-    const transactionsFromBlockchain =
-      await HiveUtils.getClient().database.getAccountHistory(
-        accountName,
-        start,
-        limit,
-        operationsBitmask,
-      );
+    const transactionsFromBlockchain = await TransactionUtils.getTransactions(
+      accountName,
+      start,
+      limit,
+      operationsBitmask[0],
+      operationsBitmask[1],
+    );
     const transactions = transactionsFromBlockchain
-      .map((e) => {
+      .map((e: any) => {
         let specificTransaction = null;
         switch (e[1].op[0]) {
           case 'transfer': {
@@ -239,7 +239,7 @@ const getAccountTransactions = async (
         return tr;
       })
       .sort(
-        (a, b) =>
+        (a: any, b: any) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
     if (start - NB_TRANSACTION_FETCHED < 0 && transactions.length > 1) {
@@ -258,7 +258,7 @@ const getAccountTransactions = async (
     Logger.error(e, e);
     return getAccountTransactions(
       accountName,
-      (e as any).jse_info.stack[0].data.sequence - 1,
+      (e as any).jse_info?.stack[0]?.data?.sequence - 1,
       memoKey,
     );
   }
@@ -271,16 +271,33 @@ const getLastTransaction = async (accountName: string) => {
     number,
     number,
   ];
-  const transactionsFromBlockchain =
-    await HiveUtils.getClient().database.getAccountHistory(
-      accountName,
-      -1,
-      1,
-      allOperationsBitmask,
-    );
+  const transactionsFromBlockchain = await TransactionUtils.getTransactions(
+    accountName,
+    -1,
+    1,
+    allOperationsBitmask[0],
+    allOperationsBitmask[1],
+  );
+
   return transactionsFromBlockchain.length > 0
     ? transactionsFromBlockchain[0][0]
     : -1;
+};
+
+const getTransactions = (
+  account: string,
+  start: number,
+  limit: number,
+  operationFilterLow: number,
+  operationFilterHigh: number,
+) => {
+  return HiveTxUtils.getData('condenser_api.get_account_history', [
+    account,
+    start,
+    limit,
+    operationFilterLow,
+    operationFilterHigh,
+  ]);
 };
 
 const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
@@ -326,6 +343,7 @@ const TransactionUtils = {
   decodeMemoIfNeeded,
   getExpirationTime,
   createTransaction,
+  getTransactions,
 };
 
 export default TransactionUtils;
