@@ -6,9 +6,7 @@ import {
   DynamicGlobalProperties,
   ExtendedAccount,
   Price,
-  TransactionConfirmation,
 } from '@hiveio/dhive';
-import { sleep } from '@hiveio/dhive/lib/utils';
 import * as hive from '@hiveio/hive-js';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import {
@@ -17,7 +15,6 @@ import {
 } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';
@@ -260,30 +257,6 @@ const signMessage = (message: string, privateKey: string) => {
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
 
-const sendOperationWithConfirmation = async (
-  transactionConfirmationPromise: Promise<TransactionConfirmation>,
-) => {
-  const transactionConfirmation = await transactionConfirmationPromise;
-  let transaction = null;
-  do {
-    transaction = await HiveUtils.getClient().transaction.findTransaction(
-      transactionConfirmation.id,
-    );
-    await sleep(500);
-  } while (['within_mempool', 'unknown'].includes(transaction.status));
-  if (
-    ['within_reversible_block', 'within_irreversible_block'].includes(
-      transaction.status,
-    )
-  ) {
-    Logger.info('Transaction confirmed');
-    return transactionConfirmation.id || true;
-  } else {
-    Logger.info(`Transaction failed with status: ${transaction.status}`);
-    return;
-  }
-};
-
 /* istanbul ignore next */
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
@@ -326,7 +299,6 @@ const HiveUtils = {
   decodeMemo,
   signMessage,
   getDelayedTransactionInfo,
-  sendOperationWithConfirmation,
   getRewardBalance,
   getRecentClaims,
   getHivePrice,

@@ -5,7 +5,6 @@ import {
   ExtendedAccount,
   Price,
   PrivateKey,
-  TransactionConfirmation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -18,6 +17,7 @@ import {
 import { ConversionUtils } from 'src/utils/conversion.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import { PowerUtils } from 'src/utils/power.utils';
@@ -537,8 +537,8 @@ describe('hive.utils tests:\n', () => {
           .fn()
           .mockResolvedValueOnce(transactionObjConfirmed));
       const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
+        HiveTxUtils,
+        'sendOperation',
       );
       const spyLoggerInfo = jest.spyOn(Logger, 'info');
       const activeAccountusingActivekey = {
@@ -620,8 +620,8 @@ describe('hive.utils tests:\n', () => {
         .fn()
         .mockReturnValueOnce(12));
       const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
+        HiveTxUtils,
+        'sendOperation',
       );
       const spyLoggerInfo = jest.spyOn(Logger, 'info');
       const activeAccountusingActivekey = {
@@ -692,8 +692,8 @@ describe('hive.utils tests:\n', () => {
           .fn()
           .mockResolvedValueOnce(transactionObjConfirmed));
       const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
+        HiveTxUtils,
+        'sendOperation',
       );
       const spyLoggerInfo = jest.spyOn(Logger, 'info');
       const activeAccountusingActivekey = {
@@ -747,8 +747,8 @@ describe('hive.utils tests:\n', () => {
         .mockResolvedValueOnce(transactionObjConfirmed);
       const spyLoggerInfo = jest.spyOn(Logger, 'info');
       const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
+        HiveTxUtils,
+        'sendOperation',
       );
       const result = await PowerUtils.powerUp(
         utilsT.userData.username,
@@ -785,8 +785,8 @@ describe('hive.utils tests:\n', () => {
         .mockResolvedValueOnce(transactionObjConfirmed);
       const spyLoggerInfo = jest.spyOn(Logger, 'info');
       const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
+        HiveTxUtils,
+        'sendOperation',
       );
       const result = await PowerUtils.powerDown(
         utilsT.userData.username,
@@ -907,47 +907,6 @@ describe('hive.utils tests:\n', () => {
           }),
         );
       }
-    });
-  });
-
-  describe('sendOperationWithConfirmation tests:\n', () => {
-    let transactionObj: TransactionConfirmation = {
-      id: '002299xxdass990',
-      block_num: 1990,
-      trx_num: 1234,
-      expired: false,
-    };
-    const spyLogger = jest.spyOn(Logger, 'info');
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test('If findTransaction returns a transaction object with status="within_reversible_block" must return true', async () => {
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: transactionObj.id,
-          status: 'within_reversible_block',
-        });
-      const result = await HiveUtils.sendOperationWithConfirmation(
-        Promise.resolve(transactionObj),
-      );
-      expect(result).toBeTruthy();
-      expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith('Transaction confirmed');
-    });
-    test('If findTransaction returns a transaction object with status!="within_reversible_block" must return false', async () => {
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: transactionObj.id,
-          status: 'error',
-        });
-      const result = await HiveUtils.sendOperationWithConfirmation(
-        Promise.resolve(transactionObj),
-      );
-      expect(result).toBe(undefined);
-      expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith('Transaction failed with status: error');
     });
   });
 });
