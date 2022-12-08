@@ -1,18 +1,11 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import { HiveEngineUtilsV2 } from 'src/utils/hive-engine-v2.utils';
-
-type SendTokenProps = {
-  username: string;
-  currency: string;
-  to: string;
-  amount: string;
-  memo: string;
-};
 
 const stakeToken = (
   to: string,
@@ -30,6 +23,7 @@ const stakeToken = (
       CustomJsonUtils.getCustomJsonOperation(
         json,
         activeAccount,
+        KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
@@ -52,6 +46,7 @@ const unstakeToken = (
       CustomJsonUtils.getCustomJsonOperation(
         json,
         activeAccount,
+        KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
@@ -75,6 +70,7 @@ const delegateToken = (
       CustomJsonUtils.getCustomJsonOperation(
         json,
         activeAccount,
+        KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
@@ -98,6 +94,7 @@ const cancelDelegationToken = (
       CustomJsonUtils.getCustomJsonOperation(
         json,
         activeAccount,
+        KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
@@ -194,6 +191,7 @@ const sendToken = (
       CustomJsonUtils.getCustomJsonOperation(
         json,
         activeAccount,
+        KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],

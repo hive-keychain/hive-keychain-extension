@@ -171,35 +171,45 @@ const RCDelegations = ({
             ? 'html_popup_cancel_delegate_rc_operation'
             : 'html_popup_delegate_rc_operation',
         );
-        let success = false;
+        try {
+          let success = false;
 
-        success = await RcDelegationsUtils.sendDelegation(
-          RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),
-          username,
-          activeAccount,
-        );
+          success = await RcDelegationsUtils.sendDelegation(
+            RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),
+            username,
+            activeAccount,
+          );
 
-        removeFromLoadingList(
-          isCancel
-            ? 'html_popup_cancel_delegate_rc_operation'
-            : 'html_popup_delegate_rc_operation',
-        );
+          removeFromLoadingList(
+            isCancel
+              ? 'html_popup_cancel_delegate_rc_operation'
+              : 'html_popup_delegate_rc_operation',
+          );
 
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(username, activeAccount);
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await TransferUtils.saveFavoriteUser(username, activeAccount);
 
-          if (!isCancel) {
-            setSuccessMessage('popup_html_rc_delegation_successful', [
-              `@${username}`,
-            ]);
+            if (!isCancel) {
+              setSuccessMessage('popup_html_rc_delegation_successful', [
+                `@${username}`,
+              ]);
+            } else {
+              setSuccessMessage('popup_html_cancel_rc_delegation_successful', [
+                `@${username}`,
+              ]);
+            }
           } else {
-            setSuccessMessage('popup_html_cancel_rc_delegation_successful', [
-              `@${username}`,
-            ]);
+            setErrorMessage('popup_html_rc_delegation_failed');
           }
-        } else {
-          setErrorMessage('popup_html_rc_delegation_failed');
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList(
+            isCancel
+              ? 'html_popup_cancel_delegate_rc_operation'
+              : 'html_popup_delegate_rc_operation',
+          );
         }
       },
     });
