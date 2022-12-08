@@ -4,7 +4,6 @@ export const DefaultRpcs: Rpc[] = [
   { uri: 'https://api.hive.blog/', testnet: false },
   { uri: 'https://api.deathwing.me', testnet: false },
   { uri: 'https://api.openhive.network/', testnet: false },
-  { uri: 'https://api.hivekings.com/', testnet: false },
   { uri: 'https://anyx.io/', testnet: false },
   { uri: 'https://api.pharesim.me/', testnet: false },
   { uri: 'https://hived.emre.sh', testnet: false },
@@ -14,5 +13,4 @@ export const DefaultRpcs: Rpc[] = [
   { uri: 'https://techcoderx.com', testnet: false },
   { uri: 'https://hive-api.arcange.eu/', testnet: false },
   { uri: 'https://hived.privex.io/', testnet: false },
-  { uri: 'https://hive.roelandp.nl', testnet: false },
 ];
