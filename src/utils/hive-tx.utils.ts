@@ -1,4 +1,5 @@
 import KeychainApi from '@api/keychain';
+import Hive from '@engrave/ledger-app-hive';
 import { Operation } from '@hiveio/dhive';
 import {
   HiveTxBroadcastErrorResponse,
@@ -43,19 +44,39 @@ const sendOperation = async (operations: Operation[], key: Key) => {
   }
 };
 
+const createTransaction = async (operations: Operation[]) => {
+  let hiveTransaction = new HiveTransaction();
+  return await hiveTransaction.create(operations);
+};
+
 const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
+  signHash?: boolean,
 ): Promise<string | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations);
   if (KeysUtils.isUsingLedger(key)) {
     try {
-      const signedTransactionFromLedger = await LedgerUtils.signTransaction(
-        transaction,
-        key,
-        // HiveTxConfig.chain_id,
-      );
+      let signedTransactionFromLedger;
+      if (signHash) {
+        const tx = await HiveTxUtils.createTransaction(operations);
+        const digest = Hive.getTransactionDigest(tx);
+        console.log(`Digest: ${digest}`);
+        const signature = await LedgerUtils.signHash(
+          digest,
+          `48'/13'/0'/0'/0'`,
+        );
+        hiveTransaction.addSignature(signature);
+      } else {
+        signedTransactionFromLedger = await LedgerUtils.signTransaction(
+          transaction,
+          key,
+        );
+        hiveTransaction.addSignature(
+          signedTransactionFromLedger!.signatures[0],
+        );
+      }
     } catch (err) {
       Logger.error(err);
       throw err;
@@ -63,6 +84,7 @@ const createSignAndBroadcastTransaction = async (
   } else {
     try {
       const privateKey = PrivateKey.fromString(key!.toString());
+      hiveTransaction.sign(privateKey);
     } catch (err) {
       Logger.error(err);
       throw new Error('html_popup_error_while_signing_transaction');
@@ -123,6 +145,7 @@ export const HiveTxUtils = {
   confirmTransaction,
   getData,
   setRpc,
+  createTransaction,
 };
 
 //TODO : When ready will replace HiveTx

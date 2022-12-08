@@ -148,6 +148,20 @@ const signTransaction = async (
   }
 };
 
+const signHash = async (digest: string, key: Key) => {
+  let ledger = await LedgerUtils.getLedgerInstance();
+  if (!ledger) throw new Error('html_ledger_error_while_connecting');
+  try {
+    return ledger.signHash(
+      digest,
+      LedgerUtils.getPathFromString(key!.toString()),
+    );
+  } catch (err: any) {
+    Logger.error(err);
+    throw new Error('html_ledger_error_while_signing');
+  }
+};
+
 const getPathFromString = (s: string) => {
   return s.replace('#', '');
 };
@@ -162,4 +176,5 @@ export const LedgerUtils = {
   getLedgerInstance,
   signTransaction,
   getPathFromString,
+  signHash,
 };
