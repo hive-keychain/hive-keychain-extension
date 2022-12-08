@@ -11,6 +11,9 @@ import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import afterTests from 'src/__tests__/utils-for-testing/setups/afterTests';
 import { actAdvanceTime } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
+//TESTS NOTE:
+//  - proxy-suggestion.component tests was removed.
+//  - remains this file to reproduce tests in the future if needed.
 
 const i18n = {
   get: (key: string, extra?: any) =>
