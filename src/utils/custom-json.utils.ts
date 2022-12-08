@@ -11,6 +11,7 @@ const send = async (
   return HiveTxUtils.sendOperation(
     [CustomJsonUtils.getCustomJsonOperation(json, activeAccount, mainnet)],
     activeAccount.keys.active!,
+    true,
   );
 };
 

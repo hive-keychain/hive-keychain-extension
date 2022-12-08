@@ -32,10 +32,15 @@ const setRpc = async (rpc: Rpc) => {
   }
 };
 
-const sendOperation = async (operations: Operation[], key: Key) => {
+const sendOperation = async (
+  operations: Operation[],
+  key: Key,
+  useSignHash?: boolean,
+) => {
   const transactionId = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
+    useSignHash,
   );
   if (transactionId) {
     return await HiveTxUtils.confirmTransaction(transactionId);
@@ -62,7 +67,6 @@ const createSignAndBroadcastTransaction = async (
       if (signHash) {
         const tx = await HiveTxUtils.createTransaction(operations);
         const digest = Hive.getTransactionDigest(tx);
-        console.log(`Digest: ${digest}`);
         const signature = await LedgerUtils.signHash(
           digest,
           `48'/13'/0'/0'/0'`,
