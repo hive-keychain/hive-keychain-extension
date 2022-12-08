@@ -12,10 +12,9 @@ const sendData = async (request: string, domain: string) => {
 
   const baseUri = `https://www.google-analytics.com/${
     process.env.GOOGLE_ANALYTICS_DEV_MODE ? 'debug/' : ''
-  }mp/collect?api_secret=${process.env.ANALYTICS_API_SECRET}&measurement_id=${
-    process.env.GOOGLE_ANALYTICS_TAG_ID
-  }`;
-
+  }mp/collect?api_secret=${
+    process.env.ANALYTICS_API_SECRET || 'odAmImcoTiqGtaKqD71mjQ'
+  }&measurement_id=${process.env.GOOGLE_ANALYTICS_TAG_ID || 'G-1LRCTFLVBH'}`;
   const payload = {
     client_id: gaClientId,
     non_personalized_ads: false,
@@ -36,6 +35,7 @@ const sendData = async (request: string, domain: string) => {
       body: JSON.stringify(payload),
       headers: { 'content-type': 'application/json' },
     });
+    Logger.log('done');
   } catch (e) {
     Logger.error('Error sending to GA', e);
   }

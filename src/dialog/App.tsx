@@ -16,9 +16,13 @@ const App = () => {
       window.dataLayer.push(arguments); // eslint-disable-line
     };
     window.gtag('js', new Date());
-    window.gtag('config', process.env.GOOGLE_ANALYTICS_TAG_ID, {
-      page_path: '/popup',
-    });
+    window.gtag(
+      'config',
+      process.env.GOOGLE_ANALYTICS_TAG_ID || 'G-1LRCTFLVBH',
+      {
+        page_path: '/popup',
+      },
+    );
     window.gtag('set', 'checkProtocolTask', () => {}); // Disables file protocol checking.
 
     window.gtag('event', 'navigation', {
