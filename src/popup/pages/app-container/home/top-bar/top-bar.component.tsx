@@ -4,7 +4,10 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -29,6 +32,7 @@ const TopBar = ({
   removeFromLoadingList,
   loadGlobalProperties,
   setErrorMessage,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -68,15 +72,41 @@ const TopBar = ({
       return;
     }
     addToLoadingList('popup_html_claiming_rewards');
-    const claimSuccessful = await HiveUtils.claimRewards(
-      activeAccount,
-      activeAccount.account.reward_hive_balance,
-      activeAccount.account.reward_hbd_balance,
-      activeAccount.account.reward_vesting_balance,
-    );
-    removeFromLoadingList('popup_html_claiming_rewards');
-    if (claimSuccessful) {
+    try {
+      const claimSuccessful = await HiveUtils.claimRewards(
+        activeAccount,
+        activeAccount.account.reward_hive_balance,
+        activeAccount.account.reward_hbd_balance,
+        activeAccount.account.reward_vesting_balance,
+      );
       refreshActiveAccount();
+      if (claimSuccessful) {
+        const rewardHp =
+          FormatUtils.withCommas(
+            FormatUtils.toHP(
+              activeAccount.account.reward_vesting_balance
+                .toString()
+                .replace('VESTS', ''),
+              globalProperties.globals,
+            ).toString(),
+          ) + ' HP';
+        let claimedResources = [
+          activeAccount.account.reward_hive_balance,
+          activeAccount.account.reward_hbd_balance,
+          rewardHp,
+        ].filter(
+          (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
+        );
+        setSuccessMessage('popup_html_claim_success', [
+          claimedResources.join(', '),
+        ]);
+      } else {
+        setErrorMessage('popup_html_claim_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_claiming_rewards');
     }
   };
 
@@ -130,6 +160,7 @@ const connector = connect(mapStateToProps, {
   removeFromLoadingList,
   loadGlobalProperties,
   setErrorMessage,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

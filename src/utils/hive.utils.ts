@@ -6,23 +6,17 @@ import {
   DynamicGlobalProperties,
   ExtendedAccount,
   Price,
-  PrivateKey,
   TransactionConfirmation,
 } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import * as hive from '@hiveio/hive-js';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/actions/message.actions';
-import { store } from '@popup/store';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
-import FormatUtils from 'src/utils/format.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -210,45 +204,20 @@ const claimRewards = async (
   rewardHBD: string | Asset,
   rewardVests: string | Asset,
 ): Promise<boolean> => {
-  try {
-    await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [
-          [
-            'claim_reward_balance',
-            {
-              account: activeAccount.name,
-              reward_hive: rewardHive,
-              reward_hbd: rewardHBD,
-              reward_vests: rewardVests,
-            },
-          ] as ClaimRewardBalanceOperation,
-        ],
-        PrivateKey.fromString(activeAccount.keys.posting as string),
-      ),
-    );
-    const rewardHp =
-      FormatUtils.withCommas(
-        FormatUtils.toHP(
-          rewardVests.toString().replace('VESTS', ''),
-          store.getState().globalProperties.globals,
-        ).toString(),
-      ) + ' HP';
-    let claimedResources = [rewardHBD, rewardHive, rewardHp].filter(
-      (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
-    );
-
-    store.dispatch(
-      setSuccessMessage('popup_html_claim_success', [
-        claimedResources.join(', '),
-      ]),
-    );
-    return true;
-  } catch (err: any) {
-    Logger.error('Error while claiming rewards', err.toString());
-    store.dispatch(setErrorMessage('popup_html_claim_error'));
-    return false;
-  }
+  return await HiveTxUtils.sendOperation(
+    [
+      [
+        'claim_reward_balance',
+        {
+          account: activeAccount.name,
+          reward_hive: rewardHive,
+          reward_hbd: rewardHBD,
+          reward_vests: rewardVests,
+        },
+      ] as ClaimRewardBalanceOperation,
+    ],
+    activeAccount.keys.posting!,
+  );
 };
 
 /* istanbul ignore next */
