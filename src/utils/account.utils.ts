@@ -16,7 +16,6 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 import MkUtils from 'src/utils/mk.utils';
-import HiveUtils from './hive.utils';
 import LocalStorageUtils from './localStorage.utils';
 
 enum AccountErrorMessages {
@@ -403,40 +402,50 @@ const doesAccountExist = async (username: string) => {
   return (await AccountUtils.getAccount(username)).length > 0;
 };
 /* istanbul ignore next */
-const getExtendedAccount = async (username: string) => {
-  return (
-    await HiveTxUtils.getData('condenser_api.get_accounts', [[username]])
-  )[0];
+const getExtendedAccount = async (
+  username: string,
+): Promise<ExtendedAccount> => {
+  return (await AccountUtils.getExtendedAccounts([username]))[0];
 };
+
+const getExtendedAccounts = async (
+  usernames: string[],
+): Promise<ExtendedAccount[]> => {
+  return await HiveTxUtils.getData('condenser_api.get_accounts', [usernames]);
+};
+
 /**
  * getClient().database.getAccounts([username])
  */
-const getAccount = async (username: string) => {
-  return HiveUtils.getClient().database.getAccounts([username]);
+const getAccount = async (username: string): Promise<ExtendedAccount[]> => {
+  return HiveTxUtils.getData('condenser_api.get_accounts', [[username]]);
 };
-/**
- * HiveUtils.getClient().rc.getRCMana(username)
- */
 const getRCMana = async (username: string) => {
-  const result = await HiveUtils.getClient().rc.call('find_rc_accounts', {
+  const result = await HiveTxUtils.getData('rc_api.find_rc_accounts', {
     accounts: [username],
   });
 
-  const mana = await HiveUtils.getClient().rc.getRCMana(username);
+  let manabar = result.rc_accounts[0].rc_manabar;
+  const max_mana = Number(result.rc_accounts[0].max_rc);
+
+  const delta: number = Date.now() / 1000 - manabar.last_update_time;
+  let current_mana = Number(manabar.current_mana) + (delta * max_mana) / 432000;
+  let percentage: number = Math.round((current_mana / max_mana) * 100);
+
+  if (!isFinite(percentage) || percentage < 0) {
+    percentage = 0;
+  } else if (percentage > 100) {
+    percentage = 100;
+  }
+
   return {
     ...result.rc_accounts[0],
-    ...mana,
-    percentage: mana.percentage / 100.0,
+    percentage: percentage,
   };
-};
-
-const getExtendedAccounts = async (usernames: string[]) => {
-  return await HiveUtils.getClient().database.getAccounts(usernames);
 };
 
 const addKeyFromLedger = async (username: string, keys: Keys) => {
   const mk = await MkUtils.getMkFromLocalStorage();
-  console.log(mk);
   let accounts = await AccountUtils.getAccountsFromLocalStorage(mk);
   let account = accounts.find(
     (account: LocalAccount) => account.name === username,
@@ -482,9 +491,9 @@ const AccountUtils = {
   getPowerDown,
   doesAccountExist,
   getExtendedAccount,
+  getExtendedAccounts,
   AccountErrorMessages,
   isAccountNameAlreadyExisting,
-  getExtendedAccounts,
   getRCMana,
   getAccount,
   generateQRCode,
