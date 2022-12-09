@@ -42,8 +42,9 @@ version=${version//'version: '/''}
 version=${version//','/''}
 version=`echo ${version} | xargs` 
 
-zip -q "_releases/${version}-firefox.zip" dist-prod-firefox/*
-cd dist-prod
+cd dist-prod-firefox
+zip -qr "../_releases/${version}-firefox.zip" *
+cd ../dist-prod
 zip -qr "../_releases/${version}-chromium.zip" *
 cd ../dist-beta
 zip -qr "../_releases/${version}-chromium-beta.zip" *
