@@ -5,7 +5,7 @@ import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import { HiveEngineUtilsV2 } from 'src/utils/hive-engine-v2.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 
 const stakeToken = (
   to: string,
@@ -18,7 +18,7 @@ const stakeToken = (
     contractAction: 'stake',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtilsV2.sendOperation(
+  return HiveEngineUtils.sendOperation(
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
@@ -41,7 +41,7 @@ const unstakeToken = (
     contractAction: 'unstake',
     contractPayload: { symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtilsV2.sendOperation(
+  return HiveEngineUtils.sendOperation(
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
@@ -65,7 +65,7 @@ const delegateToken = (
     contractAction: 'delegate',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtilsV2.sendOperation(
+  return HiveEngineUtils.sendOperation(
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
@@ -89,7 +89,7 @@ const cancelDelegationToken = (
     contractAction: 'undelegate',
     contractPayload: { from: from, symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtilsV2.sendOperation(
+  return HiveEngineUtils.sendOperation(
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
@@ -186,7 +186,7 @@ const sendToken = (
       memo: memo,
     },
   };
-  return HiveEngineUtilsV2.sendOperation(
+  return HiveEngineUtils.sendOperation(
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,

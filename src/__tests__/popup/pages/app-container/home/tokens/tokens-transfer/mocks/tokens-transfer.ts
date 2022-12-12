@@ -1,6 +1,6 @@
 import AccountUtils from 'src/utils/account.utils';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
-import { HiveEngineUtilsV2 } from 'src/utils/hive-engine-v2.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -147,7 +147,7 @@ const extraMocks = {
   tryConfirmTransaction: (
     result: any, // TODO : Fix any
   ) =>
-    (HiveEngineUtilsV2.tryConfirmTransaction = jest
+    (HiveEngineUtils.tryConfirmTransaction = jest
       .fn()
       .mockResolvedValue(result)),
 };

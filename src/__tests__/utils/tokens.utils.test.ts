@@ -1,5 +1,5 @@
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import { HiveEngineUtilsV2 } from 'src/utils/hive-engine-v2.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 jest.setTimeout(50000);
 afterEach(() => {
   jest.clearAllMocks();
@@ -23,9 +23,9 @@ describe('tokens.utils tests:\n', () => {
   describe('tryConfirmTransaction tests;\n', () => {
     test('If transaction gets confirmed, must return { confirmed:true, error:null }', async () => {
       const spyGetDelayedTransactionInfo = jest
-        .spyOn(HiveEngineUtilsV2, 'getDelayedTransactionInfo')
+        .spyOn(HiveEngineUtils, 'getDelayedTransactionInfo')
         .mockResolvedValueOnce(fakeTransactionResponse);
-      const result = await HiveEngineUtilsV2.tryConfirmTransaction(
+      const result = await HiveEngineUtils.tryConfirmTransaction(
         fakeTransactionResponse.transactionId,
       );
       expect(result).toEqual({
@@ -43,9 +43,9 @@ describe('tokens.utils tests:\n', () => {
       const error = { name: 'Fatality Error.' };
       fakeTransactionResponse.logs = JSON.stringify({ errors: [error] });
       const spyGetDelayedTransactionInfo = jest
-        .spyOn(HiveEngineUtilsV2, 'getDelayedTransactionInfo')
+        .spyOn(HiveEngineUtils, 'getDelayedTransactionInfo')
         .mockResolvedValueOnce(fakeTransactionResponse);
-      const result = await HiveEngineUtilsV2.tryConfirmTransaction(
+      const result = await HiveEngineUtils.tryConfirmTransaction(
         fakeTransactionResponse.transactionId,
       );
       expect(result).toEqual({
@@ -62,9 +62,9 @@ describe('tokens.utils tests:\n', () => {
     test('If transaction gets never confirmed must return { confirmed:false, error: null }', async () => {
       const iterationsOnGetDelayed = 20;
       const spyGetDelayedTransactionInfo = jest
-        .spyOn(HiveEngineUtilsV2, 'getDelayedTransactionInfo')
+        .spyOn(HiveEngineUtils, 'getDelayedTransactionInfo')
         .mockResolvedValue(null);
-      const result = await HiveEngineUtilsV2.tryConfirmTransaction(
+      const result = await HiveEngineUtils.tryConfirmTransaction(
         fakeTransactionResponse.transactionId,
       );
       expect(result).toEqual({
@@ -87,7 +87,7 @@ describe('tokens.utils tests:\n', () => {
       HiveEngineConfigUtils.getApi().getTransactionInfo = jest
         .fn()
         .mockImplementation(() => Promise.resolve(fakeTransactionResponse));
-      const result = await HiveEngineUtilsV2.getDelayedTransactionInfo(
+      const result = await HiveEngineUtils.getDelayedTransactionInfo(
         fakeTransactionResponse.transactionId,
       );
       expect(result).toEqual(fakeTransactionResponse);
@@ -96,7 +96,7 @@ describe('tokens.utils tests:\n', () => {
       HiveEngineConfigUtils.getApi().getTransactionInfo = jest
         .fn()
         .mockImplementation(() => Promise.resolve(null));
-      const result = await HiveEngineUtilsV2.getDelayedTransactionInfo(
+      const result = await HiveEngineUtils.getDelayedTransactionInfo(
         fakeTransactionResponse.transactionId,
       );
       expect(result).toBe(null);

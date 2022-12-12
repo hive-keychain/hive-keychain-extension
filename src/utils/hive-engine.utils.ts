@@ -15,7 +15,7 @@ const sendOperation = async (
   );
 
   if (transactionId) {
-    return await HiveEngineUtilsV2.tryConfirmTransaction(transactionId);
+    return await HiveEngineUtils.tryConfirmTransaction(transactionId);
   } else {
     return { broadcasted: false, confirmed: false };
   }
@@ -25,7 +25,7 @@ const tryConfirmTransaction = (trxId: string): Promise<TransactionStatus> => {
   let result: any;
   return new Promise(async (fulfill, reject) => {
     for (let i = 0; i < 20; i++) {
-      result = await HiveEngineUtilsV2.getDelayedTransactionInfo(trxId);
+      result = await HiveEngineUtils.getDelayedTransactionInfo(trxId);
       if (result != null) break;
     }
 
@@ -51,7 +51,7 @@ const getDelayedTransactionInfo = (trxID: string) => {
   });
 };
 
-export const HiveEngineUtilsV2 = {
+export const HiveEngineUtils = {
   getDelayedTransactionInfo,
   tryConfirmTransaction,
   sendOperation,

@@ -1,5 +1,5 @@
 import AccountUtils from 'src/utils/account.utils';
-import { HiveEngineUtilsV2 } from 'src/utils/hive-engine-v2.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
@@ -22,7 +22,7 @@ const mocks = {
   saveTransferRecipient: () =>
     (TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined)),
   tryConfirmTransaction: (result: FakeOperationResult) =>
-    (HiveEngineUtilsV2.tryConfirmTransaction = jest
+    (HiveEngineUtils.tryConfirmTransaction = jest
       .fn()
       .mockResolvedValue(tokenOperation.operationResult[result])),
 };
