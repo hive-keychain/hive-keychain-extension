@@ -1,6 +1,6 @@
 import { Transfer } from '@interfaces/transaction.interface';
 import { store } from '@popup/store';
-import HiveUtils from 'src/utils/hive.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
@@ -10,7 +10,7 @@ global.chrome = chrome;
 jest.setTimeout(50000);
 describe('transaction.utils tests:\n', () => {
   beforeEach(() => {
-    HiveUtils.setRpc(rpc.fake);
+    HiveTxUtils.setRpc(rpc.fake);
   });
   describe('getAccountTransactions tests:\n', () => {
     const callingData = {
@@ -26,10 +26,9 @@ describe('transaction.utils tests:\n', () => {
     test('Getting data from an account that has transfers, must return a new sorted array with added fields', async () => {
       const showOutPutData = false;
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryResponse));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryResponse));
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
@@ -45,10 +44,9 @@ describe('transaction.utils tests:\n', () => {
     });
     test('Getting data from an account that has no transfers, must return [[], start]', async () => {
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce([]));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce([]));
       expect(
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
@@ -62,12 +60,9 @@ describe('transaction.utils tests:\n', () => {
     test('if an error occurs(wrong transfers data received, missing proper format in .op), must call Logger', async () => {
       const spyLoggerError = jest.spyOn(Logger, 'error');
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(
-            utilsT.fakeGetAccountHistoryWrongDataResponse,
-          ));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryWrongDataResponse));
       try {
         expect(
           await TransactionUtils.getAccountTransactions(
@@ -87,10 +82,9 @@ describe('transaction.utils tests:\n', () => {
     });
     test('Getting one transaction with id(0x40), must return the expected output bellow', async () => {
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
       expect(
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
@@ -104,12 +98,11 @@ describe('transaction.utils tests:\n', () => {
     test('Must return the expected results, for the rest of cases', async () => {
       const showResults = false;
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(
-            utilsT.fakeGetAccountHistoryResponseAllOtherTypes,
-          ));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(
+          utilsT.fakeGetAccountHistoryResponseAllOtherTypes,
+        ));
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
@@ -130,10 +123,9 @@ describe('transaction.utils tests:\n', () => {
 
   describe('getLastTransaction tests:\n', () => {
     test('Querying an account with transactions, must return the last transaction number', async () => {
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
       expect(
         await TransactionUtils.getLastTransaction(utilsT.userData.username),
       ).toBe(1);
@@ -141,10 +133,9 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockRestore();
     });
     test('Querying an account with no transactions, must return -1', async () => {
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce([]));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce([]));
       expect(
         await TransactionUtils.getLastTransaction(utilsT.userData.username),
       ).toBe(-1);

@@ -1,6 +1,6 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import moment from 'moment';
-import HiveUtils from 'src/utils/hive.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
@@ -10,11 +10,11 @@ afterEach(() => {
 });
 describe('proposal.utils tests:\n', () => {
   beforeEach(() => {
-    HiveUtils.setRpc(rpc.fake);
+    HiveTxUtils.setRpc(rpc.fake);
   });
   describe('hasVotedForProposal tests:\n', () => {
     test('Must return true if voted', async () => {
-      HiveUtils.getClient().database.call = jest
+      HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValue(proposal.fakeVotedAccountResponse);
       const account = { name: 'theghost1980' } as ActiveAccount;
@@ -23,7 +23,7 @@ describe('proposal.utils tests:\n', () => {
     });
 
     test('Must return false if not voted', async () => {
-      HiveUtils.getClient().database.call = jest
+      HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValue(proposal.fakeVotedAccountResponse);
       const account = { name: 'no_voted_acount' } as ActiveAccount;
@@ -34,7 +34,7 @@ describe('proposal.utils tests:\n', () => {
 
   describe('getProposalList tests:\n', () => {
     test('Passing a user that hasnt voted on any proposal, must return a list of proposal with a field false on each one', async () => {
-      HiveUtils.getClient().database.call = jest
+      HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeProposalListResponse)
         .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);
@@ -71,7 +71,7 @@ describe('proposal.utils tests:\n', () => {
         },
       ];
 
-      HiveUtils.getClient().database.call = jest
+      HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValueOnce(withKeyChainProposal)
         .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);

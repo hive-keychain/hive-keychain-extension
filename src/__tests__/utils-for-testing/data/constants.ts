@@ -3,6 +3,7 @@ import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -23,7 +24,7 @@ export const toOverWriteFuntions: any = {
   getAccount: () => (AccountUtils.getExtendedAccount = jest.fn()),
   getExtendedAccount: () => (AccountUtils.getAccount = jest.fn()),
   checkRpcStatus: () => (RpcUtils.checkRpcStatus = jest.fn()),
-  setRpc: () => (HiveUtils.setRpc = jest.fn()),
+  setRpc: () => (HiveTxUtils.setRpc = jest.fn()),
   hasStoredAccounts: () => (AccountUtils.hasStoredAccounts = jest.fn()),
   getMkFromLocalStorage: () => (MkUtils.getMkFromLocalStorage = jest.fn()),
   getAccountsFromLocalStorage: () =>
@@ -33,8 +34,7 @@ export const toOverWriteFuntions: any = {
   getAccountValue: () => (AccountUtils.getAccountValue = jest.fn()),
   hasReward: () => (ActiveAccountUtils.hasReward = jest.fn()),
   //TODO fix these 2
-  getVestingDelegations: () =>
-    (HiveUtils.getClient().database.getVestingDelegations = jest.fn()),
+  getVestingDelegations: () => (HiveTxUtils.getData = jest.fn()),
   getDelegators: () => (KeychainApi.get = jest.fn()),
   //TIL here
   getAccountTransactions: () =>

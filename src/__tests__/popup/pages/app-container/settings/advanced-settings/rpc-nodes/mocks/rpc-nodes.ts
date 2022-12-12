@@ -1,5 +1,5 @@
 import { Icons } from '@popup/icons.enum';
-import HiveUtils from 'src/utils/hive.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -103,7 +103,7 @@ const methods = {
 };
 
 const extraMocks = {
-  setRpc: (HiveUtils.setRpc = jest.fn()),
+  setRpc: (HiveTxUtils.setRpc = jest.fn()),
 };
 
 export default {

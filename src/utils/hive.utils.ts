@@ -1,9 +1,6 @@
-import KeychainApi from '@api/keychain';
 import {
   Asset,
   ClaimRewardBalanceOperation,
-  Client,
-  DynamicGlobalProperties,
   ExtendedAccount,
   Price,
 } from '@hiveio/dhive';
@@ -13,7 +10,6 @@ import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
-import { Rpc } from 'src/interfaces/rpc.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -21,26 +17,12 @@ const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
 const HIVE_100_PERCENT = 10000;
 
-// let client = new Client(DEFAULT_RPC);
-let client: Client;
-
-const getClient = (): Client => {
-  return client;
-};
-const setRpc = async (rpc: Rpc) => {
-  client = new Client(
-    rpc.uri === 'DEFAULT'
-      ? (await KeychainApi.get('/hive/rpc')).data.rpc
-      : rpc.uri,
-  );
-};
-
 const getAccountPrice = async () => {
-  return Asset.fromString(
-    (
-      await getClient().database.getChainProperties()
-    ).account_creation_fee.toString(),
-  ).amount;
+  const price = await HiveTxUtils.getData(
+    'condenser_api.get_chain_properties',
+    [],
+  );
+  return Asset.fromString(price.account_creation_fee.toString()).amount;
 };
 
 const getVP = (account: ExtendedAccount) => {
@@ -113,12 +95,6 @@ const getVotingDollarsPerAccount = (
   } else {
     return;
   }
-};
-/* istanbul ignore next */
-const getRC = async (accountName: string) => {
-  const rcAcc = await getClient().rc.findRCAccounts([accountName]);
-  const rc = await getClient().rc.calculateRCMana(rcAcc[0]);
-  return rc;
 };
 /* istanbul ignore next */
 const getRewardBalance = (properties: GlobalProperties) => {
@@ -257,54 +233,36 @@ const signMessage = (message: string, privateKey: string) => {
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
 
-/* istanbul ignore next */
-const getDelayedTransactionInfo = (trxID: string) => {
-  return new Promise(function (fulfill, reject) {
-    setTimeout(async function () {
-      fulfill(await getClient().transaction.findTransaction(trxID));
-    }, 500);
-  });
-};
-
-/**
- * getClient().database.getDynamicGlobalProperties()
- */
-const getDynamicGlobalProperties =
-  async (): Promise<DynamicGlobalProperties> => {
-    return getClient().database.getDynamicGlobalProperties();
-  };
 /**
  * getClient().database.getCurrentMedianHistoryPrice()
  */
 const getCurrentMedianHistoryPrice = async (): Promise<Price> => {
-  return getClient().database.getCurrentMedianHistoryPrice();
+  return HiveTxUtils.getData(
+    'condenser_api.get_current_median_history_price',
+    [],
+  );
 };
 /**
  * getClient().database.call(method, params).
  * Fixed params: method 'get_reward_fund', params ['post]
  */
 const getRewardFund = async (): Promise<RewardFund> => {
-  return getClient().database.call('get_reward_fund', ['post']);
+  return HiveTxUtils.getData('condenser_api.get_reward_fund', ['post']);
 };
 
 const HiveUtils = {
-  getClient,
-  setRpc,
   getVP,
-  getRC,
   getVotingDollarsPerAccount,
   getTimeBeforeFull,
   claimRewards,
   encodeMemo,
   decodeMemo,
   signMessage,
-  getDelayedTransactionInfo,
   getRewardBalance,
   getRecentClaims,
   getHivePrice,
   getVotePowerReserveRate,
   getAccountPrice,
-  getDynamicGlobalProperties,
   getCurrentMedianHistoryPrice,
   getRewardFund,
 };

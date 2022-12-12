@@ -1,13 +1,13 @@
 import { PrivateKey } from '@hiveio/dhive';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveUtils from 'src/utils/hive.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 
 describe('hive-engine.utils tests:\n', () => {
   beforeEach(() => {
-    HiveUtils.setRpc(rpc.fake);
+    HiveTxUtils.setRpc(rpc.fake);
   });
   describe('Mocking HIVE APIs:\n', () => {
     afterAll(() => {
@@ -340,13 +340,14 @@ describe('hive-engine.utils tests:\n', () => {
         memo: string;
       };
       test('Passing requested data, must broadcast the json and return a valid TransactionConfirmation Object', async () => {
-        HiveUtils.getClient().broadcast.json = jest
-          .fn()
-          .mockImplementationOnce((...args) => {
-            return {
-              id: '803e8c82a48d5c9a452df2eb96bf49996f300f06',
-            };
-          });
+        // TODO fix here
+        // HiveUtils.getClient().broadcast.json = jest
+        //   .fn()
+        //   .mockImplementationOnce((...args) => {
+        //     return {
+        //       id: '803e8c82a48d5c9a452df2eb96bf49996f300f06',
+        //     };
+        //   });
         const data: SendTokenProps = {
           username: utilsT.userData.username,
           currency: 'BEE',
