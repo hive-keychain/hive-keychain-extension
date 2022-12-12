@@ -1,5 +1,8 @@
-import * as Hive from '@hiveio/dhive';
-import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
+import {
+  cryptoUtils,
+  DynamicGlobalProperties,
+  ExtendedAccount,
+} from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { ErrorMessage } from '@interfaces/errorMessage.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
@@ -47,7 +50,7 @@ const getKeys = async (
   const postingInfo = hiveAccounts[0].posting;
   const memoKey = hiveAccounts[0].memo_key;
 
-  if (Hive.cryptoUtils.isWif(password)) {
+  if (cryptoUtils.isWif(password)) {
     const pubUnknown = KeysUtils.getPublicKeyFromPrivateKeyString(password);
     if (pubUnknown === memoKey) {
       return {

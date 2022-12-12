@@ -1,11 +1,10 @@
-import * as Hive from '@hiveio/dhive';
-import { Account } from '@hiveio/dhive';
+import { Account, PrivateKey } from '@hiveio/dhive';
 import { Key } from '@interfaces/local-account.interface';
 import { Keys } from 'src/interfaces/keys.interface';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
   try {
-    const privateKey = Hive.PrivateKey.fromString(privateKeyS);
+    const privateKey = PrivateKey.fromString(privateKeyS);
     const publicKey = privateKey.createPublic();
     return publicKey.toString();
   } catch (e) {
@@ -29,9 +28,9 @@ const derivateFromMasterPassword = (
   password: string,
   account: Account,
 ): Keys | null => {
-  const posting = Hive.PrivateKey.fromLogin(username, password, 'posting');
-  const active = Hive.PrivateKey.fromLogin(username, password, 'active');
-  const memo = Hive.PrivateKey.fromLogin(username, password, 'memo');
+  const posting = PrivateKey.fromLogin(username, password, 'posting');
+  const active = PrivateKey.fromLogin(username, password, 'active');
+  const memo = PrivateKey.fromLogin(username, password, 'memo');
 
   const keys = {
     posting: posting.toString(),

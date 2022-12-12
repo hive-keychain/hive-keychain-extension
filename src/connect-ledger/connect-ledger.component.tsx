@@ -26,7 +26,7 @@ const ConnectLedger = () => {
         );
         await AccountUtils.addKeyFromLedger(queryParams['username'], keysToAdd);
       } else {
-        console.log('unable to detect ledger');
+        Logger.error('Unable to detect Ledger');
         return;
       }
     } catch (err: any) {

@@ -45,9 +45,9 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@engrave/ledger-app-hive": "^3.4.0",
     "@hiveio/dhive": "1.2.3",
     "@hiveio/hive-js": "2.0.4",
+    "@engrave/ledger-app-hive": "^3.4.0",
     "@ledgerhq/hw-transport": "6.24.1",
     "@ledgerhq/hw-transport-webusb": "6.20.0",
     "@types/chrome": "0.0.177",
@@ -128,7 +128,7 @@
     "tsconfig-paths-webpack-plugin": "3.5.2",
     "typescript": "4.7.4",
     "webpack": "5.74.0",
-    "webpack-bundle-analyzer": "4.5.0",
+    "webpack-bundle-analyzer": "^4.5.0",
     "webpack-cli": "4.9.2",
     "webpack-dev-server": "4.9.0",
     "webpack-merge": "5.8.0"
@@ -136,6 +136,9 @@
   "overrides": {
     "sass-graph": {
       "scss-tokenizer": "$scss-tokenizer"
+    },
+    "@engrave/ledger-app-hive": {
+      "@hiveio/dhive": "1.2.3"
     }
   },
   "browser": {
