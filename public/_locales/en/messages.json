@@ -11,6 +11,18 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "popup_html_wrong_key_active": {
+    "message": "Wrong key. Please use active key",
+    "description": "while using wrong private key"
+  },
+  "popup_html_wrong_key_posting": {
+    "message": "Wrong key. Please use posting key",
+    "description": "while using wrong private key"
+  },
+  "popup_html_wrong_key_memo": {
+    "message": "Wrong key. Please use memo key",
+    "description": "while using wrong private key"
+  },
   "common_yes": {
     "message": "Yes",
     "description": "Generic"

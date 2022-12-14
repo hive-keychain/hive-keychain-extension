@@ -14,7 +14,7 @@ export const errorClaimRewards = [
       new Asset(1000, 'VESTS'),
     ] as const,
     mocks: () => {
-      mocks.getClient(undefined);
+      // mocks.getClient(undefined); TODO fix here
     },
   },
   {
@@ -26,7 +26,7 @@ export const errorClaimRewards = [
       new Asset(1000, 'VESTS'),
     ] as const,
     mocks: () => {
-      mocks.getClient(constants.client);
+      // mocks.getClient(constants.client); TODO fix here
       mocks.sendOperations;
     },
   },

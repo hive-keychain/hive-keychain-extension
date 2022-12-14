@@ -25,6 +25,7 @@ chrome.runtime.onStartup.addListener(() => {
 });
 /* istanbul ignore next */
 (async () => {
+  await RPCModule.init();
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
   ClaimModule.start();

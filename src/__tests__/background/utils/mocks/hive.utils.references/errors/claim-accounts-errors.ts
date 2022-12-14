@@ -18,7 +18,7 @@ export const errorClaimAccounts = [
     description: 'broadcast',
     params: constants.tuple.claimAccounts,
     mocks: () => {
-      mocks.getClient(undefined);
+      // mocks.getClient(undefined); TODO fix here
       mocks.setConfigAsMin();
     },
     spies: {
@@ -35,7 +35,7 @@ export const errorClaimAccounts = [
       ) as ActiveAccount,
     ] as const,
     mocks: () => {
-      mocks.getClient(constants.client);
+      // mocks.getClient(constants.client); TODO fix here
       mocks.setConfigAsMin();
       mocks.sendOperations;
     },

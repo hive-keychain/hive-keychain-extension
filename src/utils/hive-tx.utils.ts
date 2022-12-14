@@ -138,7 +138,7 @@ const getData = async (
   key?: string,
 ) => {
   const response = await call(method, params);
-  if (response.result) {
+  if (response?.result) {
     return key ? response.result[key] : response.result;
   } else
     throw new Error(
@@ -155,5 +155,3 @@ export const HiveTxUtils = {
   setRpc,
   createTransaction,
 };
-
-//TODO : When ready will replace HiveTx

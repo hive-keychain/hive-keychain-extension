@@ -9,7 +9,6 @@ import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import accountUtilsMocks from 'src/__tests__/utils/mocks/account-utils-mocks';
 import { ActiveAccount } from '../../interfaces/active-account.interface';
-import { setErrorMessage } from '../../popup/actions/message.actions';
 import AccountUtils from '../../utils/account.utils';
 config.byDefault();
 describe('account.utils tests:\n', () => {
@@ -71,7 +70,6 @@ describe('account.utils tests:\n', () => {
       const getAccount = await AccountUtils.getKeys(
         userData.username,
         userData.encryptKeys.active,
-        setErrorMessage,
       );
 
       expect(getAccount).toBeNull();
@@ -88,7 +86,6 @@ describe('account.utils tests:\n', () => {
       const resultsGetAcc = await AccountUtils.getKeys(
         userObject.badUsername,
         userObject.activePasswordUnencrypted,
-        setErrorMessage,
       );
       expect(resultsGetAcc).toBeNull();
     });
@@ -97,7 +94,6 @@ describe('account.utils tests:\n', () => {
       const validDataUserMemo = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.memo,
-        setErrorMessage,
       );
       const expected_obj_memo: Keys = {
         memo: userData.nonEncryptKeys.memo,
@@ -110,7 +106,6 @@ describe('account.utils tests:\n', () => {
       const validDataUserPosting = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.posting,
-        setErrorMessage,
       );
       const expected_obj_posting: Keys = {
         posting: userData.nonEncryptKeys.posting,
@@ -123,7 +118,6 @@ describe('account.utils tests:\n', () => {
       const validDataUserActive = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.active,
-        setErrorMessage,
       );
       const expected_obj_active: Keys = {
         active: userData.nonEncryptKeys.active,
@@ -136,7 +130,6 @@ describe('account.utils tests:\n', () => {
       const validDataUserOwner = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.owner,
-        setErrorMessage,
       );
       expect(validDataUserOwner).toBeNull();
     });
@@ -145,7 +138,6 @@ describe('account.utils tests:\n', () => {
       const validDataUserFakeKey = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.fakeKey,
-        setErrorMessage,
       );
       expect(validDataUserFakeKey).toBeNull();
     });
@@ -154,7 +146,6 @@ describe('account.utils tests:\n', () => {
       const validUserRandomStringKey53 = await AccountUtils.getKeys(
         userData.username,
         userData.encryptKeys.randomString53,
-        setErrorMessage,
       );
       expect(validUserRandomStringKey53).toBeNull();
     });
@@ -163,7 +154,6 @@ describe('account.utils tests:\n', () => {
       const validUserRandomStringKey51 = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.randomStringKey51,
-        setErrorMessage,
       );
       expect(validUserRandomStringKey51).toBeNull();
     });
@@ -174,7 +164,6 @@ describe('account.utils tests:\n', () => {
         '',
         '12345678',
         [],
-        setErrorMessage,
       );
       expect(resultVerifyAccount).toBeNull();
     });
@@ -184,7 +173,6 @@ describe('account.utils tests:\n', () => {
         'workerjab1',
         '',
         [],
-        setErrorMessage,
       );
       expect(resultVerifyAccount).toBeNull();
     });
@@ -194,7 +182,6 @@ describe('account.utils tests:\n', () => {
         userData.username,
         userData.nonEncryptKeys.active,
         dataAccounts.default.twoAccounts,
-        setErrorMessage,
       );
       expect(resultValidOnArray).toBeNull();
     });
@@ -205,7 +192,6 @@ describe('account.utils tests:\n', () => {
           userData.username,
           userData.nonEncryptKeys.active,
           [],
-          setErrorMessage,
         );
       const expected_obj_active: Keys = {
         active: userData.nonEncryptKeys.active,
@@ -312,7 +298,7 @@ describe('account.utils tests:\n', () => {
         [{ name: 'test', keys: {} }],
         '',
         KeyType.ACTIVE,
-        setErrorMessage,
+        'mk', // TODO : might need fixing
       );
       expect(result).toBeNull();
     });
@@ -322,7 +308,7 @@ describe('account.utils tests:\n', () => {
         accounts,
         userData.encryptKeys.active,
         KeyType.ACTIVE,
-        setErrorMessage,
+        'mk', // TODO : might need fixing
       );
       expect(result).toBeNull();
     });
@@ -340,7 +326,7 @@ describe('account.utils tests:\n', () => {
         accounts,
         userData.nonEncryptKeys.active,
         KeyType.ACTIVE,
-        setErrorMessage,
+        'mk', // TODO : might need fixing
       );
       expect(result).toEqual(accounts);
     });
@@ -358,7 +344,7 @@ describe('account.utils tests:\n', () => {
         accounts,
         userData.nonEncryptKeys.posting,
         KeyType.POSTING,
-        setErrorMessage,
+        'mk', // TODO : might need fixing
       );
       expect(result).toEqual(accounts);
     });
@@ -376,7 +362,7 @@ describe('account.utils tests:\n', () => {
         accounts,
         userData.nonEncryptKeys.memo,
         KeyType.MEMO,
-        setErrorMessage,
+        'mk', // TODO : might need fixing
       );
       expect(result).toEqual(accounts);
     });
@@ -400,6 +386,7 @@ describe('account.utils tests:\n', () => {
         KeyType.MEMO,
         _accounts,
         activeAccountData,
+        'mk', // TODO Might need fixing
       );
       const expected_obj = [
         {
@@ -432,6 +419,7 @@ describe('account.utils tests:\n', () => {
         KeyType.POSTING,
         _accounts,
         activeAccountData,
+        'mk', // TODO Might need fixing
       );
       const expected_obj = [
         {
@@ -464,6 +452,7 @@ describe('account.utils tests:\n', () => {
         KeyType.ACTIVE,
         _accounts,
         activeAccountData,
+        'mk', // TODO Might need fixing
       );
       const expected_obj = [
         {
@@ -496,6 +485,7 @@ describe('account.utils tests:\n', () => {
         KeyType.ACTIVE,
         _accounts,
         activeAccountData,
+        'mk', // TODO Might need fixing
       );
       expect(result).toEqual(_accounts);
     });
@@ -632,43 +622,28 @@ describe('account.utils tests:\n', () => {
     });
     test('Test with username empty must return null ', async () => {
       const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount('', '', [], setErrorMessage);
+        await AccountUtils.addAuthorizedAccount('', '', []);
       expect(result_addAuthorizedAccount).toBeNull();
     });
     test('test with authorized account empty must return null', async () => {
       const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount(
-          'workerjab1',
-          '',
-          [],
-          setErrorMessage,
-        );
+        await AccountUtils.addAuthorizedAccount('workerjab1', '', []);
       expect(result_addAuthorizedAccount).toBeNull();
     });
     test('test with authorized account no in existing accounts list must return null', async () => {
       const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount(
-          'workerjab1',
-          'workerjab1',
-          [
-            { name: 'aggroed', keys: {} },
-            { name: 'someguy123', keys: {} },
-          ],
-          setErrorMessage,
-        );
+        await AccountUtils.addAuthorizedAccount('workerjab1', 'workerjab1', [
+          { name: 'aggroed', keys: {} },
+          { name: 'someguy123', keys: {} },
+        ]);
       expect(result_addAuthorizedAccount).toBeNull();
     });
     test('test with already existing account in existing accounts list must return null', async () => {
       const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount(
-          'workerjab1',
-          'workerjab1',
-          [
-            { name: 'workerjab1', keys: {} },
-            { name: 'someguy123', keys: {} },
-          ],
-          setErrorMessage,
-        );
+        await AccountUtils.addAuthorizedAccount('workerjab1', 'workerjab1', [
+          { name: 'workerjab1', keys: {} },
+          { name: 'someguy123', keys: {} },
+        ]);
       expect(result_addAuthorizedAccount).toBeNull();
     });
     test('test with account not existing must return null', async () => {
@@ -680,7 +655,6 @@ describe('account.utils tests:\n', () => {
             { name: 'aggroed', keys: {} },
             { name: 'someguy123', keys: {} },
           ],
-          setErrorMessage,
         );
       expect(result_addAuthorizedAccount).toBeNull();
     });
@@ -689,12 +663,9 @@ describe('account.utils tests:\n', () => {
         .fn()
         .mockResolvedValue([utilsT.fakeQuentinAccResponseWithNoAuth]);
       const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount(
-          'quentin',
-          'workerjab1',
-          [{ name: 'workerjab1', keys: userDataKeys }],
-          setErrorMessage,
-        );
+        await AccountUtils.addAuthorizedAccount('quentin', 'workerjab1', [
+          { name: 'workerjab1', keys: userDataKeys },
+        ]);
 
       expect(result_addAuthorizedAccount).toBeNull();
     });
@@ -709,12 +680,9 @@ describe('account.utils tests:\n', () => {
         activePubkey: `@${userData.username}`,
       };
       const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount(
-          'quentin',
-          'keychain.tests',
-          [{ name: 'keychain.tests', keys: userDataKeys }],
-          setErrorMessage,
-        );
+        await AccountUtils.addAuthorizedAccount('quentin', 'keychain.tests', [
+          { name: 'keychain.tests', keys: userDataKeys },
+        ]);
 
       expect(result_addAuthorizedAccount).toEqual(expectedKeysObject);
     });

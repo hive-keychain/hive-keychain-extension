@@ -1,7 +1,6 @@
 import { BgdHiveEngineConfigModule } from '@background/hive-engine-config.module';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import init from '@background/requests/init';
-import RPCModule from '@background/rpc.module';
 import { Client } from '@hiveio/dhive';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -52,7 +51,8 @@ export class RequestsHandler {
   }
 
   async setupRpc(rpc: Rpc) {
-    this.hiveClient = await RPCModule.getClient(rpc);
+    // TODO check here
+    this.hiveClient = new Client('https://api.hive.blog');
   }
 
   async setupHiveEngine() {

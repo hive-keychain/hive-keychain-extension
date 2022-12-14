@@ -1,4 +1,5 @@
 import { Icons } from '@popup/icons.enum';
+import { store } from '@popup/store';
 import { MenuItem } from 'src/interfaces/menu-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -23,7 +24,10 @@ const AccountSubMenuItems: MenuItem[] = [
     label: 'popup_html_export',
     icon: Icons.EXPORT,
     action: () => {
-      AccountUtils.downloadAccounts();
+      AccountUtils.downloadAccounts(
+        store.getState().accounts,
+        store.getState().mk,
+      );
     },
   },
 ];

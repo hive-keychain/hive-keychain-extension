@@ -1,9 +1,4 @@
-import {
-  DynamicGlobalProperties,
-  Operation,
-  Transaction as DHiveTransaction,
-  utils as dHiveUtils,
-} from '@hiveio/dhive';
+import { utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimAccount,
   ClaimReward,
@@ -321,28 +316,11 @@ const getExpirationTime = () => {
   return new Date(Date.now() + 60 * 1000).toISOString().slice(0, -5);
 };
 
-export const createTransaction = (
-  globalProperties: DynamicGlobalProperties,
-  operation: Operation,
-): DHiveTransaction => {
-  return {
-    ref_block_num: globalProperties.head_block_number,
-    ref_block_prefix: Buffer.from(
-      globalProperties.head_block_id,
-      'hex',
-    ).readUInt32LE(4),
-    expiration: new Date(Date.now() + 60 * 1000).toISOString().slice(0, -5),
-    operations: [operation],
-    extensions: [],
-  };
-};
-
 const TransactionUtils = {
   getAccountTransactions,
   getLastTransaction,
   decodeMemoIfNeeded,
   getExpirationTime,
-  createTransaction,
   getTransactions,
 };
 

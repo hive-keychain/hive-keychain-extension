@@ -1,11 +1,5 @@
-import {
-  Asset,
-  ClaimRewardBalanceOperation,
-  ExtendedAccount,
-  Price,
-} from '@hiveio/dhive';
+import { Asset, ExtendedAccount, Price } from '@hiveio/dhive';
 import * as hive from '@hiveio/hive-js';
-import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import {
   GlobalProperties,
   RewardFund,
@@ -171,28 +165,6 @@ const getTimeBeforeFull = (votingPower: number) => {
   }
 };
 
-const claimRewards = async (
-  activeAccount: ActiveAccount,
-  rewardHive: string | Asset,
-  rewardHBD: string | Asset,
-  rewardVests: string | Asset,
-): Promise<boolean> => {
-  return await HiveTxUtils.sendOperation(
-    [
-      [
-        'claim_reward_balance',
-        {
-          account: activeAccount.name,
-          reward_hive: rewardHive,
-          reward_hbd: rewardHBD,
-          reward_vests: rewardVests,
-        },
-      ] as ClaimRewardBalanceOperation,
-    ],
-    activeAccount.keys.posting!,
-  );
-};
-
 /* istanbul ignore next */
 const encodeMemo = (
   memo: string,
@@ -254,7 +226,6 @@ const HiveUtils = {
   getVP,
   getVotingDollarsPerAccount,
   getTimeBeforeFull,
-  claimRewards,
   encodeMemo,
   decodeMemo,
   signMessage,

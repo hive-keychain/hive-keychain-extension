@@ -14,7 +14,7 @@ export const broadcastVote = async (
   const key = requestHandler.data.key;
   let err, result;
   try {
-    result = await client.broadcast.vote(
+    result = await client?.broadcast.vote(
       {
         voter: data.username,
         author: data.author,

@@ -1,13 +1,16 @@
+import { ActiveAccountModule } from '@background/active-account.module';
+import MkModule from '@background/mk.module';
 import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
+import AccountUtils from 'src/utils/account.utils';
 import Logger from 'src/utils/logger.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 
 export const broadcastTransfer = async (
   requestHandler: RequestsHandler,
@@ -28,9 +31,14 @@ export const broadcastTransfer = async (
       KeychainKeyTypesLC.active,
     );
     let memo = data.memo || '';
-    if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
-      const receiver = (await client.database.getAccounts([to]))[0];
 
+    const [receiver, userAccount] = await AccountUtils.getExtendedAccounts([
+      to,
+      data.username!,
+    ]);
+    // const receiver = (await client.database.getAccounts([to]))[0];
+
+    if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
       if (!receiver || !memoKey) {
         throw new Error('Could not encode memo.');
       }
@@ -38,15 +46,35 @@ export const broadcastTransfer = async (
       memo = encode(memoKey, memoReceiver, memo);
     }
 
-    result = await client.broadcast.transfer(
-      {
-        from: data.username!,
-        to: data.to,
-        amount: data.amount + ' ' + data.currency,
-        memo,
-      },
-      PrivateKey.from(key!),
+    const localAccounts = await AccountUtils.getAccountsFromLocalStorage(
+      await MkModule.getMk(),
     );
+
+    const activeAccount = await ActiveAccountModule.createActiveAccount(
+      userAccount,
+      localAccounts,
+    );
+
+    result = await TransferUtils.sendTransfer(
+      data.username!,
+      data.to,
+      data.amount + ' ' + data.currency,
+      memo,
+      false,
+      0,
+      0,
+      activeAccount!,
+    );
+
+    // result = await client.broadcast.transfer(
+    //   {
+    //     from: data.username!,
+    //     to: data.to,
+    //     amount: data.amount + ' ' + data.currency,
+    //     memo,
+    //   },
+    //   PrivateKey.from(key!),
+    // );
   } catch (e) {
     Logger.error(e);
     if (typeof e === 'string') {

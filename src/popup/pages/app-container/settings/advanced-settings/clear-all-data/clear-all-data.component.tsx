@@ -10,7 +10,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import AccountUtils from 'src/utils/account.utils';
 import './clear-all-data.component.scss';
 
 const ClearAllData = ({
@@ -29,7 +28,9 @@ const ClearAllData = ({
   }, []);
 
   const reset = () => {
-    AccountUtils.clearAllData(resetAccount, forgetMk, resetActiveAccount);
+    resetAccount();
+    forgetMk();
+    resetActiveAccount();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 

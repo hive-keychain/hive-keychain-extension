@@ -35,7 +35,7 @@ export const recurrentTransfer = async (
       ) as [string, string];
     }
     if (memo && memo.length > 0 && memo[0] == '#') {
-      const receiver = (await client.database.getAccounts([to]))[0];
+      const receiver = (await client!.database.getAccounts([to]))[0];
       const memoKey: string = requestHandler.getUserKey(
         username!,
         KeychainKeyTypesLC.memo,
@@ -46,7 +46,7 @@ export const recurrentTransfer = async (
       const memoReceiver = receiver.memo_key;
       memo = encode(memoKey, memoReceiver, memo);
     }
-    result = await client.broadcast.sendOperations(
+    result = await client?.broadcast.sendOperations(
       [
         [
           'recurrent_transfer',

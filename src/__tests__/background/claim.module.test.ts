@@ -43,7 +43,7 @@ describe('claim.module tests:\n', () => {
     expect(spies.logger.info.mock.calls[1][0]).toBe(
       `@${accounts.active.name} doesn't have any savings interests to claim`,
     );
-    expect(spies.claimSavings(undefined)).not.toBeCalled();
+    expect(spies.claimSavings(false)).not.toBeCalled();
   });
 
   it('Must call logger with no time to claim', async () => {
@@ -57,7 +57,7 @@ describe('claim.module tests:\n', () => {
     expect(spies.logger.info.mock.calls[1][0]).toBe(
       `Not time to claim yet for @${accounts.active.name}`,
     );
-    expect(spies.claimSavings(undefined)).not.toBeCalled();
+    expect(spies.claimSavings(false)).not.toBeCalled();
   });
 
   describe('Same local accounts:\n', () => {
@@ -121,7 +121,7 @@ describe('claim.module tests:\n', () => {
     it('Must not claim savings', async () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
       await ClaimModule.start();
-      expect(spies.claimSavings(undefined)).not.toBeCalled();
+      expect(spies.claimSavings(false)).not.toBeCalled();
     });
   });
 });

@@ -18,7 +18,7 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 import './top-bar.component.scss';
 
 const TopBar = ({
@@ -40,7 +40,7 @@ const TopBar = ({
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       setHasRewardToClaim(
-        ActiveAccountUtils.hasReward(
+        RewardsUtils.hasReward(
           activeAccount.account.reward_hbd_balance as string,
           FormatUtils.toHP(
             activeAccount.account.reward_vesting_balance
@@ -73,7 +73,7 @@ const TopBar = ({
     }
     addToLoadingList('popup_html_claiming_rewards');
     try {
-      const claimSuccessful = await HiveUtils.claimRewards(
+      const claimSuccessful = await RewardsUtils.claimRewards(
         activeAccount,
         activeAccount.account.reward_hive_balance,
         activeAccount.account.reward_hbd_balance,

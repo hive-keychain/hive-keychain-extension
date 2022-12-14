@@ -9,6 +9,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
@@ -32,7 +33,7 @@ export const toOverWriteFuntions: any = {
   findUserProxy: () => (ProxyUtils.findUserProxy = jest.fn()),
   getPrices: () => (CurrencyPricesUtils.getPrices = jest.fn()),
   getAccountValue: () => (AccountUtils.getAccountValue = jest.fn()),
-  hasReward: () => (ActiveAccountUtils.hasReward = jest.fn()),
+  hasReward: () => (RewardsUtils.hasReward = jest.fn()),
   //TODO fix these 2
   getVestingDelegations: () => (HiveTxUtils.getData = jest.fn()),
   getDelegators: () => (KeychainApi.get = jest.fn()),

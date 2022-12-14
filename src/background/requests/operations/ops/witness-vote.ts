@@ -26,7 +26,7 @@ export const broadcastWitnessVote = async (
       ) as [string, string];
     }
 
-    result = await client.broadcast.sendOperations(
+    result = await client?.broadcast.sendOperations(
       [
         [
           'account_witness_vote',

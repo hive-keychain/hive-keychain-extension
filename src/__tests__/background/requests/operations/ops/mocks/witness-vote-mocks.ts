@@ -36,10 +36,10 @@ const mocks = {
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
   client: {
     broadcast: {
-      sendOperations: (id: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(id)),
+      // sendOperations: (id: TransactionConfirmation) =>
+      //   (requestHandler.getHiveClient().broadcast.sendOperations = jest
+      //     .fn()
+      //     .mockResolvedValue(id)),
     },
   },
 };
@@ -55,7 +55,7 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.sendOperations(confirmed);
+    // mocks.client.broadcast.sendOperations(confirmed); // TODO fix
   }),
   assert: {
     error: (

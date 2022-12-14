@@ -1,6 +1,7 @@
 import { Account, PrivateKey } from '@hiveio/dhive';
 import { Key } from '@interfaces/local-account.interface';
 import { Keys } from 'src/interfaces/keys.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
   try {
@@ -92,6 +93,10 @@ const isUsingLedger = (key: Key): boolean => {
   return key!.toString().startsWith('#');
 };
 
+const getKeyReferences = (key: string) => {
+  return HiveTxUtils.getData('condenser_api.get_key_references', [[key]]);
+};
+
 export const KeysUtils = {
   isAuthorizedAccount,
   getPublicKeyFromPrivateKeyString,
@@ -103,4 +108,5 @@ export const KeysUtils = {
   hasPosting,
   hasMemo,
   isUsingLedger,
+  getKeyReferences,
 };

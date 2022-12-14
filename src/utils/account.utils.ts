@@ -1,17 +1,17 @@
+import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import {
+  ClaimAccountOperation,
   cryptoUtils,
   DynamicGlobalProperties,
   ExtendedAccount,
-} from '@hiveio/dhive';
+} from '@hiveio/dhive/lib/index-browser';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
-import { ErrorMessage } from '@interfaces/errorMessage.interface';
-import { ActionType } from '@popup/actions/action-type.enum';
-import { ActionPayload } from '@popup/actions/interfaces';
-import { store } from '@popup/store';
+import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import { KeychainError } from 'src/keychain-error';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import EncryptUtils from 'src/utils/encrypt.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -29,22 +29,10 @@ enum AccountErrorMessages {
   PASSWORD_IS_PUBLIC_KEY = 'popup_account_password_is_public_key',
 }
 
-const getKeys = async (
-  username: string,
-  password: string,
-  setErrorMessage: (
-    key: string,
-    params?: string[],
-  ) => ActionPayload<ErrorMessage>,
-) => {
-  if (password.startsWith('STM')) {
-    setErrorMessage(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
-    return null;
-  }
+const getKeys = async (username: string, password: string) => {
   const hiveAccounts = await AccountUtils.getAccount(username);
   if (hiveAccounts.length === 0) {
-    setErrorMessage(AccountErrorMessages.INCORRECT_USER);
-    return null;
+    throw new Error(AccountErrorMessages.INCORRECT_USER);
   }
   const activeInfo = hiveAccounts[0].active;
   const postingInfo = hiveAccounts[0].posting;
@@ -77,7 +65,7 @@ const getKeys = async (
   );
 
   if (!keys) {
-    setErrorMessage(AccountErrorMessages.INCORRECT_KEY);
+    throw new Error(AccountErrorMessages.INCORRECT_KEY);
   }
   return keys;
 };
@@ -86,26 +74,24 @@ const verifyAccount = async (
   username: string,
   password: string,
   existingAccounts: LocalAccount[],
-  setErrorMessage: (
-    key: string,
-    params?: string[],
-  ) => ActionPayload<ErrorMessage>,
 ): Promise<Keys | null> => {
-  if (username.length === 0 || password.length === 0) {
-    setErrorMessage(AccountErrorMessages.MISSING_FIELDS);
-    return null;
-  }
-  if (isAccountNameAlreadyExisting(existingAccounts, username)) {
-    setErrorMessage(AccountErrorMessages.ALREADY_REGISTERED);
-    return null;
+  if (password.startsWith('STM')) {
+    throw new Error(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
   }
 
-  return await getKeys(username, password, setErrorMessage);
+  if (username.length === 0 || password.length === 0) {
+    throw new Error(AccountErrorMessages.MISSING_FIELDS);
+  }
+  if (isAccountNameAlreadyExisting(existingAccounts, username)) {
+    throw new Error(AccountErrorMessages.ALREADY_REGISTERED);
+  }
+
+  return await getKeys(username, password);
 };
 /* istanbul ignore next */
 const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
   const accounts: Accounts = { list: localAccounts };
-  const encyptedAccounts = await encryptAccounts(accounts, mk);
+  const encyptedAccounts = await AccountUtils.encryptAccounts(accounts, mk);
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
     encyptedAccounts,
@@ -148,13 +134,11 @@ const addAuthorizedAccount = async (
   username: string,
   authorizedAccount: string,
   existingAccounts: LocalAccount[],
-  showError: (errorMessage: string, params: string[]) => void,
 ): Promise<Keys | null> => {
   let localAuthorizedAccount: LocalAccount;
 
   if (username === '' || authorizedAccount === '') {
-    showError('popup_accounts_fill', []);
-    return null;
+    throw new KeychainError('popup_accounts_fill', []);
   }
 
   if (
@@ -162,8 +146,7 @@ const addAuthorizedAccount = async (
       .map((localAccount: LocalAccount) => localAccount.name)
       .includes(authorizedAccount)
   ) {
-    showError('popup_no_auth_account', [authorizedAccount]);
-    return null;
+    throw new KeychainError('popup_no_auth_account', [authorizedAccount]);
   } else {
     localAuthorizedAccount = existingAccounts.find(
       (localAccount: LocalAccount) => localAccount.name,
@@ -175,15 +158,13 @@ const addAuthorizedAccount = async (
       .map((localAccount: LocalAccount) => localAccount.name)
       .includes(username)
   ) {
-    showError('popup_accounts_already_registered', []);
-    return null;
+    throw new KeychainError('popup_accounts_already_registered', []);
   }
 
   const hiveAccounts = await AccountUtils.getAccount(username);
 
   if (!hiveAccounts || hiveAccounts.length === 0) {
-    showError('popup_accounts_incorrect_user', []);
-    return null;
+    throw new KeychainError('popup_accounts_incorrect_user', []);
   }
   let hiveAccount = hiveAccounts[0];
 
@@ -200,8 +181,10 @@ const addAuthorizedAccount = async (
   );
 
   if (!activeAuth && !postingAuth) {
-    showError('popup_accounts_no_auth', [authorizedAccount, username]);
-    return null;
+    throw new KeychainError('popup_accounts_no_auth', [
+      authorizedAccount,
+      username,
+    ]);
   }
 
   if (activeAuth && activeAuth[1] >= activeKeyInfo.weight_threshold) {
@@ -221,23 +204,16 @@ const addKey = async (
   accounts: LocalAccount[],
   privateKey: string,
   keyType: KeyType,
-  showError: (key: string, params?: string[]) => ActionPayload<ErrorMessage>,
+  mk: string,
 ) => {
-  const setSuccessMessage = showError;
   if (privateKey.length === 0 || privateKey.length === 0) {
-    showError(AccountErrorMessages.MISSING_FIELDS);
-    return null;
+    throw new Error(AccountErrorMessages.MISSING_FIELDS);
   }
 
   if (privateKey.startsWith('STM')) {
-    showError(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
-    return null;
+    throw new Error(AccountErrorMessages.PASSWORD_IS_PUBLIC_KEY);
   }
-  const keys = await AccountUtils.getKeys(
-    activeAccount.name!,
-    privateKey,
-    showError,
-  );
+  const keys = await AccountUtils.getKeys(activeAccount.name!, privateKey);
   let account = accounts.find(
     (account: LocalAccount) => account.name === activeAccount.name,
   );
@@ -245,33 +221,28 @@ const addKey = async (
     switch (keyType) {
       case KeyType.ACTIVE:
         if (!keys.active) {
-          showError('popup_html_wrong_key', [chrome.i18n.getMessage('active')]);
-          return null;
+          throw new Error('popup_html_wrong_key_active');
         }
         account.keys.active = keys.active;
         account.keys.activePubkey = keys.activePubkey;
         break;
       case KeyType.POSTING:
         if (!keys.posting) {
-          showError('popup_html_wrong_key', [
-            chrome.i18n.getMessage('posting'),
-          ]);
-          return null;
+          throw new Error('popup_html_wrong_key_posting');
         }
         account.keys.posting = keys.posting;
         account.keys.postingPubkey = keys.postingPubkey;
         break;
       case KeyType.MEMO:
         if (!keys.memo) {
-          showError('popup_html_wrong_key', [chrome.i18n.getMessage('memo')]);
-          return null;
+          throw new Error('popup_html_wrong_key_memo');
         }
         account.keys.memo = keys.memo;
         account.keys.memoPubkey = keys.memoPubkey;
         break;
     }
-    AccountUtils.saveAccounts(accounts, store.getState().mk);
-    setSuccessMessage('import_html_success');
+
+    AccountUtils.saveAccounts(accounts, mk);
     return accounts;
   }
 };
@@ -280,6 +251,7 @@ const deleteKey = (
   keyType: KeyType,
   accounts: LocalAccount[],
   activeAccount: ActiveAccount,
+  mk: string,
 ): LocalAccount[] => {
   const account = accounts.find(
     (account: LocalAccount) => account.name === activeAccount.name,
@@ -300,7 +272,7 @@ const deleteKey = (
         delete account?.keys.memoPubkey;
         break;
     }
-    AccountUtils.saveAccounts(accounts, store.getState().mk);
+    AccountUtils.saveAccounts(accounts, mk);
     return accounts;
   } else {
     Logger.error('Cannot delete the last key');
@@ -324,9 +296,9 @@ const isAccountListIdentical = (
   return JSON.stringify(a) === JSON.stringify(b);
 };
 /* istanbul ignore next */
-const downloadAccounts = async () => {
-  const accounts = { list: store.getState().accounts };
-  var data = new Blob([await encryptAccounts(accounts, store.getState().mk)], {
+const downloadAccounts = async (acc: LocalAccount[], mk: string) => {
+  const accounts = { list: acc };
+  var data = new Blob([await AccountUtils.encryptAccounts(accounts, mk)], {
     type: 'text/plain',
   });
   var url = window.URL.createObjectURL(data);
@@ -334,17 +306,6 @@ const downloadAccounts = async () => {
   a.href = url;
   a.download = 'accounts.kc';
   a.click();
-};
-/* istanbul ignore next */
-const clearAllData = (
-  resetAccount: () => { type: ActionType },
-  forgetMk: () => { type: ActionType },
-  resetActiveAccount: () => { type: ActionType },
-) => {
-  LocalStorageUtils.clearLocalStorage();
-  resetAccount();
-  forgetMk();
-  resetActiveAccount();
 };
 
 const getAccountValue = (
@@ -475,6 +436,30 @@ const generateQRCode = (account: LocalAccount) => {
   return JSON.stringify(account);
 };
 
+const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
+  const freeAccountConfig = Config.claims.freeAccount;
+  if (
+    rc.percentage > freeAccountConfig.MIN_RC_PCT &&
+    rc.current_mana > freeAccountConfig.MIN_RC
+  ) {
+    Logger.info(`Claiming free account for @${activeAccount.name}`);
+
+    return HiveTxUtils.sendOperation(
+      [
+        [
+          'claim_account',
+          {
+            creator: activeAccount.name,
+            extensions: [],
+            fee: '0.000 HIVE',
+          },
+        ] as ClaimAccountOperation,
+      ],
+      activeAccount.keys.active!,
+    );
+  } else Logger.info('Not enough RC% to claim account');
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -487,7 +472,6 @@ const AccountUtils = {
   isAccountListIdentical,
   deleteAccount,
   downloadAccounts,
-  clearAllData,
   getKeys,
   getAccountValue,
   getPublicMemo,
@@ -500,6 +484,8 @@ const AccountUtils = {
   getRCMana,
   getAccount,
   generateQRCode,
+  encryptAccounts,
+  claimAccounts,
 };
 
 export const BackgroundAccountUtils = {

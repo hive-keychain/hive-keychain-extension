@@ -15,6 +15,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import { PowerUtils } from 'src/utils/power.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
@@ -412,7 +413,7 @@ describe('hive.utils tests:\n', () => {
         type: 'SET_MESSAGE',
       };
       const activeAccountEmpty = {} as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
+      const result = await RewardsUtils.claimRewards(
         activeAccountEmpty,
         '1.000 HIVE',
         '1.000 HBD',
@@ -444,7 +445,7 @@ describe('hive.utils tests:\n', () => {
           activePubkey: utilsT.userData.encryptKeys.active,
         },
       } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
+      const result = await RewardsUtils.claimRewards(
         activeAccountUsingActivekey,
         '1.000 HIVE',
         '1.000 HBD',
@@ -515,7 +516,7 @@ describe('hive.utils tests:\n', () => {
           postingPubkey: utilsT.userData.encryptKeys.posting,
         },
       } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
+      const result = await RewardsUtils.claimRewards(
         activeAccountusingActivekey,
         '1.00 HIVE',
         '0.00 HBD',
@@ -601,7 +602,7 @@ describe('hive.utils tests:\n', () => {
           postingPubkey: utilsT.userData.encryptKeys.posting,
         },
       } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
+      const result = await RewardsUtils.claimRewards(
         activeAccountusingActivekey,
         '10.00 HIVE',
         '11.00 HBD',
@@ -677,7 +678,7 @@ describe('hive.utils tests:\n', () => {
           postingPubkey: utilsT.userData.encryptKeys.posting,
         },
       } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
+      const result = await RewardsUtils.claimRewards(
         activeAccountusingActivekey,
         '10.00 HIVE',
         '11.00 HBD',

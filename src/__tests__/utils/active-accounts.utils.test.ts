@@ -1,6 +1,7 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 const chrome = require('chrome-mock');
 global.chrome = chrome;
 
@@ -26,15 +27,15 @@ describe(' active-account.utils tests', () => {
     const stringCase2 = '10.000 JustAnother.string';
     const stringToFail = 'Hello HBD';
     test(`passing an expected string formatted as ${stringCase1} must return a number = 12`, () => {
-      const numbeResult = ActiveAccountUtils.getValFromString(stringCase1);
+      const numbeResult = FormatUtils.getValFromString(stringCase1);
       expect(numbeResult).toBe(12);
     });
     test(`passing an expected string formatted as ${stringCase2} must return a number = 12`, () => {
-      const numbeResult = ActiveAccountUtils.getValFromString(stringCase2);
+      const numbeResult = FormatUtils.getValFromString(stringCase2);
       expect(numbeResult).toBe(10);
     });
     test(`passing an non expected string formatted as ${stringToFail} must return NaN`, () => {
-      const numbeResult = ActiveAccountUtils.getValFromString(stringToFail);
+      const numbeResult = FormatUtils.getValFromString(stringToFail);
       expect(numbeResult).toBe(NaN);
     });
   });
@@ -46,7 +47,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '0.000 HP',
         reward_hive: '0.000 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -60,7 +61,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '1.000 HP',
         reward_hive: '0.000 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -74,7 +75,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '0.000 HP',
         reward_hive: '10.000 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -88,7 +89,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '0.000 HP',
         reward_hive: '0.000 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -104,7 +105,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '0.00 HP',
         reward_hive: '0 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -118,7 +119,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '1.00 HP',
         reward_hive: '0 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -132,7 +133,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '0.00 HP',
         reward_hive: '10 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -146,7 +147,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: '0.00 HP',
         reward_hive: '0.0000 HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -160,7 +161,7 @@ describe(' active-account.utils tests', () => {
         reward_hp: 'asdas HP',
         reward_hive: 'ABCD HIVE',
       };
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -181,13 +182,13 @@ describe(' active-account.utils tests', () => {
       };
       jest.resetModules();
       jest
-        .spyOn(ActiveAccountUtils, 'getValFromString')
+        .spyOn(FormatUtils, 'getValFromString')
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(0);
 
       expect(
-        ActiveAccountUtils.hasReward(
+        RewardsUtils.hasReward(
           rewardsObj.reward_hbd,
           rewardsObj.reward_hp,
           rewardsObj.reward_hive,
@@ -202,13 +203,13 @@ describe(' active-account.utils tests', () => {
         reward_hive: '0 HIVE',
       };
       jest.resetModules();
-      ActiveAccountUtils.getValFromString = jest
+      FormatUtils.getValFromString = jest
         .fn()
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(10)
         .mockReturnValueOnce(0);
 
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -223,14 +224,14 @@ describe(' active-account.utils tests', () => {
         reward_hive: '10 HIVE',
       };
       jest.resetModules();
-      ActiveAccountUtils.getValFromString = jest
+      FormatUtils.getValFromString = jest
         .fn()
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(10);
 
       expect(
-        ActiveAccountUtils.hasReward(
+        RewardsUtils.hasReward(
           rewardsObj.reward_hbd,
           rewardsObj.reward_hp,
           rewardsObj.reward_hive,
@@ -245,13 +246,13 @@ describe(' active-account.utils tests', () => {
         reward_hive: '0.0000 HIVE',
       };
       jest.resetModules();
-      ActiveAccountUtils.getValFromString = jest
+      FormatUtils.getValFromString = jest
         .fn()
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(0);
 
-      const result = ActiveAccountUtils.hasReward(
+      const result = RewardsUtils.hasReward(
         rewardsObj.reward_hbd,
         rewardsObj.reward_hp,
         rewardsObj.reward_hive,
@@ -272,12 +273,11 @@ describe(' active-account.utils tests', () => {
       const messageI18n = 'Message';
       const expectedRewardText = `["1.00 HBD","1 HP","1.00 HIVE","${messageI18n}:<br>1 HP / 1.00 HBD / 1.00 HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(1);
-      ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
+      FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
-      const resultBalances =
-        ActiveAccountUtils.getAvailableRewards(justRewardsObj);
+      const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
       expect(JSON.stringify(resultBalances)).toBe(expectedRewardText);
     });
     test('passing an active account object with 1 reward(reward_hbd_balance) must return especific format as seen on expectedRewardText bellow', () => {
@@ -291,12 +291,11 @@ describe(' active-account.utils tests', () => {
       const messageI18n = 'Message 2';
       const expectedRewardText = `["1.00 HBD","0 HP","0.00 HIVE","${messageI18n}:<br>1.00 HBD"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
-      ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
+      FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
-      const resultBalances =
-        ActiveAccountUtils.getAvailableRewards(justRewardsObj);
+      const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
       expect(JSON.stringify(resultBalances)).toBe(expectedRewardText);
     });
     test('passing an active account object with 1 reward(reward_vesting_balance) must return especific format as seen on expectedRewardText bellow', () => {
@@ -310,12 +309,11 @@ describe(' active-account.utils tests', () => {
       const messageI18n = 'Message 3';
       const expectedRewardText = `["0.00 HBD","10 HP","0.00 HIVE","${messageI18n}:<br>10 HP"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(10);
-      ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
+      FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
-      const resultBalances =
-        ActiveAccountUtils.getAvailableRewards(justRewardsObj);
+      const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
       expect(JSON.stringify(resultBalances)).toBe(expectedRewardText);
     });
     test('passing an active account object with 1 reward(reward_hive_balance) must return especific format as seen on expectedRewardText bellow', () => {
@@ -329,12 +327,11 @@ describe(' active-account.utils tests', () => {
       const messageI18n = 'Message 4';
       const expectedRewardText = `["0.00 HBD","0 HP","100.00 HIVE","${messageI18n}:<br>100.00 HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
-      ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
+      FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
-      const resultBalances =
-        ActiveAccountUtils.getAvailableRewards(justRewardsObj);
+      const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
       expect(JSON.stringify(resultBalances)).toBe(expectedRewardText);
     });
     test('passing an active account object with NaN reward values will return those values without validation in the same format as above', () => {
@@ -348,12 +345,11 @@ describe(' active-account.utils tests', () => {
       const messageI18n = 'Message 5';
       const expectedRewardText = `["A HBD","0 HP","WT HIVE","${messageI18n}:<br>A HBD / WT HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
-      ActiveAccountUtils.getValFromString = jest.fn().mockReturnValue(1);
+      FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
         .fn()
         .mockImplementation(() => `${messageI18n}`);
-      const resultBalances =
-        ActiveAccountUtils.getAvailableRewards(justRewardsObj);
+      const resultBalances = RewardsUtils.getAvailableRewards(justRewardsObj);
       expect(JSON.stringify(resultBalances)).toBe(expectedRewardText);
     });
   });

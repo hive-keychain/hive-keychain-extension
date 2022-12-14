@@ -25,7 +25,7 @@ export const broadcastProxy = async (
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
-    result = await client.broadcast.sendOperations(
+    result = await client?.broadcast.sendOperations(
       [
         [
           'account_witness_proxy',

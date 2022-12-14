@@ -1,9 +1,9 @@
-import RPCModule from '@background/rpc.module';
 import LedgerHiveApp from '@engrave/ledger-app-hive';
 import { Transaction } from '@hiveio/dhive';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { Keys } from '@interfaces/local-account.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
+import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 let hiveLedger: LedgerHiveApp;
@@ -85,8 +85,7 @@ const getKeysForAccount = async (username: string) => {
       const active = await hiveLedger.getPublicKey(activePath);
       const posting = await hiveLedger.getPublicKey(postingPath);
       const memo = await hiveLedger.getPublicKey(memoPath);
-      const client = await RPCModule.getClient();
-      const results = await client.keys.getKeyReferences([active]);
+      const results = await KeysUtils.getKeyReferences(active);
 
       if (
         results.accounts &&

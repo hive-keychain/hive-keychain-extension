@@ -54,15 +54,20 @@ export const addKey =
     ) => ActionPayload<ErrorMessage>,
   ): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts } = getState();
+    const { activeAccount, accounts, mk } = getState();
 
-    const newAccounts = await AccountUtils.addKey(
-      activeAccount,
-      accounts,
-      privateKey,
-      keyType,
-      setErrorMessage,
-    );
+    let newAccounts;
+    try {
+      newAccounts = await AccountUtils.addKey(
+        activeAccount,
+        accounts,
+        privateKey,
+        keyType,
+        mk,
+      );
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    }
 
     if (newAccounts && newAccounts?.length > 0) {
       const activeLocalAccount = newAccounts.find(
@@ -80,13 +85,13 @@ export const addKey =
 export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
-    const { activeAccount, accounts } = getState();
+    const { activeAccount, accounts, mk } = getState();
 
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
 
-    let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount);
+    let newAccounts = AccountUtils.deleteKey(type, accounts, activeAccount, mk);
 
     const finalAccounts = [];
     for (let i = 0; i < newAccounts.length; i++) {

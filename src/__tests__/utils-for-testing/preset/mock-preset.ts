@@ -10,6 +10,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -138,7 +139,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockImplementation((...args: any[]) =>
       mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
     );
-  ActiveAccountUtils.hasReward = jest
+  RewardsUtils.hasReward = jest
     .fn()
     .mockReturnValue((topBar && topBar.hasReward) ?? _topBar.hasReward);
   TransactionUtils.getAccountTransactions = jest
