@@ -15,7 +15,7 @@ const warn = (message: string) => {
 
 const error = (message: any, stacktrace?: any) => {
   console.log(`%c ${timestamp()} ${message} `, 'color: red');
-  // console.trace();
+  console.trace();
 
   if (process.env.DEBUG_LOG && stacktrace) {
     console.log(stacktrace);

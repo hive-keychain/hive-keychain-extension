@@ -5,6 +5,7 @@ import {
 } from '@background/requests/operations/operations.utils';
 import { signTransaction } from '@hiveio/hive-js/lib/auth';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
+
 export const signTx = async (
   requestHandler: RequestsHandler,
   data: RequestSignTx & RequestId,
@@ -13,7 +14,6 @@ export const signTx = async (
   let result, err;
 
   try {
-    //result = client.broadcast.sign(data.tx, PrivateKey.from(key!));
     result = await signTransaction(data.tx, [key]);
   } catch (e) {
     err = e;

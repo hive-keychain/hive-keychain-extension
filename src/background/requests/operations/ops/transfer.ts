@@ -8,8 +8,8 @@ import {
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/utils/account.utils';
-import Logger from 'src/utils/logger.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 
 export const broadcastTransfer = async (
@@ -21,26 +21,22 @@ export const broadcastTransfer = async (
     err_message = null;
   try {
     const { username, to } = data;
-    const client = requestHandler.getHiveClient();
     const memoKey: string = requestHandler.getUserKey(
       username!,
       KeychainKeyTypesLC.memo,
     )[0];
-    const [key] = requestHandler.getUserKey(
-      data.username!,
-      KeychainKeyTypesLC.active,
-    );
     let memo = data.memo || '';
 
-    const [receiver, userAccount] = await AccountUtils.getExtendedAccounts([
-      to,
-      data.username!,
-    ]);
-    // const receiver = (await client.database.getAccounts([to]))[0];
+    const userAccount = await AccountUtils.getExtendedAccount(data.username!);
+    const receiver = await AccountUtils.getExtendedAccount(to);
+
+    if (!receiver) {
+      throw new KeychainError('bgd_ops_transfer_get_account', [to]);
+    }
 
     if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
-      if (!receiver || !memoKey) {
-        throw new Error('Could not encode memo.');
+      if (!memoKey) {
+        throw new KeychainError('popup_html_memo_key_missing');
       }
       const memoReceiver = receiver.memo_key;
       memo = encode(memoKey, memoReceiver, memo);
@@ -65,56 +61,24 @@ export const broadcastTransfer = async (
       0,
       activeAccount!,
     );
-
-    // result = await client.broadcast.transfer(
-    //   {
-    //     from: data.username!,
-    //     to: data.to,
-    //     amount: data.amount + ' ' + data.currency,
-    //     memo,
-    //   },
-    //   PrivateKey.from(key!),
-    // );
-  } catch (e) {
-    Logger.error(e);
+  } catch (e: any) {
     if (typeof e === 'string') {
       const message = createMessage(
         true,
         null,
         data,
         null,
-        'Could not encode memo.',
+        await chrome.i18n.getMessage('bgd_ops_encode_err'),
       );
       return message;
     } else {
-      err = e;
-      if (!err['jse_info']) {
-        err_message = await chrome.i18n.getMessage(
-          'bgd_ops_error_broadcasting',
-        );
-      } else {
-        const { jse_info } = err; //hiveoio sending a custom error.
-        const { stack } = jse_info;
-        switch (stack[0].context.method) {
-          case 'adjust_balance':
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_transfer_adjust_balance',
-              [data.currency, data.username!],
-            );
-            break;
-          case 'get_account':
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_transfer_get_account',
-              [data.to],
-            );
-            break;
-          default:
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_error_broadcasting',
-            );
-            break;
-        }
-      }
+      console.log('in transfer catch', e as KeychainError);
+      console.log(e.message, e.trace);
+      err = (e as KeychainError).trace || e;
+      err_message = await chrome.i18n.getMessage(
+        (e as KeychainError).message,
+        (e as KeychainError).messageParams,
+      );
     }
   } finally {
     const message = createMessage(

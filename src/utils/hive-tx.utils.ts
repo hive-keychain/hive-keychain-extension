@@ -14,6 +14,7 @@ import {
   Transaction as HiveTransaction,
 } from 'hive-tx';
 import { AsyncUtils } from 'src/utils/async.utils';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
@@ -94,20 +95,22 @@ const createSignAndBroadcastTransaction = async (
       throw new Error('html_popup_error_while_signing_transaction');
     }
   }
+  let response;
   try {
-    const response = await hiveTransaction.broadcast();
-    if ((response as HiveTxBroadcastErrorResponse).error) {
-      Logger.error(
-        'Error during broadcast',
-        (response as HiveTxBroadcastErrorResponse).error,
-      );
-      return;
-    } else {
+    response = await hiveTransaction.broadcast();
+    if ((response as HiveTxBroadcastSuccessResponse).result) {
+      console.log(response);
       return (response as HiveTxBroadcastSuccessResponse).result.tx_id;
     }
   } catch (err) {
     Logger.error(err);
     throw new Error('html_popup_error_while_broadcasting');
+  }
+  response = response as HiveTxBroadcastErrorResponse;
+  if (response.error) {
+    // Logger.error('Error during broadcast', response.error);
+    console.log('return of parse', ErrorUtils.parse(response.error));
+    throw ErrorUtils.parse(response.error);
   }
 };
 
