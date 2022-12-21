@@ -1713,6 +1713,10 @@
     "message": "You already voted for 30 witnesses. Please remove one before voting for @stoodkev",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
+  "html_popup_vote_witness_error_30_votes": {
+    "message": "You already voted for 30 witnesses. Please remove one before voting again",
+    "description": "Error message when vote for stoodkev as witness with 30 votes"
+  },
   "html_popup_vote_stoodkev_witness_success": {
     "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
@@ -2627,5 +2631,17 @@
   "html_ledger_error_while_connecting": {
     "message": "Error while connecting to Ledger. Please make sure your Ledger is connected and Hive application is running",
     "description": "Error while connecting to Ledger"
+  },
+  "html_popup_witness_already_voted": {
+    "message": "You already voted for this witness",
+    "description": "Error if trying to vote for a witness that has alreay been voted for"
+  },
+  "html_popup_witness_not_voted": {
+    "message": "You did not vote for this witness, you can't unvote it",
+    "description": "Error if trying to unvote a witness that has not been voted for"
+  },
+  "html_popup_witness_not_existing": {
+    "message": "The witness you tried to vote for doesn't exist",
+    "description": "Error if trying to vote a witness that doesn't exist"
   }
 }

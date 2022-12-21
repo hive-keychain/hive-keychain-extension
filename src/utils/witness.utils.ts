@@ -33,6 +33,20 @@ const unvoteWitness = async (
   return WitnessUtils.sendWitnessOperation(witnessOperation, activeAccount);
 };
 
+const updateWitnessVote = async (
+  witness: Witness,
+  activeAccount: ActiveAccount,
+  approve: boolean,
+) => {
+  const witnessOperation = WitnessUtils.getWitnessVoteOperation(
+    approve,
+    activeAccount.name!,
+    witness.name,
+  );
+
+  return WitnessUtils.sendWitnessOperation(witnessOperation, activeAccount);
+};
+
 const sendWitnessOperation = async (
   witnessOperation: AccountWitnessVoteOperation,
   activeAccount: ActiveAccount,
@@ -90,6 +104,7 @@ const WitnessUtils = {
   getWitnessVoteOperation,
   getSetProxyOperation,
   sendWitnessOperation,
+  updateWitnessVote,
 };
 
 export default WitnessUtils;

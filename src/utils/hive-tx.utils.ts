@@ -99,7 +99,6 @@ const createSignAndBroadcastTransaction = async (
   try {
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
-      console.log(response);
       return (response as HiveTxBroadcastSuccessResponse).result.tx_id;
     }
   } catch (err) {

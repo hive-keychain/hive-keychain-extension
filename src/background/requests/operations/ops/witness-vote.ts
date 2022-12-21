@@ -1,21 +1,22 @@
+import { ActiveAccountModule } from '@background/active-account.module';
 import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { AccountWitnessVoteOperation, PrivateKey } from '@hiveio/dhive';
+import { createMessage } from '@background/requests/operations/operations.utils';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestWitnessVote,
 } from '@interfaces/keychain.interface';
+import { Witness } from '@interfaces/witness.interface';
+import { KeychainError } from 'src/keychain-error';
+import WitnessUtils from 'src/utils/witness.utils';
 
 export const broadcastWitnessVote = async (
   requestHandler: RequestsHandler,
   data: RequestWitnessVote & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
-  let result, err;
+  let result,
+    err,
+    err_message = null;
 
   try {
     let key = requestHandler.data.key;
@@ -25,24 +26,21 @@ export const broadcastWitnessVote = async (
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
+    const activeAccount =
+      await ActiveAccountModule.createActiveAccountFromUsername(data.username!);
 
-    result = await client?.broadcast.sendOperations(
-      [
-        [
-          'account_witness_vote',
-          {
-            account: data.username,
-            witness: data.witness,
-            approve: data.vote,
-          },
-        ] as AccountWitnessVoteOperation,
-      ],
-      PrivateKey.from(key!),
+    result = await WitnessUtils.updateWitnessVote(
+      { name: data.witness } as Witness,
+      activeAccount!,
+      data.vote,
     );
-  } catch (e) {
-    err = e;
+  } catch (e: any) {
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,

@@ -6,7 +6,7 @@ export const createMessage = (
   result: any,
   datas: KeychainRequestData & RequestId,
   success_message: string | null,
-  fail_message: string | null,
+  fail_message?: string | null,
   publicKey?: string,
 ) => {
   const { request_id, ...data } = datas;
