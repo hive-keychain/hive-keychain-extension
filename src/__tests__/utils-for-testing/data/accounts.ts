@@ -1,7 +1,8 @@
 import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { Keys, LocalAccount } from '@interfaces/local-account.interface';
+import { Keys } from '@interfaces/keys.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 

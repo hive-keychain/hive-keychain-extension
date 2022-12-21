@@ -17,7 +17,7 @@ export const broadcastDelegation = async (
   const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
   if (!key) {
-    [key] = requestHandler.getUserKey(
+    [key] = requestHandler.getUserKeyPair(
       data.username!,
       KeychainKeyTypesLC.active,
     ) as [string, string];

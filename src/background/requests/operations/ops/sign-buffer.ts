@@ -19,7 +19,7 @@ export const signBuffer = async (
   try {
     let key = requestHandler.data.key;
     if (!key) {
-      [key, publicKey] = requestHandler.getUserKey(
+      [key, publicKey] = requestHandler.getUserKeyPair(
         data.username!,
         data.method.toLowerCase() as KeychainKeyTypesLC,
       ) as [string, string];

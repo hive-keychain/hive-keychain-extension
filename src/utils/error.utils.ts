@@ -9,7 +9,9 @@ enum BlockchainErrorType {
 }
 
 const parse = (error: any) => {
+  console.log(error);
   const stack = error?.data.stack[0];
+
   console.log(stack);
   if (stack?.context?.method) {
     switch (stack.context.method) {

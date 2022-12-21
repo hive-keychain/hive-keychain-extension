@@ -3,6 +3,7 @@ import { removeWindow } from '@background/requests/dialog-lifecycle';
 import init from '@background/requests/init';
 import { Client } from '@hiveio/dhive';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
+import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -28,8 +29,8 @@ type RequestData = {
   accounts?: LocalAccount[];
   rpc?: Rpc | null;
   preferences?: NoConfirm;
-  key?: string;
-  publicKey?: string;
+  key?: Key;
+  publicKey?: Key;
   windowId?: number;
 };
 export class RequestsHandler {
@@ -116,13 +117,17 @@ export class RequestsHandler {
     return this.hiveClient;
   }
 
-  getUserKey(username: string, keyType: KeychainKeyTypesLC) {
+  getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
     const pubKey: string = `${keyType}Pubkey`;
     return [
       this.data.accounts?.find((e) => e.name === username)?.keys[keyType],
       //@ts-ignore
       this.data.accounts?.find((e) => e.name === username)?.keys[pubKey!],
     ];
+  }
+
+  getUserPrivateKey(username: string, keyType: KeychainKeyTypesLC) {
+    return this.data.accounts?.find((e) => e.name === username)?.keys[keyType];
   }
 
   static async getFromLocalStorage() {

@@ -5,7 +5,7 @@ import {
   KeychainRequestTypes,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
-import { Key, LocalAccount } from '@interfaces/local-account.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';

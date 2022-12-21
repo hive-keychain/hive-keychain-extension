@@ -29,14 +29,14 @@ export const recurrentTransfer = async (
   try {
     let key = requestHandler.data.key;
     if (!key) {
-      [key] = requestHandler.getUserKey(
+      [key] = requestHandler.getUserKeyPair(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
     if (memo && memo.length > 0 && memo[0] == '#') {
       const receiver = (await client!.database.getAccounts([to]))[0];
-      const memoKey: string = requestHandler.getUserKey(
+      const memoKey: string = requestHandler.getUserKeyPair(
         username!,
         KeychainKeyTypesLC.memo,
       )[0];

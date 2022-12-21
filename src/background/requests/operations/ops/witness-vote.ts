@@ -1,4 +1,3 @@
-import { ActiveAccountModule } from '@background/active-account.module';
 import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import {
@@ -21,18 +20,17 @@ export const broadcastWitnessVote = async (
   try {
     let key = requestHandler.data.key;
     if (!key) {
-      [key] = requestHandler.getUserKey(
+      [key] = requestHandler.getUserKeyPair(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
-    const activeAccount =
-      await ActiveAccountModule.createActiveAccountFromUsername(data.username!);
 
     result = await WitnessUtils.updateWitnessVote(
+      data.username!,
       { name: data.witness } as Witness,
-      activeAccount!,
       data.vote,
+      key,
     );
   } catch (e: any) {
     err = (e as KeychainError).trace || e;

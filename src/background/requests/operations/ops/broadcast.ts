@@ -33,7 +33,7 @@ export const broadcastOperations = async (
           if (!receiver.length) {
             throw new Error('Failed to load receiver memo key');
           }
-          const memoKey: string = requestHandler.getUserKey(
+          const memoKey: string = requestHandler.getUserKeyPair(
             data.username!,
             KeychainKeyTypesLC.memo,
           )[0];

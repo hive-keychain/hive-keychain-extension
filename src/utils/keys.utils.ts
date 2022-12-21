@@ -1,6 +1,5 @@
 import { Account, PrivateKey } from '@hiveio/dhive';
-import { Key } from '@interfaces/local-account.interface';
-import { Keys } from 'src/interfaces/keys.interface';
+import { Key, Keys } from 'src/interfaces/keys.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {

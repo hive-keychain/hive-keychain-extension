@@ -107,8 +107,7 @@ const createSignAndBroadcastTransaction = async (
   }
   response = response as HiveTxBroadcastErrorResponse;
   if (response.error) {
-    // Logger.error('Error during broadcast', response.error);
-    console.log('return of parse', ErrorUtils.parse(response.error));
+    Logger.error('Error during broadcast', response.error);
     throw ErrorUtils.parse(response.error);
   }
 };

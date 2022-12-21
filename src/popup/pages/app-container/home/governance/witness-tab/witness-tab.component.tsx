@@ -126,7 +126,8 @@ const WitnessTab = ({
         addToLoadingList('html_popup_unvote_witness_operation');
         const success = await WitnessUtils.unvoteWitness(
           witness,
-          activeAccount,
+          activeAccount.name!,
+          activeAccount.keys.active!,
         );
         addToLoadingList('html_popup_confirm_transaction_operation');
         removeFromLoadingList('html_popup_unvote_witness_operation');
@@ -147,7 +148,11 @@ const WitnessTab = ({
     } else {
       try {
         addToLoadingList('html_popup_vote_witness_operation');
-        const success = await WitnessUtils.voteWitness(witness, activeAccount);
+        const success = await WitnessUtils.voteWitness(
+          witness,
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        );
         addToLoadingList('html_popup_confirm_transaction_operation');
         removeFromLoadingList('html_popup_vote_witness_operation');
         await BlockchainTransactionUtils.delayRefresh();

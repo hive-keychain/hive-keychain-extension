@@ -1,4 +1,4 @@
-import { Keys } from '@interfaces/local-account.interface';
+import { Keys } from '@interfaces/keys.interface';
 
 require('dotenv').config();
 const one = {

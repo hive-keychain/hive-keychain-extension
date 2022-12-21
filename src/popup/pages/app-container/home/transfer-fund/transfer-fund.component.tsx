@@ -250,7 +250,7 @@ const TransferFunds = ({
             isRecurrent,
             isCancelRecurrent ? 2 : +iteration,
             isCancelRecurrent ? 24 : +frequency,
-            activeAccount,
+            activeAccount.keys.active!,
           );
 
           removeFromLoadingList('html_popup_transfer_fund_operation');

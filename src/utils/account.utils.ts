@@ -98,12 +98,16 @@ const saveAccounts = async (localAccounts: LocalAccount[], mk: string) => {
   );
 };
 /* istanbul ignore next */
-const getAccountsFromLocalStorage = async (mk: string) => {
+const getAccountsFromLocalStorage = async (
+  mk: string,
+): Promise<LocalAccount[]> => {
   const encryptedAccounts = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACCOUNTS,
   );
   const accounts = EncryptUtils.decryptToJson(encryptedAccounts, mk);
-  return accounts?.list.filter((e: LocalAccount) => e.name.length);
+  return accounts?.list.filter(
+    (e: LocalAccount) => e.name.length,
+  ) as LocalAccount[];
 };
 
 const isAccountNameAlreadyExisting = (

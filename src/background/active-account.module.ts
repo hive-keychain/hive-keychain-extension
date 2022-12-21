@@ -1,4 +1,3 @@
-import MkModule from '@background/mk.module';
 import { ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -24,15 +23,6 @@ const createActiveAccount = async (
   return activeAccount;
 };
 
-const createActiveAccountFromUsername = async (username: string) => {
-  const localAccounts = await AccountUtils.getAccountsFromLocalStorage(
-    await MkModule.getMk(),
-  );
-  const userAccount = await AccountUtils.getExtendedAccount(username);
-  return createActiveAccount(userAccount, localAccounts);
-};
-
 export const ActiveAccountModule = {
   createActiveAccount,
-  createActiveAccountFromUsername,
 };

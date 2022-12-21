@@ -1,7 +1,6 @@
 import LedgerHiveApp from '@engrave/ledger-app-hive';
 import { Transaction } from '@hiveio/dhive';
-import { Key, KeyType } from '@interfaces/keys.interface';
-import { Keys } from '@interfaces/local-account.interface';
+import { Key, Keys, KeyType } from '@interfaces/keys.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
 import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';

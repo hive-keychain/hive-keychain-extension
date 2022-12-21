@@ -1,5 +1,3 @@
-import { ActiveAccountModule } from '@background/active-account.module';
-import MkModule from '@background/mk.module';
 import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
@@ -21,13 +19,12 @@ export const broadcastTransfer = async (
     err_message = null;
   try {
     const { username, to } = data;
-    const memoKey: string = requestHandler.getUserKey(
+    const memoKey: string = requestHandler.getUserKeyPair(
       username!,
       KeychainKeyTypesLC.memo,
     )[0];
     let memo = data.memo || '';
 
-    const userAccount = await AccountUtils.getExtendedAccount(data.username!);
     const receiver = await AccountUtils.getExtendedAccount(to);
 
     if (!receiver) {
@@ -42,15 +39,6 @@ export const broadcastTransfer = async (
       memo = encode(memoKey, memoReceiver, memo);
     }
 
-    const localAccounts = await AccountUtils.getAccountsFromLocalStorage(
-      await MkModule.getMk(),
-    );
-
-    const activeAccount = await ActiveAccountModule.createActiveAccount(
-      userAccount,
-      localAccounts,
-    );
-
     result = await TransferUtils.sendTransfer(
       data.username!,
       data.to,
@@ -59,7 +47,7 @@ export const broadcastTransfer = async (
       false,
       0,
       0,
-      activeAccount!,
+      requestHandler.getUserPrivateKey(username!, KeychainKeyTypesLC.active)!,
     );
   } catch (e: any) {
     if (typeof e === 'string') {
@@ -72,8 +60,6 @@ export const broadcastTransfer = async (
       );
       return message;
     } else {
-      console.log('in transfer catch', e as KeychainError);
-      console.log(e.message, e.trace);
       err = (e as KeychainError).trace || e;
       err_message = await chrome.i18n.getMessage(
         (e as KeychainError).message,

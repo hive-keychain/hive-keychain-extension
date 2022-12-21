@@ -47,7 +47,7 @@ const mocks = {
 };
 
 const spies = {
-  getUserKey: jest.spyOn(requestHandler, 'getUserKey'),
+  getUserKey: jest.spyOn(requestHandler, 'getUserKeyPair'),
 };
 
 const methods = {

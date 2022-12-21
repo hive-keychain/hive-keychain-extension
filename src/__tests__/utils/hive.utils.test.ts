@@ -812,7 +812,7 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
-        {} as ActiveAccount, // TODO Fix
+        utilsT.userData.nonEncryptKeys.active,
       );
       expect(result).toBe(true);
       expect(spyLoggerInfo).toBeCalledTimes(1);
@@ -845,7 +845,7 @@ describe('hive.utils tests:\n', () => {
         false,
         0,
         0,
-        {} as ActiveAccount, // TODO Fix
+        utilsT.userData.nonEncryptKeys.active,
       );
       //expect(result).toBe(false);
       console.log(result);

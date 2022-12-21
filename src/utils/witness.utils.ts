@@ -3,60 +3,62 @@ import {
   AccountWitnessVoteOperation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Key } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const voteWitness = async (
   witness: Witness,
-  activeAccount: ActiveAccount,
+  voter: string,
+  privateKey: Key,
 ): Promise<boolean> => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     true,
-    activeAccount.name!,
+    voter,
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, activeAccount);
+  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, privateKey);
 };
 
 const unvoteWitness = async (
   witness: Witness,
-  activeAccount: ActiveAccount,
+  voter: string,
+  privateKey: Key,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     false,
-    activeAccount.name!,
+    voter,
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, activeAccount);
+  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, privateKey);
 };
 
 const updateWitnessVote = async (
+  voter: string,
   witness: Witness,
-  activeAccount: ActiveAccount,
   approve: boolean,
+  privateKey: Key,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     approve,
-    activeAccount.name!,
+    voter,
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, activeAccount);
+  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, privateKey);
 };
 
 const sendWitnessOperation = async (
   witnessOperation: AccountWitnessVoteOperation,
-  activeAccount: ActiveAccount,
+  username: string,
+  privateKey: Key,
 ) => {
-  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
+  GovernanceUtils.removeFromIgnoreRenewal(username);
 
-  return await HiveTxUtils.sendOperation(
-    [witnessOperation],
-    activeAccount.keys.active!,
-  );
+  return await HiveTxUtils.sendOperation([witnessOperation], privateKey);
 };
 
 const getWitnessVoteOperation = (

@@ -38,7 +38,8 @@ const WitnessVotingSection = ({
         addToLoadingList('html_popup_vote_witness_operation');
         const transactionConfirmed = await WitnessUtils.voteWitness(
           STOODKEV_WITNESS,
-          activeAccount,
+          activeAccount.name!,
+          activeAccount.keys.active!,
         );
         addToLoadingList('html_popup_confirm_transaction_operation');
         removeFromLoadingList('html_popup_vote_witness_operation');

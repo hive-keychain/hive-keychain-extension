@@ -17,7 +17,7 @@ export const broadcastCustomJson = async (
   const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
   if (!key) {
-    [key] = requestHandler.getUserKey(
+    [key] = requestHandler.getUserKeyPair(
       data.username!,
       data.method.toLowerCase() as KeychainKeyTypesLC,
     ) as [string, string];

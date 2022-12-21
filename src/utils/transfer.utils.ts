@@ -1,4 +1,5 @@
 import { RecurrentTransferOperation, TransferOperation } from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -93,12 +94,12 @@ const sendTransfer = (
   recurrent: boolean,
   iterations: number,
   frequency: number,
-  activeAccount: ActiveAccount,
+  activeKey: Key,
 ) => {
   if (!recurrent) {
     return HiveTxUtils.sendOperation(
       [getTransferOperation(sender, receiver, amount, memo)],
-      activeAccount.keys.active!,
+      activeKey,
     );
   } else {
     return HiveTxUtils.sendOperation(
@@ -112,7 +113,7 @@ const sendTransfer = (
           iterations,
         ),
       ],
-      activeAccount.keys.active!,
+      activeKey,
     );
   }
 };
