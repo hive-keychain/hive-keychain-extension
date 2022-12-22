@@ -82,10 +82,11 @@ const iterateClaimRewards = async (users: string[], mk: string) => {
       Logger.info(`Claiming rewards for @${activeAccount.name}`);
 
       await RewardsUtils.claimRewards(
-        activeAccount,
+        activeAccount.name!,
         userAccount.reward_hive_balance,
         userAccount.reward_hbd_balance,
         userAccount.reward_vesting_balance,
+        activeAccount.keys.posting!,
       );
     }
   }

@@ -74,10 +74,11 @@ const TopBar = ({
     addToLoadingList('popup_html_claiming_rewards');
     try {
       const claimSuccessful = await RewardsUtils.claimRewards(
-        activeAccount,
+        activeAccount.name!,
         activeAccount.account.reward_hive_balance,
         activeAccount.account.reward_hbd_balance,
         activeAccount.account.reward_vesting_balance,
+        activeAccount.keys.posting!,
       );
       refreshActiveAccount();
       if (claimSuccessful) {

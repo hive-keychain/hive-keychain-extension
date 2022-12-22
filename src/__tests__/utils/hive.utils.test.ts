@@ -414,10 +414,11 @@ describe('hive.utils tests:\n', () => {
       };
       const activeAccountEmpty = {} as ActiveAccount;
       const result = await RewardsUtils.claimRewards(
-        activeAccountEmpty,
         '1.000 HIVE',
         '1.000 HBD',
         '1.000 VESTS',
+        activeAccountEmpty.name!,
+        activeAccountEmpty.keys.active!,
       );
       expect(result).toBe(false);
       expect(spyLogger).toBeCalledTimes(1);
@@ -446,10 +447,11 @@ describe('hive.utils tests:\n', () => {
         },
       } as ActiveAccount;
       const result = await RewardsUtils.claimRewards(
-        activeAccountUsingActivekey,
         '1.000 HIVE',
         '1.000 HBD',
         '1.000 VESTS',
+        activeAccountUsingActivekey.name!,
+        activeAccountUsingActivekey.keys.active!,
       );
       expect(result).toBe(false);
       expect(spyLogger).toBeCalledTimes(1);
@@ -517,10 +519,11 @@ describe('hive.utils tests:\n', () => {
         },
       } as ActiveAccount;
       const result = await RewardsUtils.claimRewards(
-        activeAccountusingActivekey,
         '1.00 HIVE',
         '0.00 HBD',
         '0.00 VESTS',
+        activeAccountusingActivekey.name!,
+        activeAccountusingActivekey.keys.active!,
       );
       expect(result).toBe(true);
 
@@ -603,10 +606,11 @@ describe('hive.utils tests:\n', () => {
         },
       } as ActiveAccount;
       const result = await RewardsUtils.claimRewards(
-        activeAccountusingActivekey,
         '10.00 HIVE',
         '11.00 HBD',
         '12.00 VESTS',
+        activeAccountusingActivekey.name!,
+        activeAccountusingActivekey.keys.active!,
       );
       expect(result).toBe(true);
 
@@ -679,10 +683,11 @@ describe('hive.utils tests:\n', () => {
         },
       } as ActiveAccount;
       const result = await RewardsUtils.claimRewards(
-        activeAccountusingActivekey,
         '10.00 HIVE',
         '11.00 HBD',
         '12.00 VESTS',
+        activeAccountusingActivekey.name!,
+        activeAccountusingActivekey.keys.active!,
       );
       expect(result).toBe(false);
 

@@ -4,24 +4,25 @@ import FormatUtils from 'src/utils/format.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const claimRewards = async (
-  activeAccount: ActiveAccount,
+  username: string,
   rewardHive: string | Asset,
   rewardHBD: string | Asset,
   rewardVests: string | Asset,
+  postingKey: string,
 ): Promise<boolean> => {
   return await HiveTxUtils.sendOperation(
     [
       [
         'claim_reward_balance',
         {
-          account: activeAccount.name,
+          account: username,
           reward_hive: rewardHive,
           reward_hbd: rewardHBD,
           reward_vests: rewardVests,
         },
       ] as ClaimRewardBalanceOperation,
     ],
-    activeAccount.keys.posting!,
+    postingKey,
   );
 };
 
