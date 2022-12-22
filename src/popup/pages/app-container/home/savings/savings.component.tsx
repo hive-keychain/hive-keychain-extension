@@ -190,17 +190,19 @@ const SavingsPage = ({
             case SavingOperationType.DEPOSIT:
               addToLoadingList('html_popup_deposit_to_savings_operation');
               success = await SavingsUtils.deposit(
-                activeAccount,
                 valueS,
                 username,
+                activeAccount.name!,
+                activeAccount.keys.active!,
               );
               break;
             case SavingOperationType.WITHDRAW:
               addToLoadingList('html_popup_withdraw_from_savings_operation');
               success = await SavingsUtils.withdraw(
-                activeAccount,
                 valueS,
                 username,
+                activeAccount.name!,
+                activeAccount.keys.active!,
               );
               break;
           }

@@ -4,29 +4,32 @@ import {
   TransferToSavingsOperation,
 } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Key } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 
 /* istanbul ignore next */
 const deposit = async (
-  activeAccount: ActiveAccount,
   amount: string,
   receiver: string,
+  username: string,
+  activeKey: Key,
 ) => {
   return HiveTxUtils.sendOperation(
-    [await getDepositOperation(activeAccount.name!, receiver, amount)],
-    activeAccount.keys.active!,
+    [await getDepositOperation(username, receiver, amount)],
+    activeKey,
   );
 };
 /* istanbul ignore next */
 const withdraw = async (
-  activeAccount: ActiveAccount,
   amount: string,
   to: string,
+  username: string,
+  activeKey: Key,
 ) => {
   return HiveTxUtils.sendOperation(
-    [await getWithdrawOperation(activeAccount.name!, to, amount)],
-    activeAccount.keys.active!,
+    [await getWithdrawOperation(username, to, amount)],
+    activeKey,
   );
 };
 
@@ -85,15 +88,17 @@ const claimSavings = async (activeAccount: ActiveAccount) => {
   const hasSavings = hasBalance(savings_hbd_balance, 0.001);
   if (hasHbd) {
     return SavingsUtils.deposit(
-      activeAccount,
       '0.001 HBD',
       activeAccount.name!,
+      activeAccount.name!,
+      activeAccount.keys.active!,
     );
   } else if (hasSavings) {
     return SavingsUtils.withdraw(
-      activeAccount,
       '0.001 HBD',
       activeAccount.name!,
+      activeAccount.name!,
+      activeAccount.keys.active!,
     );
   } else {
     Logger.error(
