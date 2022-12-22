@@ -177,7 +177,8 @@ const RCDelegations = ({
           success = await RcDelegationsUtils.sendDelegation(
             RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),
             username,
-            activeAccount,
+            activeAccount.name!,
+            activeAccount.keys.posting!,
           );
 
           removeFromLoadingList(

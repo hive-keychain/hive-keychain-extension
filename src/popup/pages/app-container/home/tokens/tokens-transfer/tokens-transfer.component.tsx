@@ -186,7 +186,8 @@ const TokensTransfer = ({
             receiverUsername,
             amount,
             memoParam,
-            activeAccount,
+            activeAccount.keys.active!,
+            activeAccount.name!,
           );
           if (transactionStatus.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');

@@ -1,7 +1,6 @@
 import { Asset } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
-import { KeyType } from '@interfaces/keys.interface';
+import { Key, KeyType } from '@interfaces/keys.interface';
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
@@ -28,44 +27,40 @@ const getAllOutgoingDelegations = async (
 };
 
 const cancelDelegation = async (
+  delegatee: string,
   username: string,
-  activeAccount: ActiveAccount,
+  postingKey: Key,
 ) => {
-  return sendDelegation(0, username, activeAccount);
+  return sendDelegation(0, delegatee, username, postingKey);
 };
 
 const sendDelegation = async (
   value: number,
   delegatee: string,
-  activeAccount: ActiveAccount,
+  username: string,
+  postingKey: Key,
 ) => {
   return HiveTxUtils.sendOperation(
-    [
-      RcDelegationsUtils.getRcDelegationOperation(
-        delegatee,
-        value,
-        activeAccount,
-      ),
-    ],
-    activeAccount.keys.posting!,
+    [RcDelegationsUtils.getRcDelegationOperation(delegatee, value, username)],
+    postingKey,
   );
 };
 
 const getRcDelegationOperation = (
-  username: string,
+  delegatee: string,
   value: number,
-  activeAccount: ActiveAccount,
+  username: string,
 ) => {
   return CustomJsonUtils.getCustomJsonOperation(
     [
       'delegate_rc',
       {
-        from: activeAccount.name!,
-        delegatees: [username],
+        from: username,
+        delegatees: [delegatee],
         max_rc: value,
       },
     ],
-    activeAccount,
+    username,
     KeyType.POSTING,
     'rc',
   );

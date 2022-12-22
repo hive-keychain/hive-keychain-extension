@@ -61,7 +61,8 @@ const TokenIncomingOutgoing = ({
             username,
             symbol,
             amount.toString(),
-            activeAccount,
+            activeAccount.keys.active!,
+            activeAccount.name!,
           );
           if (tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
@@ -120,7 +121,8 @@ const TokenIncomingOutgoing = ({
             username,
             symbol,
             value.toString(),
-            activeAccount,
+            activeAccount.keys.active!,
+            activeAccount.name!,
           );
 
           if (tokenOperationResult.broadcasted) {

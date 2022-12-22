@@ -1,5 +1,4 @@
-import { ActiveAccount } from '@interfaces/active-account.interface';
-import { KeyType } from '@interfaces/keys.interface';
+import { Key, KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
@@ -11,7 +10,8 @@ const stakeToken = (
   to: string,
   symbol: string,
   amount: string,
-  activeAccount: ActiveAccount,
+  activeKey: Key,
+  username: string,
 ) => {
   const json = JSON.stringify({
     contractName: 'tokens',
@@ -22,19 +22,20 @@ const stakeToken = (
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
-        activeAccount,
+        username,
         KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 
 const unstakeToken = (
   symbol: string,
   amount: string,
-  activeAccount: ActiveAccount,
+  activeKey: Key,
+  username: string,
 ) => {
   const json = JSON.stringify({
     contractName: 'tokens',
@@ -45,12 +46,12 @@ const unstakeToken = (
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
-        activeAccount,
+        username,
         KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 
@@ -58,7 +59,8 @@ const delegateToken = (
   to: string,
   symbol: string,
   amount: string,
-  activeAccount: ActiveAccount,
+  activeKey: Key,
+  username: string,
 ) => {
   const json = JSON.stringify({
     contractName: 'tokens',
@@ -69,12 +71,12 @@ const delegateToken = (
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
-        activeAccount,
+        username,
         KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 
@@ -82,7 +84,8 @@ const cancelDelegationToken = (
   from: string,
   symbol: string,
   amount: string,
-  activeAccount: ActiveAccount,
+  activeKey: Key,
+  username: string,
 ) => {
   const json = JSON.stringify({
     contractName: 'tokens',
@@ -93,12 +96,12 @@ const cancelDelegationToken = (
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
-        activeAccount,
+        username,
         KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 
@@ -174,7 +177,8 @@ const sendToken = (
   to: string,
   amount: string,
   memo: string,
-  activeAccount: ActiveAccount,
+  activeKey: Key,
+  username: string,
 ) => {
   const json = {
     contractName: 'tokens',
@@ -190,12 +194,12 @@ const sendToken = (
     [
       CustomJsonUtils.getCustomJsonOperation(
         json,
-        activeAccount,
+        username,
         KeyType.ACTIVE,
         Config.hiveEngine.mainnet,
       ),
     ],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 

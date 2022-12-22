@@ -158,7 +158,8 @@ const TokensOperation = ({
                 receiverUsername,
                 symbol,
                 amount.toString(),
-                activeAccount,
+                activeAccount.keys.active!,
+                activeAccount.name!,
               );
               break;
             case TokenOperationType.STAKE:
@@ -166,14 +167,16 @@ const TokensOperation = ({
                 receiverUsername,
                 symbol,
                 amount.toString(),
-                activeAccount,
+                activeAccount.keys.active!,
+                activeAccount.name!,
               );
               break;
             case TokenOperationType.UNSTAKE:
               tokenOperationResult = await TokensUtils.unstakeToken(
                 symbol,
                 amount.toString(),
-                activeAccount,
+                activeAccount.keys.active!,
+                activeAccount.name!,
               );
               break;
           }
