@@ -2,7 +2,6 @@ import {
   AccountWitnessProxyOperation,
   AccountWitnessVoteOperation,
 } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Key } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -11,7 +10,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 const voteWitness = async (
   witness: Witness,
   voter: string,
-  privateKey: Key,
+  activeKey: Key,
 ): Promise<boolean> => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     true,
@@ -19,13 +18,13 @@ const voteWitness = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, privateKey);
+  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
 };
 
 const unvoteWitness = async (
   witness: Witness,
   voter: string,
-  privateKey: Key,
+  activeKey: Key,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     false,
@@ -33,14 +32,14 @@ const unvoteWitness = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, privateKey);
+  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
 };
 
 const updateWitnessVote = async (
   voter: string,
   witness: Witness,
   approve: boolean,
-  privateKey: Key,
+  activeKey: Key,
 ) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     approve,
@@ -48,17 +47,17 @@ const updateWitnessVote = async (
     witness.name,
   );
 
-  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, privateKey);
+  return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
 };
 
 const sendWitnessOperation = async (
   witnessOperation: AccountWitnessVoteOperation,
   username: string,
-  privateKey: Key,
+  activeKey: Key,
 ) => {
   GovernanceUtils.removeFromIgnoreRenewal(username);
 
-  return await HiveTxUtils.sendOperation([witnessOperation], privateKey);
+  return await HiveTxUtils.sendOperation([witnessOperation], activeKey);
 };
 
 const getWitnessVoteOperation = (
@@ -76,26 +75,27 @@ const getWitnessVoteOperation = (
   ] as AccountWitnessVoteOperation;
 };
 
-const setAsProxy = async (proxyName: string, activeAccount: ActiveAccount) => {
-  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
+const setAsProxy = async (
+  proxyName: string,
+  username: string,
+  activeKey: Key,
+) => {
+  GovernanceUtils.removeFromIgnoreRenewal(username);
   return await HiveTxUtils.sendOperation(
-    [getSetProxyOperation(proxyName, activeAccount)],
-    activeAccount.keys.active!,
+    [getSetProxyOperation(proxyName, username)],
+    activeKey,
   );
 };
 
-const getSetProxyOperation = (
-  proxyName: string,
-  activeAccount: ActiveAccount,
-) => {
+const getSetProxyOperation = (proxyName: string, username: string) => {
   return [
     'account_witness_proxy',
-    { account: activeAccount.name, proxy: proxyName },
+    { account: username, proxy: proxyName },
   ] as AccountWitnessProxyOperation;
 };
 
-const removeProxy = async (activeAccount: ActiveAccount) => {
-  return setAsProxy('', activeAccount);
+const removeProxy = async (username: string, activeKey: Key) => {
+  return setAsProxy('', username, activeKey);
 };
 
 const WitnessUtils = {

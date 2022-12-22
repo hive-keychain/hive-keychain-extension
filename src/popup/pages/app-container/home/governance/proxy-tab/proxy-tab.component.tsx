@@ -35,7 +35,13 @@ const ProxyTab = ({
     }
     addToLoadingList('popup_html_setting_proxy');
     try {
-      if (await WitnessUtils.setAsProxy(proxyUsername, activeAccount)) {
+      if (
+        await WitnessUtils.setAsProxy(
+          proxyUsername,
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
+      ) {
         setSuccessMessage('popup_success_proxy', [proxyUsername]);
         refreshActiveAccount();
       } else {
@@ -54,7 +60,12 @@ const ProxyTab = ({
     }
     addToLoadingList('popup_html_clearing_proxy');
     try {
-      if (await WitnessUtils.removeProxy(activeAccount)) {
+      if (
+        await WitnessUtils.removeProxy(
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
+      ) {
         refreshActiveAccount();
         setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
       } else {

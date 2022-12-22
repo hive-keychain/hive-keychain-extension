@@ -41,7 +41,13 @@ const ProxySuggestion = ({
 
   const handleSetProxy = async () => {
     try {
-      if (await WitnessUtils.setAsProxy('keychain', activeAccount)) {
+      if (
+        await WitnessUtils.setAsProxy(
+          'keychain',
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
+      ) {
         setSuccessMessage('popup_success_proxy', ['keychain']);
         handleClose();
         refreshActiveAccount();
