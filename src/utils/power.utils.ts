@@ -2,29 +2,25 @@ import {
   TransferToVestingOperation,
   WithdrawVestingOperation,
 } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Key } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const powerUp = async (
   from: string,
   to: string,
   amount: string,
-  activeAccount: ActiveAccount,
+  activeKey: Key,
 ) => {
   return HiveTxUtils.sendOperation(
     [getPowerUpOperation(from, to, amount)],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 
-const powerDown = async (
-  username: string,
-  amount: string,
-  activeAccount: ActiveAccount,
-) => {
+const powerDown = async (username: string, amount: string, activeKey: Key) => {
   return HiveTxUtils.sendOperation(
     [getPowerDownOperation(username, amount)],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 

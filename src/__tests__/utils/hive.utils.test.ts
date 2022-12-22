@@ -738,7 +738,7 @@ describe('hive.utils tests:\n', () => {
         utilsT.userData.username,
         utilsT.userData.username,
         '0.001 HIVE',
-        {} as ActiveAccount, // TODO : fix
+        utilsT.userData.nonEncryptKeys.active,
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
@@ -777,7 +777,7 @@ describe('hive.utils tests:\n', () => {
       const result = await PowerUtils.powerDown(
         utilsT.userData.username,
         '0.1 HIVE',
-        {} as ActiveAccount, // TODO : Fix
+        utilsT.userData.nonEncryptKeys.active,
       );
       expect(result).toBe(true);
       expect(spySendOperationWithConfirmation).toBeCalledTimes(1);

@@ -175,7 +175,7 @@ const PowerUpDown = ({
                 activeAccount.name!,
                 receiver,
                 valueS,
-                activeAccount,
+                activeAccount.keys.active!,
               );
               break;
             case PowerType.POWER_DOWN:
@@ -186,7 +186,7 @@ const PowerUpDown = ({
                   Number(value).toFixed(3),
                   globalProperties.globals!,
                 ).toFixed(6)} VESTS`,
-                activeAccount,
+                activeAccount.keys.active!,
               );
           }
           if (success) {
@@ -234,7 +234,7 @@ const PowerUpDown = ({
             `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
               6,
             )} VESTS`,
-            activeAccount,
+            activeAccount.keys.active!,
           );
 
           if (success) {
