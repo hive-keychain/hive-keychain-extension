@@ -16,7 +16,7 @@ import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import WitnessUtils from 'src/utils/witness.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import './proxy-tab.component.scss';
 
 const ProxyTab = ({
@@ -36,7 +36,7 @@ const ProxyTab = ({
     addToLoadingList('popup_html_setting_proxy');
     try {
       if (
-        await WitnessUtils.setAsProxy(
+        await ProxyUtils.setAsProxy(
           proxyUsername,
           activeAccount.name!,
           activeAccount.keys.active!,
@@ -61,7 +61,7 @@ const ProxyTab = ({
     addToLoadingList('popup_html_clearing_proxy');
     try {
       if (
-        await WitnessUtils.removeProxy(
+        await ProxyUtils.removeProxy(
           activeAccount.name!,
           activeAccount.keys.active!,
         )

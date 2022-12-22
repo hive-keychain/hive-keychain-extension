@@ -11,7 +11,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import WitnessUtils from 'src/utils/witness.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import './proxy-suggestion.component.scss';
 
 const ProxySuggestion = ({
@@ -42,7 +42,7 @@ const ProxySuggestion = ({
   const handleSetProxy = async () => {
     try {
       if (
-        await WitnessUtils.setAsProxy(
+        await ProxyUtils.setAsProxy(
           'keychain',
           activeAccount.name!,
           activeAccount.keys.active!,

@@ -1,7 +1,4 @@
-import {
-  AccountWitnessProxyOperation,
-  AccountWitnessVoteOperation,
-} from '@hiveio/dhive';
+import { AccountWitnessVoteOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -75,36 +72,10 @@ const getWitnessVoteOperation = (
   ] as AccountWitnessVoteOperation;
 };
 
-const setAsProxy = async (
-  proxyName: string,
-  username: string,
-  activeKey: Key,
-) => {
-  GovernanceUtils.removeFromIgnoreRenewal(username);
-  return await HiveTxUtils.sendOperation(
-    [getSetProxyOperation(proxyName, username)],
-    activeKey,
-  );
-};
-
-const getSetProxyOperation = (proxyName: string, username: string) => {
-  return [
-    'account_witness_proxy',
-    { account: username, proxy: proxyName },
-  ] as AccountWitnessProxyOperation;
-};
-
-const removeProxy = async (username: string, activeKey: Key) => {
-  return setAsProxy('', username, activeKey);
-};
-
 const WitnessUtils = {
   unvoteWitness,
   voteWitness,
-  setAsProxy,
-  removeProxy,
   getWitnessVoteOperation,
-  getSetProxyOperation,
   sendWitnessOperation,
   updateWitnessVote,
 };
