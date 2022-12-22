@@ -124,10 +124,11 @@ const Conversion = ({
         addToLoadingList('html_popup_conversion_operation');
         try {
           let success = await ConversionUtils.sendConvert(
-            activeAccount,
+            activeAccount.name!,
             conversions,
             valueS,
             conversionType,
+            activeAccount.keys.active!,
           );
 
           if (success) {

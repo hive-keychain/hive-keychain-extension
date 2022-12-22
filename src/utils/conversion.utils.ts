@@ -2,9 +2,9 @@ import {
   CollateralizedConvertOperation,
   ConvertOperation,
 } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
 import { CollateralizedConversion } from '@interfaces/collaterelized-conversion.interface';
 import { Conversion } from '@interfaces/conversion.interface';
+import { Key } from '@interfaces/keys.interface';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
@@ -49,26 +49,27 @@ const getHiveConversions = (username: string) => {
 
 /* istanbul ignore next */
 const sendConvert = async (
-  activeAccount: ActiveAccount,
+  username: string,
   conversions: Conversion[],
   amount: string,
   conversionType: ConversionType,
+  activeKey: Key,
 ) => {
   return HiveTxUtils.sendOperation(
     [
       ConversionUtils.getConvertOperation(
-        activeAccount.name!,
+        username,
         conversions,
         amount,
         conversionType,
       ),
     ],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 
 const getConvertOperation = (
-  activeAccountName: string,
+  username: string,
   conversions: Conversion[],
   amount: string,
   conversionType: ConversionType,
@@ -76,7 +77,7 @@ const getConvertOperation = (
   const requestId = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
   return [
     conversionType,
-    { owner: activeAccountName, requestid: requestId, amount: amount },
+    { owner: username, requestid: requestId, amount: amount },
   ];
 };
 
