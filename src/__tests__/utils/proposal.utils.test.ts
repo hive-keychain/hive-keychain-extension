@@ -1,4 +1,3 @@
-import { ActiveAccount } from '@interfaces/active-account.interface';
 import moment from 'moment';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
@@ -17,8 +16,7 @@ describe('proposal.utils tests:\n', () => {
       HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValue(proposal.fakeVotedAccountResponse);
-      const account = { name: 'theghost1980' } as ActiveAccount;
-      const result = await ProposalUtils.hasVotedForProposal(account);
+      const result = await ProposalUtils.hasVotedForProposal('theghost1980');
       expect(result).toBe(true);
     });
 
@@ -26,8 +24,7 @@ describe('proposal.utils tests:\n', () => {
       HiveTxUtils.getData = jest
         .fn()
         .mockResolvedValue(proposal.fakeVotedAccountResponse);
-      const account = { name: 'no_voted_acount' } as ActiveAccount;
-      const result = await ProposalUtils.hasVotedForProposal(account);
+      const result = await ProposalUtils.hasVotedForProposal('no_voted_acount');
       expect(result).toBe(false);
     });
   });

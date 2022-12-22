@@ -32,12 +32,17 @@ const ProposalVotingSection = ({
 
   const initHasVotedForProposal = async () => {
     if (await ProposalUtils.isRequestingProposalVotes()) {
-      sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount));
+      sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount.name!));
     }
   };
 
   const handleVoteForProposalClicked = async () => {
-    if (await ProposalUtils.voteForKeychainProposal(activeAccount)) {
+    if (
+      await ProposalUtils.voteForKeychainProposal(
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      )
+    ) {
       setSuccessMessage('popup_html_kc_proposal_vote_successful');
     } else {
       setErrorMessage('popup_html_proposal_vote_fail');

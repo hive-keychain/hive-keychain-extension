@@ -55,12 +55,28 @@ const renewUsersGovernance = async (
             keys: { active: localAccount?.keys.active },
           } as ActiveAccount;
 
-          if (await ProposalUtils.hasVotedForProposal(activeAccount)) {
-            await ProposalUtils.unvoteProposal(activeAccount, 0);
-            await ProposalUtils.voteForProposal(activeAccount, 0);
+          if (await ProposalUtils.hasVotedForProposal(activeAccount.name!)) {
+            await ProposalUtils.unvoteProposal(
+              0,
+              activeAccount.name!,
+              activeAccount.keys.active!,
+            );
+            await ProposalUtils.voteForProposal(
+              0,
+              activeAccount.name!,
+              activeAccount.keys.active!,
+            );
           } else {
-            await ProposalUtils.voteForProposal(activeAccount, 0);
-            await ProposalUtils.unvoteProposal(activeAccount, 0);
+            await ProposalUtils.voteForProposal(
+              0,
+              activeAccount.name!,
+              activeAccount.keys.active!,
+            );
+            await ProposalUtils.unvoteProposal(
+              0,
+              activeAccount.name!,
+              activeAccount.keys.active!,
+            );
           }
           resolve();
         } catch (err) {

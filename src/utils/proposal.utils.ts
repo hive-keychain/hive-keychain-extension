@@ -1,5 +1,5 @@
 import { Asset, UpdateProposalVotesOperation } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Key } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
 import { store } from '@popup/store';
 import moment from 'moment';
@@ -9,7 +9,7 @@ import FormatUtils from 'src/utils/format.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const hasVotedForProposal = async (
-  activeAccount: ActiveAccount,
+  username: string,
   proposalId?: number,
 ): Promise<boolean> => {
   const listProposalVotes = await HiveTxUtils.getData(
@@ -17,7 +17,7 @@ const hasVotedForProposal = async (
     [
       [
         proposalId !== undefined ? proposalId : Config.KEYCHAIN_PROPOSAL,
-        activeAccount.name,
+        username,
       ],
       1,
       'by_proposal_voter',
@@ -25,64 +25,54 @@ const hasVotedForProposal = async (
       'all',
     ],
   );
-  return listProposalVotes[0].voter === activeAccount.name;
+  return listProposalVotes[0].voter === username;
 };
 /* istanbul ignore next */
-const voteForKeychainProposal = async (activeAccount: ActiveAccount) => {
+const voteForKeychainProposal = async (username: string, activeKey: Key) => {
   return await HiveTxUtils.sendOperation(
     [
       ProposalUtils.getUpdateProposalVoteOperation(
-        activeAccount,
         Config.KEYCHAIN_PROPOSAL,
         false,
+        username,
       ),
     ],
-    activeAccount.keys.active!,
+    activeKey,
   );
 };
 
 /* istanbul ignore next */
 const voteForProposal = async (
-  activeAccount: ActiveAccount,
   proposalId: number,
+  username: string,
+  activeKey: Key,
 ) => {
   return await HiveTxUtils.sendOperation(
-    [
-      ProposalUtils.getUpdateProposalVoteOperation(
-        activeAccount,
-        proposalId,
-        true,
-      ),
-    ],
-    activeAccount.keys.active!,
+    [ProposalUtils.getUpdateProposalVoteOperation(proposalId, true, username)],
+    activeKey,
   );
 };
 /* istanbul ignore next */
 const unvoteProposal = async (
-  activeAccount: ActiveAccount,
   proposalId: number,
+  username: string,
+  activeKey: Key,
 ) => {
   return await HiveTxUtils.sendOperation(
-    [
-      ProposalUtils.getUpdateProposalVoteOperation(
-        activeAccount,
-        proposalId,
-        false,
-      ),
-    ],
-    activeAccount.keys.active!,
+    [ProposalUtils.getUpdateProposalVoteOperation(proposalId, false, username)],
+    activeKey,
   );
 };
 
 const getUpdateProposalVoteOperation = (
-  activeAccount: ActiveAccount,
   proposalId: number,
   approve: boolean,
+  username: string,
 ) => {
   return [
     'update_proposal_votes',
     {
-      voter: activeAccount.name!,
+      voter: username,
       proposal_ids: [proposalId],
       approve: approve,
       extensions: [],
