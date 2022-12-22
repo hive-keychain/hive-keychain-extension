@@ -19,10 +19,6 @@ import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 
-const DEFAULT_RPC = 'https://api.hive.blog';
-const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
-const HIVE_100_PERCENT = 10000;
-
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
     rpc.uri === 'DEFAULT'

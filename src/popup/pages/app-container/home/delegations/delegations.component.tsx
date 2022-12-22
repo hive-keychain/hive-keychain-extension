@@ -203,10 +203,11 @@ const Delegations = ({
         addToLoadingList('html_popup_delegation_operation');
         try {
           let success = await DelegationUtils.delegateVestingShares(
-            activeAccount,
+            activeAccount.name!,
             username,
             FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
               ' VESTS',
+            activeAccount.keys.active!,
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
@@ -240,9 +241,10 @@ const Delegations = ({
 
         try {
           let success = await DelegationUtils.delegateVestingShares(
-            activeAccount,
+            activeAccount.name!,
             username,
             '0.000000 VESTS',
+            activeAccount.keys.active!,
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);

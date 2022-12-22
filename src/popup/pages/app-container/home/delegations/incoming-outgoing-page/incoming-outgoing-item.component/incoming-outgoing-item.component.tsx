@@ -68,9 +68,10 @@ const IncomingOutgoing = ({
 
         try {
           let success = await DelegationUtils.delegateVestingShares(
-            activeAccount,
+            activeAccount.name!,
             username!,
             '0.000000 VESTS',
+            activeAccount.keys.active!,
           );
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {
@@ -124,10 +125,11 @@ const IncomingOutgoing = ({
 
         try {
           let success = await DelegationUtils.delegateVestingShares(
-            activeAccount,
+            activeAccount.name!,
             username!,
             FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
               ' VESTS',
+            activeAccount.keys.active!,
           );
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {

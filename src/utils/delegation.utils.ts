@@ -1,10 +1,10 @@
 import KeychainApi from '@api/keychain';
 import { DelegateVestingSharesOperation } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
 import {
   Delegator,
   PendingOutgoingUndelegation,
 } from '@interfaces/delegations.interface';
+import { Key } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getDelegators = async (name: string) => {
@@ -50,13 +50,14 @@ const getPendingOutgoingUndelegation = async (name: string) => {
 
 /* istanbul ignore next */
 const delegateVestingShares = async (
-  activeAccount: ActiveAccount,
+  delegator: string,
   delegatee: string,
   vestingShares: string,
+  activeKey: Key,
 ) => {
   return await HiveTxUtils.sendOperation(
-    [getDelegationOperation(delegatee, activeAccount.name!, vestingShares)],
-    activeAccount.keys.active!,
+    [getDelegationOperation(delegatee, delegator, vestingShares)],
+    activeKey,
   );
 };
 
