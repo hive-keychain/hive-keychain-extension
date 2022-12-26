@@ -1,7 +1,7 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
 import { AxiosResponse } from 'axios';
 import * as tokenActions from 'src/popup/actions/token.actions';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -28,7 +28,7 @@ describe('token.actions tests:\n', () => {
   };
   describe('loadTokens tests:\n', () => {
     test('Must load tokens', async () => {
-      HiveEngineConfigUtils.getApi().find = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeTokensResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
@@ -36,7 +36,7 @@ describe('token.actions tests:\n', () => {
       expect(fakeStore.getState().tokens).toEqual(utilsT.expectedTokensPayload);
     });
     test('If error on response, will throw an unhandled error', async () => {
-      HiveEngineConfigUtils.getApi().find = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeTokensResponseNoMetadata);
       const newError = new SyntaxError(
@@ -54,7 +54,7 @@ describe('token.actions tests:\n', () => {
 
   describe('loadTokensMarket tests:\n', () => {
     test('Must load tokens market', async () => {
-      HiveEngineConfigUtils.getApi().find = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeMarketMetricsResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
@@ -126,7 +126,7 @@ describe('token.actions tests:\n', () => {
       const axiosResponse2 = {
         data: [],
       } as AxiosResponse;
-      HiveEngineConfigUtils.getAccountHistoryApi().get = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(Promise.resolve(axiosResponse1))
         .mockResolvedValueOnce(Promise.resolve(axiosResponse2));
@@ -144,7 +144,7 @@ describe('token.actions tests:\n', () => {
     test('If error on response, will throw an unhandled error', async () => {
       const currency = 'LEO';
       const error = new Error('Custom Error');
-      HiveEngineConfigUtils.getAccountHistoryApi().get = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(Promise.reject(error));
       const fakeStore = getFakeStore(initialEmptyStateStore);

@@ -1,8 +1,11 @@
 import { CustomJsonOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
+import { TokenTransaction } from '@interfaces/tokens.interface';
 import { TransactionStatus } from '@interfaces/transaction-status.interface';
+import { KeychainError } from 'src/keychain-error';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { TokenRequestParams } from 'src/utils/token-request-params.interface';
 
 const sendOperation = async (
   operations: CustomJsonOperation[],
@@ -46,8 +49,96 @@ const tryConfirmTransaction = (trxId: string): Promise<TransactionStatus> => {
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
     setTimeout(async function () {
-      fulfill(HiveEngineConfigUtils.getApi().getTransactionInfo(trxID));
+      const url = `${HiveEngineConfigUtils.getApi()}/blockchain`;
+      let resolved = false;
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          id: 1,
+          jsonrpc: '2.0',
+          method: 'getTransactionInfo',
+          params: {
+            txid: trxID,
+          },
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      }).then((res) => {
+        resolved = true;
+        fulfill(res);
+      });
+
+      setTimeout(() => {
+        if (!resolved) {
+          reject(new KeychainError('html_popup_tokens_timeout'));
+        }
+      }, 20 * 1000);
     }, 1000);
+  });
+};
+
+const get = async <T>(
+  params: TokenRequestParams,
+  timeout: number = 10,
+): Promise<T> => {
+  const url = `${HiveEngineConfigUtils.getApi()}/contracts`;
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'find',
+        params,
+        id: 1,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => {
+        if (res && res.status === 200) {
+          resolved = true;
+          return res.json();
+        }
+      })
+      .then((res: any) => {
+        resolve(res.result as unknown as T);
+      });
+
+    setTimeout(() => {
+      if (!resolved) {
+        reject(new KeychainError('html_popup_tokens_timeout'));
+      }
+    }, timeout * 1000);
+  });
+};
+
+const getHistory = async (
+  account: string,
+  symbol: string,
+  offset: number = 0,
+  type: string = 'user',
+  timeout: number = 10,
+): Promise<TokenTransaction[]> => {
+  const queryParams = `account=${account}&symbol=${symbol}&offset=${offset}&type=${type}`;
+
+  const url = `${HiveEngineConfigUtils.getAccountHistoryApi()}/accountHistory?${queryParams}`;
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    fetch(url)
+      .then((res) => {
+        if (res && res.status === 200) {
+          resolved = true;
+          return res.json();
+        }
+      })
+      .then((res: any) => {
+        resolve(res as unknown as TokenTransaction[]);
+      });
+
+    setTimeout(() => {
+      if (!resolved) {
+        reject(new KeychainError('html_popup_tokens_timeout'));
+      }
+    }, timeout * 1000);
   });
 };
 
@@ -55,4 +146,6 @@ export const HiveEngineUtils = {
   getDelayedTransactionInfo,
   tryConfirmTransaction,
   sendOperation,
+  get,
+  getHistory,
 };

@@ -2,7 +2,7 @@ import KeychainApi from '@api/keychain';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -40,7 +40,7 @@ export const toOverWriteFuntions: any = {
   //TIL here
   getAccountTransactions: () =>
     (TransactionUtils.getAccountTransactions = jest.fn()),
-  getTokens: () => (HiveEngineConfigUtils.getApi().find = jest.fn()),
+  getTokens: () => (HiveEngineUtils.get = jest.fn()),
   getUserBalance: () => (TokensUtils.getUserBalance = jest.fn()),
   hasVotedForProposal: () => (ProposalUtils.hasVotedForProposal = jest.fn()),
   voteForKeychainProposal: () =>

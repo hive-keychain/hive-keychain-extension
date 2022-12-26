@@ -4,7 +4,7 @@ import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { ConversionUtils } from 'src/utils/conversion.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
@@ -173,7 +173,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
     );
-  HiveEngineConfigUtils.getAccountHistoryApi().get = jest
+  HiveEngineUtils.getHistory = jest
     .fn()
     .mockResolvedValueOnce({
       data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,

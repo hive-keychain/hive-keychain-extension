@@ -8,7 +8,7 @@ import {
   TokenMarket,
   TokenTransaction,
 } from 'src/interfaces/tokens.interface';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 
@@ -39,9 +39,10 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
 };
 
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
+  const tokensMarket = await TokensUtils.getTokensMarket({}, 1000, 0, []);
   const action: ActionPayload<TokenMarket[]> = {
     type: ActionType.LOAD_TOKENS_MARKET,
-    payload: await TokensUtils.getTokensMarket({}, 1000, 0, []),
+    payload: tokensMarket,
   };
   dispatch(action);
 };
@@ -56,6 +57,7 @@ export const loadUserTokens =
       let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
         account,
       );
+      console.log(tokensBalance);
       tokensBalance = tokensBalance.sort(
         (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
       );
@@ -79,19 +81,13 @@ export const loadTokenHistory =
 
     do {
       previousTokenHistoryLength = tokenHistory.length;
-      let result: TokenTransaction[] = (
-        await HiveEngineConfigUtils.getAccountHistoryApi().get(
-          'accountHistory',
-          {
-            params: {
-              account,
-              symbol: currency,
-              type: 'user',
-              offset: start,
-            },
-          },
-        )
-      ).data;
+      let result: TokenTransaction[] = await HiveEngineUtils.getHistory(
+        account,
+        currency,
+        start,
+      );
+      console.log(result);
+
       start += 1000;
       tokenHistory = [...tokenHistory, ...result];
     } while (previousTokenHistoryLength !== tokenHistory.length);

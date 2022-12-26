@@ -1,42 +1,37 @@
 import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
 import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
-import Config from 'src/config';
-//import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import { KeychainError } from 'src/keychain-error';
+import TokensUtils from 'src/utils/tokens.utils';
 
 export const broadcastSendToken = async (
   requestHandler: RequestsHandler,
   data: RequestSendToken & RequestId,
 ) => {
-  let err, result;
-  const client = requestHandler.getHiveClient();
+  let err, err_message, result;
   let key = requestHandler.data.key;
   try {
-    const id = Config.hiveEngine.mainnet;
-    const json = JSON.stringify({
-      contractName: 'tokens',
-      contractAction: 'transfer',
-      contractPayload: {
-        symbol: data.currency,
-        to: data.to,
-        quantity: data.amount,
-        memo: data.memo,
-      },
-    });
-    result = await client?.broadcast.json(
-      { required_posting_auths: [], required_auths: [data.username], id, json },
-      PrivateKey.from(key!),
+    result = await TokensUtils.sendToken(
+      data.currency,
+      data.to,
+      data.amount,
+      data.memo,
+      key!,
+      data.username,
     );
-  } catch (e) {
-    err = e;
+  } catch (e: any) {
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
     const message = createMessage(
       err,
       result,
       data,
       await chrome.i18n.getMessage('bgd_ops_tokens'),
-      await chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
+      err_message,
     );
     return message;
   }
