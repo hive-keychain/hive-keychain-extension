@@ -3,6 +3,7 @@ import { Key } from '@interfaces/keys.interface';
 import { TokenTransaction } from '@interfaces/tokens.interface';
 import { TransactionStatus } from '@interfaces/transaction-status.interface';
 import { KeychainError } from 'src/keychain-error';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { TokenRequestParams } from 'src/utils/token-request-params.interface';
@@ -20,28 +21,35 @@ const sendOperation = async (
   if (transactionId) {
     return await HiveEngineUtils.tryConfirmTransaction(transactionId);
   } else {
-    return { broadcasted: false, confirmed: false };
+    return {
+      broadcasted: false,
+      confirmed: false,
+    };
   }
 };
 
 const tryConfirmTransaction = (trxId: string): Promise<TransactionStatus> => {
   let result: any;
-  return new Promise(async (fulfill, reject) => {
+  return new Promise(async (resolve, reject) => {
     for (let i = 0; i < 20; i++) {
-      result = await HiveEngineUtils.getDelayedTransactionInfo(trxId);
-      if (result != null) break;
+      let res: any = await HiveEngineUtils.getDelayedTransactionInfo(trxId);
+      result = res.result;
+      if (result !== null) break;
     }
 
     var error = null;
     if (result && result.logs) {
       var logs = JSON.parse(result.logs);
 
-      if (logs.errors && logs.errors.length > 0) error = logs.errors[0];
+      if (logs.errors && logs.errors.length > 0) {
+        error = logs.errors[0];
+        reject(ErrorUtils.parseHiveEngine(error, JSON.parse(result.payload)));
+      }
     }
     if (result != null) {
-      fulfill({ broadcasted: true, confirmed: true });
+      resolve({ broadcasted: true, confirmed: true });
     } else {
-      fulfill({ broadcasted: true, confirmed: false });
+      resolve({ broadcasted: true, confirmed: false });
     }
   });
 };
@@ -62,10 +70,14 @@ const getDelayedTransactionInfo = (trxID: string) => {
           },
         }),
         headers: { 'Content-Type': 'application/json' },
-      }).then((res) => {
-        resolved = true;
-        fulfill(res);
-      });
+      })
+        .then((res) => {
+          if (res && res.status === 200) {
+            resolved = true;
+            return res.json();
+          }
+        })
+        .then((res: any) => fulfill(res));
 
       setTimeout(() => {
         if (!resolved) {

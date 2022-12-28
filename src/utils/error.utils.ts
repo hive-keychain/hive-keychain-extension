@@ -8,11 +8,15 @@ enum BlockchainErrorType {
   WITNESS_NOT_FOUND = 'get_witness',
 }
 
+enum HiveEngineErrorType {
+  OVERDRAW_BALANCE = 'overdrawn balance',
+  TOKEN_NOT_EXISTING = 'symbol does not exist',
+  USER_NOT_EXISTING = 'invalid to',
+}
+
 const parse = (error: any) => {
-  console.log(error);
   const stack = error?.data.stack[0];
 
-  console.log(stack);
   if (stack?.context?.method) {
     switch (stack.context.method) {
       case BlockchainErrorType.ADJUST_BLANCE:
@@ -61,4 +65,24 @@ const parse = (error: any) => {
   return new KeychainError('html_popup_error_while_broadcasting', [], error);
 };
 
-export const ErrorUtils = { parse };
+const parseHiveEngine = (error: string, payload: any) => {
+  console.log(error, payload);
+  if (error.includes(HiveEngineErrorType.OVERDRAW_BALANCE)) {
+    return new KeychainError('hive_engine_overdraw_balance_error', [
+      payload.symbol,
+    ]);
+  }
+  if (error.includes(HiveEngineErrorType.TOKEN_NOT_EXISTING)) {
+    return new KeychainError('hive_engine_not_existing_token_error', [
+      payload.symbol,
+    ]);
+  }
+  if (error.includes(HiveEngineErrorType.USER_NOT_EXISTING)) {
+    return new KeychainError('hive_engine_not_existing_user_error', [
+      payload.to,
+    ]);
+  }
+  return new KeychainError('bgd_ops_hive_engine_confirmation_error', [error]);
+};
+
+export const ErrorUtils = { parse, parseHiveEngine };

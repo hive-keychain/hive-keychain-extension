@@ -57,7 +57,6 @@ export const loadUserTokens =
       let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
         account,
       );
-      console.log(tokensBalance);
       tokensBalance = tokensBalance.sort(
         (a, b) => parseFloat(b.balance) - parseFloat(a.balance),
       );
@@ -86,7 +85,6 @@ export const loadTokenHistory =
         currency,
         start,
       );
-      console.log(result);
 
       start += 1000;
       tokenHistory = [...tokenHistory, ...result];

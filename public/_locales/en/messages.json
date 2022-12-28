@@ -2643,5 +2643,21 @@
   "html_popup_witness_not_existing": {
     "message": "The witness you tried to vote for doesn't exist",
     "description": "Error if trying to vote a witness that doesn't exist"
+  },
+  "bgd_ops_hive_engine_confirmation_error": {
+    "message": "The Hive Engine operation returned with the following error:  <br/><br/> Error: $1",
+    "description": "Error while confirming transaction on hive engine"
+  },
+  "hive_engine_overdraw_balance_error": {
+    "message": "Your $1 balance is insufficiant",
+    "description": "Error if trying to send too much of a token"
+  },
+  "hive_engine_not_existing_token_error": {
+    "message": "$1 token does not exist",
+    "description": "Error if trying to send a token that doesn't exist"
+  },
+  "hive_engine_not_existing_user_error": {
+    "message": "@$1 does not exist",
+    "description": "Error if trying to send a token that doesn't exist"
   }
 }
