@@ -2679,5 +2679,9 @@
   "recurrent_transfer_iterations_error": {
     "message": "Executions must be at least 2, if you set executions to 1 the recurrent transfer will execute immediately and delete itself. You should use a normal transfer operation",
     "description": "Recurrent transfer recurrence"
+  },
+  "set_same_proxy_error": {
+    "message": "This user is already set as your proxy.",
+    "description": "Proxy already set"
   }
 }

@@ -4,7 +4,7 @@ import FormatUtils from 'src/utils/format.utils';
 enum BlockchainErrorType {
   ADJUST_BLANCE = 'adjust_balance',
   GET_ACCOUNT = 'get_account',
-  WITNESS_VOTE = 'do_apply',
+  DO_APPLY = 'do_apply',
   WITNESS_NOT_FOUND = 'get_witness',
   VALIDATION = 'validate',
 }
@@ -32,13 +32,16 @@ const parse = (error: any) => {
           [stack.data.name],
           error,
         );
-      case BlockchainErrorType.WITNESS_VOTE: {
+      case BlockchainErrorType.DO_APPLY: {
         if (stack.format.includes('has_proxy')) {
           return new KeychainError(
             'html_popup_witness_vote_error_proxy',
             [],
             error,
           );
+        }
+        if (stack.format.includes('Proxy must change')) {
+          return new KeychainError('set_same_proxy_error', [], error);
         }
         if (stack.format.includes('reject')) {
           return new KeychainError(
