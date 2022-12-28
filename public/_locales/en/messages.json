@@ -2659,5 +2659,25 @@
   "hive_engine_not_existing_user_error": {
     "message": "@$1 does not exist",
     "description": "Error if trying to send a token that doesn't exist"
+  },
+  "transaction_wrong_format_decimal_error": {
+    "message": "Wrong format. should have $1 decimals",
+    "description": "Error if formating is not correct, wrong decimal number"
+  },
+  "error_while_broadcasting": {
+    "message": "Your transaction returned an error <br/><br/>Error: $1",
+    "description": "Generic error while broadcasting transaction"
+  },
+  "recurrent_transfer_recurrence_error": {
+    "message": "Cannot set a transfer recurrence that is less than $1 hours",
+    "description": "Recurrent transfer recurrence"
+  },
+  "recurrent_transfer_recurrence_max_duration_error": {
+    "message": "Cannot set a transfer that would last for longer than $1 days",
+    "description": "Recurrent transfer recurrence"
+  },
+  "recurrent_transfer_iterations_error": {
+    "message": "Executions must be at least 2, if you set executions to 1 the recurrent transfer will execute immediately and delete itself. You should use a normal transfer operation",
+    "description": "Recurrent transfer recurrence"
   }
 }

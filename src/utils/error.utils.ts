@@ -6,6 +6,7 @@ enum BlockchainErrorType {
   GET_ACCOUNT = 'get_account',
   WITNESS_VOTE = 'do_apply',
   WITNESS_NOT_FOUND = 'get_witness',
+  VALIDATION = 'validate',
 }
 
 enum HiveEngineErrorType {
@@ -16,7 +17,7 @@ enum HiveEngineErrorType {
 
 const parse = (error: any) => {
   const stack = error?.data.stack[0];
-
+  console.log(stack);
   if (stack?.context?.method) {
     switch (stack.context.method) {
       case BlockchainErrorType.ADJUST_BLANCE:
@@ -28,7 +29,7 @@ const parse = (error: any) => {
       case BlockchainErrorType.GET_ACCOUNT:
         return new KeychainError(
           'bgd_ops_transfer_get_account',
-          [FormatUtils.getSymbol(stack.data.a.nai), stack.data.acc!],
+          [stack.data.name],
           error,
         );
       case BlockchainErrorType.WITNESS_VOTE: {
@@ -60,9 +61,32 @@ const parse = (error: any) => {
       }
       case BlockchainErrorType.WITNESS_NOT_FOUND:
         return new KeychainError('html_popup_witness_not_existing', [], error);
+      case BlockchainErrorType.VALIDATION: {
+        if (stack.format.includes('${days}')) {
+          return new KeychainError(
+            'recurrent_transfer_recurrence_max_duration_error',
+            [stack.data.days],
+            error,
+          );
+        }
+        if (stack.format.includes('${recurrence}')) {
+          return new KeychainError(
+            'recurrent_transfer_recurrence_error',
+            [stack.data.recurrence],
+            error,
+          );
+        }
+        if (stack.format.includes('execution')) {
+          return new KeychainError(
+            'recurrent_transfer_iterations_error',
+            [],
+            error,
+          );
+        }
+      }
     }
   }
-  return new KeychainError('html_popup_error_while_broadcasting', [], error);
+  return new KeychainError('error_while_broadcasting', [stack.format], error);
 };
 
 const parseHiveEngine = (error: string, payload: any) => {
