@@ -1,53 +1,41 @@
 import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import {
-  CreateProposalOperation,
-  PrivateKey,
-  RemoveProposalOperation,
-} from '@hiveio/dhive';
+import { createMessage } from '@background/requests/operations/operations.utils';
 import {
   RequestCreateProposal,
   RequestId,
   RequestRemoveProposal,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import Logger from 'src/utils/logger.utils';
+import ProposalUtils from 'src/utils/proposal.utils';
 
 export const broadcastCreateProposal = async (
   requestHandler: RequestsHandler,
   data: RequestCreateProposal & RequestId,
 ) => {
-  let err, result;
-  const client = requestHandler.getHiveClient();
+  let err, result, err_message;
   const key = requestHandler.data.key;
   try {
-    result = await client.broadcast.sendOperations(
-      [
-        [
-          'create_proposal',
-          {
-            creator: data.username,
-            receiver: data.receiver,
-            start_date: data.start,
-            end_date: data.end,
-            daily_pay: data.daily_pay,
-            subject: data.subject,
-            permlink: data.permlink,
-            extensions:
-              typeof data.extensions === 'string'
-                ? JSON.parse(data.extensions)
-                : data.extensions,
-          },
-        ] as CreateProposalOperation,
-      ],
-      PrivateKey.from(key!),
+    result = await ProposalUtils.createProposal(
+      data.username,
+      data.receiver,
+      data.start,
+      data.end,
+      data.daily_pay,
+      data.subject,
+      data.permlink,
+      data.extensions,
+      key!,
     );
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
@@ -63,34 +51,25 @@ export const broadcastUpdateProposalVote = async (
   requestHandler: RequestsHandler,
   data: RequestUpdateProposalVote & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
   const key = requestHandler.data.key;
-  let result, err;
+  let result, err, err_message;
   try {
-    result = await client.broadcast.sendOperations(
-      [
-        [
-          'update_proposal_votes',
-          {
-            voter: data.username,
-            proposal_ids:
-              typeof data.proposal_ids === 'string'
-                ? JSON.parse(data.proposal_ids)
-                : data.proposal_ids,
-            approve: data.approve,
-            extensions:
-              typeof data.extensions === 'string'
-                ? JSON.parse(data.extensions)
-                : data.extensions,
-          },
-        ],
-      ],
-      PrivateKey.from(key!),
+    result = await ProposalUtils.updateProposalVotes(
+      typeof data.proposal_ids === 'string'
+        ? JSON.parse(data.proposal_ids)
+        : data.proposal_ids,
+      data.username,
+      data.approve,
+      key!,
     );
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     let messageText = '';
     const ids =
       typeof data.proposal_ids === 'string'
@@ -125,34 +104,28 @@ export const broadcastRemoveProposal = async (
   requestHandler: RequestsHandler,
   data: RequestRemoveProposal & RequestId,
 ) => {
-  let err, result, ids;
-  const client = requestHandler.getHiveClient();
+  let err, result, ids, err_message;
   const key = requestHandler.data.key;
   try {
     ids =
       typeof data.proposal_ids === 'string'
         ? JSON.parse(data.proposal_ids)
         : data.proposal_ids;
-    result = await client.broadcast.sendOperations(
-      [
-        [
-          'remove_proposal',
-          {
-            proposal_owner: data.username,
-            proposal_ids: ids,
-            extensions:
-              typeof data.extensions === 'string'
-                ? JSON.parse(data.extensions)
-                : data.extensions,
-          },
-        ] as RemoveProposalOperation,
-      ],
-      PrivateKey.from(key!),
+
+    result = await ProposalUtils.removeProposal(
+      data.username,
+      ids,
+      data.extensions,
+      key!,
     );
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,

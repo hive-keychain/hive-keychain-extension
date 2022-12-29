@@ -2683,5 +2683,9 @@
   "set_same_proxy_error": {
     "message": "This user is already set as your proxy.",
     "description": "Proxy already set"
+  },
+  "power_down_hp_not_sufficient_error": {
+    "message": "Account does not have sufficient Hive Power for power down",
+    "description": "Error while trying to power down"
   }
 }

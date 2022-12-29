@@ -1,4 +1,9 @@
-import { Asset, UpdateProposalVotesOperation } from '@hiveio/dhive';
+import {
+  Asset,
+  CreateProposalOperation,
+  RemoveProposalOperation,
+  UpdateProposalVotesOperation,
+} from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
 import { store } from '@popup/store';
@@ -32,7 +37,7 @@ const voteForKeychainProposal = async (username: string, activeKey: Key) => {
   return await HiveTxUtils.sendOperation(
     [
       ProposalUtils.getUpdateProposalVoteOperation(
-        Config.KEYCHAIN_PROPOSAL,
+        [Config.KEYCHAIN_PROPOSAL],
         false,
         username,
       ),
@@ -48,7 +53,13 @@ const voteForProposal = async (
   activeKey: Key,
 ) => {
   return await HiveTxUtils.sendOperation(
-    [ProposalUtils.getUpdateProposalVoteOperation(proposalId, true, username)],
+    [
+      ProposalUtils.getUpdateProposalVoteOperation(
+        [proposalId],
+        true,
+        username,
+      ),
+    ],
     activeKey,
   );
 };
@@ -59,13 +70,36 @@ const unvoteProposal = async (
   activeKey: Key,
 ) => {
   return await HiveTxUtils.sendOperation(
-    [ProposalUtils.getUpdateProposalVoteOperation(proposalId, false, username)],
+    [
+      ProposalUtils.getUpdateProposalVoteOperation(
+        [proposalId],
+        false,
+        username,
+      ),
+    ],
+    activeKey,
+  );
+};
+const updateProposalVotes = async (
+  proposalIds: number[],
+  username: string,
+  approve: boolean,
+  activeKey: Key,
+) => {
+  return await HiveTxUtils.sendOperation(
+    [
+      ProposalUtils.getUpdateProposalVoteOperation(
+        proposalIds,
+        approve,
+        username,
+      ),
+    ],
     activeKey,
   );
 };
 
 const getUpdateProposalVoteOperation = (
-  proposalId: number,
+  proposalId: number[],
   approve: boolean,
   username: string,
 ) => {
@@ -73,7 +107,7 @@ const getUpdateProposalVoteOperation = (
     'update_proposal_votes',
     {
       voter: username,
-      proposal_ids: [proposalId],
+      proposal_ids: proposalId,
       approve: approve,
       extensions: [],
     },
@@ -198,6 +232,64 @@ const getProposalDailyBudget = async () => {
   );
 };
 
+const createProposal = (
+  username: string,
+  receiver: string,
+  startDate: string,
+  endDate: string,
+  dailyPay: string,
+  subject: string,
+  permlink: string,
+  extensions: any,
+  key: Key,
+) => {
+  return HiveTxUtils.sendOperation(
+    [
+      [
+        'create_proposal',
+        {
+          creator: username,
+          receiver: receiver,
+          start_date: startDate,
+          end_date: endDate,
+          daily_pay: dailyPay,
+          subject: subject,
+          permlink: permlink,
+          extensions:
+            typeof extensions === 'string'
+              ? JSON.parse(extensions)
+              : extensions,
+        },
+      ] as CreateProposalOperation,
+    ],
+    key,
+  );
+};
+
+const removeProposal = (
+  owner: string,
+  ids: number[],
+  extensions: any,
+  key: Key,
+) => {
+  return HiveTxUtils.sendOperation(
+    [
+      [
+        'remove_proposal',
+        {
+          proposal_owner: owner,
+          proposal_ids: ids,
+          extensions:
+            typeof extensions === 'string'
+              ? JSON.parse(extensions)
+              : extensions,
+        },
+      ] as RemoveProposalOperation,
+    ],
+    key!,
+  );
+};
+
 const ProposalUtils = {
   hasVotedForProposal,
   voteForProposal,
@@ -208,6 +300,9 @@ const ProposalUtils = {
   getUpdateProposalVoteOperation,
   getProposalDailyBudget,
   getFundedOption,
+  createProposal,
+  updateProposalVotes,
+  removeProposal,
 };
 
 export default ProposalUtils;

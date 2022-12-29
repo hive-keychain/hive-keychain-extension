@@ -60,6 +60,17 @@ const parse = (error: any) => {
             error,
           );
         }
+        if (
+          stack.format.includes(
+            'Account does not have sufficient Hive Power for withdraw',
+          )
+        ) {
+          return new KeychainError(
+            'power_down_hp_not_sufficient_error',
+            [],
+            error,
+          );
+        }
         break;
       }
       case BlockchainErrorType.WITNESS_NOT_FOUND:
