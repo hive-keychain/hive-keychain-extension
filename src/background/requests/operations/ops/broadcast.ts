@@ -1,22 +1,22 @@
 import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { Operation, PrivateKey } from '@hiveio/dhive';
+import { createMessage } from '@background/requests/operations/operations.utils';
+import { Operation } from '@hiveio/dhive';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestBroadcast,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import AccountUtils from 'src/utils/account.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const broadcastOperations = async (
   requestHandler: RequestsHandler,
   data: RequestBroadcast & RequestId,
 ) => {
-  let result, err;
-  const client = requestHandler.getHiveClient();
+  let result, err, err_message;
   const key = requestHandler.data.key;
 
   // check if operations contains any transfer wich requires memo encryption
@@ -29,18 +29,18 @@ export const broadcastOperations = async (
       if (op[0] === 'transfer') {
         const memo = op[1].memo;
         if (memo && memo.length > 0 && memo[0] == '#') {
-          const receiver = await client.database.getAccounts([op[1].to]);
-          if (!receiver.length) {
-            throw new Error('Failed to load receiver memo key');
+          const receiver = await AccountUtils.getExtendedAccount(op[1].to);
+          if (!receiver) {
+            throw new KeychainError('bgd_ops_transfer_get_account', [op[1].to]);
           }
           const memoKey: string = requestHandler.getUserKeyPair(
             data.username!,
             KeychainKeyTypesLC.memo,
           )[0];
           if (!memoKey) {
-            throw new Error('Failed to load user memo key');
+            throw new KeychainError('popup_html_memo_key_missing', []);
           }
-          const memoReceiver = receiver[0].memo_key;
+          const memoReceiver = receiver.memo_key;
           op[1].memo = encode(memoKey, memoReceiver, memo);
         }
       } else if (
@@ -69,14 +69,15 @@ export const broadcastOperations = async (
         }
       }
     }
-    result = await client.broadcast.sendOperations(
-      operations,
-      PrivateKey.from(key!),
-    );
+    result = await HiveTxUtils.sendOperation(operations, key!);
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,

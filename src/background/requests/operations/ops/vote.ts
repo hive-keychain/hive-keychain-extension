@@ -2,7 +2,7 @@ import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestId, RequestVote } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
-import { VoteUtils } from 'src/utils/vote.utils';
+import { BloggingUtils } from 'src/utils/blogging.utils';
 
 export const broadcastVote = async (
   requestHandler: RequestsHandler,
@@ -11,7 +11,7 @@ export const broadcastVote = async (
   const key = requestHandler.data.key;
   let err, result, err_message;
   try {
-    result = await VoteUtils.vote(
+    result = await BloggingUtils.vote(
       data.username,
       data.author,
       data.permlink,

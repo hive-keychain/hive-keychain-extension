@@ -1,66 +1,49 @@
 import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import {
-  CommentOperation,
-  CommentOptionsOperation,
-  PrivateKey,
-} from '@hiveio/dhive';
+import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestId, RequestPost } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import { BloggingUtils } from 'src/utils/blogging.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastPost = async (
   requestHandler: RequestsHandler,
   data: RequestPost & RequestId,
 ) => {
-  let err, result;
-  const client = requestHandler.getHiveClient();
+  let err, result, err_message;
   const key = requestHandler.data.key;
   try {
     if (data.comment_options === '') {
-      result = await client.broadcast.comment(
-        {
-          parent_author: data.parent_username || '',
-          parent_permlink: data.parent_perm,
-          author: data.username,
-          permlink: data.permlink,
-          title: data.title || '',
-          body: data.body,
-          json_metadata: data.json_metadata,
-        },
-        PrivateKey.from(key!),
+      result = await BloggingUtils.post(
+        data.parent_username || '',
+        data.parent_perm,
+        data.username,
+        data.permlink,
+        data.title || '',
+        data.body,
+        data.json_metadata,
+        key!,
       );
     } else {
-      const operations = [
-        [
-          'comment',
-          {
-            parent_author: data.parent_username,
-            parent_permlink: data.parent_perm,
-            author: data.username,
-            permlink: data.permlink,
-            title: data.title,
-            body: data.body,
-            json_metadata: data.json_metadata,
-          },
-        ] as CommentOperation,
-        [
-          'comment_options',
-          JSON.parse(data.comment_options),
-        ] as CommentOptionsOperation,
-      ];
-      result = await client.broadcast.sendOperations(
-        operations,
-        PrivateKey.from(key!),
+      result = await BloggingUtils.comment(
+        data.parent_username || '',
+        data.parent_perm,
+        data.username,
+        data.permlink,
+        data.title || '',
+        data.body,
+        data.json_metadata,
+        data.comment_options,
+        key!,
       );
     }
-  } catch (e) {
-    err = e;
+  } catch (e: any) {
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    Logger.log(err);
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,

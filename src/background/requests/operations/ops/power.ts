@@ -54,8 +54,6 @@ export const broadcastPowerDown = async (
   try {
     const res = await DynamicGlobalPropertiesUtils.getDynamicGlobalProperties();
 
-    console.log(res);
-
     let vestingShares = null;
     const totalSteem = res.total_vesting_fund_hive
       ? Number((res.total_vesting_fund_hive as string).split(' ')[0])
