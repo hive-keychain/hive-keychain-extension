@@ -1,6 +1,7 @@
 import {
+  AccountCreateOperation,
+  AuthorityType,
   ChangeRecoveryAccountOperation,
-  Operation,
   PrivateKey,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
@@ -25,6 +26,13 @@ export interface GeneratedKeys {
   memo: GeneratedKey;
 }
 
+export interface AccountAuthorities {
+  owner: AuthorityType;
+  active: AuthorityType;
+  posting: AuthorityType;
+  memo_key: string;
+}
+
 const checkAccountNameAvailable = async (username: string) => {
   const account = await AccountUtils.getExtendedAccount(username);
   return account ? false : true;
@@ -44,41 +52,45 @@ const validateUsername = (username: string) => {
 
 const createAccount = async (
   creationType: AccountCreationType,
-  price: number,
   newUsername: string,
-  parentAccount: LocalAccount,
-  keys: GeneratedKeys,
+  parentUsername: string,
+  parentActiveKey: Key,
+  authorities: AccountAuthorities,
+  price?: number,
+  generatedKeys?: GeneratedKeys,
 ) => {
   let success = null;
   switch (creationType) {
     case AccountCreationType.BUYING: {
       success = await createPayingAccount(
-        keys,
+        authorities,
         newUsername,
-        parentAccount,
-        price,
+        parentUsername,
+        parentActiveKey,
+        price!,
       );
       break;
     }
     case AccountCreationType.USING_TICKET: {
       success = await createAccountUsingTicket(
-        keys,
+        authorities,
         newUsername,
-        parentAccount,
+        parentUsername,
+        parentActiveKey,
       );
       break;
     }
   }
-  if (success) {
+  if (success && generatedKeys) {
     return {
       name: newUsername,
       keys: {
-        active: keys.active.private,
-        activePubkey: keys.active.public,
-        posting: keys.posting.private,
-        postingPubkey: keys.posting.public,
-        memo: keys.memo.private,
-        memoPubkey: keys.memo.public,
+        active: generatedKeys.active.private,
+        activePubkey: generatedKeys.active.public,
+        posting: generatedKeys.posting.private,
+        postingPubkey: generatedKeys.posting.public,
+        memo: generatedKeys.memo.private,
+        memoPubkey: generatedKeys.memo.public,
       },
     } as LocalAccount;
   } else {
@@ -87,31 +99,33 @@ const createAccount = async (
 };
 
 const createAccountUsingTicket = (
-  keys: GeneratedKeys,
+  authorities: AccountAuthorities,
   newUsername: string,
-  parentAccount: LocalAccount,
+  parentUsername: string,
+  parentActiveKey: Key,
 ) => {
   return HiveTxUtils.sendOperation(
     [
       [
         'create_claimed_account',
         {
-          creator: parentAccount.name!,
+          creator: parentUsername,
           new_account_name: newUsername,
           json_metadata: '{}',
           extensions: [],
-          ...generateKeyObject(keys),
+          ...authorities,
         },
       ],
     ],
-    parentAccount.keys.active!,
+    parentActiveKey,
   );
 };
 
 const createPayingAccount = (
-  keys: GeneratedKeys,
+  authorities: AccountAuthorities,
   newUsername: string,
-  parentAccount: LocalAccount,
+  parentUsername: string,
+  parentActiveKey: Key,
   price: number,
 ) => {
   return HiveTxUtils.sendOperation(
@@ -120,18 +134,20 @@ const createPayingAccount = (
         'account_create',
         {
           fee: `${price.toFixed(3)} HIVE`,
-          creator: parentAccount.name!,
+          creator: parentUsername,
           new_account_name: newUsername,
           json_metadata: '{}',
-          ...generateKeyObject(keys),
+          ...authorities,
         },
-      ] as Operation,
+      ] as AccountCreateOperation,
     ],
-    parentAccount.keys.active!,
+    parentActiveKey,
   );
 };
 
-const generateKeyObject = (keys: GeneratedKeys) => {
+const generateAccountAuthorities = (
+  keys: GeneratedKeys,
+): AccountAuthorities => {
   return {
     owner: {
       weight_threshold: 1,
@@ -178,4 +194,5 @@ export const AccountCreationUtils = {
   validateUsername,
   createAccount,
   setRecoveryAccountOperation,
+  generateAccountAuthorities,
 };
