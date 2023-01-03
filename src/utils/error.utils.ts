@@ -17,7 +17,6 @@ enum HiveEngineErrorType {
 
 const parse = (error: any) => {
   const stack = error?.data.stack[0];
-  console.log(stack);
   if (stack?.context?.method) {
     switch (stack.context.method) {
       case BlockchainErrorType.ADJUST_BLANCE:
