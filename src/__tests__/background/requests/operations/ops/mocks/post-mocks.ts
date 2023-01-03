@@ -61,8 +61,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.comment(confirmed);
-    mocks.client.broadcast.sendOperations(confirmed);
   }),
   assertMsgSucess: (
     result: any,
@@ -72,7 +70,7 @@ const methods = {
     const { request_id, ...datas } = data;
     expect(result).toEqual(
       messages.success.answerSucess(
-        confirmed,
+        true,
         datas,
         request_id,
         chrome.i18n.getMessage(messageKey),
