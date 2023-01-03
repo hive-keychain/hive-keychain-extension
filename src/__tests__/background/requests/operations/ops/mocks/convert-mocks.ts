@@ -11,7 +11,7 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 const requestHandler = new RequestsHandler();
 const data = {
   type: KeychainRequestTypes.convert,
-  amount: '0.1',
+  amount: '0.100',
   collaterized: false,
   domain: 'domain',
   username: mk.user.one,

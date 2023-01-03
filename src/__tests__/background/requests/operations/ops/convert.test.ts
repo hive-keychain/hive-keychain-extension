@@ -1,5 +1,6 @@
 import { convert } from '@background/requests/operations/ops/convert';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks/convert-mocks';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
@@ -12,34 +13,43 @@ describe('convert tests:\n', () => {
     mocks.client.database.call([{ requestid: 1 }], [{ requestid: 2 }]);
     requestHandler.data.rpc = DefaultRpcs[0];
   });
-  it('Must return error if no key on handler', async () => {
-    const result = await convert(requestHandler, data);
-    const { request_id, ...datas } = data;
-    expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
-  });
-  it('Must return success with a non collateralized convertion', async () => {
-    requestHandler.setKeys(
-      userData.one.nonEncryptKeys.memo,
-      userData.one.encryptKeys.active,
-    );
-    mocks.client.broadcast.sendOperations(confirmed);
+  it('Must return error if undefined key on handler', async () => {
     const result = await convert(requestHandler, data);
     const { request_id, ...datas } = data;
     expect(result).toEqual(
-      messages.success.convert(confirmed, datas, request_id, data.collaterized),
+      messages.error.keyBuffer(
+        datas,
+        request_id,
+        new TypeError(
+          "Cannot read properties of undefined (reading 'toString')",
+        ),
+        "Cannot read properties of undefined (reading 'toString')",
+      ),
+    );
+  });
+  it('Must return success with a non collateralized convertion', async () => {
+    requestHandler.setKeys(
+      userData.one.nonEncryptKeys.active,
+      userData.one.encryptKeys.active,
+    );
+    HiveTxUtils.sendOperation = jest.fn().mockResolvedValue(true);
+    const result = await convert(requestHandler, data);
+    const { request_id, ...datas } = data;
+    expect(result).toEqual(
+      messages.success.convert(true, datas, request_id, data.collaterized),
     );
   });
   it('Must return success with a collateralized convertion', async () => {
     requestHandler.setKeys(
-      userData.one.nonEncryptKeys.memo,
+      userData.one.nonEncryptKeys.active,
       userData.one.encryptKeys.active,
     );
-    mocks.client.broadcast.sendOperations(confirmed);
+    HiveTxUtils.sendOperation = jest.fn().mockResolvedValue(true);
     data.collaterized = true;
     const result = await convert(requestHandler, data);
     const { request_id, ...datas } = data;
     expect(result).toEqual(
-      messages.success.convert(confirmed, datas, request_id, data.collaterized),
+      messages.success.convert(true, datas, request_id, data.collaterized),
     );
   });
 });

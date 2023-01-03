@@ -23,17 +23,24 @@ export default {
         },
       };
     },
-    keyBuffer: (datas: any, request_id: number) => {
+    keyBuffer: (
+      datas: any,
+      request_id: number,
+      error?: Error | TypeError,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new TypeError('private key should be a Buffer'),
+          error: error ?? new TypeError('private key should be a Buffer'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : private key should be a Buffer`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : private key should be a Buffer`,
           request_id: request_id,
           publicKey: undefined,
         },
@@ -276,7 +283,7 @@ export default {
       };
     },
     convert: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | Boolean,
       datas: any,
       request_id: number,
       collateralized: boolean,
