@@ -1,4 +1,5 @@
 import { broadcastCreateProposal } from '@background/requests/operations/ops/proposals';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
@@ -20,7 +21,8 @@ describe('proposals tests:\n', () => {
       );
     });
     it('Must return error if no key on handler', async () => {
-      const errorMessage = 'private key should be a Buffer';
+      const errorMessage =
+        "Cannot read properties of undefined (reading 'toString')";
       data.create.extensions = '{"keychain":10000,"points":6}';
       const result = await broadcastCreateProposal(requestHandler, data.create);
       methods.assert.error(
@@ -33,17 +35,22 @@ describe('proposals tests:\n', () => {
     it('Must return success', async () => {
       data.create.extensions = '{"keychain":10000,"points":6}';
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
+      const mHiveTxSendOp = (HiveTxUtils.sendOperation = jest
+        .fn()
+        .mockResolvedValueOnce(true));
       const result = await broadcastCreateProposal(requestHandler, data.create);
       const { request_id, ...datas } = data.create;
       expect(result).toEqual(
         messages.success.answerSucess(
-          confirmed,
+          true,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_proposal_create'),
           undefined,
         ),
       );
+      mHiveTxSendOp.mockClear();
+      mHiveTxSendOp.mockReset();
     });
   });
 });

@@ -103,7 +103,7 @@ const methods = {
           error,
           datas,
           request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMessage}`,
+          errorMessage,
           undefined,
         ),
       );
