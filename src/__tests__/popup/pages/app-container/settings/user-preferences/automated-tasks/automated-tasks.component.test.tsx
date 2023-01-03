@@ -1,5 +1,6 @@
 import automatedTasks from 'src/__tests__/popup/pages/app-container/settings/user-preferences/automated-tasks/mocks/automated-tasks';
 import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
+import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
@@ -9,7 +10,6 @@ config.byDefault();
 describe('automated-tasks.component tests:\n', () => {
   let _asFragment: () => DocumentFragment;
   const { methods, constants, extraMocks } = automatedTasks;
-  const { snapshotName } = constants;
   methods.afterEach;
   describe('Stored data:\n', () => {
     describe('Max mana greater than freeAccount credits:\n', () => {
@@ -19,10 +19,10 @@ describe('automated-tasks.component tests:\n', () => {
           maxManaGreater: true,
         });
       });
-      it('Must load component and match snapshot', () => {
-        expect(_asFragment()).toMatchSnapshot(
-          snapshotName.storedData.maxManaGreater,
-        );
+      it('Must load component and show messages', () => {
+        assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
+        assertion.getOneByText(constants.message.intro);
+        assertion.getOneByText(constants.message.autoclaimInfo);
       });
       it('Must set to false auto claim accounts', async () => {
         await clickAwait([alCheckbox.automatedTasks.checkbox.claim.accounts]);
@@ -58,10 +58,10 @@ describe('automated-tasks.component tests:\n', () => {
           passData: true,
         });
       });
-      it('Must load component and match snapshot', () => {
-        expect(_asFragment()).toMatchSnapshot(
-          snapshotName.storedData.maxManaLower,
-        );
+      it('Must load component and not show autoclaim information', () => {
+        assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
+        assertion.getOneByText(constants.message.intro);
+        assertion.queryByText(constants.message.autoclaimInfo, false);
       });
       it('Must load selected account', async () => {
         extraMocks.remockAccounts();
@@ -78,8 +78,10 @@ describe('automated-tasks.component tests:\n', () => {
     beforeEach(async () => {
       _asFragment = await automatedTasks.beforeEach();
     });
-    it('Must load component and match snapshot', () => {
-      expect(_asFragment()).toMatchSnapshot(snapshotName.noData);
+    it('Must load component, show messages but autoclaim', () => {
+      assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
+      assertion.getOneByText(constants.message.intro);
+      assertion.queryByText(constants.message.autoclaimInfo, false);
     });
   });
 });
