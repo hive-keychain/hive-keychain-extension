@@ -2687,5 +2687,17 @@
   "power_down_hp_not_sufficient_error": {
     "message": "Account does not have sufficient Hive Power for power down",
     "description": "Error while trying to power down"
+  },
+  "already_has_authority_error": {
+    "message": "Already has authority",
+    "description": "Error if account already has authority"
+  },
+  "missing_authority_error": {
+    "message": "Missing authority",
+    "description": "Error if account is missing authority"
+  },
+  "nothing_to_remove_error": {
+    "message": "Nothing to remove",
+    "description": "Error if account has no authority to remove"
   }
 }

@@ -12,8 +12,8 @@ export const addAccount = async (
 ) => {
   const { username, keys } = data;
   let err = null;
-  const client = requestHandler.getHiveClient();
-  const account = (await client.database.getAccounts([username]))[0];
+
+  const account = await AccountUtils.getExtendedAccount(username);
   if (account) {
     const savedKeys: Keys = keys;
     if (keys.memo) savedKeys.memoPubkey = account.memo_key;

@@ -47,10 +47,27 @@ const getHiveConversions = (username: string) => {
   );
 };
 
+const convert = async (
+  username: string,
+  conversions: Conversion[],
+  amount: string,
+  conversionType: ConversionType,
+  activeKey: Key,
+) => {
+  const requestId = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
+  return ConversionUtils.sendConvert(
+    username,
+    requestId,
+    amount,
+    conversionType,
+    activeKey,
+  );
+};
+
 /* istanbul ignore next */
 const sendConvert = async (
   username: string,
-  conversions: Conversion[],
+  requestId: number,
   amount: string,
   conversionType: ConversionType,
   activeKey: Key,
@@ -59,7 +76,7 @@ const sendConvert = async (
     [
       ConversionUtils.getConvertOperation(
         username,
-        conversions,
+        requestId,
         amount,
         conversionType,
       ),
@@ -70,11 +87,10 @@ const sendConvert = async (
 
 const getConvertOperation = (
   username: string,
-  conversions: Conversion[],
+  requestId: number,
   amount: string,
   conversionType: ConversionType,
 ): ConvertOperation | CollateralizedConvertOperation => {
-  const requestId = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
   return [
     conversionType,
     { owner: username, requestid: requestId, amount: amount },
@@ -87,4 +103,5 @@ export const ConversionUtils = {
   getHiveConversions,
   getConvertOperation,
   sendConvert,
+  convert,
 };

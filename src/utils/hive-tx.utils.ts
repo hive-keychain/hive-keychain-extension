@@ -48,7 +48,7 @@ const sendOperation = async (
 
 const createTransaction = async (operations: Operation[]) => {
   let hiveTransaction = new HiveTransaction();
-  return await hiveTransaction.create(operations);
+  return hiveTransaction.create(operations);
 };
 
 const createSignAndBroadcastTransaction = async (
@@ -64,10 +64,7 @@ const createSignAndBroadcastTransaction = async (
       if (signHash) {
         const tx = await HiveTxUtils.createTransaction(operations);
         const digest = Hive.getTransactionDigest(tx);
-        const signature = await LedgerUtils.signHash(
-          digest,
-          `48'/13'/0'/0'/0'`,
-        );
+        const signature = await LedgerUtils.signHash(digest, key);
         hiveTransaction.addSignature(signature);
       } else {
         signedTransactionFromLedger = await LedgerUtils.signTransaction(
@@ -129,6 +126,32 @@ const confirmTransaction = async (transactionId: string) => {
   }
 };
 
+const signTransaction = async (tx: any, key: Key, signHash?: boolean) => {
+  const hiveTransaction = new HiveTransaction(tx);
+  if (KeysUtils.isUsingLedger(key)) {
+    try {
+      if (signHash) {
+        const digest = Hive.getTransactionDigest(tx);
+        const signature = await LedgerUtils.signHash(digest, key);
+        hiveTransaction.addSignature(signature);
+      } else {
+        return await LedgerUtils.signTransaction(tx, key);
+      }
+    } catch (err) {
+      Logger.error(err);
+      throw err;
+    }
+  } else {
+    try {
+      const privateKey = PrivateKey.fromString(key!.toString());
+      return hiveTransaction.sign(privateKey);
+    } catch (err) {
+      Logger.error(err);
+      throw new Error('html_popup_error_while_signing_transaction');
+    }
+  }
+};
+
 const getData = async (
   method: string,
   params: any[] | object,
@@ -144,6 +167,7 @@ const getData = async (
       )}`,
     );
 };
+
 export const HiveTxUtils = {
   sendOperation,
   createSignAndBroadcastTransaction,
@@ -151,4 +175,5 @@ export const HiveTxUtils = {
   getData,
   setRpc,
   createTransaction,
+  signTransaction,
 };

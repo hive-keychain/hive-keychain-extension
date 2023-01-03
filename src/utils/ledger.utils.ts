@@ -1,5 +1,5 @@
 import LedgerHiveApp from '@engrave/ledger-app-hive';
-import { Transaction } from '@hiveio/dhive';
+import { SignedTransaction, Transaction } from '@hiveio/dhive';
 import { Key, Keys, KeyType } from '@interfaces/keys.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -131,7 +131,7 @@ const signTransaction = async (
   transaction: Transaction,
   key: Key,
   chainId?: string,
-) => {
+): Promise<SignedTransaction> => {
   let ledger = await LedgerUtils.getLedgerInstance();
   if (!ledger) throw new Error('html_ledger_error_while_connecting');
   try {

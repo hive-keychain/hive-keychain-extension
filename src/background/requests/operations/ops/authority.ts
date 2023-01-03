@@ -3,7 +3,6 @@ import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
 import {
   KeychainKeyTypesLC,
   RequestAddAccountAuthority,
@@ -12,19 +11,21 @@ import {
   RequestRemoveAccountAuthority,
   RequestRemoveKeyAuthority,
 } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import AccountUtils from 'src/utils/account.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const broadcastAddAccountAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestAddAccountAuthority & RequestId,
 ) => {
-  let err, result;
+  let err, result, err_message;
   const { username, authorizedUsername } = data;
   let role = data.role.toLowerCase();
   let { weight } = data;
   try {
-    const client = requestHandler.getHiveClient();
     const key = requestHandler.data.key;
-    const userAccount = (await client.database.getAccounts([username]))[0];
+    const userAccount = await AccountUtils.getExtendedAccount(username);
 
     const updatedAuthority = userAccount[role as 'posting' | 'active'];
 
@@ -35,7 +36,7 @@ export const broadcastAddAccountAuthority = async (
 
     const hasAuthority = authorizedAccounts.indexOf(authorizedUsername) !== -1;
     if (hasAuthority) {
-      throw new Error('Already has authority');
+      throw new KeychainError('already_has_authority_error');
     }
 
     /** Use weight_thresold as default weight */
@@ -54,19 +55,21 @@ export const broadcastAddAccountAuthority = async (
         : userAccount.posting;
 
     /** Add authority on user account */
-    result = await client.broadcast.updateAccount(
-      {
-        account: userAccount.name,
-        owner: undefined,
-        active,
-        posting,
-        memo_key: userAccount.memo_key,
-        json_metadata: userAccount.json_metadata,
-      },
-      PrivateKey.from(key!),
+    result = await AccountUtils.updateAccount(
+      userAccount.name,
+      active,
+      posting,
+      userAccount.memo_key,
+      userAccount.json_metadata,
+      key!,
     );
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
     const err_message = await beautifyErrorMessage(err);
     return createMessage(
@@ -87,13 +90,12 @@ export const broadcastRemoveAccountAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestRemoveAccountAuthority & RequestId,
 ) => {
-  let err, result;
+  let err, result, err_message;
   const { username, authorizedUsername } = data;
   let role = data.role.toLowerCase();
   try {
-    const client = requestHandler.getHiveClient();
     const key = requestHandler.data.key;
-    const userAccount = (await client.database.getAccounts([username]))[0];
+    const userAccount = await AccountUtils.getExtendedAccount(username);
 
     const updatedAuthority = userAccount[role as 'posting' | 'active'];
     const totalAuthorizedUser = updatedAuthority.account_auths.length;
@@ -107,7 +109,7 @@ export const broadcastRemoveAccountAuthority = async (
 
     /** Release callback if the account does not exist in the account_auths array */
     if (totalAuthorizedUser === updatedAuthority.account_auths.length) {
-      throw new Error('Nothing to remove');
+      throw new Error('nothing_to_remove_error');
     }
 
     const active =
@@ -115,21 +117,22 @@ export const broadcastRemoveAccountAuthority = async (
     const posting =
       role === KeychainKeyTypesLC.posting ? updatedAuthority : undefined;
 
-    result = await client.broadcast.updateAccount(
-      {
-        account: userAccount.name,
-        owner: undefined,
-        active,
-        posting,
-        memo_key: userAccount.memo_key,
-        json_metadata: userAccount.json_metadata,
-      },
-      PrivateKey.from(key!),
+    result = await AccountUtils.updateAccount(
+      userAccount.name,
+      active,
+      posting,
+      userAccount.memo_key,
+      userAccount.json_metadata,
+      key!,
     );
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
@@ -148,23 +151,22 @@ export const broadcastAddKeyAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestAddKeyAuthority & RequestId,
 ) => {
-  let result, err;
+  let result, err, err_message;
 
   const { username, authorizedKey } = data;
   let role = data.role.toLowerCase();
 
   let { weight } = data;
   try {
-    const client = requestHandler.getHiveClient();
     const key = requestHandler.data.key;
-    const userAccount = (await client.database.getAccounts([username]))[0];
+    const userAccount = await AccountUtils.getExtendedAccount(username);
     const updatedAuthority = userAccount[role as 'posting' | 'active'];
 
     /** Release callback if the key already exist in the key_auths array */
     const authorizedKeys = updatedAuthority.key_auths.map((auth) => auth[0]);
     const hasAuthority = authorizedKeys.indexOf(authorizedKey) !== -1;
     if (hasAuthority) {
-      throw new Error('Already has authority');
+      throw new KeychainError('already_has_authority_error');
     }
 
     /** Use weight_thresold as default weight */
@@ -181,21 +183,23 @@ export const broadcastAddKeyAuthority = async (
       role === KeychainKeyTypesLC.posting ? updatedAuthority : undefined;
 
     /** Add authority on user account */
-    result = await client.broadcast.updateAccount(
-      {
-        account: userAccount.name,
-        owner: undefined,
-        active,
-        posting,
-        memo_key: userAccount.memo_key,
-        json_metadata: userAccount.json_metadata,
-      },
-      PrivateKey.from(key!),
+
+    result = await AccountUtils.updateAccount(
+      userAccount.name,
+      active,
+      posting,
+      userAccount.memo_key,
+      userAccount.json_metadata,
+      key!,
     );
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,
@@ -215,15 +219,14 @@ export const broadcastRemoveKeyAuthority = async (
   requestHandler: RequestsHandler,
   data: RequestRemoveKeyAuthority & RequestId,
 ) => {
-  let err, result;
+  let err, result, err_message;
   const { username, authorizedKey } = data;
   let role = data.role.toLowerCase();
 
   try {
-    const client = requestHandler.getHiveClient();
     const key = requestHandler.data.key;
 
-    const userAccount = (await client.database.getAccounts([username]))[0];
+    const userAccount = await AccountUtils.getExtendedAccount(username);
 
     const updatedAuthority = userAccount[role as 'posting' | 'active'];
     const totalAuthorizedKey = updatedAuthority.key_auths.length;
@@ -237,7 +240,7 @@ export const broadcastRemoveKeyAuthority = async (
 
     /** Release callback if the key does not exist in the key_auths array */
     if (totalAuthorizedKey === updatedAuthority.key_auths.length) {
-      throw new Error('Missing authority');
+      throw new KeychainError('missing_authority_error');
     }
 
     const active =
@@ -245,21 +248,22 @@ export const broadcastRemoveKeyAuthority = async (
     const posting =
       role === KeychainKeyTypesLC.posting ? updatedAuthority : undefined;
 
-    result = await client.broadcast.updateAccount(
-      {
-        account: userAccount.name,
-        owner: undefined,
-        active,
-        posting,
-        memo_key: userAccount.memo_key,
-        json_metadata: userAccount.json_metadata,
-      },
-      PrivateKey.from(key!),
+    result = await AccountUtils.updateAccount(
+      userAccount.name,
+      active,
+      posting,
+      userAccount.memo_key,
+      userAccount.json_metadata,
+      key!,
     );
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,

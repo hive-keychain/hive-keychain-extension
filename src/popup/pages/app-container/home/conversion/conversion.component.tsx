@@ -123,7 +123,7 @@ const Conversion = ({
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_conversion_operation');
         try {
-          let success = await ConversionUtils.sendConvert(
+          let success = await ConversionUtils.convert(
             activeAccount.name!,
             conversions,
             valueS,

@@ -1,5 +1,7 @@
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import {
+  AccountUpdateOperation,
+  Authority,
   ClaimAccountOperation,
   cryptoUtils,
   DynamicGlobalProperties,
@@ -9,7 +11,7 @@ import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
-import { Keys, KeyType } from 'src/interfaces/keys.interface';
+import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
@@ -464,6 +466,32 @@ const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
   } else Logger.info('Not enough RC% to claim account');
 };
 
+const updateAccount = (
+  username: string,
+  active: Authority | undefined,
+  posting: Authority | undefined,
+  memo: string,
+  stringifiedMetadata: string,
+  key: Key,
+) => {
+  return HiveTxUtils.sendOperation(
+    [
+      [
+        'account_update',
+        {
+          account: username,
+          owner: undefined,
+          active,
+          posting,
+          memo_key: memo,
+          json_metadata: stringifiedMetadata,
+        },
+      ] as AccountUpdateOperation,
+    ],
+    key!,
+  );
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -490,6 +518,7 @@ const AccountUtils = {
   generateQRCode,
   encryptAccounts,
   claimAccounts,
+  updateAccount,
 };
 
 export const BackgroundAccountUtils = {

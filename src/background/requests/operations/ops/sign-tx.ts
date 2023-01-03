@@ -1,25 +1,28 @@
 import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { signTransaction } from '@hiveio/hive-js/lib/auth';
+import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+
+import Logger from 'src/utils/logger.utils';
 
 export const signTx = async (
   requestHandler: RequestsHandler,
   data: RequestSignTx & RequestId,
 ) => {
   let key = requestHandler.data.key;
-  let result, err;
+  let result, err, err_message;
 
   try {
-    result = await signTransaction(data.tx, [key]);
+    result = await HiveTxUtils.signTransaction(data.tx, key!);
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
-
     const message = createMessage(
       err,
       result,
