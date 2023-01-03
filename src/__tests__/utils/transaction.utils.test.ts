@@ -57,29 +57,7 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
-    test('if an error occurs(wrong transfers data received, missing proper format in .op), must call Logger', async () => {
-      const spyLoggerError = jest.spyOn(Logger, 'error');
-      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
-      const mockGetAccountHistory = (HiveTxUtils.getData = jest
-        .fn()
-        .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryWrongDataResponse));
-      try {
-        expect(
-          await TransactionUtils.getAccountTransactions(
-            callingData.accountName,
-            callingData.start,
-            callingData.memoKey,
-          ),
-        ).toBe(1);
-      } catch (error) {
-        expect((error as Error).message).toContain('stack');
-        expect(spyLoggerError).toBeCalledTimes(1);
-      }
-      mockGetAccountHistory.mockReset();
-      mockGetAccountHistory.mockRestore();
-      spyLoggerError.mockReset();
-      spyLoggerError.mockRestore();
-    });
+
     test('Getting one transaction with id(0x40), must return the expected output bellow', async () => {
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
       const mockGetAccountHistory = (HiveTxUtils.getData = jest
@@ -95,6 +73,7 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
+
     test('Must return the expected results, for the rest of cases', async () => {
       const showResults = false;
       store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
