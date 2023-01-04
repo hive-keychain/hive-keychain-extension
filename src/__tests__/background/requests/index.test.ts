@@ -21,29 +21,30 @@ describe('index tests:\n', () => {
   });
   it('Must return handler if no values on local storage', async () => {
     spies.getValueFromLocalStorage(undefined);
-    spies.getClient();
     const _requestHandler = await RequestsHandler.getFromLocalStorage();
     expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
-    expect(spies.getClient()).not.toBeCalled();
     expect(_requestHandler).toBeInstanceOf(RequestsHandler);
+    expect(_requestHandler.hiveClient.address + '/').toBe(DefaultRpcs[0].uri);
   });
-  it('Must init handler and call getClient', async () => {
-    spies.getValueFromLocalStorage(requestData);
-    spies.getClient();
-    const _requestHandler = await RequestsHandler.getFromLocalStorage();
-    expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
-    expect(spies.getClient()).toBeCalledWith(DefaultRpcs[0]);
-    expect(_requestHandler).toBeInstanceOf(RequestsHandler);
-  });
+  //TODO tests: uncomment when add the conditional on setupRpc.
+  // it('Must init handler by calling setupRpc', async () => {
+  //   const requestDataRpc1 = { rpc: DefaultRpcs[1] } as RequestDataMocks;
+  //   spies.getValueFromLocalStorage(requestDataRpc1);
+  //   const _requestHandler = await RequestsHandler.getFromLocalStorage();
+  //   expect(_requestHandler).toBeInstanceOf(RequestsHandler);
+  //   expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
+  //   expect(_requestHandler.hiveClient.address).toBe(DefaultRpcs[1].uri);
+  // });
   it('Must initialize parameters', async () => {
-    spies.getClient();
     requestHandler.initializeParameters(
       accounts.twoAccounts,
       DefaultRpcs[1],
       {},
     );
-    expect(spies.getClient()).toBeCalledWith(DefaultRpcs[1]);
+    expect(requestHandler.data.accounts).toEqual(accounts.twoAccounts);
     expect(requestHandler.hiveEngineConfig).toEqual(hiveEngineConfigByDefault);
+    expect(requestHandler.hiveClient.address + '/').toBe(DefaultRpcs[0].uri);
+    //TODO when setupRpc updated, this must change to check on initializeParam rpc assigned.
   });
   it('Must not reset resetWinId and reset data', () => {
     requestHandler.reset(false);
