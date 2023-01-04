@@ -264,7 +264,7 @@ export default {
       };
     },
     broadcast: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       request_id: number,
       message: string,
