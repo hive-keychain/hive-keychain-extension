@@ -1,8 +1,10 @@
+import { Asset } from '@hiveio/dhive';
 import moment from 'moment';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 afterEach(() => {
   jest.clearAllMocks();
@@ -31,25 +33,26 @@ describe('proposal.utils tests:\n', () => {
 
   describe('getProposalList tests:\n', () => {
     test('Passing a user that hasnt voted on any proposal, must return a list of proposal with a field false on each one', async () => {
-      HiveTxUtils.getData = jest
-        .fn()
-        .mockResolvedValueOnce(proposal.fakeProposalListResponse)
-        .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);
-
       ProposalUtils.getProposalDailyBudget = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
+      mocksImplementation.hiveTxUtils.getData({
+        listProposals: proposal.fakeProposalListResponseHiveTx.proposals,
+        listProposalVotes: proposal.fakeListProposalVotesResponse,
+      });
 
       const result = await ProposalUtils.getProposalList('theghost1980');
       expect(result).toEqual(proposal.expectedResultProposal);
     });
+
     test('Passing a user that has voted on the keychain proposal, must return a list of proposal with one voted proposal', async () => {
       const withKeyChainProposal = {
         proposals: [
-          ...proposal.fakeProposalListResponse.proposals,
-          proposal.fakeProposalKeyChain,
+          ...proposal.fakeProposalListResponseHiveTx.proposals,
+          proposal.fakeProposalKeyChainHiveTx,
         ],
       };
+
       const expectedResultProposalWithkeyChain = [
         ...proposal.expectedResultProposal,
         {
@@ -58,7 +61,7 @@ describe('proposal.utils tests:\n', () => {
           receiver: 'keychain',
           startDate: moment('2022-05-15T00:00:00'),
           endDate: moment('2023-05-15T00:00:00'),
-          dailyPay: '390 HBD',
+          dailyPay: Asset.fromString('390.000 HBD'),
           subject: 'Hive Keychain development',
           totalVotes: '0 HP',
           link: 'https://peakd.com/proposals/216',
@@ -68,14 +71,14 @@ describe('proposal.utils tests:\n', () => {
         },
       ];
 
-      HiveTxUtils.getData = jest
-        .fn()
-        .mockResolvedValueOnce(withKeyChainProposal)
-        .mockResolvedValueOnce(proposal.fakeListProposalVotesResponse);
-
       ProposalUtils.getProposalDailyBudget = jest
         .fn()
         .mockResolvedValueOnce(proposal.fakeDailyBudgetResponse);
+
+      mocksImplementation.hiveTxUtils.getData({
+        listProposals: withKeyChainProposal.proposals,
+        listProposalVotes: proposal.fakeListProposalVotesResponse,
+      });
 
       const result = await ProposalUtils.getProposalList('theghost1980');
       expect(result).toEqual(expectedResultProposalWithkeyChain);

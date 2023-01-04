@@ -113,6 +113,52 @@ const fakeProposalListResponse = {
   ],
 };
 
+const fakeProposalListResponseHiveTx = {
+  proposals: [
+    {
+      id: 214,
+      proposal_id: 214,
+      creator: 'howo',
+      receiver: 'howo',
+      start_date: '2022-04-27T00:00:00',
+      end_date: '2023-04-27T00:00:00',
+      daily_pay: '330.000 HBD',
+      subject: 'Core development of hive and communities year 3',
+      permlink: 'core-development-proposal-year-3',
+      total_votes: '84323179888178111',
+      status: 'active',
+    },
+    {
+      id: 185,
+      proposal_id: 185,
+      creator: 'hivewatchers',
+      receiver: 'hivewatchers',
+      start_date: '2021-08-01T00:00:00',
+      end_date: '2022-07-31T00:00:00',
+      daily_pay: '330.000 HBD',
+      subject: 'The Hivewatchers & Spaminator Operational Proposal',
+      permlink: 'the-hivewatchers-and-spaminator-operational-proposal',
+      total_votes: '74818760284017953',
+      status: 'active',
+    },
+    {
+      id: 201,
+      proposal_id: 201,
+      creator: 'brianoflondon',
+      receiver: 'v4vapp.dhf',
+      start_date: '2022-01-23T00:00:00',
+      end_date: '2022-05-23T00:00:00',
+      daily_pay: '330.000 HBD',
+      subject:
+        'Continuation: Hive to Value 4 Value - The Hive <> Bitcoin Lightning Bridge',
+      permlink:
+        'v4vapp-updates-ongoing-funding-proposal-for-the-btc-lightning-to-hive-bi-directional-bridge',
+      total_votes: '73774153416233168',
+      status: 'active',
+    },
+  ],
+};
+
 const fakeProposalKeyChain = {
   id: 216,
   proposal_id: 216,
@@ -121,6 +167,20 @@ const fakeProposalKeyChain = {
   start_date: '2022-05-15T00:00:00',
   end_date: '2023-05-15T00:00:00',
   daily_pay: { amount: '390000', precision: 3, nai: '@@000000013' },
+  subject: 'Hive Keychain development',
+  permlink: 'hive-keychain-proposal-dhf-ran717',
+  total_votes: '61237185339413554',
+  status: 'active',
+};
+
+const fakeProposalKeyChainHiveTx = {
+  id: 216,
+  proposal_id: 216,
+  creator: 'keychain',
+  receiver: 'keychain',
+  start_date: '2022-05-15T00:00:00',
+  end_date: '2023-05-15T00:00:00',
+  daily_pay: '390 HBD',
   subject: 'Hive Keychain development',
   permlink: 'hive-keychain-proposal-dhf-ran717',
   total_votes: '61237185339413554',
@@ -200,9 +260,11 @@ export default {
   expectedResponse,
   fakeVotedAccountResponse,
   fakeProposalListResponse,
+  fakeProposalListResponseHiveTx,
   fakeDailyBudgetResponse,
   fakeListProposalVotesResponse,
   fakeProposal2,
   fakeProposalKeyChain,
   expectedResultProposal,
+  fakeProposalKeyChainHiveTx,
 };
