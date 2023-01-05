@@ -35,14 +35,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      vote: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.vote = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-  },
 };
 
 const spies = {
@@ -56,7 +48,8 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.vote(confirmed);
+    //TODO rm comments
+    // mocks.client.broadcast.vote(confirmed);
   }),
   assert: {
     error: (

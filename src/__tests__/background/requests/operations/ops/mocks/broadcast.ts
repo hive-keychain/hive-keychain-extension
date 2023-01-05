@@ -1,5 +1,5 @@
 import { RequestsHandler } from '@background/requests';
-import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
+import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainKeyTypes,
   KeychainRequestTypes,
@@ -33,20 +33,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    database: {
-      getAccounts: (result: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-    broadcast: {
-      sendOperations: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-  },
 };
 
 const methods = {

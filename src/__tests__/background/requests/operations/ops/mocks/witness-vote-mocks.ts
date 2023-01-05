@@ -34,14 +34,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      // sendOperations: (id: TransactionConfirmation) =>
-      //   (requestHandler.getHiveClient().broadcast.sendOperations = jest
-      //     .fn()
-      //     .mockResolvedValue(id)),
-    },
-  },
 };
 
 const spies = {

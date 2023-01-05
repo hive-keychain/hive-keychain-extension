@@ -113,10 +113,6 @@ export class RequestsHandler {
     init(msg.request, this.data.tab, msg.domain, this);
   }
 
-  getHiveClient() {
-    return this.hiveClient;
-  }
-
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {
     const pubKey: string = `${keyType}Pubkey`;
     return [

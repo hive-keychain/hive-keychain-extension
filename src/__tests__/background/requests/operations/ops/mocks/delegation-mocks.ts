@@ -1,8 +1,5 @@
 import { RequestsHandler } from '@background/requests';
-import {
-  DynamicGlobalProperties,
-  TransactionConfirmation,
-} from '@hiveio/dhive';
+import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestTypes,
   RequestDelegation,
@@ -35,19 +32,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      delegateVestingShares: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.delegateVestingShares = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-    database: {
-      getDynamicGlobalProperties: (globalProps: DynamicGlobalProperties) =>
-        (requestHandler.getHiveClient().database.getDynamicGlobalProperties =
-          jest.fn().mockResolvedValue(globalProps)),
-    },
-  },
 };
 
 const spies = {
@@ -61,7 +45,8 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.delegateVestingShares(confirmed);
+    // TODO rm comments when finish fix tests
+    // mocks.client.broadcast.delegateVestingShares(confirmed);
   }),
 };
 

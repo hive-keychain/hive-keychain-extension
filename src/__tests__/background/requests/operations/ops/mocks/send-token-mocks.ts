@@ -37,14 +37,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      json: (response: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.json = jest
-          .fn()
-          .mockResolvedValue(response)),
-    },
-  },
 };
 
 const methods = {
@@ -54,7 +46,8 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.json(confirmed);
+    //TODO rm comments
+    // mocks.client.broadcast.json(confirmed);
   }),
   assert: {
     error: (

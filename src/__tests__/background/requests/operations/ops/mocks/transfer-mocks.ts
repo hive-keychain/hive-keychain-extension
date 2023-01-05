@@ -1,5 +1,5 @@
 import { RequestsHandler } from '@background/requests';
-import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
+import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainKeyTypesLC,
   KeychainRequestData,
@@ -8,7 +8,6 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
-import { RPCError } from 'src/__tests__/utils-for-testing/classes/errors/rpc';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -47,32 +46,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      transfer: (
-        using: 'success' | 'error',
-        result: TransactionConfirmation | RPCError,
-      ) => {
-        // if (using === 'success') {
-        //   requestHandler.getHiveClient().broadcast.transfer = jest
-        //     .fn()
-        //     .mockResolvedValue(result);
-        // } else {
-        //   requestHandler.getHiveClient().broadcast.transfer = jest
-        //     .fn()
-        //     .mockRejectedValue(result);
-        // }
-        // TODO Fix here
-      },
-    },
-    database: {
-      getAccounts: (receiverAccount: ExtendedAccount[]) => {},
-      // TODO fix
-      // (requestHandler.getHiveClient().database.getAccounts = jest
-      //   .fn()
-      //   .mockResolvedValue(receiverAccount)),
-    },
-  },
 };
 
 const spies = {
@@ -86,8 +59,9 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.transfer('success', confirmed);
-    mocks.client.database.getAccounts([]);
+    //TODO rm comments
+    // mocks.client.broadcast.transfer('success', confirmed);
+    // mocks.client.database.getAccounts([]);
   }),
   assert: {
     error: (

@@ -1,7 +1,6 @@
 import MkModule from '@background/mk.module';
 import { RequestsHandler } from '@background/requests';
 import { addAccount } from '@background/requests/operations/ops/add-account';
-import { ExtendedAccount } from '@hiveio/dhive';
 import {
   KeychainRequestTypes,
   RequestAddAccount,
@@ -36,14 +35,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    database: {
-      getAccounts: (result: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-  },
   getMk: (mk: string | null) =>
     (MkModule.getMk = jest.fn().mockResolvedValue(mk)),
   getAccountsFromLocalStorage: () =>
@@ -65,7 +56,8 @@ const methods = {
     cloneData: RequestAddAccount & RequestId,
   ) => {
     try {
-      mocks.client.database.getAccounts([accounts.extended]);
+      //TODO rm comments when finished fixing tests
+      // mocks.client.database.getAccounts([accounts.extended]);
       mocks.getMk(null);
       await addAccount(requestHandler, cloneData);
     } catch (error) {

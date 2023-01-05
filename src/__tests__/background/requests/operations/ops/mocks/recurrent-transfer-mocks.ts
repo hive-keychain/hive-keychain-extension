@@ -1,5 +1,5 @@
 import { RequestsHandler } from '@background/requests';
-import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
+import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestData,
   KeychainRequestTypes,
@@ -38,20 +38,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      sendOperations: (id: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(id)),
-    },
-    database: {
-      getAccounts: (receiverAccount: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(receiverAccount)),
-    },
-  },
 };
 
 const spies = {
@@ -65,8 +51,9 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.sendOperations(confirmed);
-    mocks.client.database.getAccounts([]);
+    //TODO rm comments
+    // mocks.client.broadcast.sendOperations(confirmed);
+    // mocks.client.database.getAccounts([]);
   }),
   assert: {
     error: (

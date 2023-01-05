@@ -1,5 +1,5 @@
 import { RequestsHandler } from '@background/requests';
-import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
+import { TransactionConfirmation } from '@hiveio/dhive';
 import * as MemoEncodeHiveJS from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypes,
@@ -35,14 +35,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    database: {
-      getAccounts: (receiverAccount: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(receiverAccount)),
-    },
-  },
 };
 
 const spies = {

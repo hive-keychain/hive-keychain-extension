@@ -81,7 +81,4 @@ describe('index tests:\n', () => {
       requestHandler,
     );
   });
-  it('Must return hive client', () => {
-    expect(requestHandler.getHiveClient()).toBeInstanceOf(Client);
-  });
 });

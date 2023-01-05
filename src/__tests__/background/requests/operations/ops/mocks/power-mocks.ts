@@ -1,15 +1,11 @@
 import { RequestsHandler } from '@background/requests';
-import {
-  DynamicGlobalProperties,
-  TransactionConfirmation,
-} from '@hiveio/dhive';
+import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestTypes,
   RequestId,
   RequestPowerDown,
   RequestPowerUp,
 } from '@interfaces/keychain.interface';
-import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -45,19 +41,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      sendOperations: (id: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(id)),
-    },
-    database: {
-      getDynamicGlobalProperties: (data: DynamicGlobalProperties) =>
-        (requestHandler.getHiveClient().database.getDynamicGlobalProperties =
-          jest.fn().mockResolvedValue(data)),
-    },
-  },
 };
 
 const methods = {
@@ -67,8 +50,9 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.sendOperations(confirmed);
-    mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);
+    //TODO rm comments
+    // mocks.client.broadcast.sendOperations(confirmed);
+    // mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);
   }),
 };
 
