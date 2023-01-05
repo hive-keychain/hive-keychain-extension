@@ -10,6 +10,11 @@ import messages from 'src/__tests__/background/requests/operations/ops/mocks/mes
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
+const i18n = {
+  get: (message: string, options?: string[]) =>
+    mocksImplementation.i18nGetMessageCustom(message, options),
+};
+
 const requestHandler = new RequestsHandler();
 
 const data = {
@@ -70,7 +75,7 @@ const methods = {
           error,
           datas,
           request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMessage}`,
+          errorMessage,
           undefined,
         ),
       );
@@ -98,6 +103,7 @@ const constants = {
   data,
   requestHandler,
   confirmed,
+  i18n,
 };
 
 export default {
