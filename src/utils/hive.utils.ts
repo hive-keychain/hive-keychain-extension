@@ -205,19 +205,12 @@ const signMessage = (message: string, privateKey: string) => {
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
 
-/**
- * getClient().database.getCurrentMedianHistoryPrice()
- */
 const getCurrentMedianHistoryPrice = async (): Promise<Price> => {
   return HiveTxUtils.getData(
     'condenser_api.get_current_median_history_price',
     [],
   );
 };
-/**
- * getClient().database.call(method, params).
- * Fixed params: method 'get_reward_fund', params ['post]
- */
 const getRewardFund = async (): Promise<RewardFund> => {
   return HiveTxUtils.getData('condenser_api.get_reward_fund', ['post']);
 };

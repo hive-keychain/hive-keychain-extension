@@ -1,7 +1,6 @@
 import { BgdHiveEngineConfigModule } from '@background/hive-engine-config.module';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import init from '@background/requests/init';
-import { Client } from '@hiveio/dhive';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -35,25 +34,15 @@ type RequestData = {
 };
 export class RequestsHandler {
   data: RequestData;
-  hiveClient: Client;
   hiveEngineConfig: HiveEngineConfig;
 
   constructor() {
     this.data = { confirmed: false };
-    this.hiveClient = new Client(Config.rpc.DEFAULT.uri);
     this.hiveEngineConfig = Config.hiveEngine;
   }
 
   async initFromLocalStorage(data: RequestData) {
     this.data = data;
-    if (data.rpc) {
-      await this.setupRpc(data.rpc);
-    }
-  }
-
-  async setupRpc(rpc: Rpc) {
-    // TODO check here
-    this.hiveClient = new Client('https://api.hive.blog');
   }
 
   async setupHiveEngine() {
@@ -67,7 +56,6 @@ export class RequestsHandler {
   ) {
     this.data.accounts = accounts;
     this.data.rpc = rpc;
-    await this.setupRpc(rpc);
     await this.setupHiveEngine();
     this.data.preferences = preferences;
   }
@@ -110,11 +98,13 @@ export class RequestsHandler {
     this.data.tab = sender.tab!.id;
     this.data.request = msg.request;
     this.data.request_id = msg.request_id;
+    if (msg.request.rpc)
+      this.data.rpc = { uri: msg.request.rpc, testnet: false };
     init(msg.request, this.data.tab, msg.domain, this);
   }
 
-  getHiveClient() {
-    return this.hiveClient;
+  getHiveClient(): any {
+    return {}; // TODO remove when tests are fixed. @saturno
   }
 
   getUserKeyPair(username: string, keyType: KeychainKeyTypesLC) {

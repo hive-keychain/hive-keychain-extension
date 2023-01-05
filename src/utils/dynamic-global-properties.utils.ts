@@ -1,9 +1,6 @@
 import { DynamicGlobalProperties } from '@hiveio/dhive';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
-/**
- * getClient().database.getDynamicGlobalProperties()
- */
 const getDynamicGlobalProperties =
   async (): Promise<DynamicGlobalProperties> => {
     return HiveTxUtils.getData(

@@ -1,4 +1,3 @@
-import RPCModule from '@background/rpc.module';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   KeychainRequest,
@@ -62,7 +61,7 @@ const spies = {
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockResolvedValue(data),
-  getClient: () => jest.spyOn(RPCModule, 'getClient'),
+  getClient: () => {},
   removeWindow: jest.spyOn(DialogLifeCycle, 'removeWindow'),
   removeFromLocalStorage: jest
     .spyOn(LocalStorageUtils, 'removeFromLocalStorage')

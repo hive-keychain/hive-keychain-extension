@@ -18,6 +18,7 @@ export const broadcastTransfer = async (
     err: any,
     err_message = null;
   try {
+    console.log(requestHandler.data);
     const { username, to } = data;
     const memoKey: string = requestHandler.getUserKeyPair(
       username!,
@@ -48,6 +49,7 @@ export const broadcastTransfer = async (
       0,
       0,
       requestHandler.getUserPrivateKey(username!, KeychainKeyTypesLC.active)!,
+      requestHandler.data.rpc?.uri,
     );
   } catch (e: any) {
     if (typeof e === 'string') {
