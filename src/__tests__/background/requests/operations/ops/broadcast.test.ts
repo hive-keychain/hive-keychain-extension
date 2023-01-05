@@ -4,9 +4,9 @@ import {
   RequestBroadcast,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import broadcast from 'src/__tests__/background/requests/operations/ops/mocks/broadcast';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
-import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import operation from 'src/__tests__/utils-for-testing/data/operation';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
@@ -31,7 +31,8 @@ describe('broadcast tests:\n', () => {
     expect(result).toEqual(messages.error.notIterable(datas, request_id));
   });
   it('Must return error if receiver memo key not found on hive', async () => {
-    mocks.client.database.getAccounts([]);
+    // mocks.client.database.getAccounts([]);
+    //TODO mock getAccounts.
     const transfers = operation.array.filter((op) => op['0'] === 'transfer');
     transfers[0]['1'].memo = '# enconded memo';
     const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
@@ -41,7 +42,8 @@ describe('broadcast tests:\n', () => {
     expect(result).toEqual(messages.error.receiverMemoKey(datas, request_id));
   });
   it('Must return error if memoKey not found on handler', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
+    // mocks.client.database.getAccounts([accounts.extended]);
+    //TODO mock getAccounts.
     const transfers = operation.array.filter((op) => op['0'] === 'transfer');
     transfers[0]['1'].memo = '# enconded memo';
     const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
@@ -53,7 +55,8 @@ describe('broadcast tests:\n', () => {
     );
   });
   it('Must return error if not key on handler', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
+    // mocks.client.database.getAccounts([accounts.extended]);
+    //TODO mock getAccounts.
     const transfers = operation.array.filter((op) => op['0'] === 'transfer');
     transfers[0]['1'].memo = '# enconded memo';
     const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
@@ -72,8 +75,13 @@ describe('broadcast tests:\n', () => {
     expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
   });
   it('Must return success on transfer', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
-    mocks.client.broadcast.sendOperations(confirmed);
+    // mocks.client.database.getAccounts([accounts.extended]);
+    //TODO mock getAccounts.
+    // mocks.client.broadcast.sendOperations(confirmed);
+    const mHiveTxSendOp = jest
+      .spyOn(HiveTxUtils, 'sendOperation')
+      .mockResolvedValue(true);
+
     const transfers = operation.array.filter((op) => op['0'] === 'transfer');
     transfers[0]['1'].memo = '# enconded memo';
     const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
@@ -101,10 +109,16 @@ describe('broadcast tests:\n', () => {
         chrome.i18n.getMessage('bgd_ops_broadcast'),
       ),
     );
+    mHiveTxSendOp.mockRestore();
   });
   it('Must return success broadcasting operations', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
-    mocks.client.broadcast.sendOperations(confirmed);
+    // mocks.client.database.getAccounts([accounts.extended]);
+    //TODO mock getAccounts.
+    // mocks.client.broadcast.sendOperations(confirmed);
+    const mHiveTxSendOp = jest
+      .spyOn(HiveTxUtils, 'sendOperation')
+      .mockResolvedValue(true);
+
     const operations = operation.array.filter((op) => op['0'] !== 'transfer');
     const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
     cloneData.operations = JSON.stringify(operations);
@@ -122,5 +136,6 @@ describe('broadcast tests:\n', () => {
         chrome.i18n.getMessage('bgd_ops_broadcast'),
       ),
     );
+    mHiveTxSendOp.mockRestore();
   });
 });
