@@ -10,9 +10,11 @@ import { ConversionUtils } from 'src/utils/conversion.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import conversions from 'src/__tests__/utils-for-testing/data/conversions';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 config.byDefault();
 describe('hive.utils tests:\n', () => {
@@ -265,21 +267,6 @@ describe('hive.utils tests:\n', () => {
     });
   });
 
-  const mGetConversionRequests = (
-    conversionRequests: any,
-    collateralized: any,
-  ) => {
-    HiveTxUtils.getData = jest.fn().mockImplementation((...args) => {
-      if (args[0] === 'condenser_api.get_conversion_requests') {
-        return Promise.resolve(conversionRequests);
-      } else if (
-        args[0] === 'condenser_api.get_collateralized_conversion_requests'
-      ) {
-        return Promise.resolve(collateralized);
-      }
-    });
-  };
-
   describe('getConversionRequests tests:\n', () => {
     it('Must return ordered array', async () => {
       const expectedNewArray = [
@@ -300,10 +287,10 @@ describe('hive.utils tests:\n', () => {
           requestid: 1,
         },
       ];
-      mGetConversionRequests(
-        utilsT.fakeHbdConversionsResponse,
-        utilsT.fakeHiveConversionsResponse,
-      );
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: conversions.fakeHbdConversionsResponse,
+        collateralized: conversions.fakeHiveConversionsResponse,
+      });
       const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual(expectedNewArray);
     });
@@ -318,17 +305,26 @@ describe('hive.utils tests:\n', () => {
           requestid: 1,
         },
       ];
-      mGetConversionRequests([], utilsT.fakeHiveConversionsResponse);
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: [],
+        collateralized: conversions.fakeHiveConversionsResponse,
+      });
       const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual(expectedNewArray);
     });
     test('Fetching 2 empty arrays will return an empty array', async () => {
-      mGetConversionRequests([], []);
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: [],
+        collateralized: [],
+      });
       const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual([]);
     });
     test('If hiveConversions lack one of the used properties, will return an array with undefined values', async () => {
-      mGetConversionRequests([], [{ anyOther: 'any' }]);
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: [],
+        collateralized: [{ anyOther: 'any' }],
+      });
       const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual([
         {
