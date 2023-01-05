@@ -1,6 +1,6 @@
 import MkModule from '@background/mk.module';
 import { RequestsHandler } from '@background/requests';
-import { TransactionConfirmation } from '@hiveio/dhive';
+import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import AccountUtils from 'src/utils/account.utils';
 import Logger from 'src/utils/logger.utils';
@@ -34,6 +34,8 @@ const mocks = {
     (AccountUtils.getAccountsFromLocalStorage = jest
       .fn()
       .mockResolvedValue(accounts.twoAccounts)),
+  getExtendedAccount: (account: ExtendedAccount) =>
+    (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
 };
 
 const spies = {

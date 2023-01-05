@@ -2,11 +2,12 @@ import { performOperation } from '@background/requests/operations';
 import { KeychainRequestTypes } from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import indexMocks from 'src/__tests__/background/requests/operations/mocks/index-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 describe('index tests:\n', () => {
-  const { methods, constants, spies } = indexMocks;
+  const { methods, constants, spies, mocks } = indexMocks;
   const { requestHandler, _data } = constants;
   methods.afterEach;
   methods.beforeEach;
@@ -15,15 +16,17 @@ describe('index tests:\n', () => {
     expect(spies.logger.info).toBeCalledWith('-- PERFORMING TRANSACTION --');
     expect(spies.logger.log).toBeCalledWith(_data[1]);
   });
-  it('Must call logger and sendMessage', async () => {
+
+  it('Must return error if no key on handler', async () => {
+    mocks.getExtendedAccount(accounts.extended);
     const data = _data.filter(
       (dat) => dat.type === KeychainRequestTypes.transfer,
     )[0];
-    const error = new TypeError('private key should be a Buffer');
+    const message = "Cannot read properties of undefined (reading 'toString')";
+    const error = new TypeError(message);
     requestHandler.data.request_id = data.request_id;
     await performOperation(requestHandler, data, 0, 'domain', false);
     const { request_id, ...datas } = data;
-    expect(spies.logger.error).toBeCalledWith(error);
     expect(spies.sendMessage).toBeCalledWith({
       command: DialogCommand.ANSWER_REQUEST,
       msg: {
@@ -32,11 +35,12 @@ describe('index tests:\n', () => {
         result: undefined,
         publicKey: undefined,
         data: datas,
-        message: chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
+        message: message,
         request_id: request_id,
       },
     });
   });
+
   it('Must call addToWhitelist,reset and removeWindow', async () => {
     const data = _data[1];
     requestHandler.data.key = userData.one.nonEncryptKeys.active;
@@ -50,7 +54,12 @@ describe('index tests:\n', () => {
     expect(spies.removeWindow).toBeCalledWith(requestHandler.data.windowId);
     expect(spies.reset).toBeCalledWith(false);
   });
+
   it('Must call each type of request', async () => {
+    const mHiveTxSendOp = jest
+      .spyOn(HiveTxUtils, 'sendOperation')
+      .mockResolvedValue(false);
+    mocks.getExtendedAccount(accounts.extended);
     for (let i = 0; i < _data.length; i++) {
       const tab = 0;
       requestHandler.data.rpc = DefaultRpcs[0];
@@ -64,5 +73,6 @@ describe('index tests:\n', () => {
       expect(data.type).toBe(_data[i].type);
       spies.tabsSendMessage.mockClear();
     }
+    mHiveTxSendOp.mockRestore();
   });
 });

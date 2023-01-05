@@ -97,6 +97,7 @@ const sendTransfer = (
   activeKey: Key,
   overrideRpc?: string,
 ) => {
+  console.log({ activeKey }); //TODO to remove
   if (!recurrent) {
     return HiveTxUtils.sendOperation(
       [getTransferOperation(sender, receiver, amount, memo)],
