@@ -53,6 +53,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     _governance,
   } = mocksDefault._defaults;
 
+  //INI using dHive.
   initialMocks.noImplentationNeeded();
   withFixedValues();
   LocalStorageUtils.getValueFromLocalStorage = jest
@@ -173,12 +174,15 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
     );
-  HiveEngineUtils.getHistory = jest
-    .fn()
-    .mockResolvedValueOnce({
-      data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
-    })
-    .mockResolvedValueOnce({ data: [] });
+
+  // Note: Commented as now using hiveTx at the end.
+  // HiveEngineUtils.getHistory = jest
+  //   .fn()
+  //   .mockResolvedValueOnce({
+  //     data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
+  //   })
+  //   .mockResolvedValueOnce({ data: [] });
+
   ProposalUtils.hasVotedForProposal = jest
     .fn()
     .mockResolvedValue(
@@ -218,6 +222,25 @@ const setOrDefault = (toUse: MocksToUse) => {
       .fn()
       .mockImplementation(() => Promise.resolve(undefined));
   }
+  //END using dHive.
+
+  //TODO possibly we may use a conditional for mocking
+  //  so we can use dHive or hiveTx.
+  //Using HiveTx
+  //Testing updating to hiveTx
+  let flagGetHistory = false;
+  HiveEngineUtils.getHistory = jest.fn().mockImplementation((...args) => {
+    console.log('being called w: ', args);
+    if (!flagGetHistory) {
+      flagGetHistory = true;
+      return Promise.resolve(_tokens.getTokenHistory);
+    } else {
+      flagGetHistory = false;
+      return Promise.resolve([]);
+    }
+  });
+  //end testing
+  //END Using HiveTx
 };
 
 export default { setOrDefault };
