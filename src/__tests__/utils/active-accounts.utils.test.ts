@@ -289,7 +289,7 @@ describe(' active-account.utils tests', () => {
         },
       } as ActiveAccount;
       const messageI18n = 'Message 2';
-      const expectedRewardText = `["1.00 HBD","0 HP","0.00 HIVE","${messageI18n}:<br>1.00 HBD"]`;
+      const expectedRewardText = `["1.00 HBD","0 HP","0.00 HIVE","${messageI18n}:<br>0 HP / 1.00 HBD / 0.00 HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
@@ -307,7 +307,7 @@ describe(' active-account.utils tests', () => {
         },
       } as ActiveAccount;
       const messageI18n = 'Message 3';
-      const expectedRewardText = `["0.00 HBD","10 HP","0.00 HIVE","${messageI18n}:<br>10 HP"]`;
+      const expectedRewardText = `["0.00 HBD","10 HP","0.00 HIVE","${messageI18n}:<br>10 HP / 0.00 HBD / 0.00 HIVE\"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(10);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
@@ -325,7 +325,7 @@ describe(' active-account.utils tests', () => {
         },
       } as ActiveAccount;
       const messageI18n = 'Message 4';
-      const expectedRewardText = `["0.00 HBD","0 HP","100.00 HIVE","${messageI18n}:<br>100.00 HIVE"]`;
+      const expectedRewardText = `["0.00 HBD","0 HP","100.00 HIVE","${messageI18n}:<br>0 HP / 0.00 HBD / 100.00 HIVE\"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
@@ -343,7 +343,7 @@ describe(' active-account.utils tests', () => {
         },
       } as ActiveAccount;
       const messageI18n = 'Message 5';
-      const expectedRewardText = `["A HBD","0 HP","WT HIVE","${messageI18n}:<br>A HBD / WT HIVE"]`;
+      const expectedRewardText = `["A HBD","0 HP","WT HIVE","${messageI18n}:<br>0 HP / A HBD / WT HIVE"]`;
       FormatUtils.toHP = jest.fn().mockReturnValue(0);
       FormatUtils.getValFromString = jest.fn().mockReturnValue(1);
       chrome.i18n.getMessage = jest
