@@ -384,9 +384,6 @@ const getExtendedAccounts = async (
   return await HiveTxUtils.getData('condenser_api.get_accounts', [usernames]);
 };
 
-/**
- * getClient().database.getAccounts([username])
- */
 const getAccount = async (username: string): Promise<ExtendedAccount[]> => {
   return HiveTxUtils.getData('condenser_api.get_accounts', [[username]]);
 };
