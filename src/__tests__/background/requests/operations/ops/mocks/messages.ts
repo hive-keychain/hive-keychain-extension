@@ -189,7 +189,7 @@ export default {
   },
   success: {
     addAuth: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       cloneData: any,
       request_id: number,

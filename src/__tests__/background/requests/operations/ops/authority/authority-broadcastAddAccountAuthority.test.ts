@@ -4,6 +4,8 @@ import {
   RequestAddAccountAuthority,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -11,7 +13,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:\n', () => {
   const { methods, constants, mocks } = authority;
-  const { requestHandler, confirmed } = constants;
+  const { requestHandler, i18n } = constants;
   const data = constants.data.addAccountAuthority;
   methods.afterEach;
   methods.beforeEach;
@@ -20,13 +22,15 @@ describe('authority tests:\n', () => {
       const cloneAccountExtended = objects.clone(
         accounts.extended,
       ) as ExtendedAccount;
-      mocks.client.database.getAccounts([cloneAccountExtended]);
-      mocks.client.broadcast.updateAccount(confirmed);
+      mocks.getExtendedAccount(cloneAccountExtended);
     });
     it('Must throw error if account exists in auths', async () => {
       const result = await broadcastAddAccountAuthority(requestHandler, data);
-      const { request_id, ...datas } = data;
-      expect(result).toEqual(messages.error.hasAuthority(datas, request_id));
+      const localeMessageKey = 'already_has_authority_error';
+      const error = new KeychainError(localeMessageKey);
+      const message = i18n.get('bgd_ops_error') + ' : ' + localeMessageKey;
+      expect(result.msg.error).toEqual(error);
+      expect(result.msg.message).toBe(message);
     });
     it('Must return error if no key on handler', async () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
@@ -36,10 +40,17 @@ describe('authority tests:\n', () => {
         requestHandler,
         cloneData,
       );
-      const { request_id, ...datas } = cloneData;
-      expect(result).toEqual(messages.error.keyBuffer(datas, request_id));
+      const errorMessage =
+        "Cannot read properties of undefined (reading 'toString')";
+      const error = new TypeError(errorMessage);
+      const message = i18n.get('bgd_ops_error') + ' : ' + errorMessage;
+      expect(result.msg.error).toEqual(error);
+      expect(result.msg.message).toBe(message);
     });
     it('Must broadcast update account using active key', async () => {
+      const mHiveTxSendOp = jest
+        .spyOn(HiveTxUtils, 'sendOperation')
+        .mockResolvedValue(true);
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
@@ -53,10 +64,14 @@ describe('authority tests:\n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.addAuth(confirmed, datas, cloneData, request_id),
+        messages.success.addAuth(true, datas, cloneData, request_id),
       );
+      mHiveTxSendOp.mockRestore();
     });
     it('Must broadcast update account using posting key', async () => {
+      const mHiveTxSendOp = jest
+        .spyOn(HiveTxUtils, 'sendOperation')
+        .mockResolvedValue(true);
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
@@ -70,8 +85,9 @@ describe('authority tests:\n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.addAuth(confirmed, datas, cloneData, request_id),
+        messages.success.addAuth(true, datas, cloneData, request_id),
       );
+      mHiveTxSendOp.mockRestore();
     });
   });
 });
