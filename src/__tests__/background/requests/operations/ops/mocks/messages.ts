@@ -78,33 +78,49 @@ export default {
         },
       };
     },
-    parsedFailed: (datas: any, request_id: number) => {
+    parsedFailed: (
+      datas: any,
+      request_id: number,
+      error?: SyntaxError,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new SyntaxError('Unexpected token / in JSON at position 0'),
+          error:
+            error ??
+            new SyntaxError('Unexpected token / in JSON at position 0'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Unexpected token / in JSON at position 0`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : Unexpected token / in JSON at position 0`,
           request_id: request_id,
           publicKey: undefined,
         },
       };
     },
-    notIterable: (datas: any, request_id: number) => {
+    notIterable: (
+      datas: any,
+      request_id: number,
+      error?: TypeError,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new TypeError('operations is not iterable'),
+          error: error ?? new TypeError('operations is not iterable'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : operations is not iterable`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : operations is not iterable`,
           request_id: request_id,
           publicKey: undefined,
         },
