@@ -10,8 +10,6 @@ describe('convert tests:\n', () => {
   methods.afterEach;
   methods.beforeEach;
   beforeEach(() => {
-    // mocks.client.database.call([{ requestid: 1 }], [{ requestid: 2 }]);
-    //TODO check if needed to use the requests id's
     requestHandler.data.rpc = DefaultRpcs[0];
   });
   it('Must return error if undefined key on handler', async () => {

@@ -2,6 +2,7 @@ import { addAccount } from '@background/requests/operations/ops/add-account';
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import addAccountMocks from 'src/__tests__/background/requests/operations/ops/mocks/add-account-mocks';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
@@ -11,8 +12,7 @@ describe('add-account tests:\n', () => {
   methods.afterEach;
   methods.beforeEach;
   it('Must return message with no such account error', async () => {
-    // mocks.client.database.getAccounts([]);
-    //TODO mock getAccounts.
+    mocks.getExtendedAccount(undefined);
     const result = await addAccount(requestHandler, data);
     const { request_id, ...datas } = data;
     expect(result).toEqual({
@@ -29,8 +29,7 @@ describe('add-account tests:\n', () => {
     });
   });
   it('Must return message with invalid account error if no keys on data', async () => {
-    // mocks.client.database.getAccounts([accounts.extended]);
-    //TODO mock get extended Account.
+    mocks.getExtendedAccount(accounts.extended);
     mocks.getMk(mk.user.one);
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
     cloneData.keys = {};
@@ -50,8 +49,7 @@ describe('add-account tests:\n', () => {
     });
   });
   it('Must return message with invalid account error if no mk', async () => {
-    // mocks.client.database.getAccounts([accounts.extended]);
-    //TODO mock get extended Account.
+    mocks.getExtendedAccount(accounts.extended);
     mocks.getMk(null);
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
     cloneData.keys = userData.one.nonEncryptKeys;
@@ -84,8 +82,7 @@ describe('add-account tests:\n', () => {
     await methods.tryBlock('Invalid posting key', cloneData);
   });
   it('Must add account', async () => {
-    // mocks.client.database.getAccounts([accounts.extended]);
-    //TODO mock get extended Account.
+    mocks.getExtendedAccount(accounts.extended);
     mocks.getMk(mk.user.one);
     mocks.getAccountsFromLocalStorage();
     const cloneData = objects.clone(data) as RequestAddAccount & RequestId;
