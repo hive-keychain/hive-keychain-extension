@@ -155,6 +155,7 @@ const hiveTxUtils = {
     collateralized?: any;
     listProposals?: any;
     listProposalVotes?: any;
+    dynamicGlobalProperties?: any;
   }) => {
     HiveTxUtils.getData = jest.fn().mockImplementation((...args) => {
       switch (args[0]) {
@@ -166,6 +167,8 @@ const hiveTxUtils = {
           return Promise.resolve(toUse.listProposals);
         case 'condenser_api.list_proposal_votes':
           return Promise.resolve(toUse.listProposalVotes);
+        case 'condenser_api.get_dynamic_global_properties':
+          return Promise.resolve(toUse.dynamicGlobalProperties);
         default:
           return Promise.resolve('Please check data assignment!');
       }

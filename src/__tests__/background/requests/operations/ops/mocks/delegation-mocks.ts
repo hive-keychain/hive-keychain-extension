@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestTypes,
@@ -45,8 +45,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    // TODO rm comments when finish fix tests
-    // mocks.client.broadcast.delegateVestingShares(confirmed);
   }),
 };
 
