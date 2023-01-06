@@ -1,11 +1,12 @@
-import { RequestsHandler } from '@background/requests';
-import { TransactionConfirmation } from '@hiveio/dhive';
+import { RequestsHandler } from '@background/requests/request-handler';
+import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestData,
   KeychainRequestTypes,
   RequestId,
   RequestRecurrentTransfer,
 } from '@interfaces/keychain.interface';
+import AccountUtils from 'src/utils/account.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -38,6 +39,8 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
+  getExtendedAccount: (account: ExtendedAccount | undefined) =>
+    (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
 };
 
 const spies = {
@@ -51,9 +54,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    //TODO rm comments
-    // mocks.client.broadcast.sendOperations(confirmed);
-    // mocks.client.database.getAccounts([]);
   }),
   assert: {
     error: (
@@ -68,7 +68,7 @@ const methods = {
           error,
           datas,
           request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMessage}`,
+          errorMessage,
           undefined,
         ),
       );
