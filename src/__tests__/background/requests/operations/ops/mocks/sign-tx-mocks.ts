@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { Operation, Transaction, TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestData,
