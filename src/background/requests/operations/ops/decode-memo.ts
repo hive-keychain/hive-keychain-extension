@@ -1,5 +1,5 @@
-import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { decode } from '@hiveio/hive-js/lib/auth/memo';
 import { RequestDecode, RequestId } from '@interfaces/keychain.interface';
 export const decodeMessage = async (

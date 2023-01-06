@@ -1,5 +1,5 @@
-import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';

@@ -33,16 +33,14 @@ const sendOperation = async (
   operations: Operation[],
   key: Key,
   useSignHash?: boolean,
-  overrideRpc?: string,
 ) => {
   const transactionId = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
     useSignHash,
-    overrideRpc,
   );
   if (transactionId) {
-    return await HiveTxUtils.confirmTransaction(transactionId, overrideRpc);
+    return await HiveTxUtils.confirmTransaction(transactionId);
   } else {
     return false;
   }
@@ -57,7 +55,6 @@ const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
   signHash?: boolean,
-  overrideRpc?: string,
 ): Promise<string | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations);
@@ -93,7 +90,7 @@ const createSignAndBroadcastTransaction = async (
   }
   let response;
   try {
-    response = await hiveTransaction.broadcast(overrideRpc);
+    response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
       return (response as HiveTxBroadcastSuccessResponse).result.tx_id;
     }
@@ -108,20 +105,12 @@ const createSignAndBroadcastTransaction = async (
   }
 };
 
-const confirmTransaction = async (
-  transactionId: string,
-  overrideRpc?: string,
-) => {
+const confirmTransaction = async (transactionId: string) => {
   let response = null;
   do {
-    response = await call(
-      'transaction_status_api.find_transaction',
-      {
-        transaction_id: transactionId,
-      },
-      undefined,
-      overrideRpc,
-    );
+    response = await call('transaction_status_api.find_transaction', {
+      transaction_id: transactionId,
+    });
     await AsyncUtils.sleep(500);
   } while (['within_mempool', 'unknown'].includes(response.result.status));
   if (
@@ -167,9 +156,8 @@ const getData = async (
   method: string,
   params: any[] | object,
   key?: string,
-  overrideRpc?: string,
 ) => {
-  const response = await call(method, params, undefined, overrideRpc);
+  const response = await call(method, params);
   if (response?.result) {
     return key ? response.result[key] : response.result;
   } else
