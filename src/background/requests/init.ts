@@ -1,5 +1,5 @@
 import MkModule from '@background/mk.module';
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,

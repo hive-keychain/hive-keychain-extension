@@ -1,5 +1,5 @@
-import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestConvert, RequestId } from '@interfaces/keychain.interface';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
 import { KeychainError } from 'src/keychain-error';

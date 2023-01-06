@@ -95,15 +95,12 @@ const sendTransfer = (
   iterations: number,
   frequency: number,
   activeKey: Key,
-  overrideRpc?: string,
 ) => {
-  console.log({ activeKey }); //TODO to remove
   if (!recurrent) {
     return HiveTxUtils.sendOperation(
       [getTransferOperation(sender, receiver, amount, memo)],
       activeKey,
       false,
-      overrideRpc,
     );
   } else {
     return HiveTxUtils.sendOperation(
@@ -119,7 +116,6 @@ const sendTransfer = (
       ],
       activeKey,
       false,
-      overrideRpc,
     );
   }
 };

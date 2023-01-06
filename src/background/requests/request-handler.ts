@@ -7,6 +7,7 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { config } from 'hive-tx';
 import Config from 'src/config';
 import {
   KeychainKeyTypesLC,
@@ -36,9 +37,12 @@ export class RequestsHandler {
   data: RequestData;
   hiveEngineConfig: HiveEngineConfig;
 
+  defaultRpcConfig: any;
+
   constructor() {
     this.data = { confirmed: false };
     this.hiveEngineConfig = Config.hiveEngine;
+    this.defaultRpcConfig = config;
   }
 
   async initFromLocalStorage(data: RequestData) {
@@ -58,6 +62,8 @@ export class RequestsHandler {
     this.data.rpc = rpc;
     await this.setupHiveEngine();
     this.data.preferences = preferences;
+
+    config.node = rpc.uri;
   }
 
   closeWindow() {
@@ -68,6 +74,7 @@ export class RequestsHandler {
 
   reset(resetWinId: boolean) {
     if (resetWinId) {
+      config.node = this.defaultRpcConfig.node;
       RequestsHandler.clearLocalStorage();
     } else {
       this.data = {

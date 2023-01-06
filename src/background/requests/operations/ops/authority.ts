@@ -1,8 +1,8 @@
-import { RequestsHandler } from '@background/requests';
 import {
   beautifyErrorMessage,
   createMessage,
 } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestAddAccountAuthority,

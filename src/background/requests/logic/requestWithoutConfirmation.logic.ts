@@ -1,5 +1,5 @@
 import { performOperationFromIndex } from '@background/index';
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 
 export const requestWithoutConfirmation = async (

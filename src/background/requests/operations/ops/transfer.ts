@@ -1,5 +1,5 @@
-import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
@@ -18,7 +18,6 @@ export const broadcastTransfer = async (
     err: any,
     err_message = null;
   try {
-    console.log(requestHandler.data);
     const { username, to } = data;
     const memoKey: string = requestHandler.getUserKeyPair(
       username!,
@@ -49,7 +48,6 @@ export const broadcastTransfer = async (
       0,
       0,
       requestHandler.getUserPrivateKey(username!, KeychainKeyTypesLC.active)!,
-      requestHandler.data.rpc?.uri,
     );
   } catch (e: any) {
     if (typeof e === 'string') {
