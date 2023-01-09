@@ -6,6 +6,7 @@ import {
   RequestId,
   RequestProxy,
 } from '@interfaces/keychain.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -33,6 +34,8 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
+  sendOperation: (result: boolean) =>
+    jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
 };
 
 const spies = {
@@ -46,8 +49,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    //TODO rm comments
-    // mocks.client.broadcast.sendOperations(confirmed);
   }),
   assert: {
     error: (
@@ -62,7 +63,7 @@ const methods = {
           error,
           datas,
           request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMessage}`,
+          errorMessage,
           undefined,
         ),
       );
