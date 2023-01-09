@@ -46,17 +46,22 @@ export default {
         },
       };
     },
-    nothingToRemove: (datas: any, request_id: number) => {
+    nothingToRemove: (
+      datas: any,
+      request_id: number,
+      error?: any,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('Nothing to remove'),
+          error: error ?? new Error('Nothing to remove'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Nothing to remove`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage('bgd_ops_error')} : Nothing to remove`,
           request_id,
           publicKey: undefined,
         },
@@ -212,7 +217,7 @@ export default {
       };
     },
     removedAuth: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       request_id: number,
     ) => {

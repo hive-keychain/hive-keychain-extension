@@ -8,6 +8,7 @@ import {
   RequestRemoveProposal,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
+import Logger from 'src/utils/logger.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -107,10 +108,17 @@ const methods = {
   },
 };
 
+const spies = {
+  logger: {
+    error: jest.spyOn(Logger, 'error'),
+  },
+};
+
 const constants = {
   data,
   requestHandler,
   confirmed,
+  spies,
 };
 
 export default {

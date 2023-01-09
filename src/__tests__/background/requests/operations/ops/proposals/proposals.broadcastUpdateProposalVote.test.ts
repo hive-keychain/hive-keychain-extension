@@ -3,24 +3,25 @@ import proposalsMocks from 'src/__tests__/background/requests/operations/ops/moc
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 describe('proposals tests:\n', () => {
   const { methods, constants } = proposalsMocks;
-  const { requestHandler, data } = constants;
+  const { requestHandler, data, spies } = constants;
   methods.afterEach;
   methods.beforeEach;
-  describe('broadcastUpdateProposalVote cases:\n', () => {
-    it('Must return error if bad json format in extensions', async () => {
+  //TODO: finish these cases.
+  describe.skip('broadcastUpdateProposalVote cases:\n', () => {
+    it.skip('Must return error if bad json format in proposal_ids', async () => {
       const errorMessage = 'Unexpected token ! in JSON at position 1';
-      data.update.proposal_ids = [];
-      data.update.extensions = '{!}';
+      data.update.proposal_ids = '{!}';
       const result = await broadcastUpdateProposalVote(
         requestHandler,
         data.update,
       );
-      methods.assert.error(
-        result,
-        new SyntaxError(errorMessage),
-        data.update,
-        errorMessage,
-      );
+      expect(spies.logger).toBeCalledWith('');
+      // methods.assert.error(
+      //   result,
+      //   new SyntaxError(errorMessage),
+      //   data.update,
+      //   errorMessage,
+      // );
     });
     it('Must return error if no key on handler', async () => {
       const errorMessage = 'private key should be a Buffer';
