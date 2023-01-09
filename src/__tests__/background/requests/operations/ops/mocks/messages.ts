@@ -7,17 +7,24 @@ import { AssertionError } from 'assert';
 //  answer: success & error.
 export default {
   error: {
-    hasAuthority: (datas: any, request_id: number) => {
+    hasAuthority: (
+      datas: any,
+      request_id: number,
+      error?: any,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('Already has authority'),
+          error: error ?? new Error('Already has authority'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Already has authority`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : Already has authority`,
           request_id: request_id,
           publicKey: undefined,
         },
@@ -239,7 +246,7 @@ export default {
       };
     },
     addKey: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       cloneData: any,
       request_id: number,

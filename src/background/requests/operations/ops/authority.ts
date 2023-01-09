@@ -159,6 +159,7 @@ export const broadcastAddKeyAuthority = async (
   let { weight } = data;
   try {
     const key = requestHandler.data.key;
+    console.log({ key }); //TODO to remove
     const userAccount = await AccountUtils.getExtendedAccount(username);
     const updatedAuthority = userAccount[role as 'posting' | 'active'];
 
