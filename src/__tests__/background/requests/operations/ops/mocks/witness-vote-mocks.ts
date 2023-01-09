@@ -62,7 +62,7 @@ const methods = {
           error,
           datas,
           request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMessage}`,
+          errorMessage,
           undefined,
         ),
       );
@@ -71,7 +71,7 @@ const methods = {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          confirmed,
+          true,
           datas,
           request_id,
           message,
