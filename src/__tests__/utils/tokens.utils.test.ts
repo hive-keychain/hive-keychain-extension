@@ -1,3 +1,4 @@
+import { KeychainError } from 'src/keychain-error';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 jest.setTimeout(50000);
 afterEach(() => {
@@ -12,24 +13,24 @@ describe('tokens.utils tests:\n', () => {
     sender: 'smmarkettoken',
     contract: 'smmkt',
     action: 'updateBeneficiaries',
-    payload: {
+    payload: JSON.stringify({
       beneficiaries: ['harpagon'],
       isSignedWithActiveKey: true,
-    },
+    }),
     hash: 'ac33d2fcaf2d72477483ab1f2ed4bf3bb077cdb55d5371aa896e8f3fd034e6fd',
     logs: '{}',
   };
   describe('tryConfirmTransaction tests;\n', () => {
-    test('If transaction gets confirmed, must return { confirmed:true, error:null }', async () => {
+    test('Must confirm transaction', async () => {
       const spyGetDelayedTransactionInfo = jest
         .spyOn(HiveEngineUtils, 'getDelayedTransactionInfo')
-        .mockResolvedValueOnce(fakeTransactionResponse);
+        .mockResolvedValue({ result: fakeTransactionResponse });
       const result = await HiveEngineUtils.tryConfirmTransaction(
         fakeTransactionResponse.transactionId,
       );
       expect(result).toEqual({
+        broadcasted: true,
         confirmed: true,
-        error: null,
       });
       expect(spyGetDelayedTransactionInfo).toBeCalledTimes(1);
       expect(spyGetDelayedTransactionInfo).toBeCalledWith(
@@ -38,19 +39,25 @@ describe('tokens.utils tests:\n', () => {
       spyGetDelayedTransactionInfo.mockReset();
       spyGetDelayedTransactionInfo.mockRestore();
     });
-    test('If transaction gets confirmed with errors, must return { confirmed:true, error:[detailed description] }', async () => {
-      const error = { name: 'Fatality Error.' };
+    test('Must return an unhandled error', async () => {
+      const error = 'Fatality Error.';
       fakeTransactionResponse.logs = JSON.stringify({ errors: [error] });
       const spyGetDelayedTransactionInfo = jest
         .spyOn(HiveEngineUtils, 'getDelayedTransactionInfo')
-        .mockResolvedValueOnce(fakeTransactionResponse);
-      const result = await HiveEngineUtils.tryConfirmTransaction(
-        fakeTransactionResponse.transactionId,
-      );
-      expect(result).toEqual({
-        confirmed: true,
-        error: error,
-      });
+        .mockResolvedValue({ result: fakeTransactionResponse });
+      try {
+        const result = await HiveEngineUtils.tryConfirmTransaction(
+          fakeTransactionResponse.transactionId,
+        );
+        expect(result).toEqual({
+          confirmed: false,
+          broadcasted: true,
+        });
+      } catch (error) {
+        expect(error).toEqual(
+          new KeychainError('bgd_ops_hive_engine_confirmation_error'),
+        );
+      }
       expect(spyGetDelayedTransactionInfo).toBeCalledTimes(1);
       expect(spyGetDelayedTransactionInfo).toBeCalledWith(
         fakeTransactionResponse.transactionId,
@@ -58,17 +65,17 @@ describe('tokens.utils tests:\n', () => {
       spyGetDelayedTransactionInfo.mockReset();
       spyGetDelayedTransactionInfo.mockRestore();
     });
-    test('If transaction gets never confirmed must return { confirmed:false, error: null }', async () => {
+    test('If transaction gets never confirmed must return { confirmed:false, broadcasted: true, }', async () => {
       const iterationsOnGetDelayed = 20;
       const spyGetDelayedTransactionInfo = jest
         .spyOn(HiveEngineUtils, 'getDelayedTransactionInfo')
-        .mockResolvedValue(null);
+        .mockResolvedValue({ result: null });
       const result = await HiveEngineUtils.tryConfirmTransaction(
         fakeTransactionResponse.transactionId,
       );
       expect(result).toEqual({
         confirmed: false,
-        error: null,
+        broadcasted: true,
       });
       expect(spyGetDelayedTransactionInfo).toBeCalledTimes(
         iterationsOnGetDelayed,
@@ -80,26 +87,4 @@ describe('tokens.utils tests:\n', () => {
       spyGetDelayedTransactionInfo.mockRestore();
     });
   });
-
-  // describe('getDelayedTransactionInfo tests"\n', () => {
-  //   test('If the transaction is found must return the transaction data', async () => {
-  //     HiveEngineConfigUtils.getApi().getTransactionInfo = jest
-  //       .fn()
-  //       .mockImplementation(() => Promise.resolve(fakeTransactionResponse));
-  //     const result = await HiveEngineUtils.getDelayedTransactionInfo(
-  //       fakeTransactionResponse.transactionId,
-  //     );
-  //     expect(result).toEqual(fakeTransactionResponse);
-  //   });
-  //   test('If the transaction is not found must return null', async () => {
-  //     HiveEngineConfigUtils.getApi().getTransactionInfo = jest
-  //       .fn()
-  //       .mockImplementation(() => Promise.resolve(null));
-  //     const result = await HiveEngineUtils.getDelayedTransactionInfo(
-  //       fakeTransactionResponse.transactionId,
-  //     );
-  //     expect(result).toBe(null);
-  //   });
-  // });
-  // TODO fix
 });
