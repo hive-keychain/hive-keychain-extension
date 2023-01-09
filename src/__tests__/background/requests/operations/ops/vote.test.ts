@@ -1,4 +1,5 @@
 import { broadcastVote } from '@background/requests/operations/ops/vote';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import voteMocks from 'src/__tests__/background/requests/operations/ops/mocks/vote-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 describe('vote tests:\n', () => {
@@ -7,11 +8,14 @@ describe('vote tests:\n', () => {
   methods.afterEach;
   methods.beforeEach;
   it('Must return error if no key on handler', async () => {
-    const error = 'private key should be a Buffer';
+    const error = "Cannot read properties of undefined (reading 'toString')";
     const result = await broadcastVote(requestHandler, data);
     methods.assert.error(result, new TypeError(error), data, error);
   });
   it('Must return success', async () => {
+    const hiveTxSendOp = jest
+      .spyOn(HiveTxUtils, 'sendOperation')
+      .mockResolvedValue(true);
     requestHandler.data.key = userData.one.nonEncryptKeys.active;
     const result = await broadcastVote(requestHandler, data);
     methods.assert.success(
@@ -22,5 +26,6 @@ describe('vote tests:\n', () => {
         +data.weight / 100 + '',
       ]),
     );
+    hiveTxSendOp.mockRestore();
   });
 });
