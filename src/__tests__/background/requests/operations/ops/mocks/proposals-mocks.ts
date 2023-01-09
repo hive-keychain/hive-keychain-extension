@@ -97,7 +97,7 @@ const methods = {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          confirmed,
+          true,
           datas,
           request_id,
           chrome.i18n.getMessage(keyMessage, [ids]),
