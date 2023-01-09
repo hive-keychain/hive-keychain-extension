@@ -74,17 +74,22 @@ export default {
         },
       };
     },
-    missingAuthority: (datas: any, request_id: number) => {
+    missingAuthority: (
+      datas: any,
+      request_id: number,
+      error?: any,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('Missing authority'),
+          error: error ?? new Error('Missing authority'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Missing authority`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage('bgd_ops_error')} : Missing authority`,
           request_id,
           publicKey: undefined,
         },
@@ -270,7 +275,7 @@ export default {
       };
     },
     removedKey: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       request_id: number,
     ) => {
