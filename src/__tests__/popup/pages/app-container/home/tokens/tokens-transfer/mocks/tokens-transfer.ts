@@ -1,6 +1,8 @@
+import { TransactionStatus } from '@interfaces/transaction-status.interface';
 import AccountUtils from 'src/utils/account.utils';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -144,12 +146,18 @@ const extraMocks = {
     (CustomJsonUtils.send = jest.fn().mockResolvedValue(result)),
   saveTransferRecipient: () =>
     (TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined)),
-  tryConfirmTransaction: (
-    result: any, // TODO : Fix any
-  ) =>
+  tryConfirmTransaction: (result: TransactionStatus) =>
     (HiveEngineUtils.tryConfirmTransaction = jest
       .fn()
       .mockResolvedValue(result)),
+  sendToken: (result: TransactionStatus | undefined, error?: any) =>
+    (TokensUtils.sendToken = jest.fn().mockImplementation((...args) => {
+      if (error) {
+        return Promise.reject(error);
+      } else {
+        return Promise.resolve(result);
+      }
+    })),
 };
 
 export default {
