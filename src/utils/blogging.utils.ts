@@ -14,17 +14,7 @@ const vote = (
   privateKey: Key,
 ) => {
   return HiveTxUtils.sendOperation(
-    [
-      [
-        'vote',
-        {
-          voter: voter,
-          author: author,
-          permlink: permlink,
-          weight: weight,
-        },
-      ] as VoteOperation,
-    ],
+    [BloggingUtils.getVoteOperation(voter, author, permlink, weight)],
     privateKey,
   );
 };
@@ -40,18 +30,15 @@ const post = async (
 ) => {
   return HiveTxUtils.sendOperation(
     [
-      [
-        'comment',
-        {
-          parent_author: parentUsername,
-          parent_permlink: parentPerm,
-          author: author,
-          permlink: permlink,
-          title: title,
-          body: body,
-          json_metadata: stringifyMetadata,
-        },
-      ] as CommentOperation,
+      BloggingUtils.getPostOperation(
+        parentUsername,
+        parentPerm,
+        author,
+        permlink,
+        title,
+        body,
+        stringifyMetadata,
+      ),
     ],
     key,
   );
@@ -68,7 +55,89 @@ const comment = async (
   stringifyCommentOptions: string,
   key: Key,
 ) => {
-  const operations = [
+  return HiveTxUtils.sendOperation(
+    BloggingUtils.getCommentOperation(
+      parentUsername,
+      parentPerm,
+      author,
+      permlink,
+      title,
+      body,
+      stringifyMetadata,
+      stringifyCommentOptions,
+    ),
+    key,
+  );
+};
+
+const getCommentTransaction = (
+  parentUsername: string,
+  parentPerm: string,
+  author: string,
+  permlink: string,
+  title: string,
+  body: string,
+  stringifyMetadata: string,
+  stringifyCommentOptions: string,
+) => {
+  return HiveTxUtils.createTransaction(
+    BloggingUtils.getCommentOperation(
+      parentUsername,
+      parentPerm,
+      author,
+      permlink,
+      title,
+      body,
+      stringifyMetadata,
+      stringifyCommentOptions,
+    ),
+  );
+};
+
+const getVoteTransaction = (
+  voter: string,
+  author: string,
+  permlink: string,
+  weight: number,
+) => {
+  return HiveTxUtils.createTransaction([
+    BloggingUtils.getVoteOperation(voter, author, permlink, weight),
+  ]);
+};
+
+const getPostTransaction = (
+  parentUsername: string,
+  parentPerm: string,
+  author: string,
+  permlink: string,
+  title: string,
+  body: string,
+  stringifyMetadata: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    BloggingUtils.getPostOperation(
+      parentUsername,
+      parentPerm,
+      author,
+      permlink,
+      title,
+      body,
+      stringifyMetadata,
+    ),
+  ]);
+};
+
+const getCommentOperation = (
+  parentUsername: string,
+  parentPerm: string,
+  author: string,
+  permlink: string,
+  title: string,
+  body: string,
+  stringifyMetadata: string,
+  stringifyCommentOptions: string,
+) => {
+  return [
     [
       'comment',
       {
@@ -86,12 +155,55 @@ const comment = async (
       JSON.parse(stringifyCommentOptions),
     ] as CommentOptionsOperation,
   ];
-
-  return HiveTxUtils.sendOperation(operations, key);
 };
 
+const getVoteOperation = (
+  voter: string,
+  author: string,
+  permlink: string,
+  weight: number,
+) => {
+  return [
+    'vote',
+    {
+      voter: voter,
+      author: author,
+      permlink: permlink,
+      weight: weight,
+    },
+  ] as VoteOperation;
+};
+
+const getPostOperation = (
+  parentUsername: string,
+  parentPerm: string,
+  author: string,
+  permlink: string,
+  title: string,
+  body: string,
+  stringifyMetadata: string,
+) => {
+  return [
+    'comment',
+    {
+      parent_author: parentUsername,
+      parent_permlink: parentPerm,
+      author: author,
+      permlink: permlink,
+      title: title,
+      body: body,
+      json_metadata: stringifyMetadata,
+    },
+  ] as CommentOperation;
+};
 export const BloggingUtils = {
   comment,
   post,
   vote,
+  getPostOperation,
+  getPostTransaction,
+  getCommentOperation,
+  getCommentTransaction,
+  getVoteOperation,
+  getVoteTransaction,
 };
