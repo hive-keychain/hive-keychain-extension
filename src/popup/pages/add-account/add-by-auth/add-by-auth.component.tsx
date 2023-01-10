@@ -52,7 +52,8 @@ const AddByAuth = ({
         navigateTo(Screen.SETTINGS_MAIN_PAGE);
       }
     } catch (err: any) {
-      setErrorMessage(err.message, err.params);
+      //TODO add type
+      setErrorMessage(err.message, err.messageParams);
     }
   };
 
