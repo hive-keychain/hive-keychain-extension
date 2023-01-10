@@ -2,6 +2,7 @@ import { DynamicGlobalProperties, ExtendedAccount } from '@hiveio/dhive';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
+import { KeychainError } from 'src/keychain-error';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import * as dataAccounts from 'src/__tests__/utils-for-testing/data/accounts';
@@ -65,16 +66,7 @@ describe('account.utils tests:\n', () => {
     jest.restoreAllMocks();
   });
   describe('getKeys tests:\n', () => {
-    test('Passing a public key must return null', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
-      const getAccount = await AccountUtils.getKeys(
-        userData.username,
-        userData.encryptKeys.active,
-      );
-
-      expect(getAccount).toBeNull();
-    });
-    test('getKeys must returns null if username not found in Hive DB', async () => {
+    test('Must throw error if username not found', async () => {
       const userObject: {
         badUsername: string;
         activePasswordUnencrypted: string;
@@ -82,15 +74,20 @@ describe('account.utils tests:\n', () => {
         badUsername: 'workerjaasasdasdasd',
         activePasswordUnencrypted: userData.nonEncryptKeys.active,
       };
-      extraMocks.getAccounts([]);
-      const resultsGetAcc = await AccountUtils.getKeys(
-        userObject.badUsername,
-        userObject.activePasswordUnencrypted,
-      );
-      expect(resultsGetAcc).toBeNull();
+      AccountUtils.getAccount = jest.fn().mockResolvedValue([]);
+      try {
+        await AccountUtils.getKeys(
+          userObject.badUsername,
+          userObject.activePasswordUnencrypted,
+        );
+      } catch (error) {
+        expect(error).toEqual(new Error('popup_accounts_incorrect_user'));
+      }
     });
     test('Passing valid username and unencrypted MEMO key must return a valid MEMO Key Object', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
+      AccountUtils.getAccount = jest
+        .fn()
+        .mockResolvedValue([dataAccounts.default.extended]);
       const validDataUserMemo = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.memo,
@@ -102,7 +99,9 @@ describe('account.utils tests:\n', () => {
       expect(validDataUserMemo).toEqual(expected_obj_memo);
     });
     test('Passing valid username and unencrypted POSTING key must return a valid POSTING Key Object', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
+      AccountUtils.getAccount = jest
+        .fn()
+        .mockResolvedValue([dataAccounts.default.extended]);
       const validDataUserPosting = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.posting,
@@ -114,7 +113,9 @@ describe('account.utils tests:\n', () => {
       expect(validDataUserPosting).toEqual(expected_obj_posting);
     });
     test('Passing valid username and unencrypted ACTIVE key must return a valid ACTIVE Key Object', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
+      AccountUtils.getAccount = jest
+        .fn()
+        .mockResolvedValue([dataAccounts.default.extended]);
       const validDataUserActive = await AccountUtils.getKeys(
         userData.username,
         userData.nonEncryptKeys.active,
@@ -125,68 +126,34 @@ describe('account.utils tests:\n', () => {
       };
       expect(validDataUserActive).toEqual(expected_obj_active);
     });
-    test('Passing the OWNER key and username, must return null', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
-      const validDataUserOwner = await AccountUtils.getKeys(
-        userData.username,
-        userData.nonEncryptKeys.owner,
-      );
-      expect(validDataUserOwner).toBeNull();
-    });
-    test('Passing a fake key and username, must return null', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
-      const validDataUserFakeKey = await AccountUtils.getKeys(
-        userData.username,
-        userData.nonEncryptKeys.fakeKey,
-      );
-      expect(validDataUserFakeKey).toBeNull();
-    });
-    test('Passing a random string key(53 chars) must return null', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
-      const validUserRandomStringKey53 = await AccountUtils.getKeys(
-        userData.username,
-        userData.encryptKeys.randomString53,
-      );
-      expect(validUserRandomStringKey53).toBeNull();
-    });
-    test('Passing a random string as key(51 chars), must return null', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
-      const validUserRandomStringKey51 = await AccountUtils.getKeys(
-        userData.username,
-        userData.nonEncryptKeys.randomStringKey51,
-      );
-      expect(validUserRandomStringKey51).toBeNull();
-    });
   });
   describe('verifyAccount tests:\n', () => {
-    test('Passing an empty username must return null', async () => {
-      const resultVerifyAccount = await AccountUtils.verifyAccount(
-        '',
-        '12345678',
-        [],
-      );
-      expect(resultVerifyAccount).toBeNull();
+    test('Must throw error if empty username', async () => {
+      try {
+        await AccountUtils.verifyAccount('', '12345678', []);
+      } catch (error) {
+        expect(error).toEqual(new Error('popup_accounts_fill'));
+      }
     });
-    test('Passing an empty password must return null', async () => {
-      extraMocks.getAccounts([]);
-      const resultVerifyAccount = await AccountUtils.verifyAccount(
-        'workerjab1',
-        '',
-        [],
-      );
-      expect(resultVerifyAccount).toBeNull();
+    test('Must throw error if empty password', async () => {
+      try {
+        await AccountUtils.verifyAccount('workerjab1', '', []);
+      } catch (error) {
+        expect(error).toEqual(new Error('popup_accounts_fill'));
+      }
     });
-    test('Passing an account, already registered, must return null', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
-      const resultValidOnArray = await AccountUtils.verifyAccount(
-        userData.username,
-        userData.nonEncryptKeys.active,
-        dataAccounts.default.twoAccounts,
-      );
-      expect(resultValidOnArray).toBeNull();
+    test('Must throw error if already registered', async () => {
+      try {
+        await AccountUtils.verifyAccount(
+          userData.username,
+          userData.nonEncryptKeys.active,
+          dataAccounts.default.twoAccounts,
+        );
+      } catch (error) {
+        expect(error).toEqual(new Error('popup_accounts_already_registered'));
+      }
     });
-    test('Passing an account that is not registered, must return a valid Key Object', async () => {
-      extraMocks.getAccounts([dataAccounts.default.extended]);
+    test('Must return a valid Key Object', async () => {
       const resultValidDataNonExistingAccounts =
         await AccountUtils.verifyAccount(
           userData.username,
@@ -292,27 +259,35 @@ describe('account.utils tests:\n', () => {
     });
   });
   describe('addKey tests:\n', () => {
-    test('test with empty key must return null', async () => {
-      const result = await AccountUtils.addKey(
-        activeAccountData,
-        [{ name: 'test', keys: {} }],
-        '',
-        KeyType.ACTIVE,
-        'mk', // TODO : might need fixing
-      );
-      expect(result).toBeNull();
+    test('Must throw error if empty keys', async () => {
+      try {
+        await AccountUtils.addKey(
+          activeAccountData,
+          [{ name: 'test', keys: {} }],
+          '',
+          KeyType.ACTIVE,
+          'mk',
+        );
+      } catch (error) {
+        expect(error).toEqual(new Error('popup_accounts_fill'));
+      }
     });
-    test('test with public key (STM) must return null', async () => {
-      const result = await AccountUtils.addKey(
-        activeAccountData,
-        accounts,
-        userData.encryptKeys.active,
-        KeyType.ACTIVE,
-        'mk', // TODO : might need fixing
-      );
-      expect(result).toBeNull();
+    test('Must throw error if public key used', async () => {
+      try {
+        await AccountUtils.addKey(
+          activeAccountData,
+          accounts,
+          userData.encryptKeys.active,
+          KeyType.ACTIVE,
+          'mk',
+        );
+      } catch (error) {
+        expect(error).toEqual(
+          new Error('popup_account_password_is_public_key'),
+        );
+      }
     });
-    test('test passing valid data(active key) must returns expected keys', async () => {
+    test('Must returns expected keys using active', async () => {
       let passedKeyObj: Keys = {
         active: userData.nonEncryptKeys.active,
         activePubkey: userData.encryptKeys.active,
@@ -330,7 +305,7 @@ describe('account.utils tests:\n', () => {
       );
       expect(result).toEqual(accounts);
     });
-    test('test passing valid data(posting key) must returns expected keys', async () => {
+    test('Must returns expected keys using posting', async () => {
       let passedKeyObj: Keys = {
         posting: userData.nonEncryptKeys.posting,
         postingPubkey: userData.encryptKeys.posting,
@@ -348,7 +323,7 @@ describe('account.utils tests:\n', () => {
       );
       expect(result).toEqual(accounts);
     });
-    test('test passing valid data(memo key) must returns expected keys', async () => {
+    test('Must returns expected keys using memo', async () => {
       let passedKeyObj: Keys = {
         memo: userData.nonEncryptKeys.memo,
         memoPubkey: userData.encryptKeys.memo,
@@ -620,56 +595,65 @@ describe('account.utils tests:\n', () => {
     afterEach(() => {
       jest.fn().mockClear();
     });
-    test('Test with username empty must return null ', async () => {
-      const result_addAuthorizedAccount =
+    test('Must throw error if empty data', async () => {
+      try {
         await AccountUtils.addAuthorizedAccount('', '', []);
-      expect(result_addAuthorizedAccount).toBeNull();
+      } catch (error) {
+        expect(error).toEqual(new KeychainError('popup_accounts_fill'));
+      }
     });
-    test('test with authorized account empty must return null', async () => {
-      const result_addAuthorizedAccount =
+    test('Must throw error if empty authorizedAccount,existingAccounts', async () => {
+      try {
         await AccountUtils.addAuthorizedAccount('workerjab1', '', []);
-      expect(result_addAuthorizedAccount).toBeNull();
+      } catch (error) {
+        expect(error).toEqual(new KeychainError('popup_accounts_fill'));
+      }
     });
-    test('test with authorized account no in existing accounts list must return null', async () => {
-      const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount('workerjab1', 'workerjab1', [
-          { name: 'aggroed', keys: {} },
-          { name: 'someguy123', keys: {} },
-        ]);
-      expect(result_addAuthorizedAccount).toBeNull();
+    test('Must throw error if account not present', async () => {
+      try {
+        await AccountUtils.addAuthorizedAccount('workerjab1', 'workerjab2', []);
+      } catch (error) {
+        expect(error).toEqual(new KeychainError('popup_no_auth_account'));
+      }
     });
-    test('test with already existing account in existing accounts list must return null', async () => {
-      const result_addAuthorizedAccount =
+    test('Must throw error if already registered', async () => {
+      try {
         await AccountUtils.addAuthorizedAccount('workerjab1', 'workerjab1', [
           { name: 'workerjab1', keys: {} },
           { name: 'someguy123', keys: {} },
         ]);
-      expect(result_addAuthorizedAccount).toBeNull();
-    });
-    test('test with account not existing must return null', async () => {
-      const result_addAuthorizedAccount =
-        await AccountUtils.addAuthorizedAccount(
-          'workerjab17787',
-          'someguy123',
-          [
-            { name: 'aggroed', keys: {} },
-            { name: 'someguy123', keys: {} },
-          ],
+      } catch (error) {
+        expect(error).toEqual(
+          new KeychainError('popup_accounts_already_registered'),
         );
-      expect(result_addAuthorizedAccount).toBeNull();
+      }
     });
-    test('test with account with no authority', async () => {
+    test('Must throw error if account not found', async () => {
+      AccountUtils.getAccount = jest.fn().mockResolvedValue(undefined);
+      try {
+        await AccountUtils.addAuthorizedAccount('workerjab', 'workerjab1', [
+          { name: 'workerjab1', keys: {} },
+          { name: 'someguy123', keys: {} },
+        ]);
+      } catch (error) {
+        expect(error).toEqual(
+          new KeychainError('popup_accounts_incorrect_user'),
+        );
+      }
+    });
+    test('Must throw error if unathorized account', async () => {
       AccountUtils.getAccount = jest
         .fn()
         .mockResolvedValue([utilsT.fakeQuentinAccResponseWithNoAuth]);
-      const result_addAuthorizedAccount =
+      try {
         await AccountUtils.addAuthorizedAccount('quentin', 'workerjab1', [
           { name: 'workerjab1', keys: userDataKeys },
         ]);
-
-      expect(result_addAuthorizedAccount).toBeNull();
+      } catch (error) {
+        expect(error).toEqual(new KeychainError('popup_accounts_no_auth'));
+      }
     });
-    test('test with account with authority on posting/active keys, must return keys object as the requested account was added ', async () => {
+    test('Must return account keys', async () => {
       AccountUtils.getAccount = jest
         .fn()
         .mockResolvedValue([utilsT.fakeQuentinAccResponseWithAuth]);
