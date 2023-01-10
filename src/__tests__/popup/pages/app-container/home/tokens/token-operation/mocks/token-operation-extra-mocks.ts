@@ -12,10 +12,13 @@ const mocks = {
     (TokensUtils.delegateToken = jest
       .fn()
       .mockResolvedValue(tokenOperation.constants.tokenOperationResult)),
-  stakeToken: () =>
-    (TokensUtils.stakeToken = jest
-      .fn()
-      .mockResolvedValue(tokenOperation.constants.tokenOperationResult)),
+  stakeToken: (result: TransactionStatus | undefined, error?: Error) => {
+    if (!error) {
+      TokensUtils.stakeToken = jest.fn().mockResolvedValue(result);
+    } else {
+      TokensUtils.stakeToken = jest.fn().mockRejectedValue(error);
+    }
+  },
   unstakeToken: (result: TransactionStatus | undefined, error?: Error) => {
     if (!error) {
       TokensUtils.unstakeToken = jest.fn().mockResolvedValue(result);

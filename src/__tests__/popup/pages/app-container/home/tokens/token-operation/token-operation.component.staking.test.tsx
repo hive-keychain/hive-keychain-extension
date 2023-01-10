@@ -69,25 +69,24 @@ describe('token-operation Staking tests:\n', () => {
       ]);
     });
   });
-  it('Must show error if staking fails and navigate back', async () => {
+  it('Must show error if staking fails', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.stakeToken();
-    extraMocks.tryConfirmTransaction('error');
+    extraMocks.stakeToken({ confirmed: false, broadcasted: false });
     await methods.userInteraction(balance.min, operationType, true);
-    await assertion.awaitFor(message.error.transaction, QueryDOM.BYTEXT);
-    assertion.getByLabelText(alComponent.tokensOperationPage);
+    await assertion.awaitFor(
+      message.error.transactionFailed(operationType),
+      QueryDOM.BYTEXT,
+    );
   });
   it('Must show timeout error', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.stakeToken();
-    extraMocks.tryConfirmTransaction('timeOut');
+    extraMocks.stakeToken(undefined, new Error('Network timeout.'));
     await methods.userInteraction(balance.min, operationType, true);
-    await assertion.awaitFor(message.error.timeOut, QueryDOM.BYTEXT);
+    await assertion.awaitFor('Network timeout.', QueryDOM.BYTEXT);
   });
   it('Must stake and show message', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.stakeToken();
-    extraMocks.tryConfirmTransaction('confirmed');
+    extraMocks.stakeToken({ confirmed: true, broadcasted: true });
     await methods.userInteraction(balance.min, operationType, true);
     await assertion.awaitFor(
       message.operationConfirmed(operationType),
