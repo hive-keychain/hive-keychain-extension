@@ -122,7 +122,7 @@ const userInformation = {
       pendingOutgoingUndelegation: [],
     },
   },
-  delegation: { maxAmount: '0.459' },
+  delegation: { maxAmount: '0.131' },
 };
 
 export default {
