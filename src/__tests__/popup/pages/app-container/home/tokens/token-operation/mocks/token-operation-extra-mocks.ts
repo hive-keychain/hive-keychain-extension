@@ -8,10 +8,13 @@ import { FakeOperationResult } from 'src/__tests__/utils-for-testing/types/token
 const mocks = {
   doesAccountExist: (exist: boolean) =>
     (AccountUtils.doesAccountExist = jest.fn().mockResolvedValue(exist)),
-  delegateToken: () =>
-    (TokensUtils.delegateToken = jest
-      .fn()
-      .mockResolvedValue(tokenOperation.constants.tokenOperationResult)),
+  delegateToken: (result: TransactionStatus | undefined, error?: Error) => {
+    if (!error) {
+      TokensUtils.delegateToken = jest.fn().mockResolvedValue(result);
+    } else {
+      TokensUtils.delegateToken = jest.fn().mockRejectedValue(error);
+    }
+  },
   stakeToken: (result: TransactionStatus | undefined, error?: Error) => {
     if (!error) {
       TokensUtils.stakeToken = jest.fn().mockResolvedValue(result);

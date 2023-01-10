@@ -23,7 +23,7 @@ describe('token-operation Unstaking tests:\n', () => {
     await clickAwait([alButton.token.action.unstake]);
   });
   const operationType = TokenOperationType.UNSTAKE;
-  it('Must load operation as stake', () => {
+  it('Must load operation as unstake', () => {
     assertion.getByLabelText(alComponent.tokensOperationPage);
     assertion.getManyByText([title(operationType), unstakeDisclaimer]);
   });

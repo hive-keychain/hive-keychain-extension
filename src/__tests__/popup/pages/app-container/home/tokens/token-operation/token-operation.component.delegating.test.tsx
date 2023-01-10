@@ -74,25 +74,26 @@ describe('token-operation Delegating tests:\n', () => {
       ]);
     });
   });
-  it('Must show error if delegating fails and navigate back', async () => {
+  it('Must show error if delegating fails', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.delegateToken();
+    extraMocks.delegateToken({ confirmed: false, broadcasted: false });
     extraMocks.tryConfirmTransaction('error');
     await methods.userInteraction(balance.min, operationType, true, true);
-    //TODO: update message + test
-    // await assertion.awaitFor(message.error.transaction, QueryDOM.BYTEXT);
-    assertion.getByLabelText(alComponent.tokensOperationPage);
+    await assertion.awaitFor(
+      message.error.transactionFailed(operationType),
+      QueryDOM.BYTEXT,
+    );
   });
   it('Must show timeout error', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.delegateToken();
+    extraMocks.delegateToken(undefined, new Error('Network timeout.'));
     extraMocks.tryConfirmTransaction('timeOut');
     await methods.userInteraction(balance.min, operationType, true, true);
-    await assertion.awaitFor(message.error.timeOut, QueryDOM.BYTEXT);
+    await assertion.awaitFor('Network timeout.', QueryDOM.BYTEXT);
   });
   it('Must delegate and show message', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.delegateToken();
+    extraMocks.delegateToken({ confirmed: true, broadcasted: true });
     extraMocks.tryConfirmTransaction('confirmed');
     await methods.userInteraction(balance.min, operationType, true, true);
     await assertion.awaitFor(
