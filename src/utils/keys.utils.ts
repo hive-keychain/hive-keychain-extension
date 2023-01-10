@@ -99,7 +99,7 @@ const getKeyReferences = (key: string) => {
 const getKeyType = (key: Key): PrivateKeyType => {
   if (key!.toString().startsWith('#')) {
     return PrivateKeyType.LEDGER;
-  } else if (key!.toString().startsWith('#')) {
+  } else if (key!.toString().startsWith('@')) {
     return PrivateKeyType.AUTHORIZED_ACCOUNT;
   } else {
     return PrivateKeyType.PRIVATE_KEY;
