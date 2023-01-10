@@ -1,5 +1,5 @@
 import { Account, PrivateKey } from '@hiveio/dhive';
-import { Key, Keys } from 'src/interfaces/keys.interface';
+import { Key, Keys, PrivateKeyType } from 'src/interfaces/keys.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
@@ -85,15 +85,25 @@ const hasMemo = (keys: Keys): boolean => {
 };
 
 const isAuthorizedAccount = (key: Key): boolean => {
-  return key!.toString().startsWith('@');
+  return KeysUtils.getKeyType(key) === PrivateKeyType.AUTHORIZED_ACCOUNT;
 };
 
 const isUsingLedger = (key: Key): boolean => {
-  return key!.toString().startsWith('#');
+  return KeysUtils.getKeyType(key) === PrivateKeyType.LEDGER;
 };
 
 const getKeyReferences = (key: string) => {
   return HiveTxUtils.getData('condenser_api.get_key_references', [[key]]);
+};
+
+const getKeyType = (key: Key): PrivateKeyType => {
+  if (key!.toString().startsWith('#')) {
+    return PrivateKeyType.LEDGER;
+  } else if (key!.toString().startsWith('#')) {
+    return PrivateKeyType.AUTHORIZED_ACCOUNT;
+  } else {
+    return PrivateKeyType.PRIVATE_KEY;
+  }
 };
 
 export const KeysUtils = {
@@ -108,4 +118,5 @@ export const KeysUtils = {
   hasMemo,
   isUsingLedger,
   getKeyReferences,
+  getKeyType,
 };

@@ -7,6 +7,7 @@ import {
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/utils/account.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
@@ -47,37 +48,42 @@ export const broadcastTransfer = async (
       KeychainKeyTypesLC.active,
     );
 
-    if (KeysUtils.isUsingLedger(key!)) {
-      const tx = await TransferUtils.getTransferTransaction(
-        data.username!,
-        data.to,
-        data.amount + ' ' + data.currency,
-        memo,
-        false,
-        0,
-        0,
-      );
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await TransferUtils.getTransferTransaction(
+          data.username!,
+          data.to,
+          data.amount + ' ' + data.currency,
+          memo,
+          false,
+          0,
+          0,
+        );
 
-      LedgerModule.signTransactionFromLedger({
-        transaction: tx,
-        key: key!,
-      });
-      const signature = await LedgerModule.getSignatureFromLedger();
-      result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
-        tx,
-        signature,
-      );
-    } else {
-      result = await TransferUtils.sendTransfer(
-        data.username!,
-        data.to,
-        data.amount + ' ' + data.currency,
-        memo,
-        false,
-        0,
-        0,
-        key!,
-      );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await TransferUtils.sendTransfer(
+          data.username!,
+          data.to,
+          data.amount + ' ' + data.currency,
+          memo,
+          false,
+          0,
+          0,
+          key!,
+        );
+        break;
+      }
     }
   } catch (e: any) {
     if (typeof e === 'string') {

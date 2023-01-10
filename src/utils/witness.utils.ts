@@ -72,12 +72,23 @@ const getWitnessVoteOperation = (
   ] as AccountWitnessVoteOperation;
 };
 
+const getUpdateWitnessTransaction = (
+  voter: string,
+  witness: Witness,
+  approve: boolean,
+) => {
+  return HiveTxUtils.createTransaction([
+    WitnessUtils.getWitnessVoteOperation(approve, voter, witness.name),
+  ]);
+};
+
 const WitnessUtils = {
   unvoteWitness,
   voteWitness,
   getWitnessVoteOperation,
   sendWitnessOperation,
   updateWitnessVote,
+  getUpdateWitnessTransaction,
 };
 
 export default WitnessUtils;
