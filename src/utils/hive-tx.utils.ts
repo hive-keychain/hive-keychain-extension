@@ -1,6 +1,6 @@
 import KeychainApi from '@api/keychain';
 import Hive from '@engrave/ledger-app-hive';
-import { Operation } from '@hiveio/dhive';
+import { Operation, Transaction } from '@hiveio/dhive';
 import {
   HiveTxBroadcastErrorResponse,
   HiveTxBroadcastSuccessResponse,
@@ -152,6 +152,30 @@ const signTransaction = async (tx: any, key: Key, signHash?: boolean) => {
   }
 };
 
+const broadcastAndConfirmTransactionWithSignature = async (
+  transaction: Transaction,
+  signature: string,
+) => {
+  let hiveTransaction = new HiveTransaction(transaction);
+  hiveTransaction.addSignature(signature);
+  let response;
+  try {
+    response = await hiveTransaction.broadcast();
+    if ((response as HiveTxBroadcastSuccessResponse).result) {
+      const txId = (response as HiveTxBroadcastSuccessResponse).result.tx_id;
+      return HiveTxUtils.confirmTransaction(txId);
+    }
+  } catch (err) {
+    Logger.error(err);
+    throw new Error('html_popup_error_while_broadcasting');
+  }
+  response = response as HiveTxBroadcastErrorResponse;
+  if (response.error) {
+    Logger.error('Error during broadcast', response.error);
+    throw ErrorUtils.parse(response.error);
+  }
+};
+
 const getData = async (
   method: string,
   params: any[] | object,
@@ -176,4 +200,5 @@ export const HiveTxUtils = {
   setRpc,
   createTransaction,
   signTransaction,
+  broadcastAndConfirmTransactionWithSignature,
 };

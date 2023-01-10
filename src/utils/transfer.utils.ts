@@ -1,4 +1,8 @@
-import { RecurrentTransferOperation, TransferOperation } from '@hiveio/dhive';
+import {
+  RecurrentTransferOperation,
+  Transaction,
+  TransferOperation,
+} from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
@@ -158,6 +162,33 @@ const getRecurrentTransferOperation = (
   ] as RecurrentTransferOperation;
 };
 
+const getTransferTransaction = (
+  sender: string,
+  receiver: string,
+  amount: string,
+  memo: string,
+  recurrent: boolean,
+  iterations: number,
+  frequency: number,
+): Promise<Transaction> => {
+  if (!recurrent) {
+    return HiveTxUtils.createTransaction([
+      getTransferOperation(sender, receiver, amount, memo),
+    ]);
+  } else {
+    return HiveTxUtils.createTransaction([
+      getRecurrentTransferOperation(
+        sender,
+        receiver,
+        amount,
+        memo,
+        frequency,
+        iterations,
+      ),
+    ]);
+  }
+};
+
 const TransferUtils = {
   getExchangeValidationWarning,
   saveFavoriteUser,
@@ -165,6 +196,7 @@ const TransferUtils = {
   sendTransfer,
   getTransferOperation,
   getRecurrentTransferOperation,
+  getTransferTransaction,
 };
 
 export default TransferUtils;

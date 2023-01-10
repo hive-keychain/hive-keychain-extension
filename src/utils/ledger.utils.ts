@@ -2,6 +2,7 @@ import LedgerHiveApp from '@engrave/ledger-app-hive';
 import { SignedTransaction, Transaction } from '@hiveio/dhive';
 import { Key, Keys, KeyType } from '@interfaces/keys.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
+import { KeychainError } from 'src/keychain-error';
 import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
@@ -16,7 +17,7 @@ export enum LedgerKeyType {
 
 const init = async (): Promise<boolean> => {
   try {
-    if (await TransportWebUsb.isSupported()) {
+    if (await LedgerUtils.isLedgerSupported()) {
       const transport = await TransportWebUsb.create();
       hiveLedger = new LedgerHiveApp(transport);
       return true;
@@ -27,6 +28,10 @@ const init = async (): Promise<boolean> => {
     Logger.log(err);
     throw new Error('html_ledger_error_while_connecting');
   }
+};
+
+const isLedgerSupported = async () => {
+  return await TransportWebUsb.isSupported();
 };
 
 const getSettings = () => {
@@ -133,7 +138,7 @@ const signTransaction = async (
   chainId?: string,
 ): Promise<SignedTransaction> => {
   let ledger = await LedgerUtils.getLedgerInstance();
-  if (!ledger) throw new Error('html_ledger_error_while_connecting');
+  if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
   try {
     return ledger.signTransaction(
       transaction,
@@ -142,13 +147,13 @@ const signTransaction = async (
     );
   } catch (err: any) {
     Logger.error(err);
-    throw new Error('html_ledger_error_while_signing');
+    throw new KeychainError('html_ledger_error_while_signing');
   }
 };
 
 const signHash = async (digest: string, key: Key) => {
   let ledger = await LedgerUtils.getLedgerInstance();
-  if (!ledger) throw new Error('html_ledger_error_while_connecting');
+  if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
   try {
     return ledger.signHash(
       digest,
@@ -156,7 +161,7 @@ const signHash = async (digest: string, key: Key) => {
     );
   } catch (err: any) {
     Logger.error(err);
-    throw new Error('html_ledger_error_while_signing');
+    throw new KeychainError('html_ledger_error_while_signing');
   }
 };
 
@@ -175,4 +180,5 @@ export const LedgerUtils = {
   signTransaction,
   getPathFromString,
   signHash,
+  isLedgerSupported,
 };

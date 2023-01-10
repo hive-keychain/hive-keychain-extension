@@ -2707,5 +2707,17 @@
   "network_error_timeout": {
     "message": "Network error : timeout",
     "description": "When network timeout"
+  },
+  "html_popup_waiting_for_ledger_confirmation": {
+    "message": "Waiting for Ledger confirmation",
+    "description": "loading message while waiting for cnfirmation on ledger"
+  },
+  "html_sign_with_ledger": {
+    "message": "Sign on Ledger",
+    "description": "sign on ledger dialog title"
+  },
+  "html_popup_error_while_broadcasting": {
+    "message": "Error while broadcasting the transaction",
+    "description": "error while broadcasting the transaction"
   }
 }

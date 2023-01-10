@@ -1,14 +1,11 @@
 import { KeyType } from '@interfaces/keys.interface';
+import { QueryParams } from '@interfaces/query-params.interface';
 import React from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import AccountUtils from 'src/utils/account.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import './connect-ledger.component.scss';
-
-interface QueryParams {
-  [key: string]: string;
-}
 
 const ConnectLedger = () => {
   const initializeLedger = async () => {
