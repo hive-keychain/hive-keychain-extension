@@ -1,3 +1,4 @@
+import { TransactionStatus } from '@interfaces/transaction-status.interface';
 import AccountUtils from 'src/utils/account.utils';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -15,10 +16,13 @@ const mocks = {
     (TokensUtils.stakeToken = jest
       .fn()
       .mockResolvedValue(tokenOperation.constants.tokenOperationResult)),
-  unstakeToken: () =>
-    (TokensUtils.unstakeToken = jest
-      .fn()
-      .mockResolvedValue(tokenOperation.constants.tokenOperationResult)),
+  unstakeToken: (result: TransactionStatus | undefined, error?: Error) => {
+    if (!error) {
+      TokensUtils.unstakeToken = jest.fn().mockResolvedValue(result);
+    } else {
+      TokensUtils.unstakeToken = jest.fn().mockRejectedValue(error);
+    }
+  },
   saveTransferRecipient: () =>
     (TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined)),
   tryConfirmTransaction: (result: FakeOperationResult) =>
