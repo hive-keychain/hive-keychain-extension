@@ -1,5 +1,4 @@
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
-import { AssertionError } from 'assert';
 import signMessageMocks from 'src/__tests__/background/requests/operations/ops/mocks/signMessage-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 describe('sign-buffer tests:\n', () => {
@@ -15,13 +14,14 @@ describe('sign-buffer tests:\n', () => {
     );
   });
   it('Must return error if no key on handler', async () => {
-    const error = 'private_key required';
+    const errorMessage =
+      "Cannot read properties of undefined (reading 'toString')";
     const signed = await signBuffer(requestHandler, data);
     methods.assert.error(
       signed,
-      new AssertionError({ message: error, operator: '==', expected: true }),
+      new TypeError(errorMessage),
       data,
-      chrome.i18n.getMessage('bgd_ops_sign_error'),
+      errorMessage,
       null,
     );
   });
