@@ -10,6 +10,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
+import { RcDelegationsUtils } from 'src/utils/rc-delegations.utils';
 import { RewardsUtils } from 'src/utils/rewards.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
@@ -86,12 +87,26 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (app && app.getExtendedAccounts) ?? _app.getExtendedAccounts,
     );
+  //Delegations related
   DelegationUtils.getDelegatees = jest
     .fn()
     .mockResolvedValue(
       (powerUp && powerUp.getVestingDelegations) ??
         _powerUp.getVestingDelegations,
     );
+  DelegationUtils.getPendingOutgoingUndelegation = jest
+    .fn()
+    .mockResolvedValue(
+      (powerUp && powerUp.getPendingOutgoingUndelegation) ??
+        _powerUp.getPendingOutgoingUndelegation,
+    );
+  RcDelegationsUtils.getAllOutgoingDelegations = jest
+    .fn()
+    .mockResolvedValue(
+      (powerUp && powerUp.getAllOutgoingDelegations) ??
+        _powerUp.getAllOutgoingDelegations,
+    );
+  //END delegations related
   ConversionUtils.getConversionRequests = jest
     .fn()
     .mockResolvedValue(convertions ?? _convertions.getConversionRequests);

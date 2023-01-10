@@ -4,6 +4,7 @@ import { Autolock } from '@interfaces/autolock.interface';
 import { Conversion } from '@interfaces/conversion.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
+import { RcDelegation } from '@interfaces/rc-delegation.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import {
@@ -39,6 +40,8 @@ export interface MocksTopBar {
 }
 export interface MocksPowerUp {
   getVestingDelegations?: VestingDelegation[];
+  getPendingOutgoingUndelegation?: [];
+  getAllOutgoingDelegations?: RcDelegation[];
 }
 export interface MocksWalletHistory {
   getAccountTransactions?: [Transaction[], number];
