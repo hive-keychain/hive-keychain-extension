@@ -58,7 +58,6 @@ const createSignAndBroadcastTransaction = async (
 ): Promise<string | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations);
-  console.log(transaction);
   if (KeysUtils.isUsingLedger(key)) {
     try {
       let signedTransactionFromLedger;

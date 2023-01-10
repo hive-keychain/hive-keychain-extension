@@ -2723,5 +2723,9 @@
   "html_popup_broadcasting_transaction": {
     "message": "Broadcasting transaction",
     "description": "message while broadcasting the transaction"
+  },
+  "sign_buffer_ledger_error": {
+    "message": "Ledger is currently not compatible with the signBuffer function",
+    "description": "Error message if trying to sign a buffer with Ledger"
   }
 }

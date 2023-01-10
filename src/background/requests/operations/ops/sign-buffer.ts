@@ -5,6 +5,8 @@ import {
   RequestId,
   RequestSignBuffer,
 } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -14,6 +16,7 @@ export const signBuffer = async (
 ) => {
   let signed = null;
   let error = null;
+  let err_message = null;
   let publicKey = requestHandler.data.publicKey;
 
   try {
@@ -24,17 +27,25 @@ export const signBuffer = async (
         data.method.toLowerCase() as KeychainKeyTypesLC,
       ) as [string, string];
     }
+    if (KeysUtils.isUsingLedger(key!)) {
+      throw new KeychainError('sign_buffer_ledger_error');
+    }
+
     signed = await signMessage(data.message, key!);
   } catch (err) {
     Logger.error(err);
     error = err;
+    err_message = await chrome.i18n.getMessage(
+      (err as KeychainError).message,
+      (err as KeychainError).messageParams,
+    );
   } finally {
     return createMessage(
       error,
       signed,
       data,
       await chrome.i18n.getMessage('bgd_ops_sign_success'),
-      await chrome.i18n.getMessage('bgd_ops_sign_error'),
+      err_message ?? (await chrome.i18n.getMessage('bgd_ops_sign_error')),
       publicKey,
     );
   }
