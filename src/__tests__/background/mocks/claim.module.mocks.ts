@@ -1,6 +1,6 @@
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { Client, ExtendedAccount } from '@hiveio/dhive';
-import { Manabar, RCAccount } from '@hiveio/dhive/lib/chain/rc';
+import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import Config from 'src/config';
@@ -24,6 +24,19 @@ const toClaim = () => {
 };
 
 const constants = {
+  rcAccountData: {
+    account: 'keychain.tests',
+    rc_manabar: {
+      current_mana: 1000000,
+      max_mana: 10000000,
+      percentage: 100,
+    } as Manabar,
+    max_rc_creation_adjustment: [],
+    max_rc: '58156907628',
+    delegated_rc: 0,
+    received_delegated_rc: 0,
+    percentage: 100,
+  },
   differentAccount: [{ ...accounts.local.one, name: 'theghost1980' }],
   availableSavings: [
     {
@@ -79,18 +92,14 @@ const mocks = {
     (LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue(values)),
-  getAccounts: (extendedAccounts: ExtendedAccount[]) => {
-    // RPCModule.getClient = jest.fn().mockResolvedValue(client);
-    client.database.getAccounts = jest.fn().mockResolvedValue(extendedAccounts);
-  },
+  getExtendedAccounts: (accounts: ExtendedAccount[]) =>
+    (AccountUtils.getExtendedAccounts = jest.fn().mockResolvedValue(accounts)),
   getAccountsFromLocalStorage: (localAccounts: LocalAccount[]) =>
     (BgdAccountsUtils.getAccountsFromLocalStorage = jest
       .fn()
       .mockResolvedValue(localAccounts)),
-  rcAcc: (value: RCAccount[]) => {
-    // RPCModule.getClient = jest.fn().mockResolvedValue(client);
-    client.rc.findRCAccounts = jest.fn().mockResolvedValue(value);
-  },
+  getRCMana: (rcAccount: any) =>
+    (AccountUtils.getRCMana = jest.fn().mockResolvedValue(rcAccount)),
   calculateRCMana: (manabar: Manabar) => {
     // RPCModule.getClient = jest.fn().mockResolvedValue(client);
     client.rc.calculateRCMana = jest.fn().mockResolvedValue(manabar);

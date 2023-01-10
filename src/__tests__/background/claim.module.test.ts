@@ -35,9 +35,8 @@ describe('claim.module tests:\n', () => {
 
   it('Must call logger with nothing to claim', async () => {
     mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
-    mocks.getAccounts(noAvailableSavings);
+    mocks.getExtendedAccounts(noAvailableSavings);
     mocks.getAccountsFromLocalStorage([accounts.local.justTwoKeys]);
-    mocks.rcAcc([]);
     mocks.calculateRCMana(accounts.active.rc);
     await ClaimModule.start();
     expect(spies.logger.info.mock.calls[1][0]).toBe(
@@ -48,9 +47,8 @@ describe('claim.module tests:\n', () => {
 
   it('Must call logger with no time to claim', async () => {
     mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
-    mocks.getAccounts(availableSavings);
+    mocks.getExtendedAccounts(availableSavings);
     mocks.getAccountsFromLocalStorage([accounts.local.justTwoKeys]);
-    mocks.rcAcc([]);
     mocks.calculateRCMana(accounts.active.rc);
     mocks.setMaxDelay(1000000000);
     await ClaimModule.start();
@@ -62,19 +60,19 @@ describe('claim.module tests:\n', () => {
 
   describe('Same local accounts:\n', () => {
     beforeEach(() => {
-      mocks.getAccounts([accounts.extended]);
+      mocks.getRCMana(constants.rcAccountData);
+      mocks.getExtendedAccounts([accounts.extended]);
       mocks.getAccountsFromLocalStorage([accounts.local.justTwoKeys]);
-      mocks.rcAcc([]);
       mocks.calculateRCMana(accounts.active.rc);
     });
     it('Must claim accounts', async () => {
-      mocks.getMultipleValueFromLocalStorage(validClaims({ accounts: true }));
       mocks.resetMin_RC;
+      mocks.getMultipleValueFromLocalStorage(validClaims({ accounts: true }));
       await ClaimModule.start();
-      expect(spies.claimAccounts).toBeCalledWith(
-        accounts.active.rc,
-        accounts.active,
-      );
+      expect(spies.claimAccounts).toBeCalledWith(constants.rcAccountData, {
+        ...accounts.active,
+        rc: constants.rcAccountData,
+      });
     });
     it('Must claim rewards', async () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ rewards: true }));
@@ -83,15 +81,16 @@ describe('claim.module tests:\n', () => {
         `Claiming rewards for @${accounts.extended.name}`,
       );
       expect(spies.claimRewards).toBeCalledWith(
-        accounts.active,
+        accounts.active.name,
         accounts.extended.reward_hive_balance,
         accounts.extended.reward_hbd_balance,
         accounts.extended.reward_vesting_balance,
+        accounts.local.one.keys.posting,
       );
     });
     it('Must claim savings', async () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
-      mocks.getAccounts(availableSavings);
+      mocks.getExtendedAccounts(availableSavings);
       mocks.setMaxDelay(0);
       spies.claimSavings(true);
       await ClaimModule.start();
@@ -102,7 +101,7 @@ describe('claim.module tests:\n', () => {
   });
   describe('Different local accounts:\n', () => {
     beforeEach(() => {
-      mocks.getAccounts([accounts.extended]);
+      mocks.getExtendedAccounts([accounts.extended]);
       mocks.getAccountsFromLocalStorage(differentAccount);
     });
 
