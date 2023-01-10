@@ -1,8 +1,11 @@
+import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestId, RequestSignTx } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 
 import Logger from 'src/utils/logger.utils';
 
@@ -14,7 +17,21 @@ export const signTx = async (
   let result, err, err_message;
 
   try {
-    result = await HiveTxUtils.signTransaction(data.tx, key!);
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        LedgerModule.signTransactionFromLedger({
+          transaction: data.tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = { ...data.tx, signatures: [signature] };
+        break;
+      }
+      default: {
+        result = await HiveTxUtils.signTransaction(data.tx, key!);
+        break;
+      }
+    }
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
