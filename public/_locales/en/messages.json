@@ -2719,5 +2719,9 @@
   "html_popup_error_while_broadcasting": {
     "message": "Error while broadcasting the transaction",
     "description": "error while broadcasting the transaction"
+  },
+  "html_popup_broadcasting_transaction": {
+    "message": "Broadcasting transaction",
+    "description": "message while broadcasting the transaction"
   }
 }

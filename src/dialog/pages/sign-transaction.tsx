@@ -1,7 +1,7 @@
 import { Transaction } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
@@ -17,6 +17,10 @@ export type SignFromLedgerRequestMessage = {
 };
 
 const SignTransaction = (props: Props) => {
+  const [loadingOperations, setLoadingOperations] = useState([
+    { name: 'html_popup_waiting_for_ledger_confirmation', done: false },
+  ]);
+
   useEffect(() => {
     signTransaction(props.data);
   }, []);
@@ -27,6 +31,10 @@ const SignTransaction = (props: Props) => {
         data.transaction,
         data.key!,
       );
+      setLoadingOperations([
+        { name: 'html_popup_waiting_for_ledger_confirmation', done: true },
+        { name: 'html_popup_broadcasting_transaction', done: false },
+      ]);
       chrome.runtime.sendMessage({
         command: DialogCommand.RETURN_SIGNED_TRANSACTION,
         signedTransaction: signedTransaction,
@@ -42,12 +50,7 @@ const SignTransaction = (props: Props) => {
 
   return (
     <div className="sign-transaction-with-ledger">
-      <LoadingComponent
-        operations={[
-          { name: 'html_popup_waiting_for_ledger_confirmation', done: false },
-        ]}
-        hide={false}
-      />
+      <LoadingComponent operations={loadingOperations} hide={false} />
     </div>
   );
 };
