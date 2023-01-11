@@ -2,10 +2,12 @@ import { performOperation } from '@background/requests/operations';
 import { KeychainRequestTypes } from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { ConversionUtils } from 'src/utils/conversion.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import indexMocks from 'src/__tests__/background/requests/operations/mocks/index-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 describe('index tests:\n', () => {
   const { methods, constants, spies, mocks } = indexMocks;
   const { requestHandler, _data } = constants;
@@ -58,8 +60,16 @@ describe('index tests:\n', () => {
   it('Must call each type of request', async () => {
     const mHiveTxSendOp = jest
       .spyOn(HiveTxUtils, 'sendOperation')
-      .mockResolvedValue(false);
+      .mockResolvedValue(true);
     mocks.getExtendedAccount(accounts.extended);
+    const fakeArrayResponse = [
+      utilsT.fakeHbdConversionsResponse,
+      utilsT.fakeHiveConversionsResponse,
+    ];
+    ConversionUtils.getConversionRequests = jest
+      .fn()
+      .mockResolvedValueOnce(fakeArrayResponse);
+    ConversionUtils.sendConvert = jest.fn().mockResolvedValue(true);
     for (let i = 0; i < _data.length; i++) {
       const tab = 0;
       requestHandler.data.rpc = DefaultRpcs[0];
