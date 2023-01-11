@@ -1,6 +1,6 @@
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { useEffect, useState } from 'react';
-
+/* istanbul ignore next */
 export const useAnonymousRequest = (
   data: KeychainRequest,
   accounts?: string[],

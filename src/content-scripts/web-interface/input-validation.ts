@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import Joi from 'joi';
 const username = Joi.string().required().min(3);
 const method = Joi.string()

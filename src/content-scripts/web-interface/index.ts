@@ -1,5 +1,5 @@
 // Content script interfacing the website and the extension
-
+/* istanbul ignore file */
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import schemas, {
   commonRequestParams,

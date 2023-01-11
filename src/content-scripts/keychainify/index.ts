@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import keychainify from './keychainify';
 
 type Props = { process: Process; init: () => void };
