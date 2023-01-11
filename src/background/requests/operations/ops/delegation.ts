@@ -1,3 +1,4 @@
+import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import {
@@ -5,9 +6,12 @@ import {
   RequestDelegation,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const broadcastDelegation = async (
@@ -40,12 +44,35 @@ export const broadcastDelegation = async (
     } else {
       delegatedVests = data.amount + ' VESTS';
     }
-    result = await DelegationUtils.delegateVestingShares(
-      data.username!,
-      data.delegatee,
-      delegatedVests,
-      key,
-    );
+
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await DelegationUtils.getDelegationTransaction(
+          data.username!,
+          data.delegatee,
+          delegatedVests,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await DelegationUtils.delegateVestingShares(
+          data.username!,
+          data.delegatee,
+          delegatedVests,
+          key,
+        );
+        break;
+      }
+    }
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;

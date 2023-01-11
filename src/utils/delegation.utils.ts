@@ -76,10 +76,21 @@ const getDelegationOperation = (
   ] as DelegateVestingSharesOperation;
 };
 
+const getDelegationTransaction = (
+  delegatee: string,
+  delegator: string,
+  amount: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    DelegationUtils.getDelegationOperation(delegatee, delegator, amount),
+  ]);
+};
+
 export const DelegationUtils = {
   getDelegationOperation,
   delegateVestingShares,
   getDelegators,
   getDelegatees,
   getPendingOutgoingUndelegation,
+  getDelegationTransaction,
 };
