@@ -132,6 +132,11 @@ const setOrDefault = (toUse: MocksToUse) => {
   ProxyUtils.findUserProxy = jest
     .fn()
     .mockResolvedValue((app && app.findUserProxy) ?? _app.findUserProxy);
+
+  HiveUtils.getAccountPrice = jest
+    .fn()
+    .mockReturnValue((app && app.getAccountPrice) ?? _app.getAccountPrice);
+
   HiveUtils.getVP = jest.fn().mockReturnValue((app && app.getVP) ?? _app.getVP);
   HiveUtils.getVotingDollarsPerAccount = jest
     .fn()

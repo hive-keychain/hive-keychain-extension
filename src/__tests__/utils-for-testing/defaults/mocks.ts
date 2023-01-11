@@ -49,6 +49,7 @@ const _defaults = {
     findUserProxy: '',
     getVP: 1,
     getVotingDollarsPerAccount: 1,
+    getAccountPrice: 1,
   } as MocksApp,
   _home: {
     getAccountValue: defaultAccountValue,

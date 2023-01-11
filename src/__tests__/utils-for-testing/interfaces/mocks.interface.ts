@@ -31,6 +31,7 @@ export interface MocksApp {
   findUserProxy?: string;
   getVP?: number;
   getVotingDollarsPerAccount?: number;
+  getAccountPrice?: number;
 }
 export interface MocksHome {
   getAccountValue?: string | 0;
