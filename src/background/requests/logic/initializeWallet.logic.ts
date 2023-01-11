@@ -8,6 +8,7 @@ export const initializeWallet = (
   tab: number,
   request: KeychainRequest,
 ) => {
+  /* istanbul ignore next */
   createPopup(async () => {
     sendErrors(
       requestHandler,

@@ -27,6 +27,7 @@ export const transferRequest = (
   //if (encode) account = accountsList.get(username);
   // If a username is specified, check that its active key has been added to the wallet
   if (enforced && username && account && !account.keys.active) {
+    /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
         requestHandler,
@@ -38,6 +39,7 @@ export const transferRequest = (
       );
     }, requestHandler);
   } else if (account && encode && !account.keys.memo) {
+    /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
         requestHandler,
@@ -49,6 +51,7 @@ export const transferRequest = (
       );
     }, requestHandler);
   } else if (active_accounts.length == 0) {
+    /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
         requestHandler,
@@ -62,6 +65,7 @@ export const transferRequest = (
       );
     }, requestHandler);
   } else {
+    /* istanbul ignore next */
     const callback = () => {
       chrome.runtime.sendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,

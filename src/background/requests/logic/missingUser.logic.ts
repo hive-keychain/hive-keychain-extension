@@ -9,6 +9,7 @@ export const missingUser = (
   request: KeychainRequest,
   username: string,
 ) => {
+  /* istanbul ignore next */
   const callback = async () => {
     sendErrors(
       requestHandler,

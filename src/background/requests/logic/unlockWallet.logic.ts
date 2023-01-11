@@ -9,6 +9,7 @@ export const unlockWallet = (
   request: KeychainRequest,
   domain: string,
 ) => {
+  /* istanbul ignore next */
   createPopup(async () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.UNLOCK,

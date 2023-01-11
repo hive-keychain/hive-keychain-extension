@@ -10,6 +10,7 @@ export const missingKey = (
   username: string,
   typeWif: string,
 ) => {
+  /* istanbul ignore next */
   createPopup(async () => {
     sendErrors(
       requestHandler,

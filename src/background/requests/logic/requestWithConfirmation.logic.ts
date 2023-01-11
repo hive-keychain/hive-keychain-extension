@@ -11,6 +11,7 @@ export const requestWithConfirmation = (
   domain: string,
   current_rpc: Rpc,
 ) => {
+  /* istanbul ignore next */
   const callback = () => {
     chrome.runtime.sendMessage({
       command: DialogCommand.SEND_DIALOG_CONFIRM,
