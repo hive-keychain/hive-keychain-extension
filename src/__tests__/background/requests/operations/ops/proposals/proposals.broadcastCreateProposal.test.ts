@@ -12,6 +12,7 @@ describe('proposals tests:\n', () => {
     it('Must return error if bad json format', async () => {
       const errorMessage = 'Unexpected token ! in JSON at position 1';
       data.create.extensions = '{!}';
+      requestHandler.data.key = userData.one.nonEncryptKeys.posting;
       const result = await broadcastCreateProposal(requestHandler, data.create);
       methods.assert.error(
         result,
@@ -24,6 +25,7 @@ describe('proposals tests:\n', () => {
       const errorMessage =
         "Cannot read properties of undefined (reading 'toString')";
       data.create.extensions = '{"keychain":10000,"points":6}';
+      delete requestHandler.data.key;
       const result = await broadcastCreateProposal(requestHandler, data.create);
       methods.assert.error(
         result,
