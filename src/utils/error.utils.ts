@@ -15,9 +15,16 @@ enum HiveEngineErrorType {
   USER_NOT_EXISTING = 'invalid to',
 }
 
+enum LedgerErrorType {
+  DENIED_BY_USER = 'CONDITIONS_OF_USE_NOT_SATISFIED',
+}
+
 const parse = (error: any) => {
-  const stack = error?.data.stack[0];
+  console.log(error);
+  const stack = error?.data?.stack[0];
+  console.log(stack);
   if (stack?.context?.method) {
+    console.log('ici');
     switch (stack.context.method) {
       case BlockchainErrorType.ADJUST_BLANCE:
         return new KeychainError(
@@ -98,7 +105,14 @@ const parse = (error: any) => {
         }
       }
     }
+  } else if (error.statusText) {
+    console.log(error.statusText, LedgerErrorType.DENIED_BY_USER);
+    switch (error.statusText) {
+      case LedgerErrorType.DENIED_BY_USER:
+        return new KeychainError('error_ledger_denied_by_user', [], error);
+    }
   }
+
   return new KeychainError('error_while_broadcasting', [stack.format], error);
 };
 

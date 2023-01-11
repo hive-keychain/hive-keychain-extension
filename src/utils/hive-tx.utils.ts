@@ -79,7 +79,7 @@ const createSignAndBroadcastTransaction = async (
       }
     } catch (err) {
       Logger.error(err);
-      throw err;
+      throw ErrorUtils.parse(err);
     }
   } else {
     try {
