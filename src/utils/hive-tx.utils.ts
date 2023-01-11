@@ -48,7 +48,9 @@ const sendOperation = async (
 
 const createTransaction = async (operations: Operation[]) => {
   let hiveTransaction = new HiveTransaction();
-  return hiveTransaction.create(operations);
+  const tx = await hiveTransaction.create(operations);
+  console.log(`length of transaction => ${JSON.stringify(tx).length}`);
+  return tx;
 };
 
 const createSignAndBroadcastTransaction = async (

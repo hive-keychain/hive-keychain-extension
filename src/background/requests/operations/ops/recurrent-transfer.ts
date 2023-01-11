@@ -66,7 +66,6 @@ export const recurrentTransfer = async (
           key: key!,
         });
         const signature = await LedgerModule.getSignatureFromLedger();
-        console.log(signature);
         result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
           tx,
           signature,
