@@ -19,6 +19,7 @@ describe('proposals tests:\n', () => {
       const error = 'Unexpected token ! in JSON at position 0';
       data.remove.proposal_ids = '{}';
       data.remove.extensions = '!{!}';
+      requestHandler.data.key = userData.one.nonEncryptKeys.posting;
       const result = await broadcastRemoveProposal(requestHandler, data.remove);
       methods.assert.error(result, new SyntaxError(error), data.remove, error);
     });
@@ -26,6 +27,7 @@ describe('proposals tests:\n', () => {
       const error = "Cannot read properties of undefined (reading 'toString')";
       data.remove.proposal_ids = '{}';
       data.remove.extensions = '{}';
+      delete requestHandler.data.key;
       const result = await broadcastRemoveProposal(requestHandler, data.remove);
       methods.assert.error(result, new TypeError(error), data.remove, error);
     });
