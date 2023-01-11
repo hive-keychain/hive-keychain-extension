@@ -44,9 +44,23 @@ const getPowerDownOperation = (username: string, amount: string) => {
   ] as WithdrawVestingOperation;
 };
 
+const getPowerUpTransaction = (from: string, to: string, amount: string) => {
+  return HiveTxUtils.createTransaction([
+    PowerUtils.getPowerUpOperation(from, to, amount),
+  ]);
+};
+
+const getPowerDownTransaction = (username: string, amount: string) => {
+  return HiveTxUtils.createTransaction([
+    PowerUtils.getPowerDownOperation(username, amount),
+  ]);
+};
+
 export const PowerUtils = {
   powerUp,
   powerDown,
   getPowerDownOperation,
   getPowerUpOperation,
+  getPowerUpTransaction,
+  getPowerDownTransaction,
 };
