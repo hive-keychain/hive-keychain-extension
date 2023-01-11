@@ -1,4 +1,3 @@
-import { SignedTransaction } from '@hiveio/dhive';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { SignFromLedgerRequestMessage } from 'src/dialog/pages/sign-transaction';
 import { KeychainError } from 'src/keychain-error';
@@ -17,9 +16,9 @@ const getSignatureFromLedger = () => {
       sender: chrome.runtime.MessageSender,
       sendResp: (response?: any) => void,
     ) => {
-      if (message.command === DialogCommand.RETURN_SIGNED_TRANSACTION) {
+      if (message.command === DialogCommand.RETURN_SIGNATURE) {
         chrome.runtime.onMessage.removeListener(getResponse);
-        resolve((message.signedTransaction as SignedTransaction).signatures[0]);
+        resolve(message.signature);
       } else if (
         message.command === DialogCommand.RETURN_ERROR_SIGNING_TRANSACTION
       ) {

@@ -1,3 +1,4 @@
+import HiveLedgerApp from '@engrave/ledger-app-hive';
 import { Transaction } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -14,6 +15,7 @@ type Props = {
 export type SignFromLedgerRequestMessage = {
   transaction: Transaction;
   key: Key;
+  signHash?: boolean;
 };
 
 const SignTransaction = (props: Props) => {
@@ -27,17 +29,24 @@ const SignTransaction = (props: Props) => {
 
   const signTransaction = async (data: SignFromLedgerRequestMessage) => {
     try {
-      const signedTransaction = await LedgerUtils.signTransaction(
-        data.transaction,
-        data.key!,
-      );
+      let signature;
+      if (data.signHash) {
+        const digest = HiveLedgerApp.getTransactionDigest(data.transaction);
+        signature = await LedgerUtils.signHash(digest, data.key!);
+      } else {
+        const signedTransaction = await LedgerUtils.signTransaction(
+          data.transaction,
+          data.key!,
+        );
+        signature = signedTransaction.signatures[0];
+      }
       setLoadingOperations([
         { name: 'html_popup_waiting_for_ledger_confirmation', done: true },
         { name: 'html_popup_broadcasting_transaction', done: false },
       ]);
       chrome.runtime.sendMessage({
-        command: DialogCommand.RETURN_SIGNED_TRANSACTION,
-        signedTransaction: signedTransaction,
+        command: DialogCommand.RETURN_SIGNATURE,
+        signature: signature,
       });
     } catch (err: any) {
       Logger.log(err);
