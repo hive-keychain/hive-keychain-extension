@@ -1,3 +1,4 @@
+import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
@@ -6,9 +7,12 @@ import {
   RequestId,
   RequestRecurrentTransfer,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 
@@ -44,16 +48,44 @@ export const recurrentTransfer = async (
       const memoReceiver = receiver.memo_key;
       memo = encode(memoKey, memoReceiver, memo);
     }
-    result = await TransferUtils.sendTransfer(
-      username!,
-      to,
-      `${amount} ${currency}`,
-      memo || '',
-      true,
-      executions,
-      recurrence,
-      key,
-    );
+
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await TransferUtils.getTransferTransaction(
+          username!,
+          to,
+          `${amount} ${currency}`,
+          memo || '',
+          true,
+          executions,
+          recurrence,
+        );
+
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await TransferUtils.sendTransfer(
+          username!,
+          to,
+          `${amount} ${currency}`,
+          memo || '',
+          true,
+          executions,
+          recurrence,
+          key,
+        );
+        break;
+      }
+    }
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;

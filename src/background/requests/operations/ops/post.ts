@@ -5,6 +5,7 @@ import { KeychainError } from 'src/keychain-error';
 import { BloggingUtils } from 'src/utils/blogging.utils';
 import Logger from 'src/utils/logger.utils';
 
+// TODO : when compatible
 export const broadcastPost = async (
   requestHandler: RequestsHandler,
   data: RequestPost & RequestId,

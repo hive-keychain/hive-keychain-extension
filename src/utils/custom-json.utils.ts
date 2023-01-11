@@ -34,7 +34,19 @@ const getCustomJsonOperation = (
   ] as CustomJsonOperation;
 };
 
+const getCustomJsonTransaction = (
+  json: any,
+  username: string,
+  keyType: KeyType,
+  mainnet: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    CustomJsonUtils.getCustomJsonOperation(json, username, keyType, mainnet),
+  ]);
+};
+
 export const CustomJsonUtils = {
   send,
   getCustomJsonOperation,
+  getCustomJsonTransaction,
 };

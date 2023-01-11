@@ -37,6 +37,12 @@ const getSetProxyOperation = (proxyName: string, username: string) => {
   ] as AccountWitnessProxyOperation;
 };
 
+const getSetProxyTransaction = (proxyName: string, username: string) => {
+  return HiveTxUtils.createTransaction([
+    ProxyUtils.getSetProxyOperation(proxyName, username),
+  ]);
+};
+
 const removeProxy = async (username: string, activeKey: Key) => {
   return setAsProxy('', username, activeKey);
 };
@@ -46,6 +52,7 @@ const ProxyUtils = {
   setAsProxy,
   removeProxy,
   getSetProxyOperation,
+  getSetProxyTransaction,
 };
 
 export default ProxyUtils;

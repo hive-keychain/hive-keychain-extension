@@ -98,6 +98,20 @@ const updateProposalVotes = async (
   );
 };
 
+const getUpdateProposalVoteTransaction = (
+  proposalIds: number[],
+  username: string,
+  approve: boolean,
+) => {
+  return HiveTxUtils.createTransaction([
+    ProposalUtils.getUpdateProposalVoteOperation(
+      proposalIds,
+      approve,
+      username,
+    ),
+  ]);
+};
+
 const getUpdateProposalVoteOperation = (
   proposalId: number[],
   approve: boolean,
@@ -245,25 +259,69 @@ const createProposal = (
 ) => {
   return HiveTxUtils.sendOperation(
     [
-      [
-        'create_proposal',
-        {
-          creator: username,
-          receiver: receiver,
-          start_date: startDate,
-          end_date: endDate,
-          daily_pay: dailyPay,
-          subject: subject,
-          permlink: permlink,
-          extensions:
-            typeof extensions === 'string'
-              ? JSON.parse(extensions)
-              : extensions,
-        },
-      ] as CreateProposalOperation,
+      ProposalUtils.getCreateProposalOperation(
+        username,
+        receiver,
+        startDate,
+        endDate,
+        dailyPay,
+        subject,
+        permlink,
+        extensions,
+      ),
     ],
     key,
   );
+};
+
+const getCreateProposalOperation = (
+  username: string,
+  receiver: string,
+  startDate: string,
+  endDate: string,
+  dailyPay: string,
+  subject: string,
+  permlink: string,
+  extensions: any,
+) => {
+  return [
+    'create_proposal',
+    {
+      creator: username,
+      receiver: receiver,
+      start_date: startDate,
+      end_date: endDate,
+      daily_pay: dailyPay,
+      subject: subject,
+      permlink: permlink,
+      extensions:
+        typeof extensions === 'string' ? JSON.parse(extensions) : extensions,
+    },
+  ] as CreateProposalOperation;
+};
+
+const getCreateProposalTransaction = (
+  username: string,
+  receiver: string,
+  startDate: string,
+  endDate: string,
+  dailyPay: string,
+  subject: string,
+  permlink: string,
+  extensions: any,
+) => {
+  return HiveTxUtils.createTransaction([
+    ProposalUtils.getCreateProposalOperation(
+      username,
+      receiver,
+      startDate,
+      endDate,
+      dailyPay,
+      subject,
+      permlink,
+      extensions,
+    ),
+  ]);
 };
 
 const removeProposal = (
@@ -273,21 +331,35 @@ const removeProposal = (
   key: Key,
 ) => {
   return HiveTxUtils.sendOperation(
-    [
-      [
-        'remove_proposal',
-        {
-          proposal_owner: owner,
-          proposal_ids: ids,
-          extensions:
-            typeof extensions === 'string'
-              ? JSON.parse(extensions)
-              : extensions,
-        },
-      ] as RemoveProposalOperation,
-    ],
+    [ProposalUtils.getRemoveProposalOperation(owner, ids, extensions)],
     key!,
   );
+};
+
+const getRemoveProposalOperation = (
+  owner: string,
+  ids: number[],
+  extensions: any,
+) => {
+  return [
+    'remove_proposal',
+    {
+      proposal_owner: owner,
+      proposal_ids: ids,
+      extensions:
+        typeof extensions === 'string' ? JSON.parse(extensions) : extensions,
+    },
+  ] as RemoveProposalOperation;
+};
+
+const getRemoveProposalTransaction = (
+  owner: string,
+  ids: number[],
+  extensions: any,
+) => {
+  return HiveTxUtils.createTransaction([
+    ProposalUtils.getRemoveProposalOperation(owner, ids, extensions),
+  ]);
 };
 
 const ProposalUtils = {
@@ -298,11 +370,16 @@ const ProposalUtils = {
   unvoteProposal,
   isRequestingProposalVotes,
   getUpdateProposalVoteOperation,
+  getUpdateProposalVoteTransaction,
   getProposalDailyBudget,
   getFundedOption,
   createProposal,
   updateProposalVotes,
   removeProposal,
+  getCreateProposalOperation,
+  getCreateProposalTransaction,
+  getRemoveProposalOperation,
+  getRemoveProposalTransaction,
 };
 
 export default ProposalUtils;

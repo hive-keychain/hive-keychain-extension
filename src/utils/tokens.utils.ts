@@ -4,6 +4,7 @@ import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { TokenRequestParams } from 'src/utils/token-request-params.interface';
 
 const stakeToken = (
@@ -13,22 +14,40 @@ const stakeToken = (
   activeKey: Key,
   username: string,
 ) => {
+  return HiveEngineUtils.sendOperation(
+    [TokensUtils.getStakeTokenOperation(to, symbol, amount, username)],
+    activeKey,
+  );
+};
+
+const getStakeTokenOperation = (
+  to: string,
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'stake',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtils.sendOperation(
-    [
-      CustomJsonUtils.getCustomJsonOperation(
-        json,
-        username,
-        KeyType.ACTIVE,
-        Config.hiveEngine.mainnet,
-      ),
-    ],
-    activeKey,
+  return CustomJsonUtils.getCustomJsonOperation(
+    json,
+    username,
+    KeyType.ACTIVE,
+    Config.hiveEngine.mainnet,
   );
+};
+
+const getStakeTokenTransaction = (
+  to: string,
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    TokensUtils.getStakeTokenOperation(to, symbol, amount, username),
+  ]);
 };
 
 const unstakeToken = (
@@ -37,22 +56,38 @@ const unstakeToken = (
   activeKey: Key,
   username: string,
 ) => {
+  return HiveEngineUtils.sendOperation(
+    [TokensUtils.getUnstakeTokenOperation(symbol, amount, username)],
+    activeKey,
+  );
+};
+
+const getUnstakeTokenOperation = (
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'unstake',
     contractPayload: { symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtils.sendOperation(
-    [
-      CustomJsonUtils.getCustomJsonOperation(
-        json,
-        username,
-        KeyType.ACTIVE,
-        Config.hiveEngine.mainnet,
-      ),
-    ],
-    activeKey,
+  return CustomJsonUtils.getCustomJsonOperation(
+    json,
+    username,
+    KeyType.ACTIVE,
+    Config.hiveEngine.mainnet,
   );
+};
+
+const getUnstakeTokenTransaction = (
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    TokensUtils.getUnstakeTokenOperation(symbol, amount, username),
+  ]);
 };
 
 const delegateToken = (
@@ -62,22 +97,40 @@ const delegateToken = (
   activeKey: Key,
   username: string,
 ) => {
+  return HiveEngineUtils.sendOperation(
+    [TokensUtils.getDelegateTokenOperation(to, symbol, amount, username)],
+    activeKey,
+  );
+};
+
+const getDelegateTokenOperation = (
+  to: string,
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'delegate',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtils.sendOperation(
-    [
-      CustomJsonUtils.getCustomJsonOperation(
-        json,
-        username,
-        KeyType.ACTIVE,
-        Config.hiveEngine.mainnet,
-      ),
-    ],
-    activeKey,
+  return CustomJsonUtils.getCustomJsonOperation(
+    json,
+    username,
+    KeyType.ACTIVE,
+    Config.hiveEngine.mainnet,
   );
+};
+
+const getDelegateTokenTransaction = (
+  to: string,
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    TokensUtils.getDelegateTokenOperation(to, symbol, amount, username),
+  ]);
 };
 
 const cancelDelegationToken = (
@@ -87,22 +140,52 @@ const cancelDelegationToken = (
   activeKey: Key,
   username: string,
 ) => {
+  return HiveEngineUtils.sendOperation(
+    [
+      TokensUtils.getCancelDelegationTokenOperation(
+        from,
+        symbol,
+        amount,
+        username,
+      ),
+    ],
+    activeKey,
+  );
+};
+
+const getCancelDelegationTokenOperation = (
+  from: string,
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
   const json = JSON.stringify({
     contractName: 'tokens',
     contractAction: 'undelegate',
     contractPayload: { from: from, symbol: symbol, quantity: amount },
   });
-  return HiveEngineUtils.sendOperation(
-    [
-      CustomJsonUtils.getCustomJsonOperation(
-        json,
-        username,
-        KeyType.ACTIVE,
-        Config.hiveEngine.mainnet,
-      ),
-    ],
-    activeKey,
+  return CustomJsonUtils.getCustomJsonOperation(
+    json,
+    username,
+    KeyType.ACTIVE,
+    Config.hiveEngine.mainnet,
   );
+};
+
+const getCancelDelegationTokenTransaction = (
+  from: string,
+  symbol: string,
+  amount: string,
+  username: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    TokensUtils.getCancelDelegationTokenOperation(
+      from,
+      symbol,
+      amount,
+      username,
+    ),
+  ]);
 };
 
 const sendToken = (
@@ -111,6 +194,19 @@ const sendToken = (
   amount: string,
   memo: string,
   activeKey: Key,
+  username: string,
+) => {
+  return HiveEngineUtils.sendOperation(
+    [TokensUtils.getSendTokenOperation(currency, to, amount, memo, username)],
+    activeKey,
+  );
+};
+
+const getSendTokenOperation = (
+  currency: string,
+  to: string,
+  amount: string,
+  memo: string,
   username: string,
 ) => {
   const json = {
@@ -123,17 +219,24 @@ const sendToken = (
       memo: memo,
     },
   };
-  return HiveEngineUtils.sendOperation(
-    [
-      CustomJsonUtils.getCustomJsonOperation(
-        json,
-        username,
-        KeyType.ACTIVE,
-        Config.hiveEngine.mainnet,
-      ),
-    ],
-    activeKey,
+  return CustomJsonUtils.getCustomJsonOperation(
+    json,
+    username,
+    KeyType.ACTIVE,
+    Config.hiveEngine.mainnet,
   );
+};
+
+const getSendTokenTransaction = (
+  currency: string,
+  to: string,
+  amount: string,
+  memo: string,
+  username: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    TokensUtils.getSendTokenOperation(currency, to, amount, memo, username),
+  ]);
 };
 
 const getHiveEngineTokenValue = (
@@ -241,6 +344,16 @@ const TokensUtils = {
   getAllTokens,
   getTokensMarket,
   getHiveEngineTokenValue,
+  getStakeTokenOperation,
+  getUnstakeTokenOperation,
+  getDelegateTokenOperation,
+  getCancelDelegationTokenOperation,
+  getSendTokenOperation,
+  getStakeTokenTransaction,
+  getUnstakeTokenTransaction,
+  getDelegateTokenTransaction,
+  getCancelDelegationTokenTransaction,
+  getSendTokenTransaction,
 };
 
 export default TokensUtils;
