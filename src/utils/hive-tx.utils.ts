@@ -49,7 +49,7 @@ const sendOperation = async (
 const createTransaction = async (operations: Operation[]) => {
   let hiveTransaction = new HiveTransaction();
   const tx = await hiveTransaction.create(operations);
-  console.log(`length of transaction => ${JSON.stringify(tx).length}`);
+  Logger.log(`length of transaction => ${JSON.stringify(tx).length}`);
   return tx;
 };
 

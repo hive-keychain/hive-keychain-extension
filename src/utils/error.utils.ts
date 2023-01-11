@@ -20,11 +20,8 @@ enum LedgerErrorType {
 }
 
 const parse = (error: any) => {
-  console.log(error);
   const stack = error?.data?.stack[0];
-  console.log(stack);
   if (stack?.context?.method) {
-    console.log('ici');
     switch (stack.context.method) {
       case BlockchainErrorType.ADJUST_BLANCE:
         return new KeychainError(
@@ -106,7 +103,6 @@ const parse = (error: any) => {
       }
     }
   } else if (error.statusText) {
-    console.log(error.statusText, LedgerErrorType.DENIED_BY_USER);
     switch (error.statusText) {
       case LedgerErrorType.DENIED_BY_USER:
         return new KeychainError('error_ledger_denied_by_user', [], error);
@@ -117,7 +113,6 @@ const parse = (error: any) => {
 };
 
 const parseHiveEngine = (error: string, payload: any) => {
-  console.log(error, payload);
   if (error.includes(HiveEngineErrorType.OVERDRAW_BALANCE)) {
     return new KeychainError('hive_engine_overdraw_balance_error', [
       payload.symbol,
