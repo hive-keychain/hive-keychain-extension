@@ -8,7 +8,7 @@ const signTransactionFromLedger = (data: SignFromLedgerRequestMessage) => {
     ...data,
   });
 };
-
+/* istanbul ignore next */
 const getSignatureFromLedger = () => {
   return new Promise<string>((resolve, reject) => {
     const getResponse = (

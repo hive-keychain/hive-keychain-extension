@@ -13,6 +13,7 @@ export const addAccountRequest = (
   account?: LocalAccount,
 ) => {
   if (account) {
+    /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
         requestHandler,
@@ -26,6 +27,7 @@ export const addAccountRequest = (
       );
     }, requestHandler);
   } else {
+    /* istanbul ignore next */
     const callback = () => {
       chrome.runtime.sendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,

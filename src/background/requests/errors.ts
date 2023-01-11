@@ -1,9 +1,9 @@
-/* istanbul ignore file */
 import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 // Send errors back to the content_script, it will forward it to website
+/* istanbul ignore next */
 const sendErrors = (
   requestHandler: RequestsHandler,
   tab: number,
