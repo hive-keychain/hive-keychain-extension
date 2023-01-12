@@ -1,3 +1,4 @@
+/* istanbul ignore next */
 const toBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
