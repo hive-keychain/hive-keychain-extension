@@ -1,3 +1,4 @@
+import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { Operation } from '@hiveio/dhive';
@@ -7,10 +8,14 @@ import {
   RequestBroadcast,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import AccountUtils from 'src/utils/account.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
+
+// Check size of transaction. Might need to signHash
 
 export const broadcastOperations = async (
   requestHandler: RequestsHandler,
@@ -69,7 +74,26 @@ export const broadcastOperations = async (
         }
       }
     }
-    result = await HiveTxUtils.sendOperation(operations, key!);
+
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await HiveTxUtils.createTransaction(operations);
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await HiveTxUtils.sendOperation(operations, key!);
+        break;
+      }
+    }
   } catch (e) {
     Logger.error(e);
     err = (e as KeychainError).trace || e;
