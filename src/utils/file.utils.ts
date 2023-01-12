@@ -15,5 +15,5 @@ const toBase64 = (file: File): Promise<string> =>
 const FileUtils = {
   toBase64,
 };
-
+/* istanbul ignore next */
 export default FileUtils;

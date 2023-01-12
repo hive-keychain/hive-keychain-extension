@@ -65,6 +65,71 @@ const blockchainErrorData = [
       data: {
         stack: [
           {
+            context: { method: BlockchainErrorType.DO_APPLY },
+            format: 'Proxy must change',
+          },
+        ],
+      },
+    },
+    expectError: new KeychainError('set_same_proxy_error'),
+  },
+  {
+    error: {
+      data: {
+        stack: [
+          {
+            context: { method: BlockchainErrorType.DO_APPLY },
+            format: 'reject pain',
+          },
+        ],
+      },
+    },
+    expectError: new KeychainError('html_popup_witness_already_voted'),
+  },
+  {
+    error: {
+      data: {
+        stack: [
+          {
+            context: { method: BlockchainErrorType.DO_APPLY },
+            format: 'approve love and happiness',
+          },
+        ],
+      },
+    },
+    expectError: new KeychainError('html_popup_witness_not_voted'),
+  },
+  {
+    error: {
+      data: {
+        stack: [
+          {
+            context: { method: BlockchainErrorType.DO_APPLY },
+            format: 'too many hate and suffering',
+          },
+        ],
+      },
+    },
+    expectError: new KeychainError('html_popup_vote_witness_error_30_votes'),
+  },
+  {
+    error: {
+      data: {
+        stack: [
+          {
+            context: { method: BlockchainErrorType.DO_APPLY },
+            format: 'Account does not have sufficient Hive Power for withdraw',
+          },
+        ],
+      },
+    },
+    expectError: new KeychainError('power_down_hp_not_sufficient_error'),
+  },
+  {
+    error: {
+      data: {
+        stack: [
+          {
             context: { method: BlockchainErrorType.WITNESS_NOT_FOUND },
           },
         ],
