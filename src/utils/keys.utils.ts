@@ -106,6 +106,10 @@ const getKeyType = (key: Key): PrivateKeyType => {
   }
 };
 
+const requireManualConfirmation = (key: Key) => {
+  return KeysUtils.isUsingLedger(key);
+};
+
 export const KeysUtils = {
   isAuthorizedAccount,
   getPublicKeyFromPrivateKeyString,
@@ -119,4 +123,5 @@ export const KeysUtils = {
   isUsingLedger,
   getKeyReferences,
   getKeyType,
+  requireManualConfirmation,
 };

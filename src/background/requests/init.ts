@@ -11,6 +11,7 @@ import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import Config from 'src/config';
 import EncryptUtils from 'src/utils/encrypt.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { isWhitelisted } from 'src/utils/preferences.utils';
@@ -107,7 +108,10 @@ export default async (
           const key = account.keys[typeWif];
           requestHandler.setKeys(key!, publicKey!);
 
-          if (!isWhitelisted(items.no_confirm, req, domain, rpc)) {
+          if (
+            !isWhitelisted(items.no_confirm, req, domain, rpc) ||
+            KeysUtils.requireManualConfirmation(key!)
+          ) {
             Logic.requestWithConfirmation(
               requestHandler,
               tab!,
