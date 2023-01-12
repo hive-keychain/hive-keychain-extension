@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import CurrencyUtils, { BaseCurrencies } from 'src/utils/currency.utils';
 import { getPhishingAccounts } from 'src/utils/phishing.utils';
 import TransferUtils from 'src/utils/transfer.utils';
-/* istanbul ignore next */
+
 export const useTransferCheck = (
   data: RequestTransfer | RequestSendToken,
   rpc: Rpc,
