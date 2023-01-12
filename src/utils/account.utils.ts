@@ -473,20 +473,54 @@ const updateAccount = (
 ) => {
   return HiveTxUtils.sendOperation(
     [
-      [
-        'account_update',
-        {
-          account: username,
-          owner: undefined,
-          active,
-          posting,
-          memo_key: memo,
-          json_metadata: stringifiedMetadata,
-        },
-      ] as AccountUpdateOperation,
+      AccountUtils.getUpdateAccountOperation(
+        username,
+        active,
+        posting,
+        memo,
+        stringifiedMetadata,
+      ),
     ],
     key!,
   );
+};
+
+const getUpdateAccountOperation = (
+  username: string,
+  active: Authority | undefined,
+  posting: Authority | undefined,
+  memo: string,
+  stringifiedMetadata: string,
+) => {
+  return [
+    'account_update',
+    {
+      account: username,
+      owner: undefined,
+      active,
+      posting,
+      memo_key: memo,
+      json_metadata: stringifiedMetadata,
+    },
+  ] as AccountUpdateOperation;
+};
+
+const getUpdateAccountTransaction = (
+  username: string,
+  active: Authority | undefined,
+  posting: Authority | undefined,
+  memo: string,
+  stringifiedMetadata: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    AccountUtils.getUpdateAccountOperation(
+      username,
+      active,
+      posting,
+      memo,
+      stringifiedMetadata,
+    ),
+  ]);
 };
 
 const AccountUtils = {
@@ -516,6 +550,8 @@ const AccountUtils = {
   encryptAccounts,
   claimAccounts,
   updateAccount,
+  getUpdateAccountOperation,
+  getUpdateAccountTransaction,
 };
 
 export const BackgroundAccountUtils = {
