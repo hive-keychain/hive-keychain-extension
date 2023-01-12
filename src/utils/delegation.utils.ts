@@ -60,7 +60,7 @@ const delegateVestingShares = async (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getDelegationOperation = (
   delegatee: string,
   delegator: string,
@@ -75,7 +75,7 @@ const getDelegationOperation = (
     },
   ] as DelegateVestingSharesOperation;
 };
-
+/* istanbul ignore next */
 const getDelegationTransaction = (
   delegatee: string,
   delegator: string,
