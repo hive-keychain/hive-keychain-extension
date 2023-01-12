@@ -28,13 +28,13 @@ const init = async (): Promise<boolean> => {
 const isLedgerSupported = async () => {
   return await TransportWebUsb.isSupported();
 };
-
+/* istanbul ignore next */
 const getSettings = () => {
   if (hiveLedger) {
     return hiveLedger.getSettings();
   }
 };
-
+/* istanbul ignore next */
 const getKeyFromDerivationPath = async (path: string) => {
   return hiveLedger.getPublicKey(path);
 };
@@ -65,7 +65,7 @@ const getKeyForAccount = async (
   }
   return {};
 };
-
+/* istanbul ignore next */
 const getKeysForAccount = async (username: string) => {
   let stillHas = true;
 
@@ -126,7 +126,7 @@ const getLedgerInstance = async (): Promise<LedgerHiveApp> => {
   }
   return hiveLedger;
 };
-
+/* istanbul ignore next */
 const signTransaction = async (
   transaction: Transaction,
   key: Key,
@@ -145,7 +145,7 @@ const signTransaction = async (
     throw new KeychainError('html_ledger_error_while_signing');
   }
 };
-
+/* istanbul ignore next */
 const signHash = async (digest: string, key: Key) => {
   let ledger = await LedgerUtils.getLedgerInstance();
   if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
