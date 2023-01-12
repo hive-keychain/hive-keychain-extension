@@ -2,6 +2,7 @@ import {
   AccountCreateOperation,
   AuthorityType,
   ChangeRecoveryAccountOperation,
+  CreateClaimedAccountOperation,
   PrivateKey,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
@@ -106,19 +107,46 @@ const createAccountUsingTicket = (
 ) => {
   return HiveTxUtils.sendOperation(
     [
-      [
-        'create_claimed_account',
-        {
-          creator: parentUsername,
-          new_account_name: newUsername,
-          json_metadata: '{}',
-          extensions: [],
-          ...authorities,
-        },
-      ],
+      AccountCreationUtils.getCreateClaimedAccountOperation(
+        authorities,
+        newUsername,
+        parentUsername,
+      ),
     ],
     parentActiveKey,
   );
+};
+
+const getCreateClaimedAccountOperation = (
+  authorities: AccountAuthorities,
+  newUsername: string,
+  parentUsername: string,
+) => {
+  const extensions: any[] = [];
+  return [
+    'create_claimed_account',
+    {
+      creator: parentUsername,
+      new_account_name: newUsername,
+      json_metadata: '{}',
+      extensions: extensions,
+      ...authorities,
+    },
+  ] as CreateClaimedAccountOperation;
+};
+
+const getCreateClaimedAccountTransaction = (
+  authorities: AccountAuthorities,
+  newUsername: string,
+  parentUsername: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    AccountCreationUtils.getCreateClaimedAccountOperation(
+      authorities,
+      newUsername,
+      parentUsername,
+    ),
+  ]);
 };
 
 const createPayingAccount = (
@@ -195,4 +223,6 @@ export const AccountCreationUtils = {
   createAccount,
   setRecoveryAccountOperation,
   generateAccountAuthorities,
+  getCreateClaimedAccountOperation,
+  getCreateClaimedAccountTransaction,
 };
