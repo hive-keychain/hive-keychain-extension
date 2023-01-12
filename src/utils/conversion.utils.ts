@@ -97,6 +97,22 @@ const getConvertOperation = (
   ];
 };
 
+const getConvertTransaction = (
+  username: string,
+  requestId: number,
+  amount: string,
+  conversionType: ConversionType,
+) => {
+  return HiveTxUtils.createTransaction([
+    ConversionUtils.getConvertOperation(
+      username,
+      requestId,
+      amount,
+      conversionType,
+    ),
+  ]);
+};
+
 export const ConversionUtils = {
   getConversionRequests,
   getHdbConversions,
@@ -104,4 +120,5 @@ export const ConversionUtils = {
   getConvertOperation,
   sendConvert,
   convert,
+  getConvertTransaction,
 };
