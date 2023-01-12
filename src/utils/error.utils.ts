@@ -21,6 +21,7 @@ enum LedgerErrorType {
 
 const parse = (error: any) => {
   const stack = error?.data?.stack[0];
+  console.log({ stack }); //TODO to remove
   if (stack?.context?.method) {
     switch (stack.context.method) {
       case BlockchainErrorType.ADJUST_BLANCE:
