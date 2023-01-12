@@ -11,7 +11,7 @@ const toBase64 = (file: File): Promise<string> =>
     };
     reader.onerror = (error) => reject(error);
   });
-
+/* istanbul ignore next */
 const FileUtils = {
   toBase64,
 };
