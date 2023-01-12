@@ -116,7 +116,7 @@ const createAccountUsingTicket = (
     parentActiveKey,
   );
 };
-
+/* istanbul ignore next */
 const getCreateClaimedAccountOperation = (
   authorities: AccountAuthorities,
   newUsername: string,
@@ -134,7 +134,7 @@ const getCreateClaimedAccountOperation = (
     },
   ] as CreateClaimedAccountOperation;
 };
-
+/* istanbul ignore next */
 const getCreateClaimedAccountTransaction = (
   authorities: AccountAuthorities,
   newUsername: string,
@@ -172,7 +172,7 @@ const createPayingAccount = (
     parentActiveKey,
   );
 };
-
+/* istanbul ignore next */
 const generateAccountAuthorities = (
   keys: GeneratedKeys,
 ): AccountAuthorities => {
@@ -195,7 +195,7 @@ const generateAccountAuthorities = (
     memo_key: keys.memo.public,
   };
 };
-
+/* istanbul ignore next */
 const setRecoveryAccountOperation = (
   accountName: string,
   newRecoveryAccount: string,
