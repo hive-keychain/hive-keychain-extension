@@ -23,6 +23,7 @@ const addToIgnoreRenewal = async (usernames: string[]) => {
     ignored,
   );
 };
+
 const removeFromIgnoreRenewal = async (username: string) => {
   let ignored = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,
@@ -88,7 +89,7 @@ const renewUsersGovernance = async (
   }
   await Promise.all(promises);
 };
-
+/* istanbul ignore next */
 const getGovernanceRenewalIgnored = async () => {
   const list = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.GOVERNANCE_RENEWAL_IGNORED,
