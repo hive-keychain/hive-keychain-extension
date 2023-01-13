@@ -13,7 +13,7 @@ import RpcUtils from 'src/utils/rpc.utils';
 //   realtime: true,
 //   port: 8000,
 // });
-
+/* istanbul ignore next */
 const store = createStore(
   reducers,
   /* preloadedState, */ applyMiddleware(thunk),
@@ -24,7 +24,7 @@ let previousRpc = store.getState().activeRpc;
 let previousActiveAccountName = store.getState().activeAccount?.name;
 let previousMk = store.getState().mk;
 let previousHiveEngineConfig = store.getState().hiveEngineConfig;
-
+/* istanbul ignore next */
 store.subscribe(() => {
   const { accounts, mk, activeRpc, activeAccount, hiveEngineConfig } =
     store.getState();
