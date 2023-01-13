@@ -13,6 +13,7 @@ import {
   PrivateKey,
   Transaction as HiveTransaction,
 } from 'hive-tx';
+import { KeychainError } from 'src/keychain-error';
 import { AsyncUtils } from 'src/utils/async.utils';
 import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -61,9 +62,18 @@ const createSignAndBroadcastTransaction = async (
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations);
   if (KeysUtils.isUsingLedger(key)) {
+    const { hashSignPolicy } = await LedgerUtils.getSettings();
+
+    if (
+      signHash ||
+      (!Hive.isDisplayableOnDevice(transaction) && !hashSignPolicy)
+    ) {
+      throw new KeychainError('error_ledger_no_hash_sign_policy');
+    }
+
     try {
       let signedTransactionFromLedger;
-      if (signHash) {
+      if (signHash || !Hive.isDisplayableOnDevice(transaction)) {
         const tx = await HiveTxUtils.createTransaction(operations);
         const digest = Hive.getTransactionDigest(tx);
         const signature = await LedgerUtils.signHash(digest, key);
@@ -131,8 +141,13 @@ const confirmTransaction = async (transactionId: string) => {
 const signTransaction = async (tx: any, key: Key, signHash?: boolean) => {
   const hiveTransaction = new HiveTransaction(tx);
   if (KeysUtils.isUsingLedger(key)) {
+    const { hashSignPolicy } = await LedgerUtils.getSettings();
+    if (signHash || (!Hive.isDisplayableOnDevice(tx) && !hashSignPolicy)) {
+      throw new KeychainError('error_ledger_no_hash_sign_policy');
+    }
+
     try {
-      if (signHash) {
+      if (signHash || !Hive.isDisplayableOnDevice(tx)) {
         const digest = Hive.getTransactionDigest(tx);
         const signature = await LedgerUtils.signHash(digest, key);
         hiveTransaction.addSignature(signature);
