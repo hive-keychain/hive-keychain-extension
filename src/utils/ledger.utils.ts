@@ -30,9 +30,7 @@ const isLedgerSupported = async () => {
 };
 /* istanbul ignore next */
 const getSettings = () => {
-  if (hiveLedger) {
-    return hiveLedger.getSettings();
-  }
+  return hiveLedger.getSettings();
 };
 /* istanbul ignore next */
 const getKeyFromDerivationPath = async (path: string) => {

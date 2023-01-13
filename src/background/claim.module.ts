@@ -7,6 +7,8 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import Config from 'src/config';
 import AccountUtils from 'src/utils/account.utils';
+import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
@@ -117,6 +119,17 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
       localAccounts,
     );
     if (!activeAccount) continue;
+    if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
+      Logger.warn(
+        "Can't autoclaim savings because active key is saved in Ledger",
+      );
+      await AutomatedTasksUtils.updateClaim(
+        activeAccount.name!,
+        false,
+        LocalStorageKeyEnum.CLAIM_SAVINGS,
+      );
+      continue;
+    }
     let baseDate: any =
       new Date(
         activeAccount?.account.savings_hbd_last_interest_payment!,
@@ -175,6 +188,19 @@ const iterateClaimAccounts = async (users: string[], mk: string) => {
       userAccount,
       localAccounts,
     );
+
+    if (activeAccount && KeysUtils.isUsingLedger(activeAccount?.keys.active!)) {
+      Logger.warn(
+        "Can't autoclaim accounts because active key is saved in Ledger",
+      );
+      await AutomatedTasksUtils.updateClaim(
+        activeAccount?.name!,
+        false,
+        LocalStorageKeyEnum.CLAIM_ACCOUNTS,
+      );
+      continue;
+    }
+
     if (
       activeAccount &&
       activeAccount.rc.percentage > Config.claims.freeAccount.MIN_RC_PCT
