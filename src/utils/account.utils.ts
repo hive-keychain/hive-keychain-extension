@@ -23,7 +23,7 @@ import Logger from 'src/utils/logger.utils';
 import MkUtils from 'src/utils/mk.utils';
 import LocalStorageUtils from './localStorage.utils';
 
-enum AccountErrorMessages {
+export enum AccountErrorMessages {
   INCORRECT_KEY = 'popup_accounts_incorrect_key',
   INCORRECT_USER = 'popup_accounts_incorrect_user',
   MISSING_FIELDS = 'popup_accounts_fill',
@@ -212,7 +212,7 @@ const addKey = async (
   keyType: KeyType,
   mk: string,
 ) => {
-  if (privateKey.length === 0 || privateKey.length === 0) {
+  if (privateKey.length === 0 || privateKey.trim().length === 0) {
     throw new Error(AccountErrorMessages.MISSING_FIELDS);
   }
 
@@ -383,7 +383,7 @@ const getExtendedAccounts = async (
 ): Promise<ExtendedAccount[]> => {
   return await HiveTxUtils.getData('condenser_api.get_accounts', [usernames]);
 };
-
+/* istanbul ignore next */
 const getAccount = async (username: string): Promise<ExtendedAccount[]> => {
   return HiveTxUtils.getData('condenser_api.get_accounts', [[username]]);
 };
@@ -417,12 +417,13 @@ const addKeyFromLedger = async (username: string, keys: Keys) => {
   let account = accounts.find(
     (account: LocalAccount) => account.name === username,
   );
+
   if (account) {
     account.keys = { ...account.keys, ...keys };
   }
   await AccountUtils.saveAccounts(accounts, mk);
 };
-
+/* istanbul ignore next */
 const generateQRCode = (account: LocalAccount) => {
   if (account.keys.active?.startsWith('#')) {
     delete account.keys.active;
@@ -504,7 +505,7 @@ const getUpdateAccountOperation = (
     },
   ] as AccountUpdateOperation;
 };
-
+/* istanbul ignore next */
 const getUpdateAccountTransaction = (
   username: string,
   active: Authority | undefined,
