@@ -29,8 +29,9 @@ const isLedgerSupported = async () => {
   return await TransportWebUsb.isSupported();
 };
 /* istanbul ignore next */
-const getSettings = () => {
-  return hiveLedger.getSettings();
+const getSettings = async () => {
+  let ledger = await LedgerUtils.getLedgerInstance();
+  return ledger.getSettings();
 };
 /* istanbul ignore next */
 const getKeyFromDerivationPath = async (path: string) => {
@@ -147,15 +148,10 @@ const signTransaction = async (
 const signHash = async (digest: string, key: Key) => {
   let ledger = await LedgerUtils.getLedgerInstance();
   if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
-  try {
-    return ledger.signHash(
-      digest,
-      LedgerUtils.getPathFromString(key!.toString()),
-    );
-  } catch (err: any) {
-    Logger.error(err);
-    throw new KeychainError('html_ledger_error_while_signing');
-  }
+  return ledger.signHash(
+    digest,
+    LedgerUtils.getPathFromString(key!.toString()),
+  );
 };
 
 const getPathFromString = (s: string) => {
