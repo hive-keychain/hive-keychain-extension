@@ -62,7 +62,12 @@ const createSignAndBroadcastTransaction = async (
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations);
   if (KeysUtils.isUsingLedger(key)) {
-    const { hashSignPolicy } = await LedgerUtils.getSettings();
+    let hashSignPolicy;
+    try {
+      hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
+    } catch (err: any) {
+      throw ErrorUtils.parse(err);
+    }
 
     if (
       signHash ||
@@ -141,7 +146,13 @@ const confirmTransaction = async (transactionId: string) => {
 const signTransaction = async (tx: any, key: Key, signHash?: boolean) => {
   const hiveTransaction = new HiveTransaction(tx);
   if (KeysUtils.isUsingLedger(key)) {
-    const { hashSignPolicy } = await LedgerUtils.getSettings();
+    let hashSignPolicy;
+    try {
+      hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
+    } catch (err: any) {
+      throw ErrorUtils.parse(err);
+    }
+
     if (signHash || (!Hive.isDisplayableOnDevice(tx) && !hashSignPolicy)) {
       throw new KeychainError('error_ledger_no_hash_sign_policy');
     }
@@ -164,7 +175,7 @@ const signTransaction = async (tx: any, key: Key, signHash?: boolean) => {
       return hiveTransaction.sign(privateKey);
     } catch (err) {
       Logger.error(err);
-      throw new Error('html_popup_error_while_signing_transaction');
+      throw new KeychainError('html_popup_error_while_signing_transaction');
     }
   }
 };

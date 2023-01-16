@@ -2597,7 +2597,7 @@
     "description": "Add using ledger link"
   },
   "popup_html_ledger_not_detected": {
-    "message": "Ledger not detected",
+    "message": "Ledger not detected. Make sure your Ledger is plugged and the Hive App is running",
     "description": "Ledger not detected error message"
   },
   "popup_html_ledger_detected": {
@@ -2755,5 +2755,9 @@
   "popup_html_not_enough_rc_to_claim_account": {
     "message": "You don't have enough RC to claim account.",
     "description": "automated tasks => need more RC to claim account"
+  },
+  "popup_html_validate_transaction_on_ledger": {
+    "message": "Accept transaction on Ledger device",
+    "description": "Message to remind user to accept transaction on his Ledger device"
   }
 }

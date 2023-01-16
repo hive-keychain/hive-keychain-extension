@@ -34,6 +34,7 @@ import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './transfer-fund.component.scss';
@@ -223,7 +224,10 @@ const TransferFunds = ({
         : 'popup_html_transfer_funds',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        addToLoadingList('html_popup_transfer_fund_operation');
+        addToLoadingList(
+          'html_popup_transfer_fund_operation',
+          KeysUtils.getKeyType(activeAccount.keys.active!),
+        );
         try {
           let success = false;
           let memoParam = memo;

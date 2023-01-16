@@ -16,12 +16,16 @@ export enum LedgerKeyType {
 }
 
 const init = async (): Promise<boolean> => {
+  console.log('before is supported');
   if (await LedgerUtils.isLedgerSupported()) {
+    console.log('before transport');
     const transport = await TransportWebUsb.create();
+    console.log('transport', transport);
     hiveLedger = new LedgerHiveApp(transport);
+    console.log('hiveLedger', hiveLedger);
     return true;
   } else {
-    throw new Error('html_ledger_not_supported');
+    throw new KeychainError('html_ledger_not_supported');
   }
 };
 

@@ -7,16 +7,24 @@ import './loading.component.scss';
 
 type Props = {
   operations?: LoadingOperation[];
+  caption?: string;
   hide?: boolean;
 };
-const Loading = ({ hide, operations }: Props) => {
+const Loading = ({ hide, operations, caption }: Props) => {
   return (
     <div className={`loading-container ${hide ? 'hide' : ''}`}>
       <div className="overlay"></div>
       <RotatingLogoComponent></RotatingLogoComponent>
-      <div className="loading-text">
-        {chrome.i18n.getMessage('popup_html_loading')}
-      </div>
+      {caption && (
+        <>
+          <div className="caption">{chrome.i18n.getMessage(caption)}</div>
+        </>
+      )}
+      {!caption && (
+        <div className="loading-text">
+          {chrome.i18n.getMessage('popup_html_loading')}
+        </div>
+      )}
       <div className="operations">
         {operations &&
           operations.map((operation) => (

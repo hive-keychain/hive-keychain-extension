@@ -20,8 +20,8 @@ enum LedgerErrorType {
 }
 
 const parse = (error: any) => {
+  console.log(error);
   const stack = error?.data?.stack[0];
-  console.log({ stack }); //TODO to remove
   if (stack?.context?.method) {
     switch (stack.context.method) {
       case BlockchainErrorType.ADJUST_BLANCE:
@@ -108,9 +108,17 @@ const parse = (error: any) => {
       case LedgerErrorType.DENIED_BY_USER:
         return new KeychainError('error_ledger_denied_by_user', [], error);
     }
+  } else if (
+    error.name === 'TransportOpenUserCancelled' ||
+    error.name === 'TransportStatusError' ||
+    error.name === 'DisconnectedDeviceDuringOperation'
+  ) {
+    return new KeychainError('popup_html_ledger_not_detected');
+  } else if (stack && stack.format) {
+    return new KeychainError('error_while_broadcasting', [stack.format], error);
   }
 
-  return new KeychainError('error_while_broadcasting', [stack.format], error);
+  return new KeychainError('error_while_broadcasting', [], error);
 };
 
 const parseHiveEngine = (error: string, payload: any) => {

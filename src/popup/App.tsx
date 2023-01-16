@@ -45,7 +45,7 @@ const App = ({
   activeAccountUsername,
   activeRpc,
   loading,
-  loadingOperation,
+  loadingState,
   isCurrentPageHomePage,
   displayProxySuggestion,
   navigationStack,
@@ -262,7 +262,12 @@ const App = ({
     switchToRpc: Rpc | undefined,
   ) => {
     if (loading || !activeRpc) {
-      return <LoadingComponent operations={loadingOperation} />;
+      return (
+        <LoadingComponent
+          operations={loadingState.loadingOperations}
+          caption={loadingState.caption}
+        />
+      );
     } else if (displayProxySuggestion) {
       return <ProxySuggestionComponent />;
     } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
@@ -313,8 +318,8 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
-    loading: state.loading.length,
-    loadingOperation: state.loading,
+    loading: state.loading.loadingOperations.length,
+    loadingState: state.loading,
     activeAccountUsername: state.activeAccount.name,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,

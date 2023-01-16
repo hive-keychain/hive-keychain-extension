@@ -1,3 +1,4 @@
+import { PrivateKeyType } from '@interfaces/keys.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
 
@@ -6,37 +7,66 @@ export interface LoadingOperation {
   done: boolean;
 }
 
+export interface LoadingState {
+  loadingOperations: LoadingOperation[];
+  caption?: string;
+}
+
+export interface LoadingPayload {
+  operation: string;
+  privateKeyType?: PrivateKeyType;
+}
+
 export const LoadingReducer = (
-  state: LoadingOperation[] = [],
-  { type, payload }: ActionPayload<string>,
-): LoadingOperation[] => {
+  state: LoadingState = { loadingOperations: [], caption: undefined },
+  { type, payload }: ActionPayload<LoadingPayload>,
+): LoadingState => {
   switch (type) {
     case ActionType.ADD_TO_LOADING_LIST:
-      if (state.find((loadingItem) => loadingItem.name === payload)) {
-        const newState = [...state];
-        for (let loadingOperation of newState) {
-          if (loadingOperation.name === payload) {
+      if (
+        state.loadingOperations.find(
+          (loadingItem) => loadingItem.name === payload?.operation,
+        )
+      ) {
+        const newState = { loadingOperations: [...state.loadingOperations] };
+        for (let loadingOperation of newState.loadingOperations) {
+          if (loadingOperation.name === payload?.operation) {
             loadingOperation.done = false;
           }
         }
         return newState;
       } else {
-        return [...state, { name: payload!, done: false }];
+        const newState: LoadingState = {
+          loadingOperations: [...state.loadingOperations],
+        };
+        newState.loadingOperations.push({
+          name: payload!.operation!,
+          done: false,
+        });
+        if (
+          payload?.privateKeyType &&
+          payload.privateKeyType === PrivateKeyType.LEDGER
+        ) {
+          newState.caption = 'popup_html_validate_transaction_on_ledger';
+        }
+        return newState;
       }
 
     case ActionType.REMOVE_FROM_LOADING_LIST:
-      const newState = [...state];
-      for (let loadingOperation of newState) {
-        if (loadingOperation.name === payload) {
+      const newState: LoadingState = {
+        loadingOperations: [...state.loadingOperations],
+      };
+      for (let loadingOperation of newState.loadingOperations) {
+        if (loadingOperation.name === payload?.operation) {
           loadingOperation.done = true;
         }
       }
 
-      return newState.some(
+      return newState.loadingOperations.some(
         (loadingOperation) => loadingOperation.done === false,
       )
         ? newState
-        : [];
+        : { loadingOperations: [], caption: undefined };
     default:
       return state;
   }

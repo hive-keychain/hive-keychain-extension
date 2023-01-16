@@ -5,6 +5,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import { KeychainError } from 'src/keychain-error';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import './sign-transaction.scss';
@@ -32,7 +33,13 @@ const SignTransaction = (props: Props) => {
     try {
       let signature;
       if (data.signHash) {
-        const { hashSignPolicy } = await LedgerUtils.getSettings();
+        let hashSignPolicy;
+        try {
+          hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
+        } catch (err: any) {
+          throw ErrorUtils.parse(err);
+        }
+
         if (!hashSignPolicy) {
           throw new KeychainError('error_ledger_no_hash_sign_policy');
         }
