@@ -4,6 +4,8 @@ import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import React, { useEffect, useState } from 'react';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import { KeychainError } from 'src/keychain-error';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import './sign-transaction.scss';
@@ -31,6 +33,16 @@ const SignTransaction = (props: Props) => {
     try {
       let signature;
       if (data.signHash) {
+        let hashSignPolicy;
+        try {
+          hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
+        } catch (err: any) {
+          throw ErrorUtils.parse(err);
+        }
+
+        if (!hashSignPolicy) {
+          throw new KeychainError('error_ledger_no_hash_sign_policy');
+        }
         const digest = HiveLedgerApp.getTransactionDigest(data.transaction);
         signature = await LedgerUtils.signHash(digest, data.key!);
       } else {
@@ -50,9 +62,13 @@ const SignTransaction = (props: Props) => {
       });
     } catch (err: any) {
       Logger.log(err);
+      let message = 'html_ledger_error_while_signing';
+      if (err instanceof KeychainError) {
+        message = err.message;
+      }
       chrome.runtime.sendMessage({
         command: DialogCommand.RETURN_ERROR_SIGNING_TRANSACTION,
-        message: 'html_ledger_error_while_signing',
+        message: message,
       });
     }
   };

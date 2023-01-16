@@ -56,7 +56,6 @@ const CreateAccountStepOne = ({
   }, []);
 
   const initPrice = async () => {
-    console.log('about to getAccountPrice');
     setPrice(await HiveUtils.getAccountPrice());
   };
 

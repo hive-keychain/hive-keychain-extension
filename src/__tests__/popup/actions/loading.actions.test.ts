@@ -14,7 +14,9 @@ describe('loading.actions tests:/n', () => {
       const itemMarkedDone = [{ done: false, name: 'Existing Item on list' }];
       const fakeStore = getFakeStore({
         ...initialEmptyStateStore,
-        loading: [{ done: true, name: 'Existing Item on list' }],
+        loading: {
+          loadingOperations: [{ done: true, name: 'Existing Item on list' }],
+        },
       });
       fakeStore.dispatch<any>(
         loadingActions.addToLoadingList('Existing Item on list'),
@@ -27,7 +29,9 @@ describe('loading.actions tests:/n', () => {
     test('Must return empty array', () => {
       const fakeStore = getFakeStore({
         ...initialEmptyStateStore,
-        loading: [{ done: false, name: 'Only Item on list' }],
+        loading: {
+          loadingOperations: [{ done: false, name: 'Only Item on list' }],
+        },
       });
       fakeStore.dispatch<any>(
         loadingActions.removeFromLoadingList('Only Item on list'),
@@ -37,11 +41,13 @@ describe('loading.actions tests:/n', () => {
     test('Must mark one item as done and return actual list', () => {
       const fakeStore = getFakeStore({
         ...initialEmptyStateStore,
-        loading: [
-          { done: false, name: 'Pending Item 1 on list' },
-          { done: false, name: 'Pending Item 2 on list' },
-          { done: false, name: 'Pending Item 3 on list' },
-        ],
+        loading: {
+          loadingOperations: [
+            { done: false, name: 'Pending Item 1 on list' },
+            { done: false, name: 'Pending Item 2 on list' },
+            { done: false, name: 'Pending Item 3 on list' },
+          ],
+        },
       });
       fakeStore.dispatch<any>(
         loadingActions.removeFromLoadingList('Pending Item 1 on list'),
@@ -55,11 +61,13 @@ describe('loading.actions tests:/n', () => {
     test('If not found must return actual list', () => {
       const fakeStore = getFakeStore({
         ...initialEmptyStateStore,
-        loading: [
-          { done: false, name: 'Pending Item 1 on list' },
-          { done: false, name: 'Pending Item 2 on list' },
-          { done: false, name: 'Pending Item 3 on list' },
-        ],
+        loading: {
+          loadingOperations: [
+            { done: false, name: 'Pending Item 1 on list' },
+            { done: false, name: 'Pending Item 2 on list' },
+            { done: false, name: 'Pending Item 3 on list' },
+          ],
+        },
       });
       fakeStore.dispatch<any>(
         loadingActions.removeFromLoadingList('Not found item?'),
