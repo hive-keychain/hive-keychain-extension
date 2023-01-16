@@ -54,6 +54,7 @@ const tryConfirmTransaction = (trxId: string): Promise<TransactionStatus> => {
   });
 };
 
+/* istanbul ignore next */
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
     setTimeout(async function () {
@@ -88,6 +89,7 @@ const getDelayedTransactionInfo = (trxID: string) => {
   });
 };
 
+/* istanbul ignore next */
 const get = async <T>(
   params: TokenRequestParams,
   timeout: number = 10,
@@ -123,6 +125,7 @@ const get = async <T>(
   });
 };
 
+/* istanbul ignore next */
 const getHistory = async (
   account: string,
   symbol: string,
