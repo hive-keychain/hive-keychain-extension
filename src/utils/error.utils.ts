@@ -20,7 +20,6 @@ enum LedgerErrorType {
 }
 
 const parse = (error: any) => {
-  console.log(error);
   const stack = error?.data?.stack[0];
   if (stack?.context?.method) {
     switch (stack.context.method) {

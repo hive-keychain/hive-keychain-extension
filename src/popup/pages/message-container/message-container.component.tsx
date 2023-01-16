@@ -10,7 +10,6 @@ import './message-container.component.scss';
 const DURATION = 5000;
 
 const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
-  console.log(errorMessage);
   const [timeoutId, setTimeoutId] = useState<any>();
   useEffect(() => {
     if (errorMessage.key) {
