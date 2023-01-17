@@ -4,6 +4,9 @@ import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
 describe('rc-delegations.utils.ts tests:\n', () => {
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
   const hiveTxGlobals = {
     globals: dynamic.globalProperties,
     medianHistoryPrice: dynamic.medianHistoryPrice,

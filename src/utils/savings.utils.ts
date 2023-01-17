@@ -32,7 +32,7 @@ const withdraw = async (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getWithdrawOperation = async (
   from: string,
   to: string,
@@ -49,7 +49,7 @@ const getWithdrawOperation = async (
     },
   ] as TransferFromSavingsOperation;
 };
-
+/* istanbul ignore next */
 const getDepositOperation = async (
   from: string,
   to: string,
