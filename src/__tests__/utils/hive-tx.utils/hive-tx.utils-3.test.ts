@@ -74,6 +74,19 @@ describe('hive-tx.utils.test.ts part 3', () => {
           expect(error).toEqual(new KeychainError('html_ledger_not_supported'));
         }
       });
+
+      it('Must throw error and call logger if signHash fails', async () => {
+        mocks.LedgerUtils.getSettings({ hashSignPolicy: true });
+        mocks.hive.isDisplayableOnDevice(false);
+        mocks.hive.getTransactionDigest('string_digest');
+        mocks.LedgerUtils.signHashError(new Error('signHash error'));
+        try {
+          await HiveTxUtils.signTransaction(constants.tx, '#qqqw11');
+        } catch (error) {
+          expect(error).toEqual(new Error('signHash error'));
+          expect(spies.logger.err).toBeCalledWith(new Error('signHash error'));
+        }
+      });
     });
 
     describe('not using Ledger cases:\n', () => {

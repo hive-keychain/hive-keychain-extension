@@ -14,7 +14,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
     });
 
     it('Must set Rpc', async () => {
-      await HiveTxUtils.setRpc(DefaultRpcs[2]);
+      await HiveTxUtils.setRpc({ ...DefaultRpcs[2], chainId: 'chain_Id' });
       expect(HiveTxConfig.node).toEqual(DefaultRpcs[2].uri);
     });
   });

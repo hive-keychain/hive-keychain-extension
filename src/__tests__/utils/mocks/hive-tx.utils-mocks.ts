@@ -99,6 +99,8 @@ const mocks = {
       jest.spyOn(LedgerUtils, 'getSettings').mockRejectedValue(error),
     signHash: (signature: string) =>
       jest.spyOn(LedgerUtils, 'signHash').mockResolvedValue(signature),
+    signHashError: (err: any) =>
+      jest.spyOn(LedgerUtils, 'signHash').mockRejectedValue(err),
     signTransaction: (result: SignedTransaction) =>
       jest.spyOn(LedgerUtils, 'signTransaction').mockResolvedValue(result),
     signTransactionError: (err: any) =>

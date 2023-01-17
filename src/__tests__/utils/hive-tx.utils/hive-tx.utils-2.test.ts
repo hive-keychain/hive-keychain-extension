@@ -156,6 +156,39 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
           );
         }
       });
+
+      it('Must throw error and call logger if getSettings fails', async () => {
+        mocks.hiveTransaction.create(constants.tx);
+        mocks.LedgerUtils.getSettingsError(new Error('error getting settings'));
+        try {
+          await HiveTxUtils.createSignAndBroadcastTransaction(
+            constants.operations,
+            '#ajjsk1121312312',
+          );
+        } catch (error) {
+          expect(error).toEqual(new KeychainError('error_while_broadcasting'));
+        }
+      });
+
+      it('Must throw error if broadcast fails', async () => {
+        mocks.hiveTransaction.create(constants.tx);
+        mocks.LedgerUtils.getSettings({ hashSignPolicy: true } as Settings);
+        mocks.hive.isDisplayableOnDevice(false);
+        mocks.createTransaction(constants.tx);
+        mocks.hive.getTransactionDigest('string_digest');
+        mocks.LedgerUtils.signHash('signed_string');
+        mocks.hiveTransaction.broadcastError(new Error('error broadcasting'));
+        try {
+          await HiveTxUtils.createSignAndBroadcastTransaction(
+            constants.operations,
+            '#ajjsk1121312312',
+          );
+        } catch (error) {
+          expect(error).toEqual(
+            new Error('html_popup_error_while_broadcasting'),
+          );
+        }
+      });
     });
   });
 });
