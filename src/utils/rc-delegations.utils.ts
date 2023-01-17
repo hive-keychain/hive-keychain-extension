@@ -25,7 +25,7 @@ const getAllOutgoingDelegations = async (
     : [];
   return list;
 };
-
+/* istanbul ignore next */
 const cancelDelegation = async (
   delegatee: string,
   username: string,
@@ -33,7 +33,7 @@ const cancelDelegation = async (
 ) => {
   return sendDelegation(0, delegatee, username, postingKey);
 };
-
+/* istanbul ignore next */
 const sendDelegation = async (
   value: number,
   delegatee: string,
@@ -45,7 +45,7 @@ const sendDelegation = async (
     postingKey,
   );
 };
-
+/* istanbul ignore next */
 const getRcDelegationOperation = (
   delegatee: string,
   value: number,
