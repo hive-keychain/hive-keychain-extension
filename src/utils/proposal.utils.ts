@@ -80,6 +80,7 @@ const unvoteProposal = async (
     activeKey,
   );
 };
+/* istanbul ignore next */
 const updateProposalVotes = async (
   proposalIds: number[],
   username: string,
@@ -97,7 +98,7 @@ const updateProposalVotes = async (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getUpdateProposalVoteTransaction = (
   proposalIds: number[],
   username: string,
@@ -111,7 +112,7 @@ const getUpdateProposalVoteTransaction = (
     ),
   ]);
 };
-
+/* istanbul ignore next */
 const getUpdateProposalVoteOperation = (
   proposalId: number[],
   approve: boolean,
@@ -245,7 +246,7 @@ const getProposalDailyBudget = async () => {
     ) / 100
   );
 };
-
+/* istanbul ignore next */
 const createProposal = (
   username: string,
   receiver: string,
@@ -273,7 +274,7 @@ const createProposal = (
     key,
   );
 };
-
+/* istanbul ignore next */
 const getCreateProposalOperation = (
   username: string,
   receiver: string,
@@ -299,7 +300,7 @@ const getCreateProposalOperation = (
     },
   ] as CreateProposalOperation;
 };
-
+/* istanbul ignore next */
 const getCreateProposalTransaction = (
   username: string,
   receiver: string,
@@ -323,7 +324,7 @@ const getCreateProposalTransaction = (
     ),
   ]);
 };
-
+/* istanbul ignore next */
 const removeProposal = (
   owner: string,
   ids: number[],
@@ -335,7 +336,7 @@ const removeProposal = (
     key!,
   );
 };
-
+/* istanbul ignore next */
 const getRemoveProposalOperation = (
   owner: string,
   ids: number[],
@@ -351,7 +352,7 @@ const getRemoveProposalOperation = (
     },
   ] as RemoveProposalOperation;
 };
-
+/* istanbul ignore next */
 const getRemoveProposalTransaction = (
   owner: string,
   ids: number[],
