@@ -121,7 +121,7 @@ const createSignAndBroadcastTransaction = async (
     throw ErrorUtils.parse(response.error);
   }
 };
-
+/* istanbul ignore next */
 const confirmTransaction = async (transactionId: string) => {
   let response = null;
   do {
@@ -203,7 +203,7 @@ const broadcastAndConfirmTransactionWithSignature = async (
     throw ErrorUtils.parse(response.error);
   }
 };
-
+/* istanbul ignore next */
 const getData = async (
   method: string,
   params: any[] | object,

@@ -85,14 +85,24 @@ const mocks = {
       jest
         .spyOn(HiveTransaction.prototype, 'broadcast')
         .mockResolvedValue(result),
+    broadcastError: (err: any) =>
+      jest.spyOn(HiveTransaction.prototype, 'broadcast').mockRejectedValue(err),
+    addSignature: (signature: string) =>
+      jest
+        .spyOn(HiveTransaction.prototype, 'addSignature')
+        .mockReturnValue({ ...constants.tx, signatures: [signature] }),
   },
   LedgerUtils: {
     getSettings: (settings: Settings) =>
       jest.spyOn(LedgerUtils, 'getSettings').mockResolvedValue(settings),
+    getSettingsError: (error: any) =>
+      jest.spyOn(LedgerUtils, 'getSettings').mockRejectedValue(error),
     signHash: (signature: string) =>
       jest.spyOn(LedgerUtils, 'signHash').mockResolvedValue(signature),
     signTransaction: (result: SignedTransaction) =>
       jest.spyOn(LedgerUtils, 'signTransaction').mockResolvedValue(result),
+    signTransactionError: (err: any) =>
+      jest.spyOn(LedgerUtils, 'signTransaction').mockRejectedValue(err),
   },
   hive: {
     isDisplayableOnDevice: (value: boolean) =>
@@ -102,6 +112,8 @@ const mocks = {
   },
   createTransaction: (tx: any) =>
     jest.spyOn(HiveTxUtils, 'createTransaction').mockResolvedValue(tx),
+  confirmTransaction: (result: boolean) =>
+    jest.spyOn(HiveTxUtils, 'confirmTransaction').mockResolvedValue(result),
 };
 
 const methods = {
