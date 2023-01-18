@@ -1,3 +1,4 @@
+import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import {
@@ -8,6 +9,7 @@ import {
   RequestTransfer,
 } from '@interfaces/keychain.interface';
 import AccountUtils from 'src/utils/account.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -49,6 +51,20 @@ const mocks = {
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
   getExtendedAccount: (account: ExtendedAccount | undefined) =>
     (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
+  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: boolean) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
+  },
 };
 
 const spies = {
