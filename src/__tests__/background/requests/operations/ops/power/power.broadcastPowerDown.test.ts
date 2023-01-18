@@ -11,53 +11,79 @@ describe('power tests:\n', () => {
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastPowerDown cases:\n', () => {
-    it('Must return error if wrong global data', async () => {
-      mocks.getDynamicGlobalProperties({});
-      const result = await broadcastPowerDown(requestHandler, data.powerDown);
-      expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
-      expect(result.msg.result).toBeUndefined();
-      expect(result.msg.error).not.toBeNull();
-      expect(result.msg.message).toContain(
-        "Cannot read properties of undefined (reading 'split')",
-      );
+    describe('Default cases:\n', () => {
+      it('Must return error if wrong global data', async () => {
+        mocks.getDynamicGlobalProperties({});
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+        expect(result.msg.result).toBeUndefined();
+        expect(result.msg.error).not.toBeNull();
+        expect(result.msg.message).toContain(
+          "Cannot read properties of undefined (reading 'split')",
+        );
+      });
+      it('Must return error if no key on handler', async () => {
+        mocks.getDynamicGlobalProperties(dynamic.globalProperties);
+        const errorMessage =
+          "Cannot read properties of undefined (reading 'toString')";
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        const { request_id, ...datas } = data.powerDown;
+        expect(result).toEqual(
+          messages.error.answerError(
+            new TypeError(errorMessage),
+            datas,
+            request_id,
+            errorMessage,
+            undefined,
+          ),
+        );
+      });
+      it('Must return success', async () => {
+        const mhiveTxSendOp = jest
+          .spyOn(HiveTxUtils, 'sendOperation')
+          .mockResolvedValue(true);
+        mocks.getDynamicGlobalProperties(dynamic.globalProperties);
+        requestHandler.data.key = userData.one.nonEncryptKeys.active;
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        const { request_id, ...datas } = data.powerDown;
+        expect(result).toEqual(
+          messages.success.answerSucess(
+            true,
+            datas,
+            request_id,
+            chrome.i18n.getMessage('bgd_ops_pd', [
+              datas.hive_power,
+              datas.username,
+            ]),
+            undefined,
+          ),
+        );
+        mhiveTxSendOp.mockRestore();
+      });
     });
-    it('Must return error if no key on handler', async () => {
-      mocks.getDynamicGlobalProperties(dynamic.globalProperties);
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
-      const result = await broadcastPowerDown(requestHandler, data.powerDown);
-      const { request_id, ...datas } = data.powerDown;
-      expect(result).toEqual(
-        messages.error.answerError(
-          new TypeError(errorMessage),
-          datas,
-          request_id,
-          errorMessage,
-          undefined,
-        ),
-      );
-    });
-    it('Must return success', async () => {
-      const mhiveTxSendOp = jest
-        .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
-      mocks.getDynamicGlobalProperties(dynamic.globalProperties);
-      requestHandler.data.key = userData.one.nonEncryptKeys.active;
-      const result = await broadcastPowerDown(requestHandler, data.powerDown);
-      const { request_id, ...datas } = data.powerDown;
-      expect(result).toEqual(
-        messages.success.answerSucess(
-          true,
-          datas,
-          request_id,
-          chrome.i18n.getMessage('bgd_ops_pd', [
-            datas.hive_power,
-            datas.username,
-          ]),
-          undefined,
-        ),
-      );
-      mhiveTxSendOp.mockRestore();
+
+    describe('Using ledger cases:\n', () => {
+      it('Must return success', async () => {
+        mocks.HiveTxUtils.sendOperation(true);
+        mocks.LedgerModule.getSignatureFromLedger('signed!');
+        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.getDynamicGlobalProperties(dynamic.globalProperties);
+        requestHandler.data.key = '#ledgerKEY12345';
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        const { request_id, ...datas } = data.powerDown;
+        expect(result).toEqual(
+          messages.success.answerSucess(
+            true,
+            datas,
+            request_id,
+            chrome.i18n.getMessage('bgd_ops_pd', [
+              datas.hive_power,
+              datas.username,
+            ]),
+            undefined,
+          ),
+        );
+      });
     });
   });
 });
