@@ -9,28 +9,49 @@ describe('custom-json tests:\n', () => {
   const { requestHandler, data, confirmed } = constants;
   methods.afterEach;
   methods.beforeEach;
-  it('Must call getUserKey if no key on handler', async () => {
-    await broadcastCustomJson(requestHandler, data);
-    expect(spies.getUserKey).toBeCalledWith(
-      data.username!,
-      data.method.toLowerCase() as KeychainKeyTypesLC,
-    );
+  describe('Default cases:\n', () => {
+    it('Must call getUserKey if no key on handler', async () => {
+      await broadcastCustomJson(requestHandler, data);
+      expect(spies.getUserKey).toBeCalledWith(
+        data.username!,
+        data.method.toLowerCase() as KeychainKeyTypesLC,
+      );
+    });
+    it('Must return success', async () => {
+      const mHiveTxSendOp = jest
+        .spyOn(HiveTxUtils, 'sendOperation')
+        .mockResolvedValueOnce(true);
+      requestHandler.data.key = userData.one.nonEncryptKeys.active;
+      const result = await broadcastCustomJson(requestHandler, data);
+      const { request_id, ...datas } = data;
+      expect(result).toEqual(
+        messages.success.broadcast(
+          true,
+          datas,
+          request_id,
+          chrome.i18n.getMessage('bgd_ops_broadcast'),
+        ),
+      );
+      mHiveTxSendOp.mockRestore();
+    });
   });
-  it('Must return success', async () => {
-    const mHiveTxSendOp = jest
-      .spyOn(HiveTxUtils, 'sendOperation')
-      .mockResolvedValueOnce(true);
-    requestHandler.data.key = userData.one.nonEncryptKeys.active;
-    const result = await broadcastCustomJson(requestHandler, data);
-    const { request_id, ...datas } = data;
-    expect(result).toEqual(
-      messages.success.broadcast(
-        true,
-        datas,
-        request_id,
-        chrome.i18n.getMessage('bgd_ops_broadcast'),
-      ),
-    );
-    mHiveTxSendOp.mockRestore();
+
+  describe('Using Ledger cases:\n', () => {
+    it('Must return success', async () => {
+      mocks.HiveTxUtils.sendOperation(true);
+      mocks.LedgerModule.getSignatureFromLedger('signed!');
+      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      requestHandler.data.key = '#ledgerKEY1234';
+      const result = await broadcastCustomJson(requestHandler, data);
+      const { request_id, ...datas } = data;
+      expect(result).toEqual(
+        messages.success.broadcast(
+          true,
+          datas,
+          request_id,
+          chrome.i18n.getMessage('bgd_ops_broadcast'),
+        ),
+      );
+    });
   });
 });
