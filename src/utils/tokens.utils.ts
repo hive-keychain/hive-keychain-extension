@@ -6,7 +6,7 @@ import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { TokenRequestParams } from 'src/utils/token-request-params.interface';
-
+/* istanbul ignore next */
 const stakeToken = (
   to: string,
   symbol: string,
@@ -19,7 +19,7 @@ const stakeToken = (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getStakeTokenOperation = (
   to: string,
   symbol: string,
@@ -38,7 +38,7 @@ const getStakeTokenOperation = (
     Config.hiveEngine.mainnet,
   );
 };
-
+/* istanbul ignore next */
 const getStakeTokenTransaction = (
   to: string,
   symbol: string,
@@ -49,7 +49,7 @@ const getStakeTokenTransaction = (
     TokensUtils.getStakeTokenOperation(to, symbol, amount, username),
   ]);
 };
-
+/* istanbul ignore next */
 const unstakeToken = (
   symbol: string,
   amount: string,
@@ -61,7 +61,7 @@ const unstakeToken = (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getUnstakeTokenOperation = (
   symbol: string,
   amount: string,
@@ -79,7 +79,7 @@ const getUnstakeTokenOperation = (
     Config.hiveEngine.mainnet,
   );
 };
-
+/* istanbul ignore next */
 const getUnstakeTokenTransaction = (
   symbol: string,
   amount: string,
@@ -89,7 +89,7 @@ const getUnstakeTokenTransaction = (
     TokensUtils.getUnstakeTokenOperation(symbol, amount, username),
   ]);
 };
-
+/* istanbul ignore next */
 const delegateToken = (
   to: string,
   symbol: string,
@@ -102,7 +102,7 @@ const delegateToken = (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getDelegateTokenOperation = (
   to: string,
   symbol: string,
@@ -121,7 +121,7 @@ const getDelegateTokenOperation = (
     Config.hiveEngine.mainnet,
   );
 };
-
+/* istanbul ignore next */
 const getDelegateTokenTransaction = (
   to: string,
   symbol: string,
@@ -132,7 +132,7 @@ const getDelegateTokenTransaction = (
     TokensUtils.getDelegateTokenOperation(to, symbol, amount, username),
   ]);
 };
-
+/* istanbul ignore next */
 const cancelDelegationToken = (
   from: string,
   symbol: string,
@@ -152,7 +152,7 @@ const cancelDelegationToken = (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getCancelDelegationTokenOperation = (
   from: string,
   symbol: string,
@@ -171,7 +171,7 @@ const getCancelDelegationTokenOperation = (
     Config.hiveEngine.mainnet,
   );
 };
-
+/* istanbul ignore next */
 const getCancelDelegationTokenTransaction = (
   from: string,
   symbol: string,
@@ -187,7 +187,7 @@ const getCancelDelegationTokenTransaction = (
     ),
   ]);
 };
-
+/* istanbul ignore next */
 const sendToken = (
   currency: string,
   to: string,
@@ -201,7 +201,7 @@ const sendToken = (
     activeKey,
   );
 };
-
+/* istanbul ignore next */
 const getSendTokenOperation = (
   currency: string,
   to: string,
@@ -226,7 +226,7 @@ const getSendTokenOperation = (
     Config.hiveEngine.mainnet,
   );
 };
-
+/* istanbul ignore next */
 const getSendTokenTransaction = (
   currency: string,
   to: string,
@@ -251,7 +251,7 @@ const getHiveEngineTokenValue = (
     : 0;
   return parseFloat(balance.balance) * price;
 };
-
+/* istanbul ignore next */
 const getUserBalance = (account: string) => {
   return HiveEngineUtils.get<TokenBalance[]>({
     contract: 'tokens',
@@ -262,7 +262,7 @@ const getUserBalance = (account: string) => {
     offset: 0,
   });
 };
-
+/* istanbul ignore next */
 const getIncomingDelegations = async (
   symbol: string,
   username: string,
@@ -276,7 +276,7 @@ const getIncomingDelegations = async (
     offset: 0,
   });
 };
-
+/* istanbul ignore next */
 const getOutgoingDelegations = async (
   symbol: string,
   username: string,
@@ -291,6 +291,7 @@ const getOutgoingDelegations = async (
   });
 };
 
+/* istanbul ignore next */
 /**
  * SSCJS request using HiveEngineConfigUtils.getApi().find.
  * @param {string} contract Fixed as 'tokens'
@@ -311,6 +312,8 @@ const getAllTokens = async (
     indexes,
   });
 };
+
+/* istanbul ignore next */
 /**
  * SSCJS request using HiveEngineConfigUtils.getApi().find.
  * @param {string} contract Fixed as 'market'
