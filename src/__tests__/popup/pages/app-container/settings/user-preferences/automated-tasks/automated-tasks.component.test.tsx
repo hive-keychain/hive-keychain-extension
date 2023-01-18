@@ -6,8 +6,8 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
 describe('automated-tasks.component tests:\n', () => {
+  config.byDefault();
   let _asFragment: () => DocumentFragment;
   const { methods, constants, extraMocks } = automatedTasks;
   methods.afterEach;
@@ -58,10 +58,10 @@ describe('automated-tasks.component tests:\n', () => {
           passData: true,
         });
       });
-      it('Must load component and not show autoclaim information', () => {
+      it('Must load component and show autoclaim information', () => {
         assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
         assertion.getOneByText(constants.message.intro);
-        assertion.queryByText(constants.message.autoclaimInfo, false);
+        assertion.queryByText(constants.message.autoclaimInfo, true);
       });
       it('Must load selected account', async () => {
         extraMocks.remockAccounts();
@@ -78,10 +78,10 @@ describe('automated-tasks.component tests:\n', () => {
     beforeEach(async () => {
       _asFragment = await automatedTasks.beforeEach();
     });
-    it('Must load component, show messages but autoclaim', () => {
+    it('Must load component, show messages, autoclaim info', () => {
       assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
       assertion.getOneByText(constants.message.intro);
-      assertion.queryByText(constants.message.autoclaimInfo, false);
+      assertion.queryByText(constants.message.autoclaimInfo, true);
     });
   });
 });
