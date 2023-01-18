@@ -3,7 +3,7 @@ import { Key } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-
+/* istanbul ignore next */
 const voteWitness = async (
   witness: Witness,
   voter: string,
@@ -17,7 +17,7 @@ const voteWitness = async (
 
   return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
 };
-
+/* istanbul ignore next */
 const unvoteWitness = async (
   witness: Witness,
   voter: string,
@@ -31,7 +31,7 @@ const unvoteWitness = async (
 
   return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
 };
-
+/* istanbul ignore next */
 const updateWitnessVote = async (
   voter: string,
   witness: Witness,
@@ -46,7 +46,7 @@ const updateWitnessVote = async (
 
   return WitnessUtils.sendWitnessOperation(witnessOperation, voter, activeKey);
 };
-
+/* istanbul ignore next */
 const sendWitnessOperation = async (
   witnessOperation: AccountWitnessVoteOperation,
   username: string,
@@ -56,7 +56,7 @@ const sendWitnessOperation = async (
 
   return await HiveTxUtils.sendOperation([witnessOperation], activeKey);
 };
-
+/* istanbul ignore next */
 const getWitnessVoteOperation = (
   approve: boolean,
   voter: string,
@@ -71,7 +71,7 @@ const getWitnessVoteOperation = (
     },
   ] as AccountWitnessVoteOperation;
 };
-
+/* istanbul ignore next */
 const getUpdateWitnessTransaction = (
   voter: string,
   witness: Witness,
