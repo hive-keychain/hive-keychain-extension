@@ -8,7 +8,9 @@ describe('loading.actions tests:/n', () => {
       const newItemAdded = [{ done: false, name: 'new item' }];
       const fakeStore = getFakeStore(initialEmptyStateStore);
       fakeStore.dispatch<any>(loadingActions.addToLoadingList('new item'));
-      expect(fakeStore.getState().loading).toEqual(newItemAdded);
+      expect(fakeStore.getState().loading).toEqual({
+        loadingOperations: newItemAdded,
+      });
     });
     test('Must mark found item as not done', () => {
       const itemMarkedDone = [{ done: false, name: 'Existing Item on list' }];
@@ -21,7 +23,9 @@ describe('loading.actions tests:/n', () => {
       fakeStore.dispatch<any>(
         loadingActions.addToLoadingList('Existing Item on list'),
       );
-      expect(fakeStore.getState().loading).toEqual(itemMarkedDone);
+      expect(fakeStore.getState().loading).toEqual({
+        loadingOperations: itemMarkedDone,
+      });
     });
   });
 
@@ -36,7 +40,10 @@ describe('loading.actions tests:/n', () => {
       fakeStore.dispatch<any>(
         loadingActions.removeFromLoadingList('Only Item on list'),
       );
-      expect(fakeStore.getState().loading).toEqual([]);
+      expect(fakeStore.getState().loading).toEqual({
+        caption: undefined,
+        loadingOperations: [],
+      });
     });
     test('Must mark one item as done and return actual list', () => {
       const fakeStore = getFakeStore({
@@ -52,11 +59,13 @@ describe('loading.actions tests:/n', () => {
       fakeStore.dispatch<any>(
         loadingActions.removeFromLoadingList('Pending Item 1 on list'),
       );
-      expect(fakeStore.getState().loading).toEqual([
-        { done: true, name: 'Pending Item 1 on list' },
-        { done: false, name: 'Pending Item 2 on list' },
-        { done: false, name: 'Pending Item 3 on list' },
-      ]);
+      expect(fakeStore.getState().loading).toEqual({
+        loadingOperations: [
+          { done: true, name: 'Pending Item 1 on list' },
+          { done: false, name: 'Pending Item 2 on list' },
+          { done: false, name: 'Pending Item 3 on list' },
+        ],
+      });
     });
     test('If not found must return actual list', () => {
       const fakeStore = getFakeStore({
@@ -72,11 +81,13 @@ describe('loading.actions tests:/n', () => {
       fakeStore.dispatch<any>(
         loadingActions.removeFromLoadingList('Not found item?'),
       );
-      expect(fakeStore.getState().loading).toEqual([
-        { done: false, name: 'Pending Item 1 on list' },
-        { done: false, name: 'Pending Item 2 on list' },
-        { done: false, name: 'Pending Item 3 on list' },
-      ]);
+      expect(fakeStore.getState().loading).toEqual({
+        loadingOperations: [
+          { done: false, name: 'Pending Item 1 on list' },
+          { done: false, name: 'Pending Item 2 on list' },
+          { done: false, name: 'Pending Item 3 on list' },
+        ],
+      });
     });
   });
 });
