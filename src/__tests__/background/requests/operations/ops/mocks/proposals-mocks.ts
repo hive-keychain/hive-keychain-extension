@@ -1,3 +1,4 @@
+import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
@@ -8,6 +9,7 @@ import {
   RequestRemoveProposal,
   RequestUpdateProposalVote,
 } from '@interfaces/keychain.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -62,6 +64,20 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
+  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: boolean) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
+  },
 };
 
 const methods = {
@@ -71,9 +87,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    //TODO rm comments
-    // mocks.client.broadcast.sendOperations(confirmed);
-    // mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);
   }),
   assert: {
     error: (
