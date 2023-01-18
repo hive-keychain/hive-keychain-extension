@@ -1,9 +1,11 @@
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('transfer tests:\n', () => {
   const { methods, constants, spies, mocks } = transferMocks;
   const { requestHandler, data, params, confirmed } = constants;
@@ -120,8 +122,11 @@ describe('transfer tests:\n', () => {
         mocks.LedgerModule.getSignatureFromLedger('signed!');
         mocks.broadcastAndConfirmTransactionWithSignature(true);
         mocks.getExtendedAccount(accounts.extended);
-        requestHandler.data.key = '#ledgerKey1234';
-        requestHandler.data.accounts = accounts.twoAccounts;
+        const clonedAccounts = objects.clone(
+          accounts.twoAccounts,
+        ) as LocalAccount[];
+        clonedAccounts[0].keys.active = '#ledgerKey1234';
+        requestHandler.data.accounts = clonedAccounts;
         const result = await broadcastTransfer(requestHandler, data);
         methods.assert.success(
           result,
