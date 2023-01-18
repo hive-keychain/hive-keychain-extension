@@ -124,6 +124,7 @@ describe('proposals tests:\n', () => {
     describe('Using Ledger cases:\n', () => {
       it('Must return success using proposal_ids as object', async () => {
         data.update.extensions = '{"keychain":10000,"points":6}';
+        data.update.approve = true;
         requestHandler.data.key = '#keyUsingLedger1234';
         mocks.LedgerModule.getSignatureFromLedger('signed!');
         mocks.broadcastAndConfirmTransactionWithSignature(true);
@@ -148,6 +149,7 @@ describe('proposals tests:\n', () => {
       it('Must return success using proposal_ids as string', async () => {
         data.update.extensions = '{"keychain":10000,"points":6}';
         data.update.proposal_ids = '[1]';
+        data.update.approve = true;
         requestHandler.data.key = '#keyUsingLedger1234';
         mocks.LedgerModule.getSignatureFromLedger('signed!');
         mocks.broadcastAndConfirmTransactionWithSignature(true);
