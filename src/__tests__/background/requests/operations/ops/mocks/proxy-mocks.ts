@@ -1,3 +1,4 @@
+import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
@@ -34,8 +35,20 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  sendOperation: (result: boolean) =>
-    jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
+  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: boolean) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
+  },
 };
 
 const spies = {
