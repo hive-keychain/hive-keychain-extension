@@ -49,6 +49,23 @@ describe('recurrent-transfer tests:\n', () => {
       );
       mHiveTxSendOp.mockRestore();
     });
+    it('Must return sucess on start recurrent, using ledger', async () => {
+      mocks.HiveTxUtils.sendOperation(true);
+      mocks.LedgerModule.getSignatureFromLedger('signed!');
+      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      requestHandler.data.key = '#ledgerKEY1234';
+      const result = await recurrentTransfer(requestHandler, data);
+      const { request_id, ...datas } = data;
+      expect(result).toEqual(
+        messages.success.answerSucess(
+          true,
+          datas,
+          request_id,
+          chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
+          undefined,
+        ),
+      );
+    });
     it('Must return sucess on stop recurrent', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
