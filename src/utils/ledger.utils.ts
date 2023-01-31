@@ -80,21 +80,27 @@ const getAllAccounts = async (): Promise<LocalAccount[]> => {
   const foundAccounts = [];
 
   do {
+    const ownerPath = buildDerivationPath(LedgerKeyType.OWNER, accountIndex);
     const activePath = buildDerivationPath(LedgerKeyType.ACTIVE, accountIndex);
     const postingPath = buildDerivationPath(
       LedgerKeyType.POSTING,
       accountIndex,
     );
     const memoPath = buildDerivationPath(LedgerKeyType.MEMO, accountIndex);
+
+    const owner = await hiveLedger.getPublicKey(ownerPath);
     const active = await hiveLedger.getPublicKey(activePath);
     const posting = await hiveLedger.getPublicKey(postingPath);
     const memo = await hiveLedger.getPublicKey(memoPath);
 
-    const [activeReference, postingReference, memoReference] =
-      await KeysUtils.getKeyReferences([active, posting, memo]);
+    const [ownerReference, activeReference, postingReference, memoReference] =
+      await KeysUtils.getKeyReferences([owner, active, posting, memo]);
 
     const accountName =
-      activeReference[0] || postingReference[0] || memoReference[0];
+      ownerReference[0] ||
+      activeReference[0] ||
+      postingReference[0] ||
+      memoReference[0];
     if (accountName)
       foundAccounts.push({
         name: accountName,
