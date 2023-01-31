@@ -221,7 +221,7 @@ const AddAccountsComponent = () => {
       if (accForm.keys.memo && !KeysUtils.isUsingLedger(accForm.keys.memo)) {
         try {
           const k = await AccountUtils.getKeys(accForm.name, accForm.keys.memo);
-          keys = { ...keys, memo: k.memo, memoPubkey: k.memo };
+          keys = { ...keys, memo: k.memo, memoPubkey: k.memoPubkey };
         } catch (err: any) {
           setError('memo', currentAccount, err.message);
           return;
