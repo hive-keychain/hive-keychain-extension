@@ -120,6 +120,7 @@ const InputComponent = (props: InputProps) => {
         )}
         {props.type !== InputType.PASSWORD &&
           !props.onSetToMaxClicked &&
+          props.value &&
           props.value.length > 0 && (
             <Icon
               ariaLabel="input-clear"

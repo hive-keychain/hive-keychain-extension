@@ -215,6 +215,10 @@
     "message": "Active Key",
     "description": "When adding an account via master key"
   },
+  "popup_html_master": {
+    "message": "Master Key",
+    "description": "When adding an account via master key"
+  },
   "popup_html_memo": {
     "message": "Memo Key",
     "description": "When adding an account via master key"
@@ -2759,5 +2763,78 @@
   "popup_html_validate_transaction_on_ledger": {
     "message": "Accept transaction on Ledger device",
     "description": "Message to remind user to accept transaction on his Ledger device"
+  },
+  "popup_html_add_account_with_ledger": {
+    "message": "Add from Ledger",
+    "description": "Message to remind user to accept transaction on his Ledger device"
+  },
+  "add_key_from_ledger": {
+    "message": "Add key from Ledger",
+    "description": "Title of add key from ledger page"
+  },
+
+  "add_accounts_from_ledger": {
+    "message": "Add accounts from Ledger",
+    "description": "Title of add accounts from ledger page"
+  },
+  "add_accounts_from_ledger_finished": {
+    "message": "Add accounts from Ledger",
+    "description": "Title of add accounts from ledger page"
+  },
+  "synchronize_ledger_button": {
+    "message": "Synchronize Ledger",
+    "description": "Synchronize Ledger button"
+  },
+  "ledger_select_account_caption": {
+    "message": "Select the accounts you want to import",
+    "description": "Select account caption"
+  },
+  "ledger_add_missing_keys_caption": {
+    "message": "Some of the keys are missing for this account. Please add them manually to be able to fully use your account",
+    "description": "Select account caption"
+  },
+  "ledger_add_key_use_master_key": {
+    "message": "Use master key",
+    "description": "Ledger add using master key"
+  },
+  "ledger_select_accounts": {
+    "message": "Select accounts",
+    "description": "Ledger add using master key"
+  },
+  "ledger_add_account": {
+    "message": "Add account",
+    "description": "Ledger add account"
+  },
+  "popup_html_next": {
+    "message": "Next",
+    "description": "General word"
+  },
+  "popup_html_previous": {
+    "message": "Previous",
+    "description": "General word"
+  },
+  "select_account_from_ledger": {
+    "message": "Select accounts",
+    "description": "Select accounts to import from Ledger"
+  },
+  "ledger_add_missing_keys_to": {
+    "message": "Add missing keys",
+    "description": "Add missing keys when import account from Ledger"
+  },
+  "ledger_account_discovery_caption": {
+    "message": "Synchronize your Ledger with Keychain to be able to use your accounts with Keychain",
+    "description": "synchronize ledger caption"
+  },
+  "no_account_found_on_ledger_error": {
+    "message": "No account found on your Ledger. Make sure your added one and try again.",
+    "description": "synchronize ledger caption"
+  },
+  "all_ledger_accounts_already_imported": {
+    "message": "All the accounts on your Ledger are already in Keychain",
+    "description": "while synchronizing ledger"
+  },
+  "add_accounts_from_ledger_sucessful": {
+    "message": "Your account(s) have been successfully added to Keychain",
+    "description": "Synchronize Ledger success message"
   }
 }

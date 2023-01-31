@@ -42,7 +42,7 @@ const AddKey = ({
   const navigateToUseLedger = async () => {
     const extensionId = (await chrome.management.getSelf()).id;
     chrome.tabs.create({
-      url: `chrome-extension://${extensionId}/connect-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
+      url: `chrome-extension://${extensionId}/add-key-from-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
     });
   };
 

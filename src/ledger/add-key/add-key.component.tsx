@@ -1,27 +1,32 @@
 import { KeyType } from '@interfaces/keys.interface';
 import { QueryParams } from '@interfaces/query-params.interface';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import AccountUtils from 'src/utils/account.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
-import './connect-ledger.component.scss';
+import './add-key.component.scss';
 
-const ConnectLedger = () => {
-  const initializeLedger = async () => {
+const AddKeyComponent = () => {
+  const [username, setUsername] = useState('');
+  const [keyType, setKeyType] = useState<KeyType>();
+
+  useEffect(() => {
     const queryParamsTable = window.location.search.replace('?', '').split('&');
-    const queryParams = {} as QueryParams;
+    const q = {} as QueryParams;
     for (let params of queryParamsTable) {
       const splitParams = params.split('=');
-      queryParams[splitParams[0]] = splitParams[1];
+      q[splitParams[0]] = splitParams[1];
     }
+    setUsername(q['username'] || '');
+    setKeyType(q['keyType'] as KeyType);
+  }, []);
+
+  const discoverAccounts = async () => {
     try {
-      if (await LedgerUtils.init()) {
-        const keysToAdd = await LedgerUtils.getKeyForAccount(
-          queryParams['keyType'] as KeyType,
-          queryParams['username'],
-        );
-        await AccountUtils.addKeyFromLedger(queryParams['username'], keysToAdd);
+      if (keyType && username && (await LedgerUtils.init())) {
+        let keysToAdd = await LedgerUtils.getKeyForAccount(keyType, username);
+        await AccountUtils.addKeyFromLedger(username, keysToAdd);
       } else {
         Logger.error('Unable to detect Ledger');
         return;
@@ -35,22 +40,24 @@ const ConnectLedger = () => {
     <div className="connect-ledger">
       <div className="title-panel">
         <img src="/assets/images/iconhive.png" />
-        <ButtonComponent
-          label="detect"
-          skipLabelTranslation
-          onClick={initializeLedger}
-        />
         <div className="title">
           {chrome.i18n.getMessage('html_connect_ledger')}
         </div>
       </div>
+
       <div
         className="caption"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('hello'),
         }}></div>
+      <ButtonComponent
+        label="detect"
+        skipLabelTranslation
+        onClick={discoverAccounts}
+        fixToBottom
+      />
     </div>
   );
 };
 
-export default ConnectLedger;
+export default AddKeyComponent;

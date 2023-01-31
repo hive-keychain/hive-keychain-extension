@@ -524,6 +524,26 @@ const getUpdateAccountTransaction = (
   ]);
 };
 
+const addAccount = async (username: string, keys: Keys) => {
+  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.__MK,
+  );
+
+  const localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  localAccounts.push({ name: username, keys: keys });
+  await AccountUtils.saveAccounts(localAccounts, mk);
+};
+
+const addMultipleAccounts = async (localAccounts: LocalAccount[]) => {
+  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.__MK,
+  );
+
+  const savedAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  const newSavedAccounts = [...savedAccounts, ...localAccounts];
+  await AccountUtils.saveAccounts(newSavedAccounts, mk);
+};
+
 const AccountUtils = {
   verifyAccount,
   getAccountsFromLocalStorage,
@@ -532,6 +552,7 @@ const AccountUtils = {
   addAuthorizedAccount,
   addKey,
   addKeyFromLedger,
+  addMultipleAccounts,
   deleteKey,
   isAccountListIdentical,
   deleteAccount,
@@ -553,6 +574,7 @@ const AccountUtils = {
   updateAccount,
   getUpdateAccountOperation,
   getUpdateAccountTransaction,
+  addAccount,
 };
 
 export const BackgroundAccountUtils = {

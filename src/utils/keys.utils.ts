@@ -89,11 +89,12 @@ const isAuthorizedAccount = (key: Key): boolean => {
 };
 
 const isUsingLedger = (key: Key): boolean => {
+  if (!key) return false;
   return KeysUtils.getKeyType(key) === PrivateKeyType.LEDGER;
 };
 
-const getKeyReferences = (key: string) => {
-  return HiveTxUtils.getData('condenser_api.get_key_references', [[key]]);
+const getKeyReferences = (keys: string[]) => {
+  return HiveTxUtils.getData('condenser_api.get_key_references', [keys]);
 };
 
 const getKeyType = (key: Key): PrivateKeyType => {

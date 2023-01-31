@@ -1,6 +1,7 @@
 import LedgerHiveApp from '@engrave/ledger-app-hive';
 import { SignedTransaction, Transaction } from '@hiveio/dhive';
 import { Key, Keys, KeyType } from '@interfaces/keys.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
 import { KeychainError } from 'src/keychain-error';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -64,53 +65,52 @@ const getKeyForAccount = async (
   }
   return {};
 };
-/* istanbul ignore next */
+
 const getKeysForAccount = async (username: string) => {
-  let stillHas = true;
+  const allKeys = await LedgerUtils.getAllAccounts();
+  return allKeys.find((a) => a.name === username)?.keys;
+};
+
+/* istanbul ignore next */
+const getAllAccounts = async (): Promise<LocalAccount[]> => {
+  let notAssociatedCpt = 0;
 
   let accountIndex = 0;
-  do {
-    try {
-      const activePath = buildDerivationPath(
-        LedgerKeyType.ACTIVE,
-        accountIndex,
-      );
-      const postingPath = buildDerivationPath(
-        LedgerKeyType.POSTING,
-        accountIndex,
-      );
-      const memoPath = buildDerivationPath(LedgerKeyType.MEMO, accountIndex);
-      const active = await hiveLedger.getPublicKey(activePath);
-      const posting = await hiveLedger.getPublicKey(postingPath);
-      const memo = await hiveLedger.getPublicKey(memoPath);
-      const results = await KeysUtils.getKeyReferences(active);
 
-      if (
-        results.accounts &&
-        results.accounts[0] &&
-        results.accounts[0][0] &&
-        (results.accounts[0][0] as string).length
-      ) {
-        if (results.accounts[0][0] === username) {
-          return {
-            active: `#${activePath}`,
-            activePubkey: active,
-            posting: `#${postingPath}`,
-            postingPubkey: posting,
-            memo: `#${memoPath}`,
-            memoPubkey: memo,
-          } as Keys;
-        }
-        stillHas = true;
-      } else {
-        stillHas = false;
-      }
-      accountIndex++;
-    } catch (err) {
-      Logger.error(err);
-      stillHas = false;
-    }
-  } while (stillHas);
+  const foundAccounts = [];
+
+  do {
+    const activePath = buildDerivationPath(LedgerKeyType.ACTIVE, accountIndex);
+    const postingPath = buildDerivationPath(
+      LedgerKeyType.POSTING,
+      accountIndex,
+    );
+    const memoPath = buildDerivationPath(LedgerKeyType.MEMO, accountIndex);
+    const active = await hiveLedger.getPublicKey(activePath);
+    const posting = await hiveLedger.getPublicKey(postingPath);
+    const memo = await hiveLedger.getPublicKey(memoPath);
+
+    const [activeReference, postingReference, memoReference] =
+      await KeysUtils.getKeyReferences([active, posting, memo]);
+
+    const accountName =
+      activeReference[0] || postingReference[0] || memoReference[0];
+    if (accountName)
+      foundAccounts.push({
+        name: accountName,
+        keys: {
+          active: activeReference[0] ? `#${activePath}` : null,
+          activePubkey: activeReference[0] ? active : null,
+          posting: postingReference[0] ? `#${postingPath}` : null,
+          postingPubkey: postingReference[0] ? posting : null,
+          memo: memoReference[0] ? `#${memoPath}` : null,
+          memoPubkey: memoReference[0] ? memo : null,
+        },
+      });
+    notAssociatedCpt++;
+    accountIndex++;
+  } while (notAssociatedCpt < 5);
+  return foundAccounts;
 };
 
 const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
@@ -163,6 +163,7 @@ export const LedgerUtils = {
   getSettings,
   getKeyForAccount,
   getKeysForAccount,
+  getAllAccounts,
   buildDerivationPath,
   getKeyFromDerivationPath,
   getLedgerInstance,

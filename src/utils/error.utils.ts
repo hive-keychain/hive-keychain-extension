@@ -102,7 +102,7 @@ const parse = (error: any) => {
         }
       }
     }
-  } else if (error.statusText) {
+  } else if (error.statusText && error.statusText !== 'UNKNOWN_ERROR') {
     switch (error.statusText) {
       case LedgerErrorType.DENIED_BY_USER:
         return new KeychainError('error_ledger_denied_by_user', [], error);
