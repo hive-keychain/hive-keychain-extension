@@ -23,8 +23,14 @@ import MkModule from './mk.module';
 chrome.runtime.onStartup.addListener(() => {
   LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
 });
+
+export const initWakeUpRoutine = () => {
+  chrome.alarms.create({ periodInMinutes: 0.5 });
+};
+
 /* istanbul ignore next */
 (async () => {
+  initWakeUpRoutine();
   await RPCModule.init();
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();

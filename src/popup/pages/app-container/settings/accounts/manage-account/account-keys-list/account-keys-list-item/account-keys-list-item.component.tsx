@@ -55,6 +55,8 @@ const AccountKeysListItem = ({
     }
   }, [publicKey]);
 
+  useEffect(() => {}, [publicKey, privateKey]);
+
   const copyToClipboard = (key: Key | undefined) => {
     if (key) {
       navigator.clipboard.writeText(key!.toString());

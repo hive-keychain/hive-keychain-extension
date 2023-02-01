@@ -226,7 +226,10 @@ const TransferFunds = ({
       afterConfirmAction: async () => {
         addToLoadingList(
           'html_popup_transfer_fund_operation',
-          KeysUtils.getKeyType(activeAccount.keys.active!),
+          KeysUtils.getKeyType(
+            activeAccount.keys.active!,
+            activeAccount.keys.activePubkey!,
+          ),
         );
         try {
           let success = false;

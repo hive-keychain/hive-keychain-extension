@@ -85,22 +85,22 @@ const hasMemo = (keys: Keys): boolean => {
 };
 
 const isAuthorizedAccount = (key: Key): boolean => {
-  return KeysUtils.getKeyType(key) === PrivateKeyType.AUTHORIZED_ACCOUNT;
+  return KeysUtils.getKeyType(null, key) === PrivateKeyType.AUTHORIZED_ACCOUNT;
 };
 
 const isUsingLedger = (key: Key): boolean => {
   if (!key) return false;
-  return KeysUtils.getKeyType(key) === PrivateKeyType.LEDGER;
+  return KeysUtils.getKeyType(key, null) === PrivateKeyType.LEDGER;
 };
 
 const getKeyReferences = (keys: string[]) => {
   return HiveTxUtils.getData('condenser_api.get_key_references', [keys]);
 };
 
-const getKeyType = (key: Key): PrivateKeyType => {
-  if (key!.toString().startsWith('#')) {
+const getKeyType = (privateKey: Key, publicKey?: Key): PrivateKeyType => {
+  if (privateKey?.toString().startsWith('#')) {
     return PrivateKeyType.LEDGER;
-  } else if (key!.toString().startsWith('@')) {
+  } else if (publicKey?.toString().startsWith('@')) {
     return PrivateKeyType.AUTHORIZED_ACCOUNT;
   } else {
     return PrivateKeyType.PRIVATE_KEY;
@@ -109,6 +109,22 @@ const getKeyType = (key: Key): PrivateKeyType => {
 
 const requireManualConfirmation = (key: Key) => {
   return KeysUtils.isUsingLedger(key);
+};
+
+const isExportable = (
+  privateKey: Key | undefined,
+  publicKey: Key | undefined,
+) => {
+  if (privateKey && publicKey) {
+    const keyType = KeysUtils.getKeyType(privateKey, publicKey);
+    if (
+      keyType === PrivateKeyType.PRIVATE_KEY ||
+      keyType === PrivateKeyType.AUTHORIZED_ACCOUNT
+    )
+      return true;
+  } else {
+    return false;
+  }
 };
 
 export const KeysUtils = {
@@ -125,4 +141,5 @@ export const KeysUtils = {
   getKeyReferences,
   getKeyType,
   requireManualConfirmation,
+  isExportable,
 };

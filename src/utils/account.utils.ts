@@ -425,19 +425,22 @@ const addKeyFromLedger = async (username: string, keys: Keys) => {
 };
 /* istanbul ignore next */
 const generateQRCode = (account: LocalAccount) => {
-  if (account.keys.active?.startsWith('#')) {
-    delete account.keys.active;
-    delete account.keys.memoPubkey;
+  let acc: LocalAccount = { name: account.name, keys: {} };
+  if (KeysUtils.isExportable(account.keys.active, account.keys.activePubkey)) {
+    acc.keys.active = account.keys.active;
+    acc.keys.activePubkey = account.keys.activePubkey;
   }
-  if (account.keys.posting?.startsWith('#')) {
-    delete account.keys.posting;
-    delete account.keys.postingPubkey;
+  if (
+    KeysUtils.isExportable(account.keys.posting, account.keys.postingPubkey)
+  ) {
+    acc.keys.posting = account.keys.posting;
+    acc.keys.postingPubkey = account.keys.postingPubkey;
   }
-  if (account.keys.memo?.startsWith('#')) {
-    delete account.keys.memo;
-    delete account.keys.memoPubkey;
+  if (KeysUtils.isExportable(account.keys.memo, account.keys.memoPubkey)) {
+    acc.keys.memo = account.keys.memo;
+    acc.keys.memoPubkey = account.keys.memoPubkey;
   }
-  return JSON.stringify(account);
+  return JSON.stringify(acc);
 };
 
 const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {

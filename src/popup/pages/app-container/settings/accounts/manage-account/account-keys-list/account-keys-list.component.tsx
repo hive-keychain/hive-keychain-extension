@@ -36,6 +36,7 @@ const AccountKeysList = ({
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setQRCodeDisplayed(false);
     const acc = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
