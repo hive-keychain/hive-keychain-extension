@@ -2790,7 +2790,7 @@
     "description": "Select account caption"
   },
   "ledger_add_missing_keys_caption": {
-    "message": "Some of the keys are missing for this account. Please add them manually to be able to fully use your account",
+    "message": "Some of the keys are missing for this account. Please add them manually to be able to fully use your account. If you don't want to add any additional key, you can just click on 'next'",
     "description": "Select account caption"
   },
   "ledger_add_key_use_master_key": {
