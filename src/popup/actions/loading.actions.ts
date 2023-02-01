@@ -5,7 +5,6 @@ export const addToLoadingList = (
   operation: string,
   privateKeyType?: PrivateKeyType,
 ) => {
-  console.log(privateKeyType);
   return {
     type: ActionType.ADD_TO_LOADING_LIST,
     payload: { operation: operation, privateKeyType: privateKeyType },
