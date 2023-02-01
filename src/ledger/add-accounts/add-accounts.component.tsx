@@ -144,7 +144,8 @@ const AddAccountsComponent = () => {
     const mk = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.__MK,
     );
-    const localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+    let localAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+    if (!localAccounts) return discoveredAccounts;
     return discoveredAccounts.filter((discoveredAccount) => {
       return localAccounts.find(
         (account) => account.name === discoveredAccount.name,

@@ -542,7 +542,8 @@ const addMultipleAccounts = async (localAccounts: LocalAccount[]) => {
     LocalStorageKeyEnum.__MK,
   );
 
-  const savedAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  let savedAccounts = await AccountUtils.getAccountsFromLocalStorage(mk);
+  if (!savedAccounts) savedAccounts = [];
   const newSavedAccounts = [...savedAccounts, ...localAccounts];
   await AccountUtils.saveAccounts(newSavedAccounts, mk);
 };

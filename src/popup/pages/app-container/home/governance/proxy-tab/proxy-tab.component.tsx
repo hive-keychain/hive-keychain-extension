@@ -16,6 +16,7 @@ import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { KeysUtils } from 'src/utils/keys.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import './proxy-tab.component.scss';
 
@@ -33,7 +34,13 @@ const ProxyTab = ({
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList('popup_html_setting_proxy');
+    addToLoadingList(
+      'popup_html_setting_proxy',
+      KeysUtils.getKeyType(
+        activeAccount.keys.active!,
+        activeAccount.keys.activePubkey!,
+      ),
+    );
     try {
       if (
         await ProxyUtils.setAsProxy(
@@ -58,7 +65,13 @@ const ProxyTab = ({
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList('popup_html_clearing_proxy');
+    addToLoadingList(
+      'popup_html_clearing_proxy',
+      KeysUtils.getKeyType(
+        activeAccount.keys.active!,
+        activeAccount.keys.activePubkey!,
+      ),
+    );
     try {
       if (
         await ProxyUtils.removeProxy(
