@@ -1364,6 +1364,10 @@
     "message": "Savings",
     "description": "On savings menu"
   },
+  "popup_html_savings_current_withdrawing": {
+    "message": "Withdrawing",
+    "description": "On savings menu"
+  },
   "popup_html_withdraw_text": {
     "message": "Withdrawing funds from savings will take 3.5 days.",
     "description": "when withdrawing from savings"
@@ -1493,9 +1497,17 @@
     "message": "Please confirm that you want to cancel this delegation.",
     "description": "while confirming power up and down"
   },
+  "popup_html_confirm_cancel_withdraw_savings_message": {
+    "message": "Please confirm that you want to cancel this withdraw from savings.",
+    "description": "while confirming savings withdraw"
+  },
   "popup_html_cancel_delegation": {
     "message": "Cancel delegation",
     "description": "while confirming power up and down"
+  },
+  "popup_html_cancel_withdraw_savings": {
+    "message": "Cancel Withdraw",
+    "description": "while confirming savings withdraw"
   },
   "popup_html_power_up_down_fail": {
     "message": "There was an error while executing $1. Try again later. If error persist, contact support.",
@@ -1737,6 +1749,10 @@
     "message": "Canceling delegation",
     "description": "delegation operation"
   },
+  "html_popup_cancel_withdraw_savings_operation": {
+    "message": "Canceling withdraw from savings",
+    "description": "savings operation"
+  },
   "html_popup_vote_witness_operation": {
     "message": "Voting for witness",
     "description": "vote witness operation"
@@ -1821,6 +1837,10 @@
     "message": "Successfully canceled a delegation",
     "description": "Success message cancel delegation"
   },
+  "popup_html_cancel_withdraw_savings_successful": {
+    "message": "Successfully canceled a withdraw from savings",
+    "description": "Success message cancel withdraw"
+  },
   "popup_html_cancel_delegation_fail": {
     "message": "Failed to cancel a delegation",
     "description": "Failed message cancel delegation"
@@ -1840,6 +1860,10 @@
   "popup_html_transfer_tokens": {
     "message": "Transfer tokens",
     "description": "Transfer tokens"
+  },
+  "popup_html_cancel_withdraw": {
+    "message": "Cancel withdraw from savings",
+    "description": "Cancel withdraw savings"
   },
   "popup_html_fill_form_error": {
     "message": "Please fill form",
@@ -2462,6 +2486,10 @@
   "popup_html_undelegation_pending_until_message": {
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
+  },
+  "popup_html_withdraw_savings_until_message": {
+    "message": "After being canceled, the SBD balance will be available inmediately",
+    "description": "Withdraw saving list item pending until date"
   },
   "html_popup_governance_renewal_title": {
     "message": "Governance renewal",

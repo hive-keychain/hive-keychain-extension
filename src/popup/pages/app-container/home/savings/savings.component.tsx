@@ -29,7 +29,10 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import { CurrencyListItem } from 'src/interfaces/list-item.interface';
+import {
+  CurrencyListItem,
+  CurrentWithdrawingListItem,
+} from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -61,6 +64,10 @@ const SavingsPage = ({
   );
   const [savings, setSavings] = useState<string | number>('...');
   const [liquid, setLiquid] = useState<string | number>('...');
+
+  const [currentWithdrawingList, setCurrentWithdrawingList] = useState<
+    CurrentWithdrawingListItem[]
+  >([]);
 
   const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
     [],
@@ -106,6 +113,12 @@ const SavingsPage = ({
   }, [currency]);
 
   useEffect(() => {
+    //TODO remove comments
+    //on the withdraw label, click -> another page(edit): useffect, init_withdrawing_request:
+    if (activeAccount.account.savings_withdraw_requests > 0) {
+      fetchCurrentWithdrawingList();
+    }
+    //end to remove
     const hbdSavings = FormatUtils.toNumber(
       activeAccount.account.savings_hbd_balance,
     );
@@ -132,6 +145,27 @@ const SavingsPage = ({
     }
     setText(text);
   }, [selectedCurrency, selectedSavingOperationType]);
+
+  const fetchCurrentWithdrawingList = async () => {
+    setCurrentWithdrawingList(
+      await SavingsUtils.getSavingsWitdrawFrom(activeAccount.name!),
+    );
+    // SavingsUtils.getSavingsWitdrawFrom(activeAccount.name!).then(
+    //   (response) => {
+    //     console.log(response); //TODO to remove
+    //     //to remove help data
+    //     // {amount: "2000.000 HBD"
+    //     // complete: "2023-02-02T14:10:33"
+    //     // from: "theghost1980"
+    //     // id: 161649
+    //     // memo: ""
+    //     // request_id: 1675087823
+    //     // to: "theghost1980"}
+    //     //end help data
+    //     setCurrentWithdrawing(response[0]);
+    //   },
+    // );
+  };
 
   const loadAutocompleteTransferUsernames = async () => {
     const favoriteUsers: FavoriteUserItems =
@@ -314,6 +348,14 @@ const SavingsPage = ({
     );
   };
 
+  const goToPendingWithdraws = () => {
+    //TODO add new screen enum + route, following same pattern here.
+    navigateToWithParams(Screen.CURRENT_WITHDRAW_SAVINGS_PAGE, {
+      currentWithdrawingList,
+      test: 1,
+    });
+  };
+
   return (
     <div className="savings-page" aria-label="savings-page">
       <AvailableCurrentPanelComponent
@@ -323,6 +365,9 @@ const SavingsPage = ({
         current={savings}
         currentCurrency={currency}
         currentLabel={'popup_html_savings_current'}
+        currentWithdrawLabel={'popup_html_savings_current_withdrawing'}
+        currentWithdrawingList={currentWithdrawingList}
+        onCurrentWithdrawingsPanelClick={goToPendingWithdraws}
       />
 
       <Select

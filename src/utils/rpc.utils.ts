@@ -79,7 +79,7 @@ const checkRpcStatus = async (uri: string) => {
         timeout: 10000,
       },
     );
-    console.log(result);
+    // console.log(result); //TODO commented to compile dev:chromium, to remove for production.
     if (result.data && result.data.errors) {
       return false;
     }

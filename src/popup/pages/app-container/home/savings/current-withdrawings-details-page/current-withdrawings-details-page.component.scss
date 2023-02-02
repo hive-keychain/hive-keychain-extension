@@ -1,0 +1,49 @@
+@import '../../../../../variable.scss';
+
+.incoming-outgoing-page {
+  @include pageLayoutRowGap;
+  row-gap: 32px;
+  overflow: hidden;
+  flex: 1;
+
+  .pending-disclaimer {
+    padding: 0 24px;
+    font-size: 16px;
+  }
+  .list-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    row-gap: 32px;
+    height: 100%;
+    overflow-y: scroll;
+    .panel {
+      flex: 1;
+      padding: 0 24px;
+      height: 100%;
+      .tooltip-container {
+        width: 100%;
+      }
+      &.pending-undelegations {
+        flex: unset;
+        height: max-content;
+        max-height: 50%;
+      }
+      .total {
+        display: flex;
+        justify-content: space-between;
+        font-size: 20px;
+        margin-bottom: 4px;
+        .label {
+          max-width: 60%;
+        }
+      }
+
+      .list {
+        margin: 0px -24px;
+        margin: 0px -24px;
+        max-height: calc(100% - 24px);
+      }
+    }
+  }
+}
