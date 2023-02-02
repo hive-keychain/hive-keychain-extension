@@ -60,7 +60,7 @@ const createSignAndBroadcastTransaction = async (
     try {
       hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
     } catch (err: any) {
-      throw ErrorUtils.parse(err);
+      throw ErrorUtils.parseLedger(err);
     }
 
     if (!Hive.isDisplayableOnDevice(transaction) && !hashSignPolicy) {
@@ -68,10 +68,6 @@ const createSignAndBroadcastTransaction = async (
     }
     try {
       let signedTransactionFromLedger;
-      console.log(
-        'TRANSACTION SIZE ' + JSON.stringify(transaction).length,
-        !Hive.isDisplayableOnDevice(transaction),
-      );
       if (!Hive.isDisplayableOnDevice(transaction)) {
         const digest = Hive.getTransactionDigest(transaction);
         const signature = await LedgerUtils.signHash(digest, key);
@@ -87,7 +83,7 @@ const createSignAndBroadcastTransaction = async (
       }
     } catch (err) {
       Logger.error(err);
-      throw ErrorUtils.parse(err);
+      throw err;
     }
   } else {
     try {

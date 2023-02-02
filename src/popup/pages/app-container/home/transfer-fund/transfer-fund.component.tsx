@@ -36,6 +36,7 @@ import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './transfer-fund.component.scss';
 
@@ -294,6 +295,7 @@ const TransferFunds = ({
             setErrorMessage('popup_html_transfer_failed');
           }
         } catch (err: any) {
+          Logger.error(err);
           setErrorMessage(err.message);
         } finally {
           removeFromLoadingList('html_popup_transfer_fund_operation');

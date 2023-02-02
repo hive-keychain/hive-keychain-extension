@@ -15,10 +15,6 @@ enum HiveEngineErrorType {
   USER_NOT_EXISTING = 'invalid to',
 }
 
-enum LedgerErrorType {
-  DENIED_BY_USER = 'CONDITIONS_OF_USE_NOT_SATISFIED',
-}
-
 const parse = (error: any) => {
   const stack = error?.data?.stack[0];
   if (stack?.context?.method) {
@@ -102,17 +98,6 @@ const parse = (error: any) => {
         }
       }
     }
-  } else if (error.statusText && error.statusText !== 'UNKNOWN_ERROR') {
-    switch (error.statusText) {
-      case LedgerErrorType.DENIED_BY_USER:
-        return new KeychainError('error_ledger_denied_by_user', [], error);
-    }
-  } else if (
-    error.name === 'TransportOpenUserCancelled' ||
-    error.name === 'TransportStatusError' ||
-    error.name === 'DisconnectedDeviceDuringOperation'
-  ) {
-    return new KeychainError('popup_html_ledger_not_detected');
   } else if (stack && stack.format) {
     return new KeychainError('error_while_broadcasting', [stack.format], error);
   }
@@ -139,4 +124,38 @@ const parseHiveEngine = (error: string, payload: any) => {
   return new KeychainError('bgd_ops_hive_engine_confirmation_error', [error]);
 };
 
-export const ErrorUtils = { parse, parseHiveEngine };
+const parseLedger = (error: any) => {
+  const hexErrCode = `0x${parseInt(error.statusCode)
+    .toString(16)
+    .toLowerCase()}`;
+  switch (hexErrCode) {
+    case '0x6985':
+      return new KeychainError('error_ledger_denied_by_user', [], error);
+    case '0xb003':
+      return new KeychainError('error_ledger_failed_to_parse_transaction');
+    case '0xb004':
+      return new KeychainError('error_ledger_bad_state');
+    case '0xb005':
+      return new KeychainError('html_ledger_error_while_signing');
+    case '0xb007':
+    case '0xb008':
+      return new KeychainError('error_ledger_sign_hash');
+    case '0x6a87':
+      return new KeychainError('error_ledger_internal_error');
+    case '0x6d00':
+      return new KeychainError('error_ledger_version_not_supported');
+    case '0x6e00':
+      return new KeychainError('error_ledger_app_not_supported');
+    default: {
+      if (
+        error.name === 'DisconnectedDeviceDuringOperation' ||
+        error.name === 'TransportOpenUserCancelled'
+      ) {
+        return new KeychainError('popup_html_ledger_not_detected');
+      }
+      return new KeychainError('popup_html_ledger_unknown_error');
+    }
+  }
+};
+
+export const ErrorUtils = { parse, parseHiveEngine, parseLedger };

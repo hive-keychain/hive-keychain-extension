@@ -4,6 +4,7 @@ import { Key, Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
 import { KeychainError } from 'src/keychain-error';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 
 let hiveLedger: LedgerHiveApp;
@@ -136,29 +137,31 @@ const signTransaction = async (
   key: Key,
   chainId?: string,
 ): Promise<SignedTransaction> => {
-  let ledger = await LedgerUtils.getLedgerInstance();
-  console.log(ledger);
-  if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
   try {
-    return ledger.signTransaction(
+    let ledger = await LedgerUtils.getLedgerInstance();
+    if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
+    const res = await ledger.signTransaction(
       transaction,
       LedgerUtils.getPathFromString(key!.toString()),
       chainId,
     );
+    return res;
   } catch (err: any) {
-    console.log(err);
-    // Logger.error(err);
-    throw new KeychainError('html_ledger_error_while_signing');
+    throw ErrorUtils.parseLedger(err);
   }
 };
 /* istanbul ignore next */
 const signHash = async (digest: string, key: Key) => {
-  let ledger = await LedgerUtils.getLedgerInstance();
-  if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
-  return ledger.signHash(
-    digest,
-    LedgerUtils.getPathFromString(key!.toString()),
-  );
+  try {
+    let ledger = await LedgerUtils.getLedgerInstance();
+    if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
+    return ledger.signHash(
+      digest,
+      LedgerUtils.getPathFromString(key!.toString()),
+    );
+  } catch (err) {
+    throw ErrorUtils.parseLedger(err);
+  }
 };
 
 const getPathFromString = (s: string) => {

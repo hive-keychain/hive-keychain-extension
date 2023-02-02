@@ -2736,6 +2736,30 @@
     "message": "Transaction denied",
     "description": "Transaction rejected on Ledger"
   },
+  "error_ledger_failed_to_parse_transaction": {
+    "message": "Ledger failed to parse the transaction. Contact us on our Discord",
+    "description": "transaction parsing failed on Ledger"
+  },
+  "error_ledger_bad_state": {
+    "message": "Ledger detected an error and switched to locked mode. Please reboot your device and tried again",
+    "description": "Bad state error on Ledger"
+  },
+  "error_ledger_internal_error": {
+    "message": "Ledger had an internal error. Please try to reboot your device and tried again",
+    "description": "Internal error on Ledger"
+  },
+  "error_ledger_sign_hash": {
+    "message": "There was an error while bling signing the transaction.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_app_not_supported": {
+    "message": "Seems like your app is not supported. Make sure Hive app is running on our Ledger.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_version_not_supported": {
+    "message": "The version of your Ledger's Hive app might be outdated. Update it and try again.",
+    "description": "transaction blind signing failed on Ledger"
+  },
   "error_ledger_no_hash_sign_policy": {
     "message": "Hash sign policy is not enabled on the device. Please enable it in the Hive app settings.",
     "description": "when user hasn't allowed hash sign policyon his ledger"
@@ -2836,5 +2860,9 @@
   "add_accounts_from_ledger_sucessful": {
     "message": "Your account(s) have been successfully added to Keychain",
     "description": "Synchronize Ledger success message"
+  },
+  "popup_html_ledger_unknown_error": {
+    "message": "An unknown error happened. Please reboot your Ledger and try again",
+    "description": "Ledger unknown error"
   }
 }
