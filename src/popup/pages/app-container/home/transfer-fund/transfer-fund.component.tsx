@@ -380,7 +380,6 @@ const TransferFunds = ({
             value={memo}
             onChange={setMemo}
           />
-          {memo.length}
           <CheckboxComponent
             ariaLabel="checkbox-transfer-recurrent"
             title={

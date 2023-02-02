@@ -128,6 +128,11 @@ const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
 const getLedgerInstance = async (): Promise<LedgerHiveApp> => {
   if (!hiveLedger) {
     await LedgerUtils.init();
+  } else {
+    try {
+    } catch (err) {
+      await LedgerUtils.init();
+    }
   }
   return hiveLedger;
 };
