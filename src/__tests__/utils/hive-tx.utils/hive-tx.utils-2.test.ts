@@ -78,7 +78,6 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
           await HiveTxUtils.createSignAndBroadcastTransaction(
             constants.operations,
             '#ajjsk1121312312',
-            true,
           );
         } catch (error) {
           expect(error).toEqual(

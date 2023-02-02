@@ -30,15 +30,10 @@ const setRpc = async (rpc: Rpc) => {
   }
 };
 
-const sendOperation = async (
-  operations: Operation[],
-  key: Key,
-  useSignHash?: boolean,
-) => {
+const sendOperation = async (operations: Operation[], key: Key) => {
   const transactionId = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
-    useSignHash,
   );
   if (transactionId) {
     return await HiveTxUtils.confirmTransaction(transactionId);
@@ -57,7 +52,6 @@ const createTransaction = async (operations: Operation[]) => {
 const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
-  signHash?: boolean,
 ): Promise<string | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations);
@@ -69,18 +63,17 @@ const createSignAndBroadcastTransaction = async (
       throw ErrorUtils.parse(err);
     }
 
-    if (
-      signHash ||
-      (!Hive.isDisplayableOnDevice(transaction) && !hashSignPolicy)
-    ) {
+    if (!Hive.isDisplayableOnDevice(transaction) && !hashSignPolicy) {
       throw new KeychainError('error_ledger_no_hash_sign_policy');
     }
-
     try {
       let signedTransactionFromLedger;
-      if (signHash || !Hive.isDisplayableOnDevice(transaction)) {
-        const tx = await HiveTxUtils.createTransaction(operations);
-        const digest = Hive.getTransactionDigest(tx);
+      console.log(
+        'TRANSACTION SIZE ' + JSON.stringify(transaction).length,
+        !Hive.isDisplayableOnDevice(transaction),
+      );
+      if (!Hive.isDisplayableOnDevice(transaction)) {
+        const digest = Hive.getTransactionDigest(transaction);
         const signature = await LedgerUtils.signHash(digest, key);
         hiveTransaction.addSignature(signature);
       } else {

@@ -5,7 +5,6 @@ import { LocalAccount } from '@interfaces/local-account.interface';
 import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
 import { KeychainError } from 'src/keychain-error';
 import { KeysUtils } from 'src/utils/keys.utils';
-import Logger from 'src/utils/logger.utils';
 
 let hiveLedger: LedgerHiveApp;
 
@@ -138,6 +137,7 @@ const signTransaction = async (
   chainId?: string,
 ): Promise<SignedTransaction> => {
   let ledger = await LedgerUtils.getLedgerInstance();
+  console.log(ledger);
   if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
   try {
     return ledger.signTransaction(
@@ -146,7 +146,8 @@ const signTransaction = async (
       chainId,
     );
   } catch (err: any) {
-    Logger.error(err);
+    console.log(err);
+    // Logger.error(err);
     throw new KeychainError('html_ledger_error_while_signing');
   }
 };

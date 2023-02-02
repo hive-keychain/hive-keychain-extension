@@ -15,7 +15,6 @@ const sendOperation = async (
   const transactionId = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
-    true,
   );
 
   if (transactionId) {

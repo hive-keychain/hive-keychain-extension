@@ -104,7 +104,6 @@ const sendTransfer = (
     return HiveTxUtils.sendOperation(
       [getTransferOperation(sender, receiver, amount, memo)],
       activeKey,
-      false,
     );
   } else {
     return HiveTxUtils.sendOperation(
@@ -119,7 +118,6 @@ const sendTransfer = (
         ),
       ],
       activeKey,
-      false,
     );
   }
 };

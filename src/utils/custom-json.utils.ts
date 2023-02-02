@@ -13,7 +13,6 @@ const send = async (
   return HiveTxUtils.sendOperation(
     [CustomJsonUtils.getCustomJsonOperation(json, username, keyType, mainnet)],
     key,
-    true,
   );
 };
 
