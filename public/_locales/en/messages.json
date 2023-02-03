@@ -1838,8 +1838,12 @@
     "description": "Success message cancel delegation"
   },
   "popup_html_cancel_withdraw_savings_successful": {
-    "message": "Successfully canceled a withdraw from savings",
+    "message": "Successfully canceled a withdraw of $1 HBD from savings",
     "description": "Success message cancel withdraw"
+  },
+  "popup_html_cancel_withdraw_savings_fail": {
+    "message": "Failed to cancel a withdraw from savings",
+    "description": "Failed message cancel withdraw"
   },
   "popup_html_cancel_delegation_fail": {
     "message": "Failed to cancel a delegation",
@@ -2488,7 +2492,7 @@
     "description": "Delegation list item pending until date"
   },
   "popup_html_withdraw_savings_until_message": {
-    "message": "After being canceled, the SBD balance will be available inmediately",
+    "message": "Withdrawing from savings takes 3 days. Cancel the operation if you wish to keep your HBD in the savings.",
     "description": "Withdraw saving list item pending until date"
   },
   "html_popup_governance_renewal_title": {

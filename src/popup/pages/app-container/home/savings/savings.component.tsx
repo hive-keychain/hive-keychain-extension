@@ -113,12 +113,9 @@ const SavingsPage = ({
   }, [currency]);
 
   useEffect(() => {
-    //TODO remove comments
-    //on the withdraw label, click -> another page(edit): useffect, init_withdrawing_request:
     if (activeAccount.account.savings_withdraw_requests > 0) {
       fetchCurrentWithdrawingList();
     }
-    //end to remove
     const hbdSavings = FormatUtils.toNumber(
       activeAccount.account.savings_hbd_balance,
     );
@@ -150,21 +147,6 @@ const SavingsPage = ({
     setCurrentWithdrawingList(
       await SavingsUtils.getSavingsWitdrawFrom(activeAccount.name!),
     );
-    // SavingsUtils.getSavingsWitdrawFrom(activeAccount.name!).then(
-    //   (response) => {
-    //     console.log(response); //TODO to remove
-    //     //to remove help data
-    //     // {amount: "2000.000 HBD"
-    //     // complete: "2023-02-02T14:10:33"
-    //     // from: "theghost1980"
-    //     // id: 161649
-    //     // memo: ""
-    //     // request_id: 1675087823
-    //     // to: "theghost1980"}
-    //     //end help data
-    //     setCurrentWithdrawing(response[0]);
-    //   },
-    // );
   };
 
   const loadAutocompleteTransferUsernames = async () => {
@@ -349,7 +331,6 @@ const SavingsPage = ({
   };
 
   const goToPendingWithdraws = () => {
-    //TODO add new screen enum + route, following same pattern here.
     navigateToWithParams(Screen.CURRENT_WITHDRAW_SAVINGS_PAGE, {
       currentWithdrawingList,
       test: 1,

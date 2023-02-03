@@ -1,5 +1,6 @@
 import {
   Asset,
+  CancelTransferFromSavingsOperation,
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
 } from '@hiveio/dhive';
@@ -81,6 +82,30 @@ const getSavingsWitdrawFrom = async (username: string) => {
   ]);
 };
 
+const getCancelTransferFromSavingsOperation = (
+  username: string,
+  request_id: number,
+) => {
+  return [
+    'cancel_transfer_from_savings',
+    {
+      from: username,
+      request_id,
+    },
+  ] as CancelTransferFromSavingsOperation;
+};
+
+const cancelCurrentWithdrawSaving = async (
+  username: string,
+  request_id: number,
+  activeKey: Key,
+) => {
+  return await HiveTxUtils.sendOperation(
+    [SavingsUtils.getCancelTransferFromSavingsOperation(username, request_id)],
+    activeKey,
+  );
+};
+
 /* istanbul ignore next */
 const hasBalance = (balance: string | Asset, greaterOrEqualTo: number) => {
   return typeof balance === 'string'
@@ -123,4 +148,6 @@ export const SavingsUtils = {
   hasBalance,
   claimSavings,
   getSavingsWitdrawFrom,
+  getCancelTransferFromSavingsOperation,
+  cancelCurrentWithdrawSaving,
 };

@@ -16,16 +16,12 @@ import moment from 'moment';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Screen } from 'src/reference-data/screen.enum';
+import { SavingsUtils } from 'src/utils/savings.utils';
 import './current-withdrawings-item.component.scss';
 
 interface CurrentWithdrawItemProps {
   item: CurrentWithdrawingListItem;
 }
-
-//TODO help code
-// to cancel we emit a:
-//
-//END help code
 
 const CurrentWithdrawItem = ({
   item,
@@ -35,6 +31,7 @@ const CurrentWithdrawItem = ({
   setSuccessMessage,
   addToLoadingList,
   removeFromLoadingList,
+  activeAccount,
 }: PropsType) => {
   const cancelCurrentWithdrawSavingItem = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
@@ -51,29 +48,25 @@ const CurrentWithdrawItem = ({
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_withdraw_savings_operation');
 
-        // try {
-        // //   let success = await DelegationUtils.delegateVestingShares(
-        // //     activeAccount.name!,
-        // //     username!,
-        // //     '0.000000 VESTS',
-        // //     activeAccount.keys.active!,
-        // //   );
-        // //TODO
-
-        // // let success = await SavingsUtils.cancelCurrentWithdrawSaving(requestId: number);
-        //   navigateTo(Screen.HOME_PAGE, true);
-        //   if (success) {
-        //     setSuccessMessage('popup_html_cancel_withdraw_savings_successful');
-        //   } else {
-        //     //TODO add popup_html_cancel_withdraw_savings_successful as "Savings withdraw of {{amount}} HBD could not be processed".
-        //     setErrorMessage('popup_html_cancel_delegation_fail');
-        //   }
-        // } catch (err: any) {
-        //   setErrorMessage(err.message);
-        // } finally {
-        //     //TODO to loadinglist html_popup_cancel_delegation_operation
-        //   removeFromLoadingList('html_popup_cancel_delegation_operation');
-        // }
+        try {
+          let success = await SavingsUtils.cancelCurrentWithdrawSaving(
+            activeAccount.name!,
+            item.request_id,
+            activeAccount.keys.active!,
+          );
+          navigateTo(Screen.HOME_PAGE, true);
+          if (success) {
+            setSuccessMessage('popup_html_cancel_withdraw_savings_successful', [
+              item.amount,
+            ]);
+          } else {
+            setErrorMessage('popup_html_cancel_withdraw_savings_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_cancel_withdraw_savings_operation');
+        }
       },
     });
   };
@@ -97,9 +90,7 @@ const CurrentWithdrawItem = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    //   activeAccount: state.activeAccount,
-    //   globalProperties: state.globalProperties.globals,
-    //   currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    activeAccount: state.activeAccount,
   };
 };
 
