@@ -1498,7 +1498,7 @@
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_cancel_withdraw_savings_message": {
-    "message": "Please confirm that you want to cancel this withdraw from savings.",
+    "message": "Please confirm that you want to cancel this $1 withdraw from savings.",
     "description": "while confirming savings withdraw"
   },
   "popup_html_cancel_delegation": {
@@ -1838,11 +1838,11 @@
     "description": "Success message cancel delegation"
   },
   "popup_html_cancel_withdraw_savings_successful": {
-    "message": "Successfully canceled a withdraw of $1 HBD from savings",
+    "message": "Successfully canceled a withdraw of $1 $2 from savings",
     "description": "Success message cancel withdraw"
   },
   "popup_html_cancel_withdraw_savings_fail": {
-    "message": "Failed to cancel a withdraw from savings",
+    "message": "Failed to cancel a $1 withdraw from savings",
     "description": "Failed message cancel withdraw"
   },
   "popup_html_cancel_delegation_fail": {
@@ -2492,7 +2492,7 @@
     "description": "Delegation list item pending until date"
   },
   "popup_html_withdraw_savings_until_message": {
-    "message": "Withdrawing from savings takes 3 days. Cancel the operation if you wish to keep your HBD in the savings.",
+    "message": "Withdrawing from savings takes 3 days. Cancel the operation if you wish to keep your $1 in the savings.",
     "description": "Withdraw saving list item pending until date"
   },
   "html_popup_governance_renewal_title": {

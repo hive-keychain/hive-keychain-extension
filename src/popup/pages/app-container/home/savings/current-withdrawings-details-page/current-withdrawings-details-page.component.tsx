@@ -12,6 +12,7 @@ interface CurrentWithdrawinsProps {
 
 const CurrentWithdrawings = ({
   currentWithdrawingList,
+  currency,
   currentWithdrawLabel,
   setTitleContainerProperties,
 }: PropsFromRedux & CurrentWithdrawinsProps) => {
@@ -27,7 +28,9 @@ const CurrentWithdrawings = ({
       className="incoming-outgoing-page"
       aria-label="current-witdraw-savings-page">
       <div className="pending-disclaimer">
-        {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message')}
+        {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message', [
+          currency,
+        ])}
       </div>
       <div className="list-panel">
         <div className="list">
@@ -36,6 +39,7 @@ const CurrentWithdrawings = ({
               <CurrentWithdrawItemComponent
                 key={currentWithdrawItem.request_id}
                 item={currentWithdrawItem}
+                currency={currency}
               />
             );
           })}
@@ -49,6 +53,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     currentWithdrawingList: state.navigation.stack[0].params
       .currentWithdrawingList as CurrentWithdrawingListItem[],
+    currency: state.navigation.stack[0].params.currency as string,
   };
 };
 

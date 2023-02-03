@@ -332,8 +332,10 @@ const SavingsPage = ({
 
   const goToPendingWithdraws = () => {
     navigateToWithParams(Screen.CURRENT_WITHDRAW_SAVINGS_PAGE, {
-      currentWithdrawingList,
-      test: 1,
+      currentWithdrawingList: currentWithdrawingList.filter(
+        (withdrawItem) => withdrawItem.amount.split(' ')[1] === currency,
+      ),
+      currency,
     });
   };
 
@@ -347,7 +349,9 @@ const SavingsPage = ({
         currentCurrency={currency}
         currentLabel={'popup_html_savings_current'}
         currentWithdrawLabel={'popup_html_savings_current_withdrawing'}
-        currentWithdrawingList={currentWithdrawingList}
+        currentWithdrawingList={currentWithdrawingList.filter(
+          (withdrawItem) => withdrawItem.amount.split(' ')[1] === currency,
+        )}
         onCurrentWithdrawingsPanelClick={goToPendingWithdraws}
       />
 

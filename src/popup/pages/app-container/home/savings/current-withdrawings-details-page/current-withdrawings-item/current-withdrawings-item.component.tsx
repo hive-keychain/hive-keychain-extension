@@ -21,10 +21,12 @@ import './current-withdrawings-item.component.scss';
 
 interface CurrentWithdrawItemProps {
   item: CurrentWithdrawingListItem;
+  currency: string;
 }
 
 const CurrentWithdrawItem = ({
   item,
+  currency,
   navigateToWithParams,
   navigateTo,
   setErrorMessage,
@@ -37,6 +39,7 @@ const CurrentWithdrawItem = ({
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_confirm_cancel_withdraw_savings_message',
+        [currency],
       ),
       title: 'popup_html_cancel_withdraw_savings',
       fields: [
@@ -58,9 +61,12 @@ const CurrentWithdrawItem = ({
           if (success) {
             setSuccessMessage('popup_html_cancel_withdraw_savings_successful', [
               item.amount,
+              currency,
             ]);
           } else {
-            setErrorMessage('popup_html_cancel_withdraw_savings_fail');
+            setErrorMessage('popup_html_cancel_withdraw_savings_fail', [
+              currency,
+            ]);
           }
         } catch (err: any) {
           setErrorMessage(err.message);
