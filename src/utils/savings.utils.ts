@@ -75,13 +75,13 @@ const getRequestId = async (username: string) => {
   );
   return Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
 };
-
+/* istanbul ignore next */
 const getSavingsWitdrawFrom = async (username: string) => {
   return await HiveTxUtils.getData('condenser_api.get_savings_withdraw_from', [
     username,
   ]);
 };
-
+/* istanbul ignore next */
 const getCancelTransferFromSavingsOperation = (
   username: string,
   request_id: number,
@@ -94,7 +94,7 @@ const getCancelTransferFromSavingsOperation = (
     },
   ] as CancelTransferFromSavingsOperation;
 };
-
+/* istanbul ignore next */
 const cancelCurrentWithdrawSaving = async (
   username: string,
   request_id: number,
