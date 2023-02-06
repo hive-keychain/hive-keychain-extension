@@ -2825,10 +2825,6 @@
     "message": "Select accounts",
     "description": "Ledger add using master key"
   },
-  "ledger_add_account": {
-    "message": "Add account",
-    "description": "Ledger add account"
-  },
   "popup_html_next": {
     "message": "Next",
     "description": "General word"
@@ -2861,8 +2857,20 @@
     "message": "Your account(s) have been successfully added to Keychain",
     "description": "Synchronize Ledger success message"
   },
+  "add_key_from_ledger_sucessful": {
+    "message": "Key successful added to your Keychain",
+    "description": "Synchronize Ledger success message"
+  },
   "popup_html_ledger_unknown_error": {
     "message": "An unknown error happened. Please reboot your Ledger and try again",
     "description": "Ledger unknown error"
+  },
+  "add_key_from_ledger_caption": {
+    "message": "Add a key stored in Ledger",
+    "description": "Ledger add key"
+  },
+  "ledger_discover_key": {
+    "message": "Discover key",
+    "description": "Discover key on Ledger"
   }
 }
