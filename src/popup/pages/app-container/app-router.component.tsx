@@ -13,7 +13,7 @@ import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { IncomingOutgoingRcPageComponent } from '@popup/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-page.component';
 import { RcDelegationsComponent } from '@popup/pages/app-container/home/rc-delegations/rc-delegations.component';
-import { CurrentWithdrawingsPageComponent } from '@popup/pages/app-container/home/savings/current-withdrawings-details-page/current-withdrawings-details-page.component';
+import { PendingSavingsWithdrawalPageComponent } from '@popup/pages/app-container/home/savings/current-withdrawings-details-page/pending-savings-withdrawal-page.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
@@ -78,8 +78,8 @@ const AppRouter = ({
         return <PendingConersionPageComponent />;
       case Screen.SAVINGS_PAGE:
         return <SavingsPageComponent />;
-      case Screen.CURRENT_WITHDRAW_SAVINGS_PAGE:
-        return <CurrentWithdrawingsPageComponent />;
+      case Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE:
+        return <PendingSavingsWithdrawalPageComponent />;
       case Screen.DELEGATION_PAGE:
         return <DelegationsComponent />;
       case Screen.INCOMING_OUTGOING_PAGE:

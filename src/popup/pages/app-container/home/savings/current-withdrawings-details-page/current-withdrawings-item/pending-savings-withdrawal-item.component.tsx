@@ -1,4 +1,4 @@
-import { CurrentWithdrawingListItem } from '@interfaces/list-item.interface';
+import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -17,14 +17,15 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Screen } from 'src/reference-data/screen.enum';
 import { SavingsUtils } from 'src/utils/savings.utils';
+//TODO update sccs as new.
 import './current-withdrawings-item.component.scss';
 
-interface CurrentWithdrawItemProps {
-  item: CurrentWithdrawingListItem;
+interface PendingSavingsWithdrawalProps {
+  item: SavingsWithdrawal;
   currency: string;
 }
 
-const CurrentWithdrawItem = ({
+const PendingSavingsWithdrawalItem = ({
   item,
   currency,
   navigateToWithParams,
@@ -108,6 +109,9 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
 });
-type PropsType = ConnectedProps<typeof connector> & CurrentWithdrawItemProps;
+type PropsType = ConnectedProps<typeof connector> &
+  PendingSavingsWithdrawalProps;
 
-export const CurrentWithdrawItemComponent = connector(CurrentWithdrawItem);
+export const PendingSavingsWithdrawalItemComponent = connector(
+  PendingSavingsWithdrawalItem,
+);

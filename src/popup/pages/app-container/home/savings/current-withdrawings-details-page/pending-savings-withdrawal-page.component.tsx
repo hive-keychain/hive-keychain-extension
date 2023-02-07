@@ -1,21 +1,22 @@
-import { CurrentWithdrawingListItem } from '@interfaces/list-item.interface';
+import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { CurrentWithdrawItemComponent } from '@popup/pages/app-container/home/savings/current-withdrawings-details-page/current-withdrawings-item/current-withdrawings-item.component';
+import { PendingSavingsWithdrawalItemComponent } from '@popup/pages/app-container/home/savings/current-withdrawings-details-page/current-withdrawings-item/pending-savings-withdrawal-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+//TODO update as new sccs.
 import './current-withdrawings-details-page.component.scss';
 
-interface CurrentWithdrawinsProps {
+interface PendingSavingsWithdrawalProps {
   currentWithdrawLabel?: string;
 }
 
-const CurrentWithdrawings = ({
+const PendingSavingsWithdrawal = ({
   currentWithdrawingList,
   currency,
   currentWithdrawLabel,
   setTitleContainerProperties,
-}: PropsFromRedux & CurrentWithdrawinsProps) => {
+}: PropsFromRedux & PendingSavingsWithdrawalProps) => {
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_savings_current_withdrawing',
@@ -36,7 +37,7 @@ const CurrentWithdrawings = ({
         <div className="list">
           {currentWithdrawingList.map((currentWithdrawItem) => {
             return (
-              <CurrentWithdrawItemComponent
+              <PendingSavingsWithdrawalItemComponent
                 key={currentWithdrawItem.request_id}
                 item={currentWithdrawItem}
                 currency={currency}
@@ -52,7 +53,7 @@ const CurrentWithdrawings = ({
 const mapStateToProps = (state: RootState) => {
   return {
     currentWithdrawingList: state.navigation.stack[0].params
-      .currentWithdrawingList as CurrentWithdrawingListItem[],
+      .currentWithdrawingList as SavingsWithdrawal[],
     currency: state.navigation.stack[0].params.currency as string,
   };
 };
@@ -62,4 +63,6 @@ const connector = connect(mapStateToProps, {
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
-export const CurrentWithdrawingsPageComponent = connector(CurrentWithdrawings);
+export const PendingSavingsWithdrawalPageComponent = connector(
+  PendingSavingsWithdrawal,
+);

@@ -1,5 +1,6 @@
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -29,10 +30,7 @@ import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirma
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
-import {
-  CurrencyListItem,
-  CurrentWithdrawingListItem,
-} from 'src/interfaces/list-item.interface';
+import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -64,9 +62,9 @@ const SavingsPage = ({
   );
   const [savings, setSavings] = useState<string | number>('...');
   const [liquid, setLiquid] = useState<string | number>('...');
-
+  //TODO change name to PENDING_SAVINGS_WITHDRAWAL
   const [currentWithdrawingList, setCurrentWithdrawingList] = useState<
-    CurrentWithdrawingListItem[]
+    SavingsWithdrawal[]
   >([]);
 
   const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
@@ -331,12 +329,23 @@ const SavingsPage = ({
   };
 
   const goToPendingWithdraws = () => {
-    navigateToWithParams(Screen.CURRENT_WITHDRAW_SAVINGS_PAGE, {
-      currentWithdrawingList: currentWithdrawingList.filter(
-        (withdrawItem) => withdrawItem.amount.split(' ')[1] === currency,
+    navigateToWithParams(Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE, {
+      currentWithdrawingList: filterPendingWithdrawalList(
+        currentWithdrawingList,
+        currency,
       ),
       currency,
     });
+  };
+
+  const filterPendingWithdrawalList = (
+    pendinSavingsWidrawal: SavingsWithdrawal[],
+    currency: string,
+  ) => {
+    return pendinSavingsWidrawal.filter(
+      (pendingWithdrawItem) =>
+        pendingWithdrawItem.amount.split(' ')[1] === currency,
+    );
   };
 
   return (
@@ -348,10 +357,20 @@ const SavingsPage = ({
         top={savings}
         topRight={currency}
         topLeft={'popup_html_savings_current'}
-        center={'popup_html_savings_current_withdrawing'}
-        center={currentWithdrawingList.filter(
-          (withdrawItem) => withdrawItem.amount.split(' ')[1] === currency,
-        )}
+        center={
+          filterPendingWithdrawalList(currentWithdrawingList, currency).length >
+          0
+            ? filterPendingWithdrawalList(
+                currentWithdrawingList,
+                currency,
+              ).reduce(
+                (acc, curr) => acc + parseFloat(curr.amount.split(' ')[0]),
+                0,
+              )
+            : undefined
+        }
+        centerLeft={'popup_html_savings_current_withdrawing'}
+        centerRight={currency}
         onCenterPanelClick={goToPendingWithdraws}
       />
 
