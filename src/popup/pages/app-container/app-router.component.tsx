@@ -13,7 +13,7 @@ import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { IncomingOutgoingRcPageComponent } from '@popup/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-page.component';
 import { RcDelegationsComponent } from '@popup/pages/app-container/home/rc-delegations/rc-delegations.component';
-import { PendingSavingsWithdrawalPageComponent } from '@popup/pages/app-container/home/savings/current-withdrawings-details-page/pending-savings-withdrawal-page.component';
+import { PendingSavingsWithdrawalPageComponent } from '@popup/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-page.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';

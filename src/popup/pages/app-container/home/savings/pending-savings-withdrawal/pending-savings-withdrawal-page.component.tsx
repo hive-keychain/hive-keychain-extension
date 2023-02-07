@@ -1,6 +1,6 @@
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { PendingSavingsWithdrawalItemComponent } from '@popup/pages/app-container/home/savings/current-withdrawings-details-page/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
+import { PendingSavingsWithdrawalItemComponent } from '@popup/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-item/pending-savings-withdrawal-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
