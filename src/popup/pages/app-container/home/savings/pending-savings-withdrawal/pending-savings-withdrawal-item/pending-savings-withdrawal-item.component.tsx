@@ -17,8 +17,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Screen } from 'src/reference-data/screen.enum';
 import { SavingsUtils } from 'src/utils/savings.utils';
-//TODO update sccs as new.
-import './current-withdrawings-item.component.scss';
+import './pending-savings-withdrawal-item.component.scss';
 
 interface PendingSavingsWithdrawalProps {
   item: SavingsWithdrawal;
@@ -79,7 +78,7 @@ const PendingSavingsWithdrawalItem = ({
   };
 
   return (
-    <div className="delegation-row">
+    <div className="pending-savings-withdraw-row">
       <>
         <div className="left-panel">{item.amount}</div>
         <div className="right-panel">
