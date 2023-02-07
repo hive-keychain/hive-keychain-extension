@@ -4,61 +4,60 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import './available-current-panel.component.scss';
+import './summary-panel.component.scss';
 
 interface PanelProps {
-  current?: number | string;
+  top?: number | string;
+  topLeft?: string;
+  topRight?: string;
+  bottom: number | string;
+  bottomLeft: string;
+  bottomRight: string;
+
   currentWithdrawingList?: CurrentWithdrawingListItem[];
-  available: number | string;
-  currentLabel?: string;
-  currentCurrency?: string;
-  availableLabel: string;
-  availableCurrency: string;
-  currentWithdrawLabel?: string;
-  onAvailablePanelClick?: () => void;
-  onCurrentPanelClick?: () => void;
-  onCurrentWithdrawingsPanelClick?: () => void;
+  centerLabel?: string;
+  onBottomPanelClick?: () => void;
+  onTopPanelClick?: () => void;
+  onCenterPanelClick?: () => void;
 }
 
-const AvailableCurrentPanel = ({
-  current,
-  currentLabel,
-  currentCurrency,
-  available,
-  availableLabel,
-  availableCurrency,
-  currentWithdrawLabel,
+const SummaryPanel = ({
+  top: current, // TODO make sure there is no more reference to current, available etc
+  topLeft: currentLabel,
+  topRight: currentCurrency,
+  bottom: available,
+  bottomLeft: availableLabel,
+  bottomRight: availableCurrency,
+  centerLabel: currentWithdrawLabel,
   currentWithdrawingList,
-  onAvailablePanelClick,
-  onCurrentPanelClick,
-  onCurrentWithdrawingsPanelClick,
+  onBottomPanelClick,
+  onTopPanelClick,
+  onCenterPanelClick,
 }: PropsType) => {
-  const handleClickCurrentPanel = () => {
-    if (onCurrentPanelClick) {
-      onCurrentPanelClick();
+  const handleClickTopPanel = () => {
+    if (onTopPanelClick) {
+      onTopPanelClick();
     }
   };
 
-  const handleClickAvailablePanel = () => {
-    if (onAvailablePanelClick) {
-      onAvailablePanelClick();
+  const handleClickBottomPanel = () => {
+    if (onBottomPanelClick) {
+      onBottomPanelClick();
     }
   };
 
-  const handleClickWithdrawinsPanel = () => {
-    if (onCurrentWithdrawingsPanelClick) {
-      onCurrentWithdrawingsPanelClick();
+  const handleClickCenterPanel = () => {
+    if (onCenterPanelClick) {
+      onCenterPanelClick();
     }
   };
 
   return (
-    <div className="power-up-down-top-panel">
+    <div className="summary-panel">
       {current !== null && current !== undefined && currentLabel && (
         <div
-          className={`current panel-row ${
-            onCurrentPanelClick ? 'clickable' : ''
-          }`}
-          onClick={() => handleClickCurrentPanel()}>
+          className={`current panel-row ${onTopPanelClick ? 'clickable' : ''}`}
+          onClick={() => handleClickTopPanel()}>
           <div className="current-title">
             {chrome.i18n.getMessage(currentLabel)}
           </div>
@@ -78,9 +77,9 @@ const AvailableCurrentPanel = ({
         currentWithdrawLabel && (
           <div
             className={`current panel-row ${
-              onCurrentWithdrawingsPanelClick ? 'clickable' : ''
+              onCenterPanelClick ? 'clickable' : ''
             }`}
-            onClick={handleClickWithdrawinsPanel}>
+            onClick={handleClickCenterPanel}>
             <div className="current-title">
               {chrome.i18n.getMessage(currentWithdrawLabel)}
             </div>
@@ -98,9 +97,9 @@ const AvailableCurrentPanel = ({
         )}
       <div
         className={`available panel-row ${
-          onAvailablePanelClick ? 'clickable' : ''
+          onBottomPanelClick ? 'clickable' : ''
         }`}
-        onClick={() => handleClickAvailablePanel()}>
+        onClick={() => handleClickBottomPanel()}>
         <div className="available-title">
           {chrome.i18n.getMessage(availableLabel)}
         </div>
@@ -125,4 +124,4 @@ const mapStateToProps = (state: RootState) => {
 const connector = connect(mapStateToProps, {});
 type PropsType = ConnectedProps<typeof connector> & PanelProps;
 
-export const AvailableCurrentPanelComponent = connector(AvailableCurrentPanel);
+export const SummaryPanelComponent = connector(SummaryPanel);

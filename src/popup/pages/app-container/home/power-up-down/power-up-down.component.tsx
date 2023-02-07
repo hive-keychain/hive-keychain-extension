@@ -14,7 +14,6 @@ import {
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -23,6 +22,7 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -255,21 +255,21 @@ const PowerUpDown = ({
 
   return (
     <div className="power-up-page" aria-label="power-up-page">
-      <AvailableCurrentPanelComponent
-        available={available}
-        availableCurrency={
+      <SummaryPanelComponent
+        bottom={available}
+        bottomRight={
           powerType === PowerType.POWER_UP
             ? currencyLabels.hive
             : currencyLabels.hp
         }
-        availableLabel={'popup_html_available'}
-        current={current}
-        currentCurrency={
+        bottomLeft={'popup_html_available'}
+        top={current}
+        topRight={
           powerType === PowerType.POWER_UP
             ? currencyLabels.hp
             : currencyLabels.hive
         }
-        currentLabel={'popup_html_current'}
+        topLeft={'popup_html_current'}
       />
       <div className="text">{chrome.i18n.getMessage(text)}</div>
 

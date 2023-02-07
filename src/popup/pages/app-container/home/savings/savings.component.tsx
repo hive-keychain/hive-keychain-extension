@@ -14,7 +14,6 @@ import {
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from '@popup/store';
@@ -29,6 +28,7 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import {
   CurrencyListItem,
   CurrentWithdrawingListItem,
@@ -341,18 +341,18 @@ const SavingsPage = ({
 
   return (
     <div className="savings-page" aria-label="savings-page">
-      <AvailableCurrentPanelComponent
-        available={liquid}
-        availableCurrency={currency}
-        availableLabel={'popup_html_savings_available'}
-        current={savings}
-        currentCurrency={currency}
-        currentLabel={'popup_html_savings_current'}
-        currentWithdrawLabel={'popup_html_savings_current_withdrawing'}
-        currentWithdrawingList={currentWithdrawingList.filter(
+      <SummaryPanelComponent
+        bottom={liquid}
+        bottomRight={currency}
+        bottomLeft={'popup_html_savings_available'}
+        top={savings}
+        topRight={currency}
+        topLeft={'popup_html_savings_current'}
+        center={'popup_html_savings_current_withdrawing'}
+        center={currentWithdrawingList.filter(
           (withdrawItem) => withdrawItem.amount.split(' ')[1] === currency,
         )}
-        onCurrentWithdrawingsPanelClick={goToPendingWithdraws}
+        onCenterPanelClick={goToPendingWithdraws}
       />
 
       <Select
