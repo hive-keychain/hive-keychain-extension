@@ -6,7 +6,14 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const getFullList = (): Rpc[] => {
-  return DefaultRpcs;
+  return DefaultRpcs.map((rpc: Rpc) => {
+    return {
+      ...rpc,
+      uri: rpc.uri.endsWith('/')
+        ? rpc.uri.substring(0, rpc.uri.length - 1)
+        : rpc.uri,
+    };
+  });
 };
 
 const isDefault = (rpc: Rpc): boolean => {
@@ -39,10 +46,17 @@ const deleteCustomRpc = (rpcs: Rpc[], rpc: Rpc) => {
 };
 
 const getCurrentRpc = async (): Promise<Rpc> => {
-  const currentRpc = await LocalStorageUtils.getValueFromLocalStorage(
+  let currentRpc = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.CURRENT_RPC,
   );
-  return currentRpc ? currentRpc : { uri: 'DEFAULT', testnet: false };
+  currentRpc = currentRpc ? currentRpc : { uri: 'DEFAULT', testnet: false };
+  if (currentRpc.uri.endsWith('/'))
+    currentRpc = {
+      ...currentRpc,
+      uri: currentRpc.uri.substring(0, currentRpc.uri.length - 1),
+    };
+
+  return currentRpc;
 };
 /* istanbul ignore next */
 const saveCustomRpc = (rpcs: Rpc[]) => {
