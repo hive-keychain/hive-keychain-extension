@@ -4,8 +4,7 @@ import { PendingSavingsWithdrawalItemComponent } from '@popup/pages/app-containe
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-//TODO update as new sccs.
-import './current-withdrawings-details-page.component.scss';
+import './pending-savings-withdrawal-page.component.scss';
 
 interface PendingSavingsWithdrawalProps {
   currentWithdrawLabel?: string;
@@ -26,8 +25,8 @@ const PendingSavingsWithdrawal = ({
 
   return (
     <div
-      className="incoming-outgoing-page"
-      aria-label="current-witdraw-savings-page">
+      className="pending-savings-withdrawal-page"
+      aria-label="pending-savings-withdrawal-page">
       <div className="pending-disclaimer">
         {chrome.i18n.getMessage('popup_html_withdraw_savings_until_message', [
           currency,
