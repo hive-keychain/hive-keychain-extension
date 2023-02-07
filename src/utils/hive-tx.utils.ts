@@ -19,6 +19,7 @@ import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
+import RpcUtils from 'src/utils/rpc.utils';
 
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
@@ -192,21 +193,41 @@ const broadcastAndConfirmTransactionWithSignature = async (
     throw ErrorUtils.parse(response.error);
   }
 };
+
 /* istanbul ignore next */
 const getData = async (
   method: string,
   params: any[] | object,
   key?: string,
-) => {
-  const response = await call(method, params);
-  if (response?.result) {
-    return key ? response.result[key] : response.result;
-  } else
-    throw new Error(
-      `Error while retrieving data from ${method} : ${JSON.stringify(
-        response.error,
-      )}`,
+  retryCount?: number,
+): Promise<any> => {
+  try {
+    if (retryCount === 5) {
+      throw new KeychainError(`Error while retrieving data from ${method}`);
+    }
+    const response = await call(method, params);
+    if (response?.result) {
+      return key ? response.result[key] : response.result;
+    } else {
+      const newRpc = await RpcUtils.findAndSetWorkingRpc();
+      await HiveTxUtils.setRpc(newRpc!);
+      return HiveTxUtils.getData(
+        method,
+        params,
+        key,
+        (retryCount ? retryCount : 0) + 1,
+      );
+    }
+  } catch (err) {
+    const newRpc = await RpcUtils.findAndSetWorkingRpc();
+    await HiveTxUtils.setRpc(newRpc!);
+    return HiveTxUtils.getData(
+      method,
+      params,
+      key,
+      (retryCount ? retryCount : 0) + 1,
     );
+  }
 };
 
 export const HiveTxUtils = {

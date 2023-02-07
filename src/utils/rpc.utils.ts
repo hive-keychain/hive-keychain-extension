@@ -63,7 +63,7 @@ const findRpc = async (uri: string) => {
   );
 };
 
-const checkRpcStatus = async (uri: string) => {
+const checkRpcStatus = async (uri?: string) => {
   axios.interceptors.response.use(
     (response) => {
       return response;
@@ -79,7 +79,6 @@ const checkRpcStatus = async (uri: string) => {
         timeout: 10000,
       },
     );
-    console.log(result);
     if (result.data && result.data.errors) {
       return false;
     }
@@ -88,6 +87,15 @@ const checkRpcStatus = async (uri: string) => {
   } catch (err) {
     Logger.error(err);
     return false;
+  }
+};
+
+const findAndSetWorkingRpc = async () => {
+  for (const rpc of RpcUtils.getFullList()) {
+    if (await RpcUtils.checkRpcStatus(rpc.uri)) {
+      await RpcUtils.saveCurrentRpc(rpc);
+      return rpc;
+    }
   }
 };
 
@@ -102,6 +110,7 @@ const RpcUtils = {
   deleteCustomRpc,
   findRpc,
   checkRpcStatus,
+  findAndSetWorkingRpc,
 };
 
 export default RpcUtils;
