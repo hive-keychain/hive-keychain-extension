@@ -2872,5 +2872,13 @@
   "ledger_discover_key": {
     "message": "Discover key",
     "description": "Discover key on Ledger"
+  },
+  "popup_html_token_swaps": {
+    "message": "Swaps",
+    "description": "Token swaps"
+  },
+  "html_popup_swaps_slipperage": {
+    "message": "Splipperage",
+    "description": "Token swaps : slipperage"
   }
 }

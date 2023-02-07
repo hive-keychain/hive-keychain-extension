@@ -1,0 +1,5 @@
+@import '../../../../../variable.scss';
+
+.tokens-page {
+  @include tab-style(2);
+}

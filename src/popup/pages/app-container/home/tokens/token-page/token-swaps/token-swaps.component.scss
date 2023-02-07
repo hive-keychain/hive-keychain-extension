@@ -1,0 +1,8 @@
+@import '../../../../../../variable.scss';
+
+.token-swaps {
+  @include pageLayoutRowGap;
+  row-gap: 32px;
+  overflow: hidden;
+  flex: 1;
+}
