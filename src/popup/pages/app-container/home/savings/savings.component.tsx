@@ -62,10 +62,8 @@ const SavingsPage = ({
   );
   const [savings, setSavings] = useState<string | number>('...');
   const [liquid, setLiquid] = useState<string | number>('...');
-  //TODO change name to PENDING_SAVINGS_WITHDRAWAL
-  const [currentWithdrawingList, setCurrentWithdrawingList] = useState<
-    SavingsWithdrawal[]
-  >([]);
+  const [savingsPendingWithdrawalList, setSavingsPendingWithdrawalList] =
+    useState<SavingsWithdrawal[]>([]);
 
   const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
     [],
@@ -142,8 +140,8 @@ const SavingsPage = ({
   }, [selectedCurrency, selectedSavingOperationType]);
 
   const fetchCurrentWithdrawingList = async () => {
-    setCurrentWithdrawingList(
-      await SavingsUtils.getSavingsWitdrawFrom(activeAccount.name!),
+    setSavingsPendingWithdrawalList(
+      await SavingsUtils.getSavingsWithdrawals(activeAccount.name!),
     );
   };
 
@@ -328,17 +326,17 @@ const SavingsPage = ({
     );
   };
 
-  const goToPendingWithdraws = () => {
+  const goToPendingSavingsWithdrawal = () => {
     navigateToWithParams(Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE, {
-      currentWithdrawingList: filterPendingWithdrawalList(
-        currentWithdrawingList,
+      savingsPendingWithdrawalList: filterSavingsPendingWithdrawalList(
+        savingsPendingWithdrawalList,
         currency,
       ),
       currency,
     });
   };
 
-  const filterPendingWithdrawalList = (
+  const filterSavingsPendingWithdrawalList = (
     pendinSavingsWidrawal: SavingsWithdrawal[],
     currency: string,
   ) => {
@@ -358,10 +356,12 @@ const SavingsPage = ({
         topRight={currency}
         topLeft={'popup_html_savings_current'}
         center={
-          filterPendingWithdrawalList(currentWithdrawingList, currency).length >
-          0
-            ? filterPendingWithdrawalList(
-                currentWithdrawingList,
+          filterSavingsPendingWithdrawalList(
+            savingsPendingWithdrawalList,
+            currency,
+          ).length > 0
+            ? filterSavingsPendingWithdrawalList(
+                savingsPendingWithdrawalList,
                 currency,
               ).reduce(
                 (acc, curr) => acc + parseFloat(curr.amount.split(' ')[0]),
@@ -371,7 +371,7 @@ const SavingsPage = ({
         }
         centerLeft={'popup_html_savings_current_withdrawing'}
         centerRight={currency}
-        onCenterPanelClick={goToPendingWithdraws}
+        onCenterPanelClick={goToPendingSavingsWithdrawal}
       />
 
       <Select

@@ -12,7 +12,7 @@ interface PendingSavingsWithdrawalProps {
 }
 
 const PendingSavingsWithdrawal = ({
-  currentWithdrawingList,
+  savingsPendingWithdrawalList,
   currency,
   currentWithdrawLabel,
   setTitleContainerProperties,
@@ -35,7 +35,7 @@ const PendingSavingsWithdrawal = ({
       </div>
       <div className="list-panel">
         <div className="list">
-          {currentWithdrawingList.map((currentWithdrawItem) => {
+          {savingsPendingWithdrawalList.map((currentWithdrawItem) => {
             return (
               <PendingSavingsWithdrawalItemComponent
                 key={currentWithdrawItem.request_id}
@@ -52,8 +52,8 @@ const PendingSavingsWithdrawal = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    currentWithdrawingList: state.navigation.stack[0].params
-      .currentWithdrawingList as SavingsWithdrawal[],
+    savingsPendingWithdrawalList: state.navigation.stack[0].params
+      .savingsPendingWithdrawalList as SavingsWithdrawal[],
     currency: state.navigation.stack[0].params.currency as string,
   };
 };

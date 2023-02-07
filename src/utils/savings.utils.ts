@@ -76,7 +76,7 @@ const getRequestId = async (username: string) => {
   return Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
 };
 /* istanbul ignore next */
-const getSavingsWitdrawFrom = async (username: string) => {
+const getSavingsWithdrawals = async (username: string) => {
   return await HiveTxUtils.getData('condenser_api.get_savings_withdraw_from', [
     username,
   ]);
@@ -147,7 +147,7 @@ export const SavingsUtils = {
   getRequestId,
   hasBalance,
   claimSavings,
-  getSavingsWitdrawFrom,
+  getSavingsWithdrawals,
   getCancelTransferFromSavingsOperation,
   cancelCurrentWithdrawSaving,
 };
