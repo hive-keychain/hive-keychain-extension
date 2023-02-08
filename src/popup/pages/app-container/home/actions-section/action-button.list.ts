@@ -25,12 +25,12 @@ export const ActionButtonList: ActionButton[] = [
     importedIcon: true,
     nextScreen: Screen.TOKENS_PAGE,
   },
-  {
-    label: 'popup_html_gov',
-    icon: 'hive-brands.svg',
-    importedIcon: true,
-    nextScreen: Screen.GOVERNANCE_PAGE,
-  },
+  // {
+  //   label: 'popup_html_gov',
+  //   icon: 'hive-brands.svg',
+  //   importedIcon: true,
+  //   nextScreen: Screen.GOVERNANCE_PAGE,
+  // },
   {
     label: 'popup_html_plugins',
     icon: Icons.EXTENSION,
