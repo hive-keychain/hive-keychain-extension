@@ -1,6 +1,6 @@
 {
   "name": "hive-keychain",
-  "version": "2.3.6",
+  "version": "2.3.7",
   "description": "Hive Keychain extension",
   "main": "index.js",
   "directories": {
