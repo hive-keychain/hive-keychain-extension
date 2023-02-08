@@ -25,7 +25,7 @@ const CustomSelect = ({
   skipLabelTranslation,
   onSelectedValueChange,
 }: CustomSelectProps) => {
-  const [selectedValue, setSelectedValue] = useState();
+  const [selectedValue, setSelectedValue] = useState<SelectOption>(options[0]);
 
   const updateSelectedValue = (newValue: any) => {
     setSelectedValue(newValue);
@@ -39,9 +39,14 @@ const CustomSelect = ({
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        {skipLabelTranslation
-          ? selectedValue
-          : chrome.i18n.getMessage(selectedValue!)}
+        {selectProps.state.values[0].img && (
+          <img src={selectProps.state.values[0].img} className="image" />
+        )}
+        <div className="label">
+          {skipLabelTranslation
+            ? selectProps.state.values[0].label
+            : chrome.i18n.getMessage(selectProps.state.values[0].label)}
+        </div>
       </div>
     );
   };
@@ -52,20 +57,24 @@ const CustomSelect = ({
           selectedValue === selectProps.item.value ? 'selected' : ''
         }`}
         onClick={() => {
-          updateSelectedValue(selectProps.item.value);
+          updateSelectedValue(selectProps.item);
           selectProps.methods.dropDown('close');
         }}>
         {selectProps.item.img && (
           <img src={selectProps.item.img} className="image" />
         )}
-        <div className="label">{selectProps.item.label}</div>
+        <div className="label">
+          {skipLabelTranslation
+            ? selectProps.item.label
+            : chrome.i18n.getMessage(selectProps.item.label)}
+        </div>
       </div>
     );
   };
 
   return (
     <Select
-      values={[]}
+      values={[selectedValue]}
       options={options}
       onChange={() => undefined}
       contentRenderer={contentRenderer}

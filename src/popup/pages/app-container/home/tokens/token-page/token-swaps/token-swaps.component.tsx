@@ -1,5 +1,4 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { Token } from '@interfaces/tokens.interface';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -20,9 +19,10 @@ import './token-swaps.component.scss';
 const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
   const [loading, setLoading] = useState(true);
   const [slipperage, setSlipperage] = useState(5);
+  const [amount, setAmount] = useState();
 
-  const [startToken, setStartToken] = useState<Token>();
-  const [endToken, setEndToken] = useState<Token>();
+  const [startToken, setStartToken] = useState<string>();
+  const [endToken, setEndToken] = useState<string>();
   const [startTokenListOptions, setStartTokenListOptions] = useState<
     SelectOption[]
   >([]);
@@ -42,7 +42,6 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
     let list = startList.map((token) => {
       const tokenInfo = allTokens.find((t) => t.symbol === token.symbol);
       let img = '';
-      console.log(tokenInfo);
       if (tokenInfo) {
         img = tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg';
       } else {
@@ -57,8 +56,18 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
         img: img,
       };
     });
-
+    // let endList: SelectOption[] = [{},{},...allTokens.map(token) => {
+    //   let img = '';
+    //     img = tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg';
+    //   return {
+    //     value: token.symbol,
+    //     label: token.symbol,
+    //     img: img,
+    //   };
+    // }]
+    setStartToken(list[0].value);
     setStartTokenListOptions(list);
+    // setEndTokenListOptions()
     setLoading(false);
   };
 
@@ -77,6 +86,14 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
                 onSelectedValueChange={(token) => setStartToken(token)}
               />
             )}
+            <InputComponent
+              type={InputType.NUMBER}
+              value={amount}
+              onChange={setAmount}
+              label="popup_html_transfer_amount"
+              placeholder="popup_html_transfer_amount"
+              min={0}
+            />
           </div>
           <div className="end-token"></div>
           <InputComponent
@@ -95,9 +112,9 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
             label={'html_popup_ok'}
             fixToBottom
           />
-          {loading && <RotatingLogoComponent />}
         </>
       )}
+      {loading && <RotatingLogoComponent />}
     </div>
   );
 };
