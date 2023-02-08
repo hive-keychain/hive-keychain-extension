@@ -1,37 +1,7 @@
 export const PluginsWhitelist: Extension[] = [
   {
-    extensionId: 'aapbdbdomjkkjkaonfhkkikfgjllcleb',
-    name: 'Google translate',
-    img: '',
-    installed: false,
-  },
-  {
-    extensionId: 'nkbihfbeogaeaoehlefnkodbefgpgknn',
-    name: 'Metamask',
-    img: '',
-    installed: false,
-  },
-  {
-    extensionId: 'eadampcieedklcmllfppabgaoegidbhp',
+    extensionId: process.env.DEV_PLUGIN_ID!,
     name: 'Test Plugin',
-    img: '',
-    installed: false,
-  },
-  {
-    extensionId: 'bhlhnicpbhignbdhedgjhgdocnmhomnp',
-    name: 'ColorZilla',
-    img: 'colorzilla.jpeg',
-    installed: false,
-  },
-  {
-    extensionId: 'eifflpmocdbdmepbjaopkkhbfmdgijcc',
-    name: 'JSON Viewer Pro',
-    img: '',
-    installed: false,
-  },
-  {
-    extensionId: 'ailoabdmgclmfmhdagmlohpjlbpffblp',
-    name: 'Surfshark VPN Extension',
     img: '',
     installed: false,
   },
