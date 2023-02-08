@@ -7,7 +7,6 @@
 
 .App {
   height: 600px;
-  width: 350px;
   font-family: Futura !important;
   font-weight: 400;
   background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
@@ -48,6 +47,7 @@
     justify-content: center;
     padding: 16px 0px;
     row-gap: 12px;
+    z-index: 1;
 
     .message {
       font-size: 15px;
@@ -58,6 +58,32 @@
     .submit-button {
       max-width: 130px;
       height: 36px;
+    }
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    background-color: transparent;
+  }
+  .splashscreen {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    row-gap: 32px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: url(/assets/images/hive-watermark.png) 0% 0% no-repeat
+        padding-box,
+      linear-gradient(to bottom, #000000, #59626c, #000000) 0% 0% no-repeat
+        padding-box !important;
+
+    .caption {
+      font-size: 32px;
+      color: white;
     }
   }
 }
@@ -110,11 +136,6 @@
   -webkit-box-shadow: unset;
   box-shadow: unset;
   border-radius: 4px;
-  background-color: transparent;
-}
-
-::-webkit-scrollbar {
-  width: 6px;
   background-color: transparent;
 }
 

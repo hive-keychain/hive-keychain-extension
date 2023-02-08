@@ -10,6 +10,11 @@ export const ActionButtonList: ActionButton[] = [
     icon: Icons.SEND,
   },
   {
+    label: 'popup_html_buy',
+    icon: Icons.BUY,
+    nextScreen: Screen.BUY_COINS_PAGE,
+  },
+  {
     label: 'popup_html_history',
     icon: Icons.HISTORY,
     nextScreen: Screen.WALLET_HISTORY_PAGE,

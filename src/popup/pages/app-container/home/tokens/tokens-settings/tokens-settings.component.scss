@@ -2,53 +2,83 @@
 
 .tokens-settings {
   @include pageLayoutRowGap;
-  .disclaimer {
-    padding: 0px 24px;
-    font-size: 18px;
-    a {
-      @include link;
+  row-gap: 32px !important;
+  padding: 0px 24px;
+
+  .hive-engine-rpc-panel,
+  .hive-engine-account-history-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 12px;
+    .select-title {
+      font-size: 18px;
     }
-  }
-
-  overflow: hidden;
-
-  .input-container {
-    padding: 0px 24px;
-    box-sizing: border-box;
-  }
-
-  .tokens-list {
-    row-gap: 16px;
-    display: grid;
-    overflow: auto;
-    margin-top: 4px;
-
-    .token {
-      display: flex;
+    .select-panel,
+    .new-item-panel {
+      display: grid;
+      grid-template-columns: 1fr auto;
       column-gap: 16px;
-      padding: 0px 24px;
+      align-items: center;
+    }
+  }
 
-      .switch-container {
-        margin-top: 8px;
-      }
+  .select-hive-engine-rpc-node-select,
+  .select-account-history-api-select {
+    &,
+    &:focus,
+    &:hover {
+      border: unset !important;
+      background: rgba(33, 37, 41, 0.68);
+    }
+  }
+  .select-hive-engine-rpc-node-select,
+  .select-account-history-api-select {
+    .react-dropdown-select-dropdown {
+      border: unset;
+      top: 54px;
+      background-color: black;
+    }
+  }
 
-      .description {
-        display: flex;
-        flex-direction: column;
-        .name {
-          font-size: 18px;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          overflow: hidden;
-          max-width: 240px;
-        }
-        .issued-by {
-          font-size: 16px;
-        }
-        .supply {
-          font-size: 14px;
-        }
+  .selected-panel {
+    display: flex;
+    align-items: center;
+    column-gap: 16px;
+    padding: 12px 6px;
+    box-sizing: border-box;
+    width: 100%;
+  }
+  .selected-panel,
+  .select-item {
+    font-size: 16px;
+  }
+
+  .select-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 16px;
+    padding: 12px;
+    box-sizing: border-box;
+    background: rgba(33, 37, 41, 0.68);
+
+    &:hover,
+    &.selected {
+      background: $red;
+
+      .erase-button {
+        display: block;
       }
     }
+
+    .erase-button {
+      display: none;
+      height: 16px;
+      width: 16px;
+    }
+  }
+
+  .react-dropdown-select-dropdown {
+    max-height: 250px !important;
   }
 }

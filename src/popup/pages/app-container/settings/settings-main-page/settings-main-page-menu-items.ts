@@ -19,12 +19,19 @@ const SettingsMenuItems: MenuItem[] = [
     nextScreen: Screen.SETTINGS_ADVANCED,
   },
   {
+    label: 'popup_html_governance',
+    icon: 'hive-brands.svg',
+    importedIcon: true,
+    nextScreen: Screen.GOVERNANCE_PAGE,
+  },
+  {
     label: 'popup_html_contact_support',
     icon: Icons.SUPPORT,
     action: () => {
       chrome.tabs.create({ url: 'https://discord.gg/E6P6Gjv9MC' });
     },
   },
+
   {
     label: 'popup_html_about',
     icon: Icons.INFO,

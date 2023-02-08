@@ -1,9 +1,11 @@
-import { utils as dHiveUtils } from '@hiveio/dhive';
+import { DynamicGlobalProperties, utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimAccount,
   ClaimReward,
   CollateralizedConvert,
   Convert,
+  CreateAccount,
+  CreateClaimedAccount,
   Delegation,
   DepositSavings,
   FillCollateralizedConvert,
@@ -13,11 +15,11 @@ import {
   PowerUp,
   ReceivedInterests,
   RecurrentTransfer,
+  StartWithdrawSavings,
   Transaction,
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
-import { store } from '@popup/store';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
@@ -40,6 +42,7 @@ export const CONVERT_TYPE_TRANSACTIONS = [
 const getAccountTransactions = async (
   accountName: string,
   start: number,
+  globals: DynamicGlobalProperties,
   memoKey?: string,
 ): Promise<[Transaction[], number]> => {
   try {
@@ -55,14 +58,20 @@ const getAccountTransactions = async (
       op.interest,
       op.transfer_to_savings,
       op.transfer_from_savings,
+      op.fill_transfer_from_savings,
       op.claim_account,
       op.convert,
       op.fill_convert_request,
       op.collateralized_convert,
       op.fill_collateralized_convert_request,
+      op.account_create,
+      op.create_claimed_account,
     ]) as [number, number];
 
     let limit = Math.min(start, NB_TRANSACTION_FETCHED);
+
+    if (limit <= 0) return [[], 0];
+
     const transactionsFromBlockchain =
       await HiveUtils.getClient().database.getAccountHistory(
         accountName,
@@ -70,7 +79,6 @@ const getAccountTransactions = async (
         limit,
         operationsBitmask,
       );
-
     const transactions = transactionsFromBlockchain
       .map((e) => {
         let specificTransaction = null;
@@ -92,9 +100,17 @@ const getAccountTransactions = async (
             break;
           }
           case 'fill_recurrent_transfer': {
-            let amount = `${
-              parseFloat(e[1].op[1].amount.amount) / 1000
-            } ${FormatUtils.getSymbol(e[1].op[1].amount.nai)}`;
+            const amtObj = e[1].op[1].amount;
+            const amt =
+              typeof amtObj === 'object'
+                ? parseFloat(amtObj.amount) / 100
+                : parseFloat(amtObj.split(' ')[0]);
+            const currency =
+              typeof amtObj === 'object'
+                ? FormatUtils.getSymbol(amtObj.nai)
+                : amtObj.split(' ')[1];
+            let amount = `${amt} ${currency}`;
+
             specificTransaction = e[1].op[1] as FillRecurrentTransfer;
             specificTransaction.amount = amount;
             specificTransaction.remainingExecutions =
@@ -111,7 +127,7 @@ const getAccountTransactions = async (
             specificTransaction.hive = e[1].op[1].reward_hive;
             specificTransaction.hp = `${FormatUtils.toHP(
               e[1].op[1].reward_vests,
-              store.getState().globalProperties.globals,
+              globals,
             ).toFixed(3)} HP`;
             break;
           }
@@ -119,7 +135,7 @@ const getAccountTransactions = async (
             specificTransaction = e[1].op[1] as Delegation;
             specificTransaction.amount = `${FormatUtils.toHP(
               e[1].op[1].vesting_shares,
-              store.getState().globalProperties.globals,
+              globals,
             ).toFixed(3)} HP`;
             break;
           }
@@ -135,7 +151,7 @@ const getAccountTransactions = async (
             specificTransaction.subType = 'withdraw_vesting';
             specificTransaction.amount = `${FormatUtils.toHP(
               e[1].op[1].vesting_shares,
-              store.getState().globalProperties.globals,
+              globals,
             ).toFixed(3)} HP`;
             break;
           }
@@ -152,9 +168,15 @@ const getAccountTransactions = async (
             break;
           }
           case 'transfer_from_savings': {
-            specificTransaction = e[1].op[1] as WithdrawSavings;
+            specificTransaction = e[1].op[1] as StartWithdrawSavings;
             specificTransaction.type = 'savings';
             specificTransaction.subType = 'transfer_from_savings';
+            break;
+          }
+          case 'fill_transfer_from_savings': {
+            specificTransaction = e[1].op[1] as WithdrawSavings;
+            specificTransaction.type = 'savings';
+            specificTransaction.subType = 'fill_transfer_from_savings';
             break;
           }
           case 'claim_account': {
@@ -185,6 +207,14 @@ const getAccountTransactions = async (
             specificTransaction.subType = 'fill_collateralized_convert_request';
             break;
           }
+          case 'create_claimed_account': {
+            specificTransaction = e[1].op[1] as CreateClaimedAccount;
+            break;
+          }
+          case 'account_create': {
+            specificTransaction = e[1].op[1] as CreateAccount;
+            break;
+          }
         }
         const tr: Transaction = {
           ...specificTransaction,
@@ -207,14 +237,14 @@ const getAccountTransactions = async (
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
       );
-    if (start - NB_TRANSACTION_FETCHED < 0) {
+    if (start - NB_TRANSACTION_FETCHED < 0 && transactions.length > 1) {
       transactions[transactions.length - 1].last = true;
     }
 
     if (
       start &&
       Math.min(NB_TRANSACTION_FETCHED, start) !== NB_TRANSACTION_FETCHED &&
-      transactions.length
+      transactions.length > 1
     ) {
       transactions[transactions.length - 1].lastFetched = true;
     }
@@ -224,6 +254,7 @@ const getAccountTransactions = async (
     return getAccountTransactions(
       accountName,
       (e as any).jse_info.stack[0].data.sequence - 1,
+      globals,
       memoKey,
     );
   }
@@ -265,6 +296,10 @@ const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
   return transfer;
 };
 
-const TransactionUtils = { getAccountTransactions, getLastTransaction };
+const TransactionUtils = {
+  getAccountTransactions,
+  getLastTransaction,
+  decodeMemoIfNeeded,
+};
 
 export default TransactionUtils;

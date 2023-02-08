@@ -1,4 +1,4 @@
-import { hsc } from '@api/hiveEngine';
+import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
 
 export interface TransactionConfirmationResult {
   confirmed: boolean;
@@ -11,7 +11,9 @@ const tryConfirmTransaction = (
   let result: any;
   return new Promise(async function (fulfill, reject) {
     for (let i = 0; i < 20; i++) {
-      result = await getDelayedTransactionInfo(trxId);
+      result = await BlockchainTransactionUtils.getDelayedTransactionInfo(
+        trxId,
+      );
       if (result != null) break;
     }
 
@@ -29,11 +31,11 @@ const tryConfirmTransaction = (
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
     setTimeout(async function () {
-      fulfill(hsc.getTransactionInfo(trxID));
+      fulfill(HiveEngineConfigUtils.getApi().getTransactionInfo(trxID));
     }, 1000);
   });
 };
-
+/* istanbul ignore next */
 const delayRefresh = async (): Promise<void> => {
   const TIME_REFERENCE = 1643236071000;
   const delay = Math.min(
@@ -47,6 +49,10 @@ const delayRefresh = async (): Promise<void> => {
   });
 };
 
-const BlockchainTransactionUtils = { tryConfirmTransaction, delayRefresh };
+const BlockchainTransactionUtils = {
+  tryConfirmTransaction,
+  delayRefresh,
+  getDelayedTransactionInfo,
+};
 
 export default BlockchainTransactionUtils;

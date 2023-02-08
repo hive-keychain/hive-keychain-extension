@@ -15,6 +15,10 @@
     "message": "Yes",
     "description": "Generic"
   },
+  "common_and": {
+    "message": "and",
+    "description": "Generic"
+  },
   "common_no": {
     "message": "No",
     "description": "Generic"
@@ -129,7 +133,7 @@
     "message": "Power down"
   },
   "popup_html_delegate": {
-    "message": "Delegations"
+    "message": "HP Delegations"
   },
   "popup_html_estimation": {
     "message": "Estimated Account Value",
@@ -220,7 +224,7 @@
     "description": "Generic button"
   },
   "popup_html_settings": {
-    "message": "Settings",
+    "message": "Menu",
     "description": "on settings page"
   },
   "popup_html_add_account": {
@@ -248,7 +252,7 @@
     "description": "on settings page"
   },
   "popup_html_import_export_settings": {
-    "message": "Import / Export",
+    "message": "Import / Export Settings",
     "description": "on settings page"
   },
   "popup_html_automated_tasks": {
@@ -276,7 +280,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_default_info": {
-    "message": "Lock the keychain manually or when the browser is closed.",
+    "message": "Lock Keychain manually.",
     "description": "on autolock settings"
   },
   "popup_html_al_locked_title": {
@@ -284,7 +288,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_locked_info": {
-    "message": "Auto-lock the keychain when the device locks.",
+    "message": "Auto-lock Keychain when the device locks.",
     "description": "on autolock settings"
   },
   "popup_html_al_idle_title": {
@@ -292,7 +296,7 @@
     "description": "on autolock settings"
   },
   "popup_html_al_idle_info": {
-    "message": "Auto-lock the keychain after the browser window is idle for the specified number of minutes.",
+    "message": "Auto-lock Keychain after the browser window is idle for the specified number of minutes.",
     "description": "on autolock settings"
   },
   "popup_html_keychainify_text": {
@@ -320,7 +324,7 @@
     "description": "on import / export settings"
   },
   "popup_html_about_text": {
-    "message": "The overall idea and concept for the Hive Keychain browser extension was created by <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> who is a developer and witness on the Hive blockchain. It was primarily developed by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a> who is also a Hive developer and witness. The design and development were funded by @aggroed and @yabapmatt through their joint business Splinterlands, which is a blockchain-based collectible trading card game built on top of the Hive blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!",
+    "message": "The Hive Keychain team is led by <a href=\"https://peakd.com/@stoodkev\" target=\"_blank\">@stoodkev</a>, a developer and Hive witness, and consists of a total of 3 full-time developers at the moment. We also benefit from the help of <a href=\"https://peakd.com/@nateaguila\" target=\"_blank\">@nateaguila</a>, Splinterlands's Creative Director, and many other community members.<br><br>While the project is currently funded through the Decentralized Hive Fund (DHF), the original idea and funds were provided by <a href=\"https://peakd.com/@aggroed\" target=\"_blank\">@aggroed</a> and <a href=\"https://peakd.com/@yabapmatt\" target=\"_blank\">@yabapmatt</a> (witnesses) through their joint business Splinterlands, a blockchain-based collectible trading card game built on top of the Hive blockchain. Be sure to check it out at <a href=\"https://splinterlands.io\" target=\"_blank\">https://splinterlands.io</a>!<br/><br/>For more information on our products (browser extensions and mobile Apps), visit our <a href='https://hive-keychain.com' target='__blank'>landing page</a>.",
     "description": "on about keychain"
   },
   "popup_html_delete_account": {
@@ -376,7 +380,7 @@
     "description": "on manage accounts, add a previously non stored key"
   },
   "popup_html_add_key_text": {
-    "message": "Add the <span></span> private key to your account. You can also add it by entering your master key.",
+    "message": "Add the <span>$1</span> private key to your account. You can also add it by entering your master key.",
     "description": "on preferences, within span will be posting/memo/active"
   },
   "popup_html_copied": {
@@ -465,6 +469,10 @@
   },
   "popup_html_tokens_available": {
     "message": "Tokens Available",
+    "description": "On tokens page"
+  },
+  "popup_html_tokens_settings": {
+    "message": "Tokens settings",
     "description": "On tokens page"
   },
   "popup_html_tokens_settings_text": {
@@ -571,6 +579,10 @@
     "message": "Please add your $1 key to perform this operation!",
     "description": "When trying to perform an operation without a stored private $1 key"
   },
+  "popup_missing_key_proposal": {
+    "message": "Please add your active key to vote for proposals.",
+    "description": "When voting for a proposal"
+  },
   "popup_password_mismatch": {
     "message": "Your passwords do not match!",
     "description": "when registering a password on keychain"
@@ -668,7 +680,7 @@
     "description": "on tokens page when trying to send tokens to a non existing user"
   },
   "popup_token_timeout": {
-    "message": "Transaction timed out without response. Please double check your token balance before trying to send again.",
+    "message": "We could not verify this transaction on Hive Engine. This might mean that Hive Engine is behind blocks, wait for the operation to appear in your history, or contact the Hive Engine team on Discord.",
     "description": "on tokens page when transaction timed out"
   },
   "popup_proxy": {
@@ -726,6 +738,10 @@
   "dialog_proposal_ids": {
     "message": "Proposal IDs",
     "description": "When website request a proposal vote"
+  },
+  "dialog_id": {
+    "message": "ID",
+    "description": "When website request a custom json"
   },
   "dialog_approve": {
     "message": "Approve",
@@ -824,7 +840,7 @@
     "description": "When website request a post"
   },
   "dialog_percentage_hbd": {
-    "message": "Percentage SBD : ",
+    "message": "Percentage HBD : ",
     "description": "When website request a post"
   },
   "dialog_allow_votes": {
@@ -1211,7 +1227,7 @@
     "description": "When adding new account. In a button, must keep short."
   },
   "popup_html_chose_add_method": {
-    "message": "You can add your keys by entring a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
+    "message": "You can add your keys by entering a private key or your master password.<br/>Alternatively, you can specify an authorized account or import your keys.",
     "description": "Text when adding new method."
   },
   "popup_html_auth_text": {
@@ -1240,19 +1256,13 @@
     "message": "You succesfully imported your keys!"
   },
   "import_html_error": {
-    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same master key than when you exported the file."
+    "message": "There was an error importing your keys.<br/>Make sure you that you are using the same password than when you exported the file."
   },
   "import_permissions_html_title": {
     "message": "Import settings"
   },
   "import_permissions_html_text": {
     "message": "Import your settings from another Keychain instance using a .kc.json file."
-  },
-  "import_permissions_html_success": {
-    "message": "You successfully imported your settings!"
-  },
-  "import_permissions_html_error": {
-    "message": "There was an error importing your settings."
   },
   "bgd_auth_no_active": {
     "message": "No account with active authority."
@@ -1323,7 +1333,7 @@
     "description": "On savings menu"
   },
   "popup_html_withdraw_success": {
-    "message": "Successfully started a $1  withdrawal from savings",
+    "message": "Successfully started a $1 withdrawal from savings",
     "description": "On savings menu"
   },
   "popup_html_withdraw_fail": {
@@ -1415,23 +1425,23 @@
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_unvote_successful": {
-    "message": "Unvote successful!",
+    "message": "You successfully removed your vote!",
     "description": "When user doesnt vote for proposal"
   },
   "popup_html_proposal_vote_fail": {
-    "message": "There was an error while voting for proposal. Try again later",
+    "message": "There was an error while voting for a proposal!",
     "description": "Error while voting for proposal"
   },
   "popup_html_proposal_unvote_fail": {
-    "message": "There was an error while unvoting the proposal. Try again later",
+    "message": "There was an error while removing a proposal vote!",
     "description": "Error while voting for proposal"
   },
   "popup_html_advanced_settings": {
-    "message": "Advanced",
+    "message": "Advanced settings",
     "description": "Advanced settings sub menu"
   },
   "popup_html_rpc_node_text": {
-    "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.<br/><br/>Use 'DEFAULT' RPC to let Hive Keychain choose the best RPC node at a given time.",
+    "message": "You can choose which RPC node is used to read information and broadcast transactions from/to the Hive Blockchain.",
     "description": "Text on rpc node settings page"
   },
   "popup_html_rpc_missing_fields": {
@@ -1619,6 +1629,10 @@
     "message": "A proxy is currently set, please clear the proxy before voting for a witness",
     "description": "Governance"
   },
+  "html_popup_proposal_vote_error_proxy": {
+    "message": "A proxy is currently set, please clear the proxy before voting for a proposal",
+    "description": "Governance"
+  },
   "html_popup_currently_using_proxy": {
     "message": "You are currently using @$1 as a proxy. His/her votes are displayed.",
     "description": "Governance"
@@ -1643,6 +1657,10 @@
     "message": "Clear proxy",
     "description": "Governance"
   },
+  "html_popup_set_as_proxy_error": {
+    "message": "Error while setting user as proxy",
+    "description": "Proxy"
+  },
   "html_popup_clear_proxy_error": {
     "message": "Error while removing proxy",
     "description": "Clear proxy error"
@@ -1660,15 +1678,15 @@
     "description": "General"
   },
   "html_popup_import_settings_successful": {
-    "message": "Import settings successful",
+    "message": "Successfully imported settings",
     "description": "Import settings success message"
   },
   "html_popup_import_settings_error": {
-    "message": "Import settings failed",
+    "message": "Failed to import settings",
     "description": "Import settings failed message"
   },
   "html_popup_link_to_witness_website": {
-    "message": "For more information, click here to access witness database",
+    "message": "For more information, click here to access the witness database",
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
@@ -1920,7 +1938,11 @@
     "description": "Wallet information deposit savings to another account"
   },
   "popup_html_wallet_info_withdraw_savings": {
-    "message": "Withdrawn $1 from savings",
+    "message": "Started a $1 withdrawal from savings",
+    "description": "Wallet information withdraw from savings"
+  },
+  "popup_html_wallet_info_fill_withdraw_savings": {
+    "message": "Successfully withdrawn $1 from savings",
     "description": "Wallet information withdraw from savings"
   },
   "popup_html_wallet_info_power_down": {
@@ -1954,6 +1976,15 @@
   "popup_html_wallet_info_fill_collateralized_convert_request": {
     "message": "Filled conversion: $1 => $2",
     "description": "Wallet information receive conversion"
+  },
+  "popup_html_wallet_info_create_claimed_account": {
+    "message": "Claimed account @$1",
+    "description": "Wallet information created claimed account"
+  },
+
+  "popup_html_wallet_info_account_create": {
+    "message": "Paid $1 to create @$2",
+    "description": "Wallet information create account"
   },
 
   "popup_html_filter_in": {
@@ -2277,7 +2308,7 @@
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_issue": {
-    "message": "Issued $1",
+    "message": "Received $1",
     "description": "Token wallet information start canceling delegation out"
   },
   "popup_html_token_wallet_info_pegged_buy": {
@@ -2291,5 +2322,334 @@
   "popup_html_token_unstake_cooldown_disclaimer": {
     "message": "Unstaking this token will take $1 day(s).",
     "description": "Token wallet information start canceling delegation out"
+  },
+  "popup_html_enable_autoclaim_savings": {
+    "message": "Claim savings interest",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_enable_autoclaim_savings_info": {
+    "message": "To claim your savings interest, Keychain will deposit or withdraw 0.001 HBD to/from your savings every 30 days",
+    "description": "When on automated tasks page"
+  },
+  "html_popup_new_account_history": {
+    "message": "New account history API",
+    "description": "Tokens setting page =>  add account history api"
+  },
+  "html_popup_new_rpc": {
+    "message": "New RPC node",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_new_rpc_save_success": {
+    "message": "New RPC node was saved successfully",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_url_not_valid": {
+    "message": "Url not valid",
+    "description": "Tokens setting page"
+  },
+  "html_popup_new_account_history_save_success": {
+    "message": "New account history API was saved successfully",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "html_popup_rpc_already_exist": {
+    "message": "This RPC is already in your list",
+    "description": "Tokens setting page =>  add rpc node"
+  },
+  "popup_html_transfer_recurrent_exchange_warning": {
+    "message": "Most exchanges do not accept recurrent transfers. If you proceed, your funds may be lost.",
+    "description": "Warning message during transfer if recurrent transfer and receiver is exchange"
+  },
+  "popup_html_transfer_recurrent_missing_field": {
+    "message": "Iteration and frequency are mandatory",
+    "description": "Error message during transfer if missing iteration and/or frequency and recucrent"
+  },
+  "popup_html_whats_new": {
+    "message": "What's new in v$1",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_next": {
+    "message": "Next",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_previous": {
+    "message": "Previous",
+    "description": "What's new popup title"
+  },
+  "popup_html_whats_new_got_it": {
+    "message": "Got it!",
+    "description": "What's new popup button"
+  },
+  "html_popup_tokens_timeout": {
+    "message": "This node is not replying. Please go to token settings and change the Hive Engine RPC node",
+    "description": "Token timeout error"
+  },
+  "popup_html_create_account_buy_account": {
+    "message": "Buy account",
+    "description": "Create account => Buy account"
+  },
+  "popup_html_create_account_with_claim_tokens": {
+    "message": "Use claimed tokens",
+    "description": "Create account => Buy account"
+  },
+  "popup_html_create_account": {
+    "message": "Create account",
+    "description": "Create account"
+  },
+  "popup_html_master_password": {
+    "message": "Master password",
+    "description": "General"
+  },
+  "html_popup_create_account_username_too_short": {
+    "message": "Username is too short. Needs minimum 4 characters",
+    "description": "General"
+  },
+  "html_popup_create_account_username_already_used": {
+    "message": "Username is already used. Please pick a new one",
+    "description": "General"
+  },
+  "html_popup_create_account_account_name_not_valid": {
+    "message": "Account name is not valid",
+    "description": "General"
+  },
+  "html_popup_create_account_safely_copied_keys": {
+    "message": "I have safely copied my keys and saved them outside of Keychain",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_create_account_storage_understanding": {
+    "message": "I understand that Keychain should not be considered as the primary place of storage for my keys",
+    "description": "checkbox content on create account page"
+  },
+  "html_popup_copy": {
+    "message": "Copy",
+    "description": "General"
+  },
+  "html_popup_create": {
+    "message": "Create",
+    "description": "General"
+  },
+  "html_popup_price": {
+    "message": "Price",
+    "description": "General"
+  },
+  "html_popup_next": {
+    "message": "Next",
+    "description": "General"
+  },
+  "html_popup_ticket": {
+    "message": "$1 account creation ticket",
+    "description": "claim account ticket (one word)"
+  },
+  "html_popup_account_creation_not_enough_found": {
+    "message": "You don't have enough HIVE to buy an account",
+    "description": "claim account ticket (one word)"
+  },
+  "html_popup_create_account_buy_method_message": {
+    "message": "I agree to pay $1 HIVE with account @$2 to create this account",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_claim_account_method_message": {
+    "message": "I agree to use one account creation ticket from @$1 to create this account",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_need_accept_terms_condition": {
+    "message": "You need to accept the terms and condition before creating account",
+    "description": "Create account payment message"
+  },
+  "html_popup_create_account_successful": {
+    "message": "Your account has been successfully created and added to your Keychain",
+    "description": "Create account successful message"
+  },
+  "html_popup_creating_account": {
+    "message": "Creating account",
+    "description": "Creating account message"
+  },
+  "html_popup_create_account_failed": {
+    "message": "Your account creation has failed. Please try again later",
+    "description": "Create account failed message"
+  },
+  "html_popup_read_more": {
+    "message": "Read more",
+    "description": "read more"
+  },
+  "popup_html_total_pending_undelegate": {
+    "message": "Pending undelegations",
+    "description": "Total pending undelegate"
+  },
+  "popup_html_pending_undelegation": {
+    "message": "Pending outgoing undelegations",
+    "description": "Pending undelegate"
+  },
+  "popup_html_undelegation_pending_until_message": {
+    "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
+    "description": "Delegation list item pending until date"
+  },
+  "html_popup_governance_renewal_title": {
+    "message": "Governance renewal",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renewal_introduction": {
+    "message": "Your governance votes are about to expire for the following accounts.<br/>If you want to keep them active, click on the renew button. To cancel the expiry, we will help you vote/unvote the return proposal. If you would rather review your votes manually, uncheck the checkbox to ignore.",
+    "description": "Governance expiration renewal popup"
+  },
+  "html_popup_governance_renew": {
+    "message": "Renew",
+    "description": "Governance expiration renew"
+  },
+  "html_popup_governance_ignore": {
+    "message": "Ignore",
+    "description": "Governance expiration ignore"
+  },
+  "html_popup_governance_expiration_read_more": {
+    "message": "Read more about governance expiration",
+    "description": "Governance expiration description"
+  },
+  "html_popup_governance_renewing": {
+    "message": "Renewing",
+    "description": "Governance expiration description"
+  },
+  "popup_html_transfer_to_saving_to_exchange_error": {
+    "message": "You are trying to transfer to the savings of an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
+    "description": "Transfer to savings of exchange platform warning message"
+  },
+  "popup_html_transfer_from_saving_to_exchange_error": {
+    "message": "You are trying to withdraw from your savings to an exchange. They might not be able to retrieve your transfer. Please use a regular transfer",
+    "description": "Transfer from savings to an exchange platform warning message"
+  },
+  "popup_html_buy": {
+    "message": "Buy",
+    "description": "Main page buy button"
+  },
+  "html_popup_transak_description": {
+    "message": "Transak helps you buy HIVE using fiat. It supports credit cards, bank transfers, Apple Pay and MobiKwik in more than 100 countries (options vary per country). You will receive your HIVE directly in your Hive Keychain wallet.",
+    "description": "Buy coin, transak description"
+  },
+  "html_popup_blocktrades_description": {
+    "message": "With Blocktrades, quickly swap between other major cryptocurrencies and HIVE/HBD.",
+    "description": "Buy coin, blocktrades description"
+  },
+  "html_popup_exchanges": {
+    "message": "Exchanges",
+    "description": "Buy coin exchanges"
+  },
+  "popup_html_pending": {
+    "message": "Pending",
+    "description": "Global"
+  },
+  "popup_html_pending_currency": {
+    "message": "Pending $1",
+    "description": "Global"
+  },
+  "popup_html_pending_currency_timestamp": {
+    "message": "This conversion will be filled on $1 at $2",
+    "description": "Global"
+  },
+  "popup_html_pending_conversions": {
+    "message": "You have $1 pending $2 conversion(s)",
+    "description": "Global"
+  },
+  "popup_html_analytics": {
+    "message": "Analytics",
+    "description": "Analytics menu item"
+  },
+  "popup_html_analytics_allow_ga": {
+    "message": "Collect Usage Data",
+    "description": "Allow google analytics checkbox label"
+  },
+  "popup_html_analytics_allow_ga_hint": {
+    "message": "Allow us to record your activity on Google Analytics to help us improve the user experience on Hive Keychain",
+    "description": "Allow google analytics hint"
+  },
+  "popup_html_analytics_save": {
+    "message": "Save",
+    "description": "accept button on analytics popup"
+  },
+  "popup_html_analytics_accept_to_share": {
+    "message": "I agree to share usage data with Keychain",
+    "description": "accept on analytics popup"
+  },
+  "popup_html_analytics_thank_you": {
+    "message": "Thank you for your help",
+    "description": "Thank you for your help"
+  },
+  "popup_html_analytics_title": {
+    "message": "Help us improve Keychain",
+    "description": "Analytics popup title"
+  },
+  "popup_html_analytics_message": {
+    "message": "Enable Keychain to gather anonymous non-sensitive data on the extension usage. This data will be used to enhance your user experience. You can opt out at any time from the 'Advanced Settings' section.",
+    "description": "Analytics popup message"
+  },
+  "popup_html_analytics_privacy_policy_text": {
+    "message": "By continuing, you are accepting our",
+    "description": "Followed by 'Privacy Policy'"
+  },
+  "popup_html_analytics_privacy_policy": {
+    "message": "Privacy Policy",
+    "description": "By continuing, your are accepting our [...]"
+  },
+  "popup_html_delegate_rc": {
+    "message": "RC Delegations"
+  },
+  "popup_html_rc_delegations_text": {
+    "message": "You may delegate your Resource Credit (RC) to another user. Click on the Outgoing amount to review or make changes.",
+    "description": "Main page > Delegate RC"
+  },
+  "popup_html_username_missing": {
+    "message": "Username is missing",
+    "description": "In any form, when username is missing"
+  },
+  "html_popup_delegate_rc_operation": {
+    "message": "Delegating RC",
+    "description": "delegate rc operation"
+  },
+  "html_popup_cancel_delegate_rc_operation": {
+    "message": "Canceling RC delegation",
+    "description": "cancel delegate rc operation"
+  },
+  "popup_html_rc_delegation_confirm_text": {
+    "message": "Please confirm your RC delegation.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_confirm_text": {
+    "message": "Please confirm your want to cancel your RC delegation.",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_title": {
+    "message": "RC Delegation",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_title": {
+    "message": "Cancel RC Delegation",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_successful": {
+    "message": "You successfully delegated RC to $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_successful": {
+    "message": "You successfully canceled your delegation to $1",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_cancel_rc_delegation_failed": {
+    "message": "Your cancel delegation operation has failed",
+    "description": "On RC delegation confirmation page"
+  },
+  "popup_html_rc_delegation_to": {
+    "message": "To"
+  },
+  "popup_html_rc_delegation_value": {
+    "message": "Value"
+  },
+  "popup_html_rc_delegation_failed": {
+    "message": "Rc Delegation failed",
+    "description": "RC delegation failed"
+  },
+  "popup_html_survey_no_thanks": {
+    "message": "No thanks",
+    "description": "No thanks button on survey popup"
+  },
+  "popup_html_survey_help_us": {
+    "message": "Let's go!",
+    "description": "Help us button on survey popup"
   }
 }

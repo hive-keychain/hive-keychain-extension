@@ -1,20 +1,29 @@
-import { hsc } from '@api/hiveEngine';
+import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import React, { useEffect, useState } from 'react';
+import Config from 'src/config';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import SSC from 'sscjs';
 
 type Props = {
   amount: number;
   currency: string;
   username: string;
+  hiveEngineConfig: HiveEngineConfig;
 };
 
-const RequestTokenBalance = ({ username, amount, currency }: Props) => {
+const RequestTokenBalance = ({
+  username,
+  amount,
+  currency,
+  hiveEngineConfig,
+}: Props) => {
   const [balance, setBalance] = useState('');
   const [newBalance, setNewBalance] = useState('');
+  const config = hiveEngineConfig ? hiveEngineConfig : Config.hiveEngine;
   useEffect(() => {
-    hsc
+    new SSC(config.rpc)
       .find('tokens', 'balances', {
-        username,
+        account: username,
       })
       .then((tokens: any) => {
         const token = tokens.find((e: any) => e.symbol === currency);
@@ -24,6 +33,7 @@ const RequestTokenBalance = ({ username, amount, currency }: Props) => {
         setNewBalance(`${newBal} ${currency}`);
       });
   }, [username]);
+
   return (
     <RequestItem
       title="dialog_balance"

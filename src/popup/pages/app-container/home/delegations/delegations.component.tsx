@@ -2,6 +2,7 @@ import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   loadDelegatees,
   loadDelegators,
+  loadPendingOutgoingUndelegations,
 } from '@popup/actions/delegations.actions';
 import {
   addToLoadingList,
@@ -50,6 +51,7 @@ const Delegations = ({
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadPendingOutgoingUndelegations,
 }: PropsFromRedux) => {
   const [username, setUsername] = useState<string>(
     formParams.username ? formParams.username : '',
@@ -61,6 +63,10 @@ const Delegations = ({
 
   const [totalIncoming, setTotalIncoming] = useState<string | number>('...');
   const [totalOutgoing, setTotalOutgoing] = useState<string | number>('...');
+  const [
+    totalPendingOutgoingUndelegation,
+    setTotalPendingOutgoingUndelegation,
+  ] = useState<string | number>('...');
 
   const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
     useState([]);
@@ -68,17 +74,18 @@ const Delegations = ({
   const [incomingError, setIncomingError] = useState<string | null>(null);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo = await LocalStorageUtils.getValueFromLocalStorage(
+    const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
     setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
     );
   };
 
   useEffect(() => {
     loadDelegators(activeAccount.name!);
     loadDelegatees(activeAccount.name!);
+    loadPendingOutgoingUndelegations(activeAccount.name!);
     setAvailable(0);
     loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
@@ -88,12 +95,30 @@ const Delegations = ({
   }, []);
 
   useEffect(() => {
-    if (delegations.incoming) {
-      const totalIncomingVests = delegations.incoming.reduce((prev, cur) => {
-        return (
-          prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+    if (delegations.pendingOutgoingUndelegation) {
+      const totalPendingOutgoingUndelegationVests =
+        delegations.pendingOutgoingUndelegation.reduce(
+          (prev: any, cur: any) => {
+            return prev + cur.vesting_shares;
+          },
+          0,
         );
-      }, 0);
+      setTotalPendingOutgoingUndelegation(
+        FormatUtils.toHP(
+          totalPendingOutgoingUndelegationVests,
+          globalProperties,
+        ),
+      );
+    }
+    if (delegations.incoming) {
+      const totalIncomingVests = delegations.incoming.reduce(
+        (prev: any, cur: any) => {
+          return (
+            prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+          );
+        },
+        0,
+      );
       setTotalIncoming(
         FormatUtils.toHP(totalIncomingVests.toString(), globalProperties),
       );
@@ -101,11 +126,21 @@ const Delegations = ({
       setIncomingError('popup_html_error_retrieving_incoming_delegations');
     }
     if (delegations.outgoing) {
-      const totalOutgoingVests = delegations.outgoing.reduce((prev, cur) => {
-        return (
-          prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
-        );
-      }, 0);
+      let totalOutgoingVests = delegations.outgoing.reduce(
+        (prev: any, cur: any) => {
+          return (
+            prev + Number(cur.vesting_shares.toString().replace(' VESTS', ''))
+          );
+        },
+        0,
+      );
+
+      totalOutgoingVests += delegations.pendingOutgoingUndelegation.reduce(
+        (prev: any, cur: any) => {
+          return prev + cur.vesting_shares;
+        },
+        0,
+      );
 
       setTotalOutgoing(
         FormatUtils.toHP(totalOutgoingVests.toString(), globalProperties),
@@ -133,6 +168,8 @@ const Delegations = ({
   const goToOutgoing = () => {
     navigateToWithParams(Screen.INCOMING_OUTGOING_PAGE, {
       delegationType: DelegationType.OUTGOING,
+      totalPendingOutgoingUndelegation: totalPendingOutgoingUndelegation,
+      available: available,
     });
   };
 
@@ -174,7 +211,7 @@ const Delegations = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage('popup_html_delegation_successful');
         } else {
           setErrorMessage('popup_html_delegation_fail');
@@ -206,7 +243,7 @@ const Delegations = ({
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(username, activeAccount);
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage('popup_html_cancel_delegation_successful');
         } else {
           setErrorMessage('popup_html_cancel_delegation_fail');
@@ -223,13 +260,16 @@ const Delegations = ({
   };
 
   return (
-    <div className="delegations-page">
+    <div className="delegations-page" aria-label="delegations-page">
       <div className="text">
         {chrome.i18n.getMessage('popup_html_delegations_text')}
       </div>
 
-      <div className="delegations-summary">
-        <div className="total-incoming" onClick={goToIncomings}>
+      <div className="delegations-summary" aria-label="delegations-summary">
+        <div
+          className="total-incoming"
+          onClick={goToIncomings}
+          aria-label="total-incoming">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_incoming')}
           </div>
@@ -250,7 +290,10 @@ const Delegations = ({
             </span>
           </div>
         </div>
-        <div className="total-outgoing" onClick={goToOutgoing}>
+        <div
+          className="total-outgoing"
+          onClick={goToOutgoing}
+          aria-label="total-outgoing">
           <div className="label">
             {chrome.i18n.getMessage('popup_html_total_outgoing')}
           </div>
@@ -270,30 +313,35 @@ const Delegations = ({
         </div>
       </div>
 
-      <InputComponent
-        value={username}
-        onChange={setUsername}
-        logo={Icons.AT}
-        placeholder="popup_html_username"
-        type={InputType.TEXT}
-        autocompleteValues={autocompleteTransferUsernames}
-      />
+      <div className="form-container">
+        <InputComponent
+          ariaLabel="input-username"
+          value={username}
+          onChange={setUsername}
+          logo={Icons.AT}
+          placeholder="popup_html_username"
+          type={InputType.TEXT}
+          autocompleteValues={autocompleteTransferUsernames}
+        />
 
-      <div className="amount-panel">
-        <div className="amount-input-panel">
-          <InputComponent
-            type={InputType.NUMBER}
-            placeholder="0.000"
-            skipPlaceholderTranslation={true}
-            value={value}
-            onChange={setValue}
-            onSetToMaxClicked={setToMax}
-          />
+        <div className="amount-panel">
+          <div className="amount-input-panel">
+            <InputComponent
+              ariaLabel="amount-input"
+              type={InputType.NUMBER}
+              placeholder="0.000"
+              skipPlaceholderTranslation={true}
+              value={value}
+              onChange={setValue}
+              onSetToMaxClicked={setToMax}
+            />
+          </div>
+          <div className="currency">{currencyLabels.hp}</div>
         </div>
-        <div className="currency">{currencyLabels.hp}</div>
       </div>
 
       <OperationButtonComponent
+        ariaLabel="delegate-operation-submit-button"
         label={'popup_html_delegate_to_user'}
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
@@ -325,6 +373,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
   setTitleContainerProperties,
+  loadPendingOutgoingUndelegations,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

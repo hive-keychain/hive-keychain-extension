@@ -50,7 +50,14 @@ const SignBuffer = (props: Props) => {
       {...props}
       {...anonymousProps}>
       {renderUsername()}
-      <RequestItem title="dialog_message" content={data.message} />
+      <RequestItem
+        title="dialog_message"
+        content={
+          data.message.length > 500
+            ? data.message.substring(0, 500) + ' ...'
+            : data.message
+        }
+      />
     </Operation>
   );
 };

@@ -13,7 +13,7 @@ export const broadcastSendToken = async (
   const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
   try {
-    const id = Config.hiveEngine.MAINNET;
+    const id = Config.hiveEngine.mainnet;
     const json = JSON.stringify({
       contractName: 'tokens',
       contractAction: 'transfer',
@@ -24,7 +24,7 @@ export const broadcastSendToken = async (
         memo: data.memo,
       },
     });
-    return client.broadcast.json(
+    result = await client.broadcast.json(
       { required_posting_auths: [], required_auths: [data.username], id, json },
       PrivateKey.from(key!),
     );

@@ -12,6 +12,7 @@ interface ResourceItemProps {
   value: string;
   tooltipText: string;
   secondaryValue?: string;
+  ariaLabel?: string;
 }
 
 const ResourceItem = ({
@@ -20,10 +21,14 @@ const ResourceItem = ({
   value,
   tooltipText,
   secondaryValue,
+  ariaLabel,
 }: PropsType) => {
   return (
-    <CustomTooltip message={tooltipText} skipTranslation>
-      <div className="resource-item">
+    <CustomTooltip
+      ariaLabel={`custom-tool-tip-${label}`}
+      message={tooltipText}
+      skipTranslation>
+      <div aria-label={ariaLabel} className="resource-item">
         <Icon
           name={icon}
           type={IconType.STROKED}

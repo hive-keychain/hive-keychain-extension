@@ -1,9 +1,11 @@
 import { ActiveAccountReducer } from '@popup/reducers/active-account.reducer';
 import { ActiveRpcReducer } from '@popup/reducers/active-rpc.reducer';
+import { AppStatusReducer } from '@popup/reducers/app-status.reducer';
 import ConversionsReducer from '@popup/reducers/conversion.reducer';
 import CurrencyPricesReducer from '@popup/reducers/currency-prices.reducer';
 import DelegationsReducer from '@popup/reducers/delegation.reducer';
 import GlobalPropertiesReducer from '@popup/reducers/global-properties.reducer';
+import HiveEngineConfigReducer from '@popup/reducers/hive-engine-config.reducer';
 import { LoadingReducer } from '@popup/reducers/loading.reducer';
 import { PhishingReducer } from '@popup/reducers/phishing.reducer';
 import { TitleContainerReducer } from '@popup/reducers/title-container.reducer';
@@ -37,4 +39,6 @@ export default combineReducers({
   tokenMarket: TokenMarketReducer,
   loading: LoadingReducer,
   titleContainer: TitleContainerReducer,
+  hiveEngineConfig: HiveEngineConfigReducer,
+  appStatus: AppStatusReducer,
 });

@@ -27,7 +27,7 @@ const SelectAccountSection = ({
         return { label: account.name, value: account.name };
       }),
     );
-    setSelectedLocalAccount(activeAccount.name);
+    setSelectedLocalAccount(activeAccount.name!);
   }, [accounts, activeAccount]);
 
   const [options, setOptions] = useState(defaultOptions);
@@ -39,7 +39,7 @@ const SelectAccountSection = ({
     const itemClicked = accounts.find(
       (account: LocalAccount) => account.name === accountName,
     );
-    loadActiveAccount(itemClicked);
+    loadActiveAccount(itemClicked!);
   };
 
   const customLabelRender = (
@@ -58,7 +58,11 @@ const SelectAccountSection = ({
             e.target.src = '/assets/images/accounts.png';
           }}
         />
-        <div className="selected-account-name">{selectedLocalAccount}</div>
+        <div
+          className="selected-account-name"
+          aria-label="selected-account-name">
+          {selectedLocalAccount}
+        </div>
       </div>
     );
   };
@@ -67,6 +71,7 @@ const SelectAccountSection = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.value}`}
         className={`select-account-item ${
           selectedLocalAccount === selectProps.item.value ? 'selected' : ''
         }`}
@@ -90,7 +95,6 @@ const SelectAccountSection = ({
             copyUsernameToClipboard($event, selectProps.item.label);
             selectProps.methods.dropDown('close');
           }}
-          tooltipMessage="popup_html_copy_username_tooltip_text"
         />
       </div>
     );
@@ -110,7 +114,7 @@ const SelectAccountSection = ({
       {selectedLocalAccount && options && (
         <div className="select-account-section">
           <Select
-            values={[selectedLocalAccount]}
+            values={[selectedLocalAccount as any]}
             options={options}
             onChange={() => undefined}
             contentRenderer={customLabelRender}

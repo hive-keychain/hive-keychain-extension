@@ -5,6 +5,7 @@ import { ImportKeysComponent } from '@popup/pages/add-account/import-keys/import
 import { SelectKeysComponent } from '@popup/pages/add-account/select-keys/select-keys.component';
 import { BuyCoinsComponent } from '@popup/pages/app-container/home/buy-coins/buy-coins.component';
 import { ConversionComponent } from '@popup/pages/app-container/home/conversion/conversion.component';
+import { PendingConersionPageComponent } from '@popup/pages/app-container/home/conversion/pending-conversion/pending-conversion.component';
 import { DelegationsComponent } from '@popup/pages/app-container/home/delegations/delegations.component';
 import { IncomingOutgoingPageComponent } from '@popup/pages/app-container/home/delegations/incoming-outgoing-page/incoming-outgoing-page.component';
 import { GovernanceComponent } from '@popup/pages/app-container/home/governance/governance.component';
@@ -12,9 +13,12 @@ import { HomeComponent } from '@popup/pages/app-container/home/home.component';
 import { PluginDetailsPageComponent } from '@popup/pages/app-container/home/plugin/plugins/plugin-details-page/plugin-details-page.component';
 import { PluginsComponent } from '@popup/pages/app-container/home/plugin/plugins/plugins.component';
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
+import { IncomingOutgoingRcPageComponent } from '@popup/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-page.component';
+import { RcDelegationsComponent } from '@popup/pages/app-container/home/rc-delegations/rc-delegations.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
+import { TokensFilterComponent } from '@popup/pages/app-container/home/tokens/tokens-filter/tokens-filter.component';
 import { TokensHistoryComponent } from '@popup/pages/app-container/home/tokens/tokens-history/tokens-history.component';
 import { TokensSettingsComponent } from '@popup/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
 import { TokensTransferComponent } from '@popup/pages/app-container/home/tokens/tokens-transfer/tokens-transfer.component';
@@ -23,9 +27,12 @@ import { TransferFundsComponent } from '@popup/pages/app-container/home/transfer
 import { WalletHistoryComponent } from '@popup/pages/app-container/home/wallet-history/wallet-history.component';
 import { AboutPageComponent } from '@popup/pages/app-container/settings/about/about.component';
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
+import { CreateAccountStepOneComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-one/create-account-step-one.component';
+import { CreateAccountStepTwoComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-two/create-account-step-two.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from '@popup/pages/app-container/settings/advanced-settings/advanced-settings.component';
+import { AnalyticsComponent } from '@popup/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { AutoLockComponent } from '@popup/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
@@ -69,6 +76,8 @@ const AppRouter = ({
         return <ConfirmationPageComponent />;
       case Screen.CONVERSION_PAGE:
         return <ConversionComponent />;
+      case Screen.PENDING_CONVERSION_PAGE:
+        return <PendingConersionPageComponent />;
       case Screen.SAVINGS_PAGE:
         return <SavingsPageComponent />;
       case Screen.DELEGATION_PAGE:
@@ -80,6 +89,10 @@ const AppRouter = ({
         return <PluginsComponent />;
       case Screen.PLUGIN_DETAILS_PAGE:
         return <PluginDetailsPageComponent />;
+      case Screen.RC_DELEGATIONS_PAGE:
+        return <RcDelegationsComponent />;
+      case Screen.RC_DELEGATIONS_INCOMING_OUTGOING_PAGE:
+        return <IncomingOutgoingRcPageComponent />;
       //Tokens
       case Screen.TOKENS_PAGE:
         return <TokensComponent />;
@@ -93,6 +106,8 @@ const AppRouter = ({
         return <TokensOperationComponent />;
       case Screen.TOKENS_DELEGATIONS:
         return <TokenIncomingOutgoingPageComponent />;
+      case Screen.TOKENS_FILTER:
+        return <TokensFilterComponent />;
 
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
@@ -137,6 +152,12 @@ const AppRouter = ({
         return <AutomatedTasksComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
+      case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:
+        return <CreateAccountStepOneComponent />;
+      case Screen.CREATE_ACCOUNT_PAGE_STEP_TWO:
+        return <CreateAccountStepTwoComponent />;
+      case Screen.SETTINGS_ANALYTICS:
+        return <AnalyticsComponent />;
     }
   };
 

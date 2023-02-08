@@ -23,6 +23,8 @@ interface InputProps {
   onSetToMaxClicked?(): any;
   required?: boolean;
   hasError?: boolean;
+  ariaLabel?: string;
+  disabled?: boolean;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -32,6 +34,14 @@ const InputComponent = (props: InputProps) => {
 
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return function cleanup() {
+      setMounted(false);
+    };
+  });
 
   useEffect(() => {
     if (props.autocompleteValues) {
@@ -44,7 +54,9 @@ const InputComponent = (props: InputProps) => {
   }, [props.value, props.autocompleteValues]);
 
   const handleOnBlur = () => {
-    setTimeout(() => setIsFocused(false), 200);
+    if (mounted) {
+      setTimeout(() => setIsFocused(false), 200);
+    }
   };
   const handleOnFocus = () => {
     setIsFocused(true);
@@ -65,7 +77,10 @@ const InputComponent = (props: InputProps) => {
           props.type === InputType.PASSWORD ? 'password-type' : ''
         } ${isFocused ? 'focused' : ''} `}>
         <input
-          className={`${props.hasError ? 'has-error' : ''}`}
+          aria-label={props.ariaLabel}
+          className={`${props.hasError ? 'has-error' : ''} ${
+            props.onSetToMaxClicked ? 'has-max-button' : ''
+          }`}
           type={
             props.type === InputType.PASSWORD && isPasswordDisplay
               ? InputType.TEXT
@@ -107,6 +122,7 @@ const InputComponent = (props: InputProps) => {
           !props.onSetToMaxClicked &&
           props.value.length > 0 && (
             <Icon
+              ariaLabel="input-clear"
               onClick={() => props.onChange('')}
               name={Icons.CLEAR}
               type={IconType.OUTLINED}
@@ -138,7 +154,10 @@ const InputComponent = (props: InputProps) => {
             additionalClassName="input-img"></Icon>
         )}
         {props.onSetToMaxClicked && (
-          <span className="set-to-max-button" onClick={props.onSetToMaxClicked}>
+          <span
+            aria-label="set-to-max-button"
+            className="set-to-max-button"
+            onClick={props.onSetToMaxClicked}>
             {chrome.i18n.getMessage('popup_html_send_max')}
           </span>
         )}

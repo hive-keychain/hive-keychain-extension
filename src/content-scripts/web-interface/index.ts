@@ -6,6 +6,7 @@ import {
   cancelPreviousRequest,
   sendIncompleteDataResponse,
   sendRequestToBackground,
+  sendResponse,
 } from 'src/content-scripts/web-interface/response.logic';
 import { WebInterfaceUtils } from 'src/content-scripts/web-interface/web-interface.utils';
 import { KeychainRequest } from 'src/interfaces/keychain.interface';
@@ -26,22 +27,8 @@ document.addEventListener('swHandshake_hive', () => {
   );
 });
 
-// Answering the requests
-
-const requestHandler = (
-  message: any,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void,
-) => {
-  console.log(message, sender);
-  if (message.command === DialogCommand.ANSWER_REQUEST) {
-    sendResponse(message.msg);
-    req = null;
-  }
-};
-
 document.addEventListener('swRequest_hive', (request: object) => {
-  console.log(request);
+  //console.log(request);
   const prevReq = req;
   req = (request as KeychainRequestWrapper).detail;
   const { error, value } = KeychainRequestsUtils.validateRequest(req);
@@ -57,4 +44,10 @@ document.addEventListener('swRequest_hive', (request: object) => {
 });
 
 // Get notification from the background upon request completion and pass it back to the dApp.
-chrome.runtime.onMessage.addListener(requestHandler);
+chrome.runtime.onMessage.addListener(function (obj, sender) {
+  if (obj.command === DialogCommand.ANSWER_REQUEST) {
+    //console.log('response', obj.msg);
+    sendResponse(obj.msg);
+    req = null;
+  }
+});

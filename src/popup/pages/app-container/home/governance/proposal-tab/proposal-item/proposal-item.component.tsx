@@ -1,3 +1,4 @@
+import { Proposal } from '@interfaces/proposal.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -7,15 +8,15 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
-import { Proposal } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { RootState } from '@popup/store';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import FormatUtils from 'src/utils/format.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import './proposal-item.component.scss';
 
 interface ProposalItemProps {
@@ -33,6 +34,16 @@ const ProposalItem = ({
   onVoteUnvoteSuccessful,
 }: PropsFromRedux) => {
   const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
+  const [usingProxy, setUsingProxy] = useState(false);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
+    setUsingProxy(proxy !== null);
+  };
 
   const goTo = (link: Proposal['link']) => {
     chrome.tabs.create({ url: link });
@@ -62,7 +73,7 @@ const ProposalItem = ({
         setSuccessMessage('popup_html_proposal_vote_successful');
         onVoteUnvoteSuccessful();
       } else {
-        setErrorMessage('popup_html_proposal_vote_successful');
+        setErrorMessage('popup_html_proposal_vote_fail');
       }
       removeFromLoadingList('popup_html_voting_for_proposal');
     }
@@ -70,16 +81,20 @@ const ProposalItem = ({
 
   return (
     <div
+      aria-label={`proposal-item-expandable-${proposal.id}`}
       className={`proposal-item`}
       key={proposal.proposalId}
       onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}>
       <div className="title">
         <div>
-          <span onClick={() => goTo(proposal.link)}>
+          <span
+            aria-label="proposal-item-span-go-to-link"
+            onClick={() => goTo(proposal.link)}>
             #{proposal.id} - {proposal.subject}
           </span>
         </div>
         <Icon
+          ariaLabel="proposal-item-icon-expandable"
           name={Icons.EXPAND_MORE}
           onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
           additionalClassName={`more ${
@@ -91,6 +106,7 @@ const ProposalItem = ({
         <div className="left-panel">
           <div className="creator">
             <img
+              aria-label="proposal-item-image-go-to-creator"
               onClick={() => goToCreator(proposal.creator)}
               src={`https://images.hive.blog/u/${proposal.creator}/avatar`}
               onError={(e: any) => {
@@ -98,7 +114,9 @@ const ProposalItem = ({
                 e.target.src = '/assets/images/accounts.png';
               }}
             />
-            <span onClick={() => goToCreator(proposal.creator)}>
+            <span
+              aria-label="proposal-item-span-go-to-creator"
+              onClick={() => goToCreator(proposal.creator)}>
               {chrome.i18n.getMessage('popup_html_proposal_by', [
                 proposal.creator,
               ])}
@@ -107,10 +125,23 @@ const ProposalItem = ({
         </div>
         <div className="nb-votes">
           <Icon
+            ariaLabel="proposal-item-icon-vote-unvote"
             onClick={() => toggleSupport(proposal)}
-            additionalClassName={(proposal.voted ? 'voted' : 'not-voted') + ' '}
+            additionalClassName={
+              (proposal.voted ? 'voted' : 'not-voted') +
+              ' ' +
+              (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
+            }
             name={Icons.ARROW_CIRCLE_UP}
             type={IconType.OUTLINED}
+            tooltipPosition="left"
+            tooltipMessage={
+              !activeAccount.keys.active
+                ? 'popup_missing_key_proposal'
+                : usingProxy
+                ? 'html_popup_proposal_vote_error_proxy'
+                : undefined
+            }
           />
         </div>
       </div>
@@ -129,7 +160,9 @@ const ProposalItem = ({
             <div className="extra-info">
               <div className="value">
                 <Icon name={Icons.ARROW_CIRCLE_UP} type={IconType.OUTLINED} />
-                <div>{proposal.totalVotes}</div>
+                <div aria-label="proposal-item-extra-info-value">
+                  {proposal.totalVotes}
+                </div>
               </div>
               <div>
                 <Icon name={Icons.TIMELAPSE} type={IconType.OUTLINED} />
@@ -153,7 +186,9 @@ const ProposalItem = ({
               </div>
             </div>
           </CustomTooltip>
-          <div className={`funded-chip ${proposal.funded}`}>
+          <div
+            aria-label="proposal-item-extra-info-funded"
+            className={`funded-chip ${proposal.funded}`}>
             {chrome.i18n.getMessage(
               `popup_html_proposal_funded_option_${proposal.funded}`,
             )}

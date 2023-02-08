@@ -1,21 +1,22 @@
 import RPCModule from '@background/rpc.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import BgdHiveUtils from '@background/utils/hive.utils';
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
-import { ExtendedAccount, PrivateKey } from '@hiveio/dhive/lib/index-browser';
+import { Asset, ExtendedAccount } from '@hiveio/dhive/lib/index-browser';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import moment from 'moment';
 import Config from 'src/config';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { ObjectUtils } from 'src/utils/object.utils';
 
 const start = async () => {
   Logger.info(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
   chrome.alarms.create({ periodInMinutes: Config.claims.FREQUENCY });
-  alarmHandler();
+  await alarmHandler();
 };
 
 const alarmHandler = async () => {
@@ -24,31 +25,38 @@ const alarmHandler = async () => {
       LocalStorageKeyEnum.__MK,
       LocalStorageKeyEnum.CLAIM_ACCOUNTS,
       LocalStorageKeyEnum.CLAIM_REWARDS,
+      LocalStorageKeyEnum.CLAIM_SAVINGS,
     ],
   );
-
   const mk = localStorage[LocalStorageKeyEnum.__MK];
   const claimAccounts = localStorage[LocalStorageKeyEnum.CLAIM_ACCOUNTS];
   const claimRewards = localStorage[LocalStorageKeyEnum.CLAIM_REWARDS];
+  const claimSavings = localStorage[LocalStorageKeyEnum.CLAIM_SAVINGS];
   if (!mk) return;
   if (claimAccounts) {
-    initClaimAccounts(claimAccounts, mk);
+    await initClaimAccounts(claimAccounts, mk);
   }
   if (claimRewards) {
-    initClaimRewards(claimRewards, mk);
+    await initClaimRewards(claimRewards, mk);
+  }
+  if (claimSavings) {
+    await initClaimSavings(claimSavings, mk);
   }
 };
 
 chrome.alarms.onAlarm.addListener(alarmHandler);
 
-const initClaimRewards = (claimRewards: LocalStorageClaimItem, mk: string) => {
-  if (claimRewards) {
+const initClaimRewards = async (
+  claimRewards: LocalStorageClaimItem,
+  mk: string,
+) => {
+  if (ObjectUtils.isPureObject(claimRewards)) {
     const users = Object.keys(claimRewards).filter(
       (user) => claimRewards[user] === true,
     );
-    iterateClaimRewards(users, mk);
+    await iterateClaimRewards(users, mk);
   } else {
-    Logger.info('startClaimRewards: obj not defined');
+    Logger.error('startClaimRewards: claimRewards not defined');
   }
 };
 
@@ -80,24 +88,76 @@ const iterateClaimRewards = async (users: string[], mk: string) => {
   }
 };
 
-const initClaimAccounts = (
+const initClaimSavings = async (
+  claimSavings: { [username: string]: boolean },
+  mk: string,
+) => {
+  if (ObjectUtils.isPureObject(claimSavings)) {
+    const users = Object.keys(claimSavings).filter(
+      (username) => claimSavings[username] === true,
+    );
+    await iterateClaimSavings(users, mk);
+  } else {
+    Logger.error('startClaimSavings: claimSavings not defined');
+  }
+};
+
+const iterateClaimSavings = async (users: string[], mk: string) => {
+  const client = await RPCModule.getClient();
+  const userExtendedAccounts = await client.database.getAccounts(users);
+  const localAccounts: LocalAccount[] =
+    await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+
+  for (const userAccount of userExtendedAccounts) {
+    const activeAccount = await createActiveAccount(userAccount, localAccounts);
+    if (!activeAccount) continue;
+    let baseDate: any =
+      new Date(
+        activeAccount?.account.savings_hbd_last_interest_payment!,
+      ).getUTCFullYear() === 1970
+        ? activeAccount?.account.savings_hbd_seconds_last_update
+        : activeAccount?.account.savings_hbd_last_interest_payment;
+
+    baseDate = moment(baseDate).utcOffset('+0000', true);
+    const hasSavingsToClaim =
+      Number(activeAccount?.account.savings_hbd_seconds) > 0 ||
+      Asset.from(activeAccount?.account.savings_hbd_balance!).amount > 0;
+
+    if (!hasSavingsToClaim) {
+      Logger.info(
+        `@${activeAccount?.name} doesn't have any savings interests to claim`,
+      );
+    } else {
+      const canClaimSavings =
+        moment(moment().utc()).diff(baseDate, 'days') >=
+        Config.claims.savings.delay;
+      if (canClaimSavings) {
+        if (await BgdHiveUtils.claimSavings(activeAccount!))
+          Logger.info(`Claim savings for @${activeAccount?.name} successful`);
+      } else {
+        Logger.info(`Not time to claim yet for @${activeAccount?.name}`);
+      }
+    }
+  }
+};
+
+const initClaimAccounts = async (
   claimAccounts: { [x: string]: boolean },
   mk: string,
 ) => {
-  if (claimAccounts) {
+  if (ObjectUtils.isPureObject(claimAccounts)) {
     const users = Object.keys(claimAccounts).filter(
       (user) => claimAccounts[user] === true,
     );
-    iterateClaimAccounts(users, mk);
+    await iterateClaimAccounts(users, mk);
   } else {
-    Logger.error('startClaimAccounts: obj not defined', '');
+    Logger.error('startClaimAccounts: claimAccounts not defined');
   }
 };
 
 const iterateClaimAccounts = async (users: string[], mk: string) => {
-  const userExtendedAccounts = await (
-    await RPCModule.getClient()
-  ).database.getAccounts(users);
+  const client = await RPCModule.getClient();
+  const userExtendedAccounts = await client.database.getAccounts(users);
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
@@ -106,7 +166,7 @@ const iterateClaimAccounts = async (users: string[], mk: string) => {
       activeAccount &&
       activeAccount.rc.percentage > Config.claims.freeAccount.MIN_RC_PCT
     ) {
-      await claimAccounts(activeAccount.rc, activeAccount);
+      await BgdHiveUtils.claimAccounts(activeAccount.rc, activeAccount);
     }
   }
 };
@@ -131,45 +191,19 @@ const createActiveAccount = async (
   return activeAccount;
 };
 
-export type AccountResourceCredits = {
-  estimated_max: number;
-  estimated_pct: string;
-};
-
 const getRC = async (accountName: string) => {
-  const rcAcc = await (
-    await RPCModule.getClient()
-  ).rc.findRCAccounts([accountName]);
-  const rc = await (await RPCModule.getClient()).rc.calculateRCMana(rcAcc[0]);
-  return rc;
-};
+  const client = await RPCModule.getClient();
 
-const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
-  try {
-    const freeAccountConfig = Config.claims.freeAccount;
-    if (
-      rc.percentage / 100 > freeAccountConfig.MIN_RC_PCT &&
-      rc.max_mana > freeAccountConfig.MIN_RC
-    ) {
-      const client = await RPCModule.getClient();
-      await client.broadcast.sendOperations(
-        [
-          [
-            'claim_account',
-            {
-              creator: activeAccount.name,
-              extensions: [],
-              fee: '0.000 HIVE',
-            },
-          ],
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      );
-      Logger.info(`Claiming free account for @${activeAccount.name}`);
-    } else Logger.info('Not enough RC% to claim account');
-  } catch (err) {
-    Logger.error(err);
-  }
+  const result = await client.rc.call('find_rc_accounts', {
+    accounts: [accountName],
+  });
+
+  const mana = await client.rc.getRCMana(accountName);
+  return {
+    ...result.rc_accounts[0],
+    ...mana,
+    percentage: mana.percentage / 100.0,
+  };
 };
 
 const ClaimModule = {

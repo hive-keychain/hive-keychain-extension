@@ -4,7 +4,9 @@ import {
   ClaimRewardBalanceOperation,
   Client,
   CollateralizedConvertOperation,
+  DynamicGlobalProperties,
   ExtendedAccount,
+  Price,
   PrivateKey,
   RecurrentTransferOperation,
   TransactionConfirmation,
@@ -16,20 +18,24 @@ import {
 } from '@hiveio/dhive';
 import { sleep } from '@hiveio/dhive/lib/utils';
 import * as hive from '@hiveio/hive-js';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/actions/message.actions';
+import { ErrorMessage } from '@interfaces/errorMessage.interface';
+import { ActionPayload } from '@popup/actions/interfaces';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
-import { store } from '@popup/store';
 import Config from 'src/config';
 import { ActiveAccount } from 'src/interfaces/active-account.interface';
 import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
 import { Conversion } from 'src/interfaces/conversion.interface';
-import { Delegator } from 'src/interfaces/delegations.interface';
-import { GlobalProperties } from 'src/interfaces/global-properties.interface';
+import {
+  Delegator,
+  PendingOutgoingUndelegation,
+} from 'src/interfaces/delegations.interface';
+import {
+  GlobalProperties,
+  RewardFund,
+} from 'src/interfaces/global-properties.interface';
 import { Rpc } from 'src/interfaces/rpc.interface';
 import FormatUtils from 'src/utils/format.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
@@ -37,7 +43,8 @@ const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
 const HIVE_100_PERCENT = 10000;
 
-let client = new Client(DEFAULT_RPC);
+// let client = new Client(DEFAULT_RPC);
+let client: Client;
 
 const getClient = (): Client => {
   return client;
@@ -48,6 +55,14 @@ const setRpc = async (rpc: Rpc) => {
       ? (await KeychainApi.get('/hive/rpc')).data.rpc
       : rpc.uri,
   );
+};
+
+const getAccountPrice = async () => {
+  return Asset.fromString(
+    (
+      await getClient().database.getChainProperties()
+    ).account_creation_fee.toString(),
+  ).amount;
 };
 
 const getVP = (account: ExtendedAccount) => {
@@ -72,7 +87,7 @@ const getVP = (account: ExtendedAccount) => {
   const estimated_pct = (estimated_mana / estimated_max) * 100;
   return estimated_pct;
 };
-
+/* istanbul ignore next */
 const getEffectiveVestingSharesPerAccount = (account: ExtendedAccount) => {
   const effective_vesting_shares =
     parseFloat((account.vesting_shares as string).replace(' VESTS', '')) +
@@ -95,10 +110,10 @@ const getVotingDollarsPerAccount = (
     return null;
   }
   const vp = getVP(account)! * 100;
-  const rewardBalance = getRewardBalance(properties);
-  const recentClaims = getRecentClaims(properties);
-  const hivePrice = getHivePrice(properties);
-  const votePowerReserveRate = getVotePowerReserveRate(properties);
+  const rewardBalance = HiveUtils.getRewardBalance(properties);
+  const recentClaims = HiveUtils.getRecentClaims(properties);
+  const hivePrice = HiveUtils.getHivePrice(properties);
+  const votePowerReserveRate = HiveUtils.getVotePowerReserveRate(properties);
 
   if (rewardBalance && recentClaims && hivePrice && votePowerReserveRate) {
     const effective_vesting_shares = Math.round(
@@ -121,27 +136,28 @@ const getVotingDollarsPerAccount = (
     return;
   }
 };
+/* istanbul ignore next */
 const getRC = async (accountName: string) => {
   const rcAcc = await getClient().rc.findRCAccounts([accountName]);
   const rc = await getClient().rc.calculateRCMana(rcAcc[0]);
   return rc;
 };
-
+/* istanbul ignore next */
 const getRewardBalance = (properties: GlobalProperties) => {
   return parseFloat(properties.rewardFund!.reward_balance);
 };
-
+/* istanbul ignore next */
 const getRecentClaims = (properties: GlobalProperties) => {
   return parseInt(properties.rewardFund!.recent_claims, 10);
 };
-
+/* istanbul ignore next */
 const getHivePrice = (properties: GlobalProperties) => {
   return (
     parseFloat(properties.price!.base + '') /
     parseFloat(properties.price!.quote + '')
   );
 };
-
+/* istanbul ignore next */
 const getVotePowerReserveRate = (properties: GlobalProperties) => {
   return properties.globals!.vote_power_reserve_rate;
 };
@@ -161,7 +177,6 @@ const getTimeBeforeFull = (votingPower: number) => {
     let fullInMinutes = parseInt(
       (minutesNeeded - fullInDays * 1440 - fullInHours * 60).toString(),
     );
-
     const fullIn = [];
 
     if (fullInDays) {
@@ -189,32 +204,40 @@ const getTimeBeforeFull = (votingPower: number) => {
       );
     }
 
-    let fullInString = fullIn.join(' and ');
+    let fullInString = fullIn.join(` ${chrome.i18n.getMessage('common_and')} `);
 
     if (fullIn.length === 3) {
-      fullInString = fullInString.replace(' and', ',');
+      fullInString = fullInString.replace(
+        ` ${chrome.i18n.getMessage('common_and')} `,
+        ', ',
+      );
     }
 
     return chrome.i18n.getMessage('full_in', [fullInString]);
   }
 };
 
-export const getConversionRequests = async (name: string) => {
+export const getConversionRequests = async (
+  name: string,
+): Promise<Conversion[]> => {
   const [hbdConversions, hiveConversions] = await Promise.all([
     getClient().database.call('get_conversion_requests', [name]),
     getClient().database.call('get_collateralized_conversion_requests', [name]),
   ]);
 
   return [
-    ...hiveConversions.map((e: CollateralizedConversion) => ({
-      amount: e.collateral_amount,
-      conversion_date: e.conversion_date,
-      id: e.id,
-      owner: e.owner,
-      requestid: e.requestid,
+    ...hiveConversions.map((conv: CollateralizedConversion) => ({
+      amount: conv.collateral_amount,
+      conversion_date: conv.conversion_date,
+      id: conv.id,
+      owner: conv.owner,
+      requestid: conv.requestid,
       collaterized: true,
     })),
-    ...hbdConversions,
+    ...hbdConversions.map((conv: any) => ({
+      ...conv,
+      collaterized: false,
+    })),
   ].sort(
     (a, b) =>
       new Date(a.conversion_date).getTime() -
@@ -222,7 +245,7 @@ export const getConversionRequests = async (name: string) => {
   );
 };
 
-export const getDelegators = async (name: string) => {
+const getDelegators = async (name: string) => {
   return (
     (await KeychainApi.get(`/hive/delegators/${name}`)).data as Delegator[]
   )
@@ -230,7 +253,7 @@ export const getDelegators = async (name: string) => {
     .sort((a, b) => b.vesting_shares - a.vesting_shares);
 };
 
-export const getDelegatees = async (name: string) => {
+const getDelegatees = async (name: string) => {
   return (await getClient().database.getVestingDelegations(name, '', 1000))
     .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
     .sort(
@@ -239,15 +262,40 @@ export const getDelegatees = async (name: string) => {
     );
 };
 
+const getPendingOutgoingUndelegation = async (name: string) => {
+  return (
+    await HiveUtils.getClient().database.call(
+      'find_vesting_delegation_expirations',
+      [name],
+    )
+  ).delegations.map((pendingUndelegation: any) => {
+    return {
+      delegator: pendingUndelegation.delegator,
+      expiration_date: pendingUndelegation.expiration,
+      vesting_shares:
+        parseInt(pendingUndelegation.vesting_shares.amount) / 1000000,
+    } as PendingOutgoingUndelegation;
+  });
+};
+
 const claimRewards = async (
   activeAccount: ActiveAccount,
   rewardHive: string | Asset,
   rewardHBD: string | Asset,
   rewardVests: string | Asset,
+  globals: DynamicGlobalProperties,
+  setErrorMessage: (
+    key: string,
+    params?: string[],
+  ) => ActionPayload<ErrorMessage>,
+  setSuccessMessage: (
+    key: string,
+    params?: string[],
+  ) => ActionPayload<ErrorMessage>,
 ): Promise<boolean> => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      HiveUtils.getClient().broadcast.sendOperations(
         [
           [
             'claim_reward_balance',
@@ -266,31 +314,33 @@ const claimRewards = async (
       FormatUtils.withCommas(
         FormatUtils.toHP(
           rewardVests.toString().replace('VESTS', ''),
-          store.getState().globalProperties.globals,
+          globals,
         ).toString(),
       ) + ' HP';
-
     let claimedResources = [rewardHBD, rewardHive, rewardHp].filter(
       (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
     );
 
-    store.dispatch(
-      setSuccessMessage('popup_html_claim_success', [
-        claimedResources.join(', '),
-      ]),
-    );
+    setSuccessMessage('popup_html_claim_success', [
+      claimedResources.join(', '),
+    ]);
     return true;
   } catch (err: any) {
     Logger.error('Error while claiming rewards', err.toString());
-    store.dispatch(setErrorMessage('popup_html_claim_error'));
+    setErrorMessage('popup_html_claim_error');
     return false;
   }
 };
 
-const powerUp = async (from: string, to: string, amount: string) => {
+const powerUp = async (
+  from: string,
+  to: string,
+  amount: string,
+  activeAccount: ActiveAccount,
+) => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      HiveUtils.getClient().broadcast.sendOperations(
         [
           [
             'transfer_to_vesting',
@@ -301,9 +351,7 @@ const powerUp = async (from: string, to: string, amount: string) => {
             },
           ] as TransferToVestingOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -312,10 +360,14 @@ const powerUp = async (from: string, to: string, amount: string) => {
   }
 };
 
-const powerDown = async (username: string, amount: string) => {
+const powerDown = async (
+  username: string,
+  amount: string,
+  activeAccount: ActiveAccount,
+) => {
   try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
+    await HiveUtils.sendOperationWithConfirmation(
+      HiveUtils.getClient().broadcast.sendOperations(
         [
           [
             'withdraw_vesting',
@@ -325,9 +377,7 @@ const powerDown = async (username: string, amount: string) => {
             },
           ] as WithdrawVestingOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -344,6 +394,7 @@ const transfer = async (
   recurrent: boolean,
   iterations: number,
   frequency: number,
+  activeAccount: ActiveAccount,
 ) => {
   try {
     if (!recurrent) {
@@ -355,9 +406,7 @@ const transfer = async (
             amount: amount,
             memo: memo,
           },
-          PrivateKey.fromString(
-            store.getState().activeAccount.keys.active as string,
-          ),
+          PrivateKey.fromString(activeAccount.keys.active as string),
         ),
       );
     } else {
@@ -377,9 +426,7 @@ const transfer = async (
               },
             ] as RecurrentTransferOperation,
           ],
-          PrivateKey.fromString(
-            store.getState().activeAccount.keys.active as string,
-          ),
+          PrivateKey.fromString(activeAccount.keys.active as string),
         ),
       );
     }
@@ -389,7 +436,7 @@ const transfer = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const convertOperation = async (
   activeAccount: ActiveAccount,
   conversions: Conversion[],
@@ -410,9 +457,7 @@ const convertOperation = async (
             },
           ] as CollateralizedConvertOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -421,7 +466,7 @@ const convertOperation = async (
     return false;
   }
 };
-
+/* istanbul ignore next */
 const encodeMemo = (
   memo: string,
   privateKey: string,
@@ -429,7 +474,7 @@ const encodeMemo = (
 ) => {
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
-
+/* istanbul ignore next */
 const decodeMemo = (memo: string, privateKey: string) => {
   return hive.memo.decode(privateKey, memo);
 };
@@ -460,15 +505,18 @@ const signMessage = (message: string, privateKey: string) => {
   }
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
-
+/* istanbul ignore next */
 const deposit = async (
   activeAccount: ActiveAccount,
   amount: string,
   receiver: string,
 ) => {
-  const savings = await hive.api.getSavingsWithdrawFromAsync(
-    activeAccount.name,
+  const savings = await HiveUtils.getClient().call(
+    'condenser_api',
+    'get_savings_withdraw_from',
+    [activeAccount.name],
   );
+
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
   try {
     await sendOperationWithConfirmation(
@@ -485,9 +533,7 @@ const deposit = async (
             },
           ] as TransferToSavingsOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -495,10 +541,18 @@ const deposit = async (
     return false;
   }
 };
-const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
-  const savings = await hive.api.getSavingsWithdrawFromAsync(
-    activeAccount.name,
+/* istanbul ignore next */
+const withdraw = async (
+  activeAccount: ActiveAccount,
+  amount: string,
+  to: string,
+) => {
+  const savings = await HiveUtils.getClient().call(
+    'condenser_api',
+    'get_savings_withdraw_from',
+    [activeAccount.name],
   );
+
   const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
 
   try {
@@ -512,13 +566,11 @@ const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
               from: activeAccount.name,
               memo: '',
               request_id: requestId,
-              to: activeAccount.name,
+              to,
             },
           ] as TransferFromSavingsOperation,
         ],
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
     return true;
@@ -526,7 +578,7 @@ const withdraw = async (activeAccount: ActiveAccount, amount: string) => {
     return false;
   }
 };
-
+/* istanbul ignore next */
 const delegateVestingShares = async (
   activeAccount: ActiveAccount,
   delegatee: string,
@@ -540,9 +592,7 @@ const delegateVestingShares = async (
           delegator: activeAccount.name!,
           vesting_shares: vestingShares,
         },
-        PrivateKey.fromString(
-          store.getState().activeAccount.keys.active as string,
-        ),
+        PrivateKey.fromString(activeAccount.keys.active as string),
       ),
     );
 
@@ -552,12 +602,16 @@ const delegateVestingShares = async (
     return false;
   }
 };
-
-const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
+/* istanbul ignore next */
+const sendCustomJson = async (
+  json: any,
+  activeAccount: ActiveAccount,
+  mainnet?: string,
+) => {
   return await sendOperationWithConfirmation(
     getClient().broadcast.json(
       {
-        id: Config.hiveEngine.MAINNET,
+        id: mainnet ? mainnet : Config.hiveEngine.mainnet,
         required_auths: [activeAccount.name!],
         required_posting_auths: activeAccount.keys.active
           ? []
@@ -569,37 +623,13 @@ const sendCustomJson = async (json: any, activeAccount: ActiveAccount) => {
   );
 };
 
-const voteForProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, true);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
-
-const unvoteProposal = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-) => {
-  try {
-    await updateProposalVote(activeAccount, proposalId, false);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
-
+/* istanbul ignore next */
 const updateProposalVote = async (
   activeAccount: ActiveAccount,
   proposalId: number,
   vote: boolean,
 ) => {
+  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
   return await sendOperationWithConfirmation(
     getClient().broadcast.sendOperations(
       [
@@ -613,9 +643,7 @@ const updateProposalVote = async (
           },
         ] as UpdateProposalVotesOperation,
       ],
-      PrivateKey.fromString(
-        store.getState().activeAccount.keys.active as string,
-      ),
+      PrivateKey.fromString(activeAccount.keys.active as string),
     ),
   );
 };
@@ -626,20 +654,25 @@ const sendOperationWithConfirmation = async (
   const transactionConfirmation = await transactionConfirmationPromise;
   let transaction = null;
   do {
-    transaction = await getClient().transaction.findTransaction(
+    transaction = await HiveUtils.getClient().transaction.findTransaction(
       transactionConfirmation.id,
     );
     await sleep(500);
-  } while (transaction.status == 'within_mempool');
-  if (transaction.status == 'within_reversible_block') {
+  } while (['within_mempool', 'unknown'].includes(transaction.status));
+  if (
+    ['within_reversible_block', 'within_irreversible_block'].includes(
+      transaction.status,
+    )
+  ) {
     Logger.info('Transaction confirmed');
-    return true;
+    return transactionConfirmation.id || true;
   } else {
     Logger.info(`Transaction failed with status: ${transaction.status}`);
-    return false;
+    return;
   }
 };
 
+/* istanbul ignore next */
 const getDelayedTransactionInfo = (trxID: string) => {
   return new Promise(function (fulfill, reject) {
     setTimeout(async function () {
@@ -647,13 +680,35 @@ const getDelayedTransactionInfo = (trxID: string) => {
     }, 500);
   });
 };
-
+/* istanbul ignore next */
 const getProposalDailyBudget = async () => {
-  return parseFloat(
-    (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
-      .toString()
-      .split(' ')[0],
+  return (
+    parseFloat(
+      (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
+        .toString()
+        .split(' ')[0],
+    ) / 100
   );
+};
+/**
+ * getClient().database.getDynamicGlobalProperties()
+ */
+const getDynamicGlobalProperties =
+  async (): Promise<DynamicGlobalProperties> => {
+    return getClient().database.getDynamicGlobalProperties();
+  };
+/**
+ * getClient().database.getCurrentMedianHistoryPrice()
+ */
+const getCurrentMedianHistoryPrice = async (): Promise<Price> => {
+  return getClient().database.getCurrentMedianHistoryPrice();
+};
+/**
+ * getClient().database.call(method, params).
+ * Fixed params: method 'get_reward_fund', params ['post]
+ */
+const getRewardFund = async (): Promise<RewardFund> => {
+  return getClient().database.call('get_reward_fund', ['post']);
 };
 
 const HiveUtils = {
@@ -676,11 +731,21 @@ const HiveUtils = {
   delegateVestingShares,
   sendCustomJson,
   signMessage,
-  voteForProposal,
   getDelayedTransactionInfo,
   sendOperationWithConfirmation,
-  unvoteProposal,
   getProposalDailyBudget,
+  updateProposalVote,
+  getRewardBalance,
+  getRecentClaims,
+  getHivePrice,
+  getVotePowerReserveRate,
+  getAccountPrice,
+  getDynamicGlobalProperties,
+  getCurrentMedianHistoryPrice,
+  getRewardFund,
+  getDelegatees,
+  getDelegators,
+  getPendingOutgoingUndelegation,
 };
 
 export default HiveUtils;

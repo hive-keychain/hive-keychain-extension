@@ -1,0 +1,13 @@
+diff --git a/node_modules/@hiveio/dhive/lib/utils.js b/node_modules/@hiveio/dhive/lib/utils.js
+index bf802e8..1b6dfb7 100644
+--- a/node_modules/@hiveio/dhive/lib/utils.js
++++ b/node_modules/@hiveio/dhive/lib/utils.js
+@@ -50,7 +50,7 @@ var __asyncValues = (this && this.__asyncValues) || function (o) {
+     function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+ };
+ Object.defineProperty(exports, "__esModule", { value: true });
+-const cross_fetch_1 = require("cross-fetch");
++const cross_fetch_1 = require("node-fetch");
+ const stream_1 = require("stream");
+ // TODO: Add more errors that should trigger a failover
+ const timeoutErrors = ['timeout', 'ENOTFOUND', 'ECONNREFUSED', 'database lock', 'CERT_HAS_EXPIRED', 'EHOSTUNREACH'];

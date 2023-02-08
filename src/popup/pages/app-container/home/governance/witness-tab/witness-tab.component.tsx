@@ -16,13 +16,11 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import HiveUtils from 'src/utils/hive.utils';
-import Logger from 'src/utils/logger.utils';
+import AccountUtils from 'src/utils/account.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
@@ -96,20 +94,23 @@ const WitnessTab = ({
   }, [ranking, filterValue, displayVotedOnly, votedWitnesses, hideNonActive]);
 
   const initProxyVotes = async (proxy: string) => {
-    const hiveAccounts = await HiveUtils.getClient().database.getAccounts([
-      proxy,
-    ]);
+    const hiveAccounts = await AccountUtils.getAccount(proxy);
     setVotedWitnesses(hiveAccounts[0].witness_votes);
   };
 
   const initWitnessRanking = async () => {
     setLoading(true);
-    const requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
-    if (requestResult.data !== '') {
-      const ranking = requestResult.data;
-      setRanking(ranking);
-      setFilteredRanking(ranking);
-    } else {
+    let requestResult;
+    try {
+      requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
+      if (requestResult?.data !== '') {
+        const ranking = requestResult?.data;
+        setRanking(ranking);
+        setFilteredRanking(ranking);
+      } else {
+        throw new Error('Witness-ranks data error');
+      }
+    } catch (err) {
       setErrorMessage('popup_html_error_retrieving_witness_ranking');
       setHasError(true);
     }
@@ -121,47 +122,44 @@ const WitnessTab = ({
       return;
     }
     if (activeAccount.account.witness_votes.includes(witness.name)) {
-      try {
-        addToLoadingList('html_popup_unvote_witness_operation');
-        await WitnessUtils.unvoteWitness(witness, activeAccount);
-        addToLoadingList('html_popup_confirm_transaction_operation');
-        removeFromLoadingList('html_popup_unvote_witness_operation');
-        await BlockchainTransactionUtils.delayRefresh();
-        removeFromLoadingList('html_popup_confirm_transaction_operation');
-        refreshActiveAccount();
+      addToLoadingList('html_popup_unvote_witness_operation');
+      const success = await WitnessUtils.unvoteWitness(witness, activeAccount);
+      addToLoadingList('html_popup_confirm_transaction_operation');
+      removeFromLoadingList('html_popup_unvote_witness_operation');
+      await BlockchainTransactionUtils.delayRefresh();
+      removeFromLoadingList('html_popup_confirm_transaction_operation');
+      refreshActiveAccount();
+      if (success) {
         setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
-      } catch (err) {
+      } else {
         setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
-        Logger.error(err);
-      } finally {
-        removeFromLoadingList('html_popup_unvote_witness_operation');
-        removeFromLoadingList('html_popup_confirm_transaction_operation');
       }
+      removeFromLoadingList('html_popup_unvote_witness_operation');
+      removeFromLoadingList('html_popup_confirm_transaction_operation');
     } else {
-      try {
-        addToLoadingList('html_popup_vote_witness_operation');
-        await WitnessUtils.voteWitness(witness, activeAccount);
-
-        addToLoadingList('html_popup_confirm_transaction_operation');
-        removeFromLoadingList('html_popup_vote_witness_operation');
-        await BlockchainTransactionUtils.delayRefresh();
-        removeFromLoadingList('html_popup_confirm_transaction_operation');
-
-        refreshActiveAccount();
+      addToLoadingList('html_popup_vote_witness_operation');
+      const success = await WitnessUtils.voteWitness(witness, activeAccount);
+      addToLoadingList('html_popup_confirm_transaction_operation');
+      removeFromLoadingList('html_popup_vote_witness_operation');
+      await BlockchainTransactionUtils.delayRefresh();
+      removeFromLoadingList('html_popup_confirm_transaction_operation');
+      refreshActiveAccount();
+      if (success) {
         setSuccessMessage('popup_success_wit', [`${witness.name}`]);
-      } catch (err) {
+      } else {
         setErrorMessage('popup_error_wit', [`${witness.name}`]);
-        Logger.error(err);
-      } finally {
-        removeFromLoadingList('html_popup_vote_witness_operation');
-        removeFromLoadingList('html_popup_confirm_transaction_operation');
       }
+      removeFromLoadingList('html_popup_vote_witness_operation');
+      removeFromLoadingList('html_popup_confirm_transaction_operation');
     }
   };
 
   const renderWitnessItem = (witness: Witness) => {
     return (
-      <div className="ranking-item" key={witness.name}>
+      <div
+        aria-label="ranking-item"
+        className="ranking-item"
+        key={witness.name}>
         <div className="rank">
           <div className="active-rank">
             {witness.active_rank ? witness.active_rank : '-'}{' '}
@@ -182,6 +180,7 @@ const WitnessTab = ({
           <div className="witness-name">@{witness.name}</div>
           {witness.url && ValidUrl.isWebUri(witness.url) && (
             <Icon
+              ariaLabel={'link-to-witness-page'}
               onClick={() => chrome.tabs.create({ url: witness.url })}
               name={Icons.OPEN_IN_NEW}
               type={IconType.OUTLINED}
@@ -189,26 +188,31 @@ const WitnessTab = ({
           )}
         </div>
         <Icon
+          ariaLabel="witness-voting-icon"
           additionalClassName={
             'action ' +
             (votedWitnesses.includes(witness.name) ? 'voted' : 'not-voted') +
             ' ' +
-            (usingProxy ? 'using-proxy' : '')
+            (usingProxy || !activeAccount.keys.active ? 'using-proxy' : '')
           }
           name={Icons.ARROW_CIRCLE_UP}
           type={IconType.OUTLINED}
           onClick={() => handleVotedButtonClick(witness)}
-          tooltipMessage={
-            usingProxy ? 'html_popup_witness_vote_error_proxy' : undefined
-          }
           tooltipPosition="left"
+          tooltipMessage={
+            !activeAccount.keys.active
+              ? 'popup_witness_key'
+              : usingProxy
+              ? 'html_popup_witness_vote_error_proxy'
+              : undefined
+          }
         />
       </div>
     );
   };
 
   return (
-    <div className="witness-tab">
+    <div aria-label="witness-tab" className="witness-tab">
       {!usingProxy && (
         <div className="remaining-votes">
           {chrome.i18n.getMessage('popup_html_witness_remaining', [
@@ -225,6 +229,7 @@ const WitnessTab = ({
       )}
 
       <div
+        aria-label="link-to-arcange"
         onClick={() =>
           chrome.tabs.create({ url: 'https://hive.arcange.eu/witnesses/' })
         }
@@ -243,6 +248,7 @@ const WitnessTab = ({
         <div className="ranking-container">
           <div className="ranking-filter">
             <InputComponent
+              ariaLabel="input-ranking-filter"
               type={InputType.TEXT}
               placeholder="popup_html_search"
               value={filterValue}
@@ -250,12 +256,14 @@ const WitnessTab = ({
             />
             <div className="switches-panel">
               <CheckboxComponent
+                ariaLabel="switches-panel-witness-voted_only"
                 title="html_popup_witness_display_voted_only"
                 checked={displayVotedOnly}
                 onChange={() => {
                   setDisplayVotedOnly(!displayVotedOnly);
                 }}></CheckboxComponent>
               <CheckboxComponent
+                ariaLabel="switches-panel-witness-hide_inactive"
                 title="html_popup_witness_hide_inactive"
                 checked={hideNonActive}
                 onChange={() => {
@@ -263,38 +271,41 @@ const WitnessTab = ({
                 }}></CheckboxComponent>
             </div>
           </div>
-          <CustomTooltip
-            message={
-              activeAccount.keys.active ? undefined : 'popup_witness_key'
-            }>
-            <div className="ranking">
-              <FlatList
-                list={filteredRanking}
-                renderItem={renderWitnessItem}
-                renderOnScroll
-                renderWhenEmpty={() => {
-                  return (
-                    hasError && (
-                      <div className="error-witness">
-                        <Icon
-                          name={Icons.ERROR}
-                          type={IconType.OUTLINED}></Icon>
-                        <span>
-                          {chrome.i18n.getMessage(
-                            'popup_html_error_retrieving_witness_ranking',
-                          )}
-                        </span>
-                      </div>
-                    )
-                  );
-                }}
-              />
-            </div>
-          </CustomTooltip>
+
+          <div aria-label="ranking" className="ranking">
+            <FlatList
+              list={filteredRanking}
+              renderItem={renderWitnessItem}
+              renderOnScroll
+              renderWhenEmpty={() => {
+                return (
+                  hasError && (
+                    <div aria-label="error-witness" className="error-witness">
+                      <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+                      <span>
+                        {chrome.i18n.getMessage(
+                          'popup_html_error_retrieving_witness_ranking',
+                        )}
+                      </span>
+                    </div>
+                  )
+                );
+              }}
+            />
+          </div>
         </div>
       )}
 
-      {isLoading && <RotatingLogoComponent></RotatingLogoComponent>}
+      {isLoading && (
+        <div
+          style={{
+            height: '300px',
+            display: 'flex',
+            justifyContent: 'center',
+          }}>
+          <RotatingLogoComponent></RotatingLogoComponent>
+        </div>
+      )}
     </div>
   );
 };

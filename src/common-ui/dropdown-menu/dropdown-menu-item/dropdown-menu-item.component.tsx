@@ -23,6 +23,7 @@ const DropdownMenuItem = ({
   return (
     <div
       className="dropdown-menu-item"
+      aria-label={`dropdown-menu-item-${icon}`}
       onClick={(event) => handleClickOnMenuItem(event)}>
       {importedIcon && <img className="icon" src={`/assets/images/${icon}`} />}
       {!importedIcon && (

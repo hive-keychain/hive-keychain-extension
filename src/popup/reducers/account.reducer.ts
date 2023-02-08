@@ -1,18 +1,24 @@
-import { Account } from '@hiveio/dhive';
+import { LocalAccount } from '@interfaces/local-account.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
 
 export const AccountReducer = (
-  state: Account[] = [],
+  state: LocalAccount[] = [],
   { type, payload }: ActionPayload<any>,
-) => {
+): LocalAccount[] => {
   switch (type) {
-    case ActionType.GET_ACCOUNTS:
-      return payload!;
-    case ActionType.SET_ACCOUNTS:
-      return payload;
-    case ActionType.ADD_ACCOUNT:
-      return [...state, payload];
+    case ActionType.GET_ACCOUNTS: {
+      const accounts: LocalAccount[] = payload;
+      return accounts!;
+    }
+    case ActionType.SET_ACCOUNTS: {
+      const accounts: LocalAccount[] = payload;
+      return accounts;
+    }
+    case ActionType.ADD_ACCOUNT: {
+      const account: LocalAccount = payload;
+      return [...state, account];
+    }
     case ActionType.RESET_ACCOUNT:
       return [];
     default:

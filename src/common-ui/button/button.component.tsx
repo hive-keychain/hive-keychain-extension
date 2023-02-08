@@ -8,6 +8,8 @@ export enum ButtonType {
   RAISED = 'raised',
   IMPORTANT = 'important',
   DEFAULT = 'default',
+  REVERSE = 'reverse',
+  NO_BORDER = 'no-border',
 }
 
 export interface ButtonProps {
@@ -18,11 +20,13 @@ export interface ButtonProps {
   logo?: Icons | string;
   type?: ButtonType;
   fixToBottom?: boolean;
+  ariaLabel?: string;
 }
 
 const ButtonComponent = (props: ButtonProps) => {
   return (
     <button
+      aria-label={props.ariaLabel}
       className={`submit-button ${
         props.type ? props.type : ButtonType.DEFAULT
       } ${props.fixToBottom ? 'fix-to-bottom' : ''}`}

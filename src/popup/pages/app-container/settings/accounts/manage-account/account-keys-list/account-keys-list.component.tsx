@@ -17,6 +17,7 @@ import ButtonComponent, {
 import { KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import './account-keys-list.component.scss';
 
 const AccountKeysList = ({
@@ -30,6 +31,7 @@ const AccountKeysList = ({
 }: PropsType) => {
   const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
   const [account, setAccount] = useState<LocalAccount>();
+  const [canDeleteKey, setCanDeleteKey] = useState(true);
 
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
@@ -38,6 +40,7 @@ const AccountKeysList = ({
       (account: LocalAccount) => account.name === activeAccount.name,
     );
     setAccount(account!);
+    setCanDeleteKey(KeysUtils.keysCount(activeAccount.keys) > 2);
   }, [activeAccount]);
 
   const deleteAccount = () => {
@@ -121,22 +124,26 @@ const AccountKeysList = ({
           publicKey={activeAccount.keys.postingPubkey}
           keyName={'popup_html_posting'}
           keyType={KeyType.POSTING}
+          canDelete={canDeleteKey}
         />
         <AccountKeysListItemComponent
           privateKey={activeAccount.keys.active}
           publicKey={activeAccount.keys.activePubkey}
           keyName={'popup_html_active'}
           keyType={KeyType.ACTIVE}
+          canDelete={canDeleteKey}
         />
         <AccountKeysListItemComponent
           privateKey={activeAccount.keys.memo}
           publicKey={activeAccount.keys.memoPubkey}
           keyName={'popup_html_memo'}
           keyType={KeyType.MEMO}
+          canDelete={canDeleteKey}
         />
       </div>
 
       <ButtonComponent
+        ariaLabel="button-toogle-qr-code"
         label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}
         onClick={() => toggleQRCode()}
       />
@@ -144,6 +151,7 @@ const AccountKeysList = ({
         <>
           <div ref={qrCodeRef}></div>
           <QRCode
+            aria-label="qrcode"
             className="qrcode"
             value={`keychain://add_account=${JSON.stringify(account)}`}
           />
@@ -152,6 +160,7 @@ const AccountKeysList = ({
 
       {accounts.length > 1 && (
         <ButtonComponent
+          ariaLabel="button-delete-account"
           label="popup_html_delete_account"
           type={ButtonType.IMPORTANT}
           onClick={() => deleteAccount()}

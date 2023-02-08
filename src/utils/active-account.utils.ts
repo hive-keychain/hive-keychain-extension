@@ -4,20 +4,23 @@ import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const isEmpty = (activeAccount: ActiveAccount) => {
-  return Object.keys(activeAccount.account).length === 0;
+  return (
+    !activeAccount.account || Object.keys(activeAccount.account).length === 0
+  );
 };
-
+/* istanbul ignore next */
 const saveActiveAccountNameInLocalStorage = (activeAccountName: string) => {
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
     activeAccountName,
   );
 };
-
+/* istanbul ignore next */
 const getActiveAccountNameFromLocalStorage = async () => {
-  return await LocalStorageUtils.getValueFromLocalStorage(
+  const account = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
   );
+  return account && account.length ? account : undefined;
 };
 
 const hasReward = (
@@ -26,9 +29,9 @@ const hasReward = (
   reward_hive: string,
 ): boolean => {
   return (
-    getValFromString(reward_hbd) != 0 ||
-    getValFromString(reward_hp) != 0 ||
-    getValFromString(reward_hive) != 0
+    ActiveAccountUtils.getValFromString(reward_hbd) !== 0 ||
+    ActiveAccountUtils.getValFromString(reward_hp) !== 0 ||
+    ActiveAccountUtils.getValFromString(reward_hive) !== 0
   );
 };
 
@@ -57,6 +60,7 @@ const ActiveAccountUtils = {
   getActiveAccountNameFromLocalStorage,
   hasReward,
   getAvailableRewards,
+  getValFromString,
 };
 
 export default ActiveAccountUtils;

@@ -4,7 +4,10 @@ import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
 import { forgetMk } from '@popup/actions/mk.actions';
 import { navigateTo, resetNav } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -29,6 +32,7 @@ const TopBar = ({
   removeFromLoadingList,
   loadGlobalProperties,
   setErrorMessage,
+  setSuccessMessage,
 }: PropsFromRedux) => {
   const [hasRewardToClaim, setHasRewardToClaim] = useState(false);
   const [rotateLogo, setRotateLogo] = useState(false);
@@ -67,13 +71,15 @@ const TopBar = ({
       setErrorMessage('popup_accounts_err_claim');
       return;
     }
-
     addToLoadingList('popup_html_claiming_rewards');
     const claimSuccessful = await HiveUtils.claimRewards(
       activeAccount,
       activeAccount.account.reward_hive_balance,
       activeAccount.account.reward_hbd_balance,
       activeAccount.account.reward_vesting_balance,
+      globalProperties.globals!,
+      setErrorMessage,
+      setSuccessMessage,
     );
     removeFromLoadingList('popup_html_claiming_rewards');
     if (claimSuccessful) {
@@ -87,22 +93,26 @@ const TopBar = ({
         className={rotateLogo ? 'rotate' : ''}
         src="/assets/images/keychain_icon_small.png"
         onClick={refresh}
+        aria-label="top-bar-refresh-icon"
       />
       <div className="spacer"></div>
 
       {hasRewardToClaim && (
         <Icon
+          ariaLabel="reward-claim-icon"
           name={Icons.CLAIM}
           onClick={() => claim()}
           additionalClassName="button claim-button"
           type={IconType.STROKED}></Icon>
       )}
       <Icon
+        ariaLabel="log-out-button"
         name={Icons.LOGOUT}
         onClick={() => lockPopup()}
         additionalClassName="button lock-button"
         type={IconType.STROKED}></Icon>
       <Icon
+        ariaLabel="clickable-settings"
         name={Icons.MENU}
         onClick={() => navigateTo(Screen.SETTINGS_MAIN_PAGE)}
         additionalClassName="button settings-button"
@@ -127,6 +137,7 @@ const connector = connect(mapStateToProps, {
   removeFromLoadingList,
   loadGlobalProperties,
   setErrorMessage,
+  setSuccessMessage,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

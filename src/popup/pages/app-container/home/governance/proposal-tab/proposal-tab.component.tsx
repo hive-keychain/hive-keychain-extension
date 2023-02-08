@@ -1,3 +1,4 @@
+import { Proposal } from '@interfaces/proposal.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -8,7 +9,6 @@ import {
 } from '@popup/actions/message.actions';
 import { ProposalItemComponent } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-item/proposal-item.component';
 import { RootState } from '@popup/store';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -17,29 +17,9 @@ import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import './proposal-tab.component.scss';
 
-export enum FundedOption {
-  TOTALLY_FUNDED = 'totally_funded',
-  PARTIALLY_FUNDED = 'partially_funded',
-  NOT_FUNDED = 'not_funded',
-}
-export interface Proposal {
-  id: number;
-  creator: string;
-  dailyPay: string;
-  startDate: moment.Moment;
-  endDate: moment.Moment;
-  receiver: string;
-  status: string;
-  totalVotes: string;
-  subject: string;
-  link: string;
-  proposalId: number;
-  voted: boolean;
-  funded: FundedOption;
-}
-
 const ProposalTab = ({
   activeAccount,
+  globalProperties,
   addToLoadingList,
   removeFromLoadingList,
 }: PropsFromRedux) => {
@@ -62,6 +42,7 @@ const ProposalTab = ({
     }
     proposals = await ProposalUtils.getProposalList(
       proxy ?? activeAccount.name!,
+      globalProperties.globals!,
     );
 
     setProposals(proposals);
@@ -80,7 +61,9 @@ const ProposalTab = ({
   };
 
   return (
-    <div className={`proposal-tab ${isLoading ? 'loading' : ''}`}>
+    <div
+      aria-label="proposal-tab"
+      className={`proposal-tab ${isLoading ? 'loading' : ''}`}>
       {!isLoading && (
         <>
           {displayingProxyVotes && (
@@ -101,13 +84,26 @@ const ProposalTab = ({
           </div>
         </>
       )}
-      {isLoading && <RotatingLogoComponent></RotatingLogoComponent>}
+      {isLoading && (
+        <div
+          style={{
+            height: '400px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+          }}>
+          <RotatingLogoComponent></RotatingLogoComponent>
+        </div>
+      )}
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return {
+    activeAccount: state.activeAccount,
+    globalProperties: state.globalProperties,
+  };
 };
 
 const connector = connect(mapStateToProps, {

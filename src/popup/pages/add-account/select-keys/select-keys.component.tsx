@@ -7,7 +7,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { Keys } from 'src/interfaces/keys.interface';
-import KeysUtils from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import './select-keys.component.scss';
 
 const SelectKeys = ({
@@ -54,7 +54,7 @@ const SelectKeys = ({
   };
 
   return (
-    <div className="select-keys-page">
+    <div className="select-keys-page" aria-label="select-keys-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -62,24 +62,31 @@ const SelectKeys = ({
         }}></div>
 
       <CheckboxComponent
+        ariaLabel="checkbox-import-posting-key"
         title="popup_html_posting"
         hint="popup_html_posting_info"
         checked={importPosting}
         onChange={setImportPosting}
       />
       <CheckboxComponent
+        ariaLabel="checkbox-import-active-key"
         title="popup_html_active"
         hint="popup_html_active_info"
         checked={importActive}
         onChange={setImportActive}
       />
       <CheckboxComponent
+        ariaLabel="checkbox-import-memo-key"
         title="popup_html_memo"
         hint="popup_html_memo_info"
         checked={importMemo}
         onChange={setImportMemo}
       />
-      <ButtonComponent label="popup_html_save" onClick={() => importKeys()} />
+      <ButtonComponent
+        ariaLabel="button-save"
+        label="popup_html_save"
+        onClick={() => importKeys()}
+      />
     </div>
   );
 };

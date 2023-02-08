@@ -12,7 +12,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
-import KeysUtils from 'src/utils/keys.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import './add-by-keys.component.scss';
 
 const AddByKeys = ({
@@ -42,15 +42,17 @@ const AddByKeys = ({
       setErrorMessage('popup_html_account_already_existing');
       return;
     }
-
     const keys = await AccountUtils.verifyAccount(
       username.trim(),
       privateKey.trim(),
       localAccounts,
+      setErrorMessage,
     );
+
     if (!keys) {
       return;
     }
+
     if (KeysUtils.keysCount(keys) > 2) {
       navigateToWithParams(Screen.ACCOUNT_PAGE_SELECT_KEYS, { keys, username });
     } else {
@@ -59,7 +61,7 @@ const AddByKeys = ({
   };
 
   return (
-    <div className="add-by-keys-page">
+    <div aria-label="add-by-keys-page" className="add-by-keys-page">
       <div
         className="caption"
         dangerouslySetInnerHTML={{
@@ -67,6 +69,7 @@ const AddByKeys = ({
         }}></div>
       <div className="form-container">
         <InputComponent
+          ariaLabel="input-username"
           value={username}
           onChange={setUsername}
           logo={Icons.AT}
@@ -75,6 +78,7 @@ const AddByKeys = ({
           onEnterPress={submitForm}
         />
         <InputComponent
+          ariaLabel="input-private-key"
           value={privateKey}
           onChange={setPrivateKey}
           logo={Icons.KEY}
@@ -83,6 +87,7 @@ const AddByKeys = ({
           onEnterPress={submitForm}
         />
         <ButtonComponent
+          ariaLabel="submit-button"
           label={'popup_html_submit'}
           onClick={submitForm}
           fixToBottom

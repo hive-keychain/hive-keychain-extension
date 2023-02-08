@@ -6,18 +6,24 @@ import {
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
+import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
+import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
+import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
-import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
+import { AnalyticsPopupComponent } from '@popup/pages/app-container/analytics-popup/analytics-popup.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import Config from 'src/config';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { BackgroundCommand } from 'src/reference-data/background-message-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -35,36 +41,54 @@ import { SignInRouterComponent } from './pages/sign-in/sign-in-router.component'
 import { SignUpComponent } from './pages/sign-up/sign-up.component';
 
 const App = ({
-  setMk,
   mk,
   accounts,
-  navigateTo,
   activeAccountUsername,
   activeRpc,
-  refreshActiveAccount,
-  loadActiveAccount,
   loading,
   loadingOperation,
-  setActiveRpc,
   isCurrentPageHomePage,
+  displayProxySuggestion,
+  navigationStack,
+  appStatus,
+  setMk,
+  navigateTo,
+  loadActiveAccount,
+  refreshActiveAccount,
+  setActiveRpc,
   setAccounts,
   loadGlobalProperties,
-  displayProxySuggestion,
+  initHiveEngineConfigFromStorage,
+  loadCurrencyPrices,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
+  const [displayAnalyticsPopup, setDisplayAnalyticsPopup] = useState<boolean>();
+  const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
+
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
+    initAnalytics();
   }, []);
 
   useEffect(() => {
-    onActiveRpcRefreshed();
+    if (navigationStack.length > 0) {
+      AnalyticsUtils.sendNavigationEvent(navigationStack[0].currentPage);
+    }
+  }, [navigationStack]);
+
+  useEffect(() => {
+    if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
+
+  const initAnalytics = async () => {
+    setDisplayAnalyticsPopup(await AnalyticsUtils.initializeSettings());
+  };
 
   const onActiveRpcRefreshed = async () => {
     if (activeAccountUsername) {
@@ -83,10 +107,39 @@ const App = ({
 
   useEffect(() => {
     initHasStoredAccounts();
-    if (isAppReady) {
-      selectComponent(mk, accounts);
+    const found = navigationStack.find(
+      (navigation) =>
+        navigation.currentPage === Screen.ACCOUNT_PAGE_INIT_ACCOUNT ||
+        navigation.currentPage === Screen.SETTINGS_MANAGE_ACCOUNTS ||
+        navigation.currentPage === Screen.SIGN_IN_PAGE,
+    );
+    if (
+      isAppReady &&
+      (navigationStack.length === 0 || found) &&
+      hasStoredAccounts
+    ) {
+      if (accounts.length > 0) {
+        initActiveAccount(accounts);
+      }
+      if (!appStatus.processingDecryptAccount) selectComponent(mk, accounts);
     }
-  }, [isAppReady, mk, accounts]);
+  }, [
+    isAppReady,
+    mk,
+    accounts,
+    hasStoredAccounts,
+    appStatus.processingDecryptAccount,
+  ]);
+
+  useEffect(() => {
+    if (displaySplashscreen) {
+      if (appStatus.priceLoaded && appStatus.globalPropertiesLoaded) {
+        setTimeout(() => {
+          setDisplaySplashscreen(false);
+        }, Config.loader.minDuration);
+      }
+    }
+  }, [appStatus, displaySplashscreen]);
 
   const initHasStoredAccounts = async () => {
     const storedAccounts = await AccountUtils.hasStoredAccounts();
@@ -106,7 +159,8 @@ const App = ({
       for (const rpc of RpcUtils.getFullList().filter(
         (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
       )) {
-        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
+        const status = await RpcUtils.checkRpcStatus(rpc.uri);
+        if (status) {
           if (switchAuto) {
             setActiveRpc(rpc);
           } else {
@@ -137,9 +191,7 @@ const App = ({
   };
 
   const initApplication = async () => {
-    const rpc = await RpcUtils.getCurrentRpc();
-    setInitialRpc(rpc);
-    initActiveRpc(rpc);
+    loadCurrencyPrices();
 
     const storedAccounts = await AccountUtils.hasStoredAccounts();
     setHasStoredAccounts(storedAccounts);
@@ -158,7 +210,26 @@ const App = ({
     }
 
     setAppReady(true);
-    selectComponent(mkFromStorage, accountsFromStorage);
+    await selectComponent(mkFromStorage, accountsFromStorage);
+
+    const rpc = await RpcUtils.getCurrentRpc();
+    setInitialRpc(rpc);
+    await initActiveRpc(rpc);
+    loadGlobalProperties();
+    initHiveEngineConfigFromStorage();
+
+    if (accountsFromStorage.length > 0) {
+      initActiveAccount(accountsFromStorage);
+    }
+  };
+
+  const initActiveAccount = async (accounts: LocalAccount[]) => {
+    const lastActiveAccountName =
+      await ActiveAccountUtils.getActiveAccountNameFromLocalStorage();
+    const lastActiveAccount = accounts.find(
+      (account: LocalAccount) => lastActiveAccountName === account.name,
+    );
+    loadActiveAccount(lastActiveAccount ? lastActiveAccount : accounts[0]);
   };
 
   const selectComponent = async (
@@ -166,6 +237,7 @@ const App = ({
     accounts: LocalAccount[],
   ): Promise<void> => {
     if (mk && mk.length > 0 && accounts && accounts.length > 0) {
+      setDisplaySplashscreen(true);
       navigateTo(Screen.HOME_PAGE, true);
     } else if (mk && mk.length > 0) {
       navigateTo(Screen.ACCOUNT_PAGE_INIT_ACCOUNT, true);
@@ -182,39 +254,38 @@ const App = ({
   };
 
   const renderMainLayoutNav = () => {
-    if (isAppReady) {
-      if (!mk || mk.length === 0) {
-        if (accounts && accounts.length === 0 && !hasStoredAccounts) {
-          return <SignUpComponent />;
-        } else {
-          return <SignInRouterComponent />;
-        }
+    if (!mk || mk.length === 0) {
+      if (accounts && accounts.length === 0 && !hasStoredAccounts) {
+        return <SignUpComponent />;
       } else {
-        if (accounts && accounts.length === 0) {
-          return <AddAccountRouterComponent />;
-        } else {
-          return <AppRouterComponent />;
-        }
+        return <SignInRouterComponent />;
+      }
+    } else {
+      if (accounts && accounts.length === 0) {
+        return <AddAccountRouterComponent />;
+      } else {
+        return <AppRouterComponent />;
       }
     }
   };
 
-  const tryNewRpc = () => {
-    setActiveRpc(switchToRpc!);
-    setDisplayChangeRpcPopup(false);
+  const onAnalyticsAnswered = () => {
+    AnalyticsUtils.initializeSettings();
+    setDisplayAnalyticsPopup(false);
   };
-  return (
-    <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
-      {activeRpc && renderMainLayoutNav()}
-      <MessageContainerComponent />
-      <ProposalVotingSectionComponent />
-      {(loading || !activeRpc) && (
-        <LoadingComponent operations={loadingOperation} />
-      )}
-      {displayProxySuggestion && (
-        <ProxySuggestionComponent></ProxySuggestionComponent>
-      )}
-      {displayChangeRpcPopup && activeRpc && switchToRpc && (
+
+  const renderPopup = (
+    loading: number,
+    activeRpc: Rpc | undefined,
+    displayProxySuggestion: boolean,
+    displayChangeRpcPopup: boolean,
+    switchToRpc: Rpc | undefined,
+  ) => {
+    if (loading || !activeRpc) {
+      return <LoadingComponent operations={loadingOperation} />;
+    }
+    if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+      return (
         <div className="change-rpc-popup">
           <div className="message">
             {chrome.i18n.getMessage('popup_html_rpc_not_responding_error', [
@@ -225,6 +296,33 @@ const App = ({
           <ButtonComponent
             label="popup_html_switch_rpc"
             onClick={tryNewRpc}></ButtonComponent>
+        </div>
+      );
+    } else if (displayAnalyticsPopup) {
+      return <AnalyticsPopupComponent onAnswered={onAnalyticsAnswered} />;
+    }
+  };
+
+  const tryNewRpc = () => {
+    setActiveRpc(switchToRpc!);
+    setDisplayChangeRpcPopup(false);
+  };
+  return (
+    <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
+      {isAppReady && renderMainLayoutNav()}
+      <MessageContainerComponent />
+      <ProposalVotingSectionComponent />
+      {renderPopup(
+        loading,
+        activeRpc,
+        displayProxySuggestion,
+        displayChangeRpcPopup,
+        switchToRpc,
+      )}
+      {displaySplashscreen && (
+        <div className="splashscreen">
+          <RotatingLogoComponent></RotatingLogoComponent>
+          <div className="caption">HIVE KEYCHAIN</div>
         </div>
       )}
     </div>
@@ -243,8 +341,11 @@ const mapStateToProps = (state: RootState) => {
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
     displayProxySuggestion:
       state.activeAccount &&
+      state.activeAccount.account &&
       state.activeAccount.account.proxy === '' &&
       state.activeAccount.account.witnesses_voted_for === 0,
+    navigationStack: state.navigation.stack,
+    appStatus: state.appStatus,
   };
 };
 
@@ -257,6 +358,9 @@ const connector = connect(mapStateToProps, {
   setAccounts,
   loadActiveAccount,
   loadGlobalProperties,
+  initHiveEngineConfigFromStorage,
+  loadCurrencyPrices,
+  setProcessingDecryptAccount,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

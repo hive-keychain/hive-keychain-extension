@@ -105,12 +105,12 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: FavoriteUserItems =
+    const favoriteUsers: FavoriteUserItems =
       await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.FAVORITE_USERS,
       );
     setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
     );
   };
 
@@ -131,7 +131,7 @@ const TransferFunds = ({
   };
 
   const handleClickOnSend = async () => {
-    if (!amount || !receiverUsername || receiverUsername.length === 0) {
+    if (!amount || !receiverUsername || receiverUsername.trim().length === 0) {
       setErrorMessage('popup_html_fill_form_error');
       return;
     }
@@ -171,6 +171,18 @@ const TransferFunds = ({
 
     const isCancelRecurrent = parseFloat(amount) === 0 && isRecurrent;
 
+    if (
+      isRecurrent &&
+      !isCancelRecurrent &&
+      (!frequency ||
+        frequency.length === 0 ||
+        !iteration ||
+        iteration.length === 0)
+    ) {
+      setErrorMessage('popup_html_transfer_recurrent_missing_field');
+      return;
+    }
+
     if (isRecurrent && !isCancelRecurrent) {
       fields.push({
         label: 'popup_html_transfer_recurrence',
@@ -188,6 +200,7 @@ const TransferFunds = ({
       receiverUsername,
       currencyLabels[selectedCurrency],
       memo.length > 0,
+      isRecurrent,
     );
 
     if (phishing.includes(receiverUsername)) {
@@ -204,6 +217,7 @@ const TransferFunds = ({
       ),
       fields: fields,
       warningMessage: warningMessage,
+      skipWarningTranslation: true,
       title: isCancelRecurrent
         ? 'popup_html_cancel_recurrent_transfer'
         : 'popup_html_transfer_funds',
@@ -235,16 +249,14 @@ const TransferFunds = ({
           isRecurrent,
           isCancelRecurrent ? 2 : +iteration,
           isCancelRecurrent ? 24 : +frequency,
+          activeAccount,
         );
 
         removeFromLoadingList('html_popup_transfer_fund_operation');
 
         if (success) {
           navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveTransferRecipient(
-            receiverUsername,
-            activeAccount,
-          );
+          await TransferUtils.saveFavoriteUser(receiverUsername, activeAccount);
 
           if (!isRecurrent) {
             setSuccessMessage('popup_html_transfer_successful', [
@@ -301,7 +313,7 @@ const TransferFunds = ({
 
   return (
     <>
-      <div className="transfer-funds-page">
+      <div className="transfer-funds-page" aria-label="transfer-funds-page">
         <AvailableCurrentPanelComponent
           available={balance}
           availableCurrency={currencyLabels[selectedCurrency]}
@@ -309,6 +321,7 @@ const TransferFunds = ({
         />
         <div className="form-container">
           <InputComponent
+            ariaLabel="input-username"
             type={InputType.TEXT}
             logo={Icons.AT}
             placeholder="popup_html_username"
@@ -319,6 +332,7 @@ const TransferFunds = ({
           <div className="value-panel">
             <div className="value-input-panel">
               <InputComponent
+                ariaLabel="amount-input"
                 type={InputType.NUMBER}
                 placeholder="0.000"
                 skipPlaceholderTranslation={true}
@@ -339,12 +353,14 @@ const TransferFunds = ({
           </div>
 
           <InputComponent
+            ariaLabel="input-memo-optional"
             type={InputType.TEXT}
             placeholder="popup_html_memo_optional"
             value={memo}
             onChange={setMemo}
           />
           <CheckboxComponent
+            ariaLabel="checkbox-transfer-recurrent"
             title={
               parseFloat(amount) === 0
                 ? 'popup_html_cancel_recurrent_transfer'
@@ -355,6 +371,7 @@ const TransferFunds = ({
           {isRecurrent && parseFloat(amount) !== 0 && (
             <div className="recurrent-panel">
               <InputComponent
+                ariaLabel="input-recurrent-frecuency"
                 type={InputType.NUMBER}
                 placeholder="popup_html_recurrent_transfer_frequency"
                 min={24}
@@ -364,6 +381,7 @@ const TransferFunds = ({
                 hint={'popup_html_recurrent_transfer_frequency_hint'}
               />
               <InputComponent
+                ariaLabel="input-recurrent-iterations"
                 type={InputType.NUMBER}
                 placeholder="popup_html_recurrent_transfer_iterations"
                 min={2}
@@ -375,6 +393,7 @@ const TransferFunds = ({
             </div>
           )}
           <OperationButtonComponent
+            ariaLabel="send-transfer"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={handleClickOnSend}
             label={'popup_html_send_transfer'}

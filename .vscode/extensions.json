@@ -9,5 +9,7 @@
     "formulahendry.auto-rename-tag",
     "mikestead.dotenv",
     "dsznajder.es7-react-js-snippets",
+    "firsttris.vscode-jest-runner",
+    "andys8.jest-snippets"
   ]
 }

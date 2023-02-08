@@ -45,7 +45,12 @@
       color: white;
     }
   }
-
+  &.no-border {
+    background: none;
+    border: none;
+    color: white;
+    text-decoration: underline;
+  }
   &.raised {
     background: white;
     border: none;
@@ -56,10 +61,27 @@
     }
   }
 
+  &.reverse {
+    background: white;
+    color: black;
+    border: 1px solid black;
+
+    &:hover {
+      background: black;
+      color: white;
+    }
+  }
+
   &.fix-to-bottom {
     position: fixed;
     bottom: 32px;
     left: 24px;
     width: calc(100% - 48px);
+  }
+
+  &.no-border {
+    background: none;
+    border: none;
+    color: white;
   }
 }

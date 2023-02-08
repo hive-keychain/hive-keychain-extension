@@ -13,4 +13,5 @@ export interface Settings {
   rpc?: Rpc[];
   transfer_to?: FavoriteUserItems;
   switchRpcAuto?: boolean;
+  current_rpc?: Rpc;
 }

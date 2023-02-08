@@ -8,10 +8,14 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import ArrayUtils from 'src/utils/array.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { ObjectUtils } from 'src/utils/object.utils';
 
 const sendBackImportedFileContent = async (fileContent: any) => {
   const importedSettings: Settings = fileContent;
   try {
+    if (!ObjectUtils.isPureObject(importedSettings)) {
+      throw new Error('Bad format or not object');
+    }
     if (
       importedSettings &&
       !Object.values(LocalStorageKeyEnum).includes(
@@ -122,14 +126,13 @@ const sendBackImportedFileContent = async (fileContent: any) => {
 
       if (importedSettings.transfer_to) {
         let existingTransferTo: FavoriteUserItems =
-          await LocalStorageUtils.getValueFromLocalStorage(
+          (await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
-          );
+          )) || {};
 
-        if (!existingTransferTo) existingTransferTo = {};
         for (const username of Object.keys(importedSettings.transfer_to)) {
           existingTransferTo[username] = [
-            ...existingTransferTo[username],
+            ...(existingTransferTo[username] || []),
             ...importedSettings.transfer_to[username],
           ];
         }
@@ -139,10 +142,17 @@ const sendBackImportedFileContent = async (fileContent: any) => {
         );
       }
 
-      if (importedSettings.switchRpcAuto) {
+      if (importedSettings.switchRpcAuto !== null) {
         await LocalStorageUtils.saveValueInLocalStorage(
           LocalStorageKeyEnum.SWITCH_RPC_AUTO,
           importedSettings.switchRpcAuto,
+        );
+      }
+
+      if (importedSettings.current_rpc) {
+        await LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.CURRENT_RPC,
+          importedSettings.current_rpc,
         );
       }
     }

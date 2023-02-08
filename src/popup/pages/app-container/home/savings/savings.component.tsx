@@ -1,3 +1,4 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
@@ -17,6 +18,7 @@ import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -24,6 +26,7 @@ import Select, {
 } from 'react-dropdown-select';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
@@ -31,6 +34,8 @@ import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import './savings.component.scss';
 
 const SavingsPage = ({
@@ -54,14 +59,18 @@ const SavingsPage = ({
   const [value, setValue] = useState<string | number>(
     formParams.value ? formParams.value : 0,
   );
-  const [current, setCurrent] = useState<string | number>('...');
-  const [available, setAvailable] = useState<string | number>('...');
+  const [savings, setSavings] = useState<string | number>('...');
+  const [liquid, setLiquid] = useState<string | number>('...');
+
+  const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
+    [],
+  );
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
-    useState<string>(
+    useState<SavingOperationType>(
       formParams.selectedSavingOperationType
-        ? formParams.selectedSavingOperationType
-        : SavingOperationType.WITHDRAW,
+        ? (formParams.selectedSavingOperationType as SavingOperationType)
+        : SavingOperationType.DEPOSIT,
     );
   const [selectedCurrency, setSelectedCurrency] = useState<
     keyof CurrencyLabels
@@ -88,6 +97,7 @@ const SavingsPage = ({
   ];
 
   useEffect(() => {
+    loadAutocompleteTransferUsernames();
     setTitleContainerProperties({
       title: 'popup_html_savings',
       isBackButtonEnabled: true,
@@ -105,8 +115,8 @@ const SavingsPage = ({
     const hbd = FormatUtils.toNumber(activeAccount.account.hbd_balance);
     const hive = FormatUtils.toNumber(activeAccount.account.balance);
 
-    setAvailable(selectedCurrency === 'hive' ? hive : hbd);
-    setCurrent(selectedCurrency === 'hive' ? hiveSavings : hbdSavings);
+    setLiquid(selectedCurrency === 'hive' ? hive : hbd);
+    setSavings(selectedCurrency === 'hive' ? hiveSavings : hbdSavings);
   }, [selectedCurrency]);
 
   useEffect(() => {
@@ -123,8 +133,23 @@ const SavingsPage = ({
     setText(text);
   }, [selectedCurrency, selectedSavingOperationType]);
 
+  const loadAutocompleteTransferUsernames = async () => {
+    const favoriteUsers: FavoriteUserItems =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.FAVORITE_USERS,
+      );
+    setAutoCompleteUsernames(
+      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
+    );
+  };
+
   const handleButtonClick = () => {
-    if (parseFloat(value.toString()) > parseFloat(available.toString())) {
+    if (
+      (selectedSavingOperationType === SavingOperationType.DEPOSIT &&
+        parseFloat(value.toString()) > parseFloat(liquid.toString())) ||
+      (selectedSavingOperationType === SavingOperationType.WITHDRAW &&
+        parseFloat(value.toString()) > parseFloat(savings.toString()))
+    ) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
     }
@@ -137,6 +162,11 @@ const SavingsPage = ({
 
     const valueS = `${parseFloat(value.toString()).toFixed(3)} ${currency}`;
 
+    let warning = TransferUtils.getTransferFromToSavingsValidationWarning(
+      username,
+      selectedSavingOperationType,
+    );
+
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         selectedSavingOperationType === SavingOperationType.WITHDRAW
@@ -144,6 +174,8 @@ const SavingsPage = ({
           : 'popup_html_confirm_savings_deposit',
         [currency],
       ),
+      warningMessage: warning,
+      skipWarningTranslation: true,
       title: operationString,
       skipTitleTranslation: true,
       fields: [
@@ -161,13 +193,14 @@ const SavingsPage = ({
             break;
           case SavingOperationType.WITHDRAW:
             addToLoadingList('html_popup_withdraw_from_savings_operation');
-            success = await HiveUtils.withdraw(activeAccount, valueS);
+            success = await HiveUtils.withdraw(activeAccount, valueS, username);
             removeFromLoadingList('html_popup_withdraw_from_savings_operation');
             break;
         }
 
         navigateTo(Screen.HOME_PAGE, true);
         if (success) {
+          await TransferUtils.saveFavoriteUser(username, activeAccount);
           setSuccessMessage(
             selectedSavingOperationType === SavingOperationType.DEPOSIT
               ? 'popup_html_deposit_success'
@@ -183,7 +216,7 @@ const SavingsPage = ({
           );
         }
       },
-    });
+    } as ConfirmationPageParams);
   };
 
   const getFormParams = () => {
@@ -197,9 +230,9 @@ const SavingsPage = ({
 
   const setToMax = () => {
     if (selectedSavingOperationType === SavingOperationType.WITHDRAW) {
-      setValue(current);
+      setValue(savings);
     } else {
-      setValue(available);
+      setValue(liquid);
     }
   };
 
@@ -208,6 +241,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label="select-currency-savings"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -219,6 +253,7 @@ const SavingsPage = ({
   const customOperationTypeLabelRender = (selectProps: SelectRenderer<any>) => {
     return (
       <div
+        aria-label="select-operation-type"
         className="selected-value"
         onClick={() => {
           selectProps.methods.dropDown('close');
@@ -232,13 +267,14 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label={`select-operation-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedSavingOperationType === selectProps.item.value
             ? 'selected'
             : ''
         }`}
         onClick={() => {
-          setSelectedSavingOperationType(selectProps.item.value as string);
+          setSelectedSavingOperationType(selectProps.item.value);
           selectProps.methods.dropDown('close');
         }}>
         <div className="currency">{selectProps.item.label}</div>
@@ -250,6 +286,7 @@ const SavingsPage = ({
   ) => {
     return (
       <div
+        aria-label={`select-account-item-${selectProps.item.label}`}
         className={`select-account-item ${
           selectedCurrency === selectProps.item.value ? 'selected' : ''
         }`}
@@ -263,12 +300,12 @@ const SavingsPage = ({
   };
 
   return (
-    <div className="savings-page">
+    <div className="savings-page" aria-label="savings-page">
       <AvailableCurrentPanelComponent
-        available={available}
+        available={liquid}
         availableCurrency={currency}
         availableLabel={'popup_html_savings_available'}
-        current={current}
+        current={savings}
         currentCurrency={currency}
         currentLabel={'popup_html_savings_current'}
       />
@@ -284,18 +321,21 @@ const SavingsPage = ({
 
       {text.length > 0 && <div className="text">{text}</div>}
 
-      {selectedSavingOperationType === SavingOperationType.DEPOSIT && (
+      {
         <InputComponent
+          ariaLabel="input-username"
           type={InputType.TEXT}
           logo={Icons.AT}
-          placeholder="popup_html_username"
+          placeholder="popup_html_transfer_to"
           value={username}
           onChange={setUsername}
+          autocompleteValues={autoCompleteUsernames}
         />
-      )}
+      }
       <div className="amount-panel">
         <div className="amount-input-panel">
           <InputComponent
+            ariaLabel="amount-input"
             type={InputType.NUMBER}
             placeholder="0.000"
             skipPlaceholderTranslation={true}
@@ -315,6 +355,7 @@ const SavingsPage = ({
       </div>
 
       <OperationButtonComponent
+        ariaLabel="submit-savings"
         requiredKey={KeychainKeyTypesLC.active}
         label={
           selectedSavingOperationType === SavingOperationType.WITHDRAW

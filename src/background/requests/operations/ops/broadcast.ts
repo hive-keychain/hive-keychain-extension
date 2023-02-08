@@ -25,18 +25,20 @@ export const broadcastOperations = async (
       typeof data.operations === 'string'
         ? JSON.parse(data.operations)
         : data.operations;
-
     for (const op of operations) {
       if (op[0] === 'transfer') {
         const memo = op[1].memo;
         if (memo && memo.length > 0 && memo[0] == '#') {
           const receiver = await client.database.getAccounts([op[1].to]);
+          if (!receiver.length) {
+            throw new Error('Failed to load receiver memo key');
+          }
           const memoKey: string = requestHandler.getUserKey(
             data.username!,
             KeychainKeyTypesLC.memo,
           )[0];
-          if (!receiver) {
-            throw new Error('Failed to load receiver memo key');
+          if (!memoKey) {
+            throw new Error('Failed to load user memo key');
           }
           const memoReceiver = receiver[0].memo_key;
           op[1].memo = encode(memoKey, memoReceiver, memo);
@@ -46,7 +48,8 @@ export const broadcastOperations = async (
         op[0] === 'create_proposal' ||
         op[0] === 'remove_proposal' ||
         op[0] === 'account_update2' ||
-        op[0] === 'account_update'
+        op[0] === 'account_update' ||
+        op[0] === 'recurrent_transfer'
       ) {
         if (!op[1].extensions) {
           op[1].extensions = [];
@@ -58,10 +61,10 @@ export const broadcastOperations = async (
           op[1].approve = op[1].approve === 'true';
         }
       } else if (op[0] === 'custom_json') {
-        if (op[1].required_posting_auths === 0) {
+        if (!op[1].required_posting_auths) {
           op[1].required_posting_auths = [];
         }
-        if (op[1].required_auths === 0) {
+        if (!op[1].required_auths) {
           op[1].required_auths = [];
         }
       }
