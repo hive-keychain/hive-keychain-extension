@@ -1,6 +1,6 @@
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
+import { Token, TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
@@ -297,19 +297,21 @@ const getOutgoingDelegations = async (
  * @param {string} contract Fixed as 'tokens'
  * @param {string} table Fixed as 'tokens
  */
-const getAllTokens = async (
-  query: {},
-  limit: number,
-  offset: number,
-  indexes: {}[],
-): Promise<any[]> => {
-  return HiveEngineUtils.get<any[]>({
-    contract: 'tokens',
-    table: 'tokens',
-    query,
-    limit,
-    offset,
-    indexes,
+const getAllTokens = async (): Promise<Token[]> => {
+  return (
+    await HiveEngineUtils.get<any[]>({
+      contract: 'tokens',
+      table: 'tokens',
+      query: {},
+      limit: 1000,
+      offset: 0,
+      indexes: [],
+    })
+  ).map((t: any) => {
+    return {
+      ...t,
+      metadata: JSON.parse(t.metadata),
+    };
   });
 };
 

@@ -4,12 +4,19 @@ import Select, {
   SelectRenderer,
 } from 'react-dropdown-select';
 import 'react-tabs/style/react-tabs.scss';
-import './token-swaps.component.scss';
+import './custom-select.component.scss';
+
+export interface SelectOption {
+  label: string;
+  subLabel?: string;
+  value: any;
+  img?: string;
+}
 
 interface CustomSelectProps {
-  options: any;
+  options: SelectOption[];
   defaultValue: any;
-  skipLabelTranslation: boolean;
+  skipLabelTranslation?: boolean;
   onSelectedValueChange: (value: any) => void;
 }
 
@@ -25,7 +32,7 @@ const CustomSelect = ({
     onSelectedValueChange(newValue);
   };
 
-  const contentRenderer = (selectProps: SelectRenderer<any>) => {
+  const contentRenderer = (selectProps: SelectRenderer<SelectOption>) => {
     return (
       <div
         className="selected-value"
@@ -38,7 +45,7 @@ const CustomSelect = ({
       </div>
     );
   };
-  const itemRenderer = (selectProps: SelectItemRenderer<any>) => {
+  const itemRenderer = (selectProps: SelectItemRenderer<SelectOption>) => {
     return (
       <div
         className={`select-item ${
@@ -48,6 +55,9 @@ const CustomSelect = ({
           updateSelectedValue(selectProps.item.value);
           selectProps.methods.dropDown('close');
         }}>
+        {selectProps.item.img && (
+          <img src={selectProps.item.img} className="image" />
+        )}
         <div className="label">{selectProps.item.label}</div>
       </div>
     );
