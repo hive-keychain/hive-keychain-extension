@@ -32,6 +32,7 @@ describe('transaction.utils tests:\n', () => {
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
+        utilsT.dynamicPropertiesObj,
         callingData.memoKey,
       );
       if (showOutPutData) {
@@ -51,6 +52,7 @@ describe('transaction.utils tests:\n', () => {
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
           callingData.start,
+          utilsT.dynamicPropertiesObj,
           callingData.memoKey,
         ),
       ).toEqual([[], callingData.start]);
@@ -67,6 +69,7 @@ describe('transaction.utils tests:\n', () => {
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
           callingData.start,
+          utilsT.dynamicPropertiesObj,
           callingData.memoKey,
         ),
       ).toEqual([utilsT.expectedOutputId0, callingData.start]);
@@ -85,6 +88,7 @@ describe('transaction.utils tests:\n', () => {
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
+        utilsT.dynamicPropertiesObj,
         callingData.memoKey,
       );
       if (showResults) {

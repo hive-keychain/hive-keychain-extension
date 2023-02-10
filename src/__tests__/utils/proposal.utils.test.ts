@@ -40,7 +40,10 @@ describe('proposal.utils tests:\n', () => {
         listProposals: proposal.fakeProposalListResponseHiveTx.proposals,
         listProposalVotes: proposal.fakeListProposalVotesResponse,
       });
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        dynamic.globalProperties,
+      );
       expect(result).toEqual(proposal.expectedResultProposal);
     });
 
@@ -51,7 +54,10 @@ describe('proposal.utils tests:\n', () => {
         listProposalVotes: proposal.fakeListProposalVotesResponse,
       });
 
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        dynamic.globalProperties,
+      );
       expect(result).toEqual(constants.expectedResultProposalWithkeyChain);
     });
   });
@@ -83,7 +89,9 @@ describe('proposal.utils tests:\n', () => {
       mocks.store.getState({
         globalProperties: { global: dynamic.globalProperties },
       });
-      expect(await ProposalUtils.isRequestingProposalVotes()).toBe(true);
+      expect(
+        await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
+      ).toBe(true);
     });
 
     it('Must return false', async () => {
@@ -95,7 +103,9 @@ describe('proposal.utils tests:\n', () => {
       mocks.store.getState({
         globalProperties: { global: dynamic.globalProperties },
       });
-      expect(await ProposalUtils.isRequestingProposalVotes()).toBe(false);
+      expect(
+        await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
+      ).toBe(false);
       Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP =
         tempPROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
     });
@@ -110,7 +120,9 @@ describe('proposal.utils tests:\n', () => {
       mocks.store.getState({
         globalProperties: { global: dynamic.globalProperties },
       });
-      expect(await ProposalUtils.isRequestingProposalVotes()).toBe(true);
+      expect(
+        await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
+      ).toBe(true);
     });
   });
 });

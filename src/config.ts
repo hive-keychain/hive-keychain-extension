@@ -18,7 +18,7 @@ const Config = {
   analytics: {
     frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
   },
-  PROPOSAL: 216,
+  KEYCHAIN_PROPOSAL: 216,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
   MIN_LOADING_TIME: 1000,
   rpc: {
