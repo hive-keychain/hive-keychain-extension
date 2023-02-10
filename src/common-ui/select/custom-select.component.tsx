@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
@@ -15,7 +15,7 @@ export interface SelectOption {
 
 interface CustomSelectProps {
   options: SelectOption[];
-  defaultValue: any;
+  value: any;
   skipLabelTranslation?: boolean;
   onSelectedValueChange: (value: any) => void;
 }
@@ -23,9 +23,14 @@ interface CustomSelectProps {
 const CustomSelect = ({
   options,
   skipLabelTranslation,
+  value,
   onSelectedValueChange,
 }: CustomSelectProps) => {
-  const [selectedValue, setSelectedValue] = useState<SelectOption>(options[0]);
+  const [selectedValue, setSelectedValue] = useState<SelectOption>(value);
+
+  useEffect(() => {
+    setSelectedValue(value);
+  }, [value]);
 
   const updateSelectedValue = (newValue: any) => {
     setSelectedValue(newValue);

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
@@ -43,12 +44,15 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
       const tokenInfo = allTokens.find((t) => t.symbol === token.symbol);
       let img = '';
       if (tokenInfo) {
-        img = tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg';
+        img =
+          tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
+            ? tokenInfo.metadata.icon
+            : '/assets/images/hive-engine.svg';
       } else {
         img =
           token.symbol === BaseCurrencies.HIVE
             ? `/assets/images/${Icons.HIVE}`
-            : `/assets/images/${Icons.HIVE}`;
+            : `/assets/images/${Icons.HBD}`;
       }
       return {
         value: token.symbol,
@@ -56,22 +60,42 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
         img: img,
       };
     });
-    // let endList: SelectOption[] = [{},{},...allTokens.map(token) => {
-    //   let img = '';
-    //     img = tokenInfo.metadata.icon ?? '/assets/images/hive-engine.svg';
-    //   return {
-    //     value: token.symbol,
-    //     label: token.symbol,
-    //     img: img,
-    //   };
-    // }]
+    let endList: SelectOption[] = [
+      {
+        value: BaseCurrencies.HIVE,
+        label: BaseCurrencies.HIVE,
+        img: `/assets/images/${Icons.HIVE}`,
+      },
+      {
+        value: BaseCurrencies.HBD,
+        label: BaseCurrencies.HBD,
+        img: `/assets/images/${Icons.HBD}`,
+      },
+      ...allTokens.map((token) => {
+        let img = '';
+        img = token.metadata.icon ?? '/assets/images/hive-engine.svg';
+        return {
+          value: token.symbol,
+          label: token.symbol,
+          img: img,
+        };
+      }),
+    ];
     setStartToken(list[0].value);
     setStartTokenListOptions(list);
-    // setEndTokenListOptions()
+    setEndToken(endList[0].value);
+    setEndTokenListOptions(endList);
     setLoading(false);
   };
 
   const processSwap = () => {};
+
+  const swapStartAndEnd = () => {
+    console.log(startToken, endToken);
+    const tmp = startToken;
+    setStartToken(endToken);
+    setEndToken(tmp);
+  };
 
   return (
     <div className="token-swaps" aria-label="token-swaps">
@@ -80,7 +104,7 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
           <div className="start-token">
             {startTokenListOptions.length > 0 && (
               <CustomSelect
-                defaultValue={startTokenListOptions[0]}
+                value={startToken}
                 options={startTokenListOptions}
                 skipLabelTranslation
                 onSelectedValueChange={(token) => setStartToken(token)}
@@ -95,7 +119,21 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
               min={0}
             />
           </div>
-          <div className="end-token"></div>
+          <Icon
+            type={IconType.OUTLINED}
+            name={Icons.SWAP}
+            onClick={swapStartAndEnd}
+          />
+          <div className="end-token">
+            {endTokenListOptions.length > 0 && (
+              <CustomSelect
+                value={endToken}
+                options={endTokenListOptions}
+                skipLabelTranslation
+                onSelectedValueChange={(token) => setEndToken(token)}
+              />
+            )}
+          </div>
           <InputComponent
             type={InputType.NUMBER}
             min={5}
