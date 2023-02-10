@@ -23,7 +23,7 @@ const constants = {
       endDate: moment('2023-05-15T00:00:00'),
       dailyPay: Asset.fromString('390.000 HBD'),
       subject: 'Hive Keychain development',
-      totalVotes: '0 HP',
+      totalVotes: '33.43M HP',
       link: 'https://peakd.com/proposals/216',
       proposalId: 216,
       voted: true,

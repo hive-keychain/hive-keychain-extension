@@ -2,6 +2,7 @@ import { broadcastWitnessVote } from '@background/requests/operations/ops/witnes
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import witnessVoteMocks from 'src/__tests__/background/requests/operations/ops/mocks/witness-vote-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('witness-vote tests:\n', () => {
   const { methods, constants, spies, mocks } = witnessVoteMocks;
   const { requestHandler, data } = constants;
@@ -16,9 +17,15 @@ describe('witness-vote tests:\n', () => {
       );
     });
     it('Must return error if no key on handler', async () => {
-      const error = "Cannot read properties of undefined (reading 'toString')";
       const result = await broadcastWitnessVote(requestHandler, data);
-      methods.assert.error(result, new TypeError(error), data, error);
+      methods.assert.error(
+        result,
+        new Error('html_popup_error_while_signing_transaction'),
+        data,
+        mocksImplementation.i18nGetMessageCustom(
+          'html_popup_error_while_signing_transaction',
+        ),
+      );
     });
     it('Must return success when vote', async () => {
       mocks.HiveTxUtils.sendOperation(true);

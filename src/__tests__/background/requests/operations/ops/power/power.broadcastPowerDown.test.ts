@@ -5,9 +5,10 @@ import messages from 'src/__tests__/background/requests/operations/ops/mocks/mes
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('power tests:\n', () => {
   const { methods, constants, mocks } = powerMocks;
-  const { requestHandler, data, confirmed } = constants;
+  const { requestHandler, data } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastPowerDown cases:\n', () => {
@@ -24,16 +25,16 @@ describe('power tests:\n', () => {
       });
       it('Must return error if no key on handler', async () => {
         mocks.getDynamicGlobalProperties(dynamic.globalProperties);
-        const errorMessage =
-          "Cannot read properties of undefined (reading 'toString')";
         const result = await broadcastPowerDown(requestHandler, data.powerDown);
         const { request_id, ...datas } = data.powerDown;
         expect(result).toEqual(
           messages.error.answerError(
-            new TypeError(errorMessage),
+            new Error('html_popup_error_while_signing_transaction'),
             datas,
             request_id,
-            errorMessage,
+            mocksImplementation.i18nGetMessageCustom(
+              'html_popup_error_while_signing_transaction',
+            ),
             undefined,
           ),
         );

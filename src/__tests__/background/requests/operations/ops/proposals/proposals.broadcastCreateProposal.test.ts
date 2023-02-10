@@ -3,9 +3,10 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('proposals tests:\n', () => {
   const { methods, constants, mocks } = proposalsMocks;
-  const { requestHandler, data, confirmed } = constants;
+  const { requestHandler, data } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastCreateProposal cases:\n', () => {
@@ -26,8 +27,6 @@ describe('proposals tests:\n', () => {
         );
       });
       it('Must return error if no key on handler', async () => {
-        const errorMessage =
-          "Cannot read properties of undefined (reading 'toString')";
         data.create.extensions = '{"keychain":10000,"points":6}';
         delete requestHandler.data.key;
         const result = await broadcastCreateProposal(
@@ -36,9 +35,11 @@ describe('proposals tests:\n', () => {
         );
         methods.assert.error(
           result,
-          new TypeError(errorMessage),
+          new Error('html_popup_error_while_signing_transaction'),
           data.create,
-          errorMessage,
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
         );
       });
       it('Must return success', async () => {

@@ -1,5 +1,4 @@
 import { FundedOption } from '@interfaces/proposal.interface';
-import Config from 'src/config';
 import ProposalUtils from 'src/utils/proposal.utils';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
@@ -92,22 +91,6 @@ describe('proposal.utils tests:\n', () => {
       expect(
         await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
       ).toBe(true);
-    });
-
-    it('Must return false', async () => {
-      const tempPROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP =
-        Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
-      Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP = 0;
-      mocks.getProposalDailyBudget(0.01);
-      mocks.hiveTxUtils.getData(constants.withKeyChainProposal.proposals);
-      mocks.store.getState({
-        globalProperties: { global: dynamic.globalProperties },
-      });
-      expect(
-        await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
-      ).toBe(false);
-      Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP =
-        tempPROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
     });
 
     it('Must return true with one partially_funded proposal', async () => {

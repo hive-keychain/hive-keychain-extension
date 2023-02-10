@@ -14,22 +14,20 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:\n', () => {
   const { methods, constants, mocks } = authority;
-  const { requestHandler, confirmed, i18n } = constants;
+  const { requestHandler, i18n } = constants;
   const data = constants.data.removeKeyAuthority;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastRemoveKeyAuthority cases:\n', () => {
     it('Must return error if no key on handler', async () => {
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await broadcastRemoveKeyAuthority(requestHandler, data);
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.error.keyBuffer(
           datas,
           request_id,
-          new TypeError(errorMessage),
-          errorMessage,
+          new Error('html_popup_error_while_signing_transaction'),
+          i18n.get('html_popup_error_while_signing_transaction'),
         ),
       );
     });

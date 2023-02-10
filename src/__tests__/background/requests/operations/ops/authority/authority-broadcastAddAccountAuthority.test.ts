@@ -40,10 +40,11 @@ describe('authority tests:\n', () => {
         requestHandler,
         cloneData,
       );
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
-      const error = new TypeError(errorMessage);
-      const message = i18n.get('bgd_ops_error') + ' : ' + errorMessage;
+      const error = new Error('html_popup_error_while_signing_transaction');
+      const message =
+        i18n.get('bgd_ops_error') +
+        ' : ' +
+        'html_popup_error_while_signing_transaction';
       expect(resultOperation.msg.error).toEqual(error);
       expect(resultOperation.msg.message).toBe(message);
     });

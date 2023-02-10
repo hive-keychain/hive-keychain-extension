@@ -3,9 +3,10 @@ import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import proxyMocks from 'src/__tests__/background/requests/operations/ops/mocks/proxy-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('proxy tests:\n', () => {
   const { methods, constants, spies, mocks } = proxyMocks;
-  const { requestHandler, data, confirmed } = constants;
+  const { requestHandler, data } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastProxy cases:\n', () => {
@@ -19,10 +20,15 @@ describe('proxy tests:\n', () => {
       });
       it('Must return error if no key on handler', async () => {
         delete data.username;
-        const error =
-          "Cannot read properties of undefined (reading 'toString')";
         const result = await broadcastProxy(requestHandler, data);
-        methods.assert.error(result, new TypeError(error), data, error);
+        methods.assert.error(
+          result,
+          new Error('html_popup_error_while_signing_transaction'),
+          data,
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
+        );
       });
       it('Must return success on removing proxy', async () => {
         mocks.HiveTxUtils.sendOperation(true);

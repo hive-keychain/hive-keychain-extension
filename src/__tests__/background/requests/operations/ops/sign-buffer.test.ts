@@ -1,6 +1,11 @@
 import { signBuffer } from '@background/requests/operations/ops/sign-buffer';
+import { RequestsHandler } from '@background/requests/request-handler';
+import { KeychainError } from 'src/keychain-error';
+import { KeysUtils } from 'src/utils/keys.utils';
 import signMessageMocks from 'src/__tests__/background/requests/operations/ops/mocks/signMessage-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('sign-buffer tests:\n', () => {
   const { methods, constants, spies } = signMessageMocks;
   const { requestHandler, data, signedMessage } = constants;
@@ -11,18 +16,6 @@ describe('sign-buffer tests:\n', () => {
     expect(spies.getUserKey).toBeCalledWith(
       data.username!,
       data.method.toLowerCase(),
-    );
-  });
-  it('Must return error if no key on handler', async () => {
-    const errorMessage =
-      "Cannot read properties of undefined (reading 'toString')";
-    const signed = await signBuffer(requestHandler, data);
-    methods.assert.error(
-      signed,
-      new TypeError(errorMessage),
-      data,
-      errorMessage,
-      null,
     );
   });
   it('Must return success on string', async () => {
@@ -44,6 +37,22 @@ describe('sign-buffer tests:\n', () => {
       signed,
       chrome.i18n.getMessage('bgd_ops_sign_success'),
       signedMessage.buffer,
+    );
+  });
+  it('Must return error if no key on handler', async () => {
+    const requestHandlerCloned = objects.clone(
+      requestHandler,
+    ) as RequestsHandler;
+    delete requestHandlerCloned.data.key;
+    requestHandlerCloned.getUserKeyPair = jest.fn().mockReturnValue([]);
+    KeysUtils.isUsingLedger = jest.fn().mockReturnValue(true);
+    const signed = await signBuffer(requestHandlerCloned, data);
+    methods.assert.error(
+      signed,
+      new KeychainError('sign_buffer_ledger_error'),
+      data,
+      mocksImplementation.i18nGetMessageCustom('sign_buffer_ledger_error'),
+      null,
     );
   });
 });
