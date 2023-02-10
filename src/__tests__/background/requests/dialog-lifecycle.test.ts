@@ -1,5 +1,11 @@
 import { createPopup } from '@background/requests/dialog-lifecycle';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import dialogLifecycleMocks from 'src/__tests__/background/requests/mocks/dialog-lifecycle-mocks';
+//testing about ledger
+beforeAll(() => {
+  LedgerUtils.init = jest.fn().mockResolvedValue(false);
+});
+//end testing
 describe('dialog-lifecycle tests:\n', () => {
   const { methods, constants, spies } = dialogLifecycleMocks;
   const { requestHandler } = constants;
