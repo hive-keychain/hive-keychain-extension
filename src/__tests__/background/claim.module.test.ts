@@ -59,6 +59,22 @@ describe('claim.module tests:\n', () => {
   });
 
   describe('Same local accounts:\n', () => {
+    const addedParams = {
+      max_rc_creation_adjustment: {
+        amount: '5491893317',
+        nai: '@@000000037',
+        precision: 6,
+      },
+      rc_manabar: {
+        current_mana: '58990650660',
+        last_update_time: 1669382499,
+      },
+      percentage: 100,
+    };
+    const rcWithAddedParams = {
+      ...accounts.active.rc,
+      ...addedParams,
+    };
     beforeEach(() => {
       mocks.getRCMana(constants.rcAccountData);
       mocks.getExtendedAccounts([accounts.extended]);

@@ -3,7 +3,9 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import config from 'src/__tests__/utils-for-testing/setups/config';
 describe('create-claimed-account tests:\n', () => {
+  config.byDefault();
   const { methods, constants, mocks } = createClaimedAccount;
   const { requestHandler, data, confirmed } = constants;
   methods.afterEach;

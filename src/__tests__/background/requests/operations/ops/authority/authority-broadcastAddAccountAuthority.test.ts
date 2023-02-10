@@ -36,7 +36,7 @@ describe('authority tests:\n', () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
-      const result = await broadcastAddAccountAuthority(
+      const resultOperation = await broadcastAddAccountAuthority(
         requestHandler,
         cloneData,
       );
@@ -44,8 +44,8 @@ describe('authority tests:\n', () => {
         "Cannot read properties of undefined (reading 'toString')";
       const error = new TypeError(errorMessage);
       const message = i18n.get('bgd_ops_error') + ' : ' + errorMessage;
-      expect(result.msg.error).toEqual(error);
-      expect(result.msg.message).toBe(message);
+      expect(resultOperation.msg.error).toEqual(error);
+      expect(resultOperation.msg.message).toBe(message);
     });
     it('Must broadcast update account using active key', async () => {
       const mHiveTxSendOp = jest

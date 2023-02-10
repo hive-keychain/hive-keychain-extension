@@ -4,6 +4,7 @@ import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { RootState } from 'src/__tests__/utils-for-testing/fake-store';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
@@ -14,13 +15,14 @@ import {
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
 
+const i18n = {
+  get: (key: string, options?: string[] | undefined) =>
+    mocksImplementation.i18nGetMessageCustom(key, options),
+};
+
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  snapshotName: {
-    withData: 'authorized-operations.component With Data',
-    noData: 'authorized-operations.component No Data',
-  },
   data: {
     authorizedOP: {
       'keychain.tests': {
@@ -34,6 +36,10 @@ const constants = {
         },
       },
     },
+  },
+  message: {
+    info: i18n.get('popup_html_pref_info'),
+    noWhitelisted: i18n.get('popup_html_no_pref'),
   },
 };
 

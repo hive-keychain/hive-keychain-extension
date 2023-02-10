@@ -25,6 +25,7 @@ const menuPages: IconsPage[] = [
     ariaLabel: alComponent.advanceSettings.changePassword,
   },
   { icon: Icons.LINK, ariaLabel: alComponent.advanceSettings.link },
+  { icon: Icons.ANALYTICS, ariaLabel: alComponent.advanceSettings.analytics },
   {
     icon: Icons.IMPORT_EXPORT,
     ariaLabel: alComponent.advanceSettings.importExport,

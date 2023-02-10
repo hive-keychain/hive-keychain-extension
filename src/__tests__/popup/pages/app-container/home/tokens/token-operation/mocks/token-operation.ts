@@ -52,7 +52,7 @@ const beforeEach = async (
   extraMocks.saveTransferRecipient();
   if (removeActiveKey) {
     delete initialState.accounts[0].keys.active;
-    delete initialState.accounts[0].keys.activePubKey;
+    delete initialState.accounts[0].keys.activePubkey;
   }
   renders.wInitialState(component, initialState);
   await assertion.awaitMk(constants.username);

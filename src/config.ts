@@ -15,7 +15,10 @@ const Config = {
       delay: +(process.env.DEV_CLAIM_SAVINGS_DELAY || 30),
     },
   },
-  KEYCHAIN_PROPOSAL: 216,
+  analytics: {
+    frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
+  },
+  PROPOSAL: 216,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,
   MIN_LOADING_TIME: 1000,
   rpc: {

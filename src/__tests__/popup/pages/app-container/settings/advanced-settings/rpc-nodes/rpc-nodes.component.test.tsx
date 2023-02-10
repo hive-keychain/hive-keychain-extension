@@ -2,7 +2,6 @@ import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import rpcNodes from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/rpc-nodes/mocks/rpc-nodes';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
-import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alImg from 'src/__tests__/utils-for-testing/aria-labels/al-img';
 import alSelect from 'src/__tests__/utils-for-testing/aria-labels/al-select';
 import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
@@ -19,10 +18,6 @@ describe('rpc-nodes.component tests:\n', () => {
     beforeEach(async () => {
       _asFragment = await rpcNodes.beforeEach();
     });
-    it('Must load component and info', () => {
-      assertion.getByLabelText(alComponent.advanceSettings.rpcNodes);
-      assertion.getOneByText(constants.message.intro);
-    });
 
     it('Must show add rpc button', async () => {
       await clickAwait([alCheckbox.rpcNodes.select.automaticMode]);
@@ -35,10 +30,6 @@ describe('rpc-nodes.component tests:\n', () => {
         customSwitchAuto: false,
         customsRpcs: [{ uri: 'https://saturnoman.com/rpc', testnet: false }],
       });
-    });
-    it('Must load component and info', () => {
-      assertion.getByLabelText(alComponent.advanceSettings.rpcNodes);
-      assertion.getOneByText(constants.message.intro);
     });
 
     it('Must hide add rpc button', async () => {

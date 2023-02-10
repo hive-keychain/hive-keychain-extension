@@ -1,7 +1,9 @@
+import { LocalAccount } from '@interfaces/local-account.interface';
 import reducers from '@popup/reducers';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { applyMiddleware, createStore } from 'redux';
 import thunk from 'redux-thunk';
+import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 // import {composeWithDevTools} from 'remote-redux-devtools';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
@@ -19,7 +21,7 @@ const store = createStore(
   /* preloadedState, */ applyMiddleware(thunk),
 );
 
-let previousAccounts = store.getState().accounts;
+let previousAccounts = store.getState().accounts as LocalAccount[];
 let previousRpc = store.getState().activeRpc;
 let previousActiveAccountName = store.getState().activeAccount?.name;
 let previousMk = store.getState().mk;
@@ -29,6 +31,13 @@ store.subscribe(() => {
   const { accounts, mk, activeRpc, activeAccount, hiveEngineConfig } =
     store.getState();
   if (!AccountUtils.isAccountListIdentical(previousAccounts, accounts)) {
+    if (
+      previousAccounts.length === 0 &&
+      previousAccounts.length !== accounts.length
+    ) {
+      AnalyticsUtils.sendAddFirstAccountEvent();
+    }
+
     previousAccounts = accounts;
     AccountUtils.saveAccounts(accounts, mk);
   }

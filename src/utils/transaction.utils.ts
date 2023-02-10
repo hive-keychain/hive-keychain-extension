@@ -1,4 +1,4 @@
-import { utils as dHiveUtils } from '@hiveio/dhive';
+import { DynamicGlobalProperties, utils as dHiveUtils } from '@hiveio/dhive';
 import {
   ClaimAccount,
   ClaimReward,
@@ -20,7 +20,6 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
-import { store } from '@popup/store';
 import FormatUtils from 'src/utils/format.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -44,6 +43,7 @@ export const CONVERT_TYPE_TRANSACTIONS = [
 const getAccountTransactions = async (
   accountName: string,
   start: number,
+  globals: DynamicGlobalProperties,
   memoKey?: string,
 ): Promise<[Transaction[], number]> => {
   try {
@@ -127,7 +127,7 @@ const getAccountTransactions = async (
             specificTransaction.hive = e[1].op[1].reward_hive;
             specificTransaction.hp = `${FormatUtils.toHP(
               e[1].op[1].reward_vests,
-              store.getState().globalProperties.globals,
+              globals,
             ).toFixed(3)} HP`;
             break;
           }
@@ -135,7 +135,7 @@ const getAccountTransactions = async (
             specificTransaction = e[1].op[1] as Delegation;
             specificTransaction.amount = `${FormatUtils.toHP(
               e[1].op[1].vesting_shares,
-              store.getState().globalProperties.globals,
+              globals,
             ).toFixed(3)} HP`;
             break;
           }
@@ -151,7 +151,7 @@ const getAccountTransactions = async (
             specificTransaction.subType = 'withdraw_vesting';
             specificTransaction.amount = `${FormatUtils.toHP(
               e[1].op[1].vesting_shares,
-              store.getState().globalProperties.globals,
+              globals,
             ).toFixed(3)} HP`;
             break;
           }
@@ -253,7 +253,8 @@ const getAccountTransactions = async (
     Logger.error(e, e);
     return getAccountTransactions(
       accountName,
-      (e as any).jse_info?.stack[0]?.data?.sequence - 1,
+      (e as any).jse_info.stack[0].data.sequence - 1,
+      globals,
       memoKey,
     );
   }

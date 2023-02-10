@@ -30,6 +30,7 @@ import { CreateAccountStepTwoComponent } from '@popup/pages/app-container/settin
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from '@popup/pages/app-container/settings/advanced-settings/advanced-settings.component';
+import { AnalyticsComponent } from '@popup/pages/app-container/settings/advanced-settings/analytics/analytics.component';
 import { AutoLockComponent } from '@popup/pages/app-container/settings/advanced-settings/auto-lock/auto-lock.component';
 import { ChangePasswordComponent } from '@popup/pages/app-container/settings/advanced-settings/change-password/change-password.component';
 import { ClearAllDataComponent } from '@popup/pages/app-container/settings/advanced-settings/clear-all-data/clear-all-data.component';
@@ -148,6 +149,8 @@ const AppRouter = ({
         return <CreateAccountStepOneComponent />;
       case Screen.CREATE_ACCOUNT_PAGE_STEP_TWO:
         return <CreateAccountStepTwoComponent />;
+      case Screen.SETTINGS_ANALYTICS:
+        return <AnalyticsComponent />;
     }
   };
 

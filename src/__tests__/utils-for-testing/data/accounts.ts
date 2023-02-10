@@ -1,6 +1,5 @@
 import { Asset, AuthorityType, ExtendedAccount } from '@hiveio/dhive';
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import { ActiveAccount, RC } from '@interfaces/active-account.interface';
 import { Keys } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -86,7 +85,15 @@ const active = {
     activePubkey: userData.one.encryptKeys.active,
     postingPubkey: userData.one.encryptKeys.posting,
   },
-  rc: { current_mana: 10000000, max_mana: 100, percentage: 100 } as Manabar,
+  rc: {
+    account: extended.name,
+    current_mana: 10000000,
+    max_mana: 100,
+    percentage: 10000,
+    delegated_rc: 0,
+    max_rc: 58990650660,
+    received_delegated_rc: 0,
+  } as RC,
   name: extended.name,
 } as ActiveAccount;
 
