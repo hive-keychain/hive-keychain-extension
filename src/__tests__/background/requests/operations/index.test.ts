@@ -85,6 +85,6 @@ describe('index tests:\n', () => {
       expect(data.type).toBe(_data[i].type);
       spies.tabsSendMessage.mockClear();
     }
-    mHiveTxSendOp.mockRestore();
+    mHiveTxSendOp.mockClear();
   });
 });
