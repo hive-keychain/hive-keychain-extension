@@ -132,7 +132,11 @@ const confirmTransaction = async (transactionId: string) => {
   }
 };
 
-const signTransaction = async (tx: any, key: Key, signHash?: boolean) => {
+const signTransaction = async (
+  tx: Transaction,
+  key: Key,
+  signHash?: boolean,
+) => {
   const hiveTransaction = new HiveTransaction(tx);
   if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;
