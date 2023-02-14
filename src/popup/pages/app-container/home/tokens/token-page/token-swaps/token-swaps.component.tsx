@@ -154,6 +154,7 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
                   options={endTokenListOptions}
                   skipLabelTranslation
                   setSelectedValue={setEndToken}
+                  filterable
                 />
                 {swapFinalValue && (
                   <div className="final-value">
@@ -174,6 +175,7 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
             onChange={setSlipperage}
             label="html_popup_swaps_slipperage"
             placeholder="html_popup_swaps_slipperage"
+            tooltip="html_popup_swaps_slippage_definition"
           />
           <OperationButtonComponent
             ariaLabel="operation-process-button"

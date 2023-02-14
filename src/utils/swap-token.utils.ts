@@ -18,7 +18,7 @@ const getSwapTokenStartList = async (account: ExtendedAccount) => {
     userTokenList.unshift({
       account: account.name,
       balance: Asset.fromString(account.balance.toString()).amount.toString(),
-      symbol: BaseCurrencies.HIVE,
+      symbol: BaseCurrencies.HIVE.toUpperCase(),
     } as TokenBalance);
   }
   if (Asset.fromString(account.hbd_balance.toString()).amount > 0) {
@@ -27,7 +27,7 @@ const getSwapTokenStartList = async (account: ExtendedAccount) => {
       balance: Asset.fromString(
         account.hbd_balance.toString(),
       ).amount.toString(),
-      symbol: BaseCurrencies.HBD,
+      symbol: BaseCurrencies.HBD.toUpperCase(),
     } as TokenBalance);
   }
 

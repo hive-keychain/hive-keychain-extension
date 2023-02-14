@@ -1,9 +1,8 @@
-import React from 'react';
-import Select, {
-  SelectItemRenderer,
-  SelectRenderer,
-} from 'react-dropdown-select';
+import React, { useEffect, useState } from 'react';
+import Select, { SelectRenderer } from 'react-dropdown-select';
 import 'react-tabs/style/react-tabs.scss';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import './custom-select.component.scss';
 
 export interface SelectOption {
@@ -18,6 +17,7 @@ interface CustomSelectProps {
   options: SelectOption[];
   selectedValue: any;
   skipLabelTranslation?: boolean;
+  filterable?: boolean;
   setSelectedValue: (value: any) => void;
 }
 
@@ -25,10 +25,26 @@ const CustomSelect = ({
   options,
   skipLabelTranslation,
   selectedValue,
+  filterable,
   setSelectedValue,
 }: CustomSelectProps) => {
   const updateSelectedValue = (newValue: any) => {
     setSelectedValue(newValue);
+  };
+
+  const [filteredOptions, setFilteredOptions] = useState(options);
+  const [query, setQuery] = useState('');
+
+  useEffect(() => {
+    setFilteredOptions(filter(query));
+  }, [query]);
+
+  const filter = (query: string) => {
+    return options.filter(
+      (option) =>
+        option.label.toLowerCase().includes(query.toLowerCase()) ||
+        option.subLabel?.toLowerCase().includes(query.toLowerCase()),
+    );
   };
 
   const contentRenderer = (selectProps: SelectRenderer<SelectOption>) => {
@@ -38,51 +54,70 @@ const CustomSelect = ({
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        {selectProps.state.values[0].img && (
+        {selectedValue.img && (
           <img
-            src={selectProps.state.values[0].img}
+            src={selectedValue.img}
             className="image"
             onError={({ currentTarget }) => {
               currentTarget.onerror = null;
-
-              currentTarget.src = selectProps.state.values[0].imgBackup!;
+              currentTarget.src = selectedValue.imgBackup!;
             }}
           />
         )}
         <div className="label">
           {skipLabelTranslation
-            ? selectProps.state.values[0].label
-            : chrome.i18n.getMessage(selectProps.state.values[0].label)}
+            ? selectedValue.label
+            : chrome.i18n.getMessage(selectedValue.label)}
         </div>
       </div>
     );
   };
-  const itemRenderer = (selectProps: SelectItemRenderer<SelectOption>) => {
-    return (
-      <div
-        className={`select-item ${
-          selectedValue === selectProps.item.value ? 'selected' : ''
-        }`}
-        onClick={() => {
-          updateSelectedValue(selectProps.item);
-          selectProps.methods.dropDown('close');
-        }}>
-        {selectProps.item.img && (
-          <img
-            src={selectProps.item.img}
-            className="image"
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
 
-              currentTarget.src = selectProps.item.imgBackup!;
-            }}
+  const dropdownRenderer = ({
+    props,
+    state,
+    methods,
+  }: SelectRenderer<SelectOption>) => {
+    return (
+      <div className="custom-dropdown">
+        {filterable && (
+          <InputComponent
+            onChange={setQuery}
+            value={query}
+            placeholder={''}
+            type={InputType.TEXT}
           />
         )}
-        <div className="label">
-          {skipLabelTranslation
-            ? selectProps.item.label
-            : chrome.i18n.getMessage(selectProps.item.label)}
-        </div>
+        {filteredOptions.map((option) => {
+          return (
+            <div
+              className={`select-item ${
+                selectedValue === option.value ? 'selected' : ''
+              }`}
+              onClick={() => {
+                updateSelectedValue(option);
+                methods.dropDown('close');
+              }}
+              key={`option-${option.label}`}>
+              {option.img && (
+                <img
+                  src={option.img}
+                  className="image"
+                  onError={({ currentTarget }) => {
+                    currentTarget.onerror = null;
+
+                    currentTarget.src = option.imgBackup!;
+                  }}
+                />
+              )}
+              <div className="label">
+                {skipLabelTranslation
+                  ? option.label
+                  : chrome.i18n.getMessage(option.label)}
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -90,11 +125,11 @@ const CustomSelect = ({
   return (
     <Select
       values={[selectedValue]}
-      options={options}
+      options={filteredOptions}
       onChange={() => undefined}
       contentRenderer={contentRenderer}
-      itemRenderer={itemRenderer}
       className="select-dropdown"
+      dropdownRenderer={dropdownRenderer}
     />
   );
 };

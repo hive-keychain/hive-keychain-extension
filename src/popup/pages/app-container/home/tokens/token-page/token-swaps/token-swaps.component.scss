@@ -2,7 +2,6 @@
 
 .token-swaps {
   @include pageLayoutRowGap;
-  row-gap: 32px;
   overflow: hidden;
   flex: 1;
   padding: 24px;
@@ -21,8 +20,9 @@
   }
 
   .start-token {
-    display: flex;
+    display: grid;
     align-items: flex-end;
+    grid-template-columns: 1fr 1fr;
   }
 
   .end-token {

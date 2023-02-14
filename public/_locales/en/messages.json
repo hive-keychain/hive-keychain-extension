@@ -2878,15 +2878,19 @@
     "description": "Token swaps"
   },
   "html_popup_swaps_slipperage": {
-    "message": "Splipperage",
-    "description": "Token swaps : slipperage"
+    "message": "Slippage",
+    "description": "Token swaps : Slippage"
   },
   "html_popup_swaps_process_swap": {
     "message": "Process swap",
     "description": "Token swaps : process"
   },
   "html_popup_swaps_final_price": {
-    "message": "You will receive $1 $2",
+    "message": "≈ $1 $2",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_slippage_definition": {
+    "message": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus eu vulputate ex. Phasellus venenatis aliquam magna id cursus. Nunc pulvinar molestie nisi et vehicula. Donec odio est, sollicitudin eu lectus ac, ultricies gravida nulla. Phasellus ullamcorper posuere porttitor. Interdum et malesuada fames ac ante ipsum primis in faucibus. Maecenas imperdiet.",
     "description": "Token swaps : process"
   }
 }

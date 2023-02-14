@@ -25,6 +25,8 @@ interface InputProps {
   hasError?: boolean;
   ariaLabel?: string;
   disabled?: boolean;
+  tooltip?: string;
+  skipTooltipTranslation?: boolean;
 }
 
 const InputComponent = (props: InputProps) => {
@@ -66,10 +68,21 @@ const InputComponent = (props: InputProps) => {
     <div className="custom-input">
       {props.label && (
         <div className="label">
-          {props.skipLabelTranslation
-            ? props.label
-            : chrome.i18n.getMessage(props.label)}{' '}
-          {props.required ? '*' : ''}
+          <div>
+            {props.skipLabelTranslation
+              ? props.label
+              : chrome.i18n.getMessage(props.label)}{' '}
+            {props.required ? '*' : ''}
+          </div>
+          {props.tooltip && (
+            <Icon
+              type={IconType.OUTLINED}
+              name={Icons.INFO}
+              skipTooltipTranslation={props.skipTooltipTranslation}
+              tooltipMessage={props.tooltip}
+              tooltipPosition="right"
+            />
+          )}
         </div>
       )}
       <div

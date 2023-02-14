@@ -4,6 +4,12 @@ $autoCompleteItemHeight: 30px;
 .custom-input {
   .label {
     font-size: 16px;
+    display: flex;
+    align-items: center;
+    .icon-component {
+      font-size: 16px;
+      padding-left: 8px;
+    }
   }
   .input-container {
     position: relative;
