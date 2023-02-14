@@ -1036,7 +1036,7 @@
     "description": "when user didnt create a wallet yet"
   },
   "bgd_init_no_wallet_explained": {
-    "message": "To be able to use Hive Keychain, please set up your wallet. Click on the Hive Keychain logo on the top right corner of your browser (it might be hidden in the extension menu), then setup your password and import your accounts.",
+    "message": "To use Hive Keychain, please set up your wallet. Click on the Hive Keychain logo on the top right corner of your browser (it might be hidden in the extension menu), then setup your password and import your accounts.",
     "description": "when user didnt create a wallet yet"
   },
   "bgd_lifecycle_request_canceled": {
@@ -2776,6 +2776,10 @@
     "message": "Transaction rejected",
     "description": "Transaction rejected on Ledger"
   },
+  "error_ledger_locked": {
+    "message": "Please unlock your Ledger",
+    "description": "Transaction rejected on Ledger because it is locked"
+  },
   "error_ledger_failed_to_parse_transaction": {
     "message": "Ledger failed to parse the transaction. Contact us on our Discord",
     "description": "transaction parsing failed on Ledger"
@@ -2850,7 +2854,7 @@
     "description": "Title of add accounts from ledger page"
   },
   "synchronize_ledger_button": {
-    "message": "Synchronize Ledger",
+    "message": "Link Ledger",
     "description": "Synchronize Ledger button"
   },
   "ledger_select_account_caption": {
@@ -2886,7 +2890,7 @@
     "description": "Add missing keys when import account from Ledger"
   },
   "ledger_account_discovery_caption": {
-    "message": "Synchronize your Ledger to be able to use your accounts on Keychain",
+    "message": "Link your Ledger to use your accounts on Keychain",
     "description": "synchronize ledger caption"
   },
   "no_account_found_on_ledger_error": {
@@ -2894,7 +2898,7 @@
     "description": "synchronize ledger caption"
   },
   "all_ledger_accounts_already_imported": {
-    "message": "All the accounts on your Ledger are already on Keychain",
+    "message": "All the accounts on your Ledger have already been linked to Keychain",
     "description": "while synchronizing ledger"
   },
   "add_accounts_from_ledger_sucessful": {

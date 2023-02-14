@@ -138,6 +138,8 @@ const parseLedger = (error: any) => {
     case '0xb007':
     case '0xb008':
       return new KeychainError('error_ledger_sign_hash');
+    case '0x530c':
+      return new KeychainError('error_ledger_locked');
     case '0x6985':
       return new KeychainError('error_ledger_denied_by_user', [], error);
     case '0x6a87':
