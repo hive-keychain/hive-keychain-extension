@@ -125,6 +125,8 @@ const parseHiveEngine = (error: string, payload: any) => {
 };
 
 const parseLedger = (error: any) => {
+  if (error instanceof KeychainError) return error;
+
   const hexErrCode = `0x${parseInt(error.statusCode)
     .toString(16)
     .toLowerCase()}`;
