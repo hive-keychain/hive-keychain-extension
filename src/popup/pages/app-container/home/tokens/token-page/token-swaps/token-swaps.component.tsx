@@ -20,20 +20,25 @@ import './token-swaps.component.scss';
 const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
   const [loading, setLoading] = useState(true);
   const [slipperage, setSlipperage] = useState(5);
-  const [amount, setAmount] = useState();
+  const [amount, setAmount] = useState<string>('');
 
-  const [startToken, setStartToken] = useState<string>();
-  const [endToken, setEndToken] = useState<string>();
+  const [startToken, setStartToken] = useState<SelectOption>();
+  const [endToken, setEndToken] = useState<SelectOption>();
   const [startTokenListOptions, setStartTokenListOptions] = useState<
     SelectOption[]
   >([]);
   const [endTokenListOptions, setEndTokenListOptions] = useState<
     SelectOption[]
   >([]);
+  const [swapFinalValue, setSwapFinalValue] = useState<number>();
 
   useEffect(() => {
     initTokenSelectOptions();
   }, []);
+
+  useEffect(() => {
+    calculateFinalValue();
+  }, [amount]);
 
   const initTokenSelectOptions = async () => {
     const startList = await SwapTokenUtils.getSwapTokenStartList(
@@ -63,12 +68,12 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
     let endList: SelectOption[] = [
       {
         value: BaseCurrencies.HIVE,
-        label: BaseCurrencies.HIVE,
+        label: BaseCurrencies.HIVE.toUpperCase(),
         img: `/assets/images/${Icons.HIVE}`,
       },
       {
         value: BaseCurrencies.HBD,
-        label: BaseCurrencies.HBD,
+        label: BaseCurrencies.HBD.toUpperCase(),
         img: `/assets/images/${Icons.HBD}`,
       },
       ...allTokens.map((token) => {
@@ -78,20 +83,36 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
           value: token.symbol,
           label: token.symbol,
           img: img,
+          imgBackup: '/assets/images/hive-engine.svg',
         };
       }),
     ];
-    setStartToken(list[0].value);
+    setStartToken(list[0]);
     setStartTokenListOptions(list);
-    setEndToken(endList[0].value);
+    setEndToken(endList[0]);
     setEndTokenListOptions(endList);
     setLoading(false);
+
+    calculateFinalValue();
   };
 
-  const processSwap = () => {};
+  const calculateFinalValue = async () => {
+    setSwapFinalValue(
+      await SwapTokenUtils.getFinalValue(
+        startToken?.value!,
+        endToken?.value!,
+        amount,
+      ),
+    );
+  };
+
+  const processSwap = () => {
+    console.log(
+      `start processing swap from ${startToken?.label} to ${endToken?.label}`,
+    );
+  };
 
   const swapStartAndEnd = () => {
-    console.log(startToken, endToken);
     const tmp = startToken;
     setStartToken(endToken);
     setEndToken(tmp);
@@ -104,10 +125,10 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
           <div className="start-token">
             {startTokenListOptions.length > 0 && (
               <CustomSelect
-                value={startToken}
+                selectedValue={startToken}
                 options={startTokenListOptions}
                 skipLabelTranslation
-                onSelectedValueChange={(token) => setStartToken(token)}
+                setSelectedValue={setStartToken}
               />
             )}
             <InputComponent
@@ -123,15 +144,26 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
             type={IconType.OUTLINED}
             name={Icons.SWAP}
             onClick={swapStartAndEnd}
+            additionalClassName="swap-icon"
           />
           <div className="end-token">
             {endTokenListOptions.length > 0 && (
-              <CustomSelect
-                value={endToken}
-                options={endTokenListOptions}
-                skipLabelTranslation
-                onSelectedValueChange={(token) => setEndToken(token)}
-              />
+              <>
+                <CustomSelect
+                  selectedValue={endToken}
+                  options={endTokenListOptions}
+                  skipLabelTranslation
+                  setSelectedValue={setEndToken}
+                />
+                {swapFinalValue && (
+                  <div className="final-value">
+                    {chrome.i18n.getMessage('html_popup_swaps_final_price', [
+                      swapFinalValue.toString(),
+                      endToken?.label!,
+                    ])}
+                  </div>
+                )}
+              </>
             )}
           </div>
           <InputComponent
@@ -144,10 +176,10 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
             placeholder="html_popup_swaps_slipperage"
           />
           <OperationButtonComponent
-            ariaLabel="operation-ok-button"
+            ariaLabel="operation-process-button"
             requiredKey={KeychainKeyTypesLC.active}
             onClick={processSwap}
-            label={'html_popup_ok'}
+            label={'html_popup_swaps_process_swap'}
             fixToBottom
           />
         </>

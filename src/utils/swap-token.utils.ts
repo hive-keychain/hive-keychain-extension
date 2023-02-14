@@ -38,8 +38,17 @@ const getSwapTokenEndList = () => {};
 
 const processSwap = () => {};
 
+const getFinalValue = async (
+  startToken: BaseCurrencies,
+  endToken: BaseCurrencies,
+  amount: string,
+) => {
+  if (amount.length && parseFloat(amount) > 0) return 13.5;
+};
+
 export const SwapTokenUtils = {
   getSwapTokenStartList,
   getSwapTokenEndList,
   processSwap,
+  getFinalValue,
 };

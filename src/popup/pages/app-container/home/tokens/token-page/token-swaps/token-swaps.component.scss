@@ -6,8 +6,30 @@
   overflow: hidden;
   flex: 1;
   padding: 24px;
+
+  .react-tabs {
+    flex: 1;
+  }
+
+  .rotating-logo {
+    align-self: center;
+    justify-self: center;
+  }
+
+  .swap-icon {
+    text-align: center;
+  }
+
   .start-token {
     display: flex;
     align-items: flex-end;
+  }
+
+  .end-token {
+    .final-value {
+      font-size: 18px;
+      font-style: italic;
+      padding-top: 6px;
+    }
   }
 }

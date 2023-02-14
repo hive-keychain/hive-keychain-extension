@@ -2880,5 +2880,13 @@
   "html_popup_swaps_slipperage": {
     "message": "Splipperage",
     "description": "Token swaps : slipperage"
+  },
+  "html_popup_swaps_process_swap": {
+    "message": "Process swap",
+    "description": "Token swaps : process"
+  },
+  "html_popup_swaps_final_price": {
+    "message": "You will receive $1 $2",
+    "description": "Token swaps : process"
   }
 }

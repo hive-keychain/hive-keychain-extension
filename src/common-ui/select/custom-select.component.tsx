@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Select, {
   SelectItemRenderer,
   SelectRenderer,
@@ -11,30 +11,24 @@ export interface SelectOption {
   subLabel?: string;
   value: any;
   img?: string;
+  imgBackup?: string;
 }
 
 interface CustomSelectProps {
   options: SelectOption[];
-  value: any;
+  selectedValue: any;
   skipLabelTranslation?: boolean;
-  onSelectedValueChange: (value: any) => void;
+  setSelectedValue: (value: any) => void;
 }
 
 const CustomSelect = ({
   options,
   skipLabelTranslation,
-  value,
-  onSelectedValueChange,
+  selectedValue,
+  setSelectedValue,
 }: CustomSelectProps) => {
-  const [selectedValue, setSelectedValue] = useState<SelectOption>(value);
-
-  useEffect(() => {
-    setSelectedValue(value);
-  }, [value]);
-
   const updateSelectedValue = (newValue: any) => {
     setSelectedValue(newValue);
-    onSelectedValueChange(newValue);
   };
 
   const contentRenderer = (selectProps: SelectRenderer<SelectOption>) => {
@@ -45,7 +39,15 @@ const CustomSelect = ({
           selectProps.methods.dropDown('close');
         }}>
         {selectProps.state.values[0].img && (
-          <img src={selectProps.state.values[0].img} className="image" />
+          <img
+            src={selectProps.state.values[0].img}
+            className="image"
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+
+              currentTarget.src = selectProps.state.values[0].imgBackup!;
+            }}
+          />
         )}
         <div className="label">
           {skipLabelTranslation
@@ -66,7 +68,15 @@ const CustomSelect = ({
           selectProps.methods.dropDown('close');
         }}>
         {selectProps.item.img && (
-          <img src={selectProps.item.img} className="image" />
+          <img
+            src={selectProps.item.img}
+            className="image"
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null;
+
+              currentTarget.src = selectProps.item.imgBackup!;
+            }}
+          />
         )}
         <div className="label">
           {skipLabelTranslation

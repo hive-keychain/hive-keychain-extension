@@ -2,4 +2,5 @@
 
 .tokens-page {
   @include tab-style(2);
+  @include flex-column-full-page;
 }

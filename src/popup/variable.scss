@@ -100,3 +100,9 @@ $caption-font-size: 16px;
     }
   }
 }
+
+@mixin flex-column-full-page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
