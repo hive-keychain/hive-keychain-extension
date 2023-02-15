@@ -2781,7 +2781,7 @@
     "description": "Transaction rejected on Ledger because it is locked"
   },
   "error_ledger_failed_to_parse_transaction": {
-    "message": "Ledger failed to parse the transaction. Contact us on our Discord",
+    "message": "Ledger failed to parse the transaction. Contact us on Discord",
     "description": "transaction parsing failed on Ledger"
   },
   "error_ledger_bad_state": {
