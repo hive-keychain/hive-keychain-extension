@@ -19,7 +19,7 @@ describe('hive-tx.utils.test.ts part 3', () => {
       it('Must throw error if signHash', async () => {
         mocks.LedgerUtils.getSettings({ hashSignPolicy: true });
         try {
-          await HiveTxUtils.signTransaction(constants.tx, '#1qw23eer4e', true);
+          await HiveTxUtils.signTransaction(constants.tx, '#1qw23eer4e');
         } catch (error) {
           expect(error).toEqual(
             new KeychainError('error_ledger_no_hash_sign_policy'),

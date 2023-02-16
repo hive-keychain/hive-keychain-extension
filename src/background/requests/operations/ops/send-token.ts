@@ -27,7 +27,6 @@ export const broadcastSendToken = async (
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
           key: key!,
-          signHash: true,
         });
         const signature = await LedgerModule.getSignatureFromLedger();
         result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(

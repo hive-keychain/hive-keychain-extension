@@ -62,21 +62,12 @@ const createSignAndBroadcastTransaction = async (
     } catch (err: any) {
       throw ErrorUtils.parseLedger(err);
     }
-    //TODO : Remove recurrent transfer exception after updating lib
-    if (
-      (!Hive.isDisplayableOnDevice(transaction) ||
-        transaction.operations[0][0] === 'recurrent_transfer') &&
-      !hashSignPolicy
-    ) {
+    if (!Hive.isDisplayableOnDevice(transaction) && !hashSignPolicy) {
       throw new KeychainError('error_ledger_no_hash_sign_policy');
     }
     try {
       let signedTransactionFromLedger;
-      //TODO : Remove recurrent transfer exception after updating lib
-      if (
-        !Hive.isDisplayableOnDevice(transaction) ||
-        transaction.operations[0][0] === 'recurrent_transfer'
-      ) {
+      if (!Hive.isDisplayableOnDevice(transaction)) {
         const digest = Hive.getTransactionDigest(transaction);
         const signature = await LedgerUtils.signHash(digest, key);
         hiveTransaction.addSignature(signature);
@@ -140,11 +131,7 @@ const confirmTransaction = async (transactionId: string) => {
   }
 };
 
-const signTransaction = async (
-  tx: Transaction,
-  key: Key,
-  signHash?: boolean,
-) => {
+const signTransaction = async (tx: Transaction, key: Key) => {
   const hiveTransaction = new HiveTransaction(tx);
   if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;
@@ -153,25 +140,13 @@ const signTransaction = async (
     } catch (err: any) {
       throw ErrorUtils.parse(err);
     }
-    //TODO : Remove recurrent transfer exception after updating lib
 
-    if (
-      signHash ||
-      ((!Hive.isDisplayableOnDevice(tx) ||
-        tx.operations[0][0] === 'recurrent_transfer') &&
-        !hashSignPolicy)
-    ) {
+    if (!Hive.isDisplayableOnDevice(tx) && !hashSignPolicy) {
       throw new KeychainError('error_ledger_no_hash_sign_policy');
     }
 
     try {
-      //TODO : Remove recurrent transfer exception after updating lib
-
-      if (
-        signHash ||
-        !Hive.isDisplayableOnDevice(tx) ||
-        tx.operations[0][0] === 'recurrent_transfer'
-      ) {
+      if (!Hive.isDisplayableOnDevice(tx)) {
         const digest = Hive.getTransactionDigest(tx);
         const signature = await LedgerUtils.signHash(digest, key);
         hiveTransaction.addSignature(signature);
