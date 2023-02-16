@@ -15,7 +15,6 @@ import {
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select, {
@@ -27,6 +26,7 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -335,10 +335,10 @@ const TransferFunds = ({
   return (
     <>
       <div className="transfer-funds-page" aria-label="transfer-funds-page">
-        <AvailableCurrentPanelComponent
-          available={balance}
-          availableCurrency={currencyLabels[selectedCurrency]}
-          availableLabel={'popup_html_balance'}
+        <SummaryPanelComponent
+          bottom={balance}
+          bottomRight={currencyLabels[selectedCurrency]}
+          bottomLeft={'popup_html_balance'}
         />
         <div className="form-container">
           <InputComponent
