@@ -18,13 +18,13 @@ import {
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -225,10 +225,10 @@ const TokensOperation = ({
 
   return (
     <div aria-label="tokens-operation-page" className="transfer-tokens-page">
-      <AvailableCurrentPanelComponent
-        available={balance}
-        availableCurrency={symbol}
-        availableLabel={'popup_html_balance'}></AvailableCurrentPanelComponent>
+      <SummaryPanelComponent
+        bottom={balance}
+        bottomRight={symbol}
+        bottomLeft={'popup_html_balance'}></SummaryPanelComponent>
       <div className="disclaimer">
         {chrome.i18n.getMessage('popup_html_tokens_operation_text')}
       </div>

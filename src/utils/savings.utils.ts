@@ -1,5 +1,6 @@
 import {
   Asset,
+  CancelTransferFromSavingsOperation,
   TransferFromSavingsOperation,
   TransferToSavingsOperation,
 } from '@hiveio/dhive';
@@ -74,6 +75,36 @@ const getRequestId = async (username: string) => {
   );
   return Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
 };
+/* istanbul ignore next */
+const getSavingsWithdrawals = async (username: string) => {
+  return await HiveTxUtils.getData('condenser_api.get_savings_withdraw_from', [
+    username,
+  ]);
+};
+/* istanbul ignore next */
+const getCancelTransferFromSavingsOperation = (
+  username: string,
+  request_id: number,
+) => {
+  return [
+    'cancel_transfer_from_savings',
+    {
+      from: username,
+      request_id,
+    },
+  ] as CancelTransferFromSavingsOperation;
+};
+/* istanbul ignore next */
+const cancelCurrentWithdrawSaving = async (
+  username: string,
+  request_id: number,
+  activeKey: Key,
+) => {
+  return await HiveTxUtils.sendOperation(
+    [SavingsUtils.getCancelTransferFromSavingsOperation(username, request_id)],
+    activeKey,
+  );
+};
 
 /* istanbul ignore next */
 const hasBalance = (balance: string | Asset, greaterOrEqualTo: number) => {
@@ -116,4 +147,7 @@ export const SavingsUtils = {
   getRequestId,
   hasBalance,
   claimSavings,
+  getSavingsWithdrawals,
+  getCancelTransferFromSavingsOperation,
+  cancelCurrentWithdrawSaving,
 };
