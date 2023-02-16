@@ -18,6 +18,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
+import { KeysUtils } from 'src/utils/keys.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './token-incoming-outgoing-item.component.scss';
@@ -54,7 +55,13 @@ const TokenIncomingOutgoing = ({
       title: 'popup_html_cancel_delegation',
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
-        addToLoadingList('html_popup_cancel_delegation_operation');
+        addToLoadingList(
+          'html_popup_cancel_delegation_operation',
+          KeysUtils.getKeyType(
+            activeAccount.keys.active!,
+            activeAccount.keys.activePubkey!,
+          ),
+        );
 
         try {
           let tokenOperationResult = await TokensUtils.cancelDelegationToken(

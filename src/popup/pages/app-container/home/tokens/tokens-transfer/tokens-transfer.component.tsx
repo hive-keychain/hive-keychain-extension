@@ -28,6 +28,7 @@ import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import HiveUtils from 'src/utils/hive.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
@@ -180,7 +181,13 @@ const TokensTransfer = ({
             }
           }
 
-          addToLoadingList('html_popup_transfer_token_operation');
+          addToLoadingList(
+            'html_popup_transfer_token_operation',
+            KeysUtils.getKeyType(
+              activeAccount.keys.active!,
+              activeAccount.keys.activePubkey!,
+            ),
+          );
           const transactionStatus = await TokensUtils.sendToken(
             symbol,
             receiverUsername,

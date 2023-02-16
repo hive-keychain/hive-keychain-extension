@@ -29,6 +29,7 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
@@ -149,7 +150,13 @@ const TokensOperation = ({
       title: `popup_html_${operationType}_tokens`,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        addToLoadingList(`popup_html_${operationType}_tokens`);
+        addToLoadingList(
+          `popup_html_${operationType}_tokens`,
+          KeysUtils.getKeyType(
+            activeAccount.keys.active!,
+            activeAccount.keys.activePubkey!,
+          ),
+        );
         let tokenOperationResult: TransactionStatus;
         try {
           switch (operationType) {

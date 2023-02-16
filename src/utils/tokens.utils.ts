@@ -26,11 +26,11 @@ const getStakeTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'stake',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
@@ -67,11 +67,11 @@ const getUnstakeTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'unstake',
     contractPayload: { symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
@@ -109,11 +109,11 @@ const getDelegateTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'delegate',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
@@ -159,11 +159,11 @@ const getCancelDelegationTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'undelegate',
     contractPayload: { from: from, symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
