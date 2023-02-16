@@ -164,7 +164,7 @@ const signHash = async (digest: string, key: Key) => {
   try {
     let ledger = await LedgerUtils.getLedgerInstance();
     if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
-    return ledger.signHash(
+    return await ledger.signHash(
       digest,
       LedgerUtils.getPathFromString(key!.toString()),
     );
