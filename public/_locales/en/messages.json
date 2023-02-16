@@ -2805,7 +2805,7 @@
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_no_hash_sign_policy": {
-    "message": "Hash sign policy is not enabled on the device. Please enable it in the Hive App settings.",
+    "message": "Blind signing is not authorized on your device. Please enable 'Hash Signing' in the Hive App settings.",
     "description": "when user hasn't allowed hash sign policyon his ledger"
   },
   "error_ledger_hive_app_not_opened": {
