@@ -22,6 +22,6 @@ module.exports = merge(common, {
       failOnWarning: true,
       exclude: ['../../node_modules', '../../src/utils/logger.utils.ts'],
     }),
-    new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
   ],
 });

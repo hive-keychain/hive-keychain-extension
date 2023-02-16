@@ -6,15 +6,30 @@ const path = require('path');
 
 const config = {
   entry: {
-    popup: './src/popup/index.tsx',
-    dialog: './src/dialog/index.tsx',
-    background: './src/background/index.ts',
-    importAccounts: './src/import/import-accounts.tsx',
-    importSettings: './src/import/import-settings.tsx',
-    addKeyFromLedger: './src/ledger/add-key/index.tsx',
-    addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
-    web_interface: './src/content-scripts/web-interface/index.ts',
-    keychainify: './src/content-scripts/keychainify/index.ts',
+    popup: { import: './src/popup/index.tsx', dependOn: 'shared' },
+    dialog: { import: './src/dialog/index.tsx', dependOn: 'shared' },
+    background: { import: './src/background/index.ts' },
+    importAccounts: {
+      import: './src/import/import-accounts.tsx',
+    },
+    importSettings: {
+      import: './src/import/import-settings.tsx',
+    },
+    addKeyFromLedger: {
+      import: './src/ledger/add-key/index.tsx',
+      dependOn: 'shared',
+    },
+    addAccountsFromLedger: {
+      import: './src/ledger/add-accounts/index.tsx',
+      dependOn: 'shared',
+    },
+    web_interface: {
+      import: './src/content-scripts/web-interface/index.ts',
+    },
+    keychainify: {
+      import: './src/content-scripts/keychainify/index.ts',
+    },
+    shared: ['@hiveio/dhive', 'moment', 'hive-tx'],
   },
   module: {
     rules: [
