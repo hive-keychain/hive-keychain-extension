@@ -13,7 +13,6 @@ interface PendingSavingsWithdrawalProps {
 const PendingSavingsWithdrawal = ({
   savingsPendingWithdrawalList,
   currency,
-  currentWithdrawLabel,
   setTitleContainerProperties,
 }: PropsFromRedux & PendingSavingsWithdrawalProps) => {
   useEffect(() => {

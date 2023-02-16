@@ -64,7 +64,9 @@ const SavingsPage = ({
   const [liquid, setLiquid] = useState<string | number>('...');
   const [savingsPendingWithdrawalList, setSavingsPendingWithdrawalList] =
     useState<SavingsWithdrawal[]>([]);
-
+  const [totalPendingValue, setTotalPendingValue] = useState<
+    number | undefined
+  >();
   const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
     [],
   );
@@ -140,8 +142,22 @@ const SavingsPage = ({
   }, [selectedCurrency, selectedSavingOperationType]);
 
   const fetchCurrentWithdrawingList = async () => {
+    const savingsPendingWithdrawalList =
+      await SavingsUtils.getSavingsWithdrawals(activeAccount.name!);
+
+    const totalPendingValue = filterSavingsPendingWithdrawalList(
+      savingsPendingWithdrawalList,
+      currency,
+    ).reduce((acc, curr) => acc + parseFloat(curr.amount.split(' ')[0]), 0);
+    setTotalPendingValue(
+      totalPendingValue !== 0 ? totalPendingValue : undefined,
+    );
+
     setSavingsPendingWithdrawalList(
-      await SavingsUtils.getSavingsWithdrawals(activeAccount.name!),
+      filterSavingsPendingWithdrawalList(
+        savingsPendingWithdrawalList,
+        currency,
+      ),
     );
   };
 
@@ -355,20 +371,7 @@ const SavingsPage = ({
         top={savings}
         topRight={currency}
         topLeft={'popup_html_savings_current'}
-        center={
-          filterSavingsPendingWithdrawalList(
-            savingsPendingWithdrawalList,
-            currency,
-          ).length > 0
-            ? filterSavingsPendingWithdrawalList(
-                savingsPendingWithdrawalList,
-                currency,
-              ).reduce(
-                (acc, curr) => acc + parseFloat(curr.amount.split(' ')[0]),
-                0,
-              )
-            : undefined
-        }
+        center={totalPendingValue}
         centerLeft={'popup_html_savings_current_withdrawing'}
         centerRight={currency}
         onCenterPanelClick={goToPendingSavingsWithdrawal}
