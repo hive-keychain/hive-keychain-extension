@@ -45,7 +45,7 @@
   },
   "homepage": "https://github.com/stoodkev/hive-keychain#readme",
   "dependencies": {
-    "@engrave/ledger-app-hive": "3.5.1",
+    "@engrave/ledger-app-hive": "3.5.3",
     "@hiveio/dhive": "1.2.3",
     "@hiveio/hive-js": "2.0.4",
     "@ledgerhq/hw-transport": "6.27.10",
