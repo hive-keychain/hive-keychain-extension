@@ -20,6 +20,7 @@ import {
   Transfer,
   WithdrawSavings,
 } from '@interfaces/transaction.interface';
+import { KeychainError } from 'src/keychain-error';
 import FormatUtils from 'src/utils/format.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
@@ -304,6 +305,11 @@ const decodeMemoIfNeeded = (transfer: Transfer, memoKey: string) => {
         const decodedMemo = HiveUtils.decodeMemo(memo, memoKey);
         transfer.memo = decodedMemo.substring(1);
       } catch (e) {
+        if (e instanceof KeychainError) {
+          transfer.memo = chrome.i18n.getMessage(
+            'decode_with_memo_key_in_ledger',
+          );
+        }
         Logger.error('Error while decoding', '');
       }
     } else {
