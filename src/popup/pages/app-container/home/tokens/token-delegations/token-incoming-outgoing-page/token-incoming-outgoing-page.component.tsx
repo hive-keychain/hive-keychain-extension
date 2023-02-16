@@ -72,7 +72,9 @@ const TokenIncomingOutgoingPage = ({
   };
 
   return (
-    <div aria-label="incoming-outgoing-page" className="incoming-outgoing-page">
+    <div
+      aria-label="incoming-outgoing-page"
+      className="token-incoming-outgoing-page">
       {delegationType === DelegationType.OUTGOING &&
         tokenInfo.undelegationCooldown > 0 && (
           <div className="cooldown-message">
