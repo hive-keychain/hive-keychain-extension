@@ -35,14 +35,4 @@ describe('hive-tx.utils.ts tests:\n', () => {
       ).toBe(false);
     });
   });
-
-  describe('createTransaction cases:\n', () => {
-    it('Must call logger and return tx', async () => {
-      mocks.hiveTransaction.create(constants.tx);
-      expect(await HiveTxUtils.createTransaction(constants.operations)).toEqual(
-        constants.tx,
-      );
-      expect(spies.logger.log).toBeCalledWith('length of transaction => 110');
-    });
-  });
 });

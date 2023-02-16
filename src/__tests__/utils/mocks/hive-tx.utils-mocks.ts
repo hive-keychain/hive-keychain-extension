@@ -9,6 +9,7 @@ import { Transaction as HiveTransaction } from 'hive-tx';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
@@ -31,7 +32,16 @@ const constants = {
   tx: {
     expiration: '10/10/2023',
     extensions: [],
-    operations: [],
+    operations: [
+      TransferUtils.getRecurrentTransferOperation(
+        'sender',
+        'receiver',
+        '1.000 HBD',
+        '',
+        24,
+        2,
+      ),
+    ],
     ref_block_num: 1125554,
     ref_block_prefix: 1111222,
   },

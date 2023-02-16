@@ -2952,5 +2952,9 @@
   "ledger_discover_key": {
     "message": "Confirm",
     "description": "Discover key on Ledger"
+  },
+  "local": {
+    "message": "Local",
+    "description": "generic word"
   }
 }

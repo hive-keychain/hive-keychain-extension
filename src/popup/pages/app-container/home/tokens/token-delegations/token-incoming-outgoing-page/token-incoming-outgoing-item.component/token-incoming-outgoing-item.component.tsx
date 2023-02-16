@@ -18,9 +18,9 @@ import { connect, ConnectedProps } from 'react-redux';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import TokensUtils from 'src/utils/tokens.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 import './token-incoming-outgoing-item.component.scss';
 
 interface TokenIncomingOutgoingProps {
@@ -74,7 +74,7 @@ const TokenIncomingOutgoing = ({
           if (tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
-              await TransferUtils.saveFavoriteUser(username, activeAccount);
+              await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_cancel_delegation_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
             } else {
@@ -137,7 +137,7 @@ const TokenIncomingOutgoing = ({
             removeFromLoadingList(`html_popup_delegation_operation`);
             removeFromLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
-              await TransferUtils.saveFavoriteUser(username, activeAccount);
+              await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
               setSuccessMessage(`popup_html_delegate_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
             } else {

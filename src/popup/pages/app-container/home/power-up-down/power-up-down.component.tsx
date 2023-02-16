@@ -27,10 +27,10 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { PowerUtils } from 'src/utils/power.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 import './power-up-down.component.scss';
 
 const PowerUpDown = ({
@@ -191,7 +191,7 @@ const PowerUpDown = ({
           }
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(receiver, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(receiver, activeAccount);
             setSuccessMessage('popup_html_power_up_down_success', [
               operationString,
             ]);
@@ -239,7 +239,7 @@ const PowerUpDown = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(receiver, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(receiver, activeAccount);
             setSuccessMessage('popup_html_cancel_power_down_success');
           } else {
             setErrorMessage('popup_html_cancel_power_down_fail');

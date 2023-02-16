@@ -1,4 +1,3 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
@@ -25,17 +24,18 @@ import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import InputComponent, {
+  AutoCompleteValue,
+} from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './transfer-fund.component.scss';
@@ -46,6 +46,7 @@ const TransferFunds = ({
   currencyLabels,
   phishing,
   formParams,
+  localAccounts,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -79,8 +80,9 @@ const TransferFunds = ({
   const [iteration, setIterations] = useState(
     formParams.iteration ? formParams.iteration : '',
   );
-  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState<string[]>([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    AutoCompleteValue[]
+  >([]);
 
   let balances = {
     hive: FormatUtils.toNumber(activeAccount.account.balance),
@@ -99,6 +101,7 @@ const TransferFunds = ({
 
   useEffect(() => {
     setBalance(balances[selectedCurrency]);
+    loadAutocompleteTransferUsernames();
   }, [selectedCurrency]);
 
   const options = [
@@ -107,12 +110,15 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    const favoriteUsers: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
-      );
-    setAutocompleteTransferUsernames(
-      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
+    setAutocompleteFavoriteUsers(
+      await FavoriteUserUtils.getAutocompleteList(
+        activeAccount.name!,
+        localAccounts,
+        {
+          addExchanges: true,
+          token: selectedCurrency.toUpperCase(),
+        },
+      ),
     );
   };
 
@@ -265,7 +271,7 @@ const TransferFunds = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(
+            await FavoriteUserUtils.saveFavoriteUser(
               receiverUsername,
               activeAccount,
             );
@@ -348,7 +354,7 @@ const TransferFunds = ({
             placeholder="popup_html_username"
             value={receiverUsername}
             onChange={setReceiverUsername}
-            autocompleteValues={autocompleteTransferUsernames}
+            autocompleteValues={autocompleteFavoriteUsers}
           />
           <div className="value-panel">
             <div className="value-input-panel">
@@ -434,6 +440,7 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
+    localAccounts: state.accounts,
   };
 };
 

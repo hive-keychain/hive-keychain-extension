@@ -1,4 +1,3 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import {
@@ -21,15 +20,16 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import InputComponent, {
+  AutoCompleteValue,
+} from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './tokens-transfer.component.scss';
@@ -39,6 +39,7 @@ const TokensTransfer = ({
   tokenBalance,
   phishing,
   formParams,
+  localAccounts,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -61,8 +62,9 @@ const TokensTransfer = ({
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
   const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
-  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState<string[]>([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    AutoCompleteValue[]
+  >([]);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -74,12 +76,11 @@ const TokensTransfer = ({
   }, []);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
-      );
-    setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+    setAutocompleteFavoriteUsers(
+      await FavoriteUserUtils.getAutocompleteList(
+        activeAccount.name!,
+        localAccounts,
+      ),
     );
   };
 
@@ -202,7 +203,7 @@ const TokensTransfer = ({
 
             if (transactionStatus.confirmed) {
               navigateTo(Screen.HOME_PAGE, true);
-              await TransferUtils.saveFavoriteUser(
+              await FavoriteUserUtils.saveFavoriteUser(
                 receiverUsername,
                 activeAccount,
               );
@@ -244,7 +245,7 @@ const TokensTransfer = ({
         placeholder="popup_html_username"
         value={receiverUsername}
         onChange={setReceiverUsername}
-        autocompleteValues={autocompleteTransferUsernames}
+        autocompleteValues={autocompleteFavoriteUsers}
       />
       <div className="value-panel">
         <div className="value-input-panel">
@@ -289,6 +290,7 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
+    localAccounts: state.accounts,
   };
 };
 

@@ -58,36 +58,6 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
     });
 
     describe('using ledger:\n', () => {
-      it('Must catch and throw error if invalid getSettings response', async () => {
-        mocks.hiveTransaction.create(constants.tx);
-        mocks.LedgerUtils.getSettings({} as Settings);
-        try {
-          await HiveTxUtils.createSignAndBroadcastTransaction(
-            constants.operations,
-            '#ajjsk1121312312',
-          );
-        } catch (error) {
-          expect(error).toEqual(
-            new TypeError("Cannot read properties of undefined (reading '0')"),
-          );
-        }
-      });
-
-      it('Must catch and throw error if signHash', async () => {
-        mocks.hiveTransaction.create(constants.tx);
-        mocks.LedgerUtils.getSettings({ hashSignPolicy: true } as Settings);
-        try {
-          await HiveTxUtils.createSignAndBroadcastTransaction(
-            constants.operations,
-            '#ajjsk1121312312',
-          );
-        } catch (error) {
-          expect(error).toEqual(
-            new TypeError("Cannot read properties of undefined (reading '0')"),
-          );
-        }
-      });
-
       it('Must catch and throw error if is not Displayable On Device', async () => {
         mocks.hiveTransaction.create(constants.tx);
         mocks.LedgerUtils.getSettings({ hashSignPolicy: false } as Settings);

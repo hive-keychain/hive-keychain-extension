@@ -4,32 +4,15 @@ import {
   TransferOperation,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
+import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
-import { ActiveAccount } from 'src/interfaces/active-account.interface';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-
-const exchanges = [
-  { account: 'bittrex', tokens: ['HIVE', 'HBD'] },
-  { account: 'deepcrypto8', tokens: ['HIVE'] },
-  { account: 'binance-hot', tokens: [] },
-  { account: 'ionomy', tokens: ['HIVE', 'HBD'] },
-  { account: 'huobi-pro', tokens: ['HIVE'] },
-  { account: 'huobi-withdrawal', tokens: [] },
-  { account: 'blocktrades', tokens: ['HIVE', 'HBD'] },
-  { account: 'mxchive', tokens: ['HIVE'] },
-  { account: 'hot.dunamu', tokens: [] },
-  { account: 'probithive', tokens: ['HIVE'] },
-  { account: 'probitred', tokens: [] },
-  { account: 'upbitsteem', tokens: [] },
-];
 
 const getTransferFromToSavingsValidationWarning = (
   account: string,
   operation: SavingOperationType,
 ) => {
-  if (exchanges.map((exchange) => exchange.account).includes(account)) {
+  if (exchanges.map((exchange) => exchange.username).includes(account)) {
     if (operation === SavingOperationType.DEPOSIT) {
       return chrome.i18n.getMessage(
         'popup_html_transfer_to_saving_to_exchange_error',
@@ -48,9 +31,9 @@ const getExchangeValidationWarning = async (
   hasMemo: any,
   isRecurrent?: boolean,
 ) => {
-  const exchange = exchanges.find((exchange) => exchange.account === account);
+  const exchange = exchanges.find((exchange) => exchange.username === account);
   if (!exchange) return null;
-  if (!exchange.tokens.includes(currency)) {
+  if (!exchange.acceptedCoins.includes(currency)) {
     return chrome.i18n.getMessage('popup_warning_exchange_deposit', [currency]);
   }
   if (!hasMemo) return chrome.i18n.getMessage('popup_warning_exchange_memo');
@@ -65,29 +48,6 @@ const getExchangeValidationWarning = async (
   //   }
   // }
   return null;
-};
-
-const saveFavoriteUser = async (
-  username: string,
-  activeAccount: ActiveAccount,
-) => {
-  let transferTo = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.FAVORITE_USERS,
-  );
-  if (!transferTo) {
-    transferTo = { [activeAccount.name!]: [] };
-  }
-  if (!transferTo[activeAccount.name!]) {
-    transferTo[activeAccount.name!] = [];
-  }
-
-  if (!transferTo[activeAccount.name!].includes(username)) {
-    transferTo[activeAccount.name!].push(username);
-  }
-  LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.FAVORITE_USERS,
-    transferTo,
-  );
 };
 
 const sendTransfer = (
@@ -189,7 +149,6 @@ const getTransferTransaction = (
 
 const TransferUtils = {
   getExchangeValidationWarning,
-  saveFavoriteUser,
   getTransferFromToSavingsValidationWarning,
   sendTransfer,
   getTransferOperation,

@@ -1,4 +1,3 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
@@ -18,7 +17,6 @@ import { Icons } from '@popup/icons.enum';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from '@popup/store';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -28,13 +26,15 @@ import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import InputComponent, {
+  AutoCompleteValue,
+} from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { SavingsUtils } from 'src/utils/savings.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './savings.component.scss';
@@ -45,6 +45,7 @@ const SavingsPage = ({
   activeAccount,
   globalProperties,
   formParams,
+  localAccounts,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
@@ -67,9 +68,9 @@ const SavingsPage = ({
   const [totalPendingValue, setTotalPendingValue] = useState<
     number | undefined
   >();
-  const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
-    [],
-  );
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    AutoCompleteValue[]
+  >([]);
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
     useState<SavingOperationType>(
@@ -102,7 +103,7 @@ const SavingsPage = ({
   ];
 
   useEffect(() => {
-    loadAutocompleteTransferUsernames();
+    loadAutocompleteFavoriteUsers();
     setTitleContainerProperties({
       title: 'popup_html_savings',
       isBackButtonEnabled: true,
@@ -161,13 +162,12 @@ const SavingsPage = ({
     );
   };
 
-  const loadAutocompleteTransferUsernames = async () => {
-    const favoriteUsers: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
-      );
-    setAutoCompleteUsernames(
-      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
+  const loadAutocompleteFavoriteUsers = async () => {
+    setAutocompleteFavoriteUsers(
+      await FavoriteUserUtils.getAutocompleteList(
+        activeAccount.name!,
+        localAccounts,
+      ),
     );
   };
 
@@ -237,7 +237,7 @@ const SavingsPage = ({
 
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {
-            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage(
               selectedSavingOperationType === SavingOperationType.DEPOSIT
                 ? 'popup_html_deposit_success'
@@ -396,7 +396,7 @@ const SavingsPage = ({
           placeholder="popup_html_transfer_to"
           value={username}
           onChange={setUsername}
-          autocompleteValues={autoCompleteUsernames}
+          autocompleteValues={autocompleteFavoriteUsers}
         />
       }
       <div className="amount-panel">
@@ -448,6 +448,7 @@ const mapStateToProps = (state: RootState) => {
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
+    localAccounts: state.accounts,
   };
 };
 
