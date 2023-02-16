@@ -2958,11 +2958,11 @@
     "description": "generic word"
   },
   "encode_with_memo_key_in_ledger": {
-    "message": "Your memo key is stored in Ledger. Ledger currently is currently not supporting encoding memo",
+    "message": "Your memo key is stored in Ledger. Ledger is currently not supporting encoding memo",
     "description": "Error while trying to encode a memo with memo key in ledger"
   },
   "decode_with_memo_key_in_ledger": {
-    "message": "Your memo key is stored in Ledger. Ledger currently is currently not supporting decoding memo",
+    "message": "Your memo key is stored in Ledger. Ledger is currently not supporting decoding memo",
     "description": "Error while trying to decode a memo with memo key in ledger"
   }
 }
