@@ -2,6 +2,8 @@ import { broadcastPost } from '@background/requests/operations/ops/post';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('post tests:\n', () => {
   const { methods, constants } = postMocks;
   const { requestHandler, data } = constants;
@@ -13,18 +15,26 @@ describe('post tests:\n', () => {
     const result = await broadcastPost(requestHandler, data);
     methods.assertMsgError(
       result,
-      new TypeError("Cannot read properties of undefined (reading 'toString')"),
+      new Error('html_popup_error_while_signing_transaction'),
       data,
-      "Cannot read properties of undefined (reading 'toString')",
+      mocksImplementation.i18nGetMessageCustom(
+        'html_popup_error_while_signing_transaction',
+      ),
     );
   });
 
-  it('Must return error if no key on handler', async () => {
-    const errorMsg = "Cannot read properties of undefined (reading 'toString')";
+  it('Must return error if no key', async () => {
     delete requestHandler.data.key;
     data.comment_options = '{"keychain":10000,"points":6}';
     const result = await broadcastPost(requestHandler, data);
-    methods.assertMsgError(result, new TypeError(errorMsg), data, errorMsg);
+    methods.assertMsgError(
+      result,
+      new Error('html_popup_error_while_signing_transaction'),
+      data,
+      mocksImplementation.i18nGetMessageCustom(
+        'html_popup_error_while_signing_transaction',
+      ),
+    );
   });
 
   describe('Empty comment_options:\n', () => {
@@ -42,10 +52,15 @@ describe('post tests:\n', () => {
 
   describe('With comment_options:\n', () => {
     it('Must return error if bad json', async () => {
-      const errorMsg = 'Unexpected token ! in JSON at position 0';
       data.comment_options = '!{!}';
-      const result = await broadcastPost(requestHandler, data);
-      methods.assertMsgError(result, new SyntaxError(errorMsg), data, errorMsg);
+      const resultOperation = (await broadcastPost(
+        requestHandler,
+        data,
+      )) as ResultOperation;
+      const { success, result, error } = resultOperation.msg;
+      expect(success).toBe(false);
+      expect(result).toBeUndefined();
+      expect((error as TypeError).message).toContain('JSON');
     });
     it('Must return success', async () => {
       requestHandler.data.key = userData.one.nonEncryptKeys.posting;

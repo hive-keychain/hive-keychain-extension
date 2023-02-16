@@ -125,12 +125,12 @@ const parseHiveEngine = (error: string, payload: any) => {
 };
 
 const parseLedger = (error: any) => {
+  if (error instanceof KeychainError) return error;
+
   const hexErrCode = `0x${parseInt(error.statusCode)
     .toString(16)
     .toLowerCase()}`;
   switch (hexErrCode) {
-    case '0x6985':
-      return new KeychainError('error_ledger_denied_by_user', [], error);
     case '0xb003':
       return new KeychainError('error_ledger_failed_to_parse_transaction');
     case '0xb004':
@@ -140,12 +140,18 @@ const parseLedger = (error: any) => {
     case '0xb007':
     case '0xb008':
       return new KeychainError('error_ledger_sign_hash');
+    case '0x530c':
+      return new KeychainError('error_ledger_locked');
+    case '0x6985':
+      return new KeychainError('error_ledger_denied_by_user', [], error);
     case '0x6a87':
       return new KeychainError('error_ledger_internal_error');
     case '0x6d00':
       return new KeychainError('error_ledger_version_not_supported');
     case '0x6e00':
       return new KeychainError('error_ledger_app_not_supported');
+    case '0x6e01':
+      return new KeychainError('error_ledger_hive_app_not_opened');
     default: {
       if (
         error.name === 'DisconnectedDeviceDuringOperation' ||

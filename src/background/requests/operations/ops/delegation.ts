@@ -48,8 +48,8 @@ export const broadcastDelegation = async (
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
         const tx = await DelegationUtils.getDelegationTransaction(
-          data.username!,
           data.delegatee,
+          data.username!,
           delegatedVests,
         );
         LedgerModule.signTransactionFromLedger({

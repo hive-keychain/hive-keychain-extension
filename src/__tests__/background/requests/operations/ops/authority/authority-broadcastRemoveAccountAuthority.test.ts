@@ -13,7 +13,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:/n', () => {
   const { methods, constants, mocks } = authority;
-  const { requestHandler, confirmed, i18n } = constants;
+  const { requestHandler, i18n } = constants;
   const data = constants.data.removeAccountAuthority;
   methods.afterEach;
   methods.beforeEach;

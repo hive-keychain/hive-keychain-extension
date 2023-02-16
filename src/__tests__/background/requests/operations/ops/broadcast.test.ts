@@ -87,10 +87,12 @@ describe('broadcast tests:\n', () => {
         },
       ];
       const result = await broadcastOperations(requestHandler, cloneData);
-      const message =
-        "Cannot read properties of undefined (reading 'toString')";
-      expect(result.msg.error).toEqual(new TypeError(message));
-      expect(result.msg.message).toBe(message);
+      expect(result.msg.error).toEqual(
+        new Error('html_popup_error_while_signing_transaction'),
+      );
+      expect(result.msg.message).toBe(
+        i18n.get('html_popup_error_while_signing_transaction'),
+      );
     });
     it('Must return success on transfer', async () => {
       mocks.getExtendedAccount(accounts.extended);

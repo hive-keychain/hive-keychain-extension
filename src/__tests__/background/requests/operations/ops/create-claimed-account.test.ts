@@ -3,23 +3,26 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import config from 'src/__tests__/utils-for-testing/setups/config';
 describe('create-claimed-account tests:\n', () => {
+  config.byDefault();
   const { methods, constants, mocks } = createClaimedAccount;
-  const { requestHandler, data, confirmed } = constants;
+  const { requestHandler, data } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('Default cases:\n', () => {
     it('Must return error if no key on handler', async () => {
-      const message =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await broadcastCreateClaimedAccount(requestHandler, data);
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.error.keyBuffer(
           datas,
           request_id,
-          new TypeError(message),
-          message,
+          new Error('html_popup_error_while_signing_transaction'),
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
         ),
       );
     });

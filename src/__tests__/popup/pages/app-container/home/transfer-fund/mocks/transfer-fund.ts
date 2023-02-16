@@ -80,7 +80,9 @@ const methods = {
     await clickAwait(ariaLabels);
   },
   removeKey: (key: string) => {
+    //@ts-ignore
     delete constants.stateAs.accounts[0].keys[key];
+    //@ts-ignore
     delete constants.stateAs.accounts[0].keys[`${key}Pubkey`];
   },
   selectBalance: (currency: string) => {

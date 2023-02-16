@@ -32,7 +32,11 @@ const SignTransaction = (props: Props) => {
   const signTransaction = async (data: SignFromLedgerRequestMessage) => {
     try {
       let signature;
-      if (data.signHash) {
+      if (
+        !HiveLedgerApp.isDisplayableOnDevice(data.transaction) ||
+        //TODO: Remove after HiveLedgerApp update
+        data.transaction.operations[0][0] === 'recurrent_transfer'
+      ) {
         let hashSignPolicy;
         try {
           hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;

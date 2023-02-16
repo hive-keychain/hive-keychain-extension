@@ -421,7 +421,7 @@ const addKeyFromLedger = async (username: string, keys: Keys) => {
   if (account) {
     account.keys = { ...account.keys, ...keys };
   }
-  await AccountUtils.saveAccounts(accounts, mk);
+  return await AccountUtils.saveAccounts(accounts, mk);
 };
 /* istanbul ignore next */
 const generateQRCode = (account: LocalAccount) => {

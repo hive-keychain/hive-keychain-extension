@@ -93,7 +93,9 @@ const methods = {
     afterTests.clean();
   }),
   removeKey: (key: KeyToUse) => {
+    //@ts-ignore
     delete constants.stateAs.accounts[0].keys[key];
+    //@ts-ignore
     delete constants.stateAs.accounts[0].keys[`${key}Pubkey`];
   },
   userInteraction: async (toUse: {

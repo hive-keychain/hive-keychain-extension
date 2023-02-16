@@ -2,6 +2,7 @@ import { broadcastUpdateProposalVote } from '@background/requests/operations/ops
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('proposals tests:\n', () => {
   const { methods, constants, mocks } = proposalsMocks;
   const { requestHandler, data } = constants;
@@ -10,8 +11,6 @@ describe('proposals tests:\n', () => {
   describe('broadcastUpdateProposalVote cases:\n', () => {
     describe('default cases:\n', () => {
       it('Must return error if no key on handler', async () => {
-        const errorMessage =
-          "Cannot read properties of undefined (reading 'toString')";
         data.update.proposal_ids = [];
         data.update.extensions = [];
         const result = await broadcastUpdateProposalVote(
@@ -20,9 +19,11 @@ describe('proposals tests:\n', () => {
         );
         methods.assert.error(
           result,
-          new TypeError(errorMessage),
+          new Error('html_popup_error_while_signing_transaction'),
           data.update,
-          errorMessage,
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
         );
       });
       it('Must return success on approvals', async () => {

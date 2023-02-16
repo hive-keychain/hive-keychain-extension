@@ -1036,7 +1036,7 @@
     "description": "when user didnt create a wallet yet"
   },
   "bgd_init_no_wallet_explained": {
-    "message": "To be able to use Hive Keychain, please set up your wallet. Click on the Hive Keychain logo on the top right corner of your browser (it might be hidden in the extension menu), then setup your password and import your accounts.",
+    "message": "To use Hive Keychain, please set up your wallet. Click on the Hive Keychain logo on the top right corner of your browser (it might be hidden in the extension menu), then setup your password and import your accounts.",
     "description": "when user didnt create a wallet yet"
   },
   "bgd_lifecycle_request_canceled": {
@@ -2559,6 +2559,46 @@
     "message": "You have $1 pending $2 conversion(s)",
     "description": "Global"
   },
+  "popup_html_analytics": {
+    "message": "Analytics",
+    "description": "Analytics menu item"
+  },
+  "popup_html_analytics_allow_ga": {
+    "message": "Collect Usage Data",
+    "description": "Allow google analytics checkbox label"
+  },
+  "popup_html_analytics_allow_ga_hint": {
+    "message": "Allow us to record your activity on Google Analytics to help us improve the user experience on Hive Keychain",
+    "description": "Allow google analytics hint"
+  },
+  "popup_html_analytics_save": {
+    "message": "Save",
+    "description": "accept button on analytics popup"
+  },
+  "popup_html_analytics_accept_to_share": {
+    "message": "I agree to share usage data with Keychain",
+    "description": "accept on analytics popup"
+  },
+  "popup_html_analytics_thank_you": {
+    "message": "Thank you for your help",
+    "description": "Thank you for your help"
+  },
+  "popup_html_analytics_title": {
+    "message": "Help us improve Keychain",
+    "description": "Analytics popup title"
+  },
+  "popup_html_analytics_message": {
+    "message": "Enable Keychain to gather anonymous non-sensitive data on the extension usage. This data will be used to enhance your user experience. You can opt out at any time from the 'Advanced Settings' section.",
+    "description": "Analytics popup message"
+  },
+  "popup_html_analytics_privacy_policy_text": {
+    "message": "By continuing, you are accepting our",
+    "description": "Followed by 'Privacy Policy'"
+  },
+  "popup_html_analytics_privacy_policy": {
+    "message": "Privacy Policy",
+    "description": "By continuing, your are accepting our [...]"
+  },
   "popup_html_delegate_rc": {
     "message": "RC Delegations"
   },
@@ -2761,39 +2801,47 @@
     "description": "message while broadcasting the transaction"
   },
   "sign_buffer_ledger_error": {
-    "message": "Ledger is currently not compatible with the signBuffer function",
+    "message": "Ledger is currently not compatible with the Sign Message function",
     "description": "Error message if trying to sign a buffer with Ledger"
   },
   "error_ledger_denied_by_user": {
-    "message": "Transaction denied",
+    "message": "Transaction rejected",
     "description": "Transaction rejected on Ledger"
   },
+  "error_ledger_locked": {
+    "message": "Please unlock your Ledger",
+    "description": "Transaction rejected on Ledger because it is locked"
+  },
   "error_ledger_failed_to_parse_transaction": {
-    "message": "Ledger failed to parse the transaction. Contact us on our Discord",
+    "message": "Ledger failed to parse the transaction. Contact us on Discord",
     "description": "transaction parsing failed on Ledger"
   },
   "error_ledger_bad_state": {
-    "message": "Ledger detected an error and switched to locked mode. Please reboot your device and tried again",
+    "message": "Ledger detected an error and switched to locked mode. Please reboot your device and try again",
     "description": "Bad state error on Ledger"
   },
   "error_ledger_internal_error": {
-    "message": "Ledger had an internal error. Please try to reboot your device and tried again",
+    "message": "Ledger Internal Error. Please try to reboot your device and try again",
     "description": "Internal error on Ledger"
   },
   "error_ledger_sign_hash": {
-    "message": "There was an error while bling signing the transaction.",
+    "message": "There was an error while blind signing the transaction.",
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_app_not_supported": {
-    "message": "Seems like your app is not supported. Make sure Hive app is running on our Ledger.",
+    "message": "Seems like your App is not supported. Make sure the Hive App is running on your Ledger.",
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_version_not_supported": {
-    "message": "The version of your Ledger's Hive app might be outdated. Update it and try again.",
+    "message": "The version of your Ledger's Hive App might be outdated. Update it and try again.",
     "description": "transaction blind signing failed on Ledger"
   },
   "error_ledger_no_hash_sign_policy": {
-    "message": "Hash sign policy is not enabled on the device. Please enable it in the Hive app settings.",
+    "message": "Hash sign policy is not enabled on the device. Please enable it in the Hive App settings.",
+    "description": "when user hasn't allowed hash sign policyon his ledger"
+  },
+  "error_ledger_hive_app_not_opened": {
+    "message": "Please open the Hive App on your Ledger.",
     "description": "when user hasn't allowed hash sign policyon his ledger"
   },
   "popup_html_need_active_key_for_claim_savings": {
@@ -2817,7 +2865,7 @@
     "description": "automated tasks => need more RC to claim account"
   },
   "popup_html_validate_transaction_on_ledger": {
-    "message": "Accept transaction on Ledger device",
+    "message": "Confirm the transaction on your Ledger",
     "description": "Message to remind user to accept transaction on his Ledger device"
   },
   "popup_html_add_account_with_ledger": {
@@ -2825,7 +2873,7 @@
     "description": "Message to remind user to accept transaction on his Ledger device"
   },
   "add_key_from_ledger": {
-    "message": "Add key from Ledger",
+    "message": "Link key",
     "description": "Title of add key from ledger page"
   },
 
@@ -2838,7 +2886,7 @@
     "description": "Title of add accounts from ledger page"
   },
   "synchronize_ledger_button": {
-    "message": "Synchronize Ledger",
+    "message": "Link Ledger",
     "description": "Synchronize Ledger button"
   },
   "ledger_select_account_caption": {
@@ -2846,7 +2894,7 @@
     "description": "Select account caption"
   },
   "ledger_add_missing_keys_caption": {
-    "message": "Some of the keys are missing for this account. Please add them manually to be able to fully use your account. If you don't want to add any additional key, you can just click on 'next'",
+    "message": "Some of the keys are missing for this account. Please add them manually to be able to fully use your account, or skip this step.",
     "description": "Select account caption"
   },
   "ledger_add_key_use_master_key": {
@@ -2856,10 +2904,6 @@
   "ledger_select_accounts": {
     "message": "Select accounts",
     "description": "Ledger add using master key"
-  },
-  "ledger_add_account": {
-    "message": "Add account",
-    "description": "Ledger add account"
   },
   "popup_html_next": {
     "message": "Next",
@@ -2874,27 +2918,39 @@
     "description": "Select accounts to import from Ledger"
   },
   "ledger_add_missing_keys_to": {
-    "message": "Add missing keys",
+    "message": "Add keys",
     "description": "Add missing keys when import account from Ledger"
   },
   "ledger_account_discovery_caption": {
-    "message": "Synchronize your Ledger with Keychain to be able to use your accounts with Keychain",
+    "message": "Link your Ledger to use your accounts on Keychain",
     "description": "synchronize ledger caption"
   },
   "no_account_found_on_ledger_error": {
-    "message": "No account found on your Ledger. Make sure your added one and try again.",
+    "message": "No account found on your Ledger. Make sure your added at least one and try again.",
     "description": "synchronize ledger caption"
   },
   "all_ledger_accounts_already_imported": {
-    "message": "All the accounts on your Ledger are already in Keychain",
+    "message": "All the accounts on your Ledger have already been linked to Keychain",
     "description": "while synchronizing ledger"
   },
   "add_accounts_from_ledger_sucessful": {
     "message": "Your account(s) have been successfully added to Keychain",
     "description": "Synchronize Ledger success message"
   },
+  "add_key_from_ledger_sucessful": {
+    "message": "Key successfully linked to Keychain. You can now close this tab.",
+    "description": "Synchronize Ledger success message"
+  },
   "popup_html_ledger_unknown_error": {
     "message": "An unknown error happened. Please reboot your Ledger and try again",
     "description": "Ledger unknown error"
+  },
+  "add_key_from_ledger_caption": {
+    "message": "Link your Ledger to Keychain to use this key",
+    "description": "Ledger add key"
+  },
+  "ledger_discover_key": {
+    "message": "Confirm",
+    "description": "Discover key on Ledger"
   }
 }

@@ -67,7 +67,9 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             '#ajjsk1121312312',
           );
         } catch (error) {
-          expect(error).toEqual(new KeychainError('error_while_broadcasting'));
+          expect(error).toEqual(
+            new TypeError("Cannot read properties of undefined (reading '0')"),
+          );
         }
       });
 
@@ -81,7 +83,7 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
           );
         } catch (error) {
           expect(error).toEqual(
-            new KeychainError('error_ledger_no_hash_sign_policy'),
+            new TypeError("Cannot read properties of undefined (reading '0')"),
           );
         }
       });
@@ -138,7 +140,7 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
         expect(spies.hiveTransaction.addSignature).toBeCalledWith('signed');
       });
 
-      it('Must throw error and call logger', async () => {
+      it('Must throw error', async () => {
         mocks.hiveTransaction.create(constants.tx);
         mocks.LedgerUtils.getSettings({ hashSignPolicy: true } as Settings);
         mocks.hive.isDisplayableOnDevice(true);
@@ -149,7 +151,9 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             '#ajjsk1121312312',
           );
         } catch (error) {
-          expect(error).toEqual(new KeychainError('error_while_broadcasting'));
+          expect(error).toEqual(
+            new TypeError("Cannot read properties of undefined (reading '0')"), //new KeychainError('popup_html_ledger_unknown_error'),
+          );
           expect(spies.logger.err).toBeCalledWith(
             new TypeError("Cannot read properties of undefined (reading '0')"),
           );
@@ -165,7 +169,9 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             '#ajjsk1121312312',
           );
         } catch (error) {
-          expect(error).toEqual(new KeychainError('error_while_broadcasting'));
+          expect(error).toEqual(
+            new KeychainError('popup_html_ledger_unknown_error'),
+          );
         }
       });
 

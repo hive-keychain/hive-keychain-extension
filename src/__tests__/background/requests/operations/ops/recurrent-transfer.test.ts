@@ -6,6 +6,7 @@ import messages from 'src/__tests__/background/requests/operations/ops/mocks/mes
 import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('recurrent-transfer tests:\n', () => {
   const { methods, constants, spies, mocks } = recurrentTransferMocks;
   const { requestHandler, data } = constants;
@@ -21,14 +22,14 @@ describe('recurrent-transfer tests:\n', () => {
       );
     });
     it('Must return error if no key on handler', async () => {
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await recurrentTransfer(requestHandler, data);
       methods.assert.error(
         result,
-        new TypeError(errorMessage),
+        new Error('html_popup_error_while_signing_transaction'),
         data,
-        errorMessage,
+        mocksImplementation.i18nGetMessageCustom(
+          'html_popup_error_while_signing_transaction',
+        ),
       );
     });
     it('Must return sucess on start recurrent', async () => {

@@ -4,6 +4,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import sendTokenMocks from 'src/__tests__/background/requests/operations/ops/mocks/send-token-mocks';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('send-token tests:\n', () => {
   const { methods, constants, mocks } = sendTokenMocks;
   const { requestHandler, data } = constants;
@@ -11,14 +12,14 @@ describe('send-token tests:\n', () => {
   methods.beforeEach;
   describe('default cases:\n', () => {
     it('Must return error if no key on handler', async () => {
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await broadcastSendToken(requestHandler, data);
       methods.assert.error(
         result,
-        new TypeError(errorMessage),
+        new Error('html_popup_error_while_signing_transaction'),
         data,
-        errorMessage,
+        mocksImplementation.i18nGetMessageCustom(
+          'html_popup_error_while_signing_transaction',
+        ),
       );
     });
     it('Must return success', async () => {

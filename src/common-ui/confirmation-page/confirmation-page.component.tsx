@@ -3,6 +3,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -41,6 +42,12 @@ const ConfirmationPage = ({
     });
   });
   const hasField = fields && fields.length !== 0;
+
+  const handleClickOnConfirm = () => {
+    AnalyticsUtils.sendRequestEvent(title);
+    afterConfirmAction();
+  };
+
   return (
     <div className="confirmation-page" aria-label="confirmation-page">
       <div className="confirmation-top">
@@ -79,7 +86,7 @@ const ConfirmationPage = ({
         <ButtonComponent
           ariaLabel="dialog_confirm-button"
           label={'popup_html_confirm'}
-          onClick={afterConfirmAction}
+          onClick={handleClickOnConfirm}
           type={ButtonType.RAISED}></ButtonComponent>
       </div>
     </div>

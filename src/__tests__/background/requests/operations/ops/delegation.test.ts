@@ -44,14 +44,14 @@ describe('delegation tests:\n', () => {
       });
       const result = await broadcastDelegation(requestHandler, data);
       const { request_id, ...datas } = data;
-      const errorTitle =
-        "Cannot read properties of undefined (reading 'toString')";
       expect(result).toEqual(
         messages.error.answerError(
-          new TypeError(errorTitle),
+          new Error('html_popup_error_while_signing_transaction'),
           datas,
           request_id,
-          errorTitle,
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
           undefined,
         ),
       );

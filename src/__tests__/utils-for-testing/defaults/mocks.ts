@@ -13,6 +13,7 @@ import {
   MocksApp,
   MocksChromeRunTime,
   MocksConvertionRequests,
+  MocksGoogleAnalytics,
   MocksGovernance,
   MocksHome,
   MocksPowerUp,
@@ -85,6 +86,9 @@ const _defaults = {
     },
     sendMessage: jest.fn(),
   } as MocksChromeRunTime,
+  _googleAnalytics: {
+    initializeGoogleAnalytics: 'bypass',
+  } as MocksGoogleAnalytics,
   _survey: {
     byPassing: true, //as default
   } as MocksSurvey,

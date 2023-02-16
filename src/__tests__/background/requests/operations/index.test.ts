@@ -8,6 +8,7 @@ import indexMocks from 'src/__tests__/background/requests/operations/mocks/index
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('index tests:\n', () => {
   const { methods, constants, spies, mocks } = indexMocks;
   const { requestHandler, _data } = constants;
@@ -24,8 +25,7 @@ describe('index tests:\n', () => {
     const data = _data.filter(
       (dat) => dat.type === KeychainRequestTypes.transfer,
     )[0];
-    const message = "Cannot read properties of undefined (reading 'toString')";
-    const error = new TypeError(message);
+    const error = new Error('html_popup_error_while_signing_transaction');
     requestHandler.data.request_id = data.request_id;
     await performOperation(requestHandler, data, 0, 'domain', false);
     const { request_id, ...datas } = data;
@@ -37,7 +37,9 @@ describe('index tests:\n', () => {
         result: undefined,
         publicKey: undefined,
         data: datas,
-        message: message,
+        message: mocksImplementation.i18nGetMessageCustom(
+          'html_popup_error_while_signing_transaction',
+        ),
         request_id: request_id,
       },
     });
@@ -83,6 +85,6 @@ describe('index tests:\n', () => {
       expect(data.type).toBe(_data[i].type);
       spies.tabsSendMessage.mockClear();
     }
-    mHiveTxSendOp.mockRestore();
+    mHiveTxSendOp.mockClear();
   });
 });

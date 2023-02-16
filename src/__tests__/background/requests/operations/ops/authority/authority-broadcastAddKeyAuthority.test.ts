@@ -14,7 +14,7 @@ import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:\n', () => {
   const { methods, constants, mocks } = authority;
-  const { requestHandler, confirmed, i18n } = constants;
+  const { requestHandler, i18n } = constants;
   const data = constants.data.addKeyAuthority;
   methods.afterEach;
   methods.beforeEach;
@@ -37,16 +37,14 @@ describe('authority tests:\n', () => {
       const cloneData = objects.clone(data) as RequestAddKeyAuthority &
         RequestId;
       cloneData.authorizedKey = '';
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await broadcastAddKeyAuthority(requestHandler, cloneData);
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
         messages.error.keyBuffer(
           datas,
           request_id,
-          new TypeError(errorMessage),
-          errorMessage,
+          new Error('html_popup_error_while_signing_transaction'),
+          i18n.get('html_popup_error_while_signing_transaction'),
         ),
       );
     });
