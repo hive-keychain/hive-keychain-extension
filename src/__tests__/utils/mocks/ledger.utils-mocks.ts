@@ -15,6 +15,8 @@ const mocks = {
       (TransportWebUsb.isSupported = jest.fn().mockResolvedValue(value)),
     create: (transport: Transport) =>
       (TransportWebUsb.create = jest.fn().mockResolvedValue(transport)),
+    list: (values: any[]) =>
+      (TransportWebUsb.list = jest.fn().mockResolvedValue(values)),
   },
   LedgerUtils: {
     getKeysForAccount: (keys: Keys | undefined) =>

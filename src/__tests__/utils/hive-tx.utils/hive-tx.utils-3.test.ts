@@ -17,7 +17,7 @@ describe('hive-tx.utils.test.ts part 3', () => {
       });
 
       it('Must throw error if signHash', async () => {
-        mocks.LedgerUtils.getSettings({ hashSignPolicy: true });
+        mocks.LedgerUtils.getSettings({ hashSignPolicy: false });
         try {
           await HiveTxUtils.signTransaction(constants.tx, '#1qw23eer4e');
         } catch (error) {

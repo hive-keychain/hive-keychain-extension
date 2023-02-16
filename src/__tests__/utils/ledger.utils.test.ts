@@ -13,6 +13,7 @@ describe('ledger.utils.ts tests:\n', () => {
     it('Must return true', async () => {
       mocks.transportWebUsb.isSupported(true);
       mocks.transportWebUsb.create(constants.t);
+      mocks.transportWebUsb.list(['testdevice']);
       expect(await LedgerUtils.init()).toBe(true);
     });
 
