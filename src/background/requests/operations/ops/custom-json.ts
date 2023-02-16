@@ -38,7 +38,6 @@ export const broadcastCustomJson = async (
         LedgerModule.signTransactionFromLedger({
           transaction: tx,
           key: key!,
-          signHash: JSON.stringify(data.json).length > 127,
         });
         const signature = await LedgerModule.getSignatureFromLedger();
         result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
