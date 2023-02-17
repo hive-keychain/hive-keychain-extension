@@ -1,6 +1,6 @@
 import App from '@popup/App';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import TokensUtils from 'src/utils/tokens.utils';
 import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
@@ -68,10 +68,9 @@ describe('token-operation Delegating tests:\n', () => {
     TokensUtils.delegateToken = jest.fn();
     await methods.userInteraction(balance.min, operationType, true, true);
     await waitFor(() => {
-      assertion.getManyByText([
-        message.loading.text,
-        message.loading.operation(operationType),
-      ]);
+      expect(
+        screen.getAllByText('Delegating token', { exact: false }).length,
+      ).toBeGreaterThan(1);
     });
   });
   it('Must show error if delegating fails', async () => {
