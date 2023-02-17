@@ -21,10 +21,9 @@ const getAutocompleteList = async (
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
-  if (!favoriteUsers) return [];
-  else {
-    const autoCompleteList: AutoCompleteValue[] = [];
 
+  const autoCompleteList: AutoCompleteValue[] = [];
+  if (favoriteUsers && favoriteUsers[username]) {
     for (const fav of favoriteUsers[username]) {
       if (
         !exchanges.find((exchange) => exchange.username === fav) &&
@@ -32,27 +31,27 @@ const getAutocompleteList = async (
       )
         autoCompleteList.push({ value: fav });
     }
-    for (const localAccount of localAccounts) {
-      if (localAccount.name !== username) {
-        autoCompleteList.push({
-          value: localAccount.name,
-        });
-      }
-    }
-    if (options?.addExchanges)
-      for (const exchange of exchanges) {
-        if (
-          ((options?.token && exchange.acceptedCoins.includes(options.token)) ||
-            !options?.token) &&
-          exchange.username.length > 0
-        )
-          autoCompleteList.push({
-            value: exchange.username,
-            subLabel: exchange.name,
-          });
-      }
-    return autoCompleteList;
   }
+  for (const localAccount of localAccounts) {
+    if (localAccount.name !== username) {
+      autoCompleteList.push({
+        value: localAccount.name,
+      });
+    }
+  }
+  if (options?.addExchanges)
+    for (const exchange of exchanges) {
+      if (
+        ((options?.token && exchange.acceptedCoins.includes(options.token)) ||
+          !options?.token) &&
+        exchange.username.length > 0
+      )
+        autoCompleteList.push({
+          value: exchange.username,
+          subLabel: exchange.name,
+        });
+    }
+  return autoCompleteList;
 };
 
 const saveFavoriteUser = async (
