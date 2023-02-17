@@ -107,7 +107,10 @@ const TokenItem = ({
           ariaLabel={`icon-send-history-${tokenBalance.symbol}`}
           name={Icons.SEND}
           onClick={() =>
-            navigateToWithParams(Screen.TOKENS_TRANSFER, { tokenBalance })
+            navigateToWithParams(Screen.TOKENS_TRANSFER, {
+              tokenBalance,
+              tokenInfo,
+            })
           }
           additionalClassName="send"
           type={IconType.OUTLINED}></Icon>

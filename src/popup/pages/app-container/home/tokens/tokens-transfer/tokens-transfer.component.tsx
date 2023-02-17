@@ -1,5 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { TokenBalance } from '@interfaces/tokens.interface';
+import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -37,6 +37,7 @@ import './tokens-transfer.component.scss';
 const TokensTransfer = ({
   activeAccount,
   tokenBalance,
+  tokenInfo,
   phishing,
   formParams,
   localAccounts,
@@ -123,7 +124,7 @@ const TokensTransfer = ({
     }
 
     const formattedAmount = `${parseFloat(amount.toString()).toFixed(
-      3,
+      tokenInfo.precision,
     )} ${symbol}`;
 
     let memoField = memo;
@@ -286,6 +287,7 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
+    tokenInfo: state.navigation.stack[0].params?.tokenInfo as Token,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
