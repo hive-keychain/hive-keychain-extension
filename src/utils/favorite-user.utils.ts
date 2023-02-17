@@ -36,7 +36,6 @@ const getAutocompleteList = async (
       if (localAccount.name !== username) {
         autoCompleteList.push({
           value: localAccount.name,
-          subLabel: chrome.i18n.getMessage('local'),
         });
       }
     }
