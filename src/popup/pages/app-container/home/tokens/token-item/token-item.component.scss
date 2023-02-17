@@ -17,6 +17,9 @@
 
     .symbol-balance {
       margin-left: 8px;
+      display: flex;
+      flex-direction: column;
+      row-gap: 2px;
     }
 
     .history,
