@@ -27,7 +27,7 @@
     display: flex;
     flex-direction: column;
     row-gap: 6px;
-    margin: 16px;
+    margin: 24px;
 
     .loading-operation {
       display: flex;
@@ -35,7 +35,7 @@
 
       span {
         font-style: italic;
-        font-size: 16;
+        font-size: 16px;
         color: white;
         z-index: 1;
       }

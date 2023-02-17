@@ -2964,5 +2964,13 @@
   "decode_with_memo_key_in_ledger": {
     "message": "Your memo key is stored in Ledger. Ledger is currently not supporting decoding memo",
     "description": "Error while trying to decode a memo with memo key in ledger"
+  },
+  "ledger_signing_hash": {
+    "message": "Keychain is requesting Ledger to sign the following hash. Make sure it correspond to what is displayed on your Ledger. <br /> $1",
+    "description": "Ledger signing hash confirmation"
+  },
+  "token_value": {
+    "message": "Value",
+    "description": "Value of token in USD"
   }
 }
