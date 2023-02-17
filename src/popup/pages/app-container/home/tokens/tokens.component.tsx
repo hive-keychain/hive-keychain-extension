@@ -25,6 +25,7 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import './tokens.component.scss';
 
 const Tokens = ({
@@ -73,7 +74,11 @@ const Tokens = ({
         .filter((token) =>
           token.symbol.toLowerCase().includes(filterValue.toLowerCase()),
         )
-        .sort((a, b) => parseFloat(b.balance) - parseFloat(a.balance));
+        .sort(
+          (a, b) =>
+            TokensUtils.getHiveEngineTokenValue(b, market) -
+            TokensUtils.getHiveEngineTokenValue(a, market),
+        );
       setFilteredTokenList(orderedFiltered);
     }
   }, [userTokens, market, filterValue]);
@@ -122,6 +127,7 @@ const Tokens = ({
                 key={token.symbol}
                 tokenBalance={token}
                 tokenInfo={allTokens.find((t) => t.symbol === token.symbol)!}
+                market={market}
               />
             ))}
           </div>

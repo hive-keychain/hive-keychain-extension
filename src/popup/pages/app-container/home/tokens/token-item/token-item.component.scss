@@ -1,20 +1,24 @@
 @import '../../../../../variable.scss';
 
 .token-item {
+  .token-icon {
+    height: 36px;
+    width: 36px;
+  }
   .token {
     display: grid;
-    grid-template-columns: 3fr 3fr 32px 32px 32px;
+    grid-template-columns: 42px 1fr 32px 32px 32px;
     font-size: 18px;
     align-items: center;
 
     padding: 0px 16px;
-    min-height: 50px;
+    min-height: 64px;
     cursor: pointer;
 
-    .balance {
-      text-align: right;
-      padding-right: 8px;
+    .symbol-balance {
+      margin-left: 8px;
     }
+
     .history,
     .send {
       height: 24px;
@@ -65,10 +69,6 @@
           .token-name {
             font-size: 18px;
           }
-        }
-        .token-icon {
-          height: 36px;
-          width: 36px;
         }
       }
 
