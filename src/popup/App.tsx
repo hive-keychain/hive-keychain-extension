@@ -12,13 +12,12 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
-import { AnalyticsPopupComponent } from '@popup/pages/app-container/analytics-popup/analytics-popup.component';
+import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -46,7 +45,7 @@ const App = ({
   activeAccountUsername,
   activeRpc,
   loading,
-  loadingOperation,
+  loadingState,
   isCurrentPageHomePage,
   displayProxySuggestion,
   navigationStack,
@@ -56,9 +55,9 @@ const App = ({
   loadActiveAccount,
   refreshActiveAccount,
   setActiveRpc,
+  initHiveEngineConfigFromStorage,
   setAccounts,
   loadGlobalProperties,
-  initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
@@ -66,29 +65,17 @@ const App = ({
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
-  const [displayAnalyticsPopup, setDisplayAnalyticsPopup] = useState<boolean>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
-    initAnalytics();
   }, []);
-
-  useEffect(() => {
-    if (navigationStack.length > 0) {
-      AnalyticsUtils.sendNavigationEvent(navigationStack[0].currentPage);
-    }
-  }, [navigationStack]);
 
   useEffect(() => {
     if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
-
-  const initAnalytics = async () => {
-    setDisplayAnalyticsPopup(await AnalyticsUtils.initializeSettings());
-  };
 
   const onActiveRpcRefreshed = async () => {
     if (activeAccountUsername) {
@@ -101,7 +88,6 @@ const App = ({
           (account: LocalAccount) => account.name === lastActiveAccountName,
         )!,
       );
-      loadGlobalProperties();
     }
   };
 
@@ -159,8 +145,7 @@ const App = ({
       for (const rpc of RpcUtils.getFullList().filter(
         (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
       )) {
-        const status = await RpcUtils.checkRpcStatus(rpc.uri);
-        if (status) {
+        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
           if (switchAuto) {
             setActiveRpc(rpc);
           } else {
@@ -269,11 +254,6 @@ const App = ({
     }
   };
 
-  const onAnalyticsAnswered = () => {
-    AnalyticsUtils.initializeSettings();
-    setDisplayAnalyticsPopup(false);
-  };
-
   const renderPopup = (
     loading: number,
     activeRpc: Rpc | undefined,
@@ -282,9 +262,15 @@ const App = ({
     switchToRpc: Rpc | undefined,
   ) => {
     if (loading || !activeRpc) {
-      return <LoadingComponent operations={loadingOperation} />;
-    }
-    if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+      return (
+        <LoadingComponent
+          operations={loadingState.loadingOperations}
+          caption={loadingState.caption}
+        />
+      );
+    } else if (displayProxySuggestion) {
+      return <ProxySuggestionComponent />;
+    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
         <div className="change-rpc-popup">
           <div className="message">
@@ -298,8 +284,6 @@ const App = ({
             onClick={tryNewRpc}></ButtonComponent>
         </div>
       );
-    } else if (displayAnalyticsPopup) {
-      return <AnalyticsPopupComponent onAnswered={onAnalyticsAnswered} />;
     }
   };
 
@@ -334,8 +318,8 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
-    loading: state.loading.length,
-    loadingOperation: state.loading,
+    loading: state.loading.loadingOperations.length,
+    loadingState: state.loading,
     activeAccountUsername: state.activeAccount.name,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,

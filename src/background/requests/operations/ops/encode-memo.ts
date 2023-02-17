@@ -1,11 +1,12 @@
-import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypes,
   RequestEncode,
   RequestId,
 } from '@interfaces/keychain.interface';
+import AccountUtils from 'src/utils/account.utils';
 export const encodeMessage = async (
   requestHandler: RequestsHandler,
   data: RequestEncode & RequestId,
@@ -13,9 +14,8 @@ export const encodeMessage = async (
   let encoded = null;
   let error = null;
   try {
-    const client = requestHandler.getHiveClient();
     const key = requestHandler.data.key;
-    const receiver = (await client.database.getAccounts([data.receiver]))[0];
+    const receiver = await AccountUtils.getExtendedAccount(data.receiver);
     let publicKey;
 
     if (data.method === KeychainKeyTypes.memo) {

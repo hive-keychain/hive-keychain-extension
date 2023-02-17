@@ -1,13 +1,14 @@
-import RPCModule from '@background/rpc.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
-import BgdHiveUtils from '@background/utils/hive.utils';
 import { Client, ExtendedAccount } from '@hiveio/dhive';
-import { Manabar, RCAccount } from '@hiveio/dhive/lib/chain/rc';
+import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import Config from 'src/config';
+import AccountUtils from 'src/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
+import { SavingsUtils } from 'src/utils/savings.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
@@ -23,6 +24,19 @@ const toClaim = () => {
 };
 
 const constants = {
+  rcAccountData: {
+    account: 'keychain.tests',
+    rc_manabar: {
+      current_mana: 1000000,
+      max_mana: 10000000,
+      percentage: 100,
+    } as Manabar,
+    max_rc_creation_adjustment: [],
+    max_rc: '58156907628',
+    delegated_rc: 0,
+    received_delegated_rc: 0,
+    percentage: 100,
+  },
   differentAccount: [{ ...accounts.local.one, name: 'theghost1980' }],
   availableSavings: [
     {
@@ -78,20 +92,16 @@ const mocks = {
     (LocalStorageUtils.getMultipleValueFromLocalStorage = jest
       .fn()
       .mockResolvedValue(values)),
-  getAccounts: (extendedAccounts: ExtendedAccount[]) => {
-    RPCModule.getClient = jest.fn().mockResolvedValue(client);
-    client.database.getAccounts = jest.fn().mockResolvedValue(extendedAccounts);
-  },
+  getExtendedAccounts: (accounts: ExtendedAccount[]) =>
+    (AccountUtils.getExtendedAccounts = jest.fn().mockResolvedValue(accounts)),
   getAccountsFromLocalStorage: (localAccounts: LocalAccount[]) =>
     (BgdAccountsUtils.getAccountsFromLocalStorage = jest
       .fn()
       .mockResolvedValue(localAccounts)),
-  rcAcc: (value: RCAccount[]) => {
-    RPCModule.getClient = jest.fn().mockResolvedValue(client);
-    client.rc.findRCAccounts = jest.fn().mockResolvedValue(value);
-  },
+  getRCMana: (rcAccount: any) =>
+    (AccountUtils.getRCMana = jest.fn().mockResolvedValue(rcAccount)),
   calculateRCMana: (manabar: Manabar) => {
-    RPCModule.getClient = jest.fn().mockResolvedValue(client);
+    // RPCModule.getClient = jest.fn().mockResolvedValue(client);
     client.rc.calculateRCMana = jest.fn().mockResolvedValue(manabar);
   },
   resetMin_RC: (Config.claims.freeAccount.MIN_RC_PCT = 0),
@@ -105,13 +115,13 @@ const spies = {
   },
   create: jest.spyOn(chrome.alarms, 'create').mockReturnValue(undefined),
   claimAccounts: jest
-    .spyOn(BgdHiveUtils, 'claimAccounts')
+    .spyOn(AccountUtils, 'claimAccounts')
     .mockResolvedValue(undefined),
   claimRewards: jest
-    .spyOn(BgdHiveUtils, 'claimRewards')
+    .spyOn(RewardsUtils, 'claimRewards')
     .mockResolvedValue(true),
-  claimSavings: (result: boolean | undefined) =>
-    jest.spyOn(BgdHiveUtils, 'claimSavings').mockResolvedValue(result),
+  claimSavings: (result: boolean) =>
+    jest.spyOn(SavingsUtils, 'claimSavings').mockResolvedValue(result),
 };
 
 const methods = {

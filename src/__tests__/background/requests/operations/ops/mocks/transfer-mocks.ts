@@ -1,4 +1,5 @@
-import { RequestsHandler } from '@background/requests';
+import LedgerModule from '@background/ledger.module';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainKeyTypesLC,
@@ -7,8 +8,9 @@ import {
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
+import AccountUtils from 'src/utils/account.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
-import { RPCError } from 'src/__tests__/utils-for-testing/classes/errors/rpc';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -47,34 +49,26 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      transfer: (
-        using: 'success' | 'error',
-        result: TransactionConfirmation | RPCError,
-      ) => {
-        if (using === 'success') {
-          requestHandler.getHiveClient().broadcast.transfer = jest
-            .fn()
-            .mockResolvedValue(result);
-        } else {
-          requestHandler.getHiveClient().broadcast.transfer = jest
-            .fn()
-            .mockRejectedValue(result);
-        }
-      },
-    },
-    database: {
-      getAccounts: (receiverAccount: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(receiverAccount)),
-    },
+  getExtendedAccount: (account: ExtendedAccount | undefined) =>
+    (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
+  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: boolean) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
   },
 };
 
 const spies = {
-  getUserKey: jest.spyOn(requestHandler, 'getUserKey'),
+  getUserKey: jest.spyOn(requestHandler, 'getUserKeyPair'),
 };
 
 const methods = {
@@ -84,8 +78,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.transfer('success', confirmed);
-    mocks.client.database.getAccounts([]);
   }),
   assert: {
     error: (
@@ -109,7 +101,7 @@ const methods = {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          confirmed,
+          true,
           datas,
           request_id,
           message,

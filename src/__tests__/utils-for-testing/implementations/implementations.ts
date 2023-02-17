@@ -2,6 +2,7 @@ import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
@@ -147,12 +148,41 @@ const keychainApiGet = async (
   }
 };
 
+const hiveTxUtils = {
+  //TODO add types + default data.
+  getData: (toUse: {
+    conversionRequests?: any;
+    collateralized?: any;
+    listProposals?: any;
+    listProposalVotes?: any;
+    dynamicGlobalProperties?: any;
+  }) => {
+    HiveTxUtils.getData = jest.fn().mockImplementation((...args) => {
+      switch (args[0]) {
+        case 'condenser_api.get_conversion_requests':
+          return Promise.resolve(toUse.conversionRequests);
+        case 'condenser_api.get_collateralized_conversion_requests':
+          return Promise.resolve(toUse.collateralized);
+        case 'condenser_api.list_proposals':
+          return Promise.resolve(toUse.listProposals);
+        case 'condenser_api.list_proposal_votes':
+          return Promise.resolve(toUse.listProposalVotes);
+        case 'condenser_api.get_dynamic_global_properties':
+          return Promise.resolve(toUse.dynamicGlobalProperties);
+        default:
+          return Promise.resolve('Please check data assignment!');
+      }
+    });
+  },
+};
+
 const mocksImplementation = {
   getValuefromLS,
   i18nGetMessage,
   i18nGetMessageCustom,
   keychainApiGet,
   manifestFile,
+  hiveTxUtils,
 };
 
 export default mocksImplementation;

@@ -15,7 +15,8 @@
     background: black;
     opacity: 0.75;
   }
-  .loading-text {
+  .loading-text,
+  .caption {
     font-size: 20px;
     margin-top: 16px;
     color: white;
@@ -23,18 +24,24 @@
   }
 
   .operations {
-    margin-top: 16px;
     display: flex;
     flex-direction: column;
     row-gap: 6px;
-    span {
-      font-style: italic;
-      font-size: 18px;
-      color: white;
-      z-index: 1;
-    }
-    .done {
-      color: green;
+    margin: 24px;
+
+    .loading-operation {
+      display: flex;
+      align-items: center;
+
+      span {
+        font-style: italic;
+        font-size: 16px;
+        color: white;
+        z-index: 1;
+      }
+      .done {
+        color: green;
+      }
     }
   }
 }

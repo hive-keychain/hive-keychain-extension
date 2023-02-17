@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainKeyTypes,
@@ -17,6 +17,11 @@ import mocksImplementation from 'src/__tests__/utils-for-testing/implementations
 const commonValues = {
   domain: 'domain',
   username: mk.user.one,
+};
+
+const i18n = {
+  get: (message: string, options?: string[]) =>
+    mocksImplementation.i18nGetMessageCustom(message, options),
 };
 
 const requestHandler = new RequestsHandler();
@@ -76,20 +81,8 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    database: {
-      getAccounts: (result: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-    broadcast: {
-      updateAccount: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.updateAccount = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-  },
+  getExtendedAccount: (account: ExtendedAccount | undefined) =>
+    (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
 };
 
 const methods = {
@@ -106,6 +99,7 @@ const constants = {
   data,
   requestHandler,
   confirmed,
+  i18n,
 };
 
 export default {

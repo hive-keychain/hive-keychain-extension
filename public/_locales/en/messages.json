@@ -11,6 +11,18 @@
     "message": "Wrong key. Please use $1",
     "description": "while using wrong private key"
   },
+  "popup_html_wrong_key_active": {
+    "message": "Wrong key. Please use active key",
+    "description": "while using wrong private key"
+  },
+  "popup_html_wrong_key_posting": {
+    "message": "Wrong key. Please use posting key",
+    "description": "while using wrong private key"
+  },
+  "popup_html_wrong_key_memo": {
+    "message": "Wrong key. Please use memo key",
+    "description": "while using wrong private key"
+  },
   "common_yes": {
     "message": "Yes",
     "description": "Generic"
@@ -201,6 +213,10 @@
   },
   "popup_html_active": {
     "message": "Active Key",
+    "description": "When adding an account via master key"
+  },
+  "popup_html_master": {
+    "message": "Master Key",
     "description": "When adding an account via master key"
   },
   "popup_html_memo": {
@@ -1020,7 +1036,7 @@
     "description": "when user didnt create a wallet yet"
   },
   "bgd_init_no_wallet_explained": {
-    "message": "To be able to use Hive Keychain, please set up your wallet. Click on the Hive Keychain logo on the top right corner of your browser (it might be hidden in the extension menu), then setup your password and import your accounts.",
+    "message": "To use Hive Keychain, please set up your wallet. Click on the Hive Keychain logo on the top right corner of your browser (it might be hidden in the extension menu), then setup your password and import your accounts.",
     "description": "when user didnt create a wallet yet"
   },
   "bgd_lifecycle_request_canceled": {
@@ -1348,6 +1364,10 @@
     "message": "Savings",
     "description": "On savings menu"
   },
+  "popup_html_savings_current_withdrawing": {
+    "message": "Withdrawing",
+    "description": "On savings menu"
+  },
   "popup_html_withdraw_text": {
     "message": "Withdrawing funds from savings will take 3.5 days.",
     "description": "when withdrawing from savings"
@@ -1477,9 +1497,17 @@
     "message": "Please confirm that you want to cancel this delegation.",
     "description": "while confirming power up and down"
   },
+  "popup_html_confirm_cancel_withdraw_savings_message": {
+    "message": "Please confirm that you want to cancel this $1 withdraw from savings.",
+    "description": "while confirming savings withdraw"
+  },
   "popup_html_cancel_delegation": {
     "message": "Cancel delegation",
     "description": "while confirming power up and down"
+  },
+  "popup_html_cancel_withdraw_savings": {
+    "message": "Cancel Withdraw",
+    "description": "while confirming savings withdraw"
   },
   "popup_html_power_up_down_fail": {
     "message": "There was an error while executing $1. Try again later. If error persist, contact support.",
@@ -1701,6 +1729,10 @@
     "message": "You already voted for 30 witnesses. Please remove one before voting for @stoodkev",
     "description": "Error message when vote for stoodkev as witness with 30 votes"
   },
+  "html_popup_vote_witness_error_30_votes": {
+    "message": "You already voted for 30 witnesses. Please remove one before voting again",
+    "description": "Error message when vote for stoodkev as witness with 30 votes"
+  },
   "html_popup_vote_stoodkev_witness_success": {
     "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
@@ -1716,6 +1748,10 @@
   "html_popup_cancel_delegation_operation": {
     "message": "Canceling delegation",
     "description": "delegation operation"
+  },
+  "html_popup_cancel_withdraw_savings_operation": {
+    "message": "Canceling withdraw from savings",
+    "description": "savings operation"
   },
   "html_popup_vote_witness_operation": {
     "message": "Voting for witness",
@@ -1801,6 +1837,14 @@
     "message": "Successfully canceled a delegation",
     "description": "Success message cancel delegation"
   },
+  "popup_html_cancel_withdraw_savings_successful": {
+    "message": "Successfully canceled a withdraw of $1 $2 from savings",
+    "description": "Success message cancel withdraw"
+  },
+  "popup_html_cancel_withdraw_savings_fail": {
+    "message": "Failed to cancel a $1 withdraw from savings",
+    "description": "Failed message cancel withdraw"
+  },
   "popup_html_cancel_delegation_fail": {
     "message": "Failed to cancel a delegation",
     "description": "Failed message cancel delegation"
@@ -1820,6 +1864,10 @@
   "popup_html_transfer_tokens": {
     "message": "Transfer tokens",
     "description": "Transfer tokens"
+  },
+  "popup_html_cancel_withdraw": {
+    "message": "Cancel withdraw from savings",
+    "description": "Cancel withdraw savings"
   },
   "popup_html_fill_form_error": {
     "message": "Please fill form",
@@ -2443,6 +2491,10 @@
     "message": "After being canceled, delegations take 5 days to return to your available Hive Power balance",
     "description": "Delegation list item pending until date"
   },
+  "popup_html_withdraw_savings_until_message": {
+    "message": "Withdrawing from savings takes 3 days. Cancel the operation if you wish to keep your $1 in the savings.",
+    "description": "Withdraw saving list item pending until date"
+  },
   "html_popup_governance_renewal_title": {
     "message": "Governance renewal",
     "description": "Governance expiration renewal popup"
@@ -2611,5 +2663,314 @@
   "popup_html_survey_help_us": {
     "message": "Let's go!",
     "description": "Help us button on survey popup"
+  },
+  "popup_html_public_key_not_matching": {
+    "message": "The public key doesn't match the public key on the blockchain. It might have been updated",
+    "description": "select keys => public not matching"
+  },
+  "popup_html_add_using_ledger": {
+    "message": "Add using Ledger",
+    "description": "Add using ledger link"
+  },
+  "popup_html_ledger_not_detected": {
+    "message": "Ledger not detected. Make sure your Ledger is plugged and the Hive App is running",
+    "description": "Ledger not detected error message"
+  },
+  "popup_html_ledger_detected": {
+    "message": "Ledger detected",
+    "description": "Ledger detected message"
+  },
+  "html_ledger_not_supported": {
+    "message": "Ledger not supported",
+    "description": "Ledger not detected error message"
+  },
+  "html_ledger_not_available": {
+    "message": "Ledger not available",
+    "description": "Ledger not available error message"
+  },
+  "html_ledger_no_device_selected": {
+    "message": "No Ledger device selected",
+    "description": "Ledger not selected error message"
+  },
+  "html_ledger_unknown_error": {
+    "message": "Unknown error",
+    "description": "Ledger unknown error"
+  },
+  "html_popup_using_ledger": {
+    "message": "Key saved on Ledger",
+    "description": "key using ledger label"
+  },
+  "html_ledger_error_while_signing": {
+    "message": "Error while signing transaction with Ledger",
+    "description": "Error while signing transaction with Ledger"
+  },
+  "html_ledger_error_while_connecting": {
+    "message": "Error while connecting to Ledger. Please make sure your Ledger is connected and Hive application is running",
+    "description": "Error while connecting to Ledger"
+  },
+  "html_popup_witness_already_voted": {
+    "message": "You already voted for this witness",
+    "description": "Error if trying to vote for a witness that has alreay been voted for"
+  },
+  "html_popup_witness_not_voted": {
+    "message": "You did not vote for this witness, you can't unvote it",
+    "description": "Error if trying to unvote a witness that has not been voted for"
+  },
+  "html_popup_witness_not_existing": {
+    "message": "The witness you tried to vote for doesn't exist",
+    "description": "Error if trying to vote a witness that doesn't exist"
+  },
+  "bgd_ops_hive_engine_confirmation_error": {
+    "message": "The Hive Engine operation returned with the following error:  <br/><br/> Error: $1",
+    "description": "Error while confirming transaction on hive engine"
+  },
+  "hive_engine_overdraw_balance_error": {
+    "message": "Your $1 balance is insufficiant",
+    "description": "Error if trying to send too much of a token"
+  },
+  "hive_engine_not_existing_token_error": {
+    "message": "$1 token does not exist",
+    "description": "Error if trying to send a token that doesn't exist"
+  },
+  "hive_engine_not_existing_user_error": {
+    "message": "@$1 does not exist",
+    "description": "Error if trying to send a token that doesn't exist"
+  },
+  "transaction_wrong_format_decimal_error": {
+    "message": "Wrong format. should have $1 decimals",
+    "description": "Error if formating is not correct, wrong decimal number"
+  },
+  "error_while_broadcasting": {
+    "message": "Your transaction returned an error <br/><br/>Error: $1",
+    "description": "Generic error while broadcasting transaction"
+  },
+  "recurrent_transfer_recurrence_error": {
+    "message": "Cannot set a transfer recurrence that is less than $1 hours",
+    "description": "Recurrent transfer recurrence"
+  },
+  "recurrent_transfer_recurrence_max_duration_error": {
+    "message": "Cannot set a transfer that would last for longer than $1 days",
+    "description": "Recurrent transfer recurrence"
+  },
+  "recurrent_transfer_iterations_error": {
+    "message": "Executions must be at least 2, if you set executions to 1 the recurrent transfer will execute immediately and delete itself. You should use a normal transfer operation",
+    "description": "Recurrent transfer recurrence"
+  },
+  "set_same_proxy_error": {
+    "message": "This user is already set as your proxy.",
+    "description": "Proxy already set"
+  },
+  "power_down_hp_not_sufficient_error": {
+    "message": "Account does not have sufficient Hive Power for power down",
+    "description": "Error while trying to power down"
+  },
+  "already_has_authority_error": {
+    "message": "Already has authority",
+    "description": "Error if account already has authority"
+  },
+  "missing_authority_error": {
+    "message": "Missing authority",
+    "description": "Error if account is missing authority"
+  },
+  "nothing_to_remove_error": {
+    "message": "Nothing to remove",
+    "description": "Error if account has no authority to remove"
+  },
+  "html_popup_error_while_signing_transaction": {
+    "message": "An error occured while signing the transaction",
+    "description": "Generic error during signature"
+  },
+  "network_error_timeout": {
+    "message": "Network error : timeout",
+    "description": "When network timeout"
+  },
+  "html_popup_waiting_for_ledger_confirmation": {
+    "message": "Waiting for Ledger confirmation",
+    "description": "loading message while waiting for cnfirmation on ledger"
+  },
+  "html_sign_with_ledger": {
+    "message": "Sign on Ledger",
+    "description": "sign on ledger dialog title"
+  },
+  "html_popup_error_while_broadcasting": {
+    "message": "Error while broadcasting the transaction",
+    "description": "error while broadcasting the transaction"
+  },
+  "html_popup_broadcasting_transaction": {
+    "message": "Broadcasting transaction",
+    "description": "message while broadcasting the transaction"
+  },
+  "sign_buffer_ledger_error": {
+    "message": "Ledger is currently not compatible with the Sign Message function",
+    "description": "Error message if trying to sign a buffer with Ledger"
+  },
+  "error_ledger_denied_by_user": {
+    "message": "Transaction rejected",
+    "description": "Transaction rejected on Ledger"
+  },
+  "error_ledger_locked": {
+    "message": "Please unlock your Ledger",
+    "description": "Transaction rejected on Ledger because it is locked"
+  },
+  "error_ledger_failed_to_parse_transaction": {
+    "message": "Ledger failed to parse the transaction. Contact us on Discord",
+    "description": "transaction parsing failed on Ledger"
+  },
+  "error_ledger_bad_state": {
+    "message": "Ledger detected an error and switched to locked mode. Please reboot your device and try again",
+    "description": "Bad state error on Ledger"
+  },
+  "error_ledger_internal_error": {
+    "message": "Ledger Internal Error. Please try to reboot your device and try again",
+    "description": "Internal error on Ledger"
+  },
+  "error_ledger_sign_hash": {
+    "message": "There was an error while blind signing the transaction.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_app_not_supported": {
+    "message": "Seems like your App is not supported. Make sure the Hive App is running on your Ledger.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_version_not_supported": {
+    "message": "The version of your Ledger's Hive App might be outdated. Update it and try again.",
+    "description": "transaction blind signing failed on Ledger"
+  },
+  "error_ledger_no_hash_sign_policy": {
+    "message": "Blind signing is not authorized on your device. Please enable 'Hash Signing' in the Hive App settings.",
+    "description": "when user hasn't allowed hash sign policyon his ledger"
+  },
+  "error_ledger_hive_app_not_opened": {
+    "message": "Please open the Hive App on your Ledger.",
+    "description": "when user hasn't allowed hash sign policyon his ledger"
+  },
+  "popup_html_need_active_key_for_claim_savings": {
+    "message": "You need to add your active key to Keychain to claim savings",
+    "description": "automated tasks => need active key claim savings"
+  },
+  "popup_html_need_active_key_for_claim_accounts": {
+    "message": "You need to add your active key to Keychain to claim accounts",
+    "description": "automated tasks => need active key claim accounts"
+  },
+  "popup_html_need_posting_key_to_claim_rewards": {
+    "message": "You need to add your active key to Keychain to claim accounts",
+    "description": "automated tasks => need active key claim accounts"
+  },
+  "popup_html_cant_automatically_claim_ledger": {
+    "message": "You can't automatically claim because your key is saved on Ledger",
+    "description": "automated tasks => cant claim with Ledger"
+  },
+  "popup_html_not_enough_rc_to_claim_account": {
+    "message": "You don't have enough RC to claim account.",
+    "description": "automated tasks => need more RC to claim account"
+  },
+  "popup_html_validate_transaction_on_ledger": {
+    "message": "Confirm the transaction on your Ledger",
+    "description": "Message to remind user to accept transaction on his Ledger device"
+  },
+  "popup_html_add_account_with_ledger": {
+    "message": "Add from Ledger",
+    "description": "Message to remind user to accept transaction on his Ledger device"
+  },
+  "add_key_from_ledger": {
+    "message": "Link key",
+    "description": "Title of add key from ledger page"
+  },
+
+  "add_accounts_from_ledger": {
+    "message": "Add accounts from Ledger",
+    "description": "Title of add accounts from ledger page"
+  },
+  "add_accounts_from_ledger_finished": {
+    "message": "Add accounts from Ledger",
+    "description": "Title of add accounts from ledger page"
+  },
+  "synchronize_ledger_button": {
+    "message": "Link Ledger",
+    "description": "Synchronize Ledger button"
+  },
+  "ledger_select_account_caption": {
+    "message": "Select the accounts you want to import",
+    "description": "Select account caption"
+  },
+  "ledger_add_missing_keys_caption": {
+    "message": "Some of the keys are missing for this account. Please add them manually to be able to fully use your account, or skip this step.",
+    "description": "Select account caption"
+  },
+  "ledger_add_key_use_master_key": {
+    "message": "Use master key",
+    "description": "Ledger add using master key"
+  },
+  "ledger_select_accounts": {
+    "message": "Select accounts",
+    "description": "Ledger add using master key"
+  },
+  "popup_html_next": {
+    "message": "Next",
+    "description": "General word"
+  },
+  "popup_html_previous": {
+    "message": "Previous",
+    "description": "General word"
+  },
+  "select_account_from_ledger": {
+    "message": "Select accounts",
+    "description": "Select accounts to import from Ledger"
+  },
+  "ledger_add_missing_keys_to": {
+    "message": "Add keys",
+    "description": "Add missing keys when import account from Ledger"
+  },
+  "ledger_account_discovery_caption": {
+    "message": "Link your Ledger to use your accounts on Keychain",
+    "description": "synchronize ledger caption"
+  },
+  "no_account_found_on_ledger_error": {
+    "message": "No account found on your Ledger. Make sure your added at least one and try again.",
+    "description": "synchronize ledger caption"
+  },
+  "all_ledger_accounts_already_imported": {
+    "message": "All the accounts on your Ledger have already been linked to Keychain",
+    "description": "while synchronizing ledger"
+  },
+  "add_accounts_from_ledger_sucessful": {
+    "message": "Your account(s) have been successfully added to Keychain",
+    "description": "Synchronize Ledger success message"
+  },
+  "add_key_from_ledger_sucessful": {
+    "message": "Key successfully linked to Keychain. You can now close this tab.",
+    "description": "Synchronize Ledger success message"
+  },
+  "popup_html_ledger_unknown_error": {
+    "message": "An unknown error happened. Please reboot your Ledger and try again",
+    "description": "Ledger unknown error"
+  },
+  "add_key_from_ledger_caption": {
+    "message": "Link your Ledger to Keychain to use this key",
+    "description": "Ledger add key"
+  },
+  "ledger_discover_key": {
+    "message": "Confirm",
+    "description": "Discover key on Ledger"
+  },
+  "local": {
+    "message": "Local",
+    "description": "generic word"
+  },
+  "encode_with_memo_key_in_ledger": {
+    "message": "Your memo key is stored in Ledger. Ledger is currently not supporting encoding memo",
+    "description": "Error while trying to encode a memo with memo key in ledger"
+  },
+  "decode_with_memo_key_in_ledger": {
+    "message": "Your memo key is stored in Ledger. Ledger is currently not supporting decoding memo",
+    "description": "Error while trying to decode a memo with memo key in ledger"
+  },
+  "ledger_signing_hash": {
+    "message": "Keychain is requesting Ledger to sign the following hash. Make sure it correspond to what is displayed on your Ledger. <br /> $1",
+    "description": "Ledger signing hash confirmation"
+  },
+  "token_value": {
+    "message": "Value",
+    "description": "Value of token in USD"
   }
 }

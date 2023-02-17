@@ -1,5 +1,6 @@
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import dialogLifecycleMocks from 'src/__tests__/background/requests/mocks/dialog-lifecycle-mocks';
+
 describe('dialog-lifecycle tests:\n', () => {
   const { methods, constants, spies } = dialogLifecycleMocks;
   const { requestHandler } = constants;

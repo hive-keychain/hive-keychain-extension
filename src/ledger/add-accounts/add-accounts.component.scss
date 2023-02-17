@@ -1,0 +1,94 @@
+@import '/src/popup/variable.scss';
+
+@font-face {
+  font-family: Futura;
+  src: url('/assets/fonts/Futura-Boo.otf');
+  font-weight: 400;
+}
+
+html {
+  height: 100%;
+}
+body {
+  margin: 0px;
+  height: 100%;
+  #root {
+    display: flex;
+    height: 100%;
+    background: linear-gradient(330deg, #59626c 0%, #000000 100%) 0% 0%
+      no-repeat padding-box !important;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.connect-ledger {
+  border: solid 1px grey;
+  border-radius: 8px;
+  width: 350px;
+  height: 600px;
+  font-family: Futura !important;
+  font-weight: 400;
+  background: url('/assets/images/hive-watermark.png') 0% 0% no-repeat
+    padding-box;
+  color: white;
+  padding: 24px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  row-gap: 24px;
+  font-size: 16px;
+  position: relative;
+
+  .title-panel {
+    display: flex;
+    align-items: center;
+    img {
+      height: 50px;
+    }
+    .title {
+      font-size: 24px;
+      color: white;
+      margin-left: 8px;
+    }
+  }
+
+  .caption {
+    font-size: 18px;
+  }
+
+  .account-discovery {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    row-gap: 16px;
+  }
+
+  .select-accounts,
+  .add-missing-keys {
+    display: flex;
+    flex-direction: column;
+    row-gap: 16px;
+    flex: 1;
+    .missing-keys {
+      display: flex;
+      flex-direction: column;
+      row-gap: 16px;
+    }
+    .list {
+      display: flex;
+      flex-direction: column;
+      row-gap: 8px;
+    }
+
+    .bottom-button-panel {
+      display: flex;
+      align-items: center;
+      column-gap: 16px;
+      font-size: 20px;
+    }
+  }
+  .fill-space {
+    flex: 1;
+  }
+}

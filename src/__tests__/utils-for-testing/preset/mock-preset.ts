@@ -2,16 +2,20 @@ import KeychainApi from '@api/keychain';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { ConversionUtils } from 'src/utils/conversion.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
+import { RcDelegationsUtils } from 'src/utils/rc-delegations.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
 import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
@@ -21,6 +25,7 @@ import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.int
 /**
  * @param app.getExtendedAccount ExtendedAccount Used by refresh_account, loadActiveAccount. The main one to mock when using any process within the HomePage.
  * @param app.getAccount ExtendedAccount[] Used by processes as: add-by-auth.
+ * Note for dev: dHive uses some data as {data: {...data}} and HiveTx removes the extra layer.
  */
 const setOrDefault = (toUse: MocksToUse) => {
   const {
@@ -85,13 +90,27 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockResolvedValue(
       (app && app.getExtendedAccounts) ?? _app.getExtendedAccounts,
     );
-  HiveUtils.getDelegatees = jest
+  //Delegations related
+  DelegationUtils.getDelegatees = jest
     .fn()
     .mockResolvedValue(
       (powerUp && powerUp.getVestingDelegations) ??
         _powerUp.getVestingDelegations,
     );
-  HiveUtils.getConversionRequests = jest
+  DelegationUtils.getPendingOutgoingUndelegation = jest
+    .fn()
+    .mockResolvedValue(
+      (powerUp && powerUp.getPendingOutgoingUndelegation) ??
+        _powerUp.getPendingOutgoingUndelegation,
+    );
+  RcDelegationsUtils.getAllOutgoingDelegations = jest
+    .fn()
+    .mockResolvedValue(
+      (powerUp && powerUp.getAllOutgoingDelegations) ??
+        _powerUp.getAllOutgoingDelegations,
+    );
+  //END delegations related
+  ConversionUtils.getConversionRequests = jest
     .fn()
     .mockResolvedValue(convertions ?? _convertions.getConversionRequests);
   RpcUtils.checkRpcStatus = jest
@@ -116,6 +135,11 @@ const setOrDefault = (toUse: MocksToUse) => {
   ProxyUtils.findUserProxy = jest
     .fn()
     .mockResolvedValue((app && app.findUserProxy) ?? _app.findUserProxy);
+
+  HiveUtils.getAccountPrice = jest
+    .fn()
+    .mockReturnValue((app && app.getAccountPrice) ?? _app.getAccountPrice);
+
   HiveUtils.getVP = jest.fn().mockReturnValue((app && app.getVP) ?? _app.getVP);
   HiveUtils.getVotingDollarsPerAccount = jest
     .fn()
@@ -139,7 +163,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     .mockImplementation((...args: any[]) =>
       mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
     );
-  ActiveAccountUtils.hasReward = jest
+  RewardsUtils.hasReward = jest
     .fn()
     .mockReturnValue((topBar && topBar.hasReward) ?? _topBar.hasReward);
   TransactionUtils.getAccountTransactions = jest
@@ -148,37 +172,39 @@ const setOrDefault = (toUse: MocksToUse) => {
       (walletHistory && walletHistory.getAccountTransactions) ??
         _walletHistory.getAccountTransactions,
     );
-  HiveEngineUtils.getUserBalance = jest
+  TokensUtils.getUserBalance = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getUserBalance) ?? _tokens.getUserBalance,
     );
-  HiveEngineUtils.getIncomingDelegations = jest
+  TokensUtils.getIncomingDelegations = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getIncomingDelegations) ??
         _tokens.getIncomingDelegations,
     );
-  HiveEngineUtils.getOutgoingDelegations = jest
+  TokensUtils.getOutgoingDelegations = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getOutgoingDelegations) ??
         _tokens.getOutgoingDelegations,
     );
-  HiveEngineUtils.getAllTokens = jest
+  TokensUtils.getAllTokens = jest
     .fn()
     .mockResolvedValue((tokens && tokens.getAllTokens) ?? _tokens.getAllTokens);
-  HiveEngineUtils.getTokensMarket = jest
+  TokensUtils.getTokensMarket = jest
     .fn()
     .mockResolvedValue(
       (tokens && tokens.getTokensMarket) ?? _tokens.getTokensMarket,
     );
-  HiveEngineConfigUtils.getAccountHistoryApi().get = jest
+
+  HiveEngineUtils.getHistory = jest
     .fn()
-    .mockResolvedValueOnce({
-      data: (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
-    })
-    .mockResolvedValueOnce({ data: [] });
+    .mockResolvedValueOnce(
+      (tokens && tokens.getTokenHistory) ?? _tokens.getTokenHistory,
+    )
+    .mockResolvedValueOnce([]);
+
   ProposalUtils.hasVotedForProposal = jest
     .fn()
     .mockResolvedValue(

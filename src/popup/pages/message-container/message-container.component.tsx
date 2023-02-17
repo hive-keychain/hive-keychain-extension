@@ -16,22 +16,46 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       switch (errorMessage.type) {
         case MessageType.ERROR:
           toast.error(
-            chrome.i18n.getMessage(errorMessage.key, errorMessage.params),
+            <div
+              dangerouslySetInnerHTML={{
+                __html: chrome.i18n.getMessage(
+                  errorMessage.key,
+                  errorMessage.params,
+                ),
+              }}></div>,
           );
           break;
         case MessageType.SUCCESS:
           toast.success(
-            chrome.i18n.getMessage(errorMessage.key, errorMessage.params),
+            <div
+              dangerouslySetInnerHTML={{
+                __html: chrome.i18n.getMessage(
+                  errorMessage.key,
+                  errorMessage.params,
+                ),
+              }}></div>,
           );
           break;
         case MessageType.WARNING:
           toast.warning(
-            chrome.i18n.getMessage(errorMessage.key, errorMessage.params),
+            <div
+              dangerouslySetInnerHTML={{
+                __html: chrome.i18n.getMessage(
+                  errorMessage.key,
+                  errorMessage.params,
+                ),
+              }}></div>,
           );
           break;
         case MessageType.INFO:
           toast.info(
-            chrome.i18n.getMessage(errorMessage.key, errorMessage.params),
+            <div
+              dangerouslySetInnerHTML={{
+                __html: chrome.i18n.getMessage(
+                  errorMessage.key,
+                  errorMessage.params,
+                ),
+              }}></div>,
           );
           break;
       }
@@ -59,7 +83,18 @@ const MessageContainer = ({ errorMessage, resetMessage }: PropsFromRedux) => {
       }}
       closeOnClick={true}
       draggable={false}
-      bodyStyle={{ fontSize: '16px', fontFamily: 'Futura', fontWeight: '400' }}
+      style={{
+        maxHeight: 'unset',
+      }}
+      toastStyle={{
+        maxHeight: 'unset',
+      }}
+      bodyStyle={{
+        fontSize: '16px',
+        fontFamily: 'Futura',
+        fontWeight: '400',
+        maxHeight: 'unset',
+      }}
     />
   );
 };

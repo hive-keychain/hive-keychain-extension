@@ -1,5 +1,5 @@
 import * as delegationsActions from 'src/popup/actions/delegations.actions';
-import HiveUtils from 'src/utils/hive.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import Logger from 'src/utils/logger.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -13,7 +13,7 @@ describe('delegations.actions tests:\n', () => {
   });
   describe('loadDelegators tests:\n', () => {
     test('Must fetch delegators', async () => {
-      HiveUtils.getDelegators = jest
+      DelegationUtils.getDelegators = jest
         .fn()
         .mockResolvedValue(delegations.delegators);
       const fakeStore = getFakeStore(initialEmptyStateStore);
@@ -31,7 +31,7 @@ describe('delegations.actions tests:\n', () => {
         type: 'ERROR',
       };
       const promiseError = new Error('Custom error message');
-      HiveUtils.getDelegators = jest.fn().mockRejectedValue(promiseError);
+      DelegationUtils.getDelegators = jest.fn().mockRejectedValue(promiseError);
       jest.spyOn(Logger, 'error');
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
@@ -44,7 +44,7 @@ describe('delegations.actions tests:\n', () => {
 
   describe('loadDelegatees tests:\n', () => {
     test('Must fetch delegatees', async () => {
-      HiveUtils.getDelegatees = jest
+      DelegationUtils.getDelegatees = jest
         .fn()
         .mockResolvedValue(delegations.delegatees);
       const fakeStore = getFakeStore(initialEmptyStateStore);
@@ -58,7 +58,9 @@ describe('delegations.actions tests:\n', () => {
     test('If an errors occurs, must catch the error and call Logger.error', async () => {
       const customErrorMessage = 'Custom Error';
       const promiseError = new Error(customErrorMessage);
-      HiveUtils.getDelegatees = jest.fn().mockRejectedValueOnce(promiseError);
+      DelegationUtils.getDelegatees = jest
+        .fn()
+        .mockRejectedValueOnce(promiseError);
       const spyLoggerError = jest.spyOn(Logger, 'error');
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(

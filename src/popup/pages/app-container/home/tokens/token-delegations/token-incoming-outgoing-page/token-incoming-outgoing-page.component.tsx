@@ -15,7 +15,7 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import FormatUtils from 'src/utils/format.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import './token-incoming-outgoing-page.component.scss';
 
 const TokenIncomingOutgoingPage = ({
@@ -45,12 +45,12 @@ const TokenIncomingOutgoingPage = ({
     let delegations: TokenDelegation[];
 
     if (delegationType === DelegationType.INCOMING) {
-      delegations = await HiveEngineUtils.getIncomingDelegations(
+      delegations = await TokensUtils.getIncomingDelegations(
         tokenBalance.symbol,
         activeAccountName!,
       );
     } else {
-      delegations = await HiveEngineUtils.getOutgoingDelegations(
+      delegations = await TokensUtils.getOutgoingDelegations(
         tokenBalance.symbol,
         activeAccountName!,
       );
@@ -72,7 +72,9 @@ const TokenIncomingOutgoingPage = ({
   };
 
   return (
-    <div aria-label="incoming-outgoing-page" className="incoming-outgoing-page">
+    <div
+      aria-label="incoming-outgoing-page"
+      className="token-incoming-outgoing-page">
       {delegationType === DelegationType.OUTGOING &&
         tokenInfo.undelegationCooldown > 0 && (
           <div className="cooldown-message">

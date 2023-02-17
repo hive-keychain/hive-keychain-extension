@@ -66,14 +66,11 @@ const filterDelegation = (
   );
 };
 
-export const filterInterest = (
-  interest: ReceivedInterests,
-  filterValue: string,
-) => {
+const filterInterest = (interest: ReceivedInterests, filterValue: string) => {
   return interest.interest.toLowerCase().includes(filterValue.toLowerCase());
 };
 
-export const filterConversion = (
+const filterConversion = (
   conversion: Convert | CollateralizedConvert,
   filterValue: string,
 ) => {
@@ -82,7 +79,7 @@ export const filterConversion = (
     .toLowerCase()
     .includes(filterValue.toLowerCase());
 };
-export const filterFillConversion = (
+const filterFillConversion = (
   fillConversion: FillConvert | FillCollateralizedConvert,
   filterValue: string,
 ) => {

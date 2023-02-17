@@ -183,6 +183,7 @@ const TokenHistoryItem = ({
           <div className="bottom-row">{label}</div>
         </div>
         <div
+          aria-label={`${ariaLabel}-memo-panel-${transaction._id}`}
           className={isMemoOpened ? 'memo-panel opened' : 'memo-panel closed'}>
           {getMemo()}
         </div>

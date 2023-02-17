@@ -13,7 +13,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
+import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './witness-voting-section.component.scss';
 
@@ -34,18 +34,26 @@ const WitnessVotingSection = ({
     if (activeAccount.account.witnesses_voted_for === 30) {
       setErrorMessage('html_popup_vote_stoodkev_witness_error_30_votes');
     } else {
-      addToLoadingList('html_popup_vote_witness_operation');
-      const transactionConfirmed = await WitnessUtils.voteWitness(
-        STOODKEV_WITNESS,
-        activeAccount,
-      );
-      addToLoadingList('html_popup_confirm_transaction_operation');
-      removeFromLoadingList('html_popup_vote_witness_operation');
-      if (transactionConfirmed) {
-        await BlockchainTransactionUtils.delayRefresh();
+      try {
+        addToLoadingList('html_popup_vote_witness_operation');
+        const transactionConfirmed = await WitnessUtils.voteWitness(
+          STOODKEV_WITNESS,
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        );
+        addToLoadingList('html_popup_confirm_transaction_operation');
+        removeFromLoadingList('html_popup_vote_witness_operation');
+        if (transactionConfirmed) {
+          await BlockchainTransactionUtils.delayRefresh();
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
+          refreshActiveAccount();
+          setSuccessMessage('html_popup_vote_stoodkev_witness_success');
+        }
+      } catch (err: any) {
+        setErrorMessage(err.message);
+      } finally {
+        removeFromLoadingList('html_popup_vote_witness_operation');
         removeFromLoadingList('html_popup_confirm_transaction_operation');
-        refreshActiveAccount();
-        setSuccessMessage('html_popup_vote_stoodkev_witness_success');
       }
     }
   };

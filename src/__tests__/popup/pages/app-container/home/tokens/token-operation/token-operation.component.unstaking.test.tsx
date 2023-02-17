@@ -2,7 +2,7 @@ import App from '@popup/App';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { waitFor } from '@testing-library/react';
 import React from 'react';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -13,7 +13,7 @@ import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
 const { methods, constants, extraMocks } = tokenOperation;
-const { message, title, leoToken, displayedCommon } = constants;
+const { message, title, leoToken, displayedCommon, i18n } = constants;
 const { typeValues, unstakeDisclaimer } = leoToken;
 const { balance } = typeValues;
 describe('token-operation Unstaking tests:\n', () => {
@@ -23,7 +23,7 @@ describe('token-operation Unstaking tests:\n', () => {
     await clickAwait([alButton.token.action.unstake]);
   });
   const operationType = TokenOperationType.UNSTAKE;
-  it('Must load operation as stake', () => {
+  it('Must load operation as unstake', () => {
     assertion.getByLabelText(alComponent.tokensOperationPage);
     assertion.getManyByText([title(operationType), unstakeDisclaimer]);
   });
@@ -60,7 +60,7 @@ describe('token-operation Unstaking tests:\n', () => {
   });
   it('Must show loading unstake transaction', async () => {
     extraMocks.doesAccountExist(true);
-    HiveEngineUtils.unstakeToken = jest.fn();
+    TokensUtils.unstakeToken = jest.fn();
     await methods.userInteraction(balance.min, operationType, true);
     await waitFor(() => {
       assertion.getManyByText([
@@ -69,25 +69,27 @@ describe('token-operation Unstaking tests:\n', () => {
       ]);
     });
   });
-  it('Must show error if unstaking fails and navigate back', async () => {
+  it('Must show error if unstaking fails', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.unstakeToken();
-    extraMocks.tryConfirmTransaction('error');
+    extraMocks.unstakeToken({ broadcasted: false, confirmed: false });
     await methods.userInteraction(balance.min, operationType, true);
-    await assertion.awaitFor(message.error.transaction, QueryDOM.BYTEXT);
-    assertion.getByLabelText(alComponent.tokensOperationPage);
+    await assertion.awaitFor(
+      message.error.transactionFailed(operationType),
+      QueryDOM.BYTEXT,
+    );
   });
   it('Must show timeout error', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.unstakeToken();
-    extraMocks.tryConfirmTransaction('timeOut');
+    extraMocks.unstakeToken(
+      undefined,
+      new Error(i18n.get('popup_token_timeout')),
+    );
     await methods.userInteraction(balance.min, operationType, true);
     await assertion.awaitFor(message.error.timeOut, QueryDOM.BYTEXT);
   });
   it('Must unstake and show message', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.unstakeToken();
-    extraMocks.tryConfirmTransaction('confirmed');
+    extraMocks.unstakeToken({ broadcasted: true, confirmed: true });
     await methods.userInteraction(balance.min, operationType, true);
     await assertion.awaitFor(
       message.operationConfirmed(operationType),

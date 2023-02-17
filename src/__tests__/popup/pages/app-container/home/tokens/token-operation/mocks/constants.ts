@@ -34,9 +34,8 @@ const constants = {
     error: {
       noSuchAccount: i18n.get('popup_no_such_account'),
       notEnoughBalance: i18n.get('popup_html_power_up_down_error'),
-      transaction: i18n.get('popup_html_hive_engine_error', [
-        operationResult.error.error,
-      ]),
+      transactionFailed: (operationType: TokenOperationType) =>
+        i18n.get(`popup_html_${operationType}_tokens_failed`),
       timeOut: i18n.get('popup_token_timeout'),
       noActivekey: i18n.get('popup_missing_key', [KeychainKeyTypesLC.active]),
     },
@@ -84,6 +83,7 @@ const constants = {
   tokenOperationResult: { id: '65d9cc4db737' },
   displayedCommon: ['1.00000000 LEO', 'Amount', 'Cancel', 'Confirm'],
   displayedDelegating: ['To', `@${mk.user.two}`],
+  i18n: i18n,
 };
 
 const tokenOperationConstants = {

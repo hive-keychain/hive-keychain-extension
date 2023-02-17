@@ -31,4 +31,17 @@
       align-items: center;
     }
   }
+
+  &.disabled {
+    cursor: not-allowed !important;
+    opacity: 0.5;
+    .checkbox-and-label {
+      .label {
+        cursor: not-allowed;
+      }
+    }
+    .pretty input {
+      cursor: not-allowed;
+    }
+  }
 }

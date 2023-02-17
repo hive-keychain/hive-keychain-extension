@@ -1,9 +1,9 @@
 import { TokenBalance } from '@interfaces/tokens.interface';
-import { AxiosResponse } from 'axios';
 import * as tokenActions from 'src/popup/actions/token.actions';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
+import TokensUtils from 'src/utils/tokens.utils';
+import tokenHistory from 'src/__tests__/utils-for-testing/data/history/transactions/tokens/token-history';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
@@ -28,15 +28,16 @@ describe('token.actions tests:\n', () => {
   };
   describe('loadTokens tests:\n', () => {
     test('Must load tokens', async () => {
-      HiveEngineConfigUtils.getApi().find = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeTokensResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(tokenActions.loadTokens());
       expect(fakeStore.getState().tokens).toEqual(utilsT.expectedTokensPayload);
     });
+
     test('If error on response, will throw an unhandled error', async () => {
-      HiveEngineConfigUtils.getApi().find = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeTokensResponseNoMetadata);
       const newError = new SyntaxError(
@@ -54,7 +55,7 @@ describe('token.actions tests:\n', () => {
 
   describe('loadTokensMarket tests:\n', () => {
     test('Must load tokens market', async () => {
-      HiveEngineConfigUtils.getApi().find = jest
+      HiveEngineUtils.get = jest
         .fn()
         .mockResolvedValueOnce(utilsT.fakeMarketMetricsResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
@@ -64,11 +65,12 @@ describe('token.actions tests:\n', () => {
       );
     });
   });
+
   describe('loadUserTokens tests:\n', () => {
     test('Must clear current userTokens and load user tokens', async () => {
       const newUserTokenBalances =
         utilsT.fakeGetUserBalanceResponse as TokenBalance[];
-      HiveEngineUtils.getUserBalance = jest
+      TokensUtils.getUserBalance = jest
         .fn()
         .mockResolvedValueOnce(newUserTokenBalances);
       const fakeStore = getFakeStore(initialStateJustTokens);
@@ -86,7 +88,7 @@ describe('token.actions tests:\n', () => {
         utilsT.fakeGetUserBalanceResponse[2],
         tokenObjZeroBalance,
       ] as TokenBalance[];
-      HiveEngineUtils.getUserBalance = jest
+      TokensUtils.getUserBalance = jest
         .fn()
         .mockResolvedValueOnce(newUserTokenBalances);
       const fakeStore = getFakeStore(initialStateJustTokens);
@@ -103,7 +105,7 @@ describe('token.actions tests:\n', () => {
       const userTokensReseted = { list: [], loading: true };
       const promiseError = new Error('Custom Message');
       const spyLoggerError = jest.spyOn(Logger, 'error');
-      HiveEngineUtils.getUserBalance = jest
+      TokensUtils.getUserBalance = jest
         .fn()
         .mockRejectedValueOnce(promiseError);
       const fakeStore = getFakeStore(initialStateJustTokens);
@@ -120,16 +122,10 @@ describe('token.actions tests:\n', () => {
   describe('loadTokenHistory tests:\n', () => {
     test('Must load tokenHistory', async () => {
       const currency = 'LEO';
-      const axiosResponse1 = {
-        data: utilsT.fakeTokensGetAccountHistoryResponse,
-      } as AxiosResponse;
-      const axiosResponse2 = {
-        data: [],
-      } as AxiosResponse;
-      HiveEngineConfigUtils.getAccountHistoryApi().get = jest
-        .fn()
-        .mockResolvedValueOnce(Promise.resolve(axiosResponse1))
-        .mockResolvedValueOnce(Promise.resolve(axiosResponse2));
+      const mHiveEngineGetHistory = jest
+        .spyOn(HiveEngineUtils, 'getHistory')
+        .mockResolvedValueOnce(tokenHistory.leoToken)
+        .mockResolvedValueOnce([]);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       await fakeStore.dispatch<any>(
         tokenActions.loadTokenHistory(
@@ -137,16 +133,17 @@ describe('token.actions tests:\n', () => {
           currency,
         ),
       );
-      expect(fakeStore.getState().tokenHistory).toEqual([
-        ...utilsT.expectedPayLoadloadTokenHistory,
-      ]);
+      expect(fakeStore.getState().tokenHistory).toEqual(
+        tokenHistory.expectedPayLoadloadTokenHistory,
+      );
+      mHiveEngineGetHistory.mockRestore();
     });
     test('If error on response, will throw an unhandled error', async () => {
       const currency = 'LEO';
       const error = new Error('Custom Error');
-      HiveEngineConfigUtils.getAccountHistoryApi().get = jest
-        .fn()
-        .mockResolvedValueOnce(Promise.reject(error));
+      const mHiveEngineGetHistory = jest
+        .spyOn(HiveEngineUtils, 'getHistory')
+        .mockRejectedValueOnce(error);
       const fakeStore = getFakeStore(initialEmptyStateStore);
       try {
         await fakeStore.dispatch<any>(
@@ -161,6 +158,7 @@ describe('token.actions tests:\n', () => {
       } catch (error) {
         expect(error).toEqual(error);
       }
+      mHiveEngineGetHistory.mockRestore();
     });
   });
 });

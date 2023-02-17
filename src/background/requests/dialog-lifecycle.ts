@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createPopup = (
@@ -14,6 +14,7 @@ export const createPopup = (
     requestHandler.setWindowId(undefined);
   }
   //Create new window on the top right of the screen
+  /* istanbul ignore next */
   chrome.windows.getCurrent((w) => {
     chrome.windows.create(
       {

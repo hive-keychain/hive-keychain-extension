@@ -35,9 +35,10 @@
   }
 
   .value-panel {
-    display: flex;
+    display: grid;
     column-gap: 16px;
     align-items: baseline;
+    grid-template-columns: 1fr auto;
     .select-currency {
       width: 100%;
       height: $input-height;

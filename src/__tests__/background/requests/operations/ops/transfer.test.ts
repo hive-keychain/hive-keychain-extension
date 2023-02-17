@@ -1,145 +1,138 @@
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
+import { LocalAccount } from '@interfaces/local-account.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
-import { RPCError } from 'src/__tests__/utils-for-testing/classes/errors/rpc';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
+import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('transfer tests:\n', () => {
   const { methods, constants, spies, mocks } = transferMocks;
-  const { requestHandler, data, params, confirmed } = constants;
+  const { requestHandler, data, params } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastTransfer cases:\n', () => {
-    describe('No encrypted memo:\n', () => {
-      it('Must call getUserKey', async () => {
-        await broadcastTransfer(requestHandler, data);
-        expect(spies.getUserKey).toBeCalledTimes(2);
-        expect(spies.getUserKey).toBeCalledWith(...params.getUserKey[0]);
-      });
-      it('Must return error if no key on handler', async () => {
-        const errorMsg = chrome.i18n.getMessage('bgd_ops_error_broadcasting');
-        const resultOperation = (await broadcastTransfer(
-          requestHandler,
-          data,
-        )) as ResultOperation;
-        const { success, result, error } = resultOperation.msg;
-        expect(success).toBe(false);
-        expect(result).toBeUndefined();
-        expect((error as TypeError).message).toContain('private key');
-      });
-      it('Must return error if receiver not found', async () => {
-        data.currency = 'HIVE';
-        data.amount = '0.001';
-        data.to = 'theghost9999';
-        const rpcError = new RPCError(`Cannot find account @${data.to}.`, {
-          stack: [{ context: { method: 'get_account' } }],
+    describe('Default cases:\n', () => {
+      describe('No encrypted memo:\n', () => {
+        it('Must call getUserKey', async () => {
+          await broadcastTransfer(requestHandler, data);
+          expect(spies.getUserKey).toBeCalledTimes(1);
+          expect(spies.getUserKey).toBeCalledWith(...params.getUserKey[0]);
         });
-        mocks.client.broadcast.transfer('error', rpcError);
-        requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        requestHandler.data.accounts = accounts.twoAccounts;
-        const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.error(
-          result,
-          rpcError,
-          data,
-          chrome.i18n.getMessage('bgd_ops_transfer_get_account', [data.to]),
-        );
-      });
-      it('Must return error if not enough balance', async () => {
-        data.currency = 'HIVE';
-        data.amount = '1000000.000';
-        data.to = 'theghost1980';
-        const rpcError = new RPCError(
-          `Insufficient balance ${data.amount} ${data.currency} on account @${data.username}.`,
-          {
-            stack: [{ context: { method: 'adjust_balance' } }],
-          },
-        );
-        mocks.client.broadcast.transfer('error', rpcError);
-        requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        requestHandler.data.accounts = accounts.twoAccounts;
-        const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.error(
-          result,
-          rpcError,
-          data,
-          chrome.i18n.getMessage('bgd_ops_transfer_adjust_balance', [
-            data.currency,
-            data.username!,
-          ]),
-        );
-      });
-      it('Must return default error if not found on switch cases', async () => {
-        data.currency = 'HIVE';
-        data.amount = '1000';
-        data.to = 'theghost1980';
-        const rpcError = new RPCError(`Wrong decimal places, please validate`, {
-          stack: [{ context: { method: 'string_to_asset_num' } }],
+        it('Must return error if no key on handler', async () => {
+          const result = await broadcastTransfer(requestHandler, data);
+          methods.assert.error(
+            result,
+            new Error('html_popup_error_while_signing_transaction'),
+            data,
+            mocksImplementation.i18nGetMessageCustom(
+              'html_popup_error_while_signing_transaction',
+            ),
+          );
         });
-        mocks.client.broadcast.transfer('error', rpcError);
-        requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        requestHandler.data.accounts = accounts.twoAccounts;
-        const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.error(
-          result,
-          rpcError,
-          data,
-          chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
-        );
+        it('Must return error if receiver not found', async () => {
+          data.currency = 'HIVE';
+          data.amount = '0.001';
+          data.to = 'theghost9999';
+          const localeMessageKey = 'bgd_ops_transfer_get_account';
+          mocks.getExtendedAccount(undefined);
+          requestHandler.data.key = userData.one.nonEncryptKeys.active;
+          requestHandler.data.accounts = accounts.twoAccounts;
+          const result = await broadcastTransfer(requestHandler, data);
+          methods.assert.error(
+            result,
+            new KeychainError(localeMessageKey),
+            data,
+            chrome.i18n.getMessage(localeMessageKey, [data.to]),
+          );
+        });
+        it('Must return success', async () => {
+          const mHiveTxSendOp = jest
+            .spyOn(HiveTxUtils, 'sendOperation')
+            .mockResolvedValue(true);
+          mocks.getExtendedAccount(accounts.extended);
+          requestHandler.data.key = userData.one.nonEncryptKeys.active;
+          requestHandler.data.accounts = accounts.twoAccounts;
+          const result = await broadcastTransfer(requestHandler, data);
+          methods.assert.success(
+            result,
+            chrome.i18n.getMessage('bgd_ops_transfer_success', [
+              data.amount,
+              data.currency,
+              data.username!,
+              data.to,
+            ]),
+          );
+          mHiveTxSendOp.mockRestore();
+        });
       });
-      it('Must return success', async () => {
-        mocks.client.broadcast.transfer('success', confirmed);
-        requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        requestHandler.data.accounts = accounts.twoAccounts;
-        const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.success(
-          result,
-          chrome.i18n.getMessage('bgd_ops_transfer_success', [
-            data.amount,
-            data.currency,
-            data.username!,
-            data.to,
-          ]),
-        );
+      describe('Encrypted memo:\n', () => {
+        it('Must return error if no memoKey', async () => {
+          mocks.getExtendedAccount(accounts.extended);
+          const localeMessageKey = 'popup_html_memo_key_missing';
+          requestHandler.data.key = userData.one.nonEncryptKeys.active;
+          requestHandler.data.accounts = [];
+          data.to = 'nonExistentUser';
+          data.memo = '# To Encrypt this memo!';
+          const result = await broadcastTransfer(requestHandler, data);
+          methods.assert.error(
+            result,
+            new KeychainError(localeMessageKey),
+            data,
+            chrome.i18n.getMessage(localeMessageKey),
+          );
+        });
+        it('Must return error if receiver not found', async () => {
+          mocks.getExtendedAccount(undefined);
+          const localeMessageKey = 'bgd_ops_transfer_get_account';
+          requestHandler.data.key = userData.one.nonEncryptKeys.active;
+          requestHandler.data.accounts = accounts.twoAccounts;
+          data.to = 'nonExistentUser';
+          data.memo = '# To Encrypt this memo!';
+          const result = await broadcastTransfer(requestHandler, data);
+          methods.assert.error(
+            result,
+            new KeychainError(localeMessageKey),
+            data,
+            chrome.i18n.getMessage(localeMessageKey, [data.to]),
+          );
+        });
+        it('Must return success', async () => {
+          const mHiveTxSendOp = jest
+            .spyOn(HiveTxUtils, 'sendOperation')
+            .mockResolvedValue(true);
+          mocks.getExtendedAccount(accounts.extended);
+          requestHandler.data.key = userData.one.nonEncryptKeys.active;
+          requestHandler.data.accounts = accounts.twoAccounts;
+          data.to = 'theghost1980';
+          data.memo = '# To Encrypt this memo! Get the Quan!!';
+          const result = await broadcastTransfer(requestHandler, data);
+          methods.assert.success(
+            result,
+            chrome.i18n.getMessage('bgd_ops_transfer_success', [
+              data.amount,
+              data.currency,
+              data.username!,
+              data.to,
+            ]),
+          );
+          mHiveTxSendOp.mockRestore();
+        });
       });
     });
-    describe('Encrypted memo:\n', () => {
-      it('Must return error if no memoKey', async () => {
-        mocks.client.database.getAccounts([accounts.extended]);
-        const error = 'Could not encode memo.';
-        requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        requestHandler.data.accounts = [];
-        data.to = 'nonExistentUser';
-        data.memo = '# To Encrypt this memo!';
-        const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.error(
-          result,
-          new Error(error),
-          data,
-          chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
-        );
-      });
-      it('Must return error if receiver not found', async () => {
-        mocks.client.database.getAccounts([]);
-        const error = 'Could not encode memo.';
-        requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        requestHandler.data.accounts = accounts.twoAccounts;
-        data.to = 'nonExistentUser';
-        data.memo = '# To Encrypt this memo!';
-        const result = await broadcastTransfer(requestHandler, data);
-        methods.assert.error(
-          result,
-          new Error(error),
-          data,
-          chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
-        );
-      });
+
+    describe('Using ledger cases:\n', () => {
       it('Must return success', async () => {
-        mocks.client.database.getAccounts([accounts.extended]);
-        requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        requestHandler.data.accounts = accounts.twoAccounts;
-        data.to = 'theghost1980';
-        data.memo = '# To Encrypt this memo! Get the Quan!!';
+        mocks.HiveTxUtils.sendOperation(true);
+        mocks.LedgerModule.getSignatureFromLedger('signed!');
+        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.getExtendedAccount(accounts.extended);
+        const clonedAccounts = objects.clone(
+          accounts.twoAccounts,
+        ) as LocalAccount[];
+        clonedAccounts[0].keys.active = '#ledgerKey1234';
+        requestHandler.data.accounts = clonedAccounts;
         const result = await broadcastTransfer(requestHandler, data);
         methods.assert.success(
           result,

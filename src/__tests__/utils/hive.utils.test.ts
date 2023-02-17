@@ -1,50 +1,34 @@
 import KeychainApi from '@api/keychain';
-import {
-  Asset,
-  Client,
-  ExtendedAccount,
-  Price,
-  PrivateKey,
-  TransactionConfirmation,
-} from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Asset, ExtendedAccount, Price } from '@hiveio/dhive';
 import { Rpc } from '@interfaces/rpc.interface';
-import * as MessageActions from '@popup/actions/message.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/actions/message.actions';
-import { store } from '@popup/store';
 import { AssertionError } from 'assert';
 import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
+import { ConversionUtils } from 'src/utils/conversion.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import Logger from 'src/utils/logger.utils';
+import conversions from 'src/__tests__/utils-for-testing/data/conversions';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 config.byDefault();
 describe('hive.utils tests:\n', () => {
   async function resetClient() {
-    await HiveUtils.setRpc({ uri: 'https://api.hive.blog' } as Rpc);
+    await HiveTxUtils.setRpc({ uri: 'https://api.hive.blog' } as Rpc);
   }
   afterEach(async () => {
     jest.clearAllMocks();
     await resetClient();
   });
   beforeEach(async () => {
-    await HiveUtils.setRpc(rpc.fake);
+    await HiveTxUtils.setRpc(rpc.fake);
   });
-  describe('getClient tests:\n', () => {
-    test('calling getclient must return an instance of Client', () => {
-      const getClientObj = HiveUtils.getClient();
-      expect(getClientObj instanceof Client).toBe(true);
-      expect(getClientObj.address).toBeDefined();
-    });
-  });
+
   describe('setRpc tests:\n', () => {
     test('Passing uri as "DEFAULT" will set the uri of the Client class as the return value from KeychainApi.get', async () => {
       const returnedUriValue = 'https://ValueFromHive/rpc/api';
@@ -55,22 +39,8 @@ describe('hive.utils tests:\n', () => {
         uri: 'DEFAULT',
         testnet: true,
       };
-      expect(HiveUtils.getClient().address).toBe(rpc.fake.uri);
-      const result = await HiveUtils.setRpc(fakeRpc);
+      const result = await HiveTxUtils.setRpc(fakeRpc);
       expect(result).toBeUndefined();
-      expect(HiveUtils.getClient().address).toBe(returnedUriValue);
-    });
-
-    test('Passing uri different from "DEFAULT" will override the uri value on the Client Class', async () => {
-      const overridingValue = 'https://overridingValue/rpc/api';
-      const fakeRpc: Rpc = {
-        uri: overridingValue,
-        testnet: true,
-      };
-      expect(HiveUtils.getClient().address).toBe(rpc.fake.uri);
-      const result = await HiveUtils.setRpc(fakeRpc);
-      expect(result).toBeUndefined();
-      expect(HiveUtils.getClient().address).toBe(overridingValue);
     });
   });
 
@@ -317,16 +287,11 @@ describe('hive.utils tests:\n', () => {
           requestid: 1,
         },
       ];
-      HiveUtils.getClient().database.call = jest
-        .fn()
-        .mockImplementation((...args) => {
-          if (args[0] === 'get_conversion_requests') {
-            return utilsT.fakeHbdConversionsResponse;
-          } else if (args[0] === 'get_collateralized_conversion_requests') {
-            return utilsT.fakeHiveConversionsResponse;
-          }
-        });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: conversions.fakeHbdConversionsResponse,
+        collateralized: conversions.fakeHiveConversionsResponse,
+      });
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual(expectedNewArray);
     });
     test('Fetching 1 arrays(hiveConversions) will reestructure hiveConversions Array, and return one new array', async () => {
@@ -340,42 +305,27 @@ describe('hive.utils tests:\n', () => {
           requestid: 1,
         },
       ];
-      HiveUtils.getClient().database.call = jest
-        .fn()
-        .mockImplementation((...args) => {
-          if (args[0] === 'get_conversion_requests') {
-            return [];
-          } else if (args[0] === 'get_collateralized_conversion_requests') {
-            return utilsT.fakeHiveConversionsResponse;
-          }
-        });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: [],
+        collateralized: conversions.fakeHiveConversionsResponse,
+      });
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual(expectedNewArray);
     });
     test('Fetching 2 empty arrays will return an empty array', async () => {
-      HiveUtils.getClient().database.call = jest
-        .fn()
-        .mockImplementation((...args) => {
-          if (args[0] === 'get_conversion_requests') {
-            return [];
-          } else if (args[0] === 'get_collateralized_conversion_requests') {
-            return [];
-          }
-        });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: [],
+        collateralized: [],
+      });
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual([]);
     });
     test('If hiveConversions lack one of the used properties, will return an array with undefined values', async () => {
-      HiveUtils.getClient().database.call = jest
-        .fn()
-        .mockImplementation((...args) => {
-          if (args[0] === 'get_conversion_requests') {
-            return [];
-          } else if (args[0] === 'get_collateralized_conversion_requests') {
-            return [{ anyOther: 'anyOther' }];
-          }
-        });
-      const result = await HiveUtils.getConversionRequests('wesp05');
+      mocksImplementation.hiveTxUtils.getData({
+        conversionRequests: [],
+        collateralized: [{ anyOther: 'any' }],
+      });
+      const result = await ConversionUtils.getConversionRequests('wesp05');
       expect(result).toEqual([
         {
           amount: undefined,
@@ -391,328 +341,34 @@ describe('hive.utils tests:\n', () => {
 
   describe('getDelegators tests:\n', () => {
     test('Passing an account with delegators must return an array of results', async () => {
-      HiveUtils.getDelegators = jest
+      DelegationUtils.getDelegators = jest
         .fn()
         .mockResolvedValue(delegations.delegators);
       const username = 'blocktrades';
-      const result = await HiveUtils.getDelegators(username);
+      const result = await DelegationUtils.getDelegators(username);
       expect(result).toEqual(delegations.delegators);
     });
     test('Passing an account with No delegators must return an Empty array', async () => {
-      HiveUtils.getDelegators = jest.fn().mockResolvedValue([]);
+      DelegationUtils.getDelegators = jest.fn().mockResolvedValue([]);
       const username = 'blocktrades';
-      const result = await HiveUtils.getDelegators(username);
+      const result = await DelegationUtils.getDelegators(username);
       expect(result).toEqual([]);
     });
   });
 
   describe('getDelegatees tests:\n', () => {
     test('Passing an account with delegatees must return an array', async () => {
-      HiveUtils.getDelegatees = jest
+      DelegationUtils.getDelegatees = jest
         .fn()
         .mockResolvedValue(delegations.delegatees);
-      const results = await HiveUtils.getDelegatees('string');
+      const results = await DelegationUtils.getDelegatees('string');
       expect(results).toEqual(delegations.delegatees);
     });
     test('Passing an account with No delegatees must return an Empty array', async () => {
-      HiveUtils.getDelegatees = jest.fn().mockResolvedValue([]);
+      DelegationUtils.getDelegatees = jest.fn().mockResolvedValue([]);
       const username = 'theghost1980';
-      const result = await HiveUtils.getDelegatees(username);
+      const result = await DelegationUtils.getDelegatees(username);
       expect(result.length).toBe(0);
-    });
-  });
-
-  describe('claimRewards tests:\n', () => {
-    let spyLogger = jest.spyOn(Logger, 'error');
-    let loggerCallParams: any[] = [];
-    let dispatchCallParams: {};
-    const spySetErrorMessage = jest.spyOn(MessageActions, 'setErrorMessage');
-    const spySetSuccessMessage = jest.spyOn(
-      MessageActions,
-      'setSuccessMessage',
-    );
-    beforeEach(() => {
-      store.dispatch = jest.fn();
-    });
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test('Must call Logger, setErrorMessage and return false if empty obj', async () => {
-      const activeAccountEmpty = {} as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
-        activeAccountEmpty,
-        '1.000 HIVE',
-        '1.000 HBD',
-        '1.000 VESTS',
-        utilsT.dynamicPropertiesObj,
-        setErrorMessage,
-        setSuccessMessage,
-      );
-      expect(result).toBe(false);
-      const { calls } = spyLogger.mock;
-      expect(calls[0][0]).toBe('Error while claiming rewards');
-      expect(calls[0][1]).toContain('posting');
-      expect(spySetErrorMessage).toBeCalledWith('popup_html_claim_error');
-    });
-    test('Must call Logger, setErrorMessage and return false if empty key', async () => {
-      const activeAccountUsingActivekey = {
-        keys: {
-          active: utilsT.userData.nonEncryptKeys.active,
-          activePubkey: utilsT.userData.encryptKeys.active,
-        },
-      } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
-        activeAccountUsingActivekey,
-        '1.000 HIVE',
-        '1.000 HBD',
-        '1.000 VESTS',
-        utilsT.dynamicPropertiesObj,
-        setErrorMessage,
-        setSuccessMessage,
-      );
-      expect(result).toBe(false);
-      const { calls } = spyLogger.mock;
-      expect(calls[0][0]).toBe('Error while claiming rewards');
-      expect(calls[0][1]).toContain('Expected String');
-      expect(spySetErrorMessage).toBeCalledWith('popup_html_claim_error');
-    });
-    test('Must claim rewards', async () => {
-      const transactionObjWaiting = {
-        id: '001199xxdass990',
-        status: 'within_mempool',
-      };
-      const transactionObjConfirmed = {
-        id: '001199xxdass990',
-        status: 'within_reversible_block',
-      };
-      const sendOperationCallParams: any[] = [
-        [
-          [
-            'claim_reward_balance',
-            {
-              account: 'keychain.tests',
-              reward_hbd: '0.00 HBD',
-              reward_hive: '1.00 HIVE',
-              reward_vests: '0.00 VESTS',
-            },
-          ],
-        ],
-        PrivateKey.fromString(utilsT.userData.nonEncryptKeys.posting as string),
-      ];
-      const loggerInfoConfirmedMessage = 'Transaction confirmed';
-      const expectedDispatchSuccessParams = {
-        payload: {
-          key: 'popup_html_claim_success',
-          params: ['1.00 HIVE'],
-          type: 'SUCCESS',
-        },
-        type: 'SET_MESSAGE',
-      };
-      const mockedGetClientSendOperations =
-        (HiveUtils.getClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValueOnce(transactionObjWaiting));
-      const mockedGetClientFindTransaction =
-        (HiveUtils.getClient().transaction.findTransaction = jest
-          .fn()
-          .mockResolvedValueOnce(transactionObjConfirmed));
-      const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
-      );
-      const spyLoggerInfo = jest.spyOn(Logger, 'info');
-      const activeAccountusingActivekey = {
-        name: utilsT.userData.username,
-        keys: {
-          posting: utilsT.userData.nonEncryptKeys.posting,
-          postingPubkey: utilsT.userData.encryptKeys.posting,
-        },
-      } as ActiveAccount;
-      const result = await HiveUtils.claimRewards(
-        activeAccountusingActivekey,
-        '1.00 HIVE',
-        '0.00 HBD',
-        '0.00 VESTS',
-        utilsT.dynamicPropertiesObj,
-        setErrorMessage,
-        setSuccessMessage,
-      );
-      expect(result).toBe(true);
-      expect(mockedGetClientSendOperations).toBeCalledTimes(1);
-      expect(mockedGetClientSendOperations).toBeCalledWith(
-        ...sendOperationCallParams,
-      );
-      expect(mockedGetClientFindTransaction).toBeCalledTimes(1);
-      expect(mockedGetClientFindTransaction).toBeCalledWith(
-        transactionObjWaiting.id,
-      );
-      expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
-      expect(spySetSuccessMessage).toBeCalledWith('popup_html_claim_success', [
-        '1.00 HIVE',
-      ]);
-    });
-  });
-
-  describe('powerUp tests"\n', () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test('Power up the activeAccount user, must call Logger with "Transaction confirmed" and return true', async () => {
-      const transactionObjWaiting = {
-        id: '002299xxdass990',
-        status: 'within_mempool',
-      };
-      const transactionObjConfirmed = {
-        id: '002299xxdass990',
-        status: 'within_reversible_block',
-      };
-      PrivateKey.fromString = jest.fn(); //no implementation.
-      HiveUtils.getClient().broadcast.sendOperations = jest
-        .fn()
-        .mockResolvedValueOnce(transactionObjWaiting);
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce(transactionObjConfirmed);
-      const spyLoggerInfo = jest.spyOn(Logger, 'info');
-      const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
-      );
-      const result = await HiveUtils.powerUp(
-        utilsT.userData.username,
-        utilsT.userData.username,
-        '0.001 HIVE',
-        {
-          keys: {
-            active: utilsT.userData.encryptKeys.active,
-          },
-        } as ActiveAccount,
-      );
-      expect(result).toBe(true);
-      expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
-    });
-  });
-
-  describe('powerDown tests:\n', () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test('Powerdown the activeAccount user, must call Logger with "Transaction confirmed" and return true', async () => {
-      const transactionObjWaiting = {
-        id: '002299xxdass990',
-        status: 'within_mempool',
-      };
-      const transactionObjConfirmed = {
-        id: '002299xxdass990',
-        status: 'within_reversible_block',
-      };
-      PrivateKey.fromString = jest.fn(); //no implementation.
-      HiveUtils.getClient().broadcast.sendOperations = jest
-        .fn()
-        .mockResolvedValueOnce(transactionObjWaiting);
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce(transactionObjConfirmed);
-      const spyLoggerInfo = jest.spyOn(Logger, 'info');
-      const spySendOperationWithConfirmation = jest.spyOn(
-        HiveUtils,
-        'sendOperationWithConfirmation',
-      );
-      const result = await HiveUtils.powerDown(
-        utilsT.userData.username,
-        '0.1 HIVE',
-        {
-          keys: {
-            active: utilsT.userData.encryptKeys.active,
-          },
-        } as ActiveAccount,
-      );
-      expect(result).toBe(true);
-      expect(spySendOperationWithConfirmation).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
-    });
-  });
-
-  describe('transfer tests:\n', () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test('Executing a non recurrent transfer, should return true and log a success message', async () => {
-      const spyLoggerInfo = jest.spyOn(Logger, 'info');
-      store.getState().activeAccount.keys.active =
-        utilsT.userData.nonEncryptKeys.active;
-      let transactionObj = {
-        id: '002299xxdass990',
-        status: 'within_mempool',
-      };
-      HiveUtils.getClient().broadcast.sendOperations = jest
-        .fn()
-        .mockResolvedValueOnce(transactionObj);
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: transactionObj.id,
-          status: 'within_reversible_block',
-        });
-      const result = await HiveUtils.transfer(
-        utilsT.userData.username,
-        'blocktrades',
-        '100.000 HBD',
-        '',
-        false,
-        0,
-        0,
-        {
-          keys: {
-            active: utilsT.userData.encryptKeys.active,
-          },
-        } as ActiveAccount,
-      );
-      expect(result).toBe(true);
-      expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith('Transaction confirmed');
-    });
-    test('Executing a non recurrent transfer, but making it to fail(get an error status) should return false and log an error message', async () => {
-      //Note: the expected commented line can be uncommented as soon as the function get refactored.
-      const spyLoggerInfo = jest.spyOn(Logger, 'info');
-      store.getState().activeAccount.keys.active =
-        utilsT.userData.nonEncryptKeys.active;
-      let transactionObj = {
-        id: '002299xxdass990',
-        status: 'within_mempool',
-      };
-      HiveUtils.getClient().broadcast.sendOperations = jest
-        .fn()
-        .mockResolvedValueOnce(transactionObj);
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: transactionObj.id,
-          status: 'error',
-        });
-      const result = await HiveUtils.transfer(
-        utilsT.userData.username,
-        'blocktrades',
-        '100.000 HBD',
-        '',
-        false,
-        0,
-        0,
-        {
-          keys: {
-            active: utilsT.userData.encryptKeys.active,
-          },
-        } as ActiveAccount,
-      );
-      //expect(result).toBe(false);
-      console.log(result);
-      expect(spyLoggerInfo).toBeCalledTimes(1);
-      expect(spyLoggerInfo).toBeCalledWith(
-        'Transaction failed with status: error',
-      );
     });
   });
 
@@ -751,47 +407,6 @@ describe('hive.utils tests:\n', () => {
           }),
         );
       }
-    });
-  });
-
-  describe('sendOperationWithConfirmation tests:\n', () => {
-    let transactionObj: TransactionConfirmation = {
-      id: '002299xxdass990',
-      block_num: 1990,
-      trx_num: 1234,
-      expired: false,
-    };
-    const spyLogger = jest.spyOn(Logger, 'info');
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
-    test('If findTransaction returns a transaction object with status="within_reversible_block" must return true', async () => {
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: transactionObj.id,
-          status: 'within_reversible_block',
-        });
-      const result = await HiveUtils.sendOperationWithConfirmation(
-        Promise.resolve(transactionObj),
-      );
-      expect(result).toBeTruthy();
-      expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith('Transaction confirmed');
-    });
-    test('If findTransaction returns a transaction object with status!="within_reversible_block" must return false', async () => {
-      HiveUtils.getClient().transaction.findTransaction = jest
-        .fn()
-        .mockResolvedValueOnce({
-          id: transactionObj.id,
-          status: 'error',
-        });
-      const result = await HiveUtils.sendOperationWithConfirmation(
-        Promise.resolve(transactionObj),
-      );
-      expect(result).toBe(undefined);
-      expect(spyLogger).toBeCalledTimes(1);
-      expect(spyLogger).toBeCalledWith('Transaction failed with status: error');
     });
   });
 });

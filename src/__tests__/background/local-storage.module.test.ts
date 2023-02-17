@@ -41,7 +41,10 @@ describe('local-storage.module tests:\n', () => {
     expect(spies.saveValueInLocalStorage.mock.calls).toEqual([
       [LocalStorageKeyEnum.AUTOLOCK, autoLockDefault],
       [LocalStorageKeyEnum.SWITCH_RPC_AUTO, true],
-      [LocalStorageKeyEnum.CURRENT_RPC, DefaultRpcs[0]],
+      [
+        LocalStorageKeyEnum.CURRENT_RPC,
+        { ...DefaultRpcs[0], uri: 'https://api.hive.blog' },
+      ],
       [LocalStorageKeyEnum.NO_CONFIRM, noConfirm],
       [LocalStorageKeyEnum.LOCAL_STORAGE_VERSION, 2],
     ]);

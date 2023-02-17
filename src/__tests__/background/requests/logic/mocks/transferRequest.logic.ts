@@ -1,5 +1,5 @@
-import { RequestsHandler } from '@background/requests';
 import sendErrors from '@background/requests/errors';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';

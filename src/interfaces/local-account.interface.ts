@@ -1,13 +1,4 @@
-export type Key = string | null;
-
-export interface Keys {
-  active?: Key;
-  activePubkey?: Key;
-  posting?: Key;
-  postingPubkey?: Key;
-  memo?: Key;
-  memoPubkey?: Key;
-}
+import { Keys } from '@interfaces/keys.interface';
 
 export interface LocalAccount {
   name: string;

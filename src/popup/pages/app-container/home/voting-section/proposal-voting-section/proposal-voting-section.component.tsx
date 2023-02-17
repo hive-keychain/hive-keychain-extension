@@ -35,12 +35,17 @@ const ProposalVotingSection = ({
     if (
       await ProposalUtils.isRequestingProposalVotes(globalProperties.globals!)
     ) {
-      sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount));
+      sethasVoted(await ProposalUtils.hasVotedForProposal(activeAccount.name!));
     }
   };
 
   const handleVoteForProposalClicked = async () => {
-    if (await ProposalUtils.voteForKeychainProposal(activeAccount)) {
+    if (
+      await ProposalUtils.voteForKeychainProposal(
+        activeAccount.name!,
+        activeAccount.keys.active!,
+      )
+    ) {
       setSuccessMessage('popup_html_kc_proposal_vote_successful');
     } else {
       setErrorMessage('popup_html_proposal_vote_fail');
@@ -50,7 +55,7 @@ const ProposalVotingSection = ({
 
   const handleReadClicked = () => {
     chrome.tabs.create({
-      url: `https://peakd.com/me/proposals/${Config.PROPOSAL}`,
+      url: `https://peakd.com/me/proposals/${Config.KEYCHAIN_PROPOSAL}`,
     });
   };
 

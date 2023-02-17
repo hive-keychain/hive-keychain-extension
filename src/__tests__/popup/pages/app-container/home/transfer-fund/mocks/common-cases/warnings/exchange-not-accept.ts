@@ -12,7 +12,7 @@ const run = async (currency: string) => {
     {
       ariaLabel: alInput.username,
       event: EventType.TYPE,
-      text: constants.exchange.notAccepting.hive,
+      text: constants.exchange.notAccepting.hbd,
     },
     {
       ariaLabel: alInput.amount,

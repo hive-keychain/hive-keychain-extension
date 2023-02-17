@@ -1,6 +1,6 @@
 import MkModule from '@background/mk.module';
-import { RequestsHandler } from '@background/requests';
 import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestAddAccount, RequestId } from '@interfaces/keychain.interface';
 import { Keys } from '@interfaces/keys.interface';
 import AccountUtils from 'src/utils/account.utils';
@@ -12,8 +12,8 @@ export const addAccount = async (
 ) => {
   const { username, keys } = data;
   let err = null;
-  const client = requestHandler.getHiveClient();
-  const account = (await client.database.getAccounts([username]))[0];
+
+  const account = await AccountUtils.getExtendedAccount(username);
   if (account) {
     const savedKeys: Keys = keys;
     if (keys.memo) savedKeys.memoPubkey = account.memo_key;
