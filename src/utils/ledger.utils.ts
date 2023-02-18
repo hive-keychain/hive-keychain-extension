@@ -22,7 +22,6 @@ const init = async (): Promise<boolean> => {
     if (connectedDevices.length === 0) {
       await TransportWebUsb.request();
     }
-
     const transport = await TransportWebUsb.create();
     hiveLedger = new LedgerHiveApp(transport);
     return true;
