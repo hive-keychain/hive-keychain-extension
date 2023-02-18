@@ -57,7 +57,11 @@ const ProposalItem = ({
     if (proposal.voted) {
       addToLoadingList('popup_html_unvoting_for_proposal');
       if (
-        await ProposalUtils.unvoteProposal(activeAccount, proposal.proposalId)
+        await ProposalUtils.unvoteProposal(
+          proposal.proposalId,
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
       ) {
         onVoteUnvoteSuccessful();
         setSuccessMessage('popup_html_proposal_unvote_successful');
@@ -68,7 +72,11 @@ const ProposalItem = ({
     } else {
       addToLoadingList('popup_html_voting_for_proposal');
       if (
-        await ProposalUtils.voteForProposal(activeAccount, proposal.proposalId)
+        await ProposalUtils.voteForProposal(
+          proposal.proposalId,
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
       ) {
         setSuccessMessage('popup_html_proposal_vote_successful');
         onVoteUnvoteSuccessful();
@@ -180,7 +188,7 @@ const ProposalItem = ({
               <div>
                 <Icon name={Icons.ATTACH_MONEY} type={IconType.OUTLINED} />
                 <div>
-                  {FormatUtils.withCommas(proposal.dailyPay)}/
+                  {FormatUtils.withCommas(proposal.dailyPay.toString())}/
                   {chrome.i18n.getMessage('day')}
                 </div>
               </div>

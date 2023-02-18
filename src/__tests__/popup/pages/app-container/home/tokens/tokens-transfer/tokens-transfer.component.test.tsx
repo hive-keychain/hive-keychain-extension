@@ -1,4 +1,4 @@
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import tokensTransfer from 'src/__tests__/popup/pages/app-container/home/tokens/tokens-transfer/mocks/tokens-transfer';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -13,9 +13,6 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-const { methods, constants, extraMocks } = tokensTransfer;
-const { messages, selectedToken, memo } = constants;
-let _asFragment: () => {};
 describe('tokens-transfer.component tests:\n', () => {
   const { methods, constants, extraMocks } = tokensTransfer;
   const { messages, selectedToken, memo } = constants;
@@ -101,11 +98,10 @@ describe('tokens-transfer.component tests:\n', () => {
       });
       await assertion.awaitFor(messages.phishingWarning, QueryDOM.BYTEXT);
     });
-    it('Must show timeout if confirmation fails', async () => {
+    it('Must show Network timeout error', async () => {
       extraMocks.doesAccountExist(true);
       extraMocks.getPublicMemo();
-      extraMocks.sendCustomJson(true);
-      extraMocks.tryConfirmTransaction({ confirmed: false, error: null });
+      extraMocks.sendToken(undefined, new Error('Network timeout.'));
       await methods.userInteraction({
         receiverUsername: 'theghost1980',
         amount: '1',
@@ -113,12 +109,15 @@ describe('tokens-transfer.component tests:\n', () => {
         confirm: true,
       });
       await waitFor(() => {});
-      await assertion.awaitFor(messages.timeOut, QueryDOM.BYTEXT);
+      await assertion.awaitFor('Network timeout.', QueryDOM.BYTEXT);
     });
     it('Must show error if transfer fails', async () => {
       extraMocks.doesAccountExist(true);
       extraMocks.getPublicMemo();
-      extraMocks.sendCustomJson(undefined);
+      extraMocks.sendToken({
+        confirmed: false,
+        broadcasted: false,
+      });
       await methods.userInteraction({
         receiverUsername: 'theghost1980',
         amount: '1',
@@ -130,15 +129,19 @@ describe('tokens-transfer.component tests:\n', () => {
     it('Must send transfer', async () => {
       extraMocks.doesAccountExist(true);
       extraMocks.getPublicMemo();
-      extraMocks.sendCustomJson(true);
-      extraMocks.tryConfirmTransaction({ confirmed: true, error: null });
+      extraMocks.sendToken({
+        confirmed: true,
+        broadcasted: true,
+      });
       await methods.userInteraction({
         receiverUsername: 'theghost1980',
         amount: '1',
         hasMemo: true,
         confirm: true,
       });
-      await assertion.awaitFor(messages.success, QueryDOM.BYTEXT);
+      await waitFor(() => {
+        expect(screen.getByText('successful', { exact: false })).toBeDefined();
+      });
     });
   });
   describe('No Memo Key:\n', () => {

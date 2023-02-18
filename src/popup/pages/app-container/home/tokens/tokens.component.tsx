@@ -24,8 +24,8 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
-import { getHiveEngineTokenValue } from 'src/utils/hive-engine.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import './tokens.component.scss';
 
 const Tokens = ({
@@ -76,8 +76,8 @@ const Tokens = ({
         )
         .sort(
           (a, b) =>
-            getHiveEngineTokenValue(b, market) -
-            getHiveEngineTokenValue(a, market),
+            TokensUtils.getHiveEngineTokenValue(b, market) -
+            TokensUtils.getHiveEngineTokenValue(a, market),
         );
       setFilteredTokenList(orderedFiltered);
     }
@@ -127,6 +127,7 @@ const Tokens = ({
                 key={token.symbol}
                 tokenBalance={token}
                 tokenInfo={allTokens.find((t) => t.symbol === token.symbol)!}
+                market={market}
               />
             ))}
           </div>

@@ -14,7 +14,6 @@ import {
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -23,14 +22,15 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import TransferUtils from 'src/utils/transfer.utils';
+import { PowerUtils } from 'src/utils/power.utils';
 import './power-up-down.component.scss';
 
 const PowerUpDown = ({
@@ -167,38 +167,42 @@ const PowerUpDown = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         let success = false;
-        switch (powerType) {
-          case PowerType.POWER_UP:
-            addToLoadingList('html_popup_power_up_operation');
-            success = await HiveUtils.powerUp(
-              activeAccount.name!,
-              receiver,
-              valueS,
-              activeAccount,
-            );
-            removeFromLoadingList('html_popup_power_up_operation');
-            break;
-          case PowerType.POWER_DOWN:
-            addToLoadingList('html_popup_power_down_operation');
-            success = await HiveUtils.powerDown(
-              activeAccount.name!,
-              `${FormatUtils.fromHP(
-                Number(value).toFixed(3),
-                globalProperties.globals!,
-              ).toFixed(6)} VESTS`,
-              activeAccount,
-            );
-            removeFromLoadingList('html_popup_power_down_operation');
-        }
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
-          setSuccessMessage('popup_html_power_up_down_success', [
-            operationString,
-          ]);
-        } else {
-          setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+        try {
+          switch (powerType) {
+            case PowerType.POWER_UP:
+              addToLoadingList('html_popup_power_up_operation');
+              success = await PowerUtils.powerUp(
+                activeAccount.name!,
+                receiver,
+                valueS,
+                activeAccount.keys.active!,
+              );
+              break;
+            case PowerType.POWER_DOWN:
+              addToLoadingList('html_popup_power_down_operation');
+              success = await PowerUtils.powerDown(
+                activeAccount.name!,
+                `${FormatUtils.fromHP(
+                  Number(value).toFixed(3),
+                  globalProperties.globals!,
+                ).toFixed(6)} VESTS`,
+                activeAccount.keys.active!,
+              );
+          }
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await FavoriteUserUtils.saveFavoriteUser(receiver, activeAccount);
+            setSuccessMessage('popup_html_power_up_down_success', [
+              operationString,
+            ]);
+          } else {
+            setErrorMessage('popup_html_power_up_down_fail', [operationString]);
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_power_up_operation');
+          removeFromLoadingList('html_popup_power_down_operation');
         }
       },
     });
@@ -224,22 +228,26 @@ const PowerUpDown = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_power_down_operation');
-        let success = await HiveUtils.powerDown(
-          receiver,
-          `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
-            6,
-          )} VESTS`,
-          activeAccount,
-        );
+        try {
+          let success = await PowerUtils.powerDown(
+            receiver,
+            `${FormatUtils.fromHP('0', globalProperties.globals!).toFixed(
+              6,
+            )} VESTS`,
+            activeAccount.keys.active!,
+          );
 
-        removeFromLoadingList('html_popup_cancel_power_down_operation');
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(receiver, activeAccount);
-          setSuccessMessage('popup_html_cancel_power_down_success');
-        } else {
-          setErrorMessage('popup_html_cancel_power_down_fail');
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await FavoriteUserUtils.saveFavoriteUser(receiver, activeAccount);
+            setSuccessMessage('popup_html_cancel_power_down_success');
+          } else {
+            setErrorMessage('popup_html_cancel_power_down_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_cancel_power_down_operation');
         }
       },
     });
@@ -247,21 +255,21 @@ const PowerUpDown = ({
 
   return (
     <div className="power-up-page" aria-label="power-up-page">
-      <AvailableCurrentPanelComponent
-        available={available}
-        availableCurrency={
+      <SummaryPanelComponent
+        bottom={available}
+        bottomRight={
           powerType === PowerType.POWER_UP
             ? currencyLabels.hive
             : currencyLabels.hp
         }
-        availableLabel={'popup_html_available'}
-        current={current}
-        currentCurrency={
+        bottomLeft={'popup_html_available'}
+        top={current}
+        topRight={
           powerType === PowerType.POWER_UP
             ? currencyLabels.hp
             : currencyLabels.hive
         }
-        currentLabel={'popup_html_current'}
+        topLeft={'popup_html_current'}
       />
       <div className="text">{chrome.i18n.getMessage(text)}</div>
 

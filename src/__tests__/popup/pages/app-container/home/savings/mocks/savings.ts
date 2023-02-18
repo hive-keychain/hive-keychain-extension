@@ -1,6 +1,6 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { ReactElement } from 'react';
-import HiveUtils from 'src/utils/hive.utils';
+import { SavingsUtils } from 'src/utils/savings.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -167,10 +167,10 @@ const methods = {
 
 const extraMocks = {
   withdraw: (withdrawResult: boolean) => {
-    HiveUtils.withdraw = jest.fn().mockResolvedValue(withdrawResult);
+    SavingsUtils.withdraw = jest.fn().mockResolvedValue(withdrawResult);
   },
   deposit: (depositResult: boolean) => {
-    HiveUtils.deposit = jest.fn().mockResolvedValue(depositResult);
+    SavingsUtils.deposit = jest.fn().mockResolvedValue(depositResult);
   },
 };
 

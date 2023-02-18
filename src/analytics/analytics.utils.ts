@@ -17,19 +17,27 @@ const initializeGoogleAnalytics = () => {
   Logger.info('---- Initialize Analytics -----------');
   window.gtag = window.gtag || gtag;
   window.gtag('js', new Date());
-  window.gtag('config', process.env.GOOGLE_ANALYTICS_TAG_ID as string, {
-    debug_mode,
-    send_page_view: false,
-  });
-  window.gtag('send', 'pageview', '/popup'); // Set page, avoiding rejection due
-  const gaId = document.cookie
-    .split('; ')
-    .find((cookie: string) => cookie.startsWith('_ga'))
-    ?.split('=')[1];
-  LocalStorageUtils.saveValueInLocalStorage(
-    LocalStorageKeyEnum.GA_CLIENT_ID,
-    gaId,
+  window.gtag(
+    'config',
+    process.env.GOOGLE_ANALYTICS_TAG_ID || ('G-1LRCTFLVBH' as string),
+    {
+      debug_mode,
+      send_page_view: false,
+    },
   );
+
+  window.gtag('send', 'pageview', '/popup'); // Set page, avoiding rejection due
+  setTimeout(() => {
+    const gaId = document.cookie
+      .split('; ')
+      .find((cookie: string) => cookie.startsWith('_ga'))
+      ?.split('=')[1];
+
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.GA_CLIENT_ID,
+      gaId,
+    );
+  }, 3000);
 };
 
 const sendNavigationEvent = async (page: Screen) => {

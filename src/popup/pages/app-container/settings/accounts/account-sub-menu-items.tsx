@@ -25,7 +25,7 @@ const AccountSubMenuItems: MenuItem[] = [
     icon: Icons.EXPORT,
     action: () => {
       AccountUtils.downloadAccounts(
-        store.getState().accounts!,
+        store.getState().accounts,
         store.getState().mk,
       );
     },

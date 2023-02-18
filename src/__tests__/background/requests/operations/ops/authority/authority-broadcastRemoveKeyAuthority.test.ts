@@ -5,37 +5,34 @@ import {
   RequestId,
   RequestRemoveKeyAuthority,
 } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
-import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 describe('authority tests:\n', () => {
   const { methods, constants, mocks } = authority;
-  const { requestHandler, confirmed } = constants;
+  const { requestHandler, i18n } = constants;
   const data = constants.data.removeKeyAuthority;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastRemoveKeyAuthority cases:\n', () => {
-    beforeEach(() => {
-      const cloneAccountExtended = objects.clone(
-        accounts.extended,
-      ) as ExtendedAccount;
-      mocks.client.database.getAccounts([cloneAccountExtended]);
-      mocks.client.broadcast.updateAccount(confirmed);
-    });
     it('Must return error if no key on handler', async () => {
-      const resultOperation = (await broadcastRemoveKeyAuthority(
-        requestHandler,
-        data,
-      )) as ResultOperation;
-      const { success, result, error, ...datas } = resultOperation.msg;
-      expect(success).toBe(false);
-      expect(result).toBeUndefined();
-      expect((error as TypeError).message).toContain('private key');
+      const result = await broadcastRemoveKeyAuthority(requestHandler, data);
+      const { request_id, ...datas } = data;
+      expect(result).toEqual(
+        messages.error.keyBuffer(
+          datas,
+          request_id,
+          new Error('html_popup_error_while_signing_transaction'),
+          i18n.get('html_popup_error_while_signing_transaction'),
+        ),
+      );
     });
     it('Must return error if missing authority', async () => {
+      const localeMessageKey = 'missing_authority_error';
       const cloneAccountExtended = objects.clone(
         accounts.extended,
       ) as ExtendedAccount;
@@ -44,7 +41,7 @@ describe('authority tests:\n', () => {
         account_auths: [],
         key_auths: [],
       };
-      mocks.client.database.getAccounts([cloneAccountExtended]);
+      mocks.getExtendedAccount(cloneAccountExtended);
       requestHandler.setKeys(
         userData.one.nonEncryptKeys.active,
         userData.one.encryptKeys.active,
@@ -52,16 +49,27 @@ describe('authority tests:\n', () => {
       const cloneData = objects.clone(data) as RequestRemoveKeyAuthority &
         RequestId;
       cloneData.role = KeychainKeyTypes.active;
-      const resultOperation = (await broadcastRemoveKeyAuthority(
+      const result = await broadcastRemoveKeyAuthority(
         requestHandler,
         cloneData,
-      )) as ResultOperation;
-      const { success, result, error, ...datas } = resultOperation.msg;
-      expect(success).toBe(false);
-      expect(result).toBeUndefined();
-      expect((error as TypeError).message).toContain('Missing authority');
+      );
+      const { request_id, ...datas } = cloneData;
+      expect(result).toEqual(
+        messages.error.missingAuthority(
+          datas,
+          request_id,
+          new KeychainError(localeMessageKey),
+          i18n.get('missing_authority_error'),
+        ),
+      );
     });
     it('Must remove posting key', async () => {
+      const mhiveTxSendOp = jest
+        .spyOn(HiveTxUtils, 'sendOperation')
+        .mockResolvedValue(true);
+      mocks.getExtendedAccount(
+        objects.clone(accounts.extended) as ExtendedAccount,
+      );
       requestHandler.setKeys(
         userData.one.nonEncryptKeys.posting,
         userData.one.encryptKeys.posting,
@@ -75,8 +83,9 @@ describe('authority tests:\n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.removedKey(confirmed, datas, request_id),
+        messages.success.removedKey(true, datas, request_id),
       );
+      mhiveTxSendOp.mockRestore();
     });
   });
 });

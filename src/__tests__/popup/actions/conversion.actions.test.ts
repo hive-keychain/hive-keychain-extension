@@ -1,5 +1,5 @@
 import * as convertionActions from 'src/popup/actions/conversion.actions';
-import HiveUtils from 'src/utils/hive.utils';
+import { ConversionUtils } from 'src/utils/conversion.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import { initialEmptyStateStore } from 'src/__tests__/utils-for-testing/initial-states';
@@ -14,7 +14,7 @@ describe('conversion.actions tests:\n', () => {
         utilsT.fakeHbdConversionsResponse,
         utilsT.fakeHiveConversionsResponse,
       ];
-      HiveUtils.getConversionRequests = jest
+      ConversionUtils.getConversionRequests = jest
         .fn()
         .mockResolvedValueOnce(fakeArrayResponse);
       const fakeStore = getFakeStore(initialEmptyStateStore);
@@ -25,7 +25,7 @@ describe('conversion.actions tests:\n', () => {
     });
     test('If an error occurs on the request, will thrown a unhandled error', async () => {
       const errorRequest = new Error('Custom Error');
-      HiveUtils.getConversionRequests = jest
+      ConversionUtils.getConversionRequests = jest
         .fn()
         .mockRejectedValueOnce(errorRequest);
       try {

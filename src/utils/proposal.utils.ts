@@ -1,129 +1,208 @@
-import { DynamicGlobalProperties } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import {
+  Asset,
+  CreateProposalOperation,
+  DynamicGlobalProperties,
+  RemoveProposalOperation,
+  UpdateProposalVotesOperation,
+} from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
 import moment from 'moment';
 import Config from 'src/config';
+import AccountUtils from 'src/utils/account.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
-import Logger from 'src/utils/logger.utils';
-
-const PROPOSAL_ID = Config.PROPOSAL;
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const hasVotedForProposal = async (
-  activeAccount: ActiveAccount,
+  username: string,
   proposalId?: number,
 ): Promise<boolean> => {
-  const listProposalVotes = await HiveUtils.getClient().database.call(
-    'list_proposal_votes',
+  const listProposalVotes = await HiveTxUtils.getData(
+    'condenser_api.list_proposal_votes',
     [
-      [proposalId !== undefined ? proposalId : PROPOSAL_ID, activeAccount.name],
+      [
+        proposalId !== undefined ? proposalId : Config.KEYCHAIN_PROPOSAL,
+        username,
+      ],
       1,
       'by_proposal_voter',
       'ascending',
       'all',
     ],
   );
-  return listProposalVotes[0].voter === activeAccount.name;
+  return listProposalVotes[0].voter === username;
 };
 /* istanbul ignore next */
-const voteForKeychainProposal = async (activeAccount: ActiveAccount) => {
-  return await HiveUtils.updateProposalVote(activeAccount, PROPOSAL_ID, true);
+const voteForKeychainProposal = async (username: string, activeKey: Key) => {
+  return await HiveTxUtils.sendOperation(
+    [
+      ProposalUtils.getUpdateProposalVoteOperation(
+        [Config.KEYCHAIN_PROPOSAL],
+        false,
+        username,
+      ),
+    ],
+    activeKey,
+  );
 };
 
 /* istanbul ignore next */
 const voteForProposal = async (
-  activeAccount: ActiveAccount,
   proposalId: number,
+  username: string,
+  activeKey: Key,
 ) => {
-  try {
-    await HiveUtils.updateProposalVote(activeAccount, proposalId, true);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
+  return await HiveTxUtils.sendOperation(
+    [
+      ProposalUtils.getUpdateProposalVoteOperation(
+        [proposalId],
+        true,
+        username,
+      ),
+    ],
+    activeKey,
+  );
 };
 /* istanbul ignore next */
 const unvoteProposal = async (
-  activeAccount: ActiveAccount,
   proposalId: number,
+  username: string,
+  activeKey: Key,
 ) => {
-  try {
-    await HiveUtils.updateProposalVote(activeAccount, proposalId, false);
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
+  return await HiveTxUtils.sendOperation(
+    [
+      ProposalUtils.getUpdateProposalVoteOperation(
+        [proposalId],
+        false,
+        username,
+      ),
+    ],
+    activeKey,
+  );
+};
+/* istanbul ignore next */
+const updateProposalVotes = async (
+  proposalIds: number[],
+  username: string,
+  approve: boolean,
+  activeKey: Key,
+) => {
+  return await HiveTxUtils.sendOperation(
+    [
+      ProposalUtils.getUpdateProposalVoteOperation(
+        proposalIds,
+        approve,
+        username,
+      ),
+    ],
+    activeKey,
+  );
+};
+/* istanbul ignore next */
+const getUpdateProposalVoteTransaction = (
+  proposalIds: number[],
+  username: string,
+  approve: boolean,
+) => {
+  return HiveTxUtils.createTransaction([
+    ProposalUtils.getUpdateProposalVoteOperation(
+      proposalIds,
+      approve,
+      username,
+    ),
+  ]);
+};
+/* istanbul ignore next */
+const getUpdateProposalVoteOperation = (
+  proposalId: number[],
+  approve: boolean,
+  username: string,
+) => {
+  return [
+    'update_proposal_votes',
+    {
+      voter: username,
+      proposal_ids: proposalId,
+      approve: approve,
+      extensions: [],
+    },
+  ] as UpdateProposalVotesOperation;
+};
+
+const getFundedOption = (dailyPay: number, dailyBudget: number) => {
+  let fundedOption = FundedOption.NOT_FUNDED;
+  if (dailyBudget > 0) {
+    if (dailyBudget - dailyPay >= 0) {
+      fundedOption = FundedOption.TOTALLY_FUNDED;
+    } else {
+      fundedOption = FundedOption.PARTIALLY_FUNDED;
+    }
   }
+  return fundedOption;
 };
 
 const getProposalList = async (
   accountName: string,
   globals: DynamicGlobalProperties,
 ): Promise<Proposal[]> => {
-  const listProposals = await HiveUtils.getClient().database.call(
-    'list_proposals',
+  const listProposals = await HiveTxUtils.getData(
+    'condenser_api.list_proposals',
     [[-1], 1000, 'by_total_votes', 'descending', 'votable'],
   );
 
-  const listProposalVotesRequestResult =
-    await HiveUtils.getClient().database.call('list_proposal_votes', [
-      [accountName],
-      1000,
-      'by_voter_proposal',
-      'descending',
-      'votable',
-    ]);
+  const listProposalVotesRequestResult = await HiveTxUtils.getData(
+    'condenser_api.list_proposal_votes',
+    [[accountName], 1000, 'by_voter_proposal', 'descending', 'votable'],
+  );
 
   const listProposalVotes = listProposalVotesRequestResult
     .filter((item: any) => item.voter === accountName)
     .map((item: any) => item.proposal);
 
-  let dailyBudget = await HiveUtils.getProposalDailyBudget();
-  return listProposals.proposals.map((proposal: any) => {
-    let fundedOption = FundedOption.NOT_FUNDED;
-    if (dailyBudget > 0) {
-      if (dailyBudget - parseFloat(proposal.daily_pay.amount) / 1000 >= 0) {
-        fundedOption = FundedOption.TOTALLY_FUNDED;
-      } else {
-        fundedOption = FundedOption.PARTIALLY_FUNDED;
-      }
-    }
+  let dailyBudget = await ProposalUtils.getProposalDailyBudget();
 
-    dailyBudget = dailyBudget - parseFloat(proposal.daily_pay.amount) / 1000;
-    return {
-      id: proposal.id,
-      creator: proposal.creator,
-      proposalId: proposal.proposal_id,
-      subject: proposal.subject,
-      receiver: proposal.receiver,
-      dailyPay: `${
-        parseFloat(proposal.daily_pay.amount) / 1000
-      } ${FormatUtils.getSymbol(proposal.daily_pay.nai)}`,
-      link: `https://peakd.com/proposals/${proposal.proposal_id}`,
-      startDate: moment(proposal.start_date),
-      endDate: moment(proposal.end_date),
+  const proposals: Proposal[] = [];
+  for (const p of listProposals) {
+    const dailyPay = Asset.fromString(p.daily_pay);
+    const fundedOption = ProposalUtils.getFundedOption(
+      dailyPay.amount,
+      dailyBudget,
+    );
+    proposals.push({
+      id: p.id,
+      creator: p.creator,
+      proposalId: p.proposal_id,
+      subject: p.subject,
+      receiver: p.receiver,
+      dailyPay: dailyPay,
+      link: `https://peakd.com/proposals/${p.proposal_id}`,
+      startDate: moment(p.start_date),
+      endDate: moment(p.end_date),
       totalVotes: `${FormatUtils.nFormatter(
         FormatUtils.toHP(
-          (parseFloat(proposal.total_votes) / 1000000).toString(),
+          (parseFloat(p.total_votes) / 1000000).toString(),
           globals,
         ),
         2,
       )} HP`,
       voted:
         listProposalVotes.find(
-          (p: any) => p.proposal_id === proposal.proposal_id,
+          (votedProposal: any) => votedProposal.proposal_id === p.proposal_id,
         ) !== undefined,
       funded: fundedOption,
-    } as Proposal;
-  });
+    } as Proposal);
+
+    dailyBudget = dailyBudget - dailyPay.amount;
+  }
+
+  return proposals;
 };
 
 const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
-  let dailyBudget = await HiveUtils.getProposalDailyBudget();
+  let dailyBudget = await ProposalUtils.getProposalDailyBudget();
 
   const proposals = (
-    await HiveUtils.getClient().database.call('list_proposals', [
+    await HiveTxUtils.getData('condenser_api.list_proposals', [
       [-1],
       1000,
       'by_total_votes',
@@ -131,9 +210,10 @@ const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
       'votable',
     ])
   ).map((proposal: any) => {
+    const dailyPay = Asset.fromString(proposal.daily_pay);
     let fundedOption = FundedOption.NOT_FUNDED;
     if (dailyBudget > 0) {
-      if (dailyBudget - parseFloat(proposal.daily_pay.amount) / 1000 >= 0) {
+      if (dailyBudget - dailyPay.amount / 1000 >= 0) {
         fundedOption = FundedOption.TOTALLY_FUNDED;
       } else {
         fundedOption = FundedOption.PARTIALLY_FUNDED;
@@ -148,7 +228,7 @@ const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
   });
 
   const keychainProposal = proposals.find(
-    (proposal: any) => proposal.id === Config.PROPOSAL,
+    (proposal: any) => proposal.id === Config.KEYCHAIN_PROPOSAL,
   );
   const returnProposal = proposals.find(
     (proposal: any) => proposal.fundedOption == FundedOption.PARTIALLY_FUNDED,
@@ -159,6 +239,133 @@ const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
   return voteDifference < Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
 };
 
+/* istanbul ignore next */
+const getProposalDailyBudget = async () => {
+  return (
+    parseFloat(
+      (await AccountUtils.getExtendedAccount('hive.fund')).hbd_balance
+        .toString()
+        .split(' ')[0],
+    ) / 100
+  );
+};
+/* istanbul ignore next */
+const createProposal = (
+  username: string,
+  receiver: string,
+  startDate: string,
+  endDate: string,
+  dailyPay: string,
+  subject: string,
+  permlink: string,
+  extensions: any,
+  key: Key,
+) => {
+  return HiveTxUtils.sendOperation(
+    [
+      ProposalUtils.getCreateProposalOperation(
+        username,
+        receiver,
+        startDate,
+        endDate,
+        dailyPay,
+        subject,
+        permlink,
+        extensions,
+      ),
+    ],
+    key,
+  );
+};
+/* istanbul ignore next */
+const getCreateProposalOperation = (
+  username: string,
+  receiver: string,
+  startDate: string,
+  endDate: string,
+  dailyPay: string,
+  subject: string,
+  permlink: string,
+  extensions: any,
+) => {
+  return [
+    'create_proposal',
+    {
+      creator: username,
+      receiver: receiver,
+      start_date: startDate,
+      end_date: endDate,
+      daily_pay: dailyPay,
+      subject: subject,
+      permlink: permlink,
+      extensions:
+        typeof extensions === 'string' ? JSON.parse(extensions) : extensions,
+    },
+  ] as CreateProposalOperation;
+};
+/* istanbul ignore next */
+const getCreateProposalTransaction = (
+  username: string,
+  receiver: string,
+  startDate: string,
+  endDate: string,
+  dailyPay: string,
+  subject: string,
+  permlink: string,
+  extensions: any,
+) => {
+  return HiveTxUtils.createTransaction([
+    ProposalUtils.getCreateProposalOperation(
+      username,
+      receiver,
+      startDate,
+      endDate,
+      dailyPay,
+      subject,
+      permlink,
+      extensions,
+    ),
+  ]);
+};
+/* istanbul ignore next */
+const removeProposal = (
+  owner: string,
+  ids: number[],
+  extensions: any,
+  key: Key,
+) => {
+  return HiveTxUtils.sendOperation(
+    [ProposalUtils.getRemoveProposalOperation(owner, ids, extensions)],
+    key!,
+  );
+};
+/* istanbul ignore next */
+const getRemoveProposalOperation = (
+  owner: string,
+  ids: number[],
+  extensions: any,
+) => {
+  return [
+    'remove_proposal',
+    {
+      proposal_owner: owner,
+      proposal_ids: ids,
+      extensions:
+        typeof extensions === 'string' ? JSON.parse(extensions) : extensions,
+    },
+  ] as RemoveProposalOperation;
+};
+/* istanbul ignore next */
+const getRemoveProposalTransaction = (
+  owner: string,
+  ids: number[],
+  extensions: any,
+) => {
+  return HiveTxUtils.createTransaction([
+    ProposalUtils.getRemoveProposalOperation(owner, ids, extensions),
+  ]);
+};
+
 const ProposalUtils = {
   hasVotedForProposal,
   voteForProposal,
@@ -166,6 +373,17 @@ const ProposalUtils = {
   getProposalList,
   unvoteProposal,
   isRequestingProposalVotes,
+  getUpdateProposalVoteOperation,
+  getUpdateProposalVoteTransaction,
+  getProposalDailyBudget,
+  getFundedOption,
+  createProposal,
+  updateProposalVotes,
+  removeProposal,
+  getCreateProposalOperation,
+  getCreateProposalTransaction,
+  getRemoveProposalOperation,
+  getRemoveProposalTransaction,
 };
 
 export default ProposalUtils;

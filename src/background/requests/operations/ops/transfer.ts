@@ -1,13 +1,18 @@
-import { RequestsHandler } from '@background/requests';
+import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { encode } from '@hiveio/hive-js/lib/auth/memo';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestTransfer,
 } from '@interfaces/keychain.interface';
-import Logger from 'src/utils/logger.utils';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import AccountUtils from 'src/utils/account.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 
 export const broadcastTransfer = async (
   requestHandler: RequestsHandler,
@@ -18,75 +23,84 @@ export const broadcastTransfer = async (
     err_message = null;
   try {
     const { username, to } = data;
-    const client = requestHandler.getHiveClient();
-    const memoKey: string = requestHandler.getUserKey(
+    const memoKey: string = requestHandler.getUserKeyPair(
       username!,
       KeychainKeyTypesLC.memo,
     )[0];
-    const [key] = requestHandler.getUserKey(
-      data.username!,
-      KeychainKeyTypesLC.active,
-    );
     let memo = data.memo || '';
-    if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
-      const receiver = (await client.database.getAccounts([to]))[0];
 
-      if (!receiver || !memoKey) {
-        throw new Error('Could not encode memo.');
+    const receiver = await AccountUtils.getExtendedAccount(to);
+
+    if (!receiver) {
+      throw new KeychainError('bgd_ops_transfer_get_account', [to]);
+    }
+
+    if (data.memo && data.memo.length > 0 && data.memo[0] == '#') {
+      if (!memoKey) {
+        throw new KeychainError('popup_html_memo_key_missing');
       }
       const memoReceiver = receiver.memo_key;
       memo = encode(memoKey, memoReceiver, memo);
     }
 
-    result = await client.broadcast.transfer(
-      {
-        from: data.username!,
-        to: data.to,
-        amount: data.amount + ' ' + data.currency,
-        memo,
-      },
-      PrivateKey.from(key!),
+    const key = requestHandler.getUserPrivateKey(
+      username!,
+      KeychainKeyTypesLC.active,
     );
-  } catch (e) {
-    Logger.error(e);
+    const keyType = KeysUtils.getKeyType(key!);
+    switch (keyType) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await TransferUtils.getTransferTransaction(
+          data.username!,
+          data.to,
+          data.amount + ' ' + data.currency,
+          memo,
+          false,
+          0,
+          0,
+        );
+
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await TransferUtils.sendTransfer(
+          data.username!,
+          data.to,
+          data.amount + ' ' + data.currency,
+          memo,
+          false,
+          0,
+          0,
+          key!,
+        );
+        break;
+      }
+    }
+  } catch (e: any) {
     if (typeof e === 'string') {
       const message = createMessage(
         true,
         null,
         data,
         null,
-        'Could not encode memo.',
+        await chrome.i18n.getMessage('bgd_ops_encode_err'),
       );
       return message;
     } else {
-      err = e;
-      if (!err['jse_info']) {
-        err_message = await chrome.i18n.getMessage(
-          'bgd_ops_error_broadcasting',
-        );
-      } else {
-        const { jse_info } = err; //hiveoio sending a custom error.
-        const { stack } = jse_info;
-        switch (stack[0].context.method) {
-          case 'adjust_balance':
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_transfer_adjust_balance',
-              [data.currency, data.username!],
-            );
-            break;
-          case 'get_account':
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_transfer_get_account',
-              [data.to],
-            );
-            break;
-          default:
-            err_message = await chrome.i18n.getMessage(
-              'bgd_ops_error_broadcasting',
-            );
-            break;
-        }
-      }
+      err = (e as KeychainError).trace || e;
+      err_message = await chrome.i18n.getMessage(
+        (e as KeychainError).message,
+        (e as KeychainError).messageParams,
+      );
     }
   } finally {
     const message = createMessage(

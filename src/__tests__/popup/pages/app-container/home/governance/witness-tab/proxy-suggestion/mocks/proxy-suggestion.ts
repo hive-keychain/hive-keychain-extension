@@ -1,7 +1,6 @@
 import { ExtendedAccount } from '@hiveio/dhive';
 import { ReactElement } from 'react';
 import ProxyUtils from 'src/utils/proxy.utils';
-import WitnessUtils from 'src/utils/witness.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
@@ -50,7 +49,7 @@ const methods = {
 
 const extraMocks = (setAsProxy: boolean) => {
   ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(null);
-  WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(setAsProxy);
+  ProxyUtils.setAsProxy = jest.fn().mockResolvedValue(setAsProxy);
 };
 
 export default {

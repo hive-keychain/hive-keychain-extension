@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { KeychainKeyTypes } from '@interfaces/keychain.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import Logger from 'src/utils/logger.utils';

@@ -455,4 +455,24 @@ describe('format.utils tests:\n', () => {
       expect(FormatUtils.getSymbol('@@000000037')).toBe('HP');
     });
   });
+
+  describe('fromNaiAndSymbol cases:/n', () => {
+    it('Must return formated string', () => {
+      expect(
+        FormatUtils.fromNaiAndSymbol({
+          amount: 1000,
+          precision: 4,
+          nai: '@@000000013',
+        }),
+      ).toBe('1.0000 HBD');
+    });
+  });
+
+  describe('removeHtmlTags cases:/n', () => {
+    it('Must remove html tags', () => {
+      expect(
+        FormatUtils.removeHtmlTags('<br>Text with html tags in it</br>'),
+      ).toBe('Text with html tags in it');
+    });
+  });
 });

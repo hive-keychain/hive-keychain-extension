@@ -1,5 +1,5 @@
 import MkModule from '@background/mk.module';
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import AccountUtils from 'src/utils/account.utils';
@@ -7,7 +7,6 @@ import Logger from 'src/utils/logger.utils';
 import * as PreferencesUtils from 'src/utils/preferences.utils';
 import indexReferenceData from 'src/__tests__/background/requests/operations/mocks/index-reference-data';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -29,61 +28,14 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      sendOperations: (id: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(id)),
-      json: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.json = jest
-          .fn()
-          .mockResolvedValue(result)),
-      vote: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.vote = jest
-          .fn()
-          .mockResolvedValue(result)),
-      transfer: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.transfer = jest
-          .fn()
-          .mockResolvedValue(result)),
-      comment: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.comment = jest
-          .fn()
-          .mockResolvedValue(result)),
-      updateAccount: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.updateAccount = jest
-          .fn()
-          .mockResolvedValue(result)),
-      delegateVestingShares: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.delegateVestingShares = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-    database: {
-      getAccounts: (receiverAccount: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(receiverAccount)),
-      getDynamicGlobalProperties: () =>
-        (requestHandler.getHiveClient().database.getDynamicGlobalProperties =
-          jest.fn().mockResolvedValue(dynamic.globalProperties)),
-      call: (
-        conversions: { requestid: number }[],
-        collaterized: { requestid: number }[],
-      ) =>
-        (requestHandler.getHiveClient().database.call = jest
-          .fn()
-          .mockResolvedValueOnce(conversions)
-          .mockResolvedValueOnce(collaterized)),
-    },
-  },
   getMk: (mk: string | null) =>
     (MkModule.getMk = jest.fn().mockResolvedValue(mk)),
   getAccountsFromLocalStorage: () =>
     (AccountUtils.getAccountsFromLocalStorage = jest
       .fn()
       .mockResolvedValue(accounts.twoAccounts)),
+  getExtendedAccount: (account: ExtendedAccount) =>
+    (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
 };
 
 const spies = {
@@ -106,18 +58,19 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.database.call([{ requestid: 1 }], [{ requestid: 2 }]);
-    mocks.client.broadcast.delegateVestingShares(confirmed);
-    mocks.client.broadcast.updateAccount(confirmed);
-    mocks.client.broadcast.comment(confirmed);
-    mocks.client.broadcast.transfer(confirmed);
-    mocks.client.broadcast.vote(confirmed);
-    mocks.client.broadcast.json(confirmed);
-    mocks.client.broadcast.sendOperations(confirmed);
-    mocks.client.database.getAccounts([accounts.extended]);
+    //TODO rm comments when done fixing tests
+    // mocks.client.database.call([{ requestid: 1 }], [{ requestid: 2 }]);
+    // mocks.client.broadcast.delegateVestingShares(confirmed);
+    // mocks.client.broadcast.updateAccount(confirmed);
+    // mocks.client.broadcast.comment(confirmed);
+    // mocks.client.broadcast.transfer(confirmed);
+    // mocks.client.broadcast.vote(confirmed);
+    // mocks.client.broadcast.json(confirmed);
+    // mocks.client.broadcast.sendOperations(confirmed);
+    // mocks.client.database.getAccounts([accounts.extended]);
     mocks.getAccountsFromLocalStorage();
     mocks.getMk(mk.user.one);
-    mocks.client.database.getDynamicGlobalProperties();
+    // mocks.client.database.getDynamicGlobalProperties();
   }),
 };
 

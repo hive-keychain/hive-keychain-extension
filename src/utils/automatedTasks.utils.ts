@@ -1,5 +1,8 @@
+import { ActiveAccount } from '@interfaces/active-account.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import Config from 'src/config';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const getClaims = async (username: string) => {
@@ -105,6 +108,45 @@ const initBackgroundClaims = async () => {
   });
 };
 
+const updateClaim = async (
+  username: string,
+  enabled: boolean,
+  claimType: LocalStorageKeyEnum,
+) => {
+  let claims = await LocalStorageUtils.getValueFromLocalStorage(claimType);
+  claims = {
+    ...claims,
+    [username]: enabled,
+  };
+  LocalStorageUtils.saveValueInLocalStorage(claimType, claims);
+};
+
+const canClaimSavingsErrorMessage = (activeAccount: ActiveAccount) => {
+  if (!activeAccount.keys.active) {
+    return 'popup_html_need_active_key_for_claim_savings';
+  } else if (KeysUtils.isUsingLedger(activeAccount.keys.active)) {
+    return 'popup_html_cant_automatically_claim_ledger';
+  }
+};
+
+const canClaimRewardsErrorMessage = (activeAccount: ActiveAccount) => {
+  if (!activeAccount.keys.posting) {
+    return 'popup_html_need_posting_key_to_claim_rewards';
+  } else if (KeysUtils.isUsingLedger(activeAccount.keys.posting)) {
+    return 'popup_html_cant_automatically_claim_ledger';
+  }
+};
+
+const canClaimAccountErrorMessage = (activeAccount: ActiveAccount) => {
+  if (!activeAccount.keys.active) {
+    return 'popup_html_need_active_key_for_claim_savings';
+  } else if (KeysUtils.isUsingLedger(activeAccount.keys.active)) {
+    return 'popup_html_cant_automatically_claim_ledger';
+  } else if (activeAccount.rc.max_mana > Config.claims.freeAccount.MIN_RC) {
+    return 'popup_html_not_enough_rc_to_claim_account';
+  }
+};
+
 const AutomatedTasksUtils = {
   getClaims,
   saveClaims,
@@ -112,6 +154,10 @@ const AutomatedTasksUtils = {
   getAllClaimAccounts,
   getAllClaimRewards,
   getAllClaimSavings,
+  updateClaim,
+  canClaimSavingsErrorMessage,
+  canClaimAccountErrorMessage,
+  canClaimRewardsErrorMessage,
 };
 
 export default AutomatedTasksUtils;

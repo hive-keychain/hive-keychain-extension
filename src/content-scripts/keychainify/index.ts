@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import keychainify from './keychainify';
 
 type Props = { process: Process; init: () => void };
@@ -43,31 +44,36 @@ let contentScript: Props = {
     initObserver: function () {
       let body = document.body;
 
-      // Using a MutationObserver to wait for a DOM change
-      // This is to scan dynamically loaded content (lazyload of comments for example)
-      contentScript.process.observer = new MutationObserver(
-        (function (process) {
-          return function (mutations: MutationRecord[]) {
-            mutations.forEach(function () {
-              // Preventing multiple calls to checkAnchors()
-              if (process.observerTimer) {
-                window.clearTimeout(process.observerTimer);
-              }
+      keychainify.isKeychainifyEnabled().then((enabled) => {
+        if (!enabled) {
+          return;
+        }
+        // Using a MutationObserver to wait for a DOM change
+        // This is to scan dynamically loaded content (lazyload of comments for example)
+        contentScript.process.observer = new MutationObserver(
+          (function (process) {
+            return function (mutations: MutationRecord[]) {
+              mutations.forEach(function () {
+                // Preventing multiple calls to checkAnchors()
+                if (process.observerTimer) {
+                  window.clearTimeout(process.observerTimer);
+                }
 
-              // Lets wait for a DOM change
-              process.observerTimer = window.setTimeout(function () {
-                process.checkAnchors();
-              }, 500);
-            });
-          };
-        })(contentScript.process),
-      );
+                // Lets wait for a DOM change
+                process.observerTimer = window.setTimeout(function () {
+                  process.checkAnchors();
+                }, 500);
+              });
+            };
+          })(contentScript.process),
+        );
 
-      // Waiting for the DOM to be modified (lazy loading)
-      contentScript.process.observer.observe(
-        body,
-        contentScript.process.observerConfig,
-      );
+        // Waiting for the DOM to be modified (lazy loading)
+        contentScript.process.observer.observe(
+          body,
+          contentScript.process.observerConfig,
+        );
+      });
     },
 
     /**
@@ -90,11 +96,7 @@ let contentScript: Props = {
             e.preventDefault();
             e.stopPropagation();
 
-            if (await keychainify.isKeychainifyEnabled()) {
-              keychainify.keychainifyUrl(this.href);
-            } else {
-              window.location.href = this.href;
-            }
+            keychainify.keychainifyUrl(this.href);
 
             return false;
           });

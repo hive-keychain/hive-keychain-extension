@@ -1,5 +1,6 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -12,7 +13,7 @@ describe('transfer.utils tests:\n', () => {
       chrome.i18n.getMessage = jest.fn().mockReturnValueOnce(messageFromI18n);
       expect(
         await TransferUtils.getExchangeValidationWarning(
-          'bittrex',
+          'deepcrypto8',
           'HIVE',
           true,
           true,
@@ -37,7 +38,7 @@ describe('transfer.utils tests:\n', () => {
         .mockReturnValueOnce(messageFromI18n));
       expect(
         await TransferUtils.getExchangeValidationWarning(
-          'bittrex',
+          'deepcrypto8',
           currencyToCheck,
           false,
         ),
@@ -59,7 +60,7 @@ describe('transfer.utils tests:\n', () => {
         .mockReturnValueOnce(messageFromI18n));
       expect(
         await TransferUtils.getExchangeValidationWarning(
-          'blocktrades',
+          'user.dunamu',
           currencyToCheck,
           false,
         ),
@@ -138,7 +139,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -162,7 +163,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -190,7 +191,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -216,7 +217,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);

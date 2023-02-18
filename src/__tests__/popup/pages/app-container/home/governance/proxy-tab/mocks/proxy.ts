@@ -3,7 +3,6 @@ import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { screen } from '@testing-library/react';
 import { ReactElement } from 'react';
 import ProxyUtils from 'src/utils/proxy.utils';
-import WitnessUtils from 'src/utils/witness.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -105,8 +104,8 @@ const methods = {
 
 const extraMocks = (toUse: MockProxy) => {
   ProxyUtils.findUserProxy = jest.fn().mockResolvedValue(toUse.findUserProxy);
-  WitnessUtils.setAsProxy = jest.fn().mockResolvedValue(toUse.setAsProxy);
-  WitnessUtils.removeProxy = jest.fn().mockResolvedValueOnce(toUse.removeProxy);
+  ProxyUtils.setAsProxy = jest.fn().mockResolvedValue(toUse.setAsProxy);
+  ProxyUtils.removeProxy = jest.fn().mockResolvedValueOnce(toUse.removeProxy);
 };
 
 export default {

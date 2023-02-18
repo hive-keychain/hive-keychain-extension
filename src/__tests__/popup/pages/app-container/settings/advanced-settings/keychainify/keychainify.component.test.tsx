@@ -13,11 +13,9 @@ describe('keychainify.component tests:\n', () => {
   beforeEach(async () => {
     _asFragment = await keychainify.beforeEach();
   });
-  it('Must load component and pass all checks', async () => {
-    await waitFor(() => {
-      expect(alComponent.advanceSettings.link).toBeDefined();
-      assertion.getOneByText(constants.messages.intro);
-    });
+  it('Must load component and match show intro message', () => {
+    assertion.getByLabelText(alComponent.advanceSettings.link);
+    assertion.getOneByText(constants.message.intro);
   });
   it('Must set keychainify', async () => {
     await clickAwait([alCheckbox.keychainify.checkbox]);

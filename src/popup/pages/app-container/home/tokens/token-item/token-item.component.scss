@@ -1,15 +1,26 @@
 @import '../../../../../variable.scss';
 
 .token-item {
+  .token-icon {
+    height: 36px;
+    width: 36px;
+  }
   .token {
     display: grid;
-    grid-template-columns: 2fr 3fr 1fr 1fr 1fr;
+    grid-template-columns: 42px 1fr 32px 32px 32px;
     font-size: 18px;
     align-items: center;
 
-    padding: 0px 24px;
-    min-height: 50px;
+    padding: 0px 16px;
+    min-height: 64px;
     cursor: pointer;
+
+    .symbol-balance {
+      margin-left: 8px;
+      display: flex;
+      flex-direction: column;
+      row-gap: 2px;
+    }
 
     .history,
     .send {
@@ -61,10 +72,6 @@
           .token-name {
             font-size: 18px;
           }
-        }
-        .token-icon {
-          height: 36px;
-          width: 36px;
         }
       }
 

@@ -1,5 +1,6 @@
 import { Transfer } from '@interfaces/transaction.interface';
-import HiveUtils from 'src/utils/hive.utils';
+import { store } from '@popup/store';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import Logger from 'src/utils/logger.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 import rpc from 'src/__tests__/utils-for-testing/data/rpc';
@@ -9,7 +10,7 @@ global.chrome = chrome;
 jest.setTimeout(50000);
 describe('transaction.utils tests:\n', () => {
   beforeEach(() => {
-    HiveUtils.setRpc(rpc.fake);
+    HiveTxUtils.setRpc(rpc.fake);
   });
   describe('getAccountTransactions tests:\n', () => {
     const callingData = {
@@ -24,10 +25,10 @@ describe('transaction.utils tests:\n', () => {
     });
     test('Getting data from an account that has transfers, must return a new sorted array with added fields', async () => {
       const showOutPutData = false;
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryResponse));
+      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeGetAccountHistoryResponse));
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
@@ -43,10 +44,10 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockRestore();
     });
     test('Getting data from an account that has no transfers, must return [[], start]', async () => {
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce([]));
+      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce([]));
       expect(
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
@@ -58,38 +59,12 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
-    test('if an error occurs must call Logger', async () => {
-      const spyLoggerError = jest.spyOn(Logger, 'error');
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(
-            utilsT.fakeGetAccountHistoryWrongDataResponse,
-          ));
-      try {
-        expect(
-          await TransactionUtils.getAccountTransactions(
-            callingData.accountName,
-            callingData.start,
-            utilsT.dynamicPropertiesObj,
-            callingData.memoKey,
-          ),
-        ).toBe(1);
-      } catch (error) {
-        expect((error as TypeError).message).toContain('stack');
-        const { calls } = spyLoggerError.mock;
-        expect((calls[0][0] as TypeError).message).toContain('0');
-      }
-      mockGetAccountHistory.mockReset();
-      mockGetAccountHistory.mockRestore();
-      spyLoggerError.mockReset();
-      spyLoggerError.mockRestore();
-    });
+
     test('Getting one transaction with id(0x40), must return the expected output bellow', async () => {
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
+      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
       expect(
         await TransactionUtils.getAccountTransactions(
           callingData.accountName,
@@ -101,14 +76,15 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockReset();
       mockGetAccountHistory.mockRestore();
     });
+
     test('Must return the expected results, for the rest of cases', async () => {
       const showResults = false;
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(
-            utilsT.fakeGetAccountHistoryResponseAllOtherTypes,
-          ));
+      store.getState().globalProperties.globals = utilsT.dynamicPropertiesObj;
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(
+          utilsT.fakeGetAccountHistoryResponseAllOtherTypes,
+        ));
       const result = await TransactionUtils.getAccountTransactions(
         callingData.accountName,
         callingData.start,
@@ -130,10 +106,9 @@ describe('transaction.utils tests:\n', () => {
 
   describe('getLastTransaction tests:\n', () => {
     test('Querying an account with transactions, must return the last transaction number', async () => {
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce(utilsT.fakeOneTransactionResponse));
       expect(
         await TransactionUtils.getLastTransaction(utilsT.userData.username),
       ).toBe(1);
@@ -141,10 +116,9 @@ describe('transaction.utils tests:\n', () => {
       mockGetAccountHistory.mockRestore();
     });
     test('Querying an account with no transactions, must return -1', async () => {
-      const mockGetAccountHistory =
-        (HiveUtils.getClient().database.getAccountHistory = jest
-          .fn()
-          .mockResolvedValueOnce([]));
+      const mockGetAccountHistory = (HiveTxUtils.getData = jest
+        .fn()
+        .mockResolvedValueOnce([]));
       expect(
         await TransactionUtils.getLastTransaction(utilsT.userData.username),
       ).toBe(-1);

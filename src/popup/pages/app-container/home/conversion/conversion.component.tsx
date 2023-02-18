@@ -15,18 +15,18 @@ import {
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { Conversion } from 'src/interfaces/conversion.interface';
 import { Screen } from 'src/reference-data/screen.enum';
+import { ConversionUtils } from 'src/utils/conversion.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import './conversion.component.scss';
 
 const Conversion = ({
@@ -122,27 +122,33 @@ const Conversion = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_conversion_operation');
-        let success = await HiveUtils.convertOperation(
-          activeAccount,
-          conversions,
-          valueS,
-          conversionType,
-        );
-        removeFromLoadingList('html_popup_conversion_operation');
+        try {
+          let success = await ConversionUtils.convert(
+            activeAccount.name!,
+            conversions,
+            valueS,
+            conversionType,
+            activeAccount.keys.active!,
+          );
 
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          setSuccessMessage(
-            conversionType === ConversionType.CONVERT_HBD_TO_HIVE
-              ? 'popup_html_hbd_to_hive_conversion_success'
-              : 'popup_html_hive_to_hbd_conversion_success',
-          );
-        } else {
-          setErrorMessage(
-            conversionType === ConversionType.CONVERT_HBD_TO_HIVE
-              ? 'popup_html_hbd_to_hive_conversion_fail'
-              : 'popup_html_hive_to_hbd_conversion_fail',
-          );
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            setSuccessMessage(
+              conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+                ? 'popup_html_hbd_to_hive_conversion_success'
+                : 'popup_html_hive_to_hbd_conversion_success',
+            );
+          } else {
+            setErrorMessage(
+              conversionType === ConversionType.CONVERT_HBD_TO_HIVE
+                ? 'popup_html_hbd_to_hive_conversion_fail'
+                : 'popup_html_hive_to_hbd_conversion_fail',
+            );
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_conversion_operation');
         }
       },
     });
@@ -168,21 +174,21 @@ const Conversion = ({
   return (
     <div className="conversion-page" aria-label="conversion-page">
       {totalPending > 0 && (
-        <AvailableCurrentPanelComponent
-          current={available}
-          currentCurrency={currency}
-          currentLabel={'popup_html_available'}
-          available={totalPending}
-          availableCurrency={currency}
-          availableLabel={'popup_html_pending'}
-          onAvailablePanelClick={goToPendingConversion}
+        <SummaryPanelComponent
+          top={available}
+          topRight={currency}
+          topLeft={'popup_html_available'}
+          bottom={totalPending}
+          bottomRight={currency}
+          bottomLeft={'popup_html_pending'}
+          onBottomPanelClick={goToPendingConversion}
         />
       )}
       {totalPending === 0 && (
-        <AvailableCurrentPanelComponent
-          available={available}
-          availableCurrency={currency}
-          availableLabel={'popup_html_available'}
+        <SummaryPanelComponent
+          bottom={available}
+          bottomRight={currency}
+          bottomLeft={'popup_html_available'}
         />
       )}
       <div className="text">{chrome.i18n.getMessage(text)}</div>

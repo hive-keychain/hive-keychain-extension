@@ -1,4 +1,3 @@
-import RPCModule from '@background/rpc.module';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   KeychainRequest,
@@ -15,7 +14,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 
-type RequestData = {
+export type RequestDataMocks = {
   tab?: number;
   request?: KeychainRequest;
   request_id?: number;
@@ -30,7 +29,7 @@ type RequestData = {
 
 const requestData = {
   rpc: DefaultRpcs[0],
-} as RequestData;
+} as RequestDataMocks;
 
 const hiveEngineConfigByDefault = {
   rpc: 'https://api.hive-engine.com/rpc',
@@ -58,11 +57,11 @@ const constants = {
 };
 
 const spies = {
-  getValueFromLocalStorage: (data: RequestData | undefined | null) =>
+  getValueFromLocalStorage: (data: RequestDataMocks | undefined | null) =>
     jest
       .spyOn(LocalStorageUtils, 'getValueFromLocalStorage')
       .mockResolvedValue(data),
-  getClient: () => jest.spyOn(RPCModule, 'getClient'),
+  getClient: () => {},
   removeWindow: jest.spyOn(DialogLifeCycle, 'removeWindow'),
   removeFromLocalStorage: jest
     .spyOn(LocalStorageUtils, 'removeFromLocalStorage')

@@ -19,6 +19,14 @@ const AddAccountMain = ({
 }: PropsFromRedux) => {
   const [importWindow, setImportWindow] = useState<number>();
 
+  useEffect(() => {
+    setTitleContainerProperties({
+      title: 'popup_html_setup',
+      isBackButtonEnabled: true,
+      isCloseButtonDisabled: !accounts || !accounts.length,
+    });
+  });
+
   const handleAddByKeys = (): void => {
     navigateTo(Screen.ACCOUNT_PAGE_ADD_BY_KEYS);
   };
@@ -48,19 +56,17 @@ const AddAccountMain = ({
     if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
       if (!(typeof message.value === 'string') && message.value?.length) {
         setAccounts(message.value);
-        // chrome.windows.remove(importWindow!);
       }
       chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
     }
   };
 
-  useEffect(() => {
-    setTitleContainerProperties({
-      title: 'popup_html_setup',
-      isBackButtonEnabled: true,
-      isCloseButtonDisabled: !accounts || !accounts.length,
+  const handleAddFromLedger = async () => {
+    const extensionId = (await chrome.management.getSelf()).id;
+    chrome.tabs.create({
+      url: `chrome-extension://${extensionId}/add-accounts-from-ledger.html`,
     });
-  });
+  };
 
   return (
     <div className="add-account-page" aria-label="add-account-page">
@@ -87,6 +93,11 @@ const AddAccountMain = ({
           ariaLabel="import-keys-button"
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
+        />
+        <ButtonComponent
+          ariaLabel="import-keys-button"
+          label={'popup_html_add_account_with_ledger'}
+          onClick={handleAddFromLedger}
         />
       </div>
     </div>

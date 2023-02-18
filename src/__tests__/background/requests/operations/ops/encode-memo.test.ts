@@ -12,7 +12,7 @@ describe('encode-memo tests:\n', () => {
   methods.afterEach;
   methods.beforeEach;
   it('Must return error if no key on handler', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
+    mocks.getExtendedAccount(accounts.extended);
     data.message = memo._default.decoded;
     const resultOperation = (await encodeMessage(
       requestHandler,
@@ -23,8 +23,8 @@ describe('encode-memo tests:\n', () => {
     expect(result).toBeNull();
     expect((error as TypeError).message).toContain('private_key');
   });
-  it('Must return error if receiver not received', async () => {
-    mocks.client.database.getAccounts([]);
+  it('Must return error if no receiver', async () => {
+    mocks.getExtendedAccount(undefined);
     requestHandler.data.key = userData.one.nonEncryptKeys.memo;
     data.message = memo._default.decoded;
     const resultOperation = (await encodeMessage(
@@ -37,7 +37,7 @@ describe('encode-memo tests:\n', () => {
     expect((error as TypeError).message).toContain('memo_key');
   });
   it('Must use memo_key if method as memo', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
+    mocks.getExtendedAccount(accounts.extended);
     requestHandler.data.key = userData.one.nonEncryptKeys.memo;
     data.message = memo._default.decoded;
     await encodeMessage(requestHandler, data);
@@ -48,7 +48,7 @@ describe('encode-memo tests:\n', () => {
     );
   });
   it('Must use key_auths if method not memo', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
+    mocks.getExtendedAccount(accounts.extended);
     requestHandler.data.key = userData.one.nonEncryptKeys.memo;
     data.method = KeychainKeyTypes.posting;
     data.message = memo._default.decoded;
@@ -60,7 +60,7 @@ describe('encode-memo tests:\n', () => {
     );
   });
   it('Must return success', async () => {
-    mocks.client.database.getAccounts([accounts.extended]);
+    mocks.getExtendedAccount(accounts.extended);
     requestHandler.data.key = userData.one.nonEncryptKeys.memo;
     data.message = memo._default.decoded;
     data.method = KeychainKeyTypes.memo;

@@ -94,18 +94,18 @@
       type="text"
       placeholder="username"
       id="custom_username"
-      value="stoodkev"
+      value="keychain-ledger"
     />
     <select id="custom_method">
-      <option>Posting</option>
       <option>Active</option>
+      <option>Posting</option>
     </select>
     <input type="text" placeholder="id" id="custom_id" value="custom" />
     <input
       type="text"
       placeholder="custom_json"
       id="custom_json"
-      value='{"hive":"keychain"}'
+      value='{"hive":"keychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychainkeychain"}'
     />
     <input type="text" placeholder="rpc" id="custom_rpc" />
     <button id="send_custom">Send</button>
@@ -114,11 +114,16 @@
       type="text"
       placeholder="username"
       id="transfer_username"
-      value="stoodkev"
+      value="cedricguillas"
     />
-    <input type="text" placeholder="to" id="transfer_to" value="steem-plus" />
-    <input type="text" placeholder="memo" id="transfer_memo" value="hi" />
-    <input type="number" placeholder="0.000" id="transfer_val" value="1.000" />
+    <input
+      type="text"
+      placeholder="to"
+      id="transfer_to"
+      value="cedric.tests2"
+    />
+    <input type="text" placeholder="memo" id="transfer_memo" value="#hi" />
+    <input type="number" placeholder="0.000" id="transfer_val" value="0.001" />
     <input type="checkbox" id="transfer_enforce" /><label for="transfer_enforce"
       >Enforce username</label
     >
@@ -331,11 +336,11 @@
       type="text"
       placeholder="username"
       id="tokens_username"
-      value="stoodkev"
+      value="cedric.tests"
     />
-    <input type="text" placeholder="to" id="tokens_to" value="lecaillon" />
+    <input type="text" placeholder="to" id="tokens_to" value="cedricguillas" />
     <input type="number" placeholder="1.000" id="tokens_qt" value="1.000" />
-    <input type="text" placeholder="tokens" id="tokens_unit" value="KEYCHAIN" />
+    <input type="text" placeholder="tokens" id="tokens_unit" value="WAIV" />
     <input type="text" placeholder="memo" id="tokens_memo" value="" />
     <button id="sendTokens">Send</button>
     <h3>Witness</h3>
@@ -343,7 +348,7 @@
       type="text"
       placeholder="username"
       id="witness_username"
-      value="lecaillon"
+      value="cedric.tests"
     />
     <input type="text" placeholder="username" id="witness" value="stoodkev" />
     <input type="checkbox" id="vote_wit" /><label for="vote_wit"
@@ -355,7 +360,7 @@
       type="text"
       placeholder="username"
       id="proxy_username"
-      value="lecaillon"
+      value="keychain-ledger"
     />
     <input type="text" placeholder="username" id="proxy" value="stoodkev" />
     <button id="send_proxy">Send</button>
@@ -483,14 +488,14 @@
       type="text"
       placeholder="username"
       id="rec_username"
-      value="stoodkev"
+      value="cedric.tests"
     />
-    <input type="text" placeholder="to" id="rec_to" value="lecaillon" />
+    <input type="text" placeholder="to" id="rec_to" value="cedricguillas" />
     <input type="text" placeholder="amount" id="rec_amount" value="0.001" />
     <select id="rec_currency">
-      <option>HIVE</option>
+      <option selected="selected">HIVE</option>
       <option>HBD</option>
-      <option selected="selected">TESTS</option>
+      <option>TESTS</option>
       <option>TBD</option>
     </select>
     <input type="text" placeholder="memo" id="rec_memo" value="" />
@@ -498,7 +503,7 @@
       type="number"
       placeholder="recurrence"
       id="rec_recurrence"
-      value="1"
+      value="24"
     /><input type="number" placeholder="executions" id="rec_ex" value="2" />
     <button id="send_rec">Send</button>
     <h3>Save account to keychain</h3>

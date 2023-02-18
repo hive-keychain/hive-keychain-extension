@@ -1,4 +1,3 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
@@ -15,7 +14,6 @@ import {
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select, {
@@ -26,15 +24,19 @@ import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
+import InputComponent, {
+  AutoCompleteValue,
+} from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './transfer-fund.component.scss';
 
@@ -44,6 +46,7 @@ const TransferFunds = ({
   currencyLabels,
   phishing,
   formParams,
+  localAccounts,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -77,8 +80,9 @@ const TransferFunds = ({
   const [iteration, setIterations] = useState(
     formParams.iteration ? formParams.iteration : '',
   );
-  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState<string[]>([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    AutoCompleteValue[]
+  >([]);
 
   let balances = {
     hive: FormatUtils.toNumber(activeAccount.account.balance),
@@ -97,6 +101,7 @@ const TransferFunds = ({
 
   useEffect(() => {
     setBalance(balances[selectedCurrency]);
+    loadAutocompleteTransferUsernames();
   }, [selectedCurrency]);
 
   const options = [
@@ -105,12 +110,15 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    const favoriteUsers: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
-      );
-    setAutocompleteTransferUsernames(
-      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
+    setAutocompleteFavoriteUsers(
+      await FavoriteUserUtils.getAutocompleteList(
+        activeAccount.name!,
+        localAccounts,
+        {
+          addExchanges: true,
+          token: selectedCurrency.toUpperCase(),
+        },
+      ),
     );
   };
 
@@ -223,61 +231,80 @@ const TransferFunds = ({
         : 'popup_html_transfer_funds',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        addToLoadingList('html_popup_transfer_fund_operation');
-        let success = false;
-        let memoParam = memo;
-        if (memo.length) {
-          if (memo.startsWith('#')) {
-            if (!activeAccount.keys.memo) {
-              setErrorMessage('popup_html_memo_key_missing');
-              return;
-            } else {
-              memoParam = HiveUtils.encodeMemo(
-                memo,
-                activeAccount.keys.memo.toString(),
-                await AccountUtils.getPublicMemo(receiverUsername),
-              );
+        addToLoadingList(
+          'html_popup_transfer_fund_operation',
+          KeysUtils.getKeyType(
+            activeAccount.keys.active!,
+            activeAccount.keys.activePubkey!,
+          ),
+        );
+        try {
+          let success = false;
+          let memoParam = memo;
+          if (memo.length) {
+            if (memo.startsWith('#')) {
+              if (!activeAccount.keys.memo) {
+                setErrorMessage('popup_html_memo_key_missing');
+                return;
+              } else {
+                memoParam = HiveUtils.encodeMemo(
+                  memo,
+                  activeAccount.keys.memo.toString(),
+                  await AccountUtils.getPublicMemo(receiverUsername),
+                );
+              }
             }
           }
-        }
 
-        success = await HiveUtils.transfer(
-          activeAccount.name!,
-          receiverUsername,
-          formattedAmount,
-          memoParam,
-          isRecurrent,
-          isCancelRecurrent ? 2 : +iteration,
-          isCancelRecurrent ? 24 : +frequency,
-          activeAccount,
-        );
+          success = await TransferUtils.sendTransfer(
+            activeAccount.name!,
+            receiverUsername,
+            formattedAmount,
+            memoParam,
+            isRecurrent,
+            isCancelRecurrent ? 2 : +iteration,
+            isCancelRecurrent ? 24 : +frequency,
+            activeAccount.keys.active!,
+          );
 
-        removeFromLoadingList('html_popup_transfer_fund_operation');
+          removeFromLoadingList('html_popup_transfer_fund_operation');
 
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(receiverUsername, activeAccount);
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await FavoriteUserUtils.saveFavoriteUser(
+              receiverUsername,
+              activeAccount,
+            );
 
-          if (!isRecurrent) {
-            setSuccessMessage('popup_html_transfer_successful', [
-              `@${receiverUsername}`,
-              formattedAmount,
-            ]);
+            if (!isRecurrent) {
+              setSuccessMessage('popup_html_transfer_successful', [
+                `@${receiverUsername}`,
+                formattedAmount,
+              ]);
+            } else {
+              isCancelRecurrent
+                ? setSuccessMessage(
+                    'popup_html_cancel_transfer_recurrent_successful',
+                    [`@${receiverUsername}`],
+                  )
+                : setSuccessMessage(
+                    'popup_html_transfer_recurrent_successful',
+                    [
+                      `@${receiverUsername}`,
+                      formattedAmount,
+                      frequency,
+                      iteration,
+                    ],
+                  );
+            }
           } else {
-            isCancelRecurrent
-              ? setSuccessMessage(
-                  'popup_html_cancel_transfer_recurrent_successful',
-                  [`@${receiverUsername}`],
-                )
-              : setSuccessMessage('popup_html_transfer_recurrent_successful', [
-                  `@${receiverUsername}`,
-                  formattedAmount,
-                  frequency,
-                  iteration,
-                ]);
+            setErrorMessage('popup_html_transfer_failed');
           }
-        } else {
-          setErrorMessage('popup_html_transfer_failed');
+        } catch (err: any) {
+          Logger.error(err);
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_transfer_fund_operation');
         }
       },
     });
@@ -314,10 +341,10 @@ const TransferFunds = ({
   return (
     <>
       <div className="transfer-funds-page" aria-label="transfer-funds-page">
-        <AvailableCurrentPanelComponent
-          available={balance}
-          availableCurrency={currencyLabels[selectedCurrency]}
-          availableLabel={'popup_html_balance'}
+        <SummaryPanelComponent
+          bottom={balance}
+          bottomRight={currencyLabels[selectedCurrency]}
+          bottomLeft={'popup_html_balance'}
         />
         <div className="form-container">
           <InputComponent
@@ -327,7 +354,7 @@ const TransferFunds = ({
             placeholder="popup_html_username"
             value={receiverUsername}
             onChange={setReceiverUsername}
-            autocompleteValues={autocompleteTransferUsernames}
+            autocompleteValues={autocompleteFavoriteUsers}
           />
           <div className="value-panel">
             <div className="value-input-panel">
@@ -413,6 +440,7 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
+    localAccounts: state.accounts,
   };
 };
 

@@ -14,3 +14,9 @@ export enum KeyType {
   POSTING = 'POSTING',
   MEMO = 'MEMO',
 }
+
+export enum PrivateKeyType {
+  AUTHORIZED_ACCOUNT = 'AUTHORIZED_ACCOUNT',
+  LEDGER = 'LEDGER',
+  PRIVATE_KEY = 'PRIVATE_KEY',
+}

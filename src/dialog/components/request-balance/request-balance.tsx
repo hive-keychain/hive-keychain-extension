@@ -1,6 +1,7 @@
 import { Rpc } from '@interfaces/rpc.interface';
 import React, { useEffect, useState } from 'react';
 import RequestItem from 'src/dialog/components/request-item/request-item';
+import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { BaseCurrencies } from 'src/utils/currency.utils';
 
 type Props = {
@@ -16,32 +17,26 @@ const RequestBalance = ({ rpc, username, amount, currency }: Props) => {
   const cur = currency.toLowerCase();
   useEffect(() => {
     if (username) {
-      import('@hiveio/dhive').then(({ Client }) => {
-        const client = new Client(
-          rpc.uri === 'DEFAULT' ? 'https://api.hive.blog' : rpc.uri,
-          {
-            chainId: rpc.testnet ? rpc.chainId : undefined,
-          },
-        );
-
-        client.database.getAccounts([username]).then((accounts) => {
-          const account = accounts[0];
-          const currencyParsed = CurrencyUtils.getCurrencyLabel(
-            currency,
-            rpc.testnet,
-          );
-          const currentBalance = (
-            (cur === BaseCurrencies.HIVE
-              ? account.balance
-              : account.hbd_balance) as string
-          ).split(' ')[0];
-          const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
-          setBalance(`${currentBalance} ${currencyParsed}`);
-          setNewBalance(`${newBalance} ${currencyParsed}`);
-        });
-      });
+      init(username);
     }
   }, [username]);
+
+  const init = async (username: string) => {
+    const account = await AccountUtils.getExtendedAccount(username);
+    const currencyParsed = CurrencyUtils.getCurrencyLabel(
+      currency,
+      rpc.testnet,
+    );
+    const currentBalance = (
+      (cur === BaseCurrencies.HIVE
+        ? account.balance
+        : account.hbd_balance) as string
+    ).split(' ')[0];
+    const newBalance = (parseFloat(currentBalance) - amount).toFixed(3);
+    setBalance(`${currentBalance} ${currencyParsed}`);
+    setNewBalance(`${newBalance} ${currencyParsed}`);
+  };
+
   return (
     <RequestItem
       title="dialog_balance"

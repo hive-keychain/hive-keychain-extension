@@ -114,7 +114,8 @@ const IncomingOutgoingRcPage = ({
 
         success = await RcDelegationsUtils.cancelDelegation(
           rcDelegation.delegatee,
-          activeAccount,
+          activeAccount.name!,
+          activeAccount.keys.posting!,
         );
 
         removeFromLoadingList('html_popup_cancel_delegate_rc_operation');

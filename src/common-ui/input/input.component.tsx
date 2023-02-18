@@ -4,6 +4,11 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
+export interface AutoCompleteValue {
+  value: string;
+  subLabel?: string;
+}
+
 interface InputProps {
   onChange: (value: any) => void;
   value: any;
@@ -18,17 +23,17 @@ interface InputProps {
   skipPlaceholderTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  autocompleteValues?: any[];
-  onEnterPress?(): any;
-  onSetToMaxClicked?(): any;
+  autocompleteValues?: AutoCompleteValue[];
   required?: boolean;
   hasError?: boolean;
   ariaLabel?: string;
   disabled?: boolean;
+  onEnterPress?(): any;
+  onSetToMaxClicked?(): any;
 }
 
 const InputComponent = (props: InputProps) => {
-  const [filteredValues, setFilteredValues] = useState<any[]>(
+  const [filteredValues, setFilteredValues] = useState<AutoCompleteValue[]>(
     props.autocompleteValues ? props.autocompleteValues : [],
   );
 
@@ -46,8 +51,10 @@ const InputComponent = (props: InputProps) => {
   useEffect(() => {
     if (props.autocompleteValues) {
       setFilteredValues(
-        props.autocompleteValues.filter((val) =>
-          val.toLowerCase().includes(props.value),
+        props.autocompleteValues.filter(
+          (val) =>
+            val.value?.toLowerCase().includes(props.value) ||
+            val.subLabel?.toLowerCase().includes(props.value),
         ),
       );
     }
@@ -120,6 +127,7 @@ const InputComponent = (props: InputProps) => {
         )}
         {props.type !== InputType.PASSWORD &&
           !props.onSetToMaxClicked &&
+          props.value &&
           props.value.length > 0 && (
             <Icon
               ariaLabel="input-clear"
@@ -134,8 +142,8 @@ const InputComponent = (props: InputProps) => {
               <div
                 key={index}
                 className="value"
-                onClick={() => props.onChange(val)}>
-                {val}
+                onClick={() => props.onChange(val.value)}>
+                {val.value} {val.subLabel ? `(${val.subLabel})` : ''}
               </div>
             ))}
           </div>
