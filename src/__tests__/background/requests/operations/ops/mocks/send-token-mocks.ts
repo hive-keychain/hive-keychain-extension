@@ -1,4 +1,5 @@
-import { RequestsHandler } from '@background/requests';
+import LedgerModule from '@background/ledger.module';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestData,
@@ -6,6 +7,7 @@ import {
   RequestId,
   RequestSendToken,
 } from '@interfaces/keychain.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -37,13 +39,19 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      json: (response: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.json = jest
-          .fn()
-          .mockResolvedValue(response)),
-    },
+  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: boolean) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
   },
 };
 
@@ -54,7 +62,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.json(confirmed);
   }),
   assert: {
     error: (

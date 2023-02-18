@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestData,
@@ -35,18 +35,10 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      vote: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.vote = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-  },
 };
 
 const spies = {
-  getUserKey: jest.spyOn(requestHandler, 'getUserKey'),
+  getUserKey: jest.spyOn(requestHandler, 'getUserKeyPair'),
 };
 
 const methods = {
@@ -56,7 +48,8 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.vote(confirmed);
+    //TODO rm comments
+    // mocks.client.broadcast.vote(confirmed);
   }),
   assert: {
     error: (
@@ -71,7 +64,7 @@ const methods = {
           error,
           datas,
           request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMessage}`,
+          errorMessage,
           undefined,
         ),
       );
@@ -80,7 +73,7 @@ const methods = {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          confirmed,
+          true,
           datas,
           request_id,
           message,

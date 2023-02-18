@@ -24,4 +24,11 @@
   &.loading {
     text-align: center;
   }
+  .loading-panel {
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
 }

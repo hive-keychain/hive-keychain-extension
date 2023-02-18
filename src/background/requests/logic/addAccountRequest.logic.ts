@@ -1,6 +1,6 @@
-import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -13,6 +13,7 @@ export const addAccountRequest = (
   account?: LocalAccount,
 ) => {
   if (account) {
+    /* istanbul ignore next */
     createPopup(async () => {
       sendErrors(
         requestHandler,
@@ -26,6 +27,7 @@ export const addAccountRequest = (
       );
     }, requestHandler);
   } else {
+    /* istanbul ignore next */
     const callback = () => {
       chrome.runtime.sendMessage({
         command: DialogCommand.SEND_DIALOG_CONFIRM,

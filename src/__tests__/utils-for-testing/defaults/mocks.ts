@@ -50,6 +50,7 @@ const _defaults = {
     findUserProxy: '',
     getVP: 1,
     getVotingDollarsPerAccount: 1,
+    getAccountPrice: 1,
   } as MocksApp,
   _home: {
     getAccountValue: defaultAccountValue,
@@ -59,6 +60,8 @@ const _defaults = {
   } as MocksTopBar,
   _powerUp: {
     getVestingDelegations: delegations.delegatees,
+    getPendingOutgoingUndelegation: [], //by default for now
+    getAllOutgoingDelegations: [], //by default for now
   } as MocksPowerUp,
   _walletHistory: {
     getAccountTransactions: [historyCurrency.transfers, 1000],

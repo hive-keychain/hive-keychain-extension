@@ -1,222 +1,165 @@
-import { PrivateKey } from '@hiveio/dhive';
-import { TokenDelegation } from '@interfaces/token-delegation.interface';
-import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
-import Config from 'src/config';
+import { CustomJsonOperation } from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
+import { TokenTransaction } from '@interfaces/tokens.interface';
+import { TransactionStatus } from '@interfaces/transaction-status.interface';
+import { KeychainError } from 'src/keychain-error';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveUtils from 'src/utils/hive.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { TokenRequestParams } from 'src/utils/token-request-params.interface';
 
-type SendTokenProps = {
-  username: string;
-  currency: string;
-  to: string;
-  amount: string;
-  memo: string;
-};
-
-const stakeToken = (
-  activePrivateKey: string,
-  to: string,
-  symbol: string,
-  amount: string,
-  activeAccountName: string,
-) => {
-  const id = Config.hiveEngine.mainnet;
-  const json = JSON.stringify({
-    contractName: 'tokens',
-    contractAction: 'stake',
-    contractPayload: { to: to, symbol: symbol, quantity: amount },
-  });
-  return HiveUtils.getClient().broadcast.json(
-    {
-      required_posting_auths: [],
-      required_auths: [activeAccountName],
-      id,
-      json,
-    },
-    PrivateKey.fromString(activePrivateKey),
-  );
-};
-
-const unstakeToken = (
-  activePrivateKey: string,
-  symbol: string,
-  amount: string,
-  activeAccountName: string,
-) => {
-  const id = Config.hiveEngine.mainnet;
-  const json = JSON.stringify({
-    contractName: 'tokens',
-    contractAction: 'unstake',
-    contractPayload: { symbol: symbol, quantity: amount },
-  });
-  return HiveUtils.getClient().broadcast.json(
-    {
-      required_posting_auths: [],
-      required_auths: [activeAccountName],
-      id,
-      json,
-    },
-    PrivateKey.fromString(activePrivateKey),
-  );
-};
-
-const delegateToken = (
-  activePrivateKey: string,
-  to: string,
-  symbol: string,
-  amount: string,
-  activeAccountName: string,
-) => {
-  const id = Config.hiveEngine.mainnet;
-  const json = JSON.stringify({
-    contractName: 'tokens',
-    contractAction: 'delegate',
-    contractPayload: { to: to, symbol: symbol, quantity: amount },
-  });
-  return HiveUtils.getClient().broadcast.json(
-    {
-      required_posting_auths: [],
-      required_auths: [activeAccountName],
-      id,
-      json,
-    },
-    PrivateKey.fromString(activePrivateKey),
-  );
-};
-
-const cancelDelegationToken = (
-  activePrivateKey: string,
-  from: string,
-  symbol: string,
-  amount: string,
-  activeAccountName: string,
-) => {
-  const id = Config.hiveEngine.mainnet;
-  const json = JSON.stringify({
-    contractName: 'tokens',
-    contractAction: 'undelegate',
-    contractPayload: { from: from, symbol: symbol, quantity: amount },
-  });
-  return HiveUtils.getClient().broadcast.json(
-    {
-      required_posting_auths: [],
-      required_auths: [activeAccountName],
-      id,
-      json,
-    },
-    PrivateKey.fromString(activePrivateKey),
-  );
-};
-
-const getUserBalance = (account: string) => {
-  return HiveEngineConfigUtils.getApi().find('tokens', 'balances', {
-    account,
-  });
-};
-
-const getIncomingDelegations = async (
-  symbol: string,
-  username: string,
-): Promise<TokenDelegation[]> => {
-  return HiveEngineConfigUtils.getApi().find('tokens', 'delegations', {
-    to: username,
-    symbol: symbol,
-  });
-};
-
-const getOutgoingDelegations = async (
-  symbol: string,
-  username: string,
-): Promise<TokenDelegation[]> => {
-  return HiveEngineConfigUtils.getApi().find('tokens', 'delegations', {
-    from: username,
-    symbol: symbol,
-  });
-};
-
-/**
- * SSCJS request using HiveEngineConfigUtils.getApi().find.
- * @param {string} contract Fixed as 'tokens'
- * @param {string} table Fixed as 'tokens
- */
-const getAllTokens = async (
-  query: {},
-  limit: number,
-  offset: number,
-  indexes: {}[],
-): Promise<any> => {
-  return HiveEngineConfigUtils.getApi().find(
-    'tokens',
-    'tokens',
-    query,
-    limit,
-    offset,
-    indexes,
-  );
-};
-/**
- * SSCJS request using HiveEngineConfigUtils.getApi().find.
- * @param {string} contract Fixed as 'market'
- * @param {string} table Fixed as 'metrics
- */
-const getTokensMarket = async (
-  query: {},
-  limit: number,
-  offset: number,
-  indexes: {}[],
-): Promise<TokenMarket[]> => {
-  return HiveEngineConfigUtils.getApi().find(
-    'market',
-    'metrics',
-    query,
-    limit,
-    offset,
-    indexes,
-  );
-};
-
-const sendToken = (data: SendTokenProps, key: PrivateKey) => {
-  const id = Config.hiveEngine.mainnet;
-  const json = JSON.stringify({
-    contractName: 'tokens',
-    contractAction: 'transfer',
-    contractPayload: {
-      symbol: data.currency,
-      to: data.to,
-      quantity: data.amount,
-      memo: data.memo,
-    },
-  });
-  return HiveUtils.getClient().broadcast.json(
-    { required_posting_auths: [], required_auths: [data.username], id, json },
+const sendOperation = async (
+  operations: CustomJsonOperation[],
+  key: Key,
+): Promise<TransactionStatus> => {
+  const transactionId = await HiveTxUtils.createSignAndBroadcastTransaction(
+    operations,
     key,
   );
+
+  if (transactionId) {
+    return await HiveEngineUtils.tryConfirmTransaction(transactionId);
+  } else {
+    return {
+      broadcasted: false,
+      confirmed: false,
+    };
+  }
 };
 
-export const getHiveEngineTokenValue = (
-  balance: TokenBalance,
-  market: TokenMarket[],
-) => {
-  const tokenMarket = market.find((t) => t.symbol === balance.symbol);
-  const price = tokenMarket
-    ? parseFloat(tokenMarket.lastPrice)
-    : balance.symbol === 'SWAP.HIVE'
-    ? 1
-    : 0;
-  return parseFloat(balance.balance) * price;
+const tryConfirmTransaction = (trxId: string): Promise<TransactionStatus> => {
+  let result: any;
+  return new Promise(async (resolve, reject) => {
+    for (let i = 0; i < 20; i++) {
+      let res: any = await HiveEngineUtils.getDelayedTransactionInfo(trxId);
+      result = res.result;
+      if (result !== null) break;
+    }
+
+    var error = null;
+    if (result && result.logs) {
+      var logs = JSON.parse(result.logs);
+
+      if (logs.errors && logs.errors.length > 0) {
+        error = logs.errors[0];
+        reject(ErrorUtils.parseHiveEngine(error, JSON.parse(result.payload)));
+      }
+    }
+    if (result != null) {
+      resolve({ broadcasted: true, confirmed: true });
+    } else {
+      resolve({ broadcasted: true, confirmed: false });
+    }
+  });
 };
 
-const HiveEngineUtils = {
-  sendToken,
-  getUserBalance,
-  stakeToken,
-  unstakeToken,
-  delegateToken,
-  cancelDelegationToken,
-  getIncomingDelegations,
-  getOutgoingDelegations,
-  getAllTokens,
-  getTokensMarket,
+/* istanbul ignore next */
+const getDelayedTransactionInfo = (trxID: string) => {
+  return new Promise(function (fulfill, reject) {
+    setTimeout(async function () {
+      const url = `${HiveEngineConfigUtils.getApi()}/blockchain`;
+      let resolved = false;
+      fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          id: 1,
+          jsonrpc: '2.0',
+          method: 'getTransactionInfo',
+          params: {
+            txid: trxID,
+          },
+        }),
+        headers: { 'Content-Type': 'application/json' },
+      })
+        .then((res) => {
+          if (res && res.status === 200) {
+            resolved = true;
+            return res.json();
+          }
+        })
+        .then((res: any) => fulfill(res));
+
+      setTimeout(() => {
+        if (!resolved) {
+          reject(new KeychainError('html_popup_tokens_timeout'));
+        }
+      }, 20 * 1000);
+    }, 1000);
+  });
 };
 
-export default HiveEngineUtils;
+/* istanbul ignore next */
+const get = async <T>(
+  params: TokenRequestParams,
+  timeout: number = 10,
+): Promise<T> => {
+  const url = `${HiveEngineConfigUtils.getApi()}/contracts`;
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    fetch(url, {
+      method: 'POST',
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        method: 'find',
+        params,
+        id: 1,
+      }),
+      headers: { 'Content-Type': 'application/json' },
+    })
+      .then((res) => {
+        if (res && res.status === 200) {
+          resolved = true;
+          return res.json();
+        }
+      })
+      .then((res: any) => {
+        resolve(res.result as unknown as T);
+      });
+
+    setTimeout(() => {
+      if (!resolved) {
+        reject(new KeychainError('html_popup_tokens_timeout'));
+      }
+    }, timeout * 1000);
+  });
+};
+
+/* istanbul ignore next */
+const getHistory = async (
+  account: string,
+  symbol: string,
+  offset: number = 0,
+  type: string = 'user',
+  timeout: number = 10,
+): Promise<TokenTransaction[]> => {
+  const queryParams = `account=${account}&symbol=${symbol}&offset=${offset}&type=${type}`;
+
+  const url = `${HiveEngineConfigUtils.getAccountHistoryApi()}/accountHistory?${queryParams}`;
+  return new Promise((resolve, reject) => {
+    let resolved = false;
+    fetch(url)
+      .then((res) => {
+        if (res && res.status === 200) {
+          resolved = true;
+          return res.json();
+        }
+      })
+      .then((res: any) => {
+        resolve(res as unknown as TokenTransaction[]);
+      });
+
+    setTimeout(() => {
+      if (!resolved) {
+        reject(new KeychainError('html_popup_tokens_timeout'));
+      }
+    }, timeout * 1000);
+  });
+};
+
+export const HiveEngineUtils = {
+  getDelayedTransactionInfo,
+  tryConfirmTransaction,
+  sendOperation,
+  get,
+  getHistory,
+};

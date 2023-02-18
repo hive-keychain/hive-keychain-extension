@@ -1,17 +1,19 @@
-import RPCModule from '@background/rpc.module';
+import { ActiveAccountModule } from '@background/active-account.module';
 import BgdAccountsUtils from '@background/utils/accounts.utils';
-import BgdHiveUtils from '@background/utils/hive.utils';
-import { Asset, ExtendedAccount } from '@hiveio/dhive/lib/index-browser';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Asset } from '@hiveio/dhive';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { LocalStorageClaimItem } from '@interfaces/local-storage-claim-item.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import Config from 'src/config';
-import ActiveAccountUtils from 'src/utils/active-account.utils';
+import AccountUtils from 'src/utils/account.utils';
+import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { ObjectUtils } from 'src/utils/object.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
+import { SavingsUtils } from 'src/utils/savings.utils';
 
 const start = async () => {
   Logger.info(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
@@ -61,15 +63,17 @@ const initClaimRewards = async (
 };
 
 const iterateClaimRewards = async (users: string[], mk: string) => {
-  const client = await RPCModule.getClient();
-  const userExtendedAccounts = await client.database.getAccounts(users);
+  const userExtendedAccounts = await AccountUtils.getExtendedAccounts(users);
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
-    const activeAccount = await createActiveAccount(userAccount, localAccounts);
+    const activeAccount = await ActiveAccountModule.createActiveAccount(
+      userAccount,
+      localAccounts,
+    );
     if (
       activeAccount &&
-      ActiveAccountUtils.hasReward(
+      RewardsUtils.hasReward(
         activeAccount.account.reward_hbd_balance as string,
         activeAccount.account.reward_vesting_balance
           .toString()
@@ -78,11 +82,13 @@ const iterateClaimRewards = async (users: string[], mk: string) => {
       )
     ) {
       Logger.info(`Claiming rewards for @${activeAccount.name}`);
-      await BgdHiveUtils.claimRewards(
-        activeAccount,
+
+      await RewardsUtils.claimRewards(
+        activeAccount.name!,
         userAccount.reward_hive_balance,
         userAccount.reward_hbd_balance,
         userAccount.reward_vesting_balance,
+        activeAccount.keys.posting!,
       );
     }
   }
@@ -103,14 +109,27 @@ const initClaimSavings = async (
 };
 
 const iterateClaimSavings = async (users: string[], mk: string) => {
-  const client = await RPCModule.getClient();
-  const userExtendedAccounts = await client.database.getAccounts(users);
+  const userExtendedAccounts = await AccountUtils.getExtendedAccounts(users);
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
 
   for (const userAccount of userExtendedAccounts) {
-    const activeAccount = await createActiveAccount(userAccount, localAccounts);
+    const activeAccount = await ActiveAccountModule.createActiveAccount(
+      userAccount,
+      localAccounts,
+    );
     if (!activeAccount) continue;
+    if (KeysUtils.isUsingLedger(activeAccount.keys.active!)) {
+      Logger.warn(
+        "Can't autoclaim savings because active key is saved in Ledger",
+      );
+      await AutomatedTasksUtils.updateClaim(
+        activeAccount.name!,
+        false,
+        LocalStorageKeyEnum.CLAIM_SAVINGS,
+      );
+      continue;
+    }
     let baseDate: any =
       new Date(
         activeAccount?.account.savings_hbd_last_interest_payment!,
@@ -132,8 +151,13 @@ const iterateClaimSavings = async (users: string[], mk: string) => {
         moment(moment().utc()).diff(baseDate, 'days') >=
         Config.claims.savings.delay;
       if (canClaimSavings) {
-        if (await BgdHiveUtils.claimSavings(activeAccount!))
-          Logger.info(`Claim savings for @${activeAccount?.name} successful`);
+        try {
+          if (await SavingsUtils.claimSavings(activeAccount!)) {
+            Logger.info(`Claim savings for @${activeAccount?.name} successful`);
+          }
+        } catch (err: any) {
+          Logger.error('Error while claiming savings');
+        }
       } else {
         Logger.info(`Not time to claim yet for @${activeAccount?.name}`);
       }
@@ -156,54 +180,34 @@ const initClaimAccounts = async (
 };
 
 const iterateClaimAccounts = async (users: string[], mk: string) => {
-  const client = await RPCModule.getClient();
-  const userExtendedAccounts = await client.database.getAccounts(users);
+  const userExtendedAccounts = await AccountUtils.getExtendedAccounts(users);
   const localAccounts: LocalAccount[] =
     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   for (const userAccount of userExtendedAccounts) {
-    const activeAccount = await createActiveAccount(userAccount, localAccounts);
+    const activeAccount = await ActiveAccountModule.createActiveAccount(
+      userAccount,
+      localAccounts,
+    );
+
+    if (activeAccount && KeysUtils.isUsingLedger(activeAccount?.keys.active!)) {
+      Logger.warn(
+        "Can't autoclaim accounts because active key is saved in Ledger",
+      );
+      await AutomatedTasksUtils.updateClaim(
+        activeAccount?.name!,
+        false,
+        LocalStorageKeyEnum.CLAIM_ACCOUNTS,
+      );
+      continue;
+    }
+
     if (
       activeAccount &&
       activeAccount.rc.percentage > Config.claims.freeAccount.MIN_RC_PCT
     ) {
-      await BgdHiveUtils.claimAccounts(activeAccount.rc, activeAccount);
+      await AccountUtils.claimAccounts(activeAccount.rc, activeAccount);
     }
   }
-};
-
-const createActiveAccount = async (
-  userAccount: ExtendedAccount,
-  localAccounts: LocalAccount[],
-) => {
-  const localAccount = localAccounts.find(
-    (localAccount) => localAccount.name === userAccount.name,
-  );
-  if (!localAccount) {
-    return;
-  }
-  const activeAccount: ActiveAccount = {
-    account: userAccount,
-    keys: localAccount.keys,
-    name: localAccount.name,
-    rc: await getRC(localAccount.name),
-  };
-
-  return activeAccount;
-};
-
-const getRC = async (accountName: string) => {
-  const client = await RPCModule.getClient();
-
-  const result = await client.rc.call('find_rc_accounts', {
-    accounts: [accountName],
-  });
-
-  const mana = await client.rc.getRCMana(accountName);
-  return {
-    ...result.rc_accounts[0],
-    ...mana,
-    percentage: mana.percentage / 100.0,
-  };
 };
 
 const ClaimModule = {

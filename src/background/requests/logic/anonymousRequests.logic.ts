@@ -1,6 +1,6 @@
-import { RequestsHandler } from '@background/requests';
 import { createPopup } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { KeychainRequest } from '@interfaces/keychain.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { Rpc } from '@interfaces/rpc.interface';

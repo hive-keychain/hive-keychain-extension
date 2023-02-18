@@ -1,42 +1,65 @@
-import { RequestsHandler } from '@background/requests';
+import LedgerModule from '@background/ledger.module';
 import { createMessage } from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestId, RequestSendToken } from '@interfaces/keychain.interface';
-import Config from 'src/config';
-//import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 
 export const broadcastSendToken = async (
   requestHandler: RequestsHandler,
   data: RequestSendToken & RequestId,
 ) => {
-  let err, result;
-  const client = requestHandler.getHiveClient();
+  let err, err_message, result;
   let key = requestHandler.data.key;
   try {
-    const id = Config.hiveEngine.mainnet;
-    const json = JSON.stringify({
-      contractName: 'tokens',
-      contractAction: 'transfer',
-      contractPayload: {
-        symbol: data.currency,
-        to: data.to,
-        quantity: data.amount,
-        memo: data.memo,
-      },
-    });
-    result = await client.broadcast.json(
-      { required_posting_auths: [], required_auths: [data.username], id, json },
-      PrivateKey.from(key!),
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await TokensUtils.getSendTokenTransaction(
+          data.currency,
+          data.to,
+          data.amount,
+          data.memo,
+          data.username,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await TokensUtils.sendToken(
+          data.currency,
+          data.to,
+          data.amount,
+          data.memo,
+          key!,
+          data.username,
+        );
+        break;
+      }
+    }
+  } catch (e: any) {
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
     );
-  } catch (e) {
-    err = e;
   } finally {
     const message = createMessage(
       err,
       result,
       data,
       await chrome.i18n.getMessage('bgd_ops_tokens'),
-      await chrome.i18n.getMessage('bgd_ops_error_broadcasting'),
+      err_message,
     );
     return message;
   }

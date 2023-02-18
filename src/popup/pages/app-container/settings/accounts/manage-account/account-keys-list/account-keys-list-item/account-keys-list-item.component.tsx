@@ -10,8 +10,8 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import { KeyType } from 'src/interfaces/keys.interface';
-import { Key, LocalAccount } from 'src/interfaces/local-account.interface';
+import { Key, KeyType } from 'src/interfaces/keys.interface';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import { KeysUtils } from 'src/utils/keys.utils';
 import './account-keys-list-item.component.scss';
@@ -40,6 +40,7 @@ const AccountKeysListItem = ({
 }: PropsType) => {
   const [isPrivateHidden, setIsPrivateHidden] = useState(true);
   const [isAuthorizedAccount, setIsAuthorizedAccount] = useState(false);
+  const [isUsingLedger, setIsUsingLedger] = useState(false);
 
   useEffect(() => {
     setIsPrivateHidden(true);
@@ -49,7 +50,12 @@ const AccountKeysListItem = ({
     if (publicKey) {
       setIsAuthorizedAccount(KeysUtils.isAuthorizedAccount(publicKey));
     }
+    if (privateKey) {
+      setIsUsingLedger(KeysUtils.isUsingLedger(privateKey));
+    }
   }, [publicKey]);
+
+  useEffect(() => {}, [publicKey, privateKey]);
 
   const copyToClipboard = (key: Key | undefined) => {
     if (key) {
@@ -109,7 +115,7 @@ const AccountKeysListItem = ({
 
       {(publicKey || privateKey) && (
         <div className="keys-panel">
-          {!isAuthorizedAccount && (
+          {!isAuthorizedAccount && !isUsingLedger && (
             <>
               <div
                 aria-label={`clickeable-account-key-${chrome.i18n.getMessage(
@@ -143,6 +149,20 @@ const AccountKeysListItem = ({
                 publicKey,
               ])}
             </div>
+          )}
+          {isUsingLedger && privateKey && (
+            <>
+              <div
+                aria-label="using-authorized-account"
+                className="using-authorized-account">
+                {chrome.i18n.getMessage('html_popup_using_ledger')}
+              </div>
+              <div
+                className="public-key key-field"
+                onClick={() => copyToClipboard(publicKey)}>
+                {publicKey}
+              </div>
+            </>
           )}
         </div>
       )}

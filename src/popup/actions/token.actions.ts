@@ -8,21 +8,19 @@ import {
   TokenMarket,
   TokenTransaction,
 } from 'src/interfaces/tokens.interface';
-import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
+import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
 import Logger from 'src/utils/logger.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 
 export const loadTokens = (): AppThunk => async (dispatch) => {
   let tokens;
   try {
-    tokens = (await HiveEngineUtils.getAllTokens({}, 1000, 0, [])).map(
-      (t: any) => {
-        return {
-          ...t,
-          metadata: JSON.parse(t.metadata),
-        };
-      },
-    );
+    tokens = (await TokensUtils.getAllTokens({}, 1000, 0, [])).map((t: any) => {
+      return {
+        ...t,
+        metadata: JSON.parse(t.metadata),
+      };
+    });
   } catch (err: any) {
     if (err.message.includes('timeout')) {
       dispatch({
@@ -41,9 +39,10 @@ export const loadTokens = (): AppThunk => async (dispatch) => {
 };
 
 export const loadTokensMarket = (): AppThunk => async (dispatch) => {
+  const tokensMarket = await TokensUtils.getTokensMarket({}, 1000, 0, []);
   const action: ActionPayload<TokenMarket[]> = {
     type: ActionType.LOAD_TOKENS_MARKET,
-    payload: await HiveEngineUtils.getTokensMarket({}, 1000, 0, []),
+    payload: tokensMarket,
   };
   dispatch(action);
 };
@@ -55,7 +54,7 @@ export const loadUserTokens =
       dispatch({
         type: ActionType.CLEAR_USER_TOKENS,
       });
-      let tokensBalance: TokenBalance[] = await HiveEngineUtils.getUserBalance(
+      let tokensBalance: TokenBalance[] = await TokensUtils.getUserBalance(
         account,
       );
       tokensBalance = tokensBalance.sort(
@@ -81,19 +80,12 @@ export const loadTokenHistory =
 
     do {
       previousTokenHistoryLength = tokenHistory.length;
-      let result: TokenTransaction[] = (
-        await HiveEngineConfigUtils.getAccountHistoryApi().get(
-          'accountHistory',
-          {
-            params: {
-              account,
-              symbol: currency,
-              type: 'user',
-              offset: start,
-            },
-          },
-        )
-      ).data;
+      let result: TokenTransaction[] = await HiveEngineUtils.getHistory(
+        account,
+        currency,
+        start,
+      );
+
       start += 1000;
       tokenHistory = [...tokenHistory, ...result];
     } while (previousTokenHistoryLength !== tokenHistory.length);

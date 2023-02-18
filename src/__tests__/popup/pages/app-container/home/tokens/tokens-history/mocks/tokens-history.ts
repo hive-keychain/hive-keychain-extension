@@ -91,4 +91,5 @@ export default {
   beforeEach,
   methods,
   constants,
+  minningOperationData,
 };

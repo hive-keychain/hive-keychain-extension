@@ -18,7 +18,7 @@ import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
+import { RewardsUtils } from 'src/utils/rewards.utils';
 import './top-bar.component.scss';
 
 const TopBar = ({
@@ -40,7 +40,7 @@ const TopBar = ({
   useEffect(() => {
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       setHasRewardToClaim(
-        ActiveAccountUtils.hasReward(
+        RewardsUtils.hasReward(
           activeAccount.account.reward_hbd_balance as string,
           FormatUtils.toHP(
             activeAccount.account.reward_vesting_balance
@@ -72,18 +72,42 @@ const TopBar = ({
       return;
     }
     addToLoadingList('popup_html_claiming_rewards');
-    const claimSuccessful = await HiveUtils.claimRewards(
-      activeAccount,
-      activeAccount.account.reward_hive_balance,
-      activeAccount.account.reward_hbd_balance,
-      activeAccount.account.reward_vesting_balance,
-      globalProperties.globals!,
-      setErrorMessage,
-      setSuccessMessage,
-    );
-    removeFromLoadingList('popup_html_claiming_rewards');
-    if (claimSuccessful) {
+    try {
+      const claimSuccessful = await RewardsUtils.claimRewards(
+        activeAccount.name!,
+        activeAccount.account.reward_hive_balance,
+        activeAccount.account.reward_hbd_balance,
+        activeAccount.account.reward_vesting_balance,
+        activeAccount.keys.posting!,
+      );
       refreshActiveAccount();
+      if (claimSuccessful) {
+        const rewardHp =
+          FormatUtils.withCommas(
+            FormatUtils.toHP(
+              activeAccount.account.reward_vesting_balance
+                .toString()
+                .replace('VESTS', ''),
+              globalProperties.globals,
+            ).toString(),
+          ) + ' HP';
+        let claimedResources = [
+          activeAccount.account.reward_hive_balance,
+          activeAccount.account.reward_hbd_balance,
+          rewardHp,
+        ].filter(
+          (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
+        );
+        setSuccessMessage('popup_html_claim_success', [
+          claimedResources.join(', '),
+        ]);
+      } else {
+        setErrorMessage('popup_html_claim_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_claiming_rewards');
     }
   };
 

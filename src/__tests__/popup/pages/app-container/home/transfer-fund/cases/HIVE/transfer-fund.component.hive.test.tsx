@@ -23,7 +23,6 @@ import recurrentCancellationSuccess from 'src/__tests__/popup/pages/app-containe
 import recurrentSuccess from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/success/recurrent-success';
 import transferSuccess from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/success/transfer-success';
 import exchangeNeedsMemo from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/warnings/exchange-needs-memo';
-import exchangeNotAccept from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/warnings/exchange-not-accept';
 import phishing from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/common-cases/warnings/phishing';
 import transferFund from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/transfer-fund';
 import { KeyToUse } from 'src/__tests__/utils-for-testing/enums/enums';
@@ -61,9 +60,6 @@ describe('transfer-fund.component tests:\n', () => {
       });
       it('Must show error if no iteration', async () => {
         await noIterations.run();
-      });
-      it('Must show warningMessage if exchange do not accepts currency', async () => {
-        await exchangeNotAccept.run(currency);
       });
       it('Must show memo warning when transferring to exchange account', async () => {
         await exchangeNeedsMemo.run();

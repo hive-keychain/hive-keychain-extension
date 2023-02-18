@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import * as MemoEncodeHiveJS from '@hiveio/hive-js/lib/auth/memo';
 import {
@@ -7,6 +7,7 @@ import {
   RequestEncode,
   RequestId,
 } from '@interfaces/keychain.interface';
+import AccountUtils from 'src/utils/account.utils';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -35,14 +36,8 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    database: {
-      getAccounts: (receiverAccount: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(receiverAccount)),
-    },
-  },
+  getExtendedAccount: (account: ExtendedAccount | undefined) =>
+    (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
 };
 
 const spies = {

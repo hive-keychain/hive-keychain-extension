@@ -10,10 +10,12 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { KeyType } from 'src/interfaces/keys.interface';
+// import { LedgerUtils } from 'src/utils/ledger.utils';
 import './add-key.component.scss';
 
 const AddKey = ({
-  navParams,
+  keyType,
+  activeAccountName,
   goBack,
   addKey,
   setTitleContainerProperties,
@@ -33,8 +35,15 @@ const AddKey = ({
       setErrorMessage('popup_accounts_fill');
       return;
     }
-    addKey(privateKey.trim(), navParams, setErrorMessage);
+    addKey(privateKey.trim(), keyType, setErrorMessage);
     goBack();
+  };
+
+  const navigateToUseLedger = async () => {
+    const extensionId = (await chrome.management.getSelf()).id;
+    chrome.tabs.create({
+      url: `chrome-extension://${extensionId}/add-key-from-ledger.html?keyType=${keyType}&username=${activeAccountName}`,
+    });
   };
 
   return (
@@ -44,7 +53,7 @@ const AddKey = ({
         className="introduction"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_add_key_text', [
-            navParams.substring(0, 1) + navParams.substring(1).toLowerCase(),
+            keyType.substring(0, 1) + keyType.substring(1).toLowerCase(),
           ]),
         }}></p>
 
@@ -57,6 +66,13 @@ const AddKey = ({
         onChange={setPrivateKey}
         onEnterPress={importKey}
       />
+
+      {keyType === KeyType.ACTIVE && (
+        <div className="add-using-ledger" onClick={navigateToUseLedger}>
+          {chrome.i18n.getMessage('popup_html_add_using_ledger')}
+        </div>
+      )}
+
       <ButtonComponent
         ariaLabel="import-keys-button"
         label="popup_html_import_key"
@@ -69,7 +85,8 @@ const AddKey = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    navParams: state.navigation.stack[0].params as KeyType,
+    keyType: state.navigation.stack[0].params as KeyType,
+    activeAccountName: state.activeAccount.name,
   };
 };
 

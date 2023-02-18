@@ -1,6 +1,5 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { TokenBalance } from '@interfaces/tokens.interface';
+import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -16,28 +15,32 @@ import {
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
+import InputComponent, {
+  AutoCompleteValue,
+} from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import HiveUtils from 'src/utils/hive.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './tokens-transfer.component.scss';
 
 const TokensTransfer = ({
   activeAccount,
   tokenBalance,
+  tokenInfo,
   phishing,
   formParams,
+  localAccounts,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -60,8 +63,9 @@ const TokensTransfer = ({
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
   const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
-  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState<string[]>([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    AutoCompleteValue[]
+  >([]);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -73,12 +77,11 @@ const TokensTransfer = ({
   }, []);
 
   const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
-      );
-    setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+    setAutocompleteFavoriteUsers(
+      await FavoriteUserUtils.getAutocompleteList(
+        activeAccount.name!,
+        localAccounts,
+      ),
     );
   };
 
@@ -121,7 +124,7 @@ const TokensTransfer = ({
     }
 
     const formattedAmount = `${parseFloat(amount.toString()).toFixed(
-      3,
+      tokenInfo.precision,
     )} ${symbol}`;
 
     let memoField = memo;
@@ -163,63 +166,64 @@ const TokensTransfer = ({
       title: 'popup_html_transfer_tokens',
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        let memoParam = memo;
-        if (memo.length) {
-          if (memo.startsWith('#')) {
-            if (!activeAccount.keys.memo) {
-              setErrorMessage('popup_html_memo_key_missing');
-              return;
-            } else {
-              memoParam = HiveUtils.encodeMemo(
-                memo,
-                activeAccount.keys.memo.toString(),
-                await AccountUtils.getPublicMemo(receiverUsername),
-              );
+        try {
+          let memoParam = memo;
+          if (memo.length) {
+            if (memo.startsWith('#')) {
+              if (!activeAccount.keys.memo) {
+                setErrorMessage('popup_html_memo_key_missing');
+                return;
+              } else {
+                memoParam = HiveUtils.encodeMemo(
+                  memo,
+                  activeAccount.keys.memo.toString(),
+                  await AccountUtils.getPublicMemo(receiverUsername),
+                );
+              }
             }
           }
-        }
 
-        const json = {
-          contractName: 'tokens',
-          contractAction: 'transfer',
-          contractPayload: {
-            symbol: symbol,
-            to: receiverUsername,
-            quantity: amount,
-            memo: memo,
-          },
-        };
+          addToLoadingList(
+            'html_popup_transfer_token_operation',
+            KeysUtils.getKeyType(
+              activeAccount.keys.active!,
+              activeAccount.keys.activePubkey!,
+            ),
+          );
+          const transactionStatus = await TokensUtils.sendToken(
+            symbol,
+            receiverUsername,
+            amount,
+            memoParam,
+            activeAccount.keys.active!,
+            activeAccount.name!,
+          );
+          if (transactionStatus.broadcasted) {
+            addToLoadingList('html_popup_confirm_transaction_operation');
+            removeFromLoadingList('html_popup_transfer_token_operation');
 
-        addToLoadingList('html_popup_transfer_token_operation');
-        let sendTokenResult: any = await HiveUtils.sendCustomJson(
-          json,
-          activeAccount,
-        );
-        if (!!sendTokenResult) {
-          addToLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList('html_popup_transfer_token_operation');
-          let confirmationResult: any =
-            await BlockchainTransactionUtils.tryConfirmTransaction(
-              sendTokenResult,
-            );
-          removeFromLoadingList('html_popup_confirm_transaction_operation');
-          if (confirmationResult.confirmed) {
-            navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(
-              receiverUsername,
-              activeAccount,
-            );
+            if (transactionStatus.confirmed) {
+              navigateTo(Screen.HOME_PAGE, true);
+              await FavoriteUserUtils.saveFavoriteUser(
+                receiverUsername,
+                activeAccount,
+              );
 
-            setSuccessMessage('popup_html_transfer_successful', [
-              `@${receiverUsername}`,
-              formattedAmount,
-            ]);
+              setSuccessMessage('popup_html_transfer_successful', [
+                `@${receiverUsername}`,
+                formattedAmount,
+              ]);
+            } else {
+              setErrorMessage('popup_token_timeout');
+            }
           } else {
-            setErrorMessage('popup_token_timeout');
+            setErrorMessage('popup_html_transfer_failed');
           }
-        } else {
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
           removeFromLoadingList('html_popup_transfer_token_operation');
-          setErrorMessage('popup_html_transfer_failed');
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
         }
       },
     });
@@ -227,10 +231,10 @@ const TokensTransfer = ({
 
   return (
     <div aria-label="transfer-tokens-page" className="transfer-tokens-page">
-      <AvailableCurrentPanelComponent
-        available={balance}
-        availableCurrency={symbol}
-        availableLabel={'popup_html_balance'}></AvailableCurrentPanelComponent>
+      <SummaryPanelComponent
+        bottom={balance}
+        bottomRight={symbol}
+        bottomLeft={'popup_html_balance'}></SummaryPanelComponent>
 
       <div className="disclaimer">
         {chrome.i18n.getMessage('popup_html_tokens_send_text')}
@@ -242,7 +246,7 @@ const TokensTransfer = ({
         placeholder="popup_html_username"
         value={receiverUsername}
         onChange={setReceiverUsername}
-        autocompleteValues={autocompleteTransferUsernames}
+        autocompleteValues={autocompleteFavoriteUsers}
       />
       <div className="value-panel">
         <div className="value-input-panel">
@@ -283,10 +287,12 @@ const mapStateToProps = (state: RootState) => {
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
     tokenBalance: state.navigation.stack[0].params
       ?.tokenBalance as TokenBalance,
+    tokenInfo: state.navigation.stack[0].params?.tokenInfo as Token,
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
+    localAccounts: state.accounts,
   };
 };
 

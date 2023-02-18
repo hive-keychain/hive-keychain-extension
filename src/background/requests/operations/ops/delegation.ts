@@ -1,32 +1,36 @@
-import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
+import LedgerModule from '@background/ledger.module';
+import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestDelegation,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import { DelegationUtils } from 'src/utils/delegation.utils';
+import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const broadcastDelegation = async (
   requestHandler: RequestsHandler,
   data: RequestDelegation & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
   if (!key) {
-    [key] = requestHandler.getUserKey(
+    [key] = requestHandler.getUserKeyPair(
       data.username!,
       KeychainKeyTypesLC.active,
     ) as [string, string];
   }
-  let result, err;
+  let result, err, err_message;
 
   try {
-    const global = await client.database.getDynamicGlobalProperties();
-    let delegated_vest = null;
+    const global =
+      await DynamicGlobalPropertiesUtils.getDynamicGlobalProperties();
+    let delegatedVests = null;
     if (data.unit === 'HP') {
       const totalHive = global.total_vesting_fund_hive
         ? Number((global.total_vesting_fund_hive as string).split(' ')[0])
@@ -34,24 +38,49 @@ export const broadcastDelegation = async (
       const totalVests = Number(
         (global.total_vesting_shares as string).split(' ')[0],
       );
-      delegated_vest = (parseFloat(data.amount) * totalVests) / totalHive;
-      delegated_vest = delegated_vest.toFixed(6);
-      delegated_vest = delegated_vest.toString() + ' VESTS';
+      delegatedVests = (parseFloat(data.amount) * totalVests) / totalHive;
+      delegatedVests = delegatedVests.toFixed(6);
+      delegatedVests = delegatedVests.toString() + ' VESTS';
     } else {
-      delegated_vest = data.amount + ' VESTS';
+      delegatedVests = data.amount + ' VESTS';
     }
-    result = await client.broadcast.delegateVestingShares(
-      {
-        delegator: data.username!,
-        delegatee: data.delegatee,
-        vesting_shares: delegated_vest,
-      },
-      PrivateKey.from(key!),
-    );
+
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await DelegationUtils.getDelegationTransaction(
+          data.delegatee,
+          data.username!,
+          delegatedVests,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await DelegationUtils.delegateVestingShares(
+          data.username!,
+          data.delegatee,
+          delegatedVests,
+          key,
+        );
+        break;
+      }
+    }
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     return createMessage(
       err,
       result,

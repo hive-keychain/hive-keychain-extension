@@ -1,4 +1,4 @@
-import { VestingDelegation } from '@hiveio/dhive';
+import { Asset, VestingDelegation } from '@hiveio/dhive';
 import {
   Delegator,
   PendingOutgoingUndelegation,
@@ -68,4 +68,36 @@ const pendingOutgoingUndelegation = [
   },
 ] as PendingOutgoingUndelegation[];
 
-export default { delegatees, delegators, pendingOutgoingUndelegation };
+const pendingOutgoingUndelegationAsset = [
+  {
+    delegator: 'blocktrades',
+    vesting_shares: new Asset(10000000000, 'VESTS'),
+    expiration: '2029-08-09T15:31:48.000Z',
+  },
+  {
+    delegator: 'keychain',
+    vesting_shares: new Asset(10000000000, 'VESTS'),
+    expiration: '2029-08-09T15:31:48.000Z',
+  },
+];
+
+const pendingOutgoingUndelegationAssetExpected = [
+  {
+    delegator: 'blocktrades',
+    vesting_shares: 10000,
+    expiration_date: '2029-08-09T15:31:48.000Z',
+  },
+  {
+    delegator: 'keychain',
+    vesting_shares: 10000,
+    expiration_date: '2029-08-09T15:31:48.000Z',
+  },
+];
+
+export default {
+  delegatees,
+  delegators,
+  pendingOutgoingUndelegation,
+  pendingOutgoingUndelegationAsset,
+  pendingOutgoingUndelegationAssetExpected,
+};

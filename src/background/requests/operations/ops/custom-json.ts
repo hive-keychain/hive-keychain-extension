@@ -1,58 +1,78 @@
-import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
+import LedgerModule from '@background/ledger.module';
+import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestCustomJSON,
   RequestId,
 } from '@interfaces/keychain.interface';
+import { KeyType, PrivateKeyType } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import { CustomJsonUtils } from 'src/utils/custom-json.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
 
 export const broadcastCustomJson = async (
   requestHandler: RequestsHandler,
   data: RequestCustomJSON & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
   if (!key) {
-    [key] = requestHandler.getUserKey(
+    [key] = requestHandler.getUserKeyPair(
       data.username!,
       data.method.toLowerCase() as KeychainKeyTypesLC,
     ) as [string, string];
   }
-  let result, err;
+  let result, err, err_message;
 
   try {
-    result = await client.broadcast.json(
-      {
-        required_auths:
-          data.method.toLowerCase() === KeychainKeyTypesLC.active
-            ? [data.username!]
-            : [],
-        required_posting_auths:
-          data.method.toLowerCase() === KeychainKeyTypesLC.posting
-            ? [data.username!]
-            : [],
-        id: data.id,
-        json: data.json,
-      },
-      PrivateKey.from(key!),
-    );
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await CustomJsonUtils.getCustomJsonTransaction(
+          data.json,
+          data.username!,
+          data.method.toUpperCase() as KeyType,
+          data.id,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await CustomJsonUtils.send(
+          data.json,
+          data.username!,
+          key!,
+          data.method.toUpperCase() as KeyType,
+          data.id,
+        );
+        break;
+      }
+    }
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    const message = createMessage(
+      err,
+      result,
+      data,
+      await chrome.i18n.getMessage('bgd_ops_broadcast'),
+      err_message,
+    );
+
+    return message;
   }
-
-  const err_message = await beautifyErrorMessage(err);
-
-  const message = createMessage(
-    err,
-    result,
-    data,
-    await chrome.i18n.getMessage('bgd_ops_broadcast'),
-    err_message,
-  );
-
-  return message;
 };

@@ -1,48 +1,71 @@
-import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { AccountWitnessVoteOperation, PrivateKey } from '@hiveio/dhive';
+import LedgerModule from '@background/ledger.module';
+import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestWitnessVote,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import { Witness } from '@interfaces/witness.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import WitnessUtils from 'src/utils/witness.utils';
 
 export const broadcastWitnessVote = async (
   requestHandler: RequestsHandler,
   data: RequestWitnessVote & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
-  let result, err;
+  let result,
+    err,
+    err_message = null;
 
   try {
     let key = requestHandler.data.key;
     if (!key) {
-      [key] = requestHandler.getUserKey(
+      [key] = requestHandler.getUserKeyPair(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
 
-    result = await client.broadcast.sendOperations(
-      [
-        [
-          'account_witness_vote',
-          {
-            account: data.username,
-            witness: data.witness,
-            approve: data.vote,
-          },
-        ] as AccountWitnessVoteOperation,
-      ],
-      PrivateKey.from(key!),
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await WitnessUtils.getUpdateWitnessTransaction(
+          data.username!,
+          { name: data.witness },
+          data.vote,
+        );
+
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await WitnessUtils.updateWitnessVote(
+          data.username!,
+          { name: data.witness } as Witness,
+          data.vote,
+          key,
+        );
+        break;
+      }
+    }
+  } catch (e: any) {
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
     );
-  } catch (e) {
-    err = e;
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,

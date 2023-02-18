@@ -1,68 +1,24 @@
-import KeychainApi from '@api/keychain';
-import {
-  Asset,
-  ClaimRewardBalanceOperation,
-  Client,
-  CollateralizedConvertOperation,
-  DynamicGlobalProperties,
-  ExtendedAccount,
-  Price,
-  PrivateKey,
-  RecurrentTransferOperation,
-  TransactionConfirmation,
-  TransferFromSavingsOperation,
-  TransferToSavingsOperation,
-  TransferToVestingOperation,
-  UpdateProposalVotesOperation,
-  WithdrawVestingOperation,
-} from '@hiveio/dhive';
-import { sleep } from '@hiveio/dhive/lib/utils';
+import { Asset, ExtendedAccount, Price } from '@hiveio/dhive';
 import * as hive from '@hiveio/hive-js';
-import { ErrorMessage } from '@interfaces/errorMessage.interface';
-import { ActionPayload } from '@popup/actions/interfaces';
-import { ConversionType } from '@popup/pages/app-container/home/conversion/conversion-type.enum';
-import Config from 'src/config';
-import { ActiveAccount } from 'src/interfaces/active-account.interface';
-import { CollateralizedConversion } from 'src/interfaces/collaterelized-conversion.interface';
-import { Conversion } from 'src/interfaces/conversion.interface';
-import {
-  Delegator,
-  PendingOutgoingUndelegation,
-} from 'src/interfaces/delegations.interface';
 import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
-import { Rpc } from 'src/interfaces/rpc.interface';
-import FormatUtils from 'src/utils/format.utils';
-import { GovernanceUtils } from 'src/utils/governance.utils';
-import Logger from 'src/utils/logger.utils';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';
 const HIVE_VOTING_MANA_REGENERATION_SECONDS = 432000;
 const HIVE_100_PERCENT = 10000;
 
-// let client = new Client(DEFAULT_RPC);
-let client: Client;
-
-const getClient = (): Client => {
-  return client;
-};
-const setRpc = async (rpc: Rpc) => {
-  client = new Client(
-    rpc.uri === 'DEFAULT'
-      ? (await KeychainApi.get('/hive/rpc')).data.rpc
-      : rpc.uri,
-  );
-};
-
 const getAccountPrice = async () => {
-  return Asset.fromString(
-    (
-      await getClient().database.getChainProperties()
-    ).account_creation_fee.toString(),
-  ).amount;
+  const price = await HiveTxUtils.getData(
+    'condenser_api.get_chain_properties',
+    [],
+  );
+  return Asset.fromString(price.account_creation_fee.toString()).amount;
 };
 
 const getVP = (account: ExtendedAccount) => {
@@ -135,12 +91,6 @@ const getVotingDollarsPerAccount = (
   } else {
     return;
   }
-};
-/* istanbul ignore next */
-const getRC = async (accountName: string) => {
-  const rcAcc = await getClient().rc.findRCAccounts([accountName]);
-  const rc = await getClient().rc.calculateRCMana(rcAcc[0]);
-  return rc;
 };
 /* istanbul ignore next */
 const getRewardBalance = (properties: GlobalProperties) => {
@@ -217,265 +167,20 @@ const getTimeBeforeFull = (votingPower: number) => {
   }
 };
 
-export const getConversionRequests = async (
-  name: string,
-): Promise<Conversion[]> => {
-  const [hbdConversions, hiveConversions] = await Promise.all([
-    getClient().database.call('get_conversion_requests', [name]),
-    getClient().database.call('get_collateralized_conversion_requests', [name]),
-  ]);
-
-  return [
-    ...hiveConversions.map((conv: CollateralizedConversion) => ({
-      amount: conv.collateral_amount,
-      conversion_date: conv.conversion_date,
-      id: conv.id,
-      owner: conv.owner,
-      requestid: conv.requestid,
-      collaterized: true,
-    })),
-    ...hbdConversions.map((conv: any) => ({
-      ...conv,
-      collaterized: false,
-    })),
-  ].sort(
-    (a, b) =>
-      new Date(a.conversion_date).getTime() -
-      new Date(b.conversion_date).getTime(),
-  );
-};
-
-const getDelegators = async (name: string) => {
-  return (
-    (await KeychainApi.get(`/hive/delegators/${name}`)).data as Delegator[]
-  )
-    .filter((e) => e.vesting_shares !== 0)
-    .sort((a, b) => b.vesting_shares - a.vesting_shares);
-};
-
-const getDelegatees = async (name: string) => {
-  return (await getClient().database.getVestingDelegations(name, '', 1000))
-    .filter((e) => parseFloat(e.vesting_shares + '') !== 0)
-    .sort(
-      (a, b) =>
-        parseFloat(b.vesting_shares + '') - parseFloat(a.vesting_shares + ''),
-    );
-};
-
-const getPendingOutgoingUndelegation = async (name: string) => {
-  return (
-    await HiveUtils.getClient().database.call(
-      'find_vesting_delegation_expirations',
-      [name],
-    )
-  ).delegations.map((pendingUndelegation: any) => {
-    return {
-      delegator: pendingUndelegation.delegator,
-      expiration_date: pendingUndelegation.expiration,
-      vesting_shares:
-        parseInt(pendingUndelegation.vesting_shares.amount) / 1000000,
-    } as PendingOutgoingUndelegation;
-  });
-};
-
-const claimRewards = async (
-  activeAccount: ActiveAccount,
-  rewardHive: string | Asset,
-  rewardHBD: string | Asset,
-  rewardVests: string | Asset,
-  globals: DynamicGlobalProperties,
-  setErrorMessage: (
-    key: string,
-    params?: string[],
-  ) => ActionPayload<ErrorMessage>,
-  setSuccessMessage: (
-    key: string,
-    params?: string[],
-  ) => ActionPayload<ErrorMessage>,
-): Promise<boolean> => {
-  try {
-    await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [
-          [
-            'claim_reward_balance',
-            {
-              account: activeAccount.name,
-              reward_hive: rewardHive,
-              reward_hbd: rewardHBD,
-              reward_vests: rewardVests,
-            },
-          ] as ClaimRewardBalanceOperation,
-        ],
-        PrivateKey.fromString(activeAccount.keys.posting as string),
-      ),
-    );
-    const rewardHp =
-      FormatUtils.withCommas(
-        FormatUtils.toHP(
-          rewardVests.toString().replace('VESTS', ''),
-          globals,
-        ).toString(),
-      ) + ' HP';
-    let claimedResources = [rewardHBD, rewardHive, rewardHp].filter(
-      (resource) => parseFloat(resource.toString().split(' ')[0]) !== 0,
-    );
-
-    setSuccessMessage('popup_html_claim_success', [
-      claimedResources.join(', '),
-    ]);
-    return true;
-  } catch (err: any) {
-    Logger.error('Error while claiming rewards', err.toString());
-    setErrorMessage('popup_html_claim_error');
-    return false;
-  }
-};
-
-const powerUp = async (
-  from: string,
-  to: string,
-  amount: string,
-  activeAccount: ActiveAccount,
-) => {
-  try {
-    await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [
-          [
-            'transfer_to_vesting',
-            {
-              from: from,
-              to: to,
-              amount: amount,
-            },
-          ] as TransferToVestingOperation,
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-
-const powerDown = async (
-  username: string,
-  amount: string,
-  activeAccount: ActiveAccount,
-) => {
-  try {
-    await HiveUtils.sendOperationWithConfirmation(
-      HiveUtils.getClient().broadcast.sendOperations(
-        [
-          [
-            'withdraw_vesting',
-            {
-              account: username,
-              vesting_shares: amount,
-            },
-          ] as WithdrawVestingOperation,
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-
-const transfer = async (
-  sender: string,
-  receiver: string,
-  amount: string,
-  memo: string,
-  recurrent: boolean,
-  iterations: number,
-  frequency: number,
-  activeAccount: ActiveAccount,
-) => {
-  try {
-    if (!recurrent) {
-      await sendOperationWithConfirmation(
-        getClient().broadcast.transfer(
-          {
-            from: sender,
-            to: receiver,
-            amount: amount,
-            memo: memo,
-          },
-          PrivateKey.fromString(activeAccount.keys.active as string),
-        ),
-      );
-    } else {
-      await sendOperationWithConfirmation(
-        getClient().broadcast.sendOperations(
-          [
-            [
-              'recurrent_transfer',
-              {
-                from: sender,
-                to: receiver,
-                amount: amount,
-                memo: memo,
-                recurrence: frequency,
-                executions: iterations,
-                extensions: [],
-              },
-            ] as RecurrentTransferOperation,
-          ],
-          PrivateKey.fromString(activeAccount.keys.active as string),
-        ),
-      );
-    }
-    return true;
-  } catch (err) {
-    Logger.error(err, err);
-    return false;
-  }
-};
-/* istanbul ignore next */
-const convertOperation = async (
-  activeAccount: ActiveAccount,
-  conversions: Conversion[],
-  amount: string,
-  conversionType: ConversionType,
-) => {
-  const requestid = Math.max(...conversions.map((e) => e.requestid), 0) + 1;
-  try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
-        [
-          [
-            conversionType,
-            {
-              owner: activeAccount.name,
-              requestid: requestid,
-              amount: amount,
-            },
-          ] as CollateralizedConvertOperation,
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    );
-    return true;
-  } catch (err) {
-    Logger.error(err);
-    return false;
-  }
-};
 /* istanbul ignore next */
 const encodeMemo = (
   memo: string,
   privateKey: string,
   receiverPublicKey: string,
 ) => {
+  if (KeysUtils.isUsingLedger(privateKey))
+    throw new KeychainError('encode_with_memo_key_in_ledger');
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
 /* istanbul ignore next */
 const decodeMemo = (memo: string, privateKey: string) => {
+  if (KeysUtils.isUsingLedger(privateKey))
+    throw new KeychainError('decode_with_memo_key_in_ledger');
   return hive.memo.decode(privateKey, memo);
 };
 
@@ -505,247 +210,31 @@ const signMessage = (message: string, privateKey: string) => {
   }
   return signature.Signature.signBuffer(buf, privateKey).toHex();
 };
-/* istanbul ignore next */
-const deposit = async (
-  activeAccount: ActiveAccount,
-  amount: string,
-  receiver: string,
-) => {
-  const savings = await HiveUtils.getClient().call(
-    'condenser_api',
-    'get_savings_withdraw_from',
-    [activeAccount.name],
-  );
 
-  const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
-  try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
-        [
-          [
-            'transfer_to_savings',
-            {
-              amount: amount,
-              from: activeAccount.name,
-              memo: '',
-              request_id: requestId,
-              to: receiver,
-            },
-          ] as TransferToSavingsOperation,
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-/* istanbul ignore next */
-const withdraw = async (
-  activeAccount: ActiveAccount,
-  amount: string,
-  to: string,
-) => {
-  const savings = await HiveUtils.getClient().call(
-    'condenser_api',
-    'get_savings_withdraw_from',
-    [activeAccount.name],
-  );
-
-  const requestId = Math.max(...savings.map((e: any) => e.request_id), 0) + 1;
-
-  try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.sendOperations(
-        [
-          [
-            'transfer_from_savings',
-            {
-              amount: amount,
-              from: activeAccount.name,
-              memo: '',
-              request_id: requestId,
-              to,
-            },
-          ] as TransferFromSavingsOperation,
-        ],
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    );
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-/* istanbul ignore next */
-const delegateVestingShares = async (
-  activeAccount: ActiveAccount,
-  delegatee: string,
-  vestingShares: string,
-) => {
-  try {
-    await sendOperationWithConfirmation(
-      getClient().broadcast.delegateVestingShares(
-        {
-          delegatee: delegatee,
-          delegator: activeAccount.name!,
-          vesting_shares: vestingShares,
-        },
-        PrivateKey.fromString(activeAccount.keys.active as string),
-      ),
-    );
-
-    return true;
-  } catch (err) {
-    Logger.error(err);
-    return false;
-  }
-};
-/* istanbul ignore next */
-const sendCustomJson = async (
-  json: any,
-  activeAccount: ActiveAccount,
-  mainnet?: string,
-) => {
-  return await sendOperationWithConfirmation(
-    getClient().broadcast.json(
-      {
-        id: mainnet ? mainnet : Config.hiveEngine.mainnet,
-        required_auths: [activeAccount.name!],
-        required_posting_auths: activeAccount.keys.active
-          ? []
-          : [activeAccount.name!],
-        json: JSON.stringify(json),
-      },
-      PrivateKey.fromString(activeAccount.keys.active as string),
-    ),
-  );
-};
-
-/* istanbul ignore next */
-const updateProposalVote = async (
-  activeAccount: ActiveAccount,
-  proposalId: number,
-  vote: boolean,
-) => {
-  GovernanceUtils.removeFromIgnoreRenewal(activeAccount.name!);
-  return await sendOperationWithConfirmation(
-    getClient().broadcast.sendOperations(
-      [
-        [
-          'update_proposal_votes',
-          {
-            voter: activeAccount.name!,
-            proposal_ids: [proposalId],
-            approve: vote,
-            extensions: [],
-          },
-        ] as UpdateProposalVotesOperation,
-      ],
-      PrivateKey.fromString(activeAccount.keys.active as string),
-    ),
-  );
-};
-
-const sendOperationWithConfirmation = async (
-  transactionConfirmationPromise: Promise<TransactionConfirmation>,
-) => {
-  const transactionConfirmation = await transactionConfirmationPromise;
-  let transaction = null;
-  do {
-    transaction = await HiveUtils.getClient().transaction.findTransaction(
-      transactionConfirmation.id,
-    );
-    await sleep(500);
-  } while (['within_mempool', 'unknown'].includes(transaction.status));
-  if (
-    ['within_reversible_block', 'within_irreversible_block'].includes(
-      transaction.status,
-    )
-  ) {
-    Logger.info('Transaction confirmed');
-    return transactionConfirmation.id || true;
-  } else {
-    Logger.info(`Transaction failed with status: ${transaction.status}`);
-    return;
-  }
-};
-
-/* istanbul ignore next */
-const getDelayedTransactionInfo = (trxID: string) => {
-  return new Promise(function (fulfill, reject) {
-    setTimeout(async function () {
-      fulfill(await getClient().transaction.findTransaction(trxID));
-    }, 500);
-  });
-};
-/* istanbul ignore next */
-const getProposalDailyBudget = async () => {
-  return (
-    parseFloat(
-      (await getClient().database.getAccounts(['hive.fund']))[0].hbd_balance
-        .toString()
-        .split(' ')[0],
-    ) / 100
-  );
-};
-/**
- * getClient().database.getDynamicGlobalProperties()
- */
-const getDynamicGlobalProperties =
-  async (): Promise<DynamicGlobalProperties> => {
-    return getClient().database.getDynamicGlobalProperties();
-  };
-/**
- * getClient().database.getCurrentMedianHistoryPrice()
- */
 const getCurrentMedianHistoryPrice = async (): Promise<Price> => {
-  return getClient().database.getCurrentMedianHistoryPrice();
+  return HiveTxUtils.getData(
+    'condenser_api.get_current_median_history_price',
+    [],
+  );
 };
-/**
- * getClient().database.call(method, params).
- * Fixed params: method 'get_reward_fund', params ['post]
- */
 const getRewardFund = async (): Promise<RewardFund> => {
-  return getClient().database.call('get_reward_fund', ['post']);
+  return HiveTxUtils.getData('condenser_api.get_reward_fund', ['post']);
 };
 
 const HiveUtils = {
-  getClient,
-  setRpc,
   getVP,
-  getRC,
   getVotingDollarsPerAccount,
   getTimeBeforeFull,
-  getConversionRequests,
-  claimRewards,
-  powerUp,
-  powerDown,
-  transfer,
   encodeMemo,
   decodeMemo,
-  convertOperation,
-  withdraw,
-  deposit,
-  delegateVestingShares,
-  sendCustomJson,
   signMessage,
-  getDelayedTransactionInfo,
-  sendOperationWithConfirmation,
-  getProposalDailyBudget,
-  updateProposalVote,
   getRewardBalance,
   getRecentClaims,
   getHivePrice,
   getVotePowerReserveRate,
   getAccountPrice,
-  getDynamicGlobalProperties,
   getCurrentMedianHistoryPrice,
   getRewardFund,
-  getDelegatees,
-  getDelegators,
-  getPendingOutgoingUndelegation,
 };
 
 export default HiveUtils;

@@ -1,5 +1,4 @@
-import { RequestsHandler } from '@background/requests';
-import { Client } from '@hiveio/dhive';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import Config from 'src/config';
 import indexMocks from 'src/__tests__/background/requests/mocks';
@@ -15,35 +14,32 @@ describe('index tests:\n', () => {
   });
   it('Must match this values by default', () => {
     expect(requestHandler.data).toEqual({ confirmed: false });
-    expect(requestHandler.hiveClient).toBeInstanceOf(Client);
-    expect(requestHandler.hiveClient.address).toBe(Config.rpc.DEFAULT.uri);
     expect(requestHandler.hiveEngineConfig).toEqual(Config.hiveEngine);
   });
   it('Must return handler if no values on local storage', async () => {
     spies.getValueFromLocalStorage(undefined);
-    spies.getClient();
     const _requestHandler = await RequestsHandler.getFromLocalStorage();
     expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
-    expect(spies.getClient()).not.toBeCalled();
     expect(_requestHandler).toBeInstanceOf(RequestsHandler);
   });
-  it('Must init handler and call getClient', async () => {
-    spies.getValueFromLocalStorage(requestData);
-    spies.getClient();
-    const _requestHandler = await RequestsHandler.getFromLocalStorage();
-    expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
-    expect(spies.getClient()).toBeCalledWith(DefaultRpcs[0]);
-    expect(_requestHandler).toBeInstanceOf(RequestsHandler);
-  });
+  //TODO tests: uncomment when add the conditional on setupRpc.
+  // it('Must init handler by calling setupRpc', async () => {
+  //   const requestDataRpc1 = { rpc: DefaultRpcs[1] } as RequestDataMocks;
+  //   spies.getValueFromLocalStorage(requestDataRpc1);
+  //   const _requestHandler = await RequestsHandler.getFromLocalStorage();
+  //   expect(_requestHandler).toBeInstanceOf(RequestsHandler);
+  //   expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
+  //   expect(_requestHandler.hiveClient.address).toBe(DefaultRpcs[1].uri);
+  // });
   it('Must initialize parameters', async () => {
-    spies.getClient();
     requestHandler.initializeParameters(
       accounts.twoAccounts,
       DefaultRpcs[1],
       {},
     );
-    expect(spies.getClient()).toBeCalledWith(DefaultRpcs[1]);
+    expect(requestHandler.data.accounts).toEqual(accounts.twoAccounts);
     expect(requestHandler.hiveEngineConfig).toEqual(hiveEngineConfigByDefault);
+    //TODO when setupRpc updated, this must change to check on initializeParam rpc assigned.
   });
   it('Must not reset resetWinId and reset data', () => {
     requestHandler.reset(false);
@@ -79,8 +75,5 @@ describe('index tests:\n', () => {
       msg.domain,
       requestHandler,
     );
-  });
-  it('Must return hive client', () => {
-    expect(requestHandler.getHiveClient()).toBeInstanceOf(Client);
   });
 });

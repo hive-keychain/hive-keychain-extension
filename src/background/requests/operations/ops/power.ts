@@ -1,46 +1,64 @@
-import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import {
-  PrivateKey,
-  TransferToVestingOperation,
-  WithdrawVestingOperation,
-} from '@hiveio/dhive';
+import LedgerModule from '@background/ledger.module';
+import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   RequestId,
   RequestPowerDown,
   RequestPowerUp,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
+import { PowerUtils } from 'src/utils/power.utils';
 
 export const broadcastPowerUp = async (
   requestHandler: RequestsHandler,
   data: RequestPowerUp & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
 
-  let result, err;
+  let result, err, err_message;
 
   try {
-    result = await client.broadcast.sendOperations(
-      [
-        [
-          'transfer_to_vesting',
-          {
-            from: data.username,
-            to: data.recipient,
-            amount: `${data.hive} HIVE`,
-          },
-        ] as TransferToVestingOperation,
-      ],
-      PrivateKey.from(key!),
-    );
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await PowerUtils.getPowerUpTransaction(
+          data.username,
+          data.recipient,
+          `${data.hive} HIVE`,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await PowerUtils.powerUp(
+          data.username,
+          data.recipient,
+          `${data.hive} HIVE`,
+          key!,
+        );
+        break;
+      }
+    }
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,
@@ -56,12 +74,12 @@ export const broadcastPowerDown = async (
   requestHandler: RequestsHandler,
   data: RequestPowerDown & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
   let key = requestHandler.data.key;
 
-  let result, err;
+  let result, err, err_message;
   try {
-    const res = await client.database.getDynamicGlobalProperties();
+    const res = await DynamicGlobalPropertiesUtils.getDynamicGlobalProperties();
+
     let vestingShares = null;
     const totalSteem = res.total_vesting_fund_hive
       ? Number((res.total_vesting_fund_hive as string).split(' ')[0])
@@ -73,19 +91,36 @@ export const broadcastPowerDown = async (
     vestingShares = vestingShares.toFixed(6);
     vestingShares = vestingShares.toString() + ' VESTS';
 
-    result = await client.broadcast.sendOperations(
-      [
-        [
-          'withdraw_vesting',
-          { account: data.username, vesting_shares: vestingShares },
-        ] as WithdrawVestingOperation,
-      ],
-      PrivateKey.from(key!),
-    );
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await PowerUtils.getPowerDownTransaction(
+          data.username,
+          vestingShares,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await PowerUtils.powerDown(data.username, vestingShares, key!);
+        break;
+      }
+    }
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,

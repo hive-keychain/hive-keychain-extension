@@ -1,5 +1,5 @@
-import { RequestsHandler } from '@background/requests';
 import * as BgOperationsIndex from '@background/requests/operations/index';
+import { RequestsHandler } from '@background/requests/request-handler';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
 import manipulateStrings from 'src/__tests__/utils-for-testing/helpers/manipulate-strings';
 

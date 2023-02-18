@@ -4,12 +4,14 @@ import DialogError from 'src/dialog/pages/error';
 import Register from 'src/dialog/pages/register';
 import RequestConfirmation from 'src/dialog/pages/request-confirmation';
 import RequestResponse from 'src/dialog/pages/request-response';
+import SignTransaction from 'src/dialog/pages/sign-transaction';
 import Unlock from 'src/dialog/pages/unlock';
 import BrowserUtils from 'src/utils/browser.utils';
 import './../analytics/analytics/gtag';
 import './dialog.scss';
 
 const App = () => {
+  const [data, setData] = useState<any>({});
   const initGoogleAnalytics = () => {
     window.dataLayer = window.dataLayer || [];
     window.gtag = function gtag() {
@@ -48,9 +50,7 @@ const App = () => {
     });
   }, []);
 
-  const [data, setData] = useState<any>({});
-
-  const renderDialogContent = () => {
+  const renderDialogContent = (data: any) => {
     switch (data.command) {
       case DialogCommand.UNLOCK:
         return <Unlock data={data} />;
@@ -64,12 +64,14 @@ const App = () => {
         return <RequestConfirmation data={data} />;
       case DialogCommand.ANSWER_REQUEST:
         return <RequestResponse data={data} />;
+      case DialogCommand.SIGN_WITH_LEDGER:
+        return <SignTransaction data={data} />;
       default:
         return null;
     }
   };
 
-  return <div className="dialog">{renderDialogContent()}</div>;
+  return <div className="dialog">{renderDialogContent(data)}</div>;
 };
 
 export default App;

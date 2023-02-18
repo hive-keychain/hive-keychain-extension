@@ -1,8 +1,14 @@
-import { ChangeRecoveryAccountOperation, PrivateKey } from '@hiveio/dhive';
+import {
+  AccountCreateOperation,
+  AuthorityType,
+  ChangeRecoveryAccountOperation,
+  CreateClaimedAccountOperation,
+  PrivateKey,
+} from '@hiveio/dhive';
+import { Key } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
-import HiveUtils from 'src/utils/hive.utils';
-import Logger from 'src/utils/logger.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 export enum AccountCreationType {
   USING_TICKET = 'USING_TICKET',
@@ -19,6 +25,13 @@ export interface GeneratedKeys {
   active: GeneratedKey;
   posting: GeneratedKey;
   memo: GeneratedKey;
+}
+
+export interface AccountAuthorities {
+  owner: AuthorityType;
+  active: AuthorityType;
+  posting: AuthorityType;
+  memo_key: string;
 }
 
 const checkAccountNameAvailable = async (username: string) => {
@@ -40,103 +53,129 @@ const validateUsername = (username: string) => {
 
 const createAccount = async (
   creationType: AccountCreationType,
-  price: number,
   newUsername: string,
-  parentAccount: LocalAccount,
-  keys: GeneratedKeys,
+  parentUsername: string,
+  parentActiveKey: Key,
+  authorities: AccountAuthorities,
+  price?: number,
+  generatedKeys?: GeneratedKeys,
 ) => {
-  let transactionConfirmation = null;
-  try {
-    switch (creationType) {
-      case AccountCreationType.BUYING: {
-        transactionConfirmation = await createPayingAccount(
-          keys,
-          newUsername,
-          parentAccount,
-          price,
-        );
-        break;
-      }
-      case AccountCreationType.USING_TICKET: {
-        transactionConfirmation = await createAccountUsingTicket(
-          keys,
-          newUsername,
-          parentAccount,
-        );
-        break;
-      }
+  let success = null;
+  switch (creationType) {
+    case AccountCreationType.BUYING: {
+      success = await createPayingAccount(
+        authorities,
+        newUsername,
+        parentUsername,
+        parentActiveKey,
+        price!,
+      );
+      break;
     }
-    if (transactionConfirmation !== undefined) {
-      return {
-        name: newUsername,
-        keys: {
-          active: keys.active.private,
-          activePubkey: keys.active.public,
-          posting: keys.posting.private,
-          postingPubkey: keys.posting.public,
-          memo: keys.memo.private,
-          memoPubkey: keys.memo.public,
-        },
-      } as LocalAccount;
-    } else {
-      return false;
+    case AccountCreationType.USING_TICKET: {
+      success = await createAccountUsingTicket(
+        authorities,
+        newUsername,
+        parentUsername,
+        parentActiveKey,
+      );
+      break;
     }
-  } catch (err: any) {
-    Logger.error('Error while creating account', err);
+  }
+  if (success && generatedKeys) {
+    return {
+      name: newUsername,
+      keys: {
+        active: generatedKeys.active.private,
+        activePubkey: generatedKeys.active.public,
+        posting: generatedKeys.posting.private,
+        postingPubkey: generatedKeys.posting.public,
+        memo: generatedKeys.memo.private,
+        memoPubkey: generatedKeys.memo.public,
+      },
+    } as LocalAccount;
+  } else {
     return false;
   }
 };
 
 const createAccountUsingTicket = (
-  keys: GeneratedKeys,
+  authorities: AccountAuthorities,
   newUsername: string,
-  parentAccount: LocalAccount,
+  parentUsername: string,
+  parentActiveKey: Key,
 ) => {
-  const transactionConfirmation =
-    HiveUtils.getClient().broadcast.sendOperations(
-      [
-        [
-          'create_claimed_account',
-          {
-            creator: parentAccount.name!,
-            new_account_name: newUsername,
-            json_metadata: '{}',
-            extensions: [],
-            ...generateKeyObject(keys),
-          },
-        ],
-      ],
-      PrivateKey.fromString(parentAccount.keys.active as string),
-    );
-  return HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
+  return HiveTxUtils.sendOperation(
+    [
+      AccountCreationUtils.getCreateClaimedAccountOperation(
+        authorities,
+        newUsername,
+        parentUsername,
+      ),
+    ],
+    parentActiveKey,
+  );
+};
+/* istanbul ignore next */
+const getCreateClaimedAccountOperation = (
+  authorities: AccountAuthorities,
+  newUsername: string,
+  parentUsername: string,
+) => {
+  const extensions: any[] = [];
+  return [
+    'create_claimed_account',
+    {
+      creator: parentUsername,
+      new_account_name: newUsername,
+      json_metadata: '{}',
+      extensions: extensions,
+      ...authorities,
+    },
+  ] as CreateClaimedAccountOperation;
+};
+/* istanbul ignore next */
+const getCreateClaimedAccountTransaction = (
+  authorities: AccountAuthorities,
+  newUsername: string,
+  parentUsername: string,
+) => {
+  return HiveTxUtils.createTransaction([
+    AccountCreationUtils.getCreateClaimedAccountOperation(
+      authorities,
+      newUsername,
+      parentUsername,
+    ),
+  ]);
 };
 
 const createPayingAccount = (
-  keys: GeneratedKeys,
+  authorities: AccountAuthorities,
   newUsername: string,
-  parentAccount: LocalAccount,
+  parentUsername: string,
+  parentActiveKey: Key,
   price: number,
 ) => {
-  const transactionConfirmation =
-    HiveUtils.getClient().broadcast.sendOperations(
+  return HiveTxUtils.sendOperation(
+    [
       [
-        [
-          'account_create',
-          {
-            fee: `${price.toFixed(3)} HIVE`,
-            creator: parentAccount.name!,
-            new_account_name: newUsername,
-            json_metadata: '{}',
-            ...generateKeyObject(keys),
-          },
-        ],
-      ],
-      PrivateKey.fromString(parentAccount.keys.active as string),
-    );
-  return HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
+        'account_create',
+        {
+          fee: `${price.toFixed(3)} HIVE`,
+          creator: parentUsername,
+          new_account_name: newUsername,
+          json_metadata: '{}',
+          ...authorities,
+        },
+      ] as AccountCreateOperation,
+    ],
+    parentActiveKey,
+  );
 };
-
-const generateKeyObject = (keys: GeneratedKeys) => {
+/* istanbul ignore next */
+const generateAccountAuthorities = (
+  keys: GeneratedKeys,
+): AccountAuthorities => {
   return {
     owner: {
       weight_threshold: 1,
@@ -156,27 +195,25 @@ const generateKeyObject = (keys: GeneratedKeys) => {
     memo_key: keys.memo.public,
   };
 };
-
+/* istanbul ignore next */
 const setRecoveryAccountOperation = (
   accountName: string,
   newRecoveryAccount: string,
   ownerKey: string,
 ) => {
-  const transactionConfirmation =
-    HiveUtils.getClient().broadcast.sendOperations(
+  return HiveTxUtils.sendOperation(
+    [
       [
-        [
-          'change_recovery_account',
-          {
-            account_to_recover: accountName,
-            new_recovery_account: newRecoveryAccount,
-            extensions: [],
-          },
-        ] as ChangeRecoveryAccountOperation,
-      ],
-      PrivateKey.fromString(ownerKey as string),
-    );
-  return HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
+        'change_recovery_account',
+        {
+          account_to_recover: accountName,
+          new_recovery_account: newRecoveryAccount,
+          extensions: [],
+        },
+      ] as ChangeRecoveryAccountOperation,
+    ],
+    ownerKey as Key,
+  );
 };
 
 export const AccountCreationUtils = {
@@ -185,4 +222,7 @@ export const AccountCreationUtils = {
   validateUsername,
   createAccount,
   setRecoveryAccountOperation,
+  generateAccountAuthorities,
+  getCreateClaimedAccountOperation,
+  getCreateClaimedAccountTransaction,
 };
