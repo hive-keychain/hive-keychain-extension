@@ -40,6 +40,9 @@ const InputComponent = (props: InputProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [hoveredAutocompleteValue, setHoveredAutocompleteValue] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     setMounted(true);
@@ -67,6 +70,59 @@ const InputComponent = (props: InputProps) => {
   };
   const handleOnFocus = () => {
     setIsFocused(true);
+  };
+
+  const handleKeyPressed = (key: string) => {
+    switch (key) {
+      case 'Enter': {
+        if (props.onEnterPress) props.onEnterPress();
+        break;
+      }
+      case 'ArrowDown': {
+        if (filteredValues.length > 0) {
+          let index = hoveredAutocompleteValue;
+          if (index === null) {
+            index = 0;
+          } else {
+            if (index < filteredValues.length - 1) {
+              index++;
+            } else {
+              index = 0;
+            }
+          }
+          setHoveredAutocompleteValue(index);
+          document
+            .getElementById(`filtered-value-${index}`)
+            ?.scrollIntoView({ behavior: 'auto' });
+        }
+        break;
+      }
+      case 'ArrowUp': {
+        if (filteredValues.length > 0) {
+          let index = hoveredAutocompleteValue;
+          if (!index) {
+            index = filteredValues.length - 1;
+          } else {
+            if (index > 0) {
+              index--;
+            }
+          }
+          setHoveredAutocompleteValue(index);
+          document
+            .getElementById(`filtered-value-${index}`)
+            ?.scrollIntoView({ behavior: 'smooth' });
+        }
+        break;
+      }
+    }
+  };
+
+  const removeHoverAutocomplete = () => {
+    setHoveredAutocompleteValue(null);
+  };
+
+  const hoverAutocompleteValue = (index: number) => {
+    setHoveredAutocompleteValue(index);
   };
 
   return (
@@ -103,11 +159,7 @@ const InputComponent = (props: InputProps) => {
           min={props.min}
           max={props.max}
           onChange={(e) => props.onChange(e.target.value)}
-          onKeyPress={(e) => {
-            if (e.key === 'Enter' && props.onEnterPress) {
-              props.onEnterPress();
-            }
-          }}
+          onKeyDown={(e) => handleKeyPressed(e.key)}
           onFocus={() => handleOnFocus()}
           onBlur={() => handleOnBlur()}
         />
@@ -137,12 +189,18 @@ const InputComponent = (props: InputProps) => {
               additionalClassName="input-img erase"></Icon>
           )}
         {isFocused && filteredValues && filteredValues.length > 0 && (
-          <div className="autocomplete-panel">
+          <div
+            className="autocomplete-panel"
+            onMouseLeave={() => removeHoverAutocomplete()}>
             {filteredValues.map((val, index) => (
               <div
+                id={`filtered-value-${index}`}
                 key={index}
-                className="value"
-                onClick={() => props.onChange(val.value)}>
+                className={`value ${
+                  index === hoveredAutocompleteValue ? 'hovered' : ''
+                }`}
+                onClick={() => props.onChange(val.value)}
+                onMouseEnter={() => hoverAutocompleteValue(index)}>
                 {val.value} {val.subLabel ? `(${val.subLabel})` : ''}
               </div>
             ))}
