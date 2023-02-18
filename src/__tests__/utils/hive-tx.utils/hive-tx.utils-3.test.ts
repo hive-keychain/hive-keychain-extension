@@ -21,7 +21,9 @@ describe('hive-tx.utils.test.ts part 3', () => {
         try {
           await HiveTxUtils.signTransaction(constants.tx, '#1qw23eer4e');
         } catch (error) {
-          expect(error).toEqual(new KeychainError('html_ledger_not_supported'));
+          expect(error).toEqual(
+            new KeychainError('error_ledger_no_hash_sign_policy'),
+          );
         }
       });
 
