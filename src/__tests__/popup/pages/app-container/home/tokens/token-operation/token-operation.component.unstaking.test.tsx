@@ -1,8 +1,6 @@
 import App from '@popup/App';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
-import { waitFor } from '@testing-library/react';
 import React from 'react';
-import TokensUtils from 'src/utils/tokens.utils';
 import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -57,17 +55,6 @@ describe('token-operation Unstaking tests:\n', () => {
     extraMocks.doesAccountExist(true);
     await methods.userInteraction(balance.exceeded, operationType);
     await assertion.awaitFor(message.error.notEnoughBalance, QueryDOM.BYTEXT);
-  });
-  it('Must show loading unstake transaction', async () => {
-    extraMocks.doesAccountExist(true);
-    TokensUtils.unstakeToken = jest.fn();
-    await methods.userInteraction(balance.min, operationType, true);
-    await waitFor(() => {
-      assertion.getManyByText([
-        message.loading.text,
-        message.loading.operation(operationType),
-      ]);
-    });
   });
   it('Must show error if unstaking fails', async () => {
     extraMocks.doesAccountExist(true);

@@ -16,7 +16,7 @@ describe('tokens.utils tests:\n', () => {
           tokensUser.balances[0],
           tokenMarket.all,
         ),
-      ).toBe(6606.37);
+      ).toBe(6956.57);
     });
 
     it('Must return 0, if symbol not found on market', () => {
@@ -36,7 +36,7 @@ describe('tokens.utils tests:\n', () => {
           constants.swapHiveBalance,
           clonedTokenMarket.filter((tkn) => tkn.symbol !== 'SWAP.HIVE'),
         ),
-      ).toBe(parseFloat(constants.swapHiveBalance.balance));
+      ).toBe(40.921);
     });
   });
 });

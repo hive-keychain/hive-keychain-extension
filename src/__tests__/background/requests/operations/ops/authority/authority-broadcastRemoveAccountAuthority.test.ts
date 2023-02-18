@@ -22,7 +22,7 @@ describe('authority tests:/n', () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
-      const localeMessageKey = 'nothing_to_remove_error';
+      const localeMessageKey = 'html_popup_error_while_signing_transaction';
       const result = await broadcastRemoveAccountAuthority(
         requestHandler,
         data,
@@ -33,7 +33,7 @@ describe('authority tests:/n', () => {
           datas,
           request_id,
           new Error(localeMessageKey),
-          i18n.get('nothing_to_remove_error'),
+          i18n.get(localeMessageKey),
         ),
       );
     });

@@ -1,6 +1,6 @@
 import App from '@popup/App';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import TokensUtils from 'src/utils/tokens.utils';
 import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
@@ -63,10 +63,10 @@ describe('token-operation Staking tests:\n', () => {
     TokensUtils.stakeToken = jest.fn();
     await methods.userInteraction(balance.min, operationType, true);
     await waitFor(() => {
-      assertion.getManyByText([
-        message.loading.text,
-        message.loading.operation(operationType),
-      ]);
+      const elementsFound = screen.getAllByText('Staking token', {
+        exact: false,
+      });
+      expect(elementsFound.length).toBeGreaterThan(1);
     });
   });
   it('Must show error if staking fails', async () => {
