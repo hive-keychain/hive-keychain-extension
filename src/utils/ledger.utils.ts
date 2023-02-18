@@ -19,8 +19,10 @@ export enum LedgerKeyType {
 const init = async (): Promise<boolean> => {
   if (await LedgerUtils.isLedgerSupported()) {
     const connectedDevices = await TransportWebUsb.list();
-    if (connectedDevices.length === 0)
-      throw new KeychainError('popup_html_ledger_not_detected');
+    if (connectedDevices.length === 0) {
+      await TransportWebUsb.request();
+    }
+
     const transport = await TransportWebUsb.create();
     hiveLedger = new LedgerHiveApp(transport);
     return true;
