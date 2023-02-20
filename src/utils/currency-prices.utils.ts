@@ -1,8 +1,8 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import axios from 'axios';
 
 const getPrices = async () => {
-  return (await KeychainApi.get('/hive/v2/price')).data;
+  return await KeychainApi.get('hive/v2/price');
 };
 
 const getBittrexCurrency = async (currency: string) => {

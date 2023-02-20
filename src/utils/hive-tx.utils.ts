@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import Hive from '@engrave/ledger-app-hive';
 import { Operation, Transaction } from '@hiveio/dhive';
 import {
@@ -22,9 +22,7 @@ import Logger from 'src/utils/logger.utils';
 
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
-    rpc.uri === 'DEFAULT'
-      ? (await KeychainApi.get('/hive/rpc')).data.rpc
-      : rpc.uri;
+    rpc.uri === 'DEFAULT' ? (await KeychainApi.get('hive/rpc')).rpc : rpc.uri;
   if (rpc.chainId) {
     HiveTxConfig.chain_id = rpc.chainId;
   }

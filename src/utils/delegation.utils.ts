@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import { DelegateVestingSharesOperation } from '@hiveio/dhive';
 import {
   Delegator,
@@ -8,8 +8,9 @@ import { Key } from '@interfaces/keys.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getDelegators = async (name: string) => {
-  const delegators = (await KeychainApi.get(`/hive/delegators/${name}`))
-    .data as Delegator[];
+  const delegators = (await KeychainApi.get(
+    `hive/delegators/${name}`,
+  )) as Delegator[];
   return delegators
     .filter((e) => e.vesting_shares !== 0)
     .sort((a, b) => b.vesting_shares - a.vesting_shares);
