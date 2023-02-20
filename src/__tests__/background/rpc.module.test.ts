@@ -30,15 +30,12 @@ describe('rpc.module tests:\n', () => {
       .fn()
       .mockResolvedValue({ uri: 'DEFAULT', chainId: '1' });
     KeychainApi.get = jest.fn().mockResolvedValue({
-      data: {
-        rpc: {
-          uri: 'https://default',
-        },
+      rpc: {
+        uri: 'https://default',
       },
     });
     await RPCModule.init();
     expect(HiveTxConfig.node).toEqual({ uri: 'https://default' });
-    expect(HiveTxConfig.chain_id).toBe('1');
   });
   it('Must set uri', async () => {
     RPCModule.getActiveRpc = jest

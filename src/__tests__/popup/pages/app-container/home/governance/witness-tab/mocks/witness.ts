@@ -63,14 +63,14 @@ const beforeEach = async (
   findUserProxy: string | null,
 ) => {
   let remock: MocksToUse = {
-    keyChainApiGet: { customData: { witnessRanking: constants.witnessData } },
+    keyChainApiGet: { witnessRanking: constants.witnessData },
   };
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   if (errorWitnessData === true) {
     remock = {
       keyChainApiGet: {
-        customData: { witnessRanking: '' },
+        witnessRanking: '',
       },
     };
   }

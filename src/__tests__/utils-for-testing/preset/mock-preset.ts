@@ -161,7 +161,7 @@ const setOrDefault = (toUse: MocksToUse) => {
   KeychainApi.get = jest
     .fn()
     .mockImplementation((...args: any[]) =>
-      mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
+      mocksImplementation.keychainApiGet(args[0], keyChainApiGet),
     );
   RewardsUtils.hasReward = jest
     .fn()
