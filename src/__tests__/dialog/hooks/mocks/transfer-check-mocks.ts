@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import {
   KeychainRequestTypes,
   RequestId,
@@ -19,7 +19,7 @@ const data = {
 } as RequestTransfer & RequestId;
 
 const constants = {
-  data,
+  ...data,
 };
 
 const spies = {

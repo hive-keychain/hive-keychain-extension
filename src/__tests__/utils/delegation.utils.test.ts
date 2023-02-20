@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import { DelegationUtils } from 'src/utils/delegation.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';

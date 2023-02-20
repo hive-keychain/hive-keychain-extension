@@ -15,7 +15,7 @@ describe('transfer-check.ts tests:\n', () => {
       methods.getPhishingAccounts([]);
       render(
         <Transfer
-          data={constants.data}
+          data={constants}
           domain={'domain'}
           tab={0}
           rpc={DefaultRpcs[1]}
@@ -23,7 +23,7 @@ describe('transfer-check.ts tests:\n', () => {
       );
       waitFor(() => {});
       const { calls } = spies.useTransferCheck.mock;
-      expect(calls[0]).toEqual([{ ...constants.data }, DefaultRpcs[1]]);
+      expect(calls[0]).toEqual([{ ...constants }, DefaultRpcs[1]]);
       screen.debug();
     });
 
@@ -32,7 +32,7 @@ describe('transfer-check.ts tests:\n', () => {
         .fn()
         .mockImplementation(mocksImplementation.i18nGetMessageCustom);
       methods.getPhishingAccounts(['bittrex']);
-      const clonedData = objects.clone(constants.data) as RequestTransfer &
+      const clonedData = objects.clone(constants) as RequestTransfer &
         RequestId;
       clonedData.to = 'bittrex';
       clonedData.memo = 'Hi there bittrex!';

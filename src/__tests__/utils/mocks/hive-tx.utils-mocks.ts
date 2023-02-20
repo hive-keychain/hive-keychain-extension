@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import Hive, { Settings } from '@engrave/ledger-app-hive';
 import {
   AccountCreateOperation,

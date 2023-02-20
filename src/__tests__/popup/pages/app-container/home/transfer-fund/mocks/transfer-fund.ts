@@ -21,7 +21,7 @@ import renders from 'src/__tests__/utils-for-testing/setups/renders';
 const constants = {
   username: mk.user.one,
   anotherUser: mk.user.two,
-  phishingAccount: phishing.accounts.data[0],
+  phishingAccount: phishing.accounts[0],
   exchange: {
     accepting: {
       hive: 'user.dunamu',

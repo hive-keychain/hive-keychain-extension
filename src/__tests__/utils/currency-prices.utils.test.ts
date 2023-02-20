@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import axios from 'axios';
 import CurrencyPricesUtils from 'src/utils/currency-prices.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
