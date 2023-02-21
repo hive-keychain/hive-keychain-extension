@@ -10,25 +10,21 @@ describe('delegation.utils.ts tests:/n', () => {
   });
   describe('getDelegators cases:\n', () => {
     it('Must return delegator list', async () => {
-      KeychainApi.get = jest
-        .fn()
-        .mockResolvedValue({ data: delegations.delegators });
+      KeychainApi.get = jest.fn().mockResolvedValue(delegations.delegators);
       expect(await DelegationUtils.getDelegators(mk.user.one)).toEqual(
         delegations.delegators,
       );
     });
 
     it('Must return delegator list removing 0 shares records', async () => {
-      KeychainApi.get = jest.fn().mockResolvedValue({
-        data: [
-          ...delegations.delegators,
-          {
-            delegation_date: '2017-08-09T15:30:36.000Z',
-            delegator: 'quentin',
-            vesting_shares: 0,
-          },
-        ],
-      });
+      KeychainApi.get = jest.fn().mockResolvedValue([
+        ...delegations.delegators,
+        {
+          delegation_date: '2017-08-09T15:30:36.000Z',
+          delegator: 'quentin',
+          vesting_shares: 0,
+        },
+      ]);
       expect(await DelegationUtils.getDelegators(mk.user.one)).toEqual(
         delegations.delegators,
       );

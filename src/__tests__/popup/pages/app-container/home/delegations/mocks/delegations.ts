@@ -49,7 +49,7 @@ const beforeEach = async (component: ReactElement, passErrorData: boolean) => {
   actAdvanceTime(4300);
   if (passErrorData) {
     remock = {
-      keyChainApiGet: { customData: { delegators: { data: '' } } },
+      keyChainApiGet: { delegators: { data: '' } },
     };
   }
   mockPreset.setOrDefault(remock);

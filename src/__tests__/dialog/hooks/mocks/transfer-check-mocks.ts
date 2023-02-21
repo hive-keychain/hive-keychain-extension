@@ -19,7 +19,7 @@ const data = {
 } as RequestTransfer & RequestId;
 
 const constants = {
-  data,
+  ...data,
 };
 
 const spies = {
