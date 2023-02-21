@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';

@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
-import { ConversionUtils } from 'src/utils/conversion.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
@@ -88,7 +87,7 @@ const Home = ({
       .join('.');
     if (
       extensionVersion !== lastVersionSeen &&
-      versionLog.version === extensionVersion
+      versionLog?.version === extensionVersion
     ) {
       setWhatsNewContent(versionLog);
       setDisplayWhatsNew(true);
@@ -100,7 +99,6 @@ const Home = ({
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
   ) => {
-    ConversionUtils.getConversionRequests('cedricguillas');
     if (displayWhatsNew) {
       return (
         <WhatsNewComponent

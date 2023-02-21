@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import { Asset, ExtendedAccount, Price } from '@hiveio/dhive';
 import { Rpc } from '@interfaces/rpc.interface';
 import { AssertionError } from 'assert';
