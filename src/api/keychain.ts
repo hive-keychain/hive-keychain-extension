@@ -1,10 +1,3 @@
-// const KeychainApi = axios.create({
-//   baseURL:
-//     process.env.KEYCHAIN_API_DEV === 'true'
-//       ? 'http://localhost:5000'
-//       : 'https://api.hive-keychain.com',
-// });
-
 const get = async (url: string): Promise<any> => {
   const baseURL =
     process.env.KEYCHAIN_API_DEV === 'true'
@@ -22,7 +15,6 @@ const get = async (url: string): Promise<any> => {
           }
         })
         .then((res) => {
-          console.log(res);
           resolve({ data: res });
         })
         .catch((err) => {
