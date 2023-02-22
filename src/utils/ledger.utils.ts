@@ -2,7 +2,7 @@ import LedgerHiveApp from '@engrave/ledger-app-hive';
 import { SignedTransaction, Transaction } from '@hiveio/dhive';
 import { Key, Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -18,16 +18,16 @@ export enum LedgerKeyType {
 
 const init = async (fromTab: boolean): Promise<boolean> => {
   if (await LedgerUtils.isLedgerSupported()) {
-    const connectedDevices = await TransportWebUsb.list();
-
+    const connectedDevices = await TransportWebUSB.list();
+    let transport;
     if (connectedDevices.length === 0) {
       if (fromTab) {
-        await TransportWebUsb.request();
+        transport = await TransportWebUSB.request();
       } else {
         throw new KeychainError('html_ledger_not_detected');
       }
     }
-    const transport = await TransportWebUsb.create();
+    transport = await TransportWebUSB.create();
     hiveLedger = new LedgerHiveApp(transport);
     return true;
   } else {
@@ -36,7 +36,7 @@ const init = async (fromTab: boolean): Promise<boolean> => {
 };
 
 const isLedgerSupported = async () => {
-  return await TransportWebUsb.isSupported();
+  return await TransportWebUSB.isSupported();
 };
 /* istanbul ignore next */
 const getSettings = async () => {

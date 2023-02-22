@@ -2976,5 +2976,25 @@
   "token_value": {
     "message": "Value",
     "description": "Value of token in USD"
+  },
+  "ledger_link_device": {
+    "message": "Link device",
+    "description": "link button"
+  },
+  "ledger_link_ledger_device": {
+    "message": "Link Ledger device",
+    "description": "link button"
+  },
+  "ledger_link_device_caption": {
+    "message": "Link your device with your browser to be able to use it within Keychain",
+    "description": "link device caption"
+  },
+  "ledger_link_device_linked": {
+    "message": "Device successfully linked to Ledger",
+    "description": "link device success"
+  },
+  "ledger_reboot_with_ledger_live_error": {
+    "message": "An error on your Ledger was detected. Please use Ledger Live to reboot your Ledger and try again",
+    "description": "link device error"
   }
 }
