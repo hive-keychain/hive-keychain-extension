@@ -1,5 +1,6 @@
 import { KeychainError } from 'src/keychain-error';
 import FormatUtils from 'src/utils/format.utils';
+import Logger from 'src/utils/logger.utils';
 
 enum BlockchainErrorType {
   ADJUST_BLANCE = 'adjust_balance',
@@ -153,11 +154,16 @@ const parseLedger = (error: any) => {
     case '0x6e01':
       return new KeychainError('error_ledger_hive_app_not_opened');
     default: {
+      Logger.log(error);
       if (
         error.name === 'DisconnectedDeviceDuringOperation' ||
         error.name === 'TransportOpenUserCancelled'
       ) {
         return new KeychainError('popup_html_ledger_not_detected');
+      } else if (
+        error.toString().includes('Ledger error: Unable to claim interface')
+      ) {
+        return new KeychainError('ledger_reboot_with_ledger_live_error');
       }
       return new KeychainError('popup_html_ledger_unknown_error');
     }
