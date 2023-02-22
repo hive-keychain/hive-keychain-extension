@@ -40,7 +40,7 @@ const SignTransaction = (props: Props) => {
         try {
           hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
         } catch (err: any) {
-          throw ErrorUtils.parse(err);
+          throw ErrorUtils.parseLedger(err);
         }
 
         if (!hashSignPolicy) {

@@ -16,11 +16,16 @@ export enum LedgerKeyType {
   MEMO = 4,
 }
 
-const init = async (): Promise<boolean> => {
+const init = async (fromTab: boolean): Promise<boolean> => {
   if (await LedgerUtils.isLedgerSupported()) {
     const connectedDevices = await TransportWebUsb.list();
+
     if (connectedDevices.length === 0) {
-      await TransportWebUsb.request();
+      if (fromTab) {
+        await TransportWebUsb.request();
+      } else {
+        throw new KeychainError('html_ledger_not_detected');
+      }
     }
     const transport = await TransportWebUsb.create();
     hiveLedger = new LedgerHiveApp(transport);
@@ -131,12 +136,12 @@ const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
 
 const getLedgerInstance = async (): Promise<LedgerHiveApp> => {
   if (!hiveLedger) {
-    await LedgerUtils.init();
+    await LedgerUtils.init(false);
   } else {
     try {
       await LedgerUtils.getSettings();
     } catch (err) {
-      await LedgerUtils.init();
+      await LedgerUtils.init(false);
     }
   }
   return hiveLedger;

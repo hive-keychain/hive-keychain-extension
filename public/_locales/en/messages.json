@@ -2688,6 +2688,10 @@
     "message": "Ledger not available",
     "description": "Ledger not available error message"
   },
+  "html_ledger_not_detected": {
+    "message": "We couldn't detect your Ledger. If it is connected and unlocked already, please navigate to Keychain Advanced Settings and use the Link Ledger option.",
+    "description": "Ledger not available error message"
+  },
   "html_ledger_no_device_selected": {
     "message": "No Ledger device selected",
     "description": "Ledger not selected error message"

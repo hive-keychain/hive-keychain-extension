@@ -138,7 +138,7 @@ const signTransaction = async (tx: Transaction, key: Key) => {
     try {
       hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
     } catch (err: any) {
-      throw ErrorUtils.parse(err);
+      throw ErrorUtils.parseLedger(err);
     }
 
     if (!Hive.isDisplayableOnDevice(tx) && !hashSignPolicy) {
