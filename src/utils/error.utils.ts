@@ -8,6 +8,7 @@ enum BlockchainErrorType {
   DO_APPLY = 'do_apply',
   WITNESS_NOT_FOUND = 'get_witness',
   VALIDATION = 'validate',
+  VALIDATE_TRANSACTION = 'validate_transaction',
 }
 
 enum HiveEngineErrorType {
@@ -17,6 +18,7 @@ enum HiveEngineErrorType {
 }
 
 const parse = (error: any) => {
+  Logger.log(error);
   const stack = error?.data?.stack[0];
   if (stack?.context?.method) {
     switch (stack.context.method) {
@@ -98,11 +100,14 @@ const parse = (error: any) => {
           );
         }
       }
+      case BlockchainErrorType.VALIDATE_TRANSACTION: {
+        if (error.message.includes('transaction expiration exception')) {
+          return new KeychainError('broadcast_error_transaction_expired');
+        }
+      }
     }
   } else if (stack && stack.format) {
     return new KeychainError('error_while_broadcasting', [stack.format], error);
-  } else if (error.data?.message.includes('transaction expiration exception')) {
-    return new KeychainError('broadcast_error_transaction_expired');
   }
 
   return new KeychainError('error_while_broadcasting', [], error);
