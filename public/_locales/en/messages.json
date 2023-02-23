@@ -2996,5 +2996,9 @@
   "ledger_reboot_with_ledger_live_error": {
     "message": "An error on your Ledger was detected. Please use Ledger Live to reboot your Ledger and try again",
     "description": "link device error"
+  },
+  "ledger_import_account_has_ledger": {
+    "message": "We detected an account using Ledger within the accounts you imported. To be able to use it please click <a target='_blank' href='chrome-extension://$1/link-ledger-device.html'>here</a> to link your Ledger.",
+    "description": "link device error"
   }
 }

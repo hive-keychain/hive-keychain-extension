@@ -7,7 +7,7 @@ const LinkLedgerDevice = () => {
   const [done, setDone] = useState(false);
 
   const linkDevice = async () => {
-    setDone(await LedgerUtils.init());
+    setDone(await LedgerUtils.init(true));
   };
 
   const closeTab = () => {
