@@ -119,6 +119,7 @@ const confirmTransaction = async (transactionId: string) => {
       transaction_id: transactionId,
     });
     await AsyncUtils.sleep(1000);
+    retryCount++;
   } while (
     ['within_mempool', 'unknown'].includes(response.result.status) &&
     retryCount < MAX_RETRY_COUNT
