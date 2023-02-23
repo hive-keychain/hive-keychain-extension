@@ -139,7 +139,7 @@ const getLedgerInstance = async (): Promise<LedgerHiveApp> => {
     await LedgerUtils.init(false);
   } else {
     try {
-      await LedgerUtils.getSettings();
+      await hiveLedger.getAppName();
     } catch (err) {
       await LedgerUtils.init(false);
     }

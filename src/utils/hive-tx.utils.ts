@@ -112,12 +112,17 @@ const createSignAndBroadcastTransaction = async (
 /* istanbul ignore next */
 const confirmTransaction = async (transactionId: string) => {
   let response = null;
+  const MAX_RETRY_COUNT = 6;
+  let retryCount = 0;
   do {
     response = await call('transaction_status_api.find_transaction', {
       transaction_id: transactionId,
     });
-    await AsyncUtils.sleep(500);
-  } while (['within_mempool', 'unknown'].includes(response.result.status));
+    await AsyncUtils.sleep(1000);
+  } while (
+    ['within_mempool', 'unknown'].includes(response.result.status) &&
+    retryCount < MAX_RETRY_COUNT
+  );
   if (
     ['within_reversible_block', 'within_irreversible_block'].includes(
       response.result.status,

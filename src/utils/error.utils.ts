@@ -101,6 +101,8 @@ const parse = (error: any) => {
     }
   } else if (stack && stack.format) {
     return new KeychainError('error_while_broadcasting', [stack.format], error);
+  } else if (error.data?.message.includes('transaction expiration exception')) {
+    return new KeychainError('broadcast_error_transaction_expired');
   }
 
   return new KeychainError('error_while_broadcasting', [], error);
