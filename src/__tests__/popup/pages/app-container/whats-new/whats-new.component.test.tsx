@@ -71,7 +71,7 @@ describe('whats-new.component tests:\n', () => {
       });
       await clickAwaitOnFound(alLink.whatsNew.link.readMore, 0);
       expect(extraMocks.spyChromeTab()).toBeCalledWith({
-        url: versionLog.data.url + '#' + versionLog.data.features.en[0].anchor,
+        url: versionLog.url + '#' + versionLog.features.en[0].anchor,
       });
     });
 

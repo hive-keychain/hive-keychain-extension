@@ -42,9 +42,7 @@ const constants = {
     negativeAmount: i18n.get('popup_html_need_positive_amount'),
     wrongUser: i18n.get('popup_no_such_account'),
     notEnoughBalance: i18n.get('popup_html_power_up_down_error'),
-    phishingWarning: i18n.get('popup_warning_phishing', [
-      phishing.accounts.data[1],
-    ]),
+    phishingWarning: i18n.get('popup_warning_phishing', [phishing.accounts[1]]),
     success: i18n.get('popup_html_transfer_successful', [
       '@theghost1980',
       '1.000 LEO',
@@ -61,7 +59,7 @@ const constants = {
     toEncrypt: '#fake memorandum hivekeychain',
     encrypted: '#fake memorandum hivekeychain (encrypted)',
   },
-  phishingAccount: phishing.accounts.data[1],
+  phishingAccount: phishing.accounts[1],
 };
 
 const beforeEach = async (toUse?: {

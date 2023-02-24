@@ -29,6 +29,16 @@ const AdvancedSettingsMenuItems: MenuItem[] = [
     nextScreen: Screen.SETTINGS_ANALYTICS,
   },
   {
+    label: 'ledger_link_ledger_device',
+    icon: Icons.USB,
+    action: async () => {
+      const extensionId = (await chrome.management.getSelf()).id;
+      chrome.tabs.create({
+        url: `chrome-extension://${extensionId}/link-ledger-device.html`,
+      });
+    },
+  },
+  {
     label: 'popup_html_import_export_settings',
     icon: Icons.IMPORT_EXPORT,
     nextScreen: Screen.SETTINGS_IMPORT_EXPORT,

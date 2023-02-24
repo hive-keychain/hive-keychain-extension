@@ -11,7 +11,6 @@ import { Screen } from 'src/reference-data/screen.enum';
 import './add-account-main.component.scss';
 
 const AddAccountMain = ({
-  mk,
   navigateTo,
   accounts,
   setAccounts,
@@ -54,8 +53,11 @@ const AddAccountMain = ({
 
   const onSentBackAccountsListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
-      if (!(typeof message.value === 'string') && message.value?.length) {
-        setAccounts(message.value);
+      if (
+        !(typeof message.value === 'string') &&
+        message.value?.accounts.length
+      ) {
+        setAccounts(message.value.accounts);
       }
       chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
     }
@@ -105,7 +107,7 @@ const AddAccountMain = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts, mk: state.mk };
+  return { accounts: state.accounts };
 };
 
 const connector = connect(mapStateToProps, {

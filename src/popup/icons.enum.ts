@@ -66,6 +66,7 @@ export enum Icons {
   TIMELAPSE = 'timelapse',
   TOKENS = 'generating_tokens',
   TWITTER = 'twitter.svg',
+  USB = 'usb',
   VISIBLE = 'visibility',
   WARNING = 'warning',
 }

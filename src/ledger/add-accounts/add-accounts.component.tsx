@@ -58,7 +58,7 @@ const AddAccountsComponent = () => {
     setMessage('');
     setLoading(true);
     try {
-      if (await LedgerUtils.init()) {
+      if (await LedgerUtils.init(true)) {
         let discoveredAccounts = await LedgerUtils.getAllAccounts();
         if (discoveredAccounts.length === 0) {
           setMessage('no_account_found_on_ledger_error');

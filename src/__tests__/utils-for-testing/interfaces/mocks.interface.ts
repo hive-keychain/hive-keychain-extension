@@ -103,7 +103,7 @@ export interface MocksToUse {
   tokens?: MocksTokens;
   proposal?: MocksProposal;
   chromeRunTime?: MocksChromeRunTime;
-  keyChainApiGet?: MocksKeyChainApi;
+  keyChainApiGet?: KeyChainApiGetCustomData;
   googleAnalytics?: MocksGoogleAnalytics;
   survey?: MocksSurvey;
   convertions?: MocksConvertionRequests;

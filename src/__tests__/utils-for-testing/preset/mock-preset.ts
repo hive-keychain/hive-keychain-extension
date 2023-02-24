@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
@@ -161,7 +161,7 @@ const setOrDefault = (toUse: MocksToUse) => {
   KeychainApi.get = jest
     .fn()
     .mockImplementation((...args: any[]) =>
-      mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
+      mocksImplementation.keychainApiGet(args[0], keyChainApiGet),
     );
   RewardsUtils.hasReward = jest
     .fn()
