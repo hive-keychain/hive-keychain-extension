@@ -6,6 +6,10 @@ function log(...message: any[]) {
   console.log(...message);
 }
 
+function debug(...message: any[]) {
+  console.log(...message);
+}
+
 const info = (message: string) => {
   console.log(`%c ${timestamp()} ${message} `, 'color: blue');
 };
@@ -26,6 +30,6 @@ function timestamp() {
   return `[${moment().format('L') + ' ' + moment().format('HH:mm:ss')}]`;
 }
 
-const Logger = { log, info, warn, error };
+const Logger = { log, info, warn, error, debug };
 
 export default Logger;

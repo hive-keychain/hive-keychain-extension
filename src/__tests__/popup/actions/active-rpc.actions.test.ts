@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import { Rpc } from '@interfaces/rpc.interface';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';

@@ -26,7 +26,7 @@ const beforeEach = async (component: ReactElement) => {
   actAdvanceTime(4300);
   mockPreset.setOrDefault({
     keyChainApiGet: {
-      customData: { witnessRanking: witness.rankingWInactive },
+      witnessRanking: witness.rankingWInactive,
     },
   });
   extraMocks();

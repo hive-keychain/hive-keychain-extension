@@ -1,5 +1,5 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 
 export const getPhishingAccounts = async () => {
-  return (await KeychainApi.get('/hive/phishingAccounts')).data;
+  return (await KeychainApi.get('hive/phishingAccounts')).data;
 };

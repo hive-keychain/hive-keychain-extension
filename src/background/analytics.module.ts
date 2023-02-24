@@ -8,7 +8,7 @@ const sendData = async (request: string, domain: string) => {
       LocalStorageKeyEnum.GA_CLIENT_ID,
       LocalStorageKeyEnum.ANALYTICS_SETTINGS,
     ]);
-  if (!ANALYTICS_SETTINGS.allowGoogleAnalytics) return;
+  if (!ANALYTICS_SETTINGS?.allowGoogleAnalytics) return;
 
   const baseUri = `https://www.google-analytics.com/${
     process.env.GOOGLE_ANALYTICS_DEV_MODE ? 'debug/' : ''

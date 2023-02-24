@@ -30,7 +30,7 @@ const AddKeyComponent = () => {
   const discoverAccounts = async () => {
     setLoading(true);
     try {
-      if (keyType && username && (await LedgerUtils.init())) {
+      if (keyType && username && (await LedgerUtils.init(true))) {
         let keysToAdd = await LedgerUtils.getKeyForAccount(keyType, username);
         await AccountUtils.addKeyFromLedger(username, keysToAdd);
         setMessage('add_key_from_ledger_sucessful');

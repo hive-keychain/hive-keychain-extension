@@ -23,7 +23,7 @@ const ImportFile = ({
   callBackCommand,
 }: PropsType) => {
   const [selectedFile, setSelectedFile] = useState<File>();
-  const [feedback, setFeedBack] = useState('');
+  const [feedback, setFeedBack] = useState<any>();
 
   const inputEl = useRef<HTMLInputElement>(null);
 
@@ -53,13 +53,14 @@ const ImportFile = ({
     sendResp: (response?: any) => void,
   ) => {
     if (backgroundMessage.command === callBackCommand) {
-      if (typeof backgroundMessage.value === 'string') {
-        setFeedBack(backgroundMessage.value);
+      if (backgroundMessage.value.feedback) {
+        setFeedBack(backgroundMessage.value.feedback);
       } else {
         setTimeout(() => {
           window.close();
         }, 3000);
       }
+
       chrome.runtime.onMessage.removeListener(
         onCallBackCommandeMessageListener,
       );
@@ -105,13 +106,13 @@ const ImportFile = ({
           fixToBottom></ButtonComponent>
       )}
 
-      {feedback.length ? (
+      {feedback && (
         <div
           className="feedback"
           dangerouslySetInnerHTML={{
-            __html: chrome.i18n.getMessage(feedback),
+            __html: chrome.i18n.getMessage(feedback.message, feedback.params),
           }}></div>
-      ) : null}
+      )}
     </div>
   );
 };

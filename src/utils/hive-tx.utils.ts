@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import Hive from '@engrave/ledger-app-hive';
 import { Operation, Transaction } from '@hiveio/dhive';
 import {
@@ -20,10 +20,12 @@ import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 
+const MINUTE = 60;
+
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
     rpc.uri === 'DEFAULT'
-      ? (await KeychainApi.get('/hive/rpc')).data.rpc
+      ? (await KeychainApi.get('hive/rpc')).data.rpc
       : rpc.uri;
   if (rpc.chainId) {
     HiveTxConfig.chain_id = rpc.chainId;
@@ -44,7 +46,7 @@ const sendOperation = async (operations: Operation[], key: Key) => {
 
 const createTransaction = async (operations: Operation[]) => {
   let hiveTransaction = new HiveTransaction();
-  const tx = await hiveTransaction.create(operations);
+  const tx = await hiveTransaction.create(operations, 5 * MINUTE);
   Logger.log(`length of transaction => ${JSON.stringify(tx).length}`);
   return tx;
 };
@@ -54,7 +56,7 @@ const createSignAndBroadcastTransaction = async (
   key: Key,
 ): Promise<string | undefined> => {
   let hiveTransaction = new HiveTransaction();
-  let transaction = await hiveTransaction.create(operations);
+  let transaction = await hiveTransaction.create(operations, 5 * MINUTE);
   if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;
     try {
@@ -112,12 +114,18 @@ const createSignAndBroadcastTransaction = async (
 /* istanbul ignore next */
 const confirmTransaction = async (transactionId: string) => {
   let response = null;
+  const MAX_RETRY_COUNT = 6;
+  let retryCount = 0;
   do {
     response = await call('transaction_status_api.find_transaction', {
       transaction_id: transactionId,
     });
-    await AsyncUtils.sleep(500);
-  } while (['within_mempool', 'unknown'].includes(response.result.status));
+    await AsyncUtils.sleep(1000);
+    retryCount++;
+  } while (
+    ['within_mempool', 'unknown'].includes(response.result.status) &&
+    retryCount < MAX_RETRY_COUNT
+  );
   if (
     ['within_reversible_block', 'within_irreversible_block'].includes(
       response.result.status,
@@ -138,7 +146,7 @@ const signTransaction = async (tx: Transaction, key: Key) => {
     try {
       hashSignPolicy = (await LedgerUtils.getSettings()).hashSignPolicy;
     } catch (err: any) {
-      throw ErrorUtils.parse(err);
+      throw ErrorUtils.parseLedger(err);
     }
 
     if (!Hive.isDisplayableOnDevice(tx) && !hashSignPolicy) {

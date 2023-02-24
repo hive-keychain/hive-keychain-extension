@@ -121,17 +121,17 @@ const AccountKeysList = ({
     <div className="account-keys-list">
       <div className="keys-panel">
         <AccountKeysListItemComponent
-          privateKey={activeAccount.keys.posting}
-          publicKey={activeAccount.keys.postingPubkey}
-          keyName={'popup_html_posting'}
-          keyType={KeyType.POSTING}
-          canDelete={canDeleteKey}
-        />
-        <AccountKeysListItemComponent
           privateKey={activeAccount.keys.active}
           publicKey={activeAccount.keys.activePubkey}
           keyName={'popup_html_active'}
           keyType={KeyType.ACTIVE}
+          canDelete={canDeleteKey}
+        />
+        <AccountKeysListItemComponent
+          privateKey={activeAccount.keys.posting}
+          publicKey={activeAccount.keys.postingPubkey}
+          keyName={'popup_html_posting'}
+          keyType={KeyType.POSTING}
           canDelete={canDeleteKey}
         />
         <AccountKeysListItemComponent
