@@ -20,6 +20,8 @@ import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 
+const MINUTE = 60;
+
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
     rpc.uri === 'DEFAULT'
@@ -44,7 +46,7 @@ const sendOperation = async (operations: Operation[], key: Key) => {
 
 const createTransaction = async (operations: Operation[]) => {
   let hiveTransaction = new HiveTransaction();
-  const tx = await hiveTransaction.create(operations);
+  const tx = await hiveTransaction.create(operations, 5 * MINUTE);
   Logger.log(`length of transaction => ${JSON.stringify(tx).length}`);
   return tx;
 };
@@ -54,7 +56,7 @@ const createSignAndBroadcastTransaction = async (
   key: Key,
 ): Promise<string | undefined> => {
   let hiveTransaction = new HiveTransaction();
-  let transaction = await hiveTransaction.create(operations);
+  let transaction = await hiveTransaction.create(operations, 5 * MINUTE);
   if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;
     try {

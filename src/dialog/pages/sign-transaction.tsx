@@ -33,6 +33,12 @@ const SignTransaction = (props: Props) => {
       { name: 'html_popup_broadcasting_transaction', done: false },
     ];
 
+    setInterval(() => {
+      chrome.runtime.sendMessage({
+        command: DialogCommand.PING,
+      });
+    }, 5000);
+
     try {
       let signature;
       if (!HiveLedgerApp.isDisplayableOnDevice(data.transaction)) {

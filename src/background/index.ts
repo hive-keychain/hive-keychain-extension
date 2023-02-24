@@ -113,6 +113,9 @@ const chromeMessageHandler = async (
         JSON.parse(backgroundMessage.value),
       );
       break;
+    case BackgroundCommand.PING:
+      Logger.log('ping');
+      break;
   }
 };
 
