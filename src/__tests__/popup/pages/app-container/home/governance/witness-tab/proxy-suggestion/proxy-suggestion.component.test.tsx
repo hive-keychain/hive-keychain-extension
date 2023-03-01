@@ -9,7 +9,8 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
 config.byDefault();
-describe('Proxy suggestion tests:\n', () => {
+//TODO unskip if proxy-suggestion.component gets enabled.
+describe.skip('Proxy suggestion tests:\n', () => {
   const { constants, extraMocks } = proxySuggestion;
   beforeEach(async () => {
     await proxySuggestion.beforeEach(<App />);
