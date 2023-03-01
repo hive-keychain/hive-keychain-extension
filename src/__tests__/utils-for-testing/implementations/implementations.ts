@@ -121,7 +121,6 @@ const keychainApiGet = async (
   urlToGet: string,
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
-  console.log({ urlToGet }); //TODO to remove
   switch (true) {
     case urlToGet === 'hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
@@ -149,7 +148,7 @@ const keychainApiGet = async (
 };
 
 const hiveTxUtils = {
-  //TODO add types + default data.
+  //TODO add types when needed
   getData: (toUse: {
     conversionRequests?: any;
     collateralized?: any;

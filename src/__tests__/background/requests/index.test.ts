@@ -22,15 +22,7 @@ describe('index tests:\n', () => {
     expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
     expect(_requestHandler).toBeInstanceOf(RequestsHandler);
   });
-  //TODO tests: uncomment when add the conditional on setupRpc.
-  // it('Must init handler by calling setupRpc', async () => {
-  //   const requestDataRpc1 = { rpc: DefaultRpcs[1] } as RequestDataMocks;
-  //   spies.getValueFromLocalStorage(requestDataRpc1);
-  //   const _requestHandler = await RequestsHandler.getFromLocalStorage();
-  //   expect(_requestHandler).toBeInstanceOf(RequestsHandler);
-  //   expect(spies.getValueFromLocalStorage(undefined)).toBeCalledWith(LSKEnum);
-  //   expect(_requestHandler.hiveClient.address).toBe(DefaultRpcs[1].uri);
-  // });
+
   it('Must initialize parameters', async () => {
     requestHandler.initializeParameters(
       accounts.twoAccounts,
@@ -39,7 +31,6 @@ describe('index tests:\n', () => {
     );
     expect(requestHandler.data.accounts).toEqual(accounts.twoAccounts);
     expect(requestHandler.hiveEngineConfig).toEqual(hiveEngineConfigByDefault);
-    //TODO when setupRpc updated, this must change to check on initializeParam rpc assigned.
   });
   it('Must not reset resetWinId and reset data', () => {
     requestHandler.reset(false);
