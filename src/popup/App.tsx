@@ -12,7 +12,6 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
-import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -268,9 +267,12 @@ const App = ({
           caption={loadingState.caption}
         />
       );
-    } else if (displayProxySuggestion) {
-      return <ProxySuggestionComponent />;
-    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+    }
+    // else if (displayProxySuggestion) {
+    //    Uncomment if need to
+    //   return <ProxySuggestionComponent />;
+    // }
+    else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
         <div className="change-rpc-popup">
           <div className="message">
