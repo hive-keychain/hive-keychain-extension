@@ -103,8 +103,8 @@ const WitnessTab = ({
     let requestResult;
     try {
       requestResult = await KeychainApi.get('hive/v2/witnesses-ranks');
-      if (requestResult?.data !== '') {
-        const ranking = requestResult?.data;
+      if (!!requestResult && requestResult !== '') {
+        const ranking = requestResult;
         setRanking(ranking);
         setFilteredRanking(ranking);
       } else {

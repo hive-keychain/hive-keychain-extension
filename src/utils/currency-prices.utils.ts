@@ -1,17 +1,20 @@
 import { KeychainApi } from '@api/keychain';
-import axios from 'axios';
 
 const getPrices = async () => {
-  return (await KeychainApi.get('hive/v2/price')).data;
+  return await KeychainApi.get('hive/v2/price');
 };
 
 const getBittrexCurrency = async (currency: string) => {
-  const response = (
-    await axios.get('https://api.bittrex.com/api/v1.1/public/getcurrencies')
-  ).data;
+  const response = await fetch(
+    'https://api.bittrex.com/api/v1.1/public/getcurrencies',
+    {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    },
+  );
 
-  if (response.success) {
-    return response.result.find((c: any) => c.Currency == currency);
+  if (response.status === 200) {
+    return (await response.json()).find((c: any) => c.Currency == currency);
   }
   return null;
 };

@@ -3,7 +3,7 @@ import Hive from '@engrave/ledger-app-hive';
 import { Operation, Transaction } from '@hiveio/dhive';
 import {
   HiveTxBroadcastErrorResponse,
-  HiveTxBroadcastSuccessResponse,
+  HiveTxBroadcastSuccessResponse
 } from '@interfaces/hive-tx.interface';
 import { Key } from '@interfaces/keys.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -11,7 +11,7 @@ import {
   call,
   config as HiveTxConfig,
   PrivateKey,
-  Transaction as HiveTransaction,
+  Transaction as HiveTransaction
 } from 'hive-tx';
 import { KeychainError } from 'src/keychain-error';
 import { AsyncUtils } from 'src/utils/async.utils';
@@ -25,7 +25,7 @@ const MINUTE = 60;
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
     rpc.uri === 'DEFAULT'
-      ? (await KeychainApi.get('hive/rpc')).data.rpc
+      ? (await KeychainApi.get('hive/rpc')).rpc
       : rpc.uri;
   if (rpc.chainId) {
     HiveTxConfig.chain_id = rpc.chainId;
