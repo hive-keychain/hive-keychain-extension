@@ -14,14 +14,14 @@ describe('ledger.utils.ts tests:\n', () => {
       mocks.transportWebUsb.isSupported(true);
       mocks.transportWebUsb.create(constants.t);
       mocks.transportWebUsb.list(['testdevice']);
-      expect(await LedgerUtils.init()).toBe(true);
+      expect(await LedgerUtils.init(true)).toBe(true);
     });
 
     it('Must throw error', async () => {
       mocks.transportWebUsb.isSupported(false);
       mocks.transportWebUsb.create(constants.t);
       try {
-        await LedgerUtils.init();
+        await LedgerUtils.init(true);
       } catch (error) {
         expect(error).toEqual(new Error('html_ledger_not_supported'));
       }
