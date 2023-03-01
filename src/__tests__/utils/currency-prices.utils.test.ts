@@ -13,15 +13,13 @@ describe('currency-prices-utils tests', () => {
   describe('getPrices tests:\n', () => {
     test('Must get prices from Hive API', async () => {
       const mockedApiReply = {
-        data: {
-          bitcoin: { usd: 79999, usd_24h_change: -9.025204931469629 },
-          hive: { usd: 0.638871, usd_24h_change: -13.100842677149227 },
-          hive_dollar: { usd: 0.972868, usd_24h_change: -0.6982597522799386 },
-        },
+        bitcoin: { usd: 79999, usd_24h_change: -9.025204931469629 },
+        hive: { usd: 0.638871, usd_24h_change: -13.100842677149227 },
+        hive_dollar: { usd: 0.972868, usd_24h_change: -0.6982597522799386 },
       };
       KeychainApi.get = jest.fn().mockResolvedValueOnce(mockedApiReply);
       const result = await CurrencyPricesUtils.getPrices();
-      expect(result).toEqual(mockedApiReply.data);
+      expect(result).toEqual(mockedApiReply);
     });
     test('If error on request will throw an unhandled error', async () => {
       const errorThrown = new Error('Network Failed');

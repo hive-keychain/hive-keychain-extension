@@ -121,6 +121,7 @@ const keychainApiGet = async (
   urlToGet: string,
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
+  console.log({ urlToGet }); //TODO to remove
   switch (true) {
     case urlToGet === '/hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
