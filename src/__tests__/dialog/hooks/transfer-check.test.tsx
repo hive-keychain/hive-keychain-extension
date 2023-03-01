@@ -6,8 +6,9 @@ import Transfer from 'src/dialog/pages/requests/transfer';
 import transferCheckMocks from 'src/__tests__/dialog/hooks/mocks/transfer-check-mocks';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-
+import config from 'src/__tests__/utils-for-testing/setups/config';
 describe('transfer-check.ts tests:\n', () => {
+  config.afterAllCleanAndResetMocks();
   const { constants, methods, spies } = transferCheckMocks;
   methods.afterEach;
   describe('useTransferCheck cases:\n', () => {
