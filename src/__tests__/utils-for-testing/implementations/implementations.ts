@@ -125,7 +125,7 @@ const keychainApiGet = async (
   switch (true) {
     case urlToGet === '/hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
-    case urlToGet === '/hive/v2/price':
+    case urlToGet === 'hive/v2/price':
       return customData?.currenciesPrices ?? currencies.prices;
     case urlToGet === '/hive/rpc':
       return customData?.rpc ?? { data: { rpc: 'https://api.hive.blog' } };
@@ -177,6 +177,22 @@ const hiveTxUtils = {
   },
 };
 
+/**
+ * Note: for now this mock is related to
+ * src/utils/currency-prices.utils.ts
+ * > getBittrexCurrency
+ */
+const mockFetch = (data: any, status: number, reject?: boolean) => {
+  jest.spyOn(global, 'fetch').mockImplementationOnce(() =>
+    reject
+      ? Promise.reject(data)
+      : Promise.resolve({
+          json: () => Promise.resolve(data),
+          status: status,
+        } as Response),
+  );
+};
+
 const mocksImplementation = {
   getValuefromLS,
   i18nGetMessage,
@@ -184,6 +200,7 @@ const mocksImplementation = {
   keychainApiGet,
   manifestFile,
   hiveTxUtils,
+  mockFetch,
 };
 
 export default mocksImplementation;

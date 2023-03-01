@@ -12,7 +12,7 @@ const getBittrexCurrency = async (currency: string) => {
       headers: { 'Content-Type': 'application/json' },
     },
   );
-
+  console.log({ response }); //TODO to remove
   if (response.status === 200) {
     return (await response.json()).find((c: any) => c.Currency == currency);
   }
