@@ -5,6 +5,8 @@ import convertMocks from 'src/__tests__/background/requests/operations/ops/mocks
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import config from 'src/__tests__/utils-for-testing/setups/config';
+config.afterAllCleanAndResetMocks();
 describe('convert tests:\n', () => {
   const { methods, constants, mocks } = convertMocks;
   const { requestHandler, data } = constants;

@@ -66,10 +66,19 @@ const methods = {
 
 const extraMocks = () => {};
 
+const spies = {
+  chrome: {
+    tabs: {
+      create: () => jest.spyOn(chrome.tabs, 'create'),
+    },
+  },
+};
+
 export default {
   beforeEach,
   methods,
   constants,
   extraMocks,
   menuPages,
+  spies,
 };

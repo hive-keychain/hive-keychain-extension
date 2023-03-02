@@ -48,8 +48,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    //TODO rm comments
-    // mocks.client.broadcast.vote(confirmed);
   }),
   assert: {
     error: (
