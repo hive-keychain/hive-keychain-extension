@@ -6,7 +6,10 @@ import {
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
-import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
+import {
+  setIsLedgerSupported,
+  setProcessingDecryptAccount,
+} from '@popup/actions/app-status.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
@@ -27,6 +30,7 @@ import { BackgroundCommand } from 'src/reference-data/background-message-key.enu
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -58,6 +62,7 @@ const App = ({
   setAccounts,
   loadGlobalProperties,
   loadCurrencyPrices,
+  setIsLedgerSupported,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
@@ -70,6 +75,13 @@ const App = ({
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
+    LedgerUtils.isLedgerSupported().then((res) => {
+      setIsLedgerSupported(res);
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
+        res,
+      );
+    });
   }, []);
 
   useEffect(() => {
@@ -347,6 +359,7 @@ const connector = connect(mapStateToProps, {
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
   setProcessingDecryptAccount,
+  setIsLedgerSupported,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

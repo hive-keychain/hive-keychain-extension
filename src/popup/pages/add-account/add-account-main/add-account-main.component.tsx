@@ -15,6 +15,7 @@ const AddAccountMain = ({
   accounts,
   setAccounts,
   setTitleContainerProperties,
+  isLedgerSupported,
 }: PropsFromRedux) => {
   const [importWindow, setImportWindow] = useState<number>();
 
@@ -96,18 +97,23 @@ const AddAccountMain = ({
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
         />
-        <ButtonComponent
-          ariaLabel="import-keys-button"
-          label={'popup_html_add_account_with_ledger'}
-          onClick={handleAddFromLedger}
-        />
+        {isLedgerSupported && (
+          <ButtonComponent
+            ariaLabel="import-keys-button"
+            label={'popup_html_add_account_with_ledger'}
+            onClick={handleAddFromLedger}
+          />
+        )}
       </div>
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts };
+  return {
+    accounts: state.accounts,
+    isLedgerSupported: state.appStatus.isLedgerSupported,
+  };
 };
 
 const connector = connect(mapStateToProps, {

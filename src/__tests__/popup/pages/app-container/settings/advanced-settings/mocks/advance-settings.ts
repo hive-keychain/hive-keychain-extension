@@ -45,7 +45,7 @@ const constants = {
     about: i18n.get('popup_html_about_text'),
   },
   menuItems: {
-    advanceSettings: AdvancedSettingsMenuItems,
+    advanceSettings: AdvancedSettingsMenuItems(true),
   },
 };
 
