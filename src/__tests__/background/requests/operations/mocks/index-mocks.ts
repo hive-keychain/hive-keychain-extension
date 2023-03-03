@@ -58,19 +58,8 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    //TODO rm comments when done fixing tests
-    // mocks.client.database.call([{ requestid: 1 }], [{ requestid: 2 }]);
-    // mocks.client.broadcast.delegateVestingShares(confirmed);
-    // mocks.client.broadcast.updateAccount(confirmed);
-    // mocks.client.broadcast.comment(confirmed);
-    // mocks.client.broadcast.transfer(confirmed);
-    // mocks.client.broadcast.vote(confirmed);
-    // mocks.client.broadcast.json(confirmed);
-    // mocks.client.broadcast.sendOperations(confirmed);
-    // mocks.client.database.getAccounts([accounts.extended]);
     mocks.getAccountsFromLocalStorage();
     mocks.getMk(mk.user.one);
-    // mocks.client.database.getDynamicGlobalProperties();
   }),
 };
 

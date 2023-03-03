@@ -52,7 +52,7 @@ describe('account.utils part 3 tests:\n', () => {
         accounts,
         userData.nonEncryptKeys.active,
         KeyType.ACTIVE,
-        'mk', // TODO : might need fixing
+        'mk',
       );
       expect(result).toEqual(accounts);
     });
@@ -70,7 +70,7 @@ describe('account.utils part 3 tests:\n', () => {
         accounts,
         userData.nonEncryptKeys.posting,
         KeyType.POSTING,
-        'mk', // TODO : might need fixing
+        'mk',
       );
       expect(result).toEqual(accounts);
     });
@@ -88,7 +88,7 @@ describe('account.utils part 3 tests:\n', () => {
         accounts,
         userData.nonEncryptKeys.memo,
         KeyType.MEMO,
-        'mk', // TODO : might need fixing
+        'mk',
       );
       expect(result).toEqual(accounts);
     });

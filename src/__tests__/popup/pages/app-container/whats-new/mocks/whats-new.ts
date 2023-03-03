@@ -75,7 +75,7 @@ const beforeEach = async (differVersions: boolean = false) => {
     dataMocks.customDataFromLocalStorage.customlastVersionSeen = '3.1';
     remock = {
       keyChainApiGet: {
-        customData: { extensionVersion: constants.versionLog },
+        extensionVersion: constants.versionLog,
       },
       chromeRunTime: {
         getManifest: { version: '2.2.0', name: 'KeyChain Extension' },

@@ -31,7 +31,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
       ) || [];
 
     const newAccounts =
-      BgdAccountsUtils.mergeImportedAccountsToExistingAccounts(
+      await BgdAccountsUtils.mergeImportedAccountsToExistingAccounts(
         importedAccounts,
         accounts.list || [],
       );

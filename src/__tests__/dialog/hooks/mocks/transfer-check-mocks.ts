@@ -32,9 +32,7 @@ const methods = {
     cleanup();
   }),
   getPhishingAccounts: (phishingAccounts: string[]) =>
-    (KeychainApi.get = jest.fn().mockResolvedValue({
-      data: phishingAccounts,
-    })),
+    jest.spyOn(KeychainApi, 'get').mockResolvedValue(phishingAccounts),
 };
 
 export default { constants, methods, spies };

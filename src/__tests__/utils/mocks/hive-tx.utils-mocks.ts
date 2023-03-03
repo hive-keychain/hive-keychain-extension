@@ -77,7 +77,7 @@ const spies = {
 
 const mocks = {
   keychainApi: {
-    get: (response: { data: { rpc: string } }) =>
+    get: (response: { rpc: string }) =>
       jest.spyOn(KeychainApi, 'get').mockResolvedValue(response),
   },
   createSignAndBroadcastTransaction: (value: string | undefined) =>

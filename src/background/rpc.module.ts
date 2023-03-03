@@ -7,7 +7,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 const init = async () => {
   const rpc = await RPCModule.getActiveRpc();
   if (!rpc || rpc.uri === 'DEFAULT') {
-    HiveTxConfig.node = (await KeychainApi.get('hive/rpc')).data.rpc;
+    HiveTxConfig.node = (await KeychainApi.get('hive/rpc')).rpc;
   } else {
     HiveTxConfig.node = rpc.uri;
     if (rpc.chainId) {

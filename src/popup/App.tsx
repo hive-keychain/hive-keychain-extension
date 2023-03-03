@@ -6,13 +6,15 @@ import {
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
-import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
+import {
+  setIsLedgerSupported,
+  setProcessingDecryptAccount,
+} from '@popup/actions/app-status.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
-import { ProxySuggestionComponent } from '@popup/pages/app-container/home/governance/witness-tab/proxy-suggestion/proxy-suggestion.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -28,6 +30,7 @@ import { BackgroundCommand } from 'src/reference-data/background-message-key.enu
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -59,6 +62,7 @@ const App = ({
   setAccounts,
   loadGlobalProperties,
   loadCurrencyPrices,
+  setIsLedgerSupported,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
@@ -71,6 +75,13 @@ const App = ({
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
+    LedgerUtils.isLedgerSupported().then((res) => {
+      setIsLedgerSupported(res);
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
+        res,
+      );
+    });
   }, []);
 
   useEffect(() => {
@@ -268,9 +279,12 @@ const App = ({
           caption={loadingState.caption}
         />
       );
-    } else if (displayProxySuggestion) {
-      return <ProxySuggestionComponent />;
-    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+    }
+    // else if (displayProxySuggestion) {
+    //    Uncomment if need to
+    //   return <ProxySuggestionComponent />;
+    // }
+    else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
         <div className="change-rpc-popup">
           <div className="message">
@@ -345,6 +359,7 @@ const connector = connect(mapStateToProps, {
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
   setProcessingDecryptAccount,
+  setIsLedgerSupported,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

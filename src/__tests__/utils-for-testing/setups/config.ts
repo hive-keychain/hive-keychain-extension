@@ -36,4 +36,17 @@ const adjustSetTimeOutValues = (values: SetTimeOutConfigValues) => {
   });
 };
 
-export default { useChrome, byDefault, adjustSetTimeOutValues };
+const afterAllCleanAndResetMocks = () => {
+  afterAll(() => {
+    jest.clearAllMocks();
+    jest.resetAllMocks();
+    jest.restoreAllMocks();
+  });
+};
+
+export default {
+  useChrome,
+  byDefault,
+  adjustSetTimeOutValues,
+  afterAllCleanAndResetMocks,
+};
