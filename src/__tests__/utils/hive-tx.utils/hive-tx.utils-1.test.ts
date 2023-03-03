@@ -8,7 +8,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
   methods.afterAll;
   describe('setRpc cases:\n', () => {
     it('Must set Rpc from KeychainApi', async () => {
-      mocks.keychainApi.get({ data: { rpc: DefaultRpcs[1].uri } });
+      mocks.keychainApi.get({ rpc: DefaultRpcs[1].uri });
       await HiveTxUtils.setRpc({ uri: 'DEFAULT', testnet: false });
       expect(HiveTxConfig.node).toEqual(DefaultRpcs[1].uri);
     });

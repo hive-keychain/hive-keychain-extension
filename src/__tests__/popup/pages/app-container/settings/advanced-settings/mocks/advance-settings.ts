@@ -45,7 +45,7 @@ const constants = {
     about: i18n.get('popup_html_about_text'),
   },
   menuItems: {
-    advanceSettings: AdvancedSettingsMenuItems,
+    advanceSettings: AdvancedSettingsMenuItems(true),
   },
 };
 
@@ -66,10 +66,19 @@ const methods = {
 
 const extraMocks = () => {};
 
+const spies = {
+  chrome: {
+    tabs: {
+      create: () => jest.spyOn(chrome.tabs, 'create'),
+    },
+  },
+};
+
 export default {
   beforeEach,
   methods,
   constants,
   extraMocks,
   menuPages,
+  spies,
 };

@@ -2,9 +2,7 @@ import { TransactionConfirmation } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { AssertionError } from 'assert';
-//TODO refactor and try to re-use code here
-//  Needed:
-//  answer: success & error.
+
 export default {
   error: {
     hasAuthority: (

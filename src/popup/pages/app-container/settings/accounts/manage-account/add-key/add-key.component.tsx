@@ -20,6 +20,7 @@ const AddKey = ({
   addKey,
   setTitleContainerProperties,
   setErrorMessage,
+  isLedgerSupported,
 }: PropsType) => {
   const [privateKey, setPrivateKey] = useState('');
 
@@ -67,7 +68,7 @@ const AddKey = ({
         onEnterPress={importKey}
       />
 
-      {keyType === KeyType.ACTIVE && (
+      {keyType === KeyType.ACTIVE && isLedgerSupported && (
         <div className="add-using-ledger" onClick={navigateToUseLedger}>
           {chrome.i18n.getMessage('popup_html_add_using_ledger')}
         </div>
@@ -87,6 +88,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     keyType: state.navigation.stack[0].params as KeyType,
     activeAccountName: state.activeAccount.name,
+    isLedgerSupported: state.appStatus.isLedgerSupported,
   };
 };
 

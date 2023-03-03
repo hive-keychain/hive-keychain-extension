@@ -41,6 +41,7 @@ const getExchangeValidationWarning = async (
     return chrome.i18n.getMessage(
       'popup_html_transfer_recurrent_exchange_warning',
     );
+  //TODO
   // if (exchange.account === 'bittrex') {
   //   const info = await CurrencyPricesUtils.getBittrexCurrency(currency);
   //   if (info && !info.IsActive) {

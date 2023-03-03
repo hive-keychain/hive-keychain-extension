@@ -14,7 +14,6 @@ import RpcUtils from 'src/utils/rpc.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
 //TODO see if this whole module is needed at all
-// check which mocks must be deleted, using interfaces as support.
 export const toOverWriteFuntions: any = {
   getValueFromLocalStorage: () =>
     (LocalStorageUtils.getValueFromLocalStorage = jest.fn()),
@@ -34,10 +33,8 @@ export const toOverWriteFuntions: any = {
   getPrices: () => (CurrencyPricesUtils.getPrices = jest.fn()),
   getAccountValue: () => (AccountUtils.getAccountValue = jest.fn()),
   hasReward: () => (RewardsUtils.hasReward = jest.fn()),
-  //TODO fix these 2
   getVestingDelegations: () => (HiveTxUtils.getData = jest.fn()),
   getDelegators: () => (KeychainApi.get = jest.fn()),
-  //TIL here
   getAccountTransactions: () =>
     (TransactionUtils.getAccountTransactions = jest.fn()),
   getTokens: () => (HiveEngineUtils.get = jest.fn()),

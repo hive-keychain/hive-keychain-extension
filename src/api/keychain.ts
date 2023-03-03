@@ -15,7 +15,7 @@ const get = async (url: string): Promise<any> => {
           }
         })
         .then((res) => {
-          resolve({ data: res });
+          resolve(res);
         })
         .catch((err) => {
           reject(err);
