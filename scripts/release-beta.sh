@@ -2,6 +2,7 @@
 
 rm -rf _releases
 
+
 echo "Compiling beta..."
 resultBeta=`npm run build:beta | grep -o "compiled with .* error[s]* in"`
 echo "Checking errors"
@@ -20,7 +21,7 @@ version=${manifestVersion//'"'/''}
 version=${version//'version: '/''}
 version=${version//','/''}
 version=`echo ${version} | xargs` 
-mkdir -p "_releases/${version}-beta"
 
-zip "_releases/${version}-chromium-beta.zip" dist-beta/*
-
+cd dist-beta
+zip -qr "../_releases/${version}-chromium-beta.zip" *
+cd ..

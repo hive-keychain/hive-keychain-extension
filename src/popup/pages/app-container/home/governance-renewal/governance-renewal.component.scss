@@ -20,7 +20,8 @@
   }
 
   .governance-renewal-container {
-    height: auto;
+    height: 80%;
+    overflow-y: scroll;
     width: calc(100% - 72px);
     background: $black;
     border-radius: 8px;

@@ -86,10 +86,9 @@ describe('add-by-auth tests:\n', () => {
   });
   it('Must show error if account not present in local accounts', async () => {
     const account = 'theghost1980';
-    const errorMessage = mocksImplementation.i18nGetMessageCustom(
-      'popup_no_auth_account',
-      [account],
-    );
+    const errorMessage = chrome.i18n.getMessage('popup_no_auth_account', [
+      account,
+    ]);
     await typeAwait([
       { ariaLabel: alInput.username, text: 'aggroed' },
       { ariaLabel: alInput.authorizedAccount, text: account },

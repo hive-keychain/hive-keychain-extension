@@ -8,7 +8,6 @@ import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
-import AccountUtils from 'src/utils/account.utils';
 import './reset-password.component.scss';
 
 const ResetPasswordPage = ({
@@ -26,7 +25,9 @@ const ResetPasswordPage = ({
   }, []);
 
   const reset = () => {
-    AccountUtils.clearAllData(resetAccount, forgetMk, resetActiveAccount);
+    resetAccount();
+    forgetMk();
+    resetActiveAccount();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 

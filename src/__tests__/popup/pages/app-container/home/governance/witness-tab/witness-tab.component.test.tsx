@@ -21,7 +21,7 @@ describe('witness tab:\n', () => {
     });
     it('Must display active witnesses', () => {
       expect(screen.getAllByLabelText(alDiv.rankingItem)).toHaveLength(
-        constants.witnessData.data.length - 1,
+        constants.witnessData.length - 1,
       );
     });
     it('Must display more information message', () => {

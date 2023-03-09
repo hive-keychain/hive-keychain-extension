@@ -30,10 +30,10 @@ import { Conversion as Delegations } from 'src/interfaces/conversion.interface';
 import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 import './delegations.component.scss';
 
 const Delegations = ({
@@ -201,20 +201,25 @@ const Delegations = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
-          activeAccount,
-          username,
-          FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
-            ' VESTS',
-        );
-        removeFromLoadingList('html_popup_delegation_operation');
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(username, activeAccount);
-          setSuccessMessage('popup_html_delegation_successful');
-        } else {
-          setErrorMessage('popup_html_delegation_fail');
+        try {
+          let success = await DelegationUtils.delegateVestingShares(
+            activeAccount.name!,
+            username,
+            FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
+              ' VESTS',
+            activeAccount.keys.active!,
+          );
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+            setSuccessMessage('popup_html_delegation_successful');
+          } else {
+            setErrorMessage('popup_html_delegation_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_delegation_operation');
         }
       },
     });
@@ -233,20 +238,25 @@ const Delegations = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
-          activeAccount,
-          username,
-          '0.000000 VESTS',
-        );
 
-        removeFromLoadingList('html_popup_cancel_delegation_operation');
-
-        if (success) {
-          navigateTo(Screen.HOME_PAGE, true);
-          await TransferUtils.saveFavoriteUser(username, activeAccount);
-          setSuccessMessage('popup_html_cancel_delegation_successful');
-        } else {
-          setErrorMessage('popup_html_cancel_delegation_fail');
+        try {
+          let success = await DelegationUtils.delegateVestingShares(
+            activeAccount.name!,
+            username,
+            '0.000000 VESTS',
+            activeAccount.keys.active!,
+          );
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
+            setSuccessMessage('popup_html_cancel_delegation_successful');
+          } else {
+            setErrorMessage('popup_html_cancel_delegation_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
     });
@@ -342,7 +352,11 @@ const Delegations = ({
 
       <OperationButtonComponent
         ariaLabel="delegate-operation-submit-button"
-        label={'popup_html_delegate_to_user'}
+        label={
+          value.toString().length > 0 && Number(value) === 0
+            ? 'popup_html_cancel_delegation'
+            : 'popup_html_delegate_to_user'
+        }
         onClick={() => handleButtonClick()}
         requiredKey={KeychainKeyTypesLC.active}
         fixToBottom

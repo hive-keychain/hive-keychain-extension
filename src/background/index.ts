@@ -2,9 +2,9 @@ import AccountModule from '@background/account';
 import AutolockModule from '@background/autolock.module';
 import ClaimModule from '@background/claim.module';
 import LocalStorageModule from '@background/local-storage.module';
-import { RequestsHandler } from '@background/requests';
 import init from '@background/requests/init';
 import { performOperation } from '@background/requests/operations';
+import { RequestsHandler } from '@background/requests/request-handler';
 import RPCModule from '@background/rpc.module';
 import SettingsModule from '@background/settings.module';
 import getMessage from '@background/utils/i18n.utils';
@@ -23,8 +23,10 @@ import MkModule from './mk.module';
 chrome.runtime.onStartup.addListener(() => {
   LocalStorageUtils.removeFromLocalStorage(LocalStorageKeyEnum.__MK);
 });
+
 /* istanbul ignore next */
 (async () => {
+  await RPCModule.init();
   Logger.info('Initializing background tasks');
   await LocalStorageModule.checkAndUpdateLocalStorage();
   ClaimModule.start();
@@ -110,6 +112,9 @@ const chromeMessageHandler = async (
       SettingsModule.sendBackImportedFileContent(
         JSON.parse(backgroundMessage.value),
       );
+      break;
+    case BackgroundCommand.PING:
+      Logger.log('ping');
       break;
   }
 };

@@ -22,7 +22,7 @@ const i18n = {
 const constants = {
   username: mk.user.one,
   stateAs: { ...initialStates.iniStateAs.defaultExistent } as RootState,
-  messages: {
+  message: {
     intro: i18n.get('popup_html_keychainify_text'),
   },
 };

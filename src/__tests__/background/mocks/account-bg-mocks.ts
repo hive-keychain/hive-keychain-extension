@@ -1,16 +1,8 @@
 import MkModule from '@background/mk.module';
-import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
-const constants = {
-  params: (value: any) => {
-    return {
-      command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-      value: value,
-    };
-  },
-};
+const constants = {};
 
 const mocks = {
   getUILanguage: () =>

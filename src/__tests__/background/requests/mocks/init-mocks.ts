@@ -1,7 +1,7 @@
 import { BgdHiveEngineConfigModule } from '@background/hive-engine-config.module';
 import MkModule from '@background/mk.module';
-import { RequestsHandler } from '@background/requests';
 import * as PerformOperation from '@background/requests/operations';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { HiveEngineConfig } from '@interfaces/hive-engine-rpc.interface';
 import {
   KeychainKeyTypes,

@@ -1,4 +1,5 @@
-import { RequestsHandler } from '@background/requests';
+import LedgerModule from '@background/ledger.module';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainKeyTypes,
@@ -6,8 +7,15 @@ import {
   RequestBroadcast,
   RequestId,
 } from '@interfaces/keychain.interface';
+import AccountUtils from 'src/utils/account.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+
+const i18n = {
+  get: (message: string, options?: string[]) =>
+    mocksImplementation.i18nGetMessageCustom(message, options),
+};
 
 const requestHandler = new RequestsHandler();
 
@@ -33,19 +41,21 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    database: {
-      getAccounts: (result: ExtendedAccount[]) =>
-        (requestHandler.getHiveClient().database.getAccounts = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
-    broadcast: {
-      sendOperations: (result: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(result)),
-    },
+  getExtendedAccount: (account: ExtendedAccount | undefined) =>
+    (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
+  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: boolean) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
   },
 };
 
@@ -63,6 +73,7 @@ const constants = {
   data,
   requestHandler,
   confirmed,
+  i18n,
 };
 
 export default {

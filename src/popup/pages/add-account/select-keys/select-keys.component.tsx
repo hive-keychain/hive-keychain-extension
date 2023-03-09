@@ -13,7 +13,6 @@ import './select-keys.component.scss';
 const SelectKeys = ({
   keys,
   username,
-  mk,
   addAccount,
   setErrorMessage,
   setTitleContainerProperties,
@@ -67,6 +66,10 @@ const SelectKeys = ({
         hint="popup_html_posting_info"
         checked={importPosting}
         onChange={setImportPosting}
+        disabled={keys.posting ? false : true}
+        tooltipMessage={
+          keys.posting ? undefined : 'popup_html_public_key_not_matching'
+        }
       />
       <CheckboxComponent
         ariaLabel="checkbox-import-active-key"
@@ -74,6 +77,10 @@ const SelectKeys = ({
         hint="popup_html_active_info"
         checked={importActive}
         onChange={setImportActive}
+        disabled={keys.active ? false : true}
+        tooltipMessage={
+          keys.active ? undefined : 'popup_html_public_key_not_matching'
+        }
       />
       <CheckboxComponent
         ariaLabel="checkbox-import-memo-key"
@@ -81,6 +88,10 @@ const SelectKeys = ({
         hint="popup_html_memo_info"
         checked={importMemo}
         onChange={setImportMemo}
+        disabled={keys.memo ? false : true}
+        tooltipMessage={
+          keys.memo ? undefined : 'popup_html_public_key_not_matching'
+        }
       />
       <ButtonComponent
         ariaLabel="button-save"
@@ -95,7 +106,6 @@ const mapStateToProps = (state: RootState) => {
   return {
     keys: state.navigation.stack[0].params.keys,
     username: state.navigation.stack[0].params.username,
-    mk: state.mk,
   };
 };
 

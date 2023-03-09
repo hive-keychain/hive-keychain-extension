@@ -1,56 +1,90 @@
 import { broadcastPowerDown } from '@background/requests/operations/ops/power';
-import { DynamicGlobalProperties } from '@hiveio/dhive';
+import { DialogCommand } from '@reference-data/dialog-message-key.enum';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
+import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
-import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('power tests:\n', () => {
   const { methods, constants, mocks } = powerMocks;
-  const { requestHandler, data, confirmed } = constants;
+  const { requestHandler, data } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastPowerDown cases:\n', () => {
-    it('Must return error if wrong global data', async () => {
-      mocks.client.database.getDynamicGlobalProperties(
-        {} as DynamicGlobalProperties,
-      );
-      const resultOperation = (await broadcastPowerDown(
-        requestHandler,
-        data.powerDown,
-      )) as ResultOperation;
-      const { success, result, error, ...datas } = resultOperation.msg;
-      expect(success).toBe(false);
-      expect(result).toBeUndefined();
-      expect((error as TypeError).message).toContain('split');
+    describe('Default cases:\n', () => {
+      it('Must return error if wrong global data', async () => {
+        mocks.getDynamicGlobalProperties({});
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        expect(result.command).toBe(DialogCommand.ANSWER_REQUEST);
+        expect(result.msg.result).toBeUndefined();
+        expect(result.msg.error).not.toBeNull();
+        expect(result.msg.message).toContain(
+          "Cannot read properties of undefined (reading 'split')",
+        );
+      });
+      it('Must return error if no key on handler', async () => {
+        mocks.getDynamicGlobalProperties(dynamic.globalProperties);
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        const { request_id, ...datas } = data.powerDown;
+        expect(result).toEqual(
+          messages.error.answerError(
+            new Error('html_popup_error_while_signing_transaction'),
+            datas,
+            request_id,
+            mocksImplementation.i18nGetMessageCustom(
+              'html_popup_error_while_signing_transaction',
+            ),
+            undefined,
+          ),
+        );
+      });
+      it('Must return success', async () => {
+        const mhiveTxSendOp = jest
+          .spyOn(HiveTxUtils, 'sendOperation')
+          .mockResolvedValue(true);
+        mocks.getDynamicGlobalProperties(dynamic.globalProperties);
+        requestHandler.data.key = userData.one.nonEncryptKeys.active;
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        const { request_id, ...datas } = data.powerDown;
+        expect(result).toEqual(
+          messages.success.answerSucess(
+            true,
+            datas,
+            request_id,
+            chrome.i18n.getMessage('bgd_ops_pd', [
+              datas.hive_power,
+              datas.username,
+            ]),
+            undefined,
+          ),
+        );
+        mhiveTxSendOp.mockRestore();
+      });
     });
 
-    it('Must return error if no key on handler', async () => {
-      const resultOperation = (await broadcastPowerDown(
-        requestHandler,
-        data.powerDown,
-      )) as ResultOperation;
-      const { success, result, error, ...datas } = resultOperation.msg;
-      expect(success).toBe(false);
-      expect(result).toBeUndefined();
-      expect((error as TypeError).message).toContain('private key');
-    });
-
-    it('Must return success', async () => {
-      requestHandler.data.key = userData.one.nonEncryptKeys.active;
-      const result = await broadcastPowerDown(requestHandler, data.powerDown);
-      const { request_id, ...datas } = data.powerDown;
-      expect(result).toEqual(
-        messages.success.answerSucess(
-          confirmed,
-          datas,
-          request_id,
-          chrome.i18n.getMessage('bgd_ops_pd', [
-            datas.hive_power,
-            datas.username,
-          ]),
-          undefined,
-        ),
-      );
+    describe('Using ledger cases:\n', () => {
+      it('Must return success', async () => {
+        mocks.HiveTxUtils.sendOperation(true);
+        mocks.LedgerModule.getSignatureFromLedger('signed!');
+        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.getDynamicGlobalProperties(dynamic.globalProperties);
+        requestHandler.data.key = '#ledgerKEY12345';
+        const result = await broadcastPowerDown(requestHandler, data.powerDown);
+        const { request_id, ...datas } = data.powerDown;
+        expect(result).toEqual(
+          messages.success.answerSucess(
+            true,
+            datas,
+            request_id,
+            chrome.i18n.getMessage('bgd_ops_pd', [
+              datas.hive_power,
+              datas.username,
+            ]),
+            undefined,
+          ),
+        );
+      });
     });
   });
 });

@@ -33,6 +33,12 @@ body {
   flex-direction: column;
   row-gap: 24px;
   font-size: 16px;
+
+  .feedback {
+    a {
+      color: red;
+    }
+  }
 }
 
 #file {

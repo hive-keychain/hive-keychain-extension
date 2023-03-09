@@ -6,8 +6,8 @@ import mk from 'src/__tests__/utils-for-testing/data/mk';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
-config.byDefault();
 describe('automated-tasks.component tests:\n', () => {
+  config.byDefault();
   let _asFragment: () => DocumentFragment;
   const { methods, constants, extraMocks } = automatedTasks;
   methods.afterEach;
@@ -19,10 +19,10 @@ describe('automated-tasks.component tests:\n', () => {
           maxManaGreater: true,
         });
       });
-      it('Must load component and show intro, autoclaims', () => {
+      it('Must load component and show messages', () => {
         assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
         assertion.getOneByText(constants.message.intro);
-        assertion.queryByText(constants.message.autoClaims, true);
+        assertion.getOneByText(constants.message.autoclaimInfo);
       });
       it('Must set to false auto claim accounts', async () => {
         await clickAwait([alCheckbox.automatedTasks.checkbox.claim.accounts]);
@@ -58,9 +58,10 @@ describe('automated-tasks.component tests:\n', () => {
           passData: true,
         });
       });
-      it('Must load component and not show autoclaims', () => {
+      it('Must load component and show autoclaim information', () => {
         assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
-        assertion.queryByText(constants.message.autoClaims, false);
+        assertion.getOneByText(constants.message.intro);
+        assertion.queryByText(constants.message.autoclaimInfo, true);
       });
       it('Must load selected account', async () => {
         extraMocks.remockAccounts();
@@ -77,8 +78,10 @@ describe('automated-tasks.component tests:\n', () => {
     beforeEach(async () => {
       _asFragment = await automatedTasks.beforeEach();
     });
-    it('Must load component and not show autoclaims', () => {
+    it('Must load component, show messages, autoclaim info', () => {
       assertion.getByLabelText(alComponent.userPreferences.automatedTasks);
+      assertion.getOneByText(constants.message.intro);
+      assertion.queryByText(constants.message.autoclaimInfo, true);
     });
   });
 });

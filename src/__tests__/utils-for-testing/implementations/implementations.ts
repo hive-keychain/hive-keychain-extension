@@ -2,6 +2,7 @@ import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
@@ -121,30 +122,73 @@ const keychainApiGet = async (
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
   switch (true) {
-    case urlToGet === '/hive/v2/witnesses-ranks':
+    case urlToGet === 'hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
-    case urlToGet === '/hive/v2/price':
+    case urlToGet === 'hive/v2/price':
       return customData?.currenciesPrices ?? currencies.prices;
-    case urlToGet === '/hive/rpc':
-      return customData?.rpc ?? { data: { rpc: 'https://api.hive.blog' } };
-    case urlToGet === '/hive/phishingAccounts':
+    case urlToGet === 'hive/rpc':
+      return customData?.rpc ?? { rpc: 'https://api.hive.blog' };
+    case urlToGet === 'hive/phishingAccounts':
       return customData?.phishingAccounts ?? phishing.accounts;
-    case urlToGet === '/hive/last-extension-version':
+    case urlToGet === 'hive/last-extension-version':
       return (
-        customData?.extensionVersion ?? {
-          data: {
-            version: manifestFile.chromium.version, //by default same version as current
-            //name: manifestFile.chromium.name,
-            features: {},
-            url: 'https://hive-keychain.com',
-          } as WhatsNewContent,
-        }
+        customData?.extensionVersion ??
+        ({
+          version: manifestFile.chromium.version, //by default same version as current
+          //name: manifestFile.chromium.name,
+          features: {},
+          url: 'https://hive-keychain.com',
+        } as WhatsNewContent)
       );
-    case urlToGet.includes('/hive/delegators/'):
-      return customData?.delegators ?? { data: delegations.delegators };
+    case urlToGet.includes('hive/delegators/'):
+      return customData?.delegators ?? delegations.delegators;
     default:
       return 'Please check on default cases as not found condition ->/implementations/...';
   }
+};
+
+const hiveTxUtils = {
+  //TODO add types when needed
+  getData: (toUse: {
+    conversionRequests?: any;
+    collateralized?: any;
+    listProposals?: any;
+    listProposalVotes?: any;
+    dynamicGlobalProperties?: any;
+  }) => {
+    HiveTxUtils.getData = jest.fn().mockImplementation((...args) => {
+      switch (args[0]) {
+        case 'condenser_api.get_conversion_requests':
+          return Promise.resolve(toUse.conversionRequests);
+        case 'condenser_api.get_collateralized_conversion_requests':
+          return Promise.resolve(toUse.collateralized);
+        case 'condenser_api.list_proposals':
+          return Promise.resolve(toUse.listProposals);
+        case 'condenser_api.list_proposal_votes':
+          return Promise.resolve(toUse.listProposalVotes);
+        case 'condenser_api.get_dynamic_global_properties':
+          return Promise.resolve(toUse.dynamicGlobalProperties);
+        default:
+          return Promise.resolve('Please check data assignment!');
+      }
+    });
+  },
+};
+
+/**
+ * Note: for now this mock is related to
+ * src/utils/currency-prices.utils.ts
+ * > getBittrexCurrency
+ */
+const mockFetch = (data: any, status: number, reject?: boolean) => {
+  jest.spyOn(global, 'fetch').mockImplementationOnce(() =>
+    reject
+      ? Promise.reject(data)
+      : Promise.resolve({
+          json: () => Promise.resolve(data),
+          status: status,
+        } as Response),
+  );
 };
 
 const mocksImplementation = {
@@ -153,6 +197,8 @@ const mocksImplementation = {
   i18nGetMessageCustom,
   keychainApiGet,
   manifestFile,
+  hiveTxUtils,
+  mockFetch,
 };
 
 export default mocksImplementation;

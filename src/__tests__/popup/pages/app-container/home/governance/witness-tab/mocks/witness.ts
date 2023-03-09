@@ -1,7 +1,7 @@
 import { act, screen } from '@testing-library/react';
 import { ReactElement } from 'react';
+import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alIcon from 'src/__tests__/utils-for-testing/aria-labels/al-icon';
@@ -35,19 +35,17 @@ const constants = {
   rankingError: i18n.get('popup_html_error_retrieving_witness_ranking').trim(),
   rankingErrors: 2,
   voted: accounts.extended.witness_votes.length,
-  witnessData: {
-    data: [
-      ...witness.ranking.data,
-      {
-        name: 'theghost1980',
-        rank: '200',
-        votes: '1000',
-        votes_count: 1000,
-        signing_key: witness.inactiveKey,
-        url: 'https://saturnoman.com',
-      },
-    ],
-  },
+  witnessData: [
+    ...witness.ranking,
+    {
+      name: 'theghost1980',
+      rank: '200',
+      votes: '1000',
+      votes_count: 1000,
+      signing_key: witness.inactiveKey,
+      url: 'https://saturnoman.com',
+    },
+  ],
   infoMessage: i18n.get('html_popup_link_to_witness_website').trim(),
   spy: {
     chromeTabs: () => jest.spyOn(chrome.tabs, 'create'),
@@ -55,8 +53,8 @@ const constants = {
   urlArcange: { url: witness.arcangeLink },
   errorUnvote: i18n.get('popup_error_unvote_wit', ['blocktrades']).trim(),
   successUnVote: i18n.get('popup_success_unvote_wit', ['blocktrades']),
-  errorVote: i18n.get('popup_error_wit', [witness.ranking.data[4].name]),
-  successVote: i18n.get('popup_success_wit', [witness.ranking.data[4].name]),
+  errorVote: i18n.get('popup_error_wit', [witness.ranking[4].name]),
+  successVote: i18n.get('popup_success_wit', [witness.ranking[4].name]),
 };
 
 const beforeEach = async (
@@ -65,14 +63,14 @@ const beforeEach = async (
   findUserProxy: string | null,
 ) => {
   let remock: MocksToUse = {
-    keyChainApiGet: { customData: { witnessRanking: constants.witnessData } },
+    keyChainApiGet: { witnessRanking: constants.witnessData },
   };
   jest.useFakeTimers('legacy');
   actAdvanceTime(4300);
   if (errorWitnessData === true) {
     remock = {
       keyChainApiGet: {
-        customData: { witnessRanking: { data: '' } },
+        witnessRanking: '',
       },
     };
   }
@@ -108,7 +106,7 @@ const methods = {
     });
   },
   getData: (index: number) => {
-    return constants.witnessData.data[index];
+    return constants.witnessData[index];
   },
 };
 

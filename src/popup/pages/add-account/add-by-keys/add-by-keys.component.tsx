@@ -42,12 +42,16 @@ const AddByKeys = ({
       setErrorMessage('popup_html_account_already_existing');
       return;
     }
-    const keys = await AccountUtils.verifyAccount(
-      username.trim(),
-      privateKey.trim(),
-      localAccounts,
-      setErrorMessage,
-    );
+    let keys;
+    try {
+      keys = await AccountUtils.verifyAccount(
+        username.trim(),
+        privateKey.trim(),
+        localAccounts,
+      );
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    }
 
     if (!keys) {
       return;

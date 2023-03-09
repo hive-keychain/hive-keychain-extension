@@ -1,5 +1,5 @@
-import { RequestsHandler } from '@background/requests';
 import sendErrors from '@background/requests/errors';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { Rpc } from '@interfaces/rpc.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import * as dialogLifeCycle from 'src/background/requests/dialog-lifecycle';

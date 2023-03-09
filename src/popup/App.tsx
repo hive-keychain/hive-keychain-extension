@@ -6,19 +6,20 @@ import {
   refreshActiveAccount,
 } from '@popup/actions/active-account.actions';
 import { setActiveRpc } from '@popup/actions/active-rpc.actions';
-import { setProcessingDecryptAccount } from '@popup/actions/app-status.actions';
+import {
+  setIsLedgerSupported,
+  setProcessingDecryptAccount,
+} from '@popup/actions/app-status.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
-import { AnalyticsPopupComponent } from '@popup/pages/app-container/analytics-popup/analytics-popup.component';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import { BackgroundMessage } from 'src/background/background-message.interface';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
@@ -29,6 +30,7 @@ import { BackgroundCommand } from 'src/reference-data/background-message-key.enu
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
+import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
@@ -46,7 +48,7 @@ const App = ({
   activeAccountUsername,
   activeRpc,
   loading,
-  loadingOperation,
+  loadingState,
   isCurrentPageHomePage,
   displayProxySuggestion,
   navigationStack,
@@ -56,39 +58,35 @@ const App = ({
   loadActiveAccount,
   refreshActiveAccount,
   setActiveRpc,
+  initHiveEngineConfigFromStorage,
   setAccounts,
   loadGlobalProperties,
-  initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
+  setIsLedgerSupported,
 }: PropsFromRedux) => {
   const [hasStoredAccounts, setHasStoredAccounts] = useState(false);
   const [isAppReady, setAppReady] = useState(false);
   const [displayChangeRpcPopup, setDisplayChangeRpcPopup] = useState(false);
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
-  const [displayAnalyticsPopup, setDisplayAnalyticsPopup] = useState<boolean>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
     initAutoLock();
     initApplication();
-    initAnalytics();
+    LedgerUtils.isLedgerSupported().then((res) => {
+      setIsLedgerSupported(res);
+      LocalStorageUtils.saveValueInLocalStorage(
+        LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
+        res,
+      );
+    });
   }, []);
-
-  useEffect(() => {
-    if (navigationStack.length > 0) {
-      AnalyticsUtils.sendNavigationEvent(navigationStack[0].currentPage);
-    }
-  }, [navigationStack]);
 
   useEffect(() => {
     if (activeRpc?.uri !== 'NULL') onActiveRpcRefreshed();
   }, [activeRpc]);
-
-  const initAnalytics = async () => {
-    setDisplayAnalyticsPopup(await AnalyticsUtils.initializeSettings());
-  };
 
   const onActiveRpcRefreshed = async () => {
     if (activeAccountUsername) {
@@ -101,7 +99,6 @@ const App = ({
           (account: LocalAccount) => account.name === lastActiveAccountName,
         )!,
       );
-      loadGlobalProperties();
     }
   };
 
@@ -159,8 +156,7 @@ const App = ({
       for (const rpc of RpcUtils.getFullList().filter(
         (rpc) => rpc.uri !== activeRpc?.uri && !rpc.testnet,
       )) {
-        const status = await RpcUtils.checkRpcStatus(rpc.uri);
-        if (status) {
+        if (await RpcUtils.checkRpcStatus(rpc.uri)) {
           if (switchAuto) {
             setActiveRpc(rpc);
           } else {
@@ -269,11 +265,6 @@ const App = ({
     }
   };
 
-  const onAnalyticsAnswered = () => {
-    AnalyticsUtils.initializeSettings();
-    setDisplayAnalyticsPopup(false);
-  };
-
   const renderPopup = (
     loading: number,
     activeRpc: Rpc | undefined,
@@ -282,9 +273,18 @@ const App = ({
     switchToRpc: Rpc | undefined,
   ) => {
     if (loading || !activeRpc) {
-      return <LoadingComponent operations={loadingOperation} />;
+      return (
+        <LoadingComponent
+          operations={loadingState.loadingOperations}
+          caption={loadingState.caption}
+        />
+      );
     }
-    if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+    // else if (displayProxySuggestion) {
+    //    Uncomment if need to
+    //   return <ProxySuggestionComponent />;
+    // }
+    else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
         <div className="change-rpc-popup">
           <div className="message">
@@ -298,8 +298,6 @@ const App = ({
             onClick={tryNewRpc}></ButtonComponent>
         </div>
       );
-    } else if (displayAnalyticsPopup) {
-      return <AnalyticsPopupComponent onAnswered={onAnalyticsAnswered} />;
     }
   };
 
@@ -334,8 +332,8 @@ const mapStateToProps = (state: RootState) => {
     mk: state.mk,
     accounts: state.accounts as LocalAccount[],
     activeRpc: state.activeRpc,
-    loading: state.loading.length,
-    loadingOperation: state.loading,
+    loading: state.loading.loadingOperations.length,
+    loadingState: state.loading,
     activeAccountUsername: state.activeAccount.name,
     isCurrentPageHomePage:
       state.navigation.stack[0]?.currentPage === Screen.HOME_PAGE,
@@ -361,6 +359,7 @@ const connector = connect(mapStateToProps, {
   initHiveEngineConfigFromStorage,
   loadCurrencyPrices,
   setProcessingDecryptAccount,
+  setIsLedgerSupported,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

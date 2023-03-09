@@ -34,6 +34,7 @@ const CreateAccountStepTwo = ({
   addAccount,
   addToLoadingList,
   removeFromLoadingList,
+  navigateTo,
 }: PropsFromRedux) => {
   const emptyKeys = {
     owner: { public: '', private: '' },
@@ -43,7 +44,7 @@ const CreateAccountStepTwo = ({
   } as GeneratedKeys;
 
   const [masterKey, setMasterKey] = useState('');
-  const [keys, setKeys] = useState(emptyKeys);
+  const [generatedKeys, setGeneratedKeys] = useState(emptyKeys);
   const [keysTextVersion, setKeysTextVersion] = useState('');
 
   const accountName = navParams?.newUsername;
@@ -66,7 +67,7 @@ const CreateAccountStepTwo = ({
 
   useEffect(() => {
     if (masterKey === '') {
-      setKeys(emptyKeys);
+      setGeneratedKeys(emptyKeys);
       return;
     }
     const posting = PrivateKey.fromLogin(accountName, masterKey, 'posting');
@@ -74,7 +75,7 @@ const CreateAccountStepTwo = ({
     const memo = PrivateKey.fromLogin(accountName, masterKey, 'memo');
     const owner = PrivateKey.fromLogin(accountName, masterKey, 'owner');
 
-    setKeys({
+    setGeneratedKeys({
       owner: {
         private: owner.toString(),
         public: owner.createPublic().toString(),
@@ -102,7 +103,7 @@ const CreateAccountStepTwo = ({
     }
     setNotPrimaryStorageUnderstanding(false);
     setSafelyCopied(false);
-  }, [keys]);
+  }, [generatedKeys]);
 
   const generateMasterKey = async () => {
     if (accountName.length < 3) {
@@ -138,27 +139,27 @@ const CreateAccountStepTwo = ({
     -----------------------------------------<br/>
     <span class="key-name">Owner key:</span><br/>
     <span class="key-type">Private</span><br/>
-    ${keys.owner.private}<br/>
+    ${generatedKeys.owner.private}<br/>
     <span class="key-type">Public</span><br/>
-    ${keys.owner.public}<br/>
+    ${generatedKeys.owner.public}<br/>
     -----------------------------------------<br/>
     <span class="key-name">Active key:</span><br/>
     <span class="key-type">Private</span><br/>
-    ${keys.active.private}<br/>
+    ${generatedKeys.active.private}<br/>
     <span class="key-type">Public</span><br/>
-    ${keys.active.public}<br/>
+    ${generatedKeys.active.public}<br/>
     -----------------------------------------<br/>
     <span class="key-name">Posting key:</span><br/>
     <span class="key-type">Private</span><br/>
-    ${keys.posting.private}<br/>
+    ${generatedKeys.posting.private}<br/>
     <span class="key-type">Public</span><br/>
-    ${keys.posting.public}<br/>
+    ${generatedKeys.posting.public}<br/>
     -----------------------------------------<br/>
     <span class="key-name">Memo key:</span><br/>
     <span class="key-type">Private</span><br/>
-    ${keys.memo.private}<br/>
+    ${generatedKeys.memo.private}<br/>
     <span class="key-type">Public</span><br/>
-    ${keys.memo.public}`;
+    ${generatedKeys.memo.public}`;
   };
 
   const createAccount = async () => {
@@ -168,20 +169,28 @@ const CreateAccountStepTwo = ({
       notPrimaryStorageUnderstanding
     ) {
       addToLoadingList('html_popup_creating_account');
-      const result = await AccountCreationUtils.createAccount(
-        creationType,
-        price,
-        accountName,
-        selectedAccount,
-        keys,
-      );
-      removeFromLoadingList('html_popup_creating_account');
-      if (result) {
-        setSuccessMessage('html_popup_create_account_successful');
-        addAccount(result as LocalAccount);
-        navigateTo(Screen.HOME_PAGE, true);
-      } else {
-        setErrorMessage('html_popup_create_account_failed');
+      try {
+        const result = await AccountCreationUtils.createAccount(
+          creationType,
+          accountName,
+          selectedAccount.name!,
+          selectedAccount.keys.active!,
+          AccountCreationUtils.generateAccountAuthorities(generatedKeys),
+          price,
+          generatedKeys,
+        );
+
+        if (result) {
+          setSuccessMessage('html_popup_create_account_successful');
+          addAccount(result as LocalAccount);
+          navigateTo(Screen.HOME_PAGE, true);
+        } else {
+          setErrorMessage('html_popup_create_account_failed');
+        }
+      } catch (err: any) {
+        setErrorMessage(err.message);
+      } finally {
+        removeFromLoadingList('html_popup_creating_account');
       }
     } else {
       setErrorMessage('html_popup_create_account_need_accept_terms_condition');

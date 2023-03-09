@@ -1,6 +1,6 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
+import { TransactionStatus } from '@interfaces/transaction-status.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -17,21 +17,21 @@ import {
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent from 'src/common-ui/input/input.component';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
+import InputComponent, {
+  AutoCompleteValue,
+} from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
-import HiveEngineUtils from 'src/utils/hive-engine.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
-import TransferUtils from 'src/utils/transfer.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import TokensUtils from 'src/utils/tokens.utils';
 import './token-operation.component.scss';
 
 export enum TokenOperationType {
@@ -46,6 +46,7 @@ const TokensOperation = ({
   tokenBalance,
   tokenInfo,
   formParams,
+  localAccounts,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -82,24 +83,24 @@ const TokensOperation = ({
 
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
-  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState<string[]>([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    AutoCompleteValue[]
+  >([]);
 
   useEffect(() => {
     setTitleContainerProperties({
       title: `popup_html_${operationType}_tokens`,
       isBackButtonEnabled: true,
     });
-    loadAutocompleteTransferUsernames();
+    loadAutocompleteFavoriteUsers();
   }, []);
 
-  const loadAutocompleteTransferUsernames = async () => {
-    const transferTo: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
-      );
-    setAutocompleteTransferUsernames(
-      transferTo ? transferTo[activeAccount.name!] : [],
+  const loadAutocompleteFavoriteUsers = async () => {
+    setAutocompleteFavoriteUsers(
+      await FavoriteUserUtils.getAutocompleteList(
+        activeAccount.name!,
+        localAccounts,
+      ),
     );
   };
 
@@ -149,67 +150,68 @@ const TokensOperation = ({
       title: `popup_html_${operationType}_tokens`,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        addToLoadingList(`popup_html_${operationType}_tokens`);
-        let tokenOperationResult = null;
+        addToLoadingList(
+          `popup_html_${operationType}_tokens`,
+          KeysUtils.getKeyType(
+            activeAccount.keys.active!,
+            activeAccount.keys.activePubkey!,
+          ),
+        );
+        let tokenOperationResult: TransactionStatus;
+        try {
+          switch (operationType) {
+            case TokenOperationType.DELEGATE:
+              tokenOperationResult = await TokensUtils.delegateToken(
+                receiverUsername,
+                symbol,
+                amount.toString(),
+                activeAccount.keys.active!,
+                activeAccount.name!,
+              );
+              break;
+            case TokenOperationType.STAKE:
+              tokenOperationResult = await TokensUtils.stakeToken(
+                receiverUsername,
+                symbol,
+                amount.toString(),
+                activeAccount.keys.active!,
+                activeAccount.name!,
+              );
+              break;
+            case TokenOperationType.UNSTAKE:
+              tokenOperationResult = await TokensUtils.unstakeToken(
+                symbol,
+                amount.toString(),
+                activeAccount.keys.active!,
+                activeAccount.name!,
+              );
+              break;
+          }
 
-        switch (operationType) {
-          case TokenOperationType.DELEGATE:
-            tokenOperationResult = await HiveEngineUtils.delegateToken(
-              activeAccount.keys.active as string,
-              receiverUsername,
-              symbol,
-              amount.toString(),
-              activeAccount.name!,
-            );
-            break;
-          case TokenOperationType.STAKE:
-            tokenOperationResult = await HiveEngineUtils.stakeToken(
-              activeAccount.keys.active as string,
-              receiverUsername,
-              symbol,
-              amount.toString(),
-              activeAccount.name!,
-            );
-            break;
-          case TokenOperationType.UNSTAKE:
-            tokenOperationResult = await HiveEngineUtils.unstakeToken(
-              activeAccount.keys.active as string,
-              symbol,
-              amount.toString(),
-              activeAccount.name!,
-            );
-            break;
-        }
+          if (tokenOperationResult && tokenOperationResult.broadcasted) {
+            addToLoadingList('html_popup_confirm_transaction_operation');
+            removeFromLoadingList(`popup_html_${operationType}_tokens`);
 
-        if (tokenOperationResult && tokenOperationResult.id) {
-          addToLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList(`popup_html_${operationType}_tokens`);
-          let confirmationResult: any =
-            await BlockchainTransactionUtils.tryConfirmTransaction(
-              tokenOperationResult.id,
-            );
-
-          removeFromLoadingList('html_popup_confirm_transaction_operation');
-          if (confirmationResult && confirmationResult.confirmed) {
-            if (confirmationResult.error) {
-              setErrorMessage('popup_html_hive_engine_error', [
-                confirmationResult.error,
-              ]);
-              goBack();
-            } else {
-              await TransferUtils.saveFavoriteUser(
+            removeFromLoadingList('html_popup_confirm_transaction_operation');
+            if (tokenOperationResult.confirmed) {
+              await FavoriteUserUtils.saveFavoriteUser(
                 receiverUsername,
                 activeAccount,
               );
               setSuccessMessage(`popup_html_${operationType}_tokens_success`);
               navigateTo(Screen.HOME_PAGE, true);
+            } else {
+              setErrorMessage('popup_token_timeout');
             }
           } else {
-            setErrorMessage('popup_token_timeout');
+            removeFromLoadingList('html_popup_transfer_token_operation');
+            setErrorMessage(`popup_html_${operationType}_tokens_failed`);
           }
-        } else {
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList('html_popup_transfer_token_operation');
-          setErrorMessage(`popup_html_${operationType}_tokens_failed`);
         }
       },
     });
@@ -230,10 +232,10 @@ const TokensOperation = ({
 
   return (
     <div aria-label="tokens-operation-page" className="transfer-tokens-page">
-      <AvailableCurrentPanelComponent
-        available={balance}
-        availableCurrency={symbol}
-        availableLabel={'popup_html_balance'}></AvailableCurrentPanelComponent>
+      <SummaryPanelComponent
+        bottom={balance}
+        bottomRight={symbol}
+        bottomLeft={'popup_html_balance'}></SummaryPanelComponent>
       <div className="disclaimer">
         {chrome.i18n.getMessage('popup_html_tokens_operation_text')}
       </div>
@@ -254,7 +256,7 @@ const TokensOperation = ({
           placeholder="popup_html_username"
           value={receiverUsername}
           onChange={setReceiverUsername}
-          autocompleteValues={autocompleteTransferUsernames}
+          autocompleteValues={autocompleteFavoriteUsers}
         />
       )}
       <div className="value-panel">
@@ -295,6 +297,7 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
+    localAccounts: state.accounts,
   };
 };
 

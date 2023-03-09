@@ -1,4 +1,3 @@
-import { RequestsHandler } from '@background/requests';
 import { removeWindow } from '@background/requests/dialog-lifecycle';
 import sendErrors from '@background/requests/errors';
 import { addAccount } from '@background/requests/operations/ops/add-account';
@@ -33,6 +32,7 @@ import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { broadcastTransfer } from '@background/requests/operations/ops/transfer';
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainRequest,
   KeychainRequestTypes,

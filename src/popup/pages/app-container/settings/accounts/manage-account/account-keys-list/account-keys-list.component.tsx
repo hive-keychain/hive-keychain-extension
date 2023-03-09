@@ -36,10 +36,11 @@ const AccountKeysList = ({
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const account = accounts.find(
+    setQRCodeDisplayed(false);
+    const acc = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );
-    setAccount(account!);
+    setAccount(acc!);
     setCanDeleteKey(KeysUtils.keysCount(activeAccount.keys) > 2);
   }, [activeAccount]);
 
@@ -120,17 +121,17 @@ const AccountKeysList = ({
     <div className="account-keys-list">
       <div className="keys-panel">
         <AccountKeysListItemComponent
-          privateKey={activeAccount.keys.posting}
-          publicKey={activeAccount.keys.postingPubkey}
-          keyName={'popup_html_posting'}
-          keyType={KeyType.POSTING}
-          canDelete={canDeleteKey}
-        />
-        <AccountKeysListItemComponent
           privateKey={activeAccount.keys.active}
           publicKey={activeAccount.keys.activePubkey}
           keyName={'popup_html_active'}
           keyType={KeyType.ACTIVE}
+          canDelete={canDeleteKey}
+        />
+        <AccountKeysListItemComponent
+          privateKey={activeAccount.keys.posting}
+          publicKey={activeAccount.keys.postingPubkey}
+          keyName={'popup_html_posting'}
+          keyType={KeyType.POSTING}
           canDelete={canDeleteKey}
         />
         <AccountKeysListItemComponent
@@ -153,7 +154,9 @@ const AccountKeysList = ({
           <QRCode
             aria-label="qrcode"
             className="qrcode"
-            value={`keychain://add_account=${JSON.stringify(account)}`}
+            value={`keychain://add_account=${AccountUtils.generateQRCode(
+              account!,
+            )}`}
           />
         </>
       )}

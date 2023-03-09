@@ -1,8 +1,8 @@
 import { ExtendedAccount } from '@hiveio/dhive';
+import { Keys } from '@interfaces/keys.interface';
 import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload } from '@popup/actions/interfaces';
 import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
-import { Keys } from 'src/interfaces/local-account.interface';
 
 export const ActiveAccountReducer = (
   state: ActiveAccount = {

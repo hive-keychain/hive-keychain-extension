@@ -2,7 +2,7 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { DelegationsPayload } from 'src/interfaces/delegations.interface';
-import HiveUtils from 'src/utils/hive.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const loadDelegators =
@@ -11,7 +11,7 @@ export const loadDelegators =
     try {
       const action: ActionPayload<DelegationsPayload> = {
         type: ActionType.FETCH_DELEGATORS,
-        payload: { incoming: await HiveUtils.getDelegators(username) },
+        payload: { incoming: await DelegationUtils.getDelegators(username) },
       };
       dispatch(action);
     } catch (e) {
@@ -33,7 +33,7 @@ export const loadDelegatees =
     try {
       const action: ActionPayload<DelegationsPayload> = {
         type: ActionType.FETCH_DELEGATEES,
-        payload: { outgoing: await HiveUtils.getDelegatees(username) },
+        payload: { outgoing: await DelegationUtils.getDelegatees(username) },
       };
       dispatch(action);
     } catch (e) {
@@ -49,7 +49,7 @@ export const loadPendingOutgoingUndelegations =
         type: ActionType.FETCH_PENDING_OUTGOING_UNDELEGATION,
         payload: {
           pendingOutgoingUndelegation:
-            await HiveUtils.getPendingOutgoingUndelegation(username),
+            await DelegationUtils.getPendingOutgoingUndelegation(username),
         },
       };
       dispatch(action);

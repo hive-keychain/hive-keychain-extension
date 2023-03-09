@@ -1,5 +1,5 @@
 // Content script interfacing the website and the extension
-
+/* istanbul ignore file */
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import schemas, {
   commonRequestParams,
@@ -27,7 +27,6 @@ const setupInjection = () => {
     Logger.error('Hive Keychain injection failed.', e);
   }
 };
-
 setupInjection();
 
 // Answering the handshakes

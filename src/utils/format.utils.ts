@@ -93,10 +93,22 @@ const fromNaiAndSymbol = (obj: any) => {
   return `${(obj.amount / 1000).toFixed(obj.precision)} ${FormatUtils.getSymbol(
     obj.nai,
   )}`;
- };
-  
+};
+
 const removeHtmlTags = (str: string) => {
   return str.replace(/<(?:.|\n)*?>/gm, '');
+};
+
+const getValFromString = (string: string): number => {
+  return parseFloat(string.split(' ')[0]);
+};
+
+const trimUselessZero = (number: number, precision: number) => {
+  const numberWithPrecision = number.toFixed(precision);
+  const n = parseFloat(numberWithPrecision).toString();
+  if (n.split('.').length > 0 && n.split('.')[1]?.length > 3)
+    return FormatUtils.withCommas(n);
+  else return FormatUtils.withCommas(parseFloat(n).toFixed(3));
 };
 
 const FormatUtils = {
@@ -110,6 +122,8 @@ const FormatUtils = {
   getSymbol,
   fromNaiAndSymbol,
   removeHtmlTags,
+  getValFromString,
+  trimUselessZero,
 };
 
 export default FormatUtils;

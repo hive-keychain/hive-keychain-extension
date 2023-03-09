@@ -1,8 +1,8 @@
+import { KeychainApi } from '@api/keychain';
 import RPCModule from '@background/rpc.module';
-import { Client } from '@hiveio/dhive';
-import { Rpc } from '@interfaces/rpc.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { config as HiveTxConfig } from 'hive-tx';
 import rpcModuleMocks from 'src/__tests__/background/mocks/rpc.module.mocks';
 describe('rpc.module tests:\n', () => {
   const { spies, methods, mocks } = rpcModuleMocks;
@@ -24,21 +24,24 @@ describe('rpc.module tests:\n', () => {
       LocalStorageKeyEnum.CURRENT_RPC,
     );
   });
-  it('Must get Client without override', async () => {
-    mocks.getValueFromLocalStorage({
-      customCurrentRpc: DefaultRpcs[2],
+
+  it('Must set default uri & chainId', async () => {
+    RPCModule.getActiveRpc = jest
+      .fn()
+      .mockResolvedValue({ uri: 'DEFAULT', chainId: '1' });
+    KeychainApi.get = jest.fn().mockResolvedValue({
+      rpc: {
+        uri: 'https://default',
+      },
     });
-    const client = await RPCModule.getClient();
-    expect(client).toBeInstanceOf(Client);
-    expect(client.address).toBe(DefaultRpcs[2].uri);
+    await RPCModule.init();
+    expect(HiveTxConfig.node).toEqual({ uri: 'https://default' });
   });
-  it('Must get overrided Client', async () => {
-    mocks.fetch({
-      rpc: 'https://saturnoman.com',
-    });
-    const client = await RPCModule.getClient({
-      uri: 'DEFAULT',
-    } as Rpc);
-    expect(client.address).toBe('https://saturnoman.com');
+  it('Must set uri', async () => {
+    RPCModule.getActiveRpc = jest
+      .fn()
+      .mockResolvedValue({ uri: 'https://saturnoman' });
+    await RPCModule.init();
+    expect(HiveTxConfig.node).toEqual('https://saturnoman');
   });
 });

@@ -21,6 +21,7 @@ export interface ButtonProps {
   type?: ButtonType;
   fixToBottom?: boolean;
   ariaLabel?: string;
+  additionalClass?: string;
 }
 
 const ButtonComponent = (props: ButtonProps) => {
@@ -29,7 +30,9 @@ const ButtonComponent = (props: ButtonProps) => {
       aria-label={props.ariaLabel}
       className={`submit-button ${
         props.type ? props.type : ButtonType.DEFAULT
-      } ${props.fixToBottom ? 'fix-to-bottom' : ''}`}
+      } ${props.fixToBottom ? 'fix-to-bottom' : ''} ${
+        props.additionalClass ?? ''
+      }`}
       onClick={props.onClick}>
       <div className="button-label">
         {props.skipLabelTranslation

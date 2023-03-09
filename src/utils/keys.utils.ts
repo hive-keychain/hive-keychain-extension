@@ -1,11 +1,10 @@
-import * as Hive from '@hiveio/dhive';
-import { Account } from '@hiveio/dhive';
-import { Key } from '@interfaces/local-account.interface';
-import { Keys } from 'src/interfaces/keys.interface';
+import { Account, PrivateKey } from '@hiveio/dhive';
+import { Key, Keys, PrivateKeyType } from 'src/interfaces/keys.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const getPublicKeyFromPrivateKeyString = (privateKeyS: string) => {
   try {
-    const privateKey = Hive.PrivateKey.fromString(privateKeyS);
+    const privateKey = PrivateKey.fromString(privateKeyS);
     const publicKey = privateKey.createPublic();
     return publicKey.toString();
   } catch (e) {
@@ -29,9 +28,9 @@ const derivateFromMasterPassword = (
   password: string,
   account: Account,
 ): Keys | null => {
-  const posting = Hive.PrivateKey.fromLogin(username, password, 'posting');
-  const active = Hive.PrivateKey.fromLogin(username, password, 'active');
-  const memo = Hive.PrivateKey.fromLogin(username, password, 'memo');
+  const posting = PrivateKey.fromLogin(username, password, 'posting');
+  const active = PrivateKey.fromLogin(username, password, 'active');
+  const memo = PrivateKey.fromLogin(username, password, 'memo');
 
   const keys = {
     posting: posting.toString(),
@@ -86,7 +85,46 @@ const hasMemo = (keys: Keys): boolean => {
 };
 
 const isAuthorizedAccount = (key: Key): boolean => {
-  return key!.toString().startsWith('@');
+  return KeysUtils.getKeyType(null, key) === PrivateKeyType.AUTHORIZED_ACCOUNT;
+};
+
+const isUsingLedger = (key: Key): boolean => {
+  if (!key) return false;
+  return KeysUtils.getKeyType(key, null) === PrivateKeyType.LEDGER;
+};
+
+const getKeyReferences = (keys: string[]) => {
+  return HiveTxUtils.getData('condenser_api.get_key_references', [keys]);
+};
+
+const getKeyType = (privateKey: Key, publicKey?: Key): PrivateKeyType => {
+  if (privateKey?.toString().startsWith('#')) {
+    return PrivateKeyType.LEDGER;
+  } else if (publicKey?.toString().startsWith('@')) {
+    return PrivateKeyType.AUTHORIZED_ACCOUNT;
+  } else {
+    return PrivateKeyType.PRIVATE_KEY;
+  }
+};
+
+const requireManualConfirmation = (key: Key) => {
+  return KeysUtils.isUsingLedger(key);
+};
+
+const isExportable = (
+  privateKey: Key | undefined,
+  publicKey: Key | undefined,
+) => {
+  if (privateKey && publicKey) {
+    const keyType = KeysUtils.getKeyType(privateKey, publicKey);
+    if (
+      keyType === PrivateKeyType.PRIVATE_KEY ||
+      keyType === PrivateKeyType.AUTHORIZED_ACCOUNT
+    )
+      return true;
+  } else {
+    return false;
+  }
 };
 
 export const KeysUtils = {
@@ -99,4 +137,9 @@ export const KeysUtils = {
   hasActive,
   hasPosting,
   hasMemo,
+  isUsingLedger,
+  getKeyReferences,
+  getKeyType,
+  requireManualConfirmation,
+  isExportable,
 };

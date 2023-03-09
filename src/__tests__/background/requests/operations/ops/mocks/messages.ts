@@ -2,102 +2,140 @@ import { TransactionConfirmation } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { AssertionError } from 'assert';
-//TODO refactor and try to re-use code here
-//  Needed:
-//  answer: success & error.
+
 export default {
   error: {
-    hasAuthority: (datas: any, request_id: number) => {
+    hasAuthority: (
+      datas: any,
+      request_id: number,
+      error?: any,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('Already has authority'),
+          error: error ?? new Error('Already has authority'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Already has authority`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : Already has authority`,
           request_id: request_id,
           publicKey: undefined,
         },
       };
     },
-    keyBuffer: (datas: any, request_id: number) => {
+    keyBuffer: (
+      datas: any,
+      request_id: number,
+      error?: Error | TypeError,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new TypeError('private key should be a Buffer'),
+          error: error ?? new TypeError('private key should be a Buffer'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : private key should be a Buffer`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : private key should be a Buffer`,
           request_id: request_id,
           publicKey: undefined,
         },
       };
     },
-    nothingToRemove: (datas: any, request_id: number) => {
+    nothingToRemove: (
+      datas: any,
+      request_id: number,
+      error?: any,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('Nothing to remove'),
+          error: error ?? new Error('Nothing to remove'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Nothing to remove`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage('bgd_ops_error')} : Nothing to remove`,
           request_id,
           publicKey: undefined,
         },
       };
     },
-    missingAuthority: (datas: any, request_id: number) => {
+    missingAuthority: (
+      datas: any,
+      request_id: number,
+      error?: any,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new Error('Missing authority'),
+          error: error ?? new Error('Missing authority'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Missing authority`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage('bgd_ops_error')} : Missing authority`,
           request_id,
           publicKey: undefined,
         },
       };
     },
-    parsedFailed: (datas: any, request_id: number) => {
+    parsedFailed: (
+      datas: any,
+      request_id: number,
+      error?: SyntaxError,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new SyntaxError('Unexpected token / in JSON at position 0'),
+          error:
+            error ??
+            new SyntaxError('Unexpected token / in JSON at position 0'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : Unexpected token / in JSON at position 0`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : Unexpected token / in JSON at position 0`,
           request_id: request_id,
           publicKey: undefined,
         },
       };
     },
-    notIterable: (datas: any, request_id: number) => {
+    notIterable: (
+      datas: any,
+      request_id: number,
+      error?: TypeError,
+      message?: string,
+    ) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
           success: false,
-          error: new TypeError('operations is not iterable'),
+          error: error ?? new TypeError('operations is not iterable'),
           result: undefined,
           data: datas,
-          message: `${chrome.i18n.getMessage(
-            'bgd_ops_error',
-          )} : operations is not iterable`,
+          message:
+            message ??
+            `${chrome.i18n.getMessage(
+              'bgd_ops_error',
+            )} : operations is not iterable`,
           request_id: request_id,
           publicKey: undefined,
         },
@@ -166,7 +204,7 @@ export default {
   },
   success: {
     addAuth: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       cloneData: any,
       request_id: number,
@@ -189,7 +227,7 @@ export default {
       };
     },
     removedAuth: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       request_id: number,
     ) => {
@@ -211,7 +249,7 @@ export default {
       };
     },
     addKey: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       cloneData: any,
       request_id: number,
@@ -235,7 +273,7 @@ export default {
       };
     },
     removedKey: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       request_id: number,
     ) => {
@@ -257,7 +295,7 @@ export default {
       };
     },
     broadcast: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | boolean,
       datas: any,
       request_id: number,
       message: string,
@@ -276,7 +314,7 @@ export default {
       };
     },
     convert: (
-      result: TransactionConfirmation,
+      result: TransactionConfirmation | Boolean,
       datas: any,
       request_id: number,
       collateralized: boolean,

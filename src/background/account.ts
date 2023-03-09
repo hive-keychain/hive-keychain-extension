@@ -17,7 +17,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
     } catch (e) {
       chrome.runtime.sendMessage({
         command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-        value: 'import_html_error',
+        value: { feedback: { message: 'import_html_error' } },
       });
       return;
     }
@@ -31,7 +31,7 @@ const sendBackImportedAccounts = async (fileContent: string) => {
       ) || [];
 
     const newAccounts =
-      BgdAccountsUtils.mergeImportedAccountsToExistingAccounts(
+      await BgdAccountsUtils.mergeImportedAccountsToExistingAccounts(
         importedAccounts,
         accounts.list || [],
       );
@@ -43,9 +43,25 @@ const sendBackImportedAccounts = async (fileContent: string) => {
       LocalStorageKeyEnum.ACCOUNTS,
       newAccountsEncrypted,
     );
+
+    let useLedger = newAccounts.some(
+      (account) =>
+        account.keys.active?.startsWith('#') ||
+        account.keys.posting?.startsWith('#') ||
+        account.keys.memo?.startsWith('#'),
+    );
+    const extensionId = (await chrome.management.getSelf()).id;
     chrome.runtime.sendMessage({
       command: BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS,
-      value: newAccounts,
+      value: {
+        accounts: newAccounts,
+        feedback: useLedger
+          ? {
+              message: 'ledger_import_account_has_ledger',
+              params: [extensionId],
+            }
+          : null,
+      },
     });
   }
 };

@@ -1,42 +1,42 @@
-import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { PrivateKey } from '@hiveio/dhive';
+import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { RequestId, RequestVote } from '@interfaces/keychain.interface';
+import { KeychainError } from 'src/keychain-error';
+import { BloggingUtils } from 'src/utils/blogging.utils';
 
 export const broadcastVote = async (
   requestHandler: RequestsHandler,
   data: RequestVote & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
   const key = requestHandler.data.key;
-  let err, result;
+  let err, result, err_message;
   try {
-    result = await client.broadcast.vote(
-      {
-        voter: data.username,
-        author: data.author,
-        permlink: data.permlink,
-        weight: +data.weight,
-      },
-      PrivateKey.from(key!),
-    );
-  } catch (e) {
-    err = e;
-  }
-  const err_message = await beautifyErrorMessage(err);
-  const message = createMessage(
-    err,
-    result,
-    data,
-    await chrome.i18n.getMessage('bgd_ops_vote', [
+    // TODO : When Ledger ready for full usage with posting key, add compatibility with Ledger
+    result = await BloggingUtils.vote(
+      data.username,
       data.author,
       data.permlink,
-      +data.weight / 100 + '',
-    ]),
-    err_message,
-  );
-  return message;
+      +data.weight,
+      key!,
+    );
+  } catch (e: any) {
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
+  } finally {
+    const message = createMessage(
+      err,
+      result,
+      data,
+      await chrome.i18n.getMessage('bgd_ops_vote', [
+        data.author,
+        data.permlink,
+        +data.weight / 100 + '',
+      ]),
+      err_message,
+    );
+    return message;
+  }
 };

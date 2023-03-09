@@ -87,7 +87,7 @@ const Home = ({
       .join('.');
     if (
       extensionVersion !== lastVersionSeen &&
-      versionLog.version === extensionVersion
+      versionLog?.version === extensionVersion
     ) {
       setWhatsNewContent(versionLog);
       setDisplayWhatsNew(true);
