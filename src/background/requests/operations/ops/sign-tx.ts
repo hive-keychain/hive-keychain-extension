@@ -20,6 +20,9 @@ export const signTx = async (
   if (!transaction.extensions) {
     transaction.extensions = [];
   }
+  if (typeof transaction.expiration !== 'string') {
+    transaction.expiration = (transaction.expiration as Date).toISOString();
+  }
 
   transaction.expiration = transaction.expiration.split('.')[0];
 
