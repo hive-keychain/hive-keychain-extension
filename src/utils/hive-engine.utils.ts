@@ -23,6 +23,7 @@ const sendOperation = async (
     return {
       broadcasted: false,
       confirmed: false,
+      tx_id: '',
     };
   }
 };
@@ -48,9 +49,9 @@ const tryConfirmTransaction = (
       }
     }
     if (result != null) {
-      resolve({ broadcasted: true, confirmed: true });
+      resolve({ broadcasted: true, confirmed: true, tx_id: trxId });
     } else {
-      resolve({ broadcasted: true, confirmed: false });
+      resolve({ broadcasted: true, confirmed: false, tx_id: trxId });
     }
   });
 };
