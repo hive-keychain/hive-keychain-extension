@@ -1,6 +1,7 @@
 export interface HiveTxConfirmationResult {
   confirmed: boolean;
   tx_id: string;
+  id: string;
   status: string;
 }
 

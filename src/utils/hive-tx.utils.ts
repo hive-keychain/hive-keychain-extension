@@ -41,7 +41,7 @@ const sendOperation = async (
   if (transactionResult) {
     return {
       ...transactionResult,
-      confirmed: await HiveTxUtils.confirmTransaction(transactionResult.tx_id),
+      confirmed: await HiveTxUtils.confirmTransaction(transactionResult.id),
     };
   } else {
     return null;
@@ -103,7 +103,12 @@ const createSignAndBroadcastTransaction = async (
   try {
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
-      return (response as HiveTxBroadcastSuccessResponse).result;
+      const result = (response as HiveTxBroadcastSuccessResponse).result;
+      return {
+        ...result,
+        id: result.tx_id,
+        confirmed: await HiveTxUtils.confirmTransaction(result.id),
+      };
     }
   } catch (err) {
     Logger.error(err);
@@ -194,7 +199,8 @@ const broadcastAndConfirmTransactionWithSignature = async (
       const result = (response as HiveTxBroadcastSuccessResponse).result;
       return {
         ...result,
-        confirmed: await HiveTxUtils.confirmTransaction(result.tx_id),
+        id: result.tx_id,
+        confirmed: await HiveTxUtils.confirmTransaction(result.id),
       };
     }
   } catch (err) {
