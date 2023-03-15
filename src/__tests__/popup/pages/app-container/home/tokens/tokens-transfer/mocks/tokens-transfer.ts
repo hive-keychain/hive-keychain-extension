@@ -1,4 +1,4 @@
-import { TransactionStatus } from '@interfaces/transaction-status.interface';
+import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import AccountUtils from 'src/utils/account.utils';
 import { CustomJsonUtils } from 'src/utils/custom-json.utils';
 import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
@@ -148,11 +148,11 @@ const extraMocks = {
     (FavoriteUserUtils.saveFavoriteUser = jest
       .fn()
       .mockResolvedValue(undefined)),
-  tryConfirmTransaction: (result: TransactionStatus) =>
+  tryConfirmTransaction: (result: HiveEngineTransactionStatus) =>
     (HiveEngineUtils.tryConfirmTransaction = jest
       .fn()
       .mockResolvedValue(result)),
-  sendToken: (result: TransactionStatus | undefined, error?: any) =>
+  sendToken: (result: HiveEngineTransactionStatus | undefined, error?: any) =>
     (TokensUtils.sendToken = jest.fn().mockImplementation((...args) => {
       if (error) {
         return Promise.reject(error);

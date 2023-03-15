@@ -1,7 +1,13 @@
+export interface HiveTxConfirmationResult {
+  confirmed: boolean;
+  tx_id: string;
+  status: string;
+}
+
 export interface HiveTxBroadcastSuccessResponse {
   id: number;
   jsonrpc: string;
-  result: { tx_id: string; status: string };
+  result: HiveTxConfirmationResult;
 }
 
 export interface HiveTxBroadcastErrorResponse {

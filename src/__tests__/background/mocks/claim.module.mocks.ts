@@ -1,6 +1,7 @@
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { Client, ExtendedAccount } from '@hiveio/dhive';
 import { Manabar } from '@hiveio/dhive/lib/chain/rc';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import Config from 'src/config';
@@ -10,6 +11,7 @@ import Logger from 'src/utils/logger.utils';
 import { RewardsUtils } from 'src/utils/rewards.utils';
 import { SavingsUtils } from 'src/utils/savings.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
 const initialMIN_RC_PCT = Config.claims.freeAccount.MIN_RC_PCT;
@@ -119,8 +121,8 @@ const spies = {
     .mockResolvedValue(undefined),
   claimRewards: jest
     .spyOn(RewardsUtils, 'claimRewards')
-    .mockResolvedValue(true),
-  claimSavings: (result: boolean) =>
+    .mockResolvedValue(transactionConfirmationSuccess),
+  claimSavings: (result: HiveTxConfirmationResult) =>
     jest.spyOn(SavingsUtils, 'claimSavings').mockResolvedValue(result),
 };
 

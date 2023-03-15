@@ -2,6 +2,10 @@ import ClaimModule from '@background/claim.module';
 import Config from 'src/config';
 import claimModuleMocks from 'src/__tests__/background/mocks/claim.module.mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import {
+  transactionConfirmationFailed,
+  transactionConfirmationSuccess,
+} from 'src/__tests__/utils-for-testing/data/confirmations';
 describe('claim.module tests:\n', () => {
   const { mocks, methods, spies, constants } = claimModuleMocks;
   const { validClaims, nonValidClaims, error, differentAccount } = constants;
@@ -42,7 +46,7 @@ describe('claim.module tests:\n', () => {
     expect(spies.logger.info.mock.calls[1][0]).toBe(
       `@${accounts.active.name} doesn't have any savings interests to claim`,
     );
-    expect(spies.claimSavings(false)).not.toBeCalled();
+    expect(spies.claimSavings(transactionConfirmationFailed)).not.toBeCalled();
   });
 
   it('Must call logger with no time to claim', async () => {
@@ -55,7 +59,7 @@ describe('claim.module tests:\n', () => {
     expect(spies.logger.info.mock.calls[1][0]).toBe(
       `Not time to claim yet for @${accounts.active.name}`,
     );
-    expect(spies.claimSavings(false)).not.toBeCalled();
+    expect(spies.claimSavings(transactionConfirmationFailed)).not.toBeCalled();
   });
 
   describe('Same local accounts:\n', () => {
@@ -108,7 +112,7 @@ describe('claim.module tests:\n', () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
       mocks.getExtendedAccounts(availableSavings);
       mocks.setMaxDelay(0);
-      spies.claimSavings(true);
+      spies.claimSavings(transactionConfirmationSuccess);
       await ClaimModule.start();
       expect(spies.logger.info.mock.calls[1][0]).toBe(
         `Claim savings for @${accounts.active.name} successful`,
@@ -136,7 +140,9 @@ describe('claim.module tests:\n', () => {
     it('Must not claim savings', async () => {
       mocks.getMultipleValueFromLocalStorage(validClaims({ savings: true }));
       await ClaimModule.start();
-      expect(spies.claimSavings(false)).not.toBeCalled();
+      expect(
+        spies.claimSavings(transactionConfirmationFailed),
+      ).not.toBeCalled();
     });
   });
 });

@@ -9,6 +9,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:/n', () => {
@@ -70,7 +71,7 @@ describe('authority tests:/n', () => {
         mocks.getExtendedAccount(cloneExtended);
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'theghost1980';
@@ -85,7 +86,11 @@ describe('authority tests:/n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.removedAuth(true, datas, request_id),
+        messages.success.removedAuth(
+          transactionConfirmationSuccess,
+          datas,
+          request_id,
+        ),
       );
       mhiveTxSendOp.mockRestore();
     });
@@ -93,7 +98,7 @@ describe('authority tests:/n', () => {
       mocks.getExtendedAccount(accounts.extended);
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'theghost1980';
@@ -108,7 +113,11 @@ describe('authority tests:/n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.removedAuth(true, datas, request_id),
+        messages.success.removedAuth(
+          transactionConfirmationSuccess,
+          datas,
+          request_id,
+        ),
       );
       mhiveTxSendOp.mockRestore();
     });
