@@ -1,8 +1,14 @@
-export interface HiveTxConfirmationResult {
-  confirmed: boolean;
+export interface ConfirmationResult {
   tx_id: string;
   id: string;
   status: string;
+  block_num: number;
+}
+
+export interface HiveTxConfirmationResult {
+  block_num: number;
+  status: string;
+  tx_id: string;
 }
 
 export interface HiveTxBroadcastSuccessResponse {

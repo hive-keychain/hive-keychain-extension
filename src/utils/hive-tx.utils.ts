@@ -2,6 +2,7 @@ import { KeychainApi } from '@api/keychain';
 import Hive from '@engrave/ledger-app-hive';
 import { Operation, Transaction } from '@hiveio/dhive';
 import {
+  ConfirmationResult,
   HiveTxBroadcastErrorResponse,
   HiveTxBroadcastSuccessResponse,
   HiveTxConfirmationResult,
@@ -15,7 +16,6 @@ import {
   Transaction as HiveTransaction,
 } from 'hive-tx';
 import { KeychainError } from 'src/keychain-error';
-import { AsyncUtils } from 'src/utils/async.utils';
 import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
@@ -41,7 +41,6 @@ const sendOperation = async (
   if (transactionResult) {
     return {
       ...transactionResult,
-      confirmed: await HiveTxUtils.confirmTransaction(transactionResult.id),
     };
   } else {
     return null;
@@ -58,7 +57,7 @@ const createTransaction = async (operations: Operation[]) => {
 const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
-): Promise<HiveTxConfirmationResult | undefined> => {
+): Promise<ConfirmationResult | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations, 5 * MINUTE);
   if (KeysUtils.isUsingLedger(key)) {
@@ -107,7 +106,6 @@ const createSignAndBroadcastTransaction = async (
       return {
         ...result,
         id: result.tx_id,
-        confirmed: await HiveTxUtils.confirmTransaction(result.id),
       };
     }
   } catch (err) {
@@ -121,32 +119,32 @@ const createSignAndBroadcastTransaction = async (
   }
 };
 /* istanbul ignore next */
-const confirmTransaction = async (transactionId: string) => {
-  let response = null;
-  const MAX_RETRY_COUNT = 6;
-  let retryCount = 0;
-  do {
-    response = await call('transaction_status_api.find_transaction', {
-      transaction_id: transactionId,
-    });
-    await AsyncUtils.sleep(1000);
-    retryCount++;
-  } while (
-    ['within_mempool', 'unknown'].includes(response.result.status) &&
-    retryCount < MAX_RETRY_COUNT
-  );
-  if (
-    ['within_reversible_block', 'within_irreversible_block'].includes(
-      response.result.status,
-    )
-  ) {
-    Logger.info('Transaction confirmed');
-    return true;
-  } else {
-    Logger.error(`Transaction failed with status: ${response.result.status}`);
-    return false;
-  }
-};
+// const confirmTransaction = async (transactionId: string) => {
+//   let response = null;
+//   const MAX_RETRY_COUNT = 6;
+//   let retryCount = 0;
+//   do {
+//     response = await call('transaction_status_api.find_transaction', {
+//       transaction_id: transactionId,
+//     });
+//     await AsyncUtils.sleep(1000);
+//     retryCount++;
+//   } while (
+//     ['within_mempool', 'unknown'].includes(response.result.status) &&
+//     retryCount < MAX_RETRY_COUNT
+//   );
+//   if (
+//     ['within_reversible_block', 'within_irreversible_block'].includes(
+//       response.result.status,
+//     )
+//   ) {
+//     Logger.info('Transaction confirmed');
+//     return true;
+//   } else {
+//     Logger.error(`Transaction failed with status: ${response.result.status}`);
+//     return false;
+//   }
+// };
 
 const signTransaction = async (tx: Transaction, key: Key) => {
   const hiveTransaction = new HiveTransaction(tx);
@@ -188,7 +186,7 @@ const signTransaction = async (tx: Transaction, key: Key) => {
 const broadcastAndConfirmTransactionWithSignature = async (
   transaction: Transaction,
   signature: string,
-): Promise<HiveTxConfirmationResult | undefined> => {
+): Promise<ConfirmationResult | undefined> => {
   let hiveTransaction = new HiveTransaction(transaction);
   hiveTransaction.addSignature(signature);
   let response;
@@ -200,7 +198,6 @@ const broadcastAndConfirmTransactionWithSignature = async (
       return {
         ...result,
         id: result.tx_id,
-        confirmed: await HiveTxUtils.confirmTransaction(result.id),
       };
     }
   } catch (err) {
@@ -233,7 +230,7 @@ const getData = async (
 export const HiveTxUtils = {
   sendOperation,
   createSignAndBroadcastTransaction,
-  confirmTransaction,
+  // confirmTransaction,
   getData,
   setRpc,
   createTransaction,
