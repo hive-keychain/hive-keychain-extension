@@ -5,7 +5,6 @@ import {
   ConfirmationResult,
   HiveTxBroadcastErrorResponse,
   HiveTxBroadcastSuccessResponse,
-  HiveTxConfirmationResult,
 } from '@interfaces/hive-tx.interface';
 import { Key } from '@interfaces/keys.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -33,7 +32,7 @@ const setRpc = async (rpc: Rpc) => {
 const sendOperation = async (
   operations: Operation[],
   key: Key,
-): Promise<HiveTxConfirmationResult | null> => {
+): Promise<ConfirmationResult | null> => {
   const transactionResult = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
