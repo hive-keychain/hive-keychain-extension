@@ -18,7 +18,7 @@ const sendOperation = async (
   );
 
   if (transactionResult) {
-    return await HiveEngineUtils.tryConfirmTransaction(transactionResult.id);
+    return await HiveEngineUtils.tryConfirmTransaction(transactionResult.tx_id);
   } else {
     return {
       broadcasted: false,

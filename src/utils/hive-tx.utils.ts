@@ -2,9 +2,10 @@ import { KeychainApi } from '@api/keychain';
 import Hive from '@engrave/ledger-app-hive';
 import { Operation, Transaction } from '@hiveio/dhive';
 import {
-  ConfirmationResult,
   HiveTxBroadcastErrorResponse,
+  HiveTxBroadcastResult,
   HiveTxBroadcastSuccessResponse,
+  TransactionResult,
 } from '@interfaces/hive-tx.interface';
 import { Key } from '@interfaces/keys.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -15,6 +16,7 @@ import {
   Transaction as HiveTransaction,
 } from 'hive-tx';
 import { KeychainError } from 'src/keychain-error';
+import { AsyncUtils } from 'src/utils/async.utils';
 import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
@@ -32,15 +34,20 @@ const setRpc = async (rpc: Rpc) => {
 const sendOperation = async (
   operations: Operation[],
   key: Key,
-): Promise<ConfirmationResult | null> => {
+  confirmation?: boolean,
+): Promise<TransactionResult | null> => {
   const transactionResult = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
   );
   if (transactionResult) {
     return {
-      ...transactionResult,
-    };
+      id: transactionResult.tx_id,
+      tx_id: transactionResult.tx_id,
+      confirmed: confirmation
+        ? await confirmTransaction(transactionResult.tx_id)
+        : false,
+    } as TransactionResult;
   } else {
     return null;
   }
@@ -56,7 +63,7 @@ const createTransaction = async (operations: Operation[]) => {
 const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
-): Promise<ConfirmationResult | undefined> => {
+): Promise<HiveTxBroadcastResult | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations, 5 * MINUTE);
   if (KeysUtils.isUsingLedger(key)) {
@@ -104,7 +111,6 @@ const createSignAndBroadcastTransaction = async (
       const result = (response as HiveTxBroadcastSuccessResponse).result;
       return {
         ...result,
-        id: result.tx_id,
       };
     }
   } catch (err) {
@@ -118,32 +124,32 @@ const createSignAndBroadcastTransaction = async (
   }
 };
 /* istanbul ignore next */
-// const confirmTransaction = async (transactionId: string) => {
-//   let response = null;
-//   const MAX_RETRY_COUNT = 6;
-//   let retryCount = 0;
-//   do {
-//     response = await call('transaction_status_api.find_transaction', {
-//       transaction_id: transactionId,
-//     });
-//     await AsyncUtils.sleep(1000);
-//     retryCount++;
-//   } while (
-//     ['within_mempool', 'unknown'].includes(response.result.status) &&
-//     retryCount < MAX_RETRY_COUNT
-//   );
-//   if (
-//     ['within_reversible_block', 'within_irreversible_block'].includes(
-//       response.result.status,
-//     )
-//   ) {
-//     Logger.info('Transaction confirmed');
-//     return true;
-//   } else {
-//     Logger.error(`Transaction failed with status: ${response.result.status}`);
-//     return false;
-//   }
-// };
+const confirmTransaction = async (transactionId: string) => {
+  let response = null;
+  const MAX_RETRY_COUNT = 6;
+  let retryCount = 0;
+  do {
+    response = await call('transaction_status_api.find_transaction', {
+      transaction_id: transactionId,
+    });
+    await AsyncUtils.sleep(1000);
+    retryCount++;
+  } while (
+    ['within_mempool', 'unknown'].includes(response.result.status) &&
+    retryCount < MAX_RETRY_COUNT
+  );
+  if (
+    ['within_reversible_block', 'within_irreversible_block'].includes(
+      response.result.status,
+    )
+  ) {
+    Logger.info('Transaction confirmed');
+    return true;
+  } else {
+    Logger.error(`Transaction failed with status: ${response.result.status}`);
+    return false;
+  }
+};
 
 const signTransaction = async (tx: Transaction, key: Key) => {
   const hiveTransaction = new HiveTransaction(tx);
@@ -185,7 +191,8 @@ const signTransaction = async (tx: Transaction, key: Key) => {
 const broadcastAndConfirmTransactionWithSignature = async (
   transaction: Transaction,
   signature: string,
-): Promise<ConfirmationResult | undefined> => {
+  confirmation?: boolean,
+): Promise<TransactionResult | undefined> => {
   let hiveTransaction = new HiveTransaction(transaction);
   hiveTransaction.addSignature(signature);
   let response;
@@ -193,11 +200,16 @@ const broadcastAndConfirmTransactionWithSignature = async (
     Logger.log(hiveTransaction);
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
-      const result = (response as HiveTxBroadcastSuccessResponse).result;
+      const transactionResult: HiveTxBroadcastResult = (
+        response as HiveTxBroadcastSuccessResponse
+      ).result;
       return {
-        ...result,
-        id: result.tx_id,
-      };
+        id: transactionResult.tx_id,
+        tx_id: transactionResult.tx_id,
+        confirmed: confirmation
+          ? await confirmTransaction(transactionResult.tx_id)
+          : false,
+      } as TransactionResult;
     }
   } catch (err) {
     Logger.error(err);

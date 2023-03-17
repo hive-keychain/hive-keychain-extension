@@ -1,12 +1,12 @@
-export interface ConfirmationResult {
+export interface TransactionResult {
   tx_id: string;
   id: string;
-  status: string;
-  block_num: number;
+  // status: string;
+  // block_num: number;
+  confirmed?: boolean;
 }
 
-export interface HiveTxConfirmationResult {
-  block_num: number;
+export interface HiveTxBroadcastResult {
   status: string;
   tx_id: string;
 }
@@ -14,7 +14,7 @@ export interface HiveTxConfirmationResult {
 export interface HiveTxBroadcastSuccessResponse {
   id: number;
   jsonrpc: string;
-  result: HiveTxConfirmationResult;
+  result: HiveTxBroadcastResult;
 }
 
 export interface HiveTxBroadcastErrorResponse {
