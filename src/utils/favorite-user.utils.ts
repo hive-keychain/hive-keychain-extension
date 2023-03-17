@@ -21,7 +21,7 @@ const getAutocompleteList = async (
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
-
+  console.log({ favoriteUsers }); //TODO to remove
   const autoCompleteList: AutoCompleteValue[] = [];
   if (favoriteUsers && favoriteUsers[username]) {
     for (const fav of favoriteUsers[username]) {
@@ -80,7 +80,71 @@ const saveFavoriteUser = async (
   );
 };
 
+//TODO new function/new formats to be discussed
+export interface FavoritesAccountLists {
+  favorite_users: FavoriteAccounts[];
+  favorite_local_accounts: FavoriteAccounts[];
+  favorite_exchanges: FavoriteAccounts[];
+}
+export interface FavoriteAccounts {
+  account: string;
+  label: string;
+  subLabel?: string;
+}
+const getFavoriteList = async (
+  username: string,
+  localAccounts: LocalAccount[],
+  options?: AutocompleteListOption,
+): Promise<FavoritesAccountLists> => {
+  const favoriteUsers: FavoriteUserItems =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+    );
+  console.log({ favoriteUsers }); //TODO to remove
+  const favoritesCompleteList: FavoritesAccountLists = {
+    favorite_users: [],
+    favorite_local_accounts: [],
+    favorite_exchanges: [],
+  };
+  if (favoriteUsers && favoriteUsers[username]) {
+    for (const fav of favoriteUsers[username]) {
+      if (
+        !exchanges.find((exchange) => exchange.username === fav) &&
+        !localAccounts.find((localAccount) => localAccount.name === fav)
+      )
+        // autoCompleteList.push({ value: fav });
+        favoritesCompleteList.favorite_users.push({
+          account: fav,
+          label: 'Not set yet',
+        });
+    }
+  }
+  for (const localAccount of localAccounts) {
+    if (localAccount.name !== username) {
+      favoritesCompleteList.favorite_local_accounts.push({
+        account: localAccount.name,
+        label: 'Not set yet',
+      });
+    }
+  }
+  if (options?.addExchanges)
+    for (const exchange of exchanges) {
+      if (
+        ((options?.token && exchange.acceptedCoins.includes(options.token)) ||
+          !options?.token) &&
+        exchange.username.length > 0
+      )
+        favoritesCompleteList.favorite_exchanges.push({
+          account: exchange.username,
+          label: 'Not set yet',
+          subLabel: exchange.name,
+        });
+    }
+  return favoritesCompleteList;
+};
+
 export const FavoriteUserUtils = {
   getAutocompleteList,
   saveFavoriteUser,
+  getFavoriteList,
 };

@@ -1,0 +1,27 @@
+@import '../../../../../../variable.scss';
+.favorite-item {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  row-gap: 12px;
+
+  .item {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+  }
+
+  .remove-button {
+    color: white;
+    cursor: pointer;
+    font-size: 26px;
+    &:hover {
+      color: $red-dark;
+    }
+  }
+
+  &:nth-child(even) {
+    background-color: $red-transparent;
+  }
+}

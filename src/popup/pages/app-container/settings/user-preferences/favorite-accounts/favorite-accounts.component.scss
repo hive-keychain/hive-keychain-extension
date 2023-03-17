@@ -1,0 +1,59 @@
+@import '../../../../../variable.scss';
+
+.favorite-accounts-page {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  row-gap: 32px;
+  padding: 0px 24px;
+
+  .intro {
+    font-size: 16px;
+  }
+
+  .title {
+    font-size: 18px;
+  }
+
+  .select {
+    margin: 0px -24px;
+  }
+  .favorite-accounts-list {
+    flex-direction: column;
+    display: flex;
+    flex: 1;
+    overflow: auto;
+    .title {
+      margin-top: 10px;
+      margin-bottom: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    .favorite-accounts-item {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      row-gap: 12px;
+
+      .item {
+        flex-direction: row;
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+      }
+
+      .remove-button {
+        color: white;
+        cursor: pointer;
+        font-size: 26px;
+        &:hover {
+          color: $red-dark;
+        }
+      }
+
+      &:nth-child(even) {
+        background-color: $red-transparent;
+      }
+    }
+  }
+}

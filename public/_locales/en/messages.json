@@ -279,6 +279,10 @@
     "message": "Operations",
     "description": "on settings page"
   },
+  "popup_html_favorite_accounts": {
+    "message": "Favorite accounts",
+    "description": "on settings page"
+  },
   "popup_html_operation_popup": {
     "message": "Operation popup",
     "description": "on settings page"
@@ -1415,6 +1419,10 @@
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
+  },
+  "popup_html_favorite_accounts_intro": {
+    "message": "Setup accounts that you use the most, when doing transfers, hive engine operations, exchange operations, and more.",
+    "description": "When on favorite accounts page"
   },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Claim Rewards",
