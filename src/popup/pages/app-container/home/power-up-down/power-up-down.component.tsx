@@ -166,7 +166,7 @@ const PowerUpDown = ({
       fields: fields,
       formParams: getFormParams(),
       afterConfirmAction: async () => {
-        let success = false;
+        let success;
         try {
           switch (powerType) {
             case PowerType.POWER_UP:

@@ -1,6 +1,7 @@
 import { signTx } from '@background/requests/operations/ops/sign-tx';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import signTxMocks from 'src/__tests__/background/requests/operations/ops/mocks/sign-tx-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 describe('sign-tx tests:\n', () => {
   const { methods, constants, mocks } = signTxMocks;
@@ -20,7 +21,7 @@ describe('sign-tx tests:\n', () => {
     it('Must return success', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       const signedTx = await signTx(requestHandler, data);
       expect(signedTx.msg.success).toBe(true);
@@ -32,9 +33,11 @@ describe('sign-tx tests:\n', () => {
 
   describe('Using ledger cases:\n', () => {
     it('Must return success', async () => {
-      mocks.HiveTxUtils.sendOperation(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
       mocks.LedgerModule.getSignatureFromLedger('signed!');
-      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      mocks.broadcastAndConfirmTransactionWithSignature(
+        transactionConfirmationSuccess,
+      );
       requestHandler.data.key = '#ledger123456';
       const signedTx = await signTx(requestHandler, data);
       expect(signedTx.msg.success).toBe(true);

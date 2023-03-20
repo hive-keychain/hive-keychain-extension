@@ -10,6 +10,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:\n', () => {
@@ -53,7 +54,7 @@ describe('authority tests:\n', () => {
       beforeEach(() => {
         mhiveTxSendOp = jest
           .spyOn(HiveTxUtils, 'sendOperation')
-          .mockResolvedValue(true);
+          .mockResolvedValue(transactionConfirmationSuccess);
       });
       afterEach(() => {
         mhiveTxSendOp.mockRestore();
@@ -81,7 +82,12 @@ describe('authority tests:\n', () => {
         );
         const { request_id, ...datas } = cloneData;
         expect(result).toEqual(
-          messages.success.addKey(true, datas, cloneData, request_id),
+          messages.success.addKey(
+            transactionConfirmationSuccess,
+            datas,
+            cloneData,
+            request_id,
+          ),
         );
       });
       it('Must broadcast update account posting key', async () => {
@@ -107,7 +113,12 @@ describe('authority tests:\n', () => {
         );
         const { request_id, ...datas } = cloneData;
         expect(result).toEqual(
-          messages.success.addKey(true, datas, cloneData, request_id),
+          messages.success.addKey(
+            transactionConfirmationSuccess,
+            datas,
+            cloneData,
+            request_id,
+          ),
         );
       });
     });

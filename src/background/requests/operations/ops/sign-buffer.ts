@@ -10,6 +10,8 @@ import { KeysUtils } from 'src/utils/keys.utils';
 import Logger from 'src/utils/logger.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
+export type SignedBuffer = string;
+
 export const signBuffer = async (
   requestHandler: RequestsHandler,
   data: RequestSignBuffer & RequestId,
@@ -51,7 +53,7 @@ export const signBuffer = async (
   }
 };
 
-const signMessage = (message: string, privateKey: string) => {
+const signMessage = (message: string, privateKey: string): SignedBuffer => {
   let buf;
   try {
     const o = JSON.parse(message, (k, v) => {

@@ -1,6 +1,6 @@
+import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
 const checkAndUpdateLocalStorage = async () => {
@@ -65,14 +65,37 @@ const checkAndUpdateLocalStorage = async () => {
         JSON.parse(noConfirm),
       );
     }
-
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
-      2,
-    );
+    saveNewLocalStorageVersion(2);
   } else {
-    Logger.info('Already has updated local storage');
+    switch (localStorageVersion) {
+      case 2: {
+        let activeRpc: Rpc = await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.CURRENT_RPC,
+        );
+        if (
+          [
+            'https://anyx.io',
+            'https://api.pharesim.me/',
+            'https://rpc.ausbit.dev',
+            'https://hived.privex.io/',
+          ].includes(activeRpc.uri)
+        ) {
+          LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.CURRENT_RPC,
+            { uri: 'https://api.hive.blog', testnet: false } as Rpc,
+          );
+        }
+        saveNewLocalStorageVersion(3);
+      }
+    }
   }
+};
+
+const saveNewLocalStorageVersion = (version: number) => {
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+    version,
+  );
 };
 
 const LocalStorageModule = { checkAndUpdateLocalStorage };

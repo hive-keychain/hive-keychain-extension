@@ -1,6 +1,7 @@
 import { broadcastVote } from '@background/requests/operations/ops/vote';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import voteMocks from 'src/__tests__/background/requests/operations/ops/mocks/vote-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('vote tests:\n', () => {
@@ -22,7 +23,7 @@ describe('vote tests:\n', () => {
   it('Must return success', async () => {
     const hiveTxSendOp = jest
       .spyOn(HiveTxUtils, 'sendOperation')
-      .mockResolvedValue(true);
+      .mockResolvedValue(transactionConfirmationSuccess);
     requestHandler.data.key = userData.one.nonEncryptKeys.active;
     const result = await broadcastVote(requestHandler, data);
     methods.assert.success(

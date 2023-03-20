@@ -103,6 +103,28 @@ const checkRpcStatus = async (uri: string) => {
   }
 };
 
+// const test = async () => {
+//   const list = [...getFullList(), ...(await RpcUtils.getCustomRpcs())];
+//   for (const rpc of list) {
+//     try {
+//       const start = Date.now();
+//       await HiveTxUtils.setRpc(rpc);
+//       const res = await HiveTxUtils.getData(
+//         'transaction_status_api.find_transaction',
+//         { transaction_id: 'f5178d311dd17927d460e8674cabd074df8e24fe' },
+//       );
+//       const end = Date.now();
+//       if (res.status) {
+//         console.log(`${rpc.uri} responded in ${end - start}ms`);
+//       } else {
+//         console.log(`${rpc.uri} responded without status`);
+//       }
+//     } catch (e) {
+//       console.log(`${rpc.uri} had an error`, e);
+//     }
+//   }
+// };
+
 const RpcUtils = {
   getFullList,
   addCustomRpc,

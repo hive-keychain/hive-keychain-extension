@@ -14,7 +14,10 @@ describe('hive-tx.utils.test.ts part 4', () => {
           constants.tx,
           'signature',
         ),
-      ).toBe(true);
+      ).toBe({
+        ...constants.broadcastResponse.success,
+        status: 'confirmed',
+      });
     });
 
     it('Must throw error and call logger if error on Hive Tx', async () => {

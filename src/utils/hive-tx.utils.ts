@@ -3,7 +3,9 @@ import Hive from '@engrave/ledger-app-hive';
 import { Operation, Transaction } from '@hiveio/dhive';
 import {
   HiveTxBroadcastErrorResponse,
-  HiveTxBroadcastSuccessResponse
+  HiveTxBroadcastResult,
+  HiveTxBroadcastSuccessResponse,
+  TransactionResult,
 } from '@interfaces/hive-tx.interface';
 import { Key } from '@interfaces/keys.interface';
 import { Rpc } from '@interfaces/rpc.interface';
@@ -11,7 +13,7 @@ import {
   call,
   config as HiveTxConfig,
   PrivateKey,
-  Transaction as HiveTransaction
+  Transaction as HiveTransaction,
 } from 'hive-tx';
 import { KeychainError } from 'src/keychain-error';
 import { AsyncUtils } from 'src/utils/async.utils';
@@ -24,23 +26,30 @@ const MINUTE = 60;
 
 const setRpc = async (rpc: Rpc) => {
   HiveTxConfig.node =
-    rpc.uri === 'DEFAULT'
-      ? (await KeychainApi.get('hive/rpc')).rpc
-      : rpc.uri;
+    rpc.uri === 'DEFAULT' ? (await KeychainApi.get('hive/rpc')).rpc : rpc.uri;
   if (rpc.chainId) {
     HiveTxConfig.chain_id = rpc.chainId;
   }
 };
-
-const sendOperation = async (operations: Operation[], key: Key) => {
-  const transactionId = await HiveTxUtils.createSignAndBroadcastTransaction(
+const sendOperation = async (
+  operations: Operation[],
+  key: Key,
+  confirmation?: boolean,
+): Promise<TransactionResult | null> => {
+  const transactionResult = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
   );
-  if (transactionId) {
-    return await HiveTxUtils.confirmTransaction(transactionId);
+  if (transactionResult) {
+    return {
+      id: transactionResult.tx_id,
+      tx_id: transactionResult.tx_id,
+      confirmed: confirmation
+        ? await confirmTransaction(transactionResult.tx_id)
+        : false,
+    } as TransactionResult;
   } else {
-    return false;
+    return null;
   }
 };
 
@@ -54,7 +63,7 @@ const createTransaction = async (operations: Operation[]) => {
 const createSignAndBroadcastTransaction = async (
   operations: Operation[],
   key: Key,
-): Promise<string | undefined> => {
+): Promise<HiveTxBroadcastResult | undefined> => {
   let hiveTransaction = new HiveTransaction();
   let transaction = await hiveTransaction.create(operations, 5 * MINUTE);
   if (KeysUtils.isUsingLedger(key)) {
@@ -99,7 +108,10 @@ const createSignAndBroadcastTransaction = async (
   try {
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
-      return (response as HiveTxBroadcastSuccessResponse).result.tx_id;
+      const result = (response as HiveTxBroadcastSuccessResponse).result;
+      return {
+        ...result,
+      };
     }
   } catch (err) {
     Logger.error(err);
@@ -179,7 +191,8 @@ const signTransaction = async (tx: Transaction, key: Key) => {
 const broadcastAndConfirmTransactionWithSignature = async (
   transaction: Transaction,
   signature: string,
-) => {
+  confirmation?: boolean,
+): Promise<TransactionResult | undefined> => {
   let hiveTransaction = new HiveTransaction(transaction);
   hiveTransaction.addSignature(signature);
   let response;
@@ -187,8 +200,16 @@ const broadcastAndConfirmTransactionWithSignature = async (
     Logger.log(hiveTransaction);
     response = await hiveTransaction.broadcast();
     if ((response as HiveTxBroadcastSuccessResponse).result) {
-      const txId = (response as HiveTxBroadcastSuccessResponse).result.tx_id;
-      return HiveTxUtils.confirmTransaction(txId);
+      const transactionResult: HiveTxBroadcastResult = (
+        response as HiveTxBroadcastSuccessResponse
+      ).result;
+      return {
+        id: transactionResult.tx_id,
+        tx_id: transactionResult.tx_id,
+        confirmed: confirmation
+          ? await confirmTransaction(transactionResult.tx_id)
+          : false,
+      } as TransactionResult;
     }
   } catch (err) {
     Logger.error(err);
@@ -220,7 +241,7 @@ const getData = async (
 export const HiveTxUtils = {
   sendOperation,
   createSignAndBroadcastTransaction,
-  confirmTransaction,
+  // confirmTransaction,
   getData,
   setRpc,
   createTransaction,

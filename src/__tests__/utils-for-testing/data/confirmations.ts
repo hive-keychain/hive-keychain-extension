@@ -8,3 +8,15 @@ export default {
     expired: false,
   } as TransactionConfirmation,
 };
+
+export const transactionConfirmationSuccess = {
+  confirmed: true,
+  status: 'ok',
+  tx_id: '45dfd45ds54ds65f4sd5',
+};
+
+export const transactionConfirmationFailed = {
+  confirmed: false,
+  status: 'nok',
+  tx_id: 'jfidslji39fds93489fjd9',
+};
