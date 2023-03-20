@@ -87,6 +87,43 @@ const checkAndUpdateLocalStorage = async () => {
         }
         saveNewLocalStorageVersion(3);
       }
+      case 3: {
+        //add a third case into switch to check previous local storage and make it as the new format
+
+        //TODO clean up, delete this test part
+        //test to delete
+        // LocalStorageUtils.saveValueInLocalStorage(
+        //   LocalStorageKeyEnum.FAVORITE_USERS,
+        //   {
+        //     theghost1980: [
+        //       { account: 'testing', label: '' },
+        //       { account: 'testing2', label: 'One here!' },
+        //     ],
+        //   },
+        // );
+        //end test
+
+        //TODO here add another function to keep old ways to save data...
+
+        const actualFavoriteUsers: any =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.FAVORITE_USERS,
+          );
+        console.log({ actualFavoriteUsers }); //TODO to remove
+        //check on format
+        let oldFormat = true;
+        Object.entries(actualFavoriteUsers).map((favorite: any) => {
+          // console.log({ value: favorite[1], type: typeof favorite[1] });
+          if (typeof favorite[1] === 'object') {
+            favorite[1].map((favItem: any) => {
+              if (favItem.account && favItem.label) {
+                oldFormat = false;
+              }
+            });
+          }
+        });
+        console.log({ oldFormat });
+      }
     }
   }
 };

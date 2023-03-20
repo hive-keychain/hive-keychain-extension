@@ -1,9 +1,19 @@
 @import '../../../../../../variable.scss';
-.favorite-item {
+.favorite-accounts-item {
   display: flex;
   flex-direction: column;
   padding: 10px;
   row-gap: 12px;
+
+  .buttons {
+    display: none;
+  }
+
+  &:hover {
+    .buttons {
+      display: flex;
+    }
+  }
 
   .item {
     flex-direction: row;
@@ -13,6 +23,15 @@
   }
 
   .remove-button {
+    color: white;
+    cursor: pointer;
+    font-size: 22px;
+    &:hover {
+      color: $red-dark;
+    }
+  }
+
+  .edit-button {
     color: white;
     cursor: pointer;
     font-size: 26px;

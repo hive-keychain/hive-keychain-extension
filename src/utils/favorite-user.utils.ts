@@ -81,30 +81,41 @@ const saveFavoriteUser = async (
 };
 
 //TODO new function/new formats to be discussed
-export interface FavoritesAccountLists {
-  favorite_users: FavoriteAccounts[];
-  favorite_local_accounts: FavoriteAccounts[];
-  favorite_exchanges: FavoriteAccounts[];
+export enum FavoriteUserListName {
+  USERS = 'USERS',
+  LOCAL_ACCOUNTS = 'LOCAL_ACCOUNTS',
+  EXCHANGES = 'EXCHANGES',
+}
+export interface FavoriteUserList {
+  name: FavoriteUserListName;
+  list: FavoriteAccounts[];
 }
 export interface FavoriteAccounts {
   account: string;
   label: string;
   subLabel?: string;
 }
-const getFavoriteList = async (
+const getFavoriteListOldFormatAndReformat = async (
   username: string,
   localAccounts: LocalAccount[],
   options?: AutocompleteListOption,
-): Promise<FavoritesAccountLists> => {
+): Promise<FavoriteUserList[]> => {
   const favoriteUsers: FavoriteUserItems =
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
   console.log({ favoriteUsers }); //TODO to remove
-  const favoritesCompleteList: FavoritesAccountLists = {
-    favorite_users: [],
-    favorite_local_accounts: [],
-    favorite_exchanges: [],
+  const favoriteUsersList: FavoriteUserList = {
+    name: FavoriteUserListName.USERS,
+    list: [],
+  };
+  const favoriteLocalAccountsList: FavoriteUserList = {
+    name: FavoriteUserListName.LOCAL_ACCOUNTS,
+    list: [],
+  };
+  const favoriteExchangesList: FavoriteUserList = {
+    name: FavoriteUserListName.EXCHANGES,
+    list: [],
   };
   if (favoriteUsers && favoriteUsers[username]) {
     for (const fav of favoriteUsers[username]) {
@@ -112,18 +123,17 @@ const getFavoriteList = async (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
       )
-        // autoCompleteList.push({ value: fav });
-        favoritesCompleteList.favorite_users.push({
+        favoriteUsersList.list.push({
           account: fav,
-          label: 'Not set yet',
+          label: '',
         });
     }
   }
   for (const localAccount of localAccounts) {
     if (localAccount.name !== username) {
-      favoritesCompleteList.favorite_local_accounts.push({
+      favoriteLocalAccountsList.list.push({
         account: localAccount.name,
-        label: 'Not set yet',
+        label: '',
       });
     }
   }
@@ -134,17 +144,17 @@ const getFavoriteList = async (
           !options?.token) &&
         exchange.username.length > 0
       )
-        favoritesCompleteList.favorite_exchanges.push({
+        favoriteExchangesList.list.push({
           account: exchange.username,
-          label: 'Not set yet',
+          label: '',
           subLabel: exchange.name,
         });
     }
-  return favoritesCompleteList;
+  return [favoriteUsersList, favoriteLocalAccountsList, favoriteExchangesList];
 };
 
 export const FavoriteUserUtils = {
   getAutocompleteList,
   saveFavoriteUser,
-  getFavoriteList,
+  getFavoriteListOldFormatAndReformat,
 };

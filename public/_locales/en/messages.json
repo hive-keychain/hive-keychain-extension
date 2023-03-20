@@ -107,6 +107,10 @@
     "message": "Password",
     "description": "Placeholder in input for password"
   },
+  "popup_html_new_label": {
+    "message": "New Label",
+    "description": "Placeholder in input for new favorite label item"
+  },
   "popup_html_signin": {
     "message": "Sign In"
   },
@@ -414,6 +418,22 @@
   "popup_html_copy_username_tooltip_text": {
     "message": "Click here to copy username",
     "description": "after clicking on copy username to clipboard button on home page"
+  },
+  "popup_html_edit_favorite_label_tooltip_text_button": {
+    "message": "Edit label",
+    "description": "on hover favorite page on button edit"
+  },
+  "popup_html_save_favorite_label_tooltip_text_button": {
+    "message": "Save label",
+    "description": "on hover favorite page on button save"
+  },
+  "popup_html_cancel_favorite_label_tooltip_text_button": {
+    "message": "Cancel edition",
+    "description": "on hover favorite page on button cancel"
+  },
+  "popup_html_delete_favorite_label_tooltip_text_button": {
+    "message": "Delete favorite",
+    "description": "on hover favorite page on button delete"
   },
   "popup_html_change_password_text": {
     "message": "Input your old password for confirmation, then chose a new password.",

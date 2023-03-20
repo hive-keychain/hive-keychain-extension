@@ -2,7 +2,7 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
-import { FavoriteAccountsItemComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
+import { FavoriteAccountsListComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select, {
@@ -12,7 +12,8 @@ import Select, {
 import { connect, ConnectedProps } from 'react-redux';
 import {
   FavoriteAccounts,
-  FavoritesAccountLists,
+  FavoriteUserList,
+  FavoriteUserListName,
   FavoriteUserUtils,
 } from 'src/utils/favorite-user.utils';
 import './favorite-accounts.component.scss';
@@ -38,12 +39,13 @@ const FavoriteAccounts = ({
   //     AutomatedTasksUtils.canClaimAccountErrorMessage(activeAccount);
   //   const claimRewardsErrorMessage =
   //     AutomatedTasksUtils.canClaimRewardsErrorMessage(activeAccount);
-  const [favoriteAccountsList, setFavoriteAccountsList] =
-    useState<FavoritesAccountLists>({
-      favorite_users: [],
-      favorite_local_accounts: [],
-      favorite_exchanges: [],
-    });
+  const [favoriteAccountsList, setFavoriteAccountsList] = useState<
+    FavoriteUserList[]
+  >([
+    { name: FavoriteUserListName.USERS, list: [] },
+    { name: FavoriteUserListName.LOCAL_ACCOUNTS, list: [] },
+    { name: FavoriteUserListName.EXCHANGES, list: [] },
+  ]);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -89,7 +91,7 @@ const FavoriteAccounts = ({
 
     //load actual favorites
     setFavoriteAccountsList(
-      await FavoriteUserUtils.getFavoriteList(
+      await FavoriteUserUtils.getFavoriteListOldFormatAndReformat(
         activeAccount.name!,
         localAccounts,
         {
@@ -158,9 +160,45 @@ const FavoriteAccounts = ({
     );
   };
 
-  const deleteFavorite = (category: string, favoriteItem: FavoriteAccounts) => {
-    console.log('Should delete: ', { category, favoriteItem }); //TODO to remove
+  const handleDeleteFavorite = (
+    listName: FavoriteUserListName,
+    favoriteItem: FavoriteAccounts,
+  ) => {
+    const favoriteAccountsListCopy = [...favoriteAccountsList];
+    const selectedList = favoriteAccountsListCopy.filter(
+      (favoriteList) => favoriteList.name === listName,
+    )[0];
+    const filteredSelectedList = selectedList.list.filter(
+      (favorite) => favorite !== favoriteItem,
+    );
+    selectedList.list = filteredSelectedList;
+    setFavoriteAccountsList([...favoriteAccountsListCopy, { ...selectedList }]);
+    //TODO save to local storage with new format.
+    //TODO keep working on the src\background\local-storage.module.ts
+    // as you will need this to move on in favorites...
   };
+
+  const handleEditFavoriteLabel = (
+    listName: FavoriteUserListName,
+    favoriteItem: FavoriteAccounts,
+    newLabel: string,
+  ) => {
+    const favoriteAccountsListCopy = [...favoriteAccountsList];
+    const selectedList = favoriteAccountsListCopy.filter(
+      (favoriteList) => favoriteList.name === listName,
+    )[0];
+    const favoriteItemIndexToEdit = selectedList.list.findIndex(
+      (favorite) => favorite === favoriteItem,
+    );
+    selectedList.list[favoriteItemIndexToEdit] = {
+      ...selectedList.list[favoriteItemIndexToEdit],
+      label: newLabel,
+    };
+    setFavoriteAccountsList([...favoriteAccountsListCopy, { ...selectedList }]);
+    //TODO save to local storage with new format.
+  };
+
+  //TODO here check why the list have some margins on it sides and remove them.
 
   return (
     <div aria-label="favorite-accounts-page" className="favorite-accounts-page">
@@ -178,180 +216,37 @@ const FavoriteAccounts = ({
         />
       </div>
       <div className="favorite-accounts-list">
-        <div className="title">FAVORITE USERS:</div>
-        {favoriteAccountsList.favorite_users.length > 0 ? (
-          favoriteAccountsList.favorite_users.map(
-            (favorite) => (
-              <FavoriteAccountsItemComponent
-                favorite={favorite}
-                deleteFavorite={deleteFavorite}
-              />
-            ),
-            // return (
-            //   //TODO move to a component
-            //   <div className="favorite-accounts-item" key={favorite.account}>
-            //     <div className="item">
-            //       <span>
-            //         {favorite.account}{' '}
-            //         {favorite.subLabel
-            //           ? `(${favorite.subLabel})`
-            //           : `(${favorite.label})`}
-            //       </span>
-            //       <Icon
-            //         onClick={() => deleteFavorite('favorite_users', favorite)}
-            //         name={Icons.DELETE}
-            //         type={IconType.OUTLINED}
-            //         additionalClassName="remove-button"
-            //       />
-            //     </div>
-            //   </div>
-            // );
-          )
-        ) : (
-          <div>No favorite users yet.</div>
-        )}
-
-        <div className="title">FAVORITE LOCAL ACCOUNTS:</div>
-        {favoriteAccountsList.favorite_local_accounts.length > 0 ? (
-          favoriteAccountsList.favorite_local_accounts.map(
-            (favorite) => (
-              <FavoriteAccountsItemComponent
-                favorite={favorite}
-                deleteFavorite={deleteFavorite}
-              />
-            ),
-            // return (
-            //   <div className="favorite-accounts-item" key={favorite.account}>
-            //     <div className="item">
-            //       <span>
-            //         {favorite.account}{' '}
-            //         {favorite.subLabel
-            //           ? `(${favorite.subLabel})`
-            //           : `(${favorite.label})`}
-            //       </span>
-            //       <Icon
-            //         onClick={() => deleteFavorite('favorite_users', favorite)}
-            //         name={Icons.DELETE}
-            //         type={IconType.OUTLINED}
-            //         additionalClassName="remove-button"
-            //       />
-            //     </div>
-            //   </div>
-            // );
-          )
-        ) : (
-          <div>No favorite local accounts yet.</div>
-        )}
-
-        <div className="title">FAVORITE EXCHANGES:</div>
-        {favoriteAccountsList.favorite_local_accounts.length > 0 ? (
-          favoriteAccountsList.favorite_exchanges.map(
-            (favorite) => (
-              <FavoriteAccountsItemComponent
-                favorite={favorite}
-                deleteFavorite={deleteFavorite}
-              />
-            ),
-            // return (
-            //   <div className="favorite-accounts-item" key={favorite.account}>
-            //     <div className="item">
-            //       <span>
-            //         {favorite.account}{' '}
-            //         {favorite.subLabel
-            //           ? `(${favorite.subLabel})`
-            //           : `(${favorite.label})`}
-            //       </span>
-            //       <Icon
-            //         onClick={() => deleteFavorite('favorite_users', favorite)}
-            //         name={Icons.DELETE}
-            //         type={IconType.OUTLINED}
-            //         additionalClassName="remove-button"
-            //       />
-            //     </div>
-            //   </div>
-            // );
-          )
-        ) : (
-          <div>No favorite exchanges yet.</div>
-        )}
-
-        {/* {Object.entries(favoriteAccountsList).map((category) => {
-          return (
-            <div>
-              <div className="title">
-                {category[0].split('_').join(' ').toUpperCase()}:
-              </div>
-              {category[1].map((favorite: FavoriteAccounts) => {
-                return (
-                  <div className="favorite-accounts-item">
-                    <div className="item">
-                      {favorite.account}{' '}
-                      {favorite.subLabel
-                        ? `(${favorite.subLabel})`
-                        : `(${favorite.label})`}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        })} */}
+        <FavoriteAccountsListComponent
+          favoriteList={
+            favoriteAccountsList.filter(
+              (favoriteList) =>
+                favoriteList.name === FavoriteUserListName.USERS,
+            )[0]
+          }
+          handleDeleteFavorite={handleDeleteFavorite}
+          handleEditFavoriteLabel={handleEditFavoriteLabel}
+        />
+        <FavoriteAccountsListComponent
+          favoriteList={
+            favoriteAccountsList.filter(
+              (favoriteList) =>
+                favoriteList.name === FavoriteUserListName.LOCAL_ACCOUNTS,
+            )[0]
+          }
+          handleDeleteFavorite={handleDeleteFavorite}
+          handleEditFavoriteLabel={handleEditFavoriteLabel}
+        />
+        <FavoriteAccountsListComponent
+          favoriteList={
+            favoriteAccountsList.filter(
+              (favoriteList) =>
+                favoriteList.name === FavoriteUserListName.EXCHANGES,
+            )[0]
+          }
+          handleDeleteFavorite={handleDeleteFavorite}
+          handleEditFavoriteLabel={handleEditFavoriteLabel}
+        />
       </div>
-      {/* <span className="title">Favorite Used store accounts</span>
-      <div className="favorite-accounts-list">
-        {favoriteAccountsList
-          .filter((favItem) => favItem.category === 'localAccounts')
-          .map((favoriteItem) => (
-            <FavoriteAccountsItemComponent
-              key={Math.random().toFixed(5)} //TODO update, for now random
-              favorite={favoriteItem}
-            />
-          ))}
-      </div>
-      <span className="title">Favorite Used exchanges</span>
-      <div className="favorite-accounts-list">
-        {favoriteAccountsList
-          .filter((favItem) => favItem.category === 'exchanges')
-          .map((favoriteItem) => (
-            <FavoriteAccountsItemComponent
-              key={Math.random().toFixed(5)} //TODO update, for now random
-              favorite={favoriteItem}
-            />
-          ))}
-      </div> */}
-
-      {/* //TODO remove unused */}
-      {/* <CheckboxComponent
-        ariaLabel="checkbox-autoclaim-rewards"
-        title="popup_html_enable_autoclaim_rewards"
-        checked={claimRewards}
-        onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
-        hint="popup_html_enable_autoclaim_rewards_info"
-        tooltipMessage={claimRewardsErrorMessage}
-        disabled={!!claimRewardsErrorMessage}
-      />
-      <CheckboxComponent
-        ariaLabel="checkbox-autoclaim-accounts"
-        title="popup_html_enable_autoclaim_accounts"
-        checked={claimAccounts}
-        onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
-        skipHintTranslation
-        hint={chrome.i18n.getMessage(
-          'popup_html_enable_autoclaim_accounts_info',
-          [Config.claims.freeAccount.MIN_RC_PCT + ''],
-        )}
-        tooltipMessage={claimAccountErrorMessage}
-        disabled={!!claimSavingsErrorMessage}
-      />
-      <CheckboxComponent
-        ariaLabel="checkbox-autoclaim-savings"
-        title="popup_html_enable_autoclaim_savings"
-        checked={claimSavings}
-        onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}
-        hint="popup_html_enable_autoclaim_savings_info"
-        tooltipMessage={claimSavingsErrorMessage}
-        disabled={!!claimSavingsErrorMessage}
-      /> */}
     </div>
   );
 };
