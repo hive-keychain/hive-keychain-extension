@@ -10,6 +10,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:\n', () => {
@@ -66,7 +67,7 @@ describe('authority tests:\n', () => {
     it('Must remove posting key', async () => {
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       mocks.getExtendedAccount(
         objects.clone(accounts.extended) as ExtendedAccount,
       );
@@ -83,7 +84,11 @@ describe('authority tests:\n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.removedKey(true, datas, request_id),
+        messages.success.removedKey(
+          transactionConfirmationSuccess,
+          datas,
+          request_id,
+        ),
       );
       mhiveTxSendOp.mockRestore();
     });

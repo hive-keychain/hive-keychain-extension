@@ -18,7 +18,7 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             constants.operations,
             userData.one.nonEncryptKeys.posting,
           ),
-        ).toBe(constants.broadcastResponse.success.result.tx_id);
+        ).toBe(constants.broadcastResponse.success.result);
       });
 
       it('Must catch error, call logger and throw Error if not valid key', async () => {
@@ -87,7 +87,7 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             constants.operations,
             '#ajjsk1121312312',
           ),
-        ).toEqual(constants.broadcastResponse.success.result.tx_id);
+        ).toEqual(constants.broadcastResponse.success.result);
         expect(spies.hiveTransaction.addSignature).toBeCalledWith(
           'signed_string',
         );
@@ -106,7 +106,7 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             constants.operations,
             '#ajjsk1121312312',
           ),
-        ).toEqual(constants.broadcastResponse.success.result.tx_id);
+        ).toEqual(constants.broadcastResponse.success.result);
         expect(spies.hiveTransaction.addSignature).toBeCalledWith('signed');
       });
 

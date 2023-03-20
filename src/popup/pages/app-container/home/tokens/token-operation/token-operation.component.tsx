@@ -1,6 +1,6 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
-import { TransactionStatus } from '@interfaces/transaction-status.interface';
+import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -157,7 +157,7 @@ const TokensOperation = ({
             activeAccount.keys.activePubkey!,
           ),
         );
-        let tokenOperationResult: TransactionStatus;
+        let tokenOperationResult: HiveEngineTransactionStatus;
         try {
           switch (operationType) {
             case TokenOperationType.DELEGATE:

@@ -1,7 +1,7 @@
 import { CustomJsonOperation } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { TokenTransaction } from '@interfaces/tokens.interface';
-import { TransactionStatus } from '@interfaces/transaction-status.interface';
+import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/utils/error.utils';
 import { HiveEngineConfigUtils } from 'src/utils/hive-engine-config.utils';
@@ -11,23 +11,26 @@ import { TokenRequestParams } from 'src/utils/token-request-params.interface';
 const sendOperation = async (
   operations: CustomJsonOperation[],
   key: Key,
-): Promise<TransactionStatus> => {
-  const transactionId = await HiveTxUtils.createSignAndBroadcastTransaction(
+): Promise<HiveEngineTransactionStatus> => {
+  const transactionResult = await HiveTxUtils.createSignAndBroadcastTransaction(
     operations,
     key,
   );
 
-  if (transactionId) {
-    return await HiveEngineUtils.tryConfirmTransaction(transactionId);
+  if (transactionResult) {
+    return await HiveEngineUtils.tryConfirmTransaction(transactionResult.tx_id);
   } else {
     return {
       broadcasted: false,
       confirmed: false,
+      tx_id: '',
     };
   }
 };
 
-const tryConfirmTransaction = (trxId: string): Promise<TransactionStatus> => {
+const tryConfirmTransaction = (
+  trxId: string,
+): Promise<HiveEngineTransactionStatus> => {
   let result: any;
   return new Promise(async (resolve, reject) => {
     for (let i = 0; i < 20; i++) {
@@ -46,9 +49,9 @@ const tryConfirmTransaction = (trxId: string): Promise<TransactionStatus> => {
       }
     }
     if (result != null) {
-      resolve({ broadcasted: true, confirmed: true });
+      resolve({ broadcasted: true, confirmed: true, tx_id: trxId });
     } else {
-      resolve({ broadcasted: true, confirmed: false });
+      resolve({ broadcasted: true, confirmed: false, tx_id: trxId });
     }
   });
 };

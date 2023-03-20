@@ -4,11 +4,7 @@ import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 /* istanbul ignore next */
-const voteWitness = async (
-  witness: Witness,
-  voter: string,
-  activeKey: Key,
-): Promise<boolean> => {
+const voteWitness = async (witness: Witness, voter: string, activeKey: Key) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(
     true,
     voter,

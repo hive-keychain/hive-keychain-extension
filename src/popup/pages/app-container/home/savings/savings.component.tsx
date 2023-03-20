@@ -213,7 +213,7 @@ const SavingsPage = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         try {
-          let success = false;
+          let success;
           switch (selectedSavingOperationType) {
             case SavingOperationType.DEPOSIT:
               addToLoadingList('html_popup_deposit_to_savings_operation');
