@@ -110,7 +110,7 @@ const IncomingOutgoingRcPage = ({
       title: 'popup_html_cancel_rc_delegation_title',
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegate_rc_operation');
-        let success = false;
+        let success;
 
         success = await RcDelegationsUtils.cancelDelegation(
           rcDelegation.delegatee,

@@ -1,6 +1,7 @@
 import { broadcastWitnessVote } from '@background/requests/operations/ops/witness-vote';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import witnessVoteMocks from 'src/__tests__/background/requests/operations/ops/mocks/witness-vote-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('witness-vote tests:\n', () => {
@@ -28,7 +29,7 @@ describe('witness-vote tests:\n', () => {
       );
     });
     it('Must return success when vote', async () => {
-      mocks.HiveTxUtils.sendOperation(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       const result = await broadcastWitnessVote(requestHandler, data);
       methods.assert.success(
@@ -37,7 +38,7 @@ describe('witness-vote tests:\n', () => {
       );
     });
     it('Must return success when unvote', async () => {
-      mocks.HiveTxUtils.sendOperation(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       data.vote = false;
       const result = await broadcastWitnessVote(requestHandler, data);
@@ -50,9 +51,11 @@ describe('witness-vote tests:\n', () => {
 
   describe('Using ledger cases:\n', () => {
     it('Must return success when vote', async () => {
-      mocks.HiveTxUtils.sendOperation(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
       mocks.LedgerModule.getSignatureFromLedger('signed!');
-      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      mocks.broadcastAndConfirmTransactionWithSignature(
+        transactionConfirmationSuccess,
+      );
       requestHandler.data.key = '#ledgerKEY';
       data.vote = true;
       const result = await broadcastWitnessVote(requestHandler, data);

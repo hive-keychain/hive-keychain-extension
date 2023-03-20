@@ -1,6 +1,10 @@
 import { AccountCreationUtils } from 'src/utils/account-creation.utils';
 import AccountUtils from 'src/utils/account.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import {
+  transactionConfirmationFailed,
+  transactionConfirmationSuccess,
+} from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import accountCreationUtilsMocks from 'src/__tests__/utils/mocks/account-creation.utils-mocks';
 
@@ -47,7 +51,7 @@ describe('account-creation.utils.ts tests:/n', () => {
     it('Must return localAccount when buying account', async () => {
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       expect(
         await AccountCreationUtils.createAccount(
           constants.creationType.buying,
@@ -75,7 +79,7 @@ describe('account-creation.utils.ts tests:/n', () => {
     it('Must return false if buying account fails', async () => {
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(false);
+        .mockResolvedValue(transactionConfirmationFailed);
       expect(
         await AccountCreationUtils.createAccount(
           constants.creationType.buying,
@@ -93,7 +97,7 @@ describe('account-creation.utils.ts tests:/n', () => {
     it('Must return false if no generatedKeys when buying account', async () => {
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       expect(
         await AccountCreationUtils.createAccount(
           constants.creationType.buying,
@@ -110,7 +114,7 @@ describe('account-creation.utils.ts tests:/n', () => {
     it('Must return localAccount when using ticket', async () => {
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       expect(
         await AccountCreationUtils.createAccount(
           constants.creationType.usingTicket,
@@ -138,7 +142,7 @@ describe('account-creation.utils.ts tests:/n', () => {
     it('Must return false if using ticket fails', async () => {
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(false);
+        .mockResolvedValue(transactionConfirmationFailed);
       expect(
         await AccountCreationUtils.createAccount(
           constants.creationType.usingTicket,
@@ -156,7 +160,7 @@ describe('account-creation.utils.ts tests:/n', () => {
     it('Must return false if no generatedKeys when using ticket', async () => {
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       expect(
         await AccountCreationUtils.createAccount(
           constants.creationType.usingTicket,

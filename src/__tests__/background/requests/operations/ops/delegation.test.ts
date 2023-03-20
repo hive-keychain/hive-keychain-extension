@@ -8,6 +8,7 @@ import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import delegationMocks from 'src/__tests__/background/requests/operations/ops/mocks/delegation-mocks';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
@@ -62,13 +63,13 @@ describe('delegation tests:\n', () => {
       });
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       const result = await broadcastDelegation(requestHandler, data);
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.broadcast(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_delegate', [
@@ -87,9 +88,11 @@ describe('delegation tests:\n', () => {
       mocksImplementation.hiveTxUtils.getData({
         dynamicGlobalProperties: dynamic.globalProperties,
       });
-      mocks.HiveTxUtils.sendOperation(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
       mocks.LedgerModule.getSignatureFromLedger('signed!');
-      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      mocks.broadcastAndConfirmTransactionWithSignature(
+        transactionConfirmationSuccess,
+      );
       requestHandler.data.key = '#ledgerKEY12345';
       const clonedData = objects.clone(data) as RequestDelegation & RequestId;
       clonedData.unit = 'VESTS';
@@ -97,7 +100,7 @@ describe('delegation tests:\n', () => {
       const { request_id, ...datas } = clonedData;
       expect(result).toEqual(
         messages.success.broadcast(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_delegate', [

@@ -239,7 +239,7 @@ const TransferFunds = ({
           ),
         );
         try {
-          let success = false;
+          let success;
           let memoParam = memo;
           if (memo.length) {
             if (memo.startsWith('#')) {

@@ -1,6 +1,7 @@
 import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { AuthorityType, TransactionConfirmation } from '@hiveio/dhive';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestTypes,
   RequestCreateClaimedAccount,
@@ -43,7 +44,9 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+  broadcastAndConfirmTransactionWithSignature: (
+    result: HiveTxConfirmationResult,
+  ) =>
     jest
       .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
       .mockResolvedValue(result),
@@ -54,7 +57,7 @@ const mocks = {
         .mockResolvedValue(signature),
   },
   HiveTxUtils: {
-    sendOperation: (result: boolean) =>
+    sendOperation: (result: HiveTxConfirmationResult) =>
       jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
   },
 };

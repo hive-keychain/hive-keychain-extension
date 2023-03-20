@@ -1,6 +1,7 @@
 import { broadcastPost } from '@background/requests/operations/ops/post';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import postMocks from 'src/__tests__/background/requests/operations/ops/mocks/post-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 import { ResultOperation } from 'src/__tests__/utils-for-testing/interfaces/assertions';
@@ -42,7 +43,7 @@ describe('post tests:\n', () => {
       requestHandler.data.key = userData.one.nonEncryptKeys.posting;
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValueOnce(true);
+        .mockResolvedValueOnce(transactionConfirmationSuccess);
       const result = await broadcastPost(requestHandler, data);
       methods.assertMsgSucess(result, data, 'bgd_ops_post');
       mHiveTxSendOp.mockClear();
@@ -67,7 +68,7 @@ describe('post tests:\n', () => {
       data.comment_options = '{"keychain":10000,"points":6}';
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValueOnce(true);
+        .mockResolvedValueOnce(transactionConfirmationSuccess);
       const result = await broadcastPost(requestHandler, data);
       methods.assertMsgSucess(result, data, 'bgd_ops_post');
       mHiveTxSendOp.mockClear();

@@ -50,3 +50,4 @@ cd ../dist-beta
 zip -qr "../_releases/${version}-chromium-beta.zip" *
 cd ..
 zip -q -r "_releases/${version}-source.zip" . -x node_modules\* dist-*\* example\* coverage\* .github\* _releases\* .vscode\* scripts\* .env
+

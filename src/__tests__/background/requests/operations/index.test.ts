@@ -6,6 +6,7 @@ import { ConversionUtils } from 'src/utils/conversion.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import indexMocks from 'src/__tests__/background/requests/operations/mocks/index-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -62,7 +63,7 @@ describe('index tests:\n', () => {
   it('Must call each type of request', async () => {
     const mHiveTxSendOp = jest
       .spyOn(HiveTxUtils, 'sendOperation')
-      .mockResolvedValue(true);
+      .mockResolvedValue(transactionConfirmationSuccess);
     mocks.getExtendedAccount(accounts.extended);
     const fakeArrayResponse = [
       utilsT.fakeHbdConversionsResponse,

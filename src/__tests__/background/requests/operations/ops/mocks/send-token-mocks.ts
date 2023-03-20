@@ -1,6 +1,7 @@
 import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestData,
   KeychainRequestTypes,
@@ -9,6 +10,7 @@ import {
 } from '@interfaces/keychain.interface';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -39,7 +41,9 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  broadcastAndConfirmTransactionWithSignature: (result: boolean) =>
+  broadcastAndConfirmTransactionWithSignature: (
+    result: HiveTxConfirmationResult,
+  ) =>
     jest
       .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
       .mockResolvedValue(result),
@@ -50,7 +54,7 @@ const mocks = {
         .mockResolvedValue(signature),
   },
   HiveTxUtils: {
-    sendOperation: (result: boolean) =>
+    sendOperation: (result: HiveTxConfirmationResult) =>
       jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
   },
 };
@@ -85,7 +89,7 @@ const methods = {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          confirmed,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           message,

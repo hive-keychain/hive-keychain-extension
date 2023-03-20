@@ -4,6 +4,7 @@ import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
@@ -50,7 +51,7 @@ describe('transfer tests:\n', () => {
         it('Must return success', async () => {
           const mHiveTxSendOp = jest
             .spyOn(HiveTxUtils, 'sendOperation')
-            .mockResolvedValue(true);
+            .mockResolvedValue(transactionConfirmationSuccess);
           mocks.getExtendedAccount(accounts.extended);
           requestHandler.data.key = userData.one.nonEncryptKeys.active;
           requestHandler.data.accounts = accounts.twoAccounts;
@@ -101,7 +102,7 @@ describe('transfer tests:\n', () => {
         it('Must return success', async () => {
           const mHiveTxSendOp = jest
             .spyOn(HiveTxUtils, 'sendOperation')
-            .mockResolvedValue(true);
+            .mockResolvedValue(transactionConfirmationSuccess);
           mocks.getExtendedAccount(accounts.extended);
           requestHandler.data.key = userData.one.nonEncryptKeys.active;
           requestHandler.data.accounts = accounts.twoAccounts;
@@ -124,9 +125,11 @@ describe('transfer tests:\n', () => {
 
     describe('Using ledger cases:\n', () => {
       it('Must return success', async () => {
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         mocks.LedgerModule.getSignatureFromLedger('signed!');
-        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.broadcastAndConfirmTransactionWithSignature(
+          transactionConfirmationSuccess,
+        );
         mocks.getExtendedAccount(accounts.extended);
         const clonedAccounts = objects.clone(
           accounts.twoAccounts,

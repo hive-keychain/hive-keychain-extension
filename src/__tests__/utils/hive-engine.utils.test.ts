@@ -1,6 +1,7 @@
 import { KeyType } from '@interfaces/keys.interface';
 import { KeychainError } from 'src/keychain-error';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import hiveEngineUtilsMocks from 'src/__tests__/utils/mocks/hive-engine.utils-mocks';
 
 describe('hive-engine.utils tests:\n', () => {
@@ -8,7 +9,7 @@ describe('hive-engine.utils tests:\n', () => {
   methods.afterEach;
   describe('sendOperation cases:\n', () => {
     it('Must send operation and return tx id', async () => {
-      mocks.createSignAndBroadcastTransaction('1234');
+      mocks.createSignAndBroadcastTransaction(transactionConfirmationSuccess);
       mocks.tryConfirmTransaction(constants.status.confirmed);
       expect(
         await HiveEngineUtils.sendOperation(
