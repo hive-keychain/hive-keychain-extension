@@ -63,66 +63,19 @@ PropsFromRedux) => {
     setLabel('');
   };
 
-  // const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
-  // const [usingProxy, setUsingProxy] = useState(false);
-
-  //   useEffect(() => {
-  //     init();
-  //   }, []);
-
-  //   const init = async () => {
-  //     let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
-  //     setUsingProxy(proxy !== null);
-  //   };
-
-  //   const goTo = (link: Proposal['link']) => {
-  //     chrome.tabs.create({ url: link });
-  //   };
-
-  //   const goToCreator = (creator: Proposal['creator']) => {
-  //     chrome.tabs.create({ url: `https://peakd.com/@${creator}` });
-  //   };
-
-  //   const toggleSupport = async (proposal: Proposal) => {
-  //     if (proposal.voted) {
-  //       addToLoadingList('popup_html_unvoting_for_proposal');
-  //       if (
-  //         await ProposalUtils.unvoteProposal(
-  //           proposal.proposalId,
-  //           activeAccount.name!,
-  //           activeAccount.keys.active!,
-  //         )
-  //       ) {
-  //         onVoteUnvoteSuccessful();
-  //         setSuccessMessage('popup_html_proposal_unvote_successful');
-  //       } else {
-  //         setErrorMessage('popup_html_proposal_unvote_fail');
-  //       }
-  //       removeFromLoadingList('popup_html_unvoting_for_proposal');
-  //     } else {
-  //       addToLoadingList('popup_html_voting_for_proposal');
-  //       if (
-  //         await ProposalUtils.voteForProposal(
-  //           proposal.proposalId,
-  //           activeAccount.name!,
-  //           activeAccount.keys.active!,
-  //         )
-  //       ) {
-  //         setSuccessMessage('popup_html_proposal_vote_successful');
-  //         onVoteUnvoteSuccessful();
-  //       } else {
-  //         setErrorMessage('popup_html_proposal_vote_fail');
-  //       }
-  //       removeFromLoadingList('popup_html_voting_for_proposal');
-  //     }
-  //   };
+  const handleAboutToEdit = (favorite: FavoriteAccounts) => {
+    setSelectedFavoriteToEdit(favorite);
+    setLabel(favorite.label);
+  };
 
   return (
     <div className="favorite-accounts-item">
       <div className="item">
         <div>
           {favorite.account}{' '}
-          {favorite.label && favorite.label.trim().length > 0
+          {selectedFavoriteToEdit !== favorite &&
+          favorite.label &&
+          favorite.label.trim().length > 0
             ? `(${favorite.label})`
             : ''}
           {favorite.subLabel && favorite.subLabel.trim().length > 0
@@ -146,7 +99,7 @@ PropsFromRedux) => {
                 'popup_html_edit_favorite_label_tooltip_text_button'
               }
               tooltipPosition={'top'}
-              onClick={() => setSelectedFavoriteToEdit(favorite)}
+              onClick={() => handleAboutToEdit(favorite)}
               name={Icons.EDIT}
               type={IconType.OUTLINED}
               additionalClassName="edit-button"

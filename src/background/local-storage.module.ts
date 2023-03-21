@@ -91,20 +91,25 @@ const checkAndUpdateLocalStorage = async () => {
         //add a third case into switch to check previous local storage and make it as the new format
 
         //TODO clean up, delete this test part
-        //test to delete
+        //////////////test on initial loading to delete
+        //OLD format
+        // const data = {
+        //   theghost1980: ['testing1', 'testing2', 'testing3'],
+        //   'keychain.tests': ['testing3', 'testing4', 'testing5'],
+        // };
+
+        //NEW format
+
         // LocalStorageUtils.saveValueInLocalStorage(
         //   LocalStorageKeyEnum.FAVORITE_USERS,
-        //   {
-        //     theghost1980: [
-        //       { account: 'testing', label: '' },
-        //       { account: 'testing2', label: 'One here!' },
-        //     ],
-        //   },
+        //   data,
         // );
-        //end test
+        ////////////////end test
 
-        //TODO here add another function to keep old ways to save data...
-
+        const activeAccountName =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
+          );
         const actualFavoriteUsers: any =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
@@ -112,17 +117,59 @@ const checkAndUpdateLocalStorage = async () => {
         console.log({ actualFavoriteUsers }); //TODO to remove
         //check on format
         let oldFormat = true;
-        Object.entries(actualFavoriteUsers).map((favorite: any) => {
-          // console.log({ value: favorite[1], type: typeof favorite[1] });
-          if (typeof favorite[1] === 'object') {
-            favorite[1].map((favItem: any) => {
-              if (favItem.account && favItem.label) {
-                oldFormat = false;
-              }
-            });
+        //validation
+        console.log('so: ', actualFavoriteUsers[activeAccountName]);
+        for (const [key, value] of Object.entries(
+          actualFavoriteUsers[activeAccountName],
+        )) {
+          // console.log({ value });
+          if ((value as any).name) {
+            oldFormat = false;
           }
-        });
+        }
+        // for (const [key, value] of Object.entries(actualFavoriteUsers)) {
+        //   if ((value as any).name === FavoriteUserListName.EXCHANGES) {
+        //     oldFormat = false;
+        //   }
+        // }
+        //load data depending on oldFormat
         console.log({ oldFormat });
+        //TODO uncomment
+        // if (oldFormat) {
+        //   const mk = await LocalStorageUtils.getValueFromLocalStorage(
+        //     LocalStorageKeyEnum.__MK,
+        //   );
+        //   const localAccounts =
+        //     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+
+        //   const favoriteUserData: any = {};
+        //   //iterate on each account + initialize
+        //   for (const localAccount of localAccounts) {
+        //     //Initialize new format to store
+        //     const aboutToSaveNewFormatCompleteObject =
+        //       await FavoriteUserUtils.getFavoriteListOldFormatAndReformat(
+        //         localAccount.name,
+        //         localAccounts,
+        //         {
+        //           addExchanges: true,
+        //           addSwaps: true,
+        //         },
+        //       );
+        //     console.log({ aboutToSaveNewFormatCompleteObject });
+        //     favoriteUserData[localAccount.name] =
+        //       aboutToSaveNewFormatCompleteObject;
+        //   }
+
+        //   console.log({ favoriteUserData });
+        //   //TODO uncomment
+        //   //save in local storage
+        //   LocalStorageUtils.saveValueInLocalStorage(
+        //     LocalStorageKeyEnum.FAVORITE_USERS,
+        //     favoriteUserData,
+        //   );
+        //   console.log('SAVED new format!!!'); //TODO to remove
+        // }
+        //omitting else as it will load using .
       }
     }
   }

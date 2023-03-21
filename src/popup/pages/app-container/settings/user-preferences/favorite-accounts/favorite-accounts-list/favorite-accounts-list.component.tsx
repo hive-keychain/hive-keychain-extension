@@ -8,7 +8,7 @@ import {
 } from '@popup/actions/message.actions';
 import { FavoriteAccountsItemComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
 import { RootState } from '@popup/store';
-import React, { useState } from 'react';
+import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
   FavoriteAccounts,
@@ -46,60 +46,6 @@ const FavoriteAccountsList = ({
 }: // deleteFavorite,
 //   onVoteUnvoteSuccessful,
 PropsFromRedux) => {
-  const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
-  const [usingProxy, setUsingProxy] = useState(false);
-
-  //   useEffect(() => {
-  //     init();
-  //   }, []);
-
-  //   const init = async () => {
-  //     let proxy = await ProxyUtils.findUserProxy(activeAccount.account);
-  //     setUsingProxy(proxy !== null);
-  //   };
-
-  //   const goTo = (link: Proposal['link']) => {
-  //     chrome.tabs.create({ url: link });
-  //   };
-
-  //   const goToCreator = (creator: Proposal['creator']) => {
-  //     chrome.tabs.create({ url: `https://peakd.com/@${creator}` });
-  //   };
-
-  //   const toggleSupport = async (proposal: Proposal) => {
-  //     if (proposal.voted) {
-  //       addToLoadingList('popup_html_unvoting_for_proposal');
-  //       if (
-  //         await ProposalUtils.unvoteProposal(
-  //           proposal.proposalId,
-  //           activeAccount.name!,
-  //           activeAccount.keys.active!,
-  //         )
-  //       ) {
-  //         onVoteUnvoteSuccessful();
-  //         setSuccessMessage('popup_html_proposal_unvote_successful');
-  //       } else {
-  //         setErrorMessage('popup_html_proposal_unvote_fail');
-  //       }
-  //       removeFromLoadingList('popup_html_unvoting_for_proposal');
-  //     } else {
-  //       addToLoadingList('popup_html_voting_for_proposal');
-  //       if (
-  //         await ProposalUtils.voteForProposal(
-  //           proposal.proposalId,
-  //           activeAccount.name!,
-  //           activeAccount.keys.active!,
-  //         )
-  //       ) {
-  //         setSuccessMessage('popup_html_proposal_vote_successful');
-  //         onVoteUnvoteSuccessful();
-  //       } else {
-  //         setErrorMessage('popup_html_proposal_vote_fail');
-  //       }
-  //       removeFromLoadingList('popup_html_voting_for_proposal');
-  //     }
-  //   };
-
   const favoriteListName = favoriteList.name.split('_').join(' ');
   //TODO here display ICONS only on hover
   return (

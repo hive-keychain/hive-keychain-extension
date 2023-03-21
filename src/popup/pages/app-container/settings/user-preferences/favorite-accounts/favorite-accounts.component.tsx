@@ -1,9 +1,11 @@
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { FavoriteAccountsListComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-list/favorite-accounts-list.component';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -14,8 +16,8 @@ import {
   FavoriteAccounts,
   FavoriteUserList,
   FavoriteUserListName,
-  FavoriteUserUtils,
 } from 'src/utils/favorite-user.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './favorite-accounts.component.scss';
 //TODO customise & finish
 const FavoriteAccounts = ({
@@ -27,18 +29,9 @@ const FavoriteAccounts = ({
 }: PropsFromRedux) => {
   const defaultOptions: LocalAccountListItem[] = [];
   const [options, setOptions] = useState(defaultOptions);
-  //   const [claimRewards, setClaimRewards] = useState(false);
-  //   const [claimAccounts, setClaimAccounts] = useState(false);
-  //   const [claimSavings, setClaimSavings] = useState(false);
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
     accounts[0].name,
   );
-  //   const claimSavingsErrorMessage =
-  //     AutomatedTasksUtils.canClaimSavingsErrorMessage(activeAccount);
-  //   const claimAccountErrorMessage =
-  //     AutomatedTasksUtils.canClaimAccountErrorMessage(activeAccount);
-  //   const claimRewardsErrorMessage =
-  //     AutomatedTasksUtils.canClaimRewardsErrorMessage(activeAccount);
   const [favoriteAccountsList, setFavoriteAccountsList] = useState<
     FavoriteUserList[]
   >([
@@ -65,41 +58,15 @@ const FavoriteAccounts = ({
     setSelectedLocalAccount(activeAccount.name!);
   }, [accounts, activeAccount]);
 
-  //   const saveClaims = async (
-  //     claimRewards: boolean,
-  //     claimAccounts: boolean,
-  //     claimSavings: boolean,
-  //   ) => {
-  //     setClaimAccounts(claimAccounts);
-  //     setClaimRewards(claimRewards);
-  //     setClaimSavings(claimSavings);
-
-  //     await AutomatedTasksUtils.saveClaims(
-  //       claimRewards,
-  //       claimAccounts,
-  //       claimSavings,
-  //       activeAccount.name!,
-  //     );
-  //   };
-
   const init = async () => {
-    //TODO remove unused
-    // const values = await AutomatedTasksUtils.getClaims(activeAccount.name!);
-    // setClaimRewards(values[LocalStorageKeyEnum.CLAIM_REWARDS] ?? false);
-    // setClaimAccounts(values[LocalStorageKeyEnum.CLAIM_ACCOUNTS] ?? false);
-    // setClaimSavings(values[LocalStorageKeyEnum.CLAIM_SAVINGS] ?? false);
-
     //load actual favorites
-    setFavoriteAccountsList(
-      await FavoriteUserUtils.getFavoriteListOldFormatAndReformat(
-        activeAccount.name!,
-        localAccounts,
-        {
-          addExchanges: true,
-          addSwaps: true,
-        },
-      ),
+    const tempToRemove = await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.FAVORITE_USERS,
     );
+    console.log({ inComponent: tempToRemove[activeAccount.name!] });
+
+    //TODO finish bellow
+    setFavoriteAccountsList(tempToRemove[activeAccount.name!]);
   };
 
   //TODO remove after finished
@@ -172,10 +139,23 @@ const FavoriteAccounts = ({
       (favorite) => favorite !== favoriteItem,
     );
     selectedList.list = filteredSelectedList;
-    setFavoriteAccountsList([...favoriteAccountsListCopy, { ...selectedList }]);
-    //TODO save to local storage with new format.
-    //TODO keep working on the src\background\local-storage.module.ts
-    // as you will need this to move on in favorites...
+    setFavoriteAccountsList([...favoriteAccountsListCopy]);
+    saveFavoriteList(selectedList);
+  };
+
+  const saveFavoriteList = async (list: FavoriteUserList) => {
+    //TODO finish
+    const actualFavoriteUsersLists: FavoriteUserItems[] =
+      await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.FAVORITE_USERS,
+      );
+    console.log({ actualFavoriteUsersLists });
+    //TODO uncomment
+    // LocalStorageUtils.saveValueInLocalStorage(
+    //   LocalStorageKeyEnum.FAVORITE_USERS,
+    //   updatedFavoriteUsers,
+    // );
+    //END TO move
   };
 
   const handleEditFavoriteLabel = (
@@ -194,8 +174,8 @@ const FavoriteAccounts = ({
       ...selectedList.list[favoriteItemIndexToEdit],
       label: newLabel,
     };
-    setFavoriteAccountsList([...favoriteAccountsListCopy, { ...selectedList }]);
-    //TODO save to local storage with new format.
+    setFavoriteAccountsList([...favoriteAccountsListCopy]);
+    saveFavoriteList(selectedList);
   };
 
   //TODO here check why the list have some margins on it sides and remove them.

@@ -100,11 +100,13 @@ const getFavoriteListOldFormatAndReformat = async (
   localAccounts: LocalAccount[],
   options?: AutocompleteListOption,
 ): Promise<FavoriteUserList[]> => {
-  const favoriteUsers: FavoriteUserItems =
-    await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.FAVORITE_USERS,
-    );
-  console.log({ favoriteUsers }); //TODO to remove
+  //TODO create & move interface bellow
+  const favoriteUsers: {
+    [key: string]: any[];
+  } = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.FAVORITE_USERS,
+  );
+  console.log({ favoriteUsersFromUtils: favoriteUsers }); //TODO to remove
   const favoriteUsersList: FavoriteUserList = {
     name: FavoriteUserListName.USERS,
     list: [],
@@ -123,6 +125,7 @@ const getFavoriteListOldFormatAndReformat = async (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
       )
+        //as the new format has already the keys ({account:'',label:''...})
         favoriteUsersList.list.push({
           account: fav,
           label: '',
@@ -150,6 +153,12 @@ const getFavoriteListOldFormatAndReformat = async (
           subLabel: exchange.name,
         });
     }
+  const returning = [
+    favoriteUsersList,
+    favoriteLocalAccountsList,
+    favoriteExchangesList,
+  ];
+  console.log({ aboutToReturn: returning });
   return [favoriteUsersList, favoriteLocalAccountsList, favoriteExchangesList];
 };
 
