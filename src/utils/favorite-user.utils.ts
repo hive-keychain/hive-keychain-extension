@@ -21,7 +21,6 @@ const getAutocompleteList = async (
     await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
-  console.log({ favoriteUsers }); //TODO to remove
   const autoCompleteList: AutoCompleteValue[] = [];
   if (favoriteUsers && favoriteUsers[username]) {
     for (const fav of favoriteUsers[username]) {
@@ -72,7 +71,7 @@ const saveFavoriteUser = async (
     !favoriteUser[activeAccount.name!].includes(username) &&
     !exchanges.find((exchange) => exchange.username === username)
   ) {
-    favoriteUser[activeAccount.name!].push(username);
+    favoriteUser[activeAccount.name!].push({ account: username, label: '' });
   }
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
@@ -80,7 +79,6 @@ const saveFavoriteUser = async (
   );
 };
 
-//TODO new function/new formats to be discussed
 export enum FavoriteUserListName {
   USERS = 'USERS',
   LOCAL_ACCOUNTS = 'LOCAL_ACCOUNTS',
@@ -100,13 +98,11 @@ const getAutocompleteListByCategories = async (
   localAccounts: LocalAccount[],
   options?: AutocompleteListOption,
 ): Promise<FavoriteUserList[]> => {
-  //TODO create & move interface bellow
   const favoriteUsers: {
     [key: string]: any[];
   } = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
   );
-  console.log({ favoriteUsersFromUtils: favoriteUsers }); //TODO to remove
   const favoriteUsersList: FavoriteUserList = {
     name: FavoriteUserListName.USERS,
     list: [],
@@ -119,6 +115,7 @@ const getAutocompleteListByCategories = async (
     name: FavoriteUserListName.EXCHANGES,
     list: [],
   };
+  const favoriteUsersCompleteList: FavoriteUserList[] = [];
   if (favoriteUsers && favoriteUsers[username]) {
     for (const fav of favoriteUsers[username]) {
       if (
@@ -149,13 +146,16 @@ const getAutocompleteListByCategories = async (
           subLabel: exchange.name,
         });
     }
-  const returning = [
-    favoriteUsersList,
-    favoriteLocalAccountsList,
-    favoriteExchangesList,
-  ];
-  console.log({ aboutToReturn: returning });
-  return [favoriteUsersList, favoriteLocalAccountsList, favoriteExchangesList];
+  if (favoriteUsersList.list.length > 0) {
+    favoriteUsersCompleteList.push(favoriteUsersList);
+  }
+  if (favoriteLocalAccountsList.list.length > 0) {
+    favoriteUsersCompleteList.push(favoriteLocalAccountsList);
+  }
+  if (favoriteExchangesList.list.length > 0) {
+    favoriteUsersCompleteList.push(favoriteExchangesList);
+  }
+  return favoriteUsersCompleteList;
 };
 
 export const FavoriteUserUtils = {

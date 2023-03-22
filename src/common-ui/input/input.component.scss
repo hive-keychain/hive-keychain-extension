@@ -60,7 +60,12 @@ $autoCompleteItemHeight: 30px;
       max-height: $autoCompleteItemHeight * 5;
       overflow: auto;
 
+      .title-category {
+        font-weight: bold;
+      }
+
       .value {
+        font-weight: 400;
         height: 30px;
         cursor: pointer;
         padding-left: 16px;

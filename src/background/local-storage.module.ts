@@ -165,7 +165,7 @@ const checkAndUpdateLocalStorage = async () => {
           for (const [key, value] of Object.entries(
             actualFavoriteUsers as FavoriteUserItems,
           )) {
-            // console.log({ key, value }); //TODO clea nup
+            // console.log({ key, value }); //TODO clean up
             favoriteUserData[key] = value.map((account) => {
               return {
                 account: account,
