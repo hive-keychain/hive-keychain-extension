@@ -90,52 +90,13 @@ const checkAndUpdateLocalStorage = async () => {
         saveNewLocalStorageVersion(3);
       }
       case 3: {
-        //add a third case into switch to check previous local storage and make it as the new format
-
-        //TODO clean up, delete this test part
-        //////////////test on initial loading to delete
-        //OLD format
-        // const data = {
-        //   theghost1980: ['testing1', 'testing2', 'testing3'],
-        //   'keychain.tests': ['testing3', 'testing4', 'testing5'],
-        // };
-        //NEW format
-        // const data = {
-        //   theghost1980: [
-        //     {
-        //       account: 'testing1',
-        //       label: '',
-        //     },
-        //   ],
-        //   'keychain.tests': [
-        //     {
-        //       account: 'testing2',
-        //       label: '',
-        //     },
-        //   ],
-        // };
-
-        // LocalStorageUtils.saveValueInLocalStorage(
-        //   LocalStorageKeyEnum.FAVORITE_USERS,
-        //   data,
-        // );
-        ////////////////end test
-
-        // const activeAccountName =
-        //   await LocalStorageUtils.getValueFromLocalStorage(
-        //     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
-        //   );
-
-        //TODO test what would happen with a brand new account that has no favorites added???
         const actualFavoriteUsers: any =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
           );
-        console.log({ actualFavoriteUsers }); //TODO to remove
         //check on format
         let oldFormat = true;
         //validation
-        console.log('so: ', actualFavoriteUsers);
         for (const [key, value] of Object.entries(actualFavoriteUsers)) {
           if (Array.isArray(value)) {
             value.map((favoriteObject) => {
@@ -146,12 +107,8 @@ const checkAndUpdateLocalStorage = async () => {
           }
         }
 
-        console.log({ oldFormat });
-
-        //TODO update to only make editable fav user NOT exchanges nor localAccounts.
         if (oldFormat) {
           const favoriteUserData: any = {};
-          //TODO initialize object from localAccounts found to avoid future errors.
           const mk = await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.__MK,
           );
@@ -165,7 +122,6 @@ const checkAndUpdateLocalStorage = async () => {
           for (const [key, value] of Object.entries(
             actualFavoriteUsers as FavoriteUserItems,
           )) {
-            // console.log({ key, value }); //TODO clean up
             favoriteUserData[key] = value.map((account) => {
               return {
                 account: account,
@@ -173,15 +129,12 @@ const checkAndUpdateLocalStorage = async () => {
               };
             });
           }
-          console.log({ favoriteUserData });
           //save in local storage
           LocalStorageUtils.saveValueInLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
             favoriteUserData,
           );
-          console.log('SAVED new format'); //TODO to remove
         }
-        //omitting else as it will load using .
       }
     }
   }
