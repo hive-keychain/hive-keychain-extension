@@ -1,11 +1,3 @@
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from '@popup/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
@@ -19,8 +11,7 @@ import {
 } from 'src/utils/favorite-user.utils';
 import './favorite-accounts-item.component.scss';
 
-interface ProposalItemProps {
-  //TODO change name & props as needed
+interface FavoriteAccountsItemProps {
   favorite: FavoriteAccounts;
   handleDeleteFavorite: (
     favoriteUserListName: FavoriteUserListName,
@@ -32,8 +23,6 @@ interface ProposalItemProps {
     newLabel: string,
   ) => void;
   listName: FavoriteUserListName;
-  //   onVoteUnvoteSuccessful: () => void;
-  // deleteFavorite: (category: string, favoriteItem: FavoriteAccounts) => void;
 }
 
 const FavoriteAccountsItem = ({
@@ -41,14 +30,8 @@ const FavoriteAccountsItem = ({
   handleDeleteFavorite,
   handleEditFavoriteLabel,
   listName,
-  addToLoadingList,
-  removeFromLoadingList,
-  setErrorMessage,
-  setSuccessMessage,
   activeAccount,
-}: // deleteFavorite,
-//   onVoteUnvoteSuccessful,
-PropsFromRedux) => {
+}: PropsFromRedux) => {
   const [selectedFavoriteToEdit, setSelectedFavoriteToEdit] =
     useState<FavoriteAccounts>();
   const [label, setLabel] = useState('');
@@ -69,7 +52,9 @@ PropsFromRedux) => {
   };
 
   return (
-    <div className="favorite-accounts-item">
+    <div
+      className="favorite-accounts-item"
+      key={`${Math.random().toFixed(8).toString()}-${listName}-item`}>
       <div className="item">
         <div>
           {favorite.account}{' '}
@@ -88,7 +73,6 @@ PropsFromRedux) => {
               onChange={setLabel}
               type={InputType.TEXT}
               value={label}
-              logo=""
               placeholder="popup_html_new_label"
               onEnterPress={onClickEditIcon}
             />
@@ -149,12 +133,8 @@ const mapStateToProps = (state: RootState) => {
   return { activeAccount: state.activeAccount };
 };
 
-const connector = connect(mapStateToProps, {
-  addToLoadingList,
-  removeFromLoadingList,
-  setErrorMessage,
-  setSuccessMessage,
-});
-type PropsFromRedux = ConnectedProps<typeof connector> & ProposalItemProps;
+const connector = connect(mapStateToProps, {});
+type PropsFromRedux = ConnectedProps<typeof connector> &
+  FavoriteAccountsItemProps;
 
 export const FavoriteAccountsItemComponent = connector(FavoriteAccountsItem);

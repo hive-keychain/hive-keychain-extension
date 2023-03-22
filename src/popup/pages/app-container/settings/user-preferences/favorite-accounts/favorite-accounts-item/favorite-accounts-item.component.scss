@@ -1,4 +1,5 @@
 @import '../../../../../../variable.scss';
+
 .favorite-accounts-item {
   display: flex;
   flex-direction: column;
@@ -19,7 +20,7 @@
     flex-direction: row;
     display: flex;
     justify-content: space-between;
-    font-size: 14px;
+    font-size: 16px;
   }
 
   .remove-button {
@@ -38,9 +39,5 @@
     &:hover {
       color: $red-dark;
     }
-  }
-
-  &:nth-child(even) {
-    background-color: $red-transparent;
   }
 }

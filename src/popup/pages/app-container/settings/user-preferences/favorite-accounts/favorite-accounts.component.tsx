@@ -19,7 +19,7 @@ import {
 } from 'src/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './favorite-accounts.component.scss';
-//TODO customise & finish
+
 const FavoriteAccounts = ({
   accounts,
   activeAccount,
@@ -34,11 +34,7 @@ const FavoriteAccounts = ({
   );
   const [favoriteAccountsList, setFavoriteAccountsList] = useState<
     FavoriteUserList[]
-  >([
-    { name: FavoriteUserListName.USERS, list: [] },
-    { name: FavoriteUserListName.LOCAL_ACCOUNTS, list: [] },
-    { name: FavoriteUserListName.EXCHANGES, list: [] },
-  ]);
+  >([{ name: FavoriteUserListName.USERS, list: [] }]);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -59,21 +55,16 @@ const FavoriteAccounts = ({
   }, [accounts, activeAccount]);
 
   const init = async () => {
-    //load actual favorites
     const tempToRemove = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
-    console.log({ inComponent: tempToRemove[activeAccount.name!] });
-
-    //TODO finish bellow
-    setFavoriteAccountsList(tempToRemove[activeAccount.name!]);
+    setFavoriteAccountsList([
+      {
+        name: FavoriteUserListName.USERS,
+        list: tempToRemove[activeAccount.name!],
+      },
+    ]);
   };
-
-  //TODO remove after finished
-  useEffect(() => {
-    console.log({ favoriteAccountsList }); //TODO to remove
-  }, [favoriteAccountsList]);
-  //end to remove
 
   const handleItemClicked = (accountName: string) => {
     const itemClicked = accounts.find(
@@ -144,18 +135,18 @@ const FavoriteAccounts = ({
   };
 
   const saveFavoriteList = async (list: FavoriteUserList) => {
-    //TODO finish
     const actualFavoriteUsersLists: FavoriteUserItems[] =
       await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.FAVORITE_USERS,
       );
-    console.log({ actualFavoriteUsersLists });
-    //TODO uncomment
-    // LocalStorageUtils.saveValueInLocalStorage(
-    //   LocalStorageKeyEnum.FAVORITE_USERS,
-    //   updatedFavoriteUsers,
-    // );
-    //END TO move
+    const updatedFavoriteUserLists = {
+      ...actualFavoriteUsersLists,
+      [activeAccount.name!]: list.list,
+    };
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+      updatedFavoriteUserLists,
+    );
   };
 
   const handleEditFavoriteLabel = (
@@ -178,14 +169,12 @@ const FavoriteAccounts = ({
     saveFavoriteList(selectedList);
   };
 
-  //TODO here check why the list have some margins on it sides and remove them.
-
   return (
     <div aria-label="favorite-accounts-page" className="favorite-accounts-page">
-      <div className="intro">
+      <div className="intro padding">
         {chrome.i18n.getMessage('popup_html_favorite_accounts_intro')}
       </div>
-      <div className="select">
+      <div className="select padding">
         <Select
           values={[selectedLocalAccount as any]}
           options={options}
@@ -195,38 +184,15 @@ const FavoriteAccounts = ({
           className="select-account-select"
         />
       </div>
-      <div className="favorite-accounts-list">
-        <FavoriteAccountsListComponent
-          favoriteList={
-            favoriteAccountsList.filter(
-              (favoriteList) =>
-                favoriteList.name === FavoriteUserListName.USERS,
-            )[0]
-          }
-          handleDeleteFavorite={handleDeleteFavorite}
-          handleEditFavoriteLabel={handleEditFavoriteLabel}
-        />
-        <FavoriteAccountsListComponent
-          favoriteList={
-            favoriteAccountsList.filter(
-              (favoriteList) =>
-                favoriteList.name === FavoriteUserListName.LOCAL_ACCOUNTS,
-            )[0]
-          }
-          handleDeleteFavorite={handleDeleteFavorite}
-          handleEditFavoriteLabel={handleEditFavoriteLabel}
-        />
-        <FavoriteAccountsListComponent
-          favoriteList={
-            favoriteAccountsList.filter(
-              (favoriteList) =>
-                favoriteList.name === FavoriteUserListName.EXCHANGES,
-            )[0]
-          }
-          handleDeleteFavorite={handleDeleteFavorite}
-          handleEditFavoriteLabel={handleEditFavoriteLabel}
-        />
-      </div>
+      <FavoriteAccountsListComponent
+        favoriteList={
+          favoriteAccountsList.filter(
+            (favoriteList) => favoriteList.name === FavoriteUserListName.USERS,
+          )[0]
+        }
+        handleDeleteFavorite={handleDeleteFavorite}
+        handleEditFavoriteLabel={handleEditFavoriteLabel}
+      />
     </div>
   );
 };

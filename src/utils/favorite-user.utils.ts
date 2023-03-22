@@ -95,7 +95,7 @@ export interface FavoriteAccounts {
   label: string;
   subLabel?: string;
 }
-const getFavoriteListOldFormatAndReformat = async (
+const getAutocompleteListByCategories = async (
   username: string,
   localAccounts: LocalAccount[],
   options?: AutocompleteListOption,
@@ -125,11 +125,7 @@ const getFavoriteListOldFormatAndReformat = async (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
       )
-        //as the new format has already the keys ({account:'',label:''...})
-        favoriteUsersList.list.push({
-          account: fav,
-          label: '',
-        });
+        favoriteUsersList.list.push(fav);
     }
   }
   for (const localAccount of localAccounts) {
@@ -165,5 +161,5 @@ const getFavoriteListOldFormatAndReformat = async (
 export const FavoriteUserUtils = {
   getAutocompleteList,
   saveFavoriteUser,
-  getFavoriteListOldFormatAndReformat,
+  getAutocompleteListByCategories,
 };

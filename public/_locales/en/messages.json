@@ -287,6 +287,14 @@
     "message": "Favorite accounts",
     "description": "on settings page"
   },
+  "popup_html_favorite_accounts_title_list": {
+    "message": "Favorite $1",
+    "description": "on favorite settings page"
+  },
+  "popup_html_favorite_accounts_no_favorites": {
+    "message": "No favorites yet in $1 list",
+    "description": "on favorite settings page results"
+  },
   "popup_html_operation_popup": {
     "message": "Operation popup",
     "description": "on settings page"

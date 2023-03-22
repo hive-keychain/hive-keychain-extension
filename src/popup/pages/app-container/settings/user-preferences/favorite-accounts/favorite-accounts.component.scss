@@ -4,8 +4,16 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  row-gap: 32px;
-  padding: 0px 24px;
+  row-gap: 16px;
+  overflow: hidden;
+
+  .favorite-accounts-item {
+    background: $black-transparent;
+  }
+
+  .favorite-accounts-item:nth-child(even) {
+    background: $red-transparent;
+  }
 
   .intro {
     font-size: 16px;
@@ -13,48 +21,14 @@
 
   .title {
     font-size: 18px;
+    text-align: center;
   }
 
   .select {
     margin: 0px -24px;
   }
-  .favorite-accounts-list {
-    flex-direction: column;
-    display: flex;
-    flex: 1;
-    padding: 0px 0px !important;
-    overflow: auto;
-    .title {
-      margin-top: 10px;
-      margin-bottom: 10px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .favorite-accounts-item {
-      display: flex;
-      flex-direction: column;
-      padding: 10px;
-      row-gap: 12px;
 
-      .item {
-        flex-direction: row;
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-      }
-
-      .remove-button {
-        color: white;
-        cursor: pointer;
-        font-size: 26px;
-        &:hover {
-          color: $red-dark;
-        }
-      }
-
-      &:nth-child(even) {
-        background-color: $red-transparent;
-      }
-    }
+  .padding {
+    padding: 0px 24px;
   }
 }

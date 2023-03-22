@@ -1,3 +1,5 @@
+import BgdAccountsUtils from '@background/utils/accounts.utils';
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -97,8 +99,21 @@ const checkAndUpdateLocalStorage = async () => {
         //   theghost1980: ['testing1', 'testing2', 'testing3'],
         //   'keychain.tests': ['testing3', 'testing4', 'testing5'],
         // };
-
         //NEW format
+        // const data = {
+        //   theghost1980: [
+        //     {
+        //       account: 'testing1',
+        //       label: '',
+        //     },
+        //   ],
+        //   'keychain.tests': [
+        //     {
+        //       account: 'testing2',
+        //       label: '',
+        //     },
+        //   ],
+        // };
 
         // LocalStorageUtils.saveValueInLocalStorage(
         //   LocalStorageKeyEnum.FAVORITE_USERS,
@@ -106,10 +121,12 @@ const checkAndUpdateLocalStorage = async () => {
         // );
         ////////////////end test
 
-        const activeAccountName =
-          await LocalStorageUtils.getValueFromLocalStorage(
-            LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
-          );
+        // const activeAccountName =
+        //   await LocalStorageUtils.getValueFromLocalStorage(
+        //     LocalStorageKeyEnum.ACTIVE_ACCOUNT_NAME,
+        //   );
+
+        //TODO test what would happen with a brand new account that has no favorites added???
         const actualFavoriteUsers: any =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
@@ -118,57 +135,52 @@ const checkAndUpdateLocalStorage = async () => {
         //check on format
         let oldFormat = true;
         //validation
-        console.log('so: ', actualFavoriteUsers[activeAccountName]);
-        for (const [key, value] of Object.entries(
-          actualFavoriteUsers[activeAccountName],
-        )) {
-          // console.log({ value });
-          if ((value as any).name) {
-            oldFormat = false;
+        console.log('so: ', actualFavoriteUsers);
+        for (const [key, value] of Object.entries(actualFavoriteUsers)) {
+          if (Array.isArray(value)) {
+            value.map((favoriteObject) => {
+              if (typeof favoriteObject === 'object') {
+                oldFormat = false;
+              }
+            });
           }
         }
-        // for (const [key, value] of Object.entries(actualFavoriteUsers)) {
-        //   if ((value as any).name === FavoriteUserListName.EXCHANGES) {
-        //     oldFormat = false;
-        //   }
-        // }
-        //load data depending on oldFormat
+
         console.log({ oldFormat });
-        //TODO uncomment
-        // if (oldFormat) {
-        //   const mk = await LocalStorageUtils.getValueFromLocalStorage(
-        //     LocalStorageKeyEnum.__MK,
-        //   );
-        //   const localAccounts =
-        //     await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
 
-        //   const favoriteUserData: any = {};
-        //   //iterate on each account + initialize
-        //   for (const localAccount of localAccounts) {
-        //     //Initialize new format to store
-        //     const aboutToSaveNewFormatCompleteObject =
-        //       await FavoriteUserUtils.getFavoriteListOldFormatAndReformat(
-        //         localAccount.name,
-        //         localAccounts,
-        //         {
-        //           addExchanges: true,
-        //           addSwaps: true,
-        //         },
-        //       );
-        //     console.log({ aboutToSaveNewFormatCompleteObject });
-        //     favoriteUserData[localAccount.name] =
-        //       aboutToSaveNewFormatCompleteObject;
-        //   }
-
-        //   console.log({ favoriteUserData });
-        //   //TODO uncomment
-        //   //save in local storage
-        //   LocalStorageUtils.saveValueInLocalStorage(
-        //     LocalStorageKeyEnum.FAVORITE_USERS,
-        //     favoriteUserData,
-        //   );
-        //   console.log('SAVED new format!!!'); //TODO to remove
-        // }
+        //TODO update to only make editable fav user NOT exchanges nor localAccounts.
+        if (oldFormat) {
+          const favoriteUserData: any = {};
+          //TODO initialize object from localAccounts found to avoid future errors.
+          const mk = await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.__MK,
+          );
+          const localAccounts =
+            await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+          //initialize object.
+          for (const localAccount of localAccounts) {
+            favoriteUserData[localAccount.name] = [];
+          }
+          //fill the object initialized
+          for (const [key, value] of Object.entries(
+            actualFavoriteUsers as FavoriteUserItems,
+          )) {
+            // console.log({ key, value }); //TODO clea nup
+            favoriteUserData[key] = value.map((account) => {
+              return {
+                account: account,
+                label: '',
+              };
+            });
+          }
+          console.log({ favoriteUserData });
+          //save in local storage
+          LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.FAVORITE_USERS,
+            favoriteUserData,
+          );
+          console.log('SAVED new format'); //TODO to remove
+        }
         //omitting else as it will load using .
       }
     }
