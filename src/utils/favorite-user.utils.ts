@@ -1,3 +1,4 @@
+import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -57,6 +58,10 @@ const saveFavoriteUser = async (
   username: string,
   activeAccount: ActiveAccount,
 ) => {
+  const mk = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.__MK,
+  );
+  const localAccounts = await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
   let favoriteUser = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
   );
@@ -66,10 +71,10 @@ const saveFavoriteUser = async (
   if (!favoriteUser[activeAccount.name!]) {
     favoriteUser[activeAccount.name!] = [];
   }
-
   if (
     !favoriteUser[activeAccount.name!].includes(username) &&
-    !exchanges.find((exchange) => exchange.username === username)
+    !exchanges.find((exchange) => exchange.username === username) &&
+    !localAccounts.find((localAccount) => localAccount.name === username)
   ) {
     favoriteUser[activeAccount.name!].push({ account: username, label: '' });
   }
