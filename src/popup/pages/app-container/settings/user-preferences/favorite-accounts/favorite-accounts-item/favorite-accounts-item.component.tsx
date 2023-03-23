@@ -61,7 +61,10 @@ const FavoriteAccountsItem = ({
             e.target.src = '/assets/images/accounts.png';
           }}
         />
-        <div className="item-username">
+        <div
+          className={`item-username${
+            favorite.label.length > 13 ? 'as-column' : ''
+          }`}>
           {favorite.account}
           {selectedFavoriteToEdit !== favorite && (
             <div className="item-username-label">
@@ -80,7 +83,7 @@ const FavoriteAccountsItem = ({
         <div className="buttons">
           {selectedFavoriteToEdit?.account === favorite.account && (
             <InputComponent
-              onChange={setLabel}
+              onChange={(value) => setLabel(value)}
               type={InputType.TEXT}
               value={label}
               placeholder="popup_html_new_label"

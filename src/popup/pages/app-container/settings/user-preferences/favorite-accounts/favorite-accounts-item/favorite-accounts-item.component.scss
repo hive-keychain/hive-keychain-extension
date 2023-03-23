@@ -3,6 +3,8 @@
 .favorite-accounts-item {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  align-content: center;
   padding: 10px;
   row-gap: 12px;
 
@@ -13,6 +15,8 @@
   &:hover {
     .buttons {
       display: flex;
+      flex-direction: row;
+      align-items: center;
     }
   }
 
@@ -36,6 +40,10 @@
         display: flex;
         font-weight: bold;
         align-items: center;
+      }
+
+      .as-column {
+        flex-direction: column;
       }
 
       .item-username-label {
