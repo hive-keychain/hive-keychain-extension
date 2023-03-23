@@ -7,6 +7,8 @@ import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import { InputType } from 'src/common-ui/input/input-type.enum';
+import InputComponent from 'src/common-ui/input/input.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { removeFromWhitelist } from 'src/utils/preferences.utils';
 import './authorized-operations.component.scss';
@@ -17,6 +19,7 @@ const AuthorizedOperations = ({
 }: PropsFromRedux) => {
   const [noConfirm, setNoConfirm] = useState({} as NoConfirm);
   const [websites, setWebsites] = useState({} as NoConfirmWebsite);
+  const [filterWebSites, setFilterWebSites] = useState<NoConfirm>();
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -37,6 +40,7 @@ const AuthorizedOperations = ({
       LocalStorageKeyEnum.NO_CONFIRM,
     );
     setNoConfirm(res);
+    console.log({ res }); //TODO to remove
   };
 
   const handleEraseButtonClick = (website: string, operation: string) => {
@@ -47,6 +51,14 @@ const AuthorizedOperations = ({
       operation,
     );
     setNoConfirm(newList);
+  };
+
+  const handleOnChangeFilter = (value: string) => {
+    console.log({ value, websites });
+    const websitesCopy = { ...websites };
+    for (const website of Object.entries(websitesCopy)) {
+      console.log({ website });
+    }
   };
 
   return (
@@ -60,6 +72,25 @@ const AuthorizedOperations = ({
         }}></div>
 
       <SelectAccountSectionComponent></SelectAccountSectionComponent>
+
+      {/* //TODO decide if move to a component or make a ui_common that can be re-used */}
+      {/* //filter */}
+      <div className="search-panel">
+        <InputComponent
+          ariaLabel="input-filter-box"
+          type={InputType.TEXT}
+          placeholder="popup_html_search"
+          value={filterWebSites}
+          onChange={(value) => handleOnChangeFilter(value)}
+        />
+        <div
+          aria-label="clear-filters"
+          className={'filter-button'}
+          onClick={() => {}}>
+          {chrome.i18n.getMessage(`popup_html_clear_filters`)}
+        </div>
+      </div>
+      {/* //end filter */}
 
       {websites && Object.keys(websites).length > 0 && (
         <div className="preferences">
