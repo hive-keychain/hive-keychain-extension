@@ -1,4 +1,3 @@
-import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import {
   AccountUpdateOperation,
   Authority,
@@ -10,7 +9,7 @@ import {
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import Config from 'src/config';
 import { Accounts } from 'src/interfaces/accounts.interface';
-import { ActiveAccount } from 'src/interfaces/active-account.interface';
+import { ActiveAccount, RC } from 'src/interfaces/active-account.interface';
 import { Key, Keys, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { KeychainError } from 'src/keychain-error';
@@ -443,11 +442,11 @@ const generateQRCode = (account: LocalAccount) => {
   return JSON.stringify(acc);
 };
 
-const claimAccounts = async (rc: Manabar, activeAccount: ActiveAccount) => {
+const claimAccounts = async (rc: RC, activeAccount: ActiveAccount) => {
   const freeAccountConfig = Config.claims.freeAccount;
   if (
-    rc.percentage > freeAccountConfig.MIN_RC_PCT &&
-    rc.current_mana > freeAccountConfig.MIN_RC
+    activeAccount.rc.percentage > freeAccountConfig.MIN_RC_PCT &&
+    parseFloat(rc.rc_manabar.current_mana) > freeAccountConfig.MIN_RC
   ) {
     Logger.info(`Claiming free account for @${activeAccount.name}`);
 
