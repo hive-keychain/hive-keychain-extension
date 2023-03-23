@@ -20,13 +20,42 @@
     flex-direction: row;
     display: flex;
     justify-content: space-between;
-    font-size: 16px;
+    align-items: center;
+    font-size: 18px;
+
+    .item-user-favorite {
+      display: flex;
+      align-items: center;
+      column-gap: 16px;
+      padding: 12px 26px;
+      box-sizing: border-box;
+      width: auto;
+
+      .item-username {
+        flex-direction: row;
+        display: flex;
+        font-weight: bold;
+        align-items: center;
+      }
+
+      .item-username-label {
+        font-weight: 400;
+        font-size: 16px;
+      }
+
+      img {
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+      }
+    }
   }
 
   .remove-button {
     color: white;
     cursor: pointer;
     font-size: 22px;
+    margin-left: 3px;
     &:hover {
       color: $red-dark;
     }
@@ -35,7 +64,8 @@
   .edit-button {
     color: white;
     cursor: pointer;
-    font-size: 26px;
+    font-size: 22px;
+    margin-left: 3px;
     &:hover {
       color: $red-dark;
     }

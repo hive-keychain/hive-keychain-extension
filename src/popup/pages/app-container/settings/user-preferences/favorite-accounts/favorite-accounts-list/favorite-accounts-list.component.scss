@@ -4,6 +4,7 @@
   flex-direction: column;
   display: flex;
   flex: 1;
+  overflow: auto;
 
   .title {
     margin-top: 10px;

@@ -185,6 +185,9 @@ const FavoriteAccounts = ({
         />
       </div>
       <FavoriteAccountsListComponent
+        key={`${Math.random().toFixed(6).toString()}-${
+          FavoriteUserListName.USERS
+        }`}
         favoriteList={
           favoriteAccountsList.filter(
             (favoriteList) => favoriteList.name === FavoriteUserListName.USERS,

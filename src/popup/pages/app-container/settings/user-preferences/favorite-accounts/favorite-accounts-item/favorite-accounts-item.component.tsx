@@ -51,78 +51,73 @@ const FavoriteAccountsItem = ({
     setLabel(favorite.label);
   };
 
-  return (
-    <div
-      className="favorite-accounts-item"
-      key={`${Math.random().toFixed(8).toString()}-${listName}-item`}>
-      <div className="item">
-        <div>
-          {favorite.account}{' '}
-          {selectedFavoriteToEdit !== favorite &&
-          favorite.label &&
-          favorite.label.trim().length > 0
-            ? `(${favorite.label})`
-            : ''}
-          {favorite.subLabel && favorite.subLabel.trim().length > 0
-            ? `(${favorite.subLabel})`
-            : ''}
+  const customLabelRender = (favorite: FavoriteAccounts) => {
+    return (
+      <div className="item-user-favorite">
+        <img
+          src={`https://images.hive.blog/u/${favorite.account}/avatar`}
+          onError={(e: any) => {
+            e.target.onError = null;
+            e.target.src = '/assets/images/accounts.png';
+          }}
+        />
+        <div className="item-username">
+          {favorite.account}
+          {selectedFavoriteToEdit !== favorite && (
+            <div className="item-username-label">
+              {favorite.label ? `(${favorite.label})` : ''}
+            </div>
+          )}
         </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="favorite-accounts-item">
+      <div className="item">
+        {customLabelRender(favorite)}
         <div className="buttons">
-          {selectedFavoriteToEdit === favorite && (
+          {selectedFavoriteToEdit?.account === favorite.account && (
             <InputComponent
               onChange={setLabel}
               type={InputType.TEXT}
               value={label}
               placeholder="popup_html_new_label"
-              onEnterPress={onClickEditIcon}
             />
           )}
-          {selectedFavoriteToEdit !== favorite && (
+          {selectedFavoriteToEdit?.account !== favorite.account && (
             <Icon
-              tooltipMessage={
-                'popup_html_edit_favorite_label_tooltip_text_button'
-              }
-              tooltipPosition={'top'}
               onClick={() => handleAboutToEdit(favorite)}
               name={Icons.EDIT}
               type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
-          {selectedFavoriteToEdit === favorite && (
+          {selectedFavoriteToEdit?.account === favorite.account && (
             <Icon
-              tooltipMessage={
-                'popup_html_save_favorite_label_tooltip_text_button'
-              }
-              tooltipPosition={'top'}
               onClick={() => onClickEditIcon()}
               name={Icons.SAVE}
               type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
-          {selectedFavoriteToEdit === favorite && (
+          {selectedFavoriteToEdit?.account === favorite.account && (
             <Icon
-              tooltipMessage={
-                'popup_html_cancel_favorite_label_tooltip_text_button'
-              }
-              tooltipPosition={'top'}
               onClick={() => onClickCancelIcon()}
               name={Icons.CLEAR}
               type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
-          <Icon
-            tooltipMessage={
-              'popup_html_delete_favorite_label_tooltip_text_button'
-            }
-            tooltipPosition={'top'}
-            onClick={() => handleDeleteFavorite(listName, favorite)}
-            name={Icons.DELETE}
-            type={IconType.OUTLINED}
-            additionalClassName="remove-button"
-          />
+          {selectedFavoriteToEdit?.account !== favorite.account && (
+            <Icon
+              onClick={() => handleDeleteFavorite(listName, favorite)}
+              name={Icons.DELETE}
+              type={IconType.OUTLINED}
+              additionalClassName="remove-button"
+            />
+          )}
         </div>
       </div>
     </div>

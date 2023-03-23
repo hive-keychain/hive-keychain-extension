@@ -34,11 +34,6 @@ const FavoriteAccountsList = ({
     <div
       className="favorite-accounts-list"
       key={`${Math.random().toFixed(6).toString()}-${favoriteListName}`}>
-      <div className="title">
-        {chrome.i18n.getMessage('popup_html_favorite_accounts_title_list', [
-          favoriteListName,
-        ])}
-      </div>
       {favoriteList.list.length === 0 && (
         <div className="text-no-favorites">
           {chrome.i18n.getMessage('popup_html_favorite_accounts_no_favorites', [
@@ -49,6 +44,9 @@ const FavoriteAccountsList = ({
       {favoriteList.list.map((favoriteItem) => {
         return (
           <FavoriteAccountsItemComponent
+            key={`${Math.random()
+              .toFixed(6)
+              .toString()}-${favoriteListName}-item`}
             favorite={favoriteItem}
             listName={favoriteList.name}
             handleDeleteFavorite={handleDeleteFavorite}
