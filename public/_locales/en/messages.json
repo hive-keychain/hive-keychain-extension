@@ -375,6 +375,10 @@
     "message": "No whitelisted operation",
     "description": "on preferences"
   },
+  "popup_html_nothing_found_using_filter": {
+    "message": "Nothing found, try to clear your filter(s)",
+    "description": "on multiple pages where filter is used"
+  },
   "popup_html_add_rpc": {
     "message": "Add RPC",
     "description": "on preferences"

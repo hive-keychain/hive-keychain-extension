@@ -19,7 +19,10 @@ const AuthorizedOperations = ({
 }: PropsFromRedux) => {
   const [noConfirm, setNoConfirm] = useState({} as NoConfirm);
   const [websites, setWebsites] = useState({} as NoConfirmWebsite);
-  const [filterWebSites, setFilterWebSites] = useState<NoConfirm>();
+  const [filterWebSites, setFilterWebSites] = useState<NoConfirmWebsite>(
+    {} as NoConfirmWebsite,
+  );
+  const [filterValue, setFilterValue] = useState('');
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -32,15 +35,19 @@ const AuthorizedOperations = ({
   useEffect(() => {
     if (noConfirm) {
       setWebsites(noConfirm[activeAccount.name!]);
+      setFilterWebSites(noConfirm[activeAccount.name!]);
     }
   }, [activeAccount, noConfirm]);
+
+  useEffect(() => {
+    handleOnChangeFilter(filterValue);
+  }, [filterValue]);
 
   const init = async () => {
     let res = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_CONFIRM,
     );
     setNoConfirm(res);
-    console.log({ res }); //TODO to remove
   };
 
   const handleEraseButtonClick = (website: string, operation: string) => {
@@ -53,12 +60,29 @@ const AuthorizedOperations = ({
     setNoConfirm(newList);
   };
 
-  const handleOnChangeFilter = (value: string) => {
-    console.log({ value, websites });
-    const websitesCopy = { ...websites };
-    for (const website of Object.entries(websitesCopy)) {
-      console.log({ website });
+  const handleOnChangeFilter = (valueToFilter: string) => {
+    const filtered: NoConfirmWebsite = {};
+    const lowerCaseValueToFilter = valueToFilter.toLowerCase();
+    for (const [key, value] of Object.entries(websites)) {
+      if (
+        key.toLowerCase().includes(lowerCaseValueToFilter) ||
+        Object.entries(value).find((operation) => {
+          const readableOperation = chrome.i18n.getMessage(
+            `popup_${operation[0]
+              .split(/(?=[A-Z])/)
+              .join('_')
+              .toLowerCase()}`,
+          );
+          if (
+            operation[0].toLowerCase().includes(lowerCaseValueToFilter) ||
+            readableOperation.toLowerCase().includes(lowerCaseValueToFilter)
+          )
+            return true;
+        })
+      )
+        filtered[key] = value;
     }
+    setFilterWebSites(filtered);
   };
 
   return (
@@ -73,33 +97,32 @@ const AuthorizedOperations = ({
 
       <SelectAccountSectionComponent></SelectAccountSectionComponent>
 
-      {/* //TODO decide if move to a component or make a ui_common that can be re-used */}
-      {/* //filter */}
-      <div className="search-panel">
-        <InputComponent
-          ariaLabel="input-filter-box"
-          type={InputType.TEXT}
-          placeholder="popup_html_search"
-          value={filterWebSites}
-          onChange={(value) => handleOnChangeFilter(value)}
-        />
-        <div
-          aria-label="clear-filters"
-          className={'filter-button'}
-          onClick={() => {}}>
-          {chrome.i18n.getMessage(`popup_html_clear_filters`)}
-        </div>
-      </div>
-      {/* //end filter */}
-
       {websites && Object.keys(websites).length > 0 && (
+        <div className="search-panel">
+          <InputComponent
+            ariaLabel="input-filter-box"
+            type={InputType.TEXT}
+            placeholder="popup_html_search"
+            value={filterValue}
+            onChange={(value) => setFilterValue(value)}
+          />
+          <div
+            aria-label="clear-filters"
+            className={'filter-button'}
+            onClick={() => setFilterValue('')}>
+            {chrome.i18n.getMessage(`popup_html_clear_filters`)}
+          </div>
+        </div>
+      )}
+
+      {filterWebSites && Object.keys(filterWebSites).length > 0 && (
         <div className="preferences">
-          {Object.keys(websites).map((website) => (
+          {Object.keys(filterWebSites).map((website) => (
             <div className="website" key={website}>
               <div className="name">
                 {chrome.i18n.getMessage('popup_website')}: {website}
               </div>
-              {Object.keys(websites[website]).map((operation) => {
+              {Object.keys(filterWebSites[website]).map((operation) => {
                 return (
                   websites[website][operation] && (
                     <div
@@ -130,12 +153,19 @@ const AuthorizedOperations = ({
           ))}
         </div>
       )}
-      {(websites && Object.keys(websites).length === 0) ||
-        (!websites && (
+      {(filterWebSites && Object.keys(filterWebSites).length === 0) ||
+        (!filterWebSites && (
           <div className="no_pref">
             {chrome.i18n.getMessage('popup_html_no_pref')}
           </div>
         ))}
+
+      {filterValue.trim().length > 0 &&
+        Object.keys(filterWebSites).length === 0 && (
+          <div className="no_pref">
+            {chrome.i18n.getMessage('popup_html_nothing_found_using_filter')}
+          </div>
+        )}
     </div>
   );
 };
