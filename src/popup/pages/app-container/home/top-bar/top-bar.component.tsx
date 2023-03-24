@@ -101,6 +101,7 @@ const TopBar = ({
         setSuccessMessage('popup_html_claim_success', [
           claimedResources.join(', '),
         ]);
+        refresh();
       } else {
         setErrorMessage('popup_html_claim_error');
       }
