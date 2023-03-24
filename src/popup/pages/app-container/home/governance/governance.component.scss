@@ -22,7 +22,8 @@
 
   .react-tabs__tab-list {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    //TODO fix styles, for now added a new fraction.
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     margin: 0 0 32px !important;
 
     .react-tabs__tab {
