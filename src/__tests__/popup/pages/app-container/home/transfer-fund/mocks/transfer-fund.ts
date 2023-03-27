@@ -1,5 +1,6 @@
 import { ReactElement } from 'react';
 import AccountUtils from 'src/utils/account.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import keyMessage from 'src/__tests__/popup/pages/app-container/home/transfer-fund/mocks/keyMessages/keyMessage';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
@@ -20,15 +21,14 @@ import renders from 'src/__tests__/utils-for-testing/setups/renders';
 const constants = {
   username: mk.user.one,
   anotherUser: mk.user.two,
-  phishingAccount: phishing.accounts.data[0],
+  phishingAccount: phishing.accounts[0],
   exchange: {
     accepting: {
-      hive: 'bittrex',
-      hbd: 'ionomy',
+      hive: 'user.dunamu',
+      hbd: 'user.dunamu',
     },
     notAccepting: {
-      hive: 'binance-hot',
-      hbd: 'hot.dunamu',
+      hbd: 'gateiodeposit',
     },
   },
   memoMessage: {
@@ -80,7 +80,9 @@ const methods = {
     await clickAwait(ariaLabels);
   },
   removeKey: (key: string) => {
+    //@ts-ignore
     delete constants.stateAs.accounts[0].keys[key];
+    //@ts-ignore
     delete constants.stateAs.accounts[0].keys[`${key}Pubkey`];
   },
   selectBalance: (currency: string) => {
@@ -98,7 +100,7 @@ const methods = {
 const extraMocks = {
   transfer: (transfer: boolean) => {
     TransferUtils.sendTransfer = jest.fn().mockResolvedValue(transfer);
-    TransferUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined);
+    FavoriteUserUtils.saveFavoriteUser = jest.fn().mockResolvedValue(undefined);
     AccountUtils.getPublicMemo = jest
       .fn()
       .mockResolvedValue(accounts.extended.memo_key);

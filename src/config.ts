@@ -9,11 +9,14 @@ const Config = {
     FREQUENCY: +(process.env.DEV_CLAIM_FREQUENCY || 10),
     freeAccount: {
       MIN_RC_PCT: +(process.env.DEV_CLAIM_ACCOUNT_RC_PCT || 85),
-      MIN_RC: +(process.env.DEV_CLAIM_ACCOUNT_MIN_RC || 1.2 * 10 * 10 ** 12), // 20% more than 10^13 (current creation cost)
+      MIN_RC: +(process.env.DEV_CLAIM_ACCOUNT_MIN_RC || 9484331370472),
     },
     savings: {
       delay: +(process.env.DEV_CLAIM_SAVINGS_DELAY || 30),
     },
+  },
+  analytics: {
+    frequency: +(process.env.DEV_ANALYTICS_FREQUENCY || 10),
   },
   KEYCHAIN_PROPOSAL: 216,
   PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP: 8 * 10 ** 6,

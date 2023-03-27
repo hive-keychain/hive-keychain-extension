@@ -14,7 +14,7 @@ describe('error.utils.ts tests:\n', () => {
     it('Must return error if statusText', () => {
       expect(
         ErrorUtils.parse({ statusText: 'CONDITIONS_OF_USE_NOT_SATISFIED' }),
-      ).toEqual(new KeychainError('error_ledger_denied_by_user'));
+      ).toEqual(new KeychainError('error_while_broadcasting'));
     });
 
     it('Must return KeychainError on each Blockchain error case', () => {

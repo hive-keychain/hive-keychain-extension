@@ -2,31 +2,38 @@ import { broadcastCreateClaimedAccount } from '@background/requests/operations/o
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import createClaimedAccount from 'src/__tests__/background/requests/operations/ops/mocks/create-claimed-account';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
+import {
+  transactionConfirmationFailed,
+  transactionConfirmationSuccess,
+} from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import config from 'src/__tests__/utils-for-testing/setups/config';
 describe('create-claimed-account tests:\n', () => {
+  config.byDefault();
   const { methods, constants, mocks } = createClaimedAccount;
-  const { requestHandler, data, confirmed } = constants;
+  const { requestHandler, data } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('Default cases:\n', () => {
     it('Must return error if no key on handler', async () => {
-      const message =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await broadcastCreateClaimedAccount(requestHandler, data);
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.error.keyBuffer(
           datas,
           request_id,
-          new TypeError(message),
-          message,
+          new Error('html_popup_error_while_signing_transaction'),
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
         ),
       );
     });
     it('Must return success on claimed account', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValueOnce(true);
+        .mockResolvedValueOnce(transactionConfirmationSuccess);
       requestHandler.setKeys(
         userData.one.nonEncryptKeys.active,
         userData.one.encryptKeys.active,
@@ -35,7 +42,7 @@ describe('create-claimed-account tests:\n', () => {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.broadcast(
-          false,
+          transactionConfirmationFailed,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_create_account', [data.new_account]),
@@ -47,8 +54,10 @@ describe('create-claimed-account tests:\n', () => {
 
   describe('Using ledger cases:\n', () => {
     it('Must return success on claimed account', async () => {
-      mocks.HiveTxUtils.sendOperation(true);
-      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
+      mocks.broadcastAndConfirmTransactionWithSignature(
+        transactionConfirmationSuccess,
+      );
       mocks.LedgerModule.getSignatureFromLedger('signed!');
       requestHandler.setKeys(
         '#LedgerKeyHere1234',
@@ -58,7 +67,7 @@ describe('create-claimed-account tests:\n', () => {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.broadcast(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_create_account', [data.new_account]),

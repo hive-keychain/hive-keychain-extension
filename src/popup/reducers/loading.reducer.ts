@@ -4,6 +4,8 @@ import { ActionPayload } from '@popup/actions/interfaces';
 
 export interface LoadingOperation {
   name: string;
+  operationParams?: string[];
+  hideDots?: boolean;
   done: boolean;
 }
 
@@ -14,6 +16,8 @@ export interface LoadingState {
 
 export interface LoadingPayload {
   operation: string;
+  operationParams?: string[];
+  hideDots?: boolean;
   privateKeyType?: PrivateKeyType;
 }
 
@@ -41,6 +45,8 @@ export const LoadingReducer = (
         };
         newState.loadingOperations.push({
           name: payload!.operation!,
+          operationParams: payload!.operationParams,
+          hideDots: payload!.hideDots,
           done: false,
         });
         if (

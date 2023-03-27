@@ -2,7 +2,7 @@ import LedgerHiveApp from '@engrave/ledger-app-hive';
 import { SignedTransaction, Transaction } from '@hiveio/dhive';
 import { Key, Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
-import TransportWebUsb from '@ledgerhq/hw-transport-webusb';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/utils/error.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -16,9 +16,18 @@ export enum LedgerKeyType {
   MEMO = 4,
 }
 
-const init = async (): Promise<boolean> => {
+const init = async (fromTab: boolean): Promise<boolean> => {
   if (await LedgerUtils.isLedgerSupported()) {
-    const transport = await TransportWebUsb.create();
+    const connectedDevices = await TransportWebUSB.list();
+    let transport;
+    if (connectedDevices.length === 0) {
+      if (fromTab) {
+        transport = await TransportWebUSB.request();
+      } else {
+        throw new KeychainError('html_ledger_not_detected');
+      }
+    }
+    transport = await TransportWebUSB.create();
     hiveLedger = new LedgerHiveApp(transport);
     return true;
   } else {
@@ -27,7 +36,7 @@ const init = async (): Promise<boolean> => {
 };
 
 const isLedgerSupported = async () => {
-  return await TransportWebUsb.isSupported();
+  return await TransportWebUSB.isSupported();
 };
 /* istanbul ignore next */
 const getSettings = async () => {
@@ -127,11 +136,12 @@ const buildDerivationPath = (keyType: LedgerKeyType, accountIndex: number) => {
 
 const getLedgerInstance = async (): Promise<LedgerHiveApp> => {
   if (!hiveLedger) {
-    await LedgerUtils.init();
+    await LedgerUtils.init(false);
   } else {
     try {
+      await hiveLedger.getAppName();
     } catch (err) {
-      await LedgerUtils.init();
+      await LedgerUtils.init(false);
     }
   }
   return hiveLedger;
@@ -160,7 +170,7 @@ const signHash = async (digest: string, key: Key) => {
   try {
     let ledger = await LedgerUtils.getLedgerInstance();
     if (!ledger) throw new KeychainError('html_ledger_error_while_connecting');
-    return ledger.signHash(
+    return await ledger.signHash(
       digest,
       LedgerUtils.getPathFromString(key!.toString()),
     );

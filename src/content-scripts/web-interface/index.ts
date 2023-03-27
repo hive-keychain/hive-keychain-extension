@@ -62,6 +62,7 @@ document.addEventListener('swRequest_hive', (request: object) => {
 // Get notification from the background upon request completion and pass it back to the dApp.
 chrome.runtime.onMessage.addListener(function (obj, sender, sendResp) {
   if (obj.command === DialogCommand.ANSWER_REQUEST) {
+    //console.log('response', obj.msg);
     sendResponse(obj.msg);
     req = null;
   }

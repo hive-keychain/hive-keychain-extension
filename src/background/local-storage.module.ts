@@ -1,6 +1,8 @@
+import BgdAccountsUtils from '@background/utils/accounts.utils';
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
+import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
 const checkAndUpdateLocalStorage = async () => {
@@ -65,14 +67,85 @@ const checkAndUpdateLocalStorage = async () => {
         JSON.parse(noConfirm),
       );
     }
-
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
-      2,
-    );
+    saveNewLocalStorageVersion(2);
   } else {
-    Logger.info('Already has updated local storage');
+    switch (localStorageVersion) {
+      case 2: {
+        let activeRpc: Rpc = await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.CURRENT_RPC,
+        );
+        if (
+          [
+            'https://anyx.io',
+            'https://api.pharesim.me/',
+            'https://rpc.ausbit.dev',
+            'https://hived.privex.io/',
+          ].includes(activeRpc.uri)
+        ) {
+          LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.CURRENT_RPC,
+            { uri: 'https://api.hive.blog', testnet: false } as Rpc,
+          );
+        }
+        saveNewLocalStorageVersion(3);
+      }
+      case 3: {
+        const actualFavoriteUsers: any =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.FAVORITE_USERS,
+          );
+        //check on format
+        let oldFormat = true;
+        //validation
+        for (const [key, value] of Object.entries(actualFavoriteUsers)) {
+          if (Array.isArray(value)) {
+            value.map((favoriteObject) => {
+              if (typeof favoriteObject === 'object') {
+                oldFormat = false;
+              }
+            });
+          }
+        }
+
+        if (oldFormat) {
+          const favoriteUserData: any = {};
+          const mk = await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.__MK,
+          );
+          const localAccounts =
+            await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+          //initialize object.
+          for (const localAccount of localAccounts) {
+            favoriteUserData[localAccount.name] = [];
+          }
+          //fill the object initialized
+          for (const [key, value] of Object.entries(
+            actualFavoriteUsers as FavoriteUserItems,
+          )) {
+            favoriteUserData[key] = value.map((account) => {
+              return {
+                account: account,
+                label: '',
+              };
+            });
+          }
+          //save in local storage
+          LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.FAVORITE_USERS,
+            favoriteUserData,
+          );
+          saveNewLocalStorageVersion(4);
+        }
+      }
+    }
   }
+};
+
+const saveNewLocalStorageVersion = (version: number) => {
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
+    version,
+  );
 };
 
 const LocalStorageModule = { checkAndUpdateLocalStorage };

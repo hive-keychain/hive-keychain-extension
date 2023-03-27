@@ -47,8 +47,8 @@ export const broadcastTransfer = async (
       username!,
       KeychainKeyTypesLC.active,
     );
-
-    switch (KeysUtils.getKeyType(key!)) {
+    const keyType = KeysUtils.getKeyType(key!);
+    switch (keyType) {
       case PrivateKeyType.LEDGER: {
         const tx = await TransferUtils.getTransferTransaction(
           data.username!,

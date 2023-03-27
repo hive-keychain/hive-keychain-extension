@@ -19,11 +19,19 @@ const getAccountsFromFileData = (
   }
 };
 
-const mergeImportedAccountsToExistingAccounts = (
+const mergeImportedAccountsToExistingAccounts = async (
   importedAccounts: LocalAccount[],
   existingAccounts: LocalAccount[],
 ) => {
   const newAccounts = [];
+  const isLedgerSupported = await LocalStorageUtils.getValueFromLocalStorage(
+    LocalStorageKeyEnum.IS_LEDGER_SUPPORTED,
+  );
+  if (!isLedgerSupported) {
+    importedAccounts = importedAccounts.filter(
+      (e) => e.keys.active?.[0] !== '#' && e.keys.posting?.[0] !== '#',
+    );
+  }
   for (const importedAccount of importedAccounts) {
     if (
       existingAccounts

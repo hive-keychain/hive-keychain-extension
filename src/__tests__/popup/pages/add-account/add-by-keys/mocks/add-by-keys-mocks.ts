@@ -37,7 +37,6 @@ const typeAndSubmit = async (privateKey: string) => {
     },
     { ariaLabel: alButton.submit, event: EventType.CLICK },
   ]);
-  // await actPendingTimers(); TODO check why this here???
 };
 
 const typeAndSubmitWEmpty = async (

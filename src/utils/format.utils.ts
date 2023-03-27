@@ -103,6 +103,14 @@ const getValFromString = (string: string): number => {
   return parseFloat(string.split(' ')[0]);
 };
 
+const trimUselessZero = (number: number, precision: number) => {
+  const numberWithPrecision = number.toFixed(precision);
+  const n = parseFloat(numberWithPrecision).toString();
+  if (n.split('.').length > 0 && n.split('.')[1]?.length > 3)
+    return FormatUtils.withCommas(n);
+  else return FormatUtils.withCommas(parseFloat(n).toFixed(3));
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -115,6 +123,7 @@ const FormatUtils = {
   fromNaiAndSymbol,
   removeHtmlTags,
   getValFromString,
+  trimUselessZero,
 };
 
 export default FormatUtils;

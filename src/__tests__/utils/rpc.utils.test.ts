@@ -216,7 +216,7 @@ describe('rpc.utils tests:\n', () => {
         timeout: 10000,
       });
       expect(spyLoggerError).toBeCalledTimes(1);
-      expect(spyLoggerError).toBeCalledWith(error);
+      expect(spyLoggerError).toBeCalledWith('error', error);
     });
   });
 });

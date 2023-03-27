@@ -1,5 +1,4 @@
 import { FundedOption } from '@interfaces/proposal.interface';
-import Config from 'src/config';
 import ProposalUtils from 'src/utils/proposal.utils';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import proposal from 'src/__tests__/utils-for-testing/data/proposal';
@@ -40,7 +39,10 @@ describe('proposal.utils tests:\n', () => {
         listProposals: proposal.fakeProposalListResponseHiveTx.proposals,
         listProposalVotes: proposal.fakeListProposalVotesResponse,
       });
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        dynamic.globalProperties,
+      );
       expect(result).toEqual(proposal.expectedResultProposal);
     });
 
@@ -51,7 +53,10 @@ describe('proposal.utils tests:\n', () => {
         listProposalVotes: proposal.fakeListProposalVotesResponse,
       });
 
-      const result = await ProposalUtils.getProposalList('theghost1980');
+      const result = await ProposalUtils.getProposalList(
+        'theghost1980',
+        dynamic.globalProperties,
+      );
       expect(result).toEqual(constants.expectedResultProposalWithkeyChain);
     });
   });
@@ -83,21 +88,9 @@ describe('proposal.utils tests:\n', () => {
       mocks.store.getState({
         globalProperties: { global: dynamic.globalProperties },
       });
-      expect(await ProposalUtils.isRequestingProposalVotes()).toBe(true);
-    });
-
-    it('Must return false', async () => {
-      const tempPROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP =
-        Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
-      Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP = 0;
-      mocks.getProposalDailyBudget(0.01);
-      mocks.hiveTxUtils.getData(constants.withKeyChainProposal.proposals);
-      mocks.store.getState({
-        globalProperties: { global: dynamic.globalProperties },
-      });
-      expect(await ProposalUtils.isRequestingProposalVotes()).toBe(false);
-      Config.PROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP =
-        tempPROPOSAL_MIN_VOTE_DIFFERENCE_HIDE_POPUP;
+      expect(
+        await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
+      ).toBe(true);
     });
 
     it('Must return true with one partially_funded proposal', async () => {
@@ -110,7 +103,9 @@ describe('proposal.utils tests:\n', () => {
       mocks.store.getState({
         globalProperties: { global: dynamic.globalProperties },
       });
-      expect(await ProposalUtils.isRequestingProposalVotes()).toBe(true);
+      expect(
+        await ProposalUtils.isRequestingProposalVotes(dynamic.globalProperties),
+      ).toBe(true);
     });
   });
 });

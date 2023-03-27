@@ -1,7 +1,9 @@
 import { broadcastRemoveProposal } from '@background/requests/operations/ops/proposals';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('proposals tests:\n', () => {
   const { methods, constants, mocks } = proposalsMocks;
   const { requestHandler, data } = constants;
@@ -41,8 +43,6 @@ describe('proposals tests:\n', () => {
         );
       });
       it('Must return error if no key on handler', async () => {
-        const error =
-          "Cannot read properties of undefined (reading 'toString')";
         data.remove.proposal_ids = '{}';
         data.remove.extensions = '{}';
         delete requestHandler.data.key;
@@ -50,12 +50,19 @@ describe('proposals tests:\n', () => {
           requestHandler,
           data.remove,
         );
-        methods.assert.error(result, new TypeError(error), data.remove, error);
+        methods.assert.error(
+          result,
+          new Error('html_popup_error_while_signing_transaction'),
+          data.remove,
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
+        );
       });
       it('Must return success', async () => {
         const mhiveTxSendOp = jest
           .spyOn(HiveTxUtils, 'sendOperation')
-          .mockResolvedValue(true);
+          .mockResolvedValue(transactionConfirmationSuccess);
         data.remove.proposal_ids = '{}';
         const ids = JSON.parse(data.remove.proposal_ids);
         data.remove.extensions = '{}';
@@ -77,7 +84,9 @@ describe('proposals tests:\n', () => {
     describe('Using Ledger cases:\n', () => {
       it('Must return success using proposal_ids as json', async () => {
         mocks.LedgerModule.getSignatureFromLedger('signed!');
-        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.broadcastAndConfirmTransactionWithSignature(
+          transactionConfirmationSuccess,
+        );
         data.remove.proposal_ids = '{}';
         const ids = JSON.parse(data.remove.proposal_ids);
         data.remove.extensions = '{}';
@@ -96,7 +105,9 @@ describe('proposals tests:\n', () => {
 
       it('Must return success using proposal_ids as object', async () => {
         mocks.LedgerModule.getSignatureFromLedger('signed!');
-        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.broadcastAndConfirmTransactionWithSignature(
+          transactionConfirmationSuccess,
+        );
         data.remove.proposal_ids = [1];
         data.remove.extensions = '{}';
         requestHandler.data.key = '#ledgerKey1234';

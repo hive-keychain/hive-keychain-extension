@@ -1,14 +1,16 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import Hive, { Settings } from '@engrave/ledger-app-hive';
 import {
   AccountCreateOperation,
   Operation,
   SignedTransaction,
 } from '@hiveio/dhive';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import { Transaction as HiveTransaction } from 'hive-tx';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 
@@ -31,7 +33,16 @@ const constants = {
   tx: {
     expiration: '10/10/2023',
     extensions: [],
-    operations: [],
+    operations: [
+      TransferUtils.getRecurrentTransferOperation(
+        'sender',
+        'receiver',
+        '1.000 HBD',
+        '',
+        24,
+        2,
+      ),
+    ],
     ref_block_num: 1125554,
     ref_block_prefix: 1111222,
   },
@@ -67,10 +78,12 @@ const spies = {
 
 const mocks = {
   keychainApi: {
-    get: (response: { data: { rpc: string } }) =>
+    get: (response: { rpc: string }) =>
       jest.spyOn(KeychainApi, 'get').mockResolvedValue(response),
   },
-  createSignAndBroadcastTransaction: (value: string | undefined) =>
+  createSignAndBroadcastTransaction: (
+    value: HiveTxConfirmationResult | undefined,
+  ) =>
     jest
       .spyOn(HiveTxUtils, 'createSignAndBroadcastTransaction')
       .mockResolvedValue(value),

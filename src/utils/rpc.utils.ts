@@ -6,7 +6,14 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 
 const getFullList = (): Rpc[] => {
-  return DefaultRpcs;
+  return DefaultRpcs.map((rpc: Rpc) => {
+    return {
+      ...rpc,
+      uri: rpc.uri.endsWith('/')
+        ? rpc.uri.substring(0, rpc.uri.length - 1)
+        : rpc.uri,
+    };
+  });
 };
 
 const isDefault = (rpc: Rpc): boolean => {
@@ -39,10 +46,17 @@ const deleteCustomRpc = (rpcs: Rpc[], rpc: Rpc) => {
 };
 
 const getCurrentRpc = async (): Promise<Rpc> => {
-  const currentRpc = await LocalStorageUtils.getValueFromLocalStorage(
+  let currentRpc = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.CURRENT_RPC,
   );
-  return currentRpc ? currentRpc : { uri: 'DEFAULT', testnet: false };
+  currentRpc = currentRpc ? currentRpc : { uri: 'DEFAULT', testnet: false };
+  if (currentRpc.uri.endsWith('/'))
+    currentRpc = {
+      ...currentRpc,
+      uri: currentRpc.uri.substring(0, currentRpc.uri.length - 1),
+    };
+
+  return currentRpc;
 };
 /* istanbul ignore next */
 const saveCustomRpc = (rpcs: Rpc[]) => {
@@ -69,7 +83,7 @@ const checkRpcStatus = async (uri: string) => {
       return response;
     },
     (error) => {
-      throw new Error('RPC NOK');
+      throw new Error('RPC NOK' + uri);
     },
   );
   try {
@@ -79,17 +93,37 @@ const checkRpcStatus = async (uri: string) => {
         timeout: 10000,
       },
     );
-    console.log(result);
-    if (result.data && result.data.errors) {
+    if (result?.data?.error) {
       return false;
     }
-
     return true;
   } catch (err) {
-    Logger.error(err);
+    Logger.error('error', err);
     return false;
   }
 };
+
+// const test = async () => {
+//   const list = [...getFullList(), ...(await RpcUtils.getCustomRpcs())];
+//   for (const rpc of list) {
+//     try {
+//       const start = Date.now();
+//       await HiveTxUtils.setRpc(rpc);
+//       const res = await HiveTxUtils.getData(
+//         'transaction_status_api.find_transaction',
+//         { transaction_id: 'f5178d311dd17927d460e8674cabd074df8e24fe' },
+//       );
+//       const end = Date.now();
+//       if (res.status) {
+//         console.log(`${rpc.uri} responded in ${end - start}ms`);
+//       } else {
+//         console.log(`${rpc.uri} responded without status`);
+//       }
+//     } catch (e) {
+//       console.log(`${rpc.uri} had an error`, e);
+//     }
+//   }
+// };
 
 const RpcUtils = {
   getFullList,

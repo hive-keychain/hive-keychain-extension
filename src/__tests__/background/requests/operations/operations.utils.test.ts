@@ -3,6 +3,7 @@ import {
   createMessage,
 } from '@background/requests/operations/operations.utils';
 import operationsUtilsMocks from 'src/__tests__/background/requests/operations/mocks/operations.utils-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 describe('operations.utils tests:\n', () => {
   const { methods, constants } = operationsUtilsMocks;
   const { data, confirmed, message } = constants;
@@ -12,7 +13,7 @@ describe('operations.utils tests:\n', () => {
     it('Must return an answerRequest with success', () => {
       const result = createMessage(
         undefined,
-        confirmed,
+        transactionConfirmationSuccess,
         data,
         message.success,
         null,

@@ -91,7 +91,7 @@ const ProxySuggestion = ({
           ariaLabel="operation-ok-button"
           requiredKey={KeychainKeyTypesLC.active}
           onClick={handleSetProxy}
-          label={'html_popup_ok'}
+          label={'html_popup_set_as_proxy'}
         />
       </div>
     </div>

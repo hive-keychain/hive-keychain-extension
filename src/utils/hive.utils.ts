@@ -4,7 +4,9 @@ import {
   GlobalProperties,
   RewardFund,
 } from 'src/interfaces/global-properties.interface';
+import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 const signature = require('@hiveio/hive-js/lib/auth/ecc');
 
 const DEFAULT_RPC = 'https://api.hive.blog';
@@ -171,10 +173,14 @@ const encodeMemo = (
   privateKey: string,
   receiverPublicKey: string,
 ) => {
+  if (KeysUtils.isUsingLedger(privateKey))
+    throw new KeychainError('encode_with_memo_key_in_ledger');
   return hive.memo.encode(privateKey, receiverPublicKey, memo);
 };
 /* istanbul ignore next */
 const decodeMemo = (memo: string, privateKey: string) => {
+  if (KeysUtils.isUsingLedger(privateKey))
+    throw new KeychainError('decode_with_memo_key_in_ledger');
   return hive.memo.decode(privateKey, memo);
 };
 

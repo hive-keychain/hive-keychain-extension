@@ -30,12 +30,8 @@ describe('auto-lock.component tests:\n', () => {
       _asFragment = await autoLock.beforeEach();
       await methods.gotoAutoLock();
     });
-    it('Must load autolock', async () => {
-      await waitFor(() => {
-        expect(
-          screen.getByLabelText(alComponent.advanceSettings.autoLock),
-        ).toBeInTheDocument();
-      });
+    it('Must load autolock page', () => {
+      assertion.getByLabelText(alComponent.advanceSettings.autoLock);
     });
     it('Must set autolock by click, show message and goback to advanced menu', async () => {
       await clickAwait([

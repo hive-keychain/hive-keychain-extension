@@ -6,8 +6,9 @@ import Transfer from 'src/dialog/pages/requests/transfer';
 import transferCheckMocks from 'src/__tests__/dialog/hooks/mocks/transfer-check-mocks';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-
+import config from 'src/__tests__/utils-for-testing/setups/config';
 describe('transfer-check.ts tests:\n', () => {
+  config.afterAllCleanAndResetMocks();
   const { constants, methods, spies } = transferCheckMocks;
   methods.afterEach;
   describe('useTransferCheck cases:\n', () => {
@@ -15,7 +16,7 @@ describe('transfer-check.ts tests:\n', () => {
       methods.getPhishingAccounts([]);
       render(
         <Transfer
-          data={constants.data}
+          data={constants}
           domain={'domain'}
           tab={0}
           rpc={DefaultRpcs[1]}
@@ -23,7 +24,7 @@ describe('transfer-check.ts tests:\n', () => {
       );
       waitFor(() => {});
       const { calls } = spies.useTransferCheck.mock;
-      expect(calls[0]).toEqual([{ ...constants.data }, DefaultRpcs[1]]);
+      expect(calls[0]).toEqual([{ ...constants }, DefaultRpcs[1]]);
       screen.debug();
     });
 
@@ -32,7 +33,7 @@ describe('transfer-check.ts tests:\n', () => {
         .fn()
         .mockImplementation(mocksImplementation.i18nGetMessageCustom);
       methods.getPhishingAccounts(['bittrex']);
-      const clonedData = objects.clone(constants.data) as RequestTransfer &
+      const clonedData = objects.clone(constants) as RequestTransfer &
         RequestId;
       clonedData.to = 'bittrex';
       clonedData.memo = 'Hi there bittrex!';

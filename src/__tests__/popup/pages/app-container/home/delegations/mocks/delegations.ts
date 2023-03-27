@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
 import { DelegationUtils } from 'src/utils/delegation.utils';
-import TransferUtils from 'src/utils/transfer.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alDropdown from 'src/__tests__/utils-for-testing/aria-labels/al-dropdown';
@@ -49,7 +49,7 @@ const beforeEach = async (component: ReactElement, passErrorData: boolean) => {
   actAdvanceTime(4300);
   if (passErrorData) {
     remock = {
-      keyChainApiGet: { customData: { delegators: { data: '' } } },
+      keyChainApiGet: { delegators: { data: '' } },
     };
   }
   mockPreset.setOrDefault(remock);
@@ -108,7 +108,7 @@ const extraMocks = (delegateVestingShares: boolean) => {
   DelegationUtils.delegateVestingShares = jest
     .fn()
     .mockResolvedValue(delegateVestingShares);
-  TransferUtils.saveFavoriteUser = jest.fn();
+  FavoriteUserUtils.saveFavoriteUser = jest.fn();
 };
 
 /**

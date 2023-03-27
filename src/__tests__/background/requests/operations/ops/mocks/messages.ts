@@ -1,10 +1,11 @@
-import { TransactionConfirmation } from '@hiveio/dhive';
+import { SignedBuffer } from '@background/requests/operations/ops/sign-buffer';
+import { SignedTransaction } from '@hiveio/dhive';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { AssertionError } from 'assert';
-//TODO refactor and try to re-use code here
-//  Needed:
-//  answer: success & error.
+
 export default {
   error: {
     hasAuthority: (
@@ -206,7 +207,7 @@ export default {
   },
   success: {
     addAuth: (
-      result: TransactionConfirmation | boolean,
+      result: HiveTxConfirmationResult,
       datas: any,
       cloneData: any,
       request_id: number,
@@ -229,7 +230,7 @@ export default {
       };
     },
     removedAuth: (
-      result: TransactionConfirmation | boolean,
+      result: HiveTxConfirmationResult,
       datas: any,
       request_id: number,
     ) => {
@@ -251,7 +252,7 @@ export default {
       };
     },
     addKey: (
-      result: TransactionConfirmation | boolean,
+      result: HiveTxConfirmationResult,
       datas: any,
       cloneData: any,
       request_id: number,
@@ -275,7 +276,7 @@ export default {
       };
     },
     removedKey: (
-      result: TransactionConfirmation | boolean,
+      result: HiveTxConfirmationResult,
       datas: any,
       request_id: number,
     ) => {
@@ -297,7 +298,7 @@ export default {
       };
     },
     broadcast: (
-      result: TransactionConfirmation | boolean,
+      result: HiveTxConfirmationResult,
       datas: any,
       request_id: number,
       message: string,
@@ -316,7 +317,7 @@ export default {
       };
     },
     convert: (
-      result: TransactionConfirmation | Boolean,
+      result: HiveTxConfirmationResult,
       datas: any,
       request_id: number,
       collateralized: boolean,
@@ -360,7 +361,11 @@ export default {
       };
     },
     answerSucess: (
-      result: any,
+      result:
+        | HiveTxConfirmationResult
+        | SignedTransaction
+        | SignedBuffer
+        | HiveEngineTransactionStatus,
       datas: any,
       request_id: number,
       message: string,

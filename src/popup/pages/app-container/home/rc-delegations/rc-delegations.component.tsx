@@ -28,10 +28,10 @@ import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.compo
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { RcDelegationsUtils } from 'src/utils/rc-delegations.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 
 import './rc-delegations.component.scss';
 
@@ -172,7 +172,7 @@ const RCDelegations = ({
             : 'html_popup_delegate_rc_operation',
         );
         try {
-          let success = false;
+          let success;
 
           success = await RcDelegationsUtils.sendDelegation(
             RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),
@@ -189,7 +189,7 @@ const RCDelegations = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
 
             if (!isCancel) {
               setSuccessMessage('popup_html_rc_delegation_successful', [

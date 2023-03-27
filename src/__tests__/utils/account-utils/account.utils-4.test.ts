@@ -27,7 +27,7 @@ describe('account.utils part 4 tests:\n', () => {
         KeyType.MEMO,
         _accounts,
         activeAccountData,
-        'mk', // TODO Might need fixing
+        'mk',
       );
       const expected_obj = [
         {
@@ -60,7 +60,7 @@ describe('account.utils part 4 tests:\n', () => {
         KeyType.POSTING,
         _accounts,
         activeAccountData,
-        'mk', // TODO Might need fixing
+        'mk',
       );
       const expected_obj = [
         {
@@ -93,7 +93,7 @@ describe('account.utils part 4 tests:\n', () => {
         KeyType.ACTIVE,
         _accounts,
         activeAccountData,
-        'mk', // TODO Might need fixing
+        'mk',
       );
       const expected_obj = [
         {
@@ -126,7 +126,7 @@ describe('account.utils part 4 tests:\n', () => {
         KeyType.ACTIVE,
         _accounts,
         activeAccountData,
-        'mk', // TODO Might need fixing
+        'mk',
       );
       expect(result).toEqual(_accounts);
     });

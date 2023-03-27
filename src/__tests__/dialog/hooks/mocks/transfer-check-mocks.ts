@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import {
   KeychainRequestTypes,
   RequestId,
@@ -19,7 +19,7 @@ const data = {
 } as RequestTransfer & RequestId;
 
 const constants = {
-  data,
+  ...data,
 };
 
 const spies = {
@@ -32,9 +32,7 @@ const methods = {
     cleanup();
   }),
   getPhishingAccounts: (phishingAccounts: string[]) =>
-    (KeychainApi.get = jest.fn().mockResolvedValue({
-      data: phishingAccounts,
-    })),
+    jest.spyOn(KeychainApi, 'get').mockResolvedValue(phishingAccounts),
 };
 
 export default { constants, methods, spies };

@@ -11,3 +11,12 @@ export const setProcessingDecryptAccount = (
     } as Partial<AppStatus>,
   };
 };
+
+export const setIsLedgerSupported = (isLedgerSupported: boolean) => {
+  return {
+    type: ActionType.SET_APP_STATUS,
+    payload: {
+      isLedgerSupported,
+    } as Partial<AppStatus>,
+  };
+};

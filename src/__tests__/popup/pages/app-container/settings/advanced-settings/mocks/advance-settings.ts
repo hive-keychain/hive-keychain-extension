@@ -25,6 +25,7 @@ const menuPages: IconsPage[] = [
     ariaLabel: alComponent.advanceSettings.changePassword,
   },
   { icon: Icons.LINK, ariaLabel: alComponent.advanceSettings.link },
+  { icon: Icons.ANALYTICS, ariaLabel: alComponent.advanceSettings.analytics },
   {
     icon: Icons.IMPORT_EXPORT,
     ariaLabel: alComponent.advanceSettings.importExport,
@@ -44,7 +45,7 @@ const constants = {
     about: i18n.get('popup_html_about_text'),
   },
   menuItems: {
-    advanceSettings: AdvancedSettingsMenuItems,
+    advanceSettings: AdvancedSettingsMenuItems(true),
   },
 };
 
@@ -65,10 +66,19 @@ const methods = {
 
 const extraMocks = () => {};
 
+const spies = {
+  chrome: {
+    tabs: {
+      create: () => jest.spyOn(chrome.tabs, 'create'),
+    },
+  },
+};
+
 export default {
   beforeEach,
   methods,
   constants,
   extraMocks,
   menuPages,
+  spies,
 };

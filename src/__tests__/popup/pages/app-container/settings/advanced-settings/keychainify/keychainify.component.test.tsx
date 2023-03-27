@@ -1,3 +1,4 @@
+import { waitFor } from '@testing-library/react';
 import keychainify from 'src/__tests__/popup/pages/app-container/settings/advanced-settings/keychainify/mocks/keychainify';
 import alCheckbox from 'src/__tests__/utils-for-testing/aria-labels/al-checkbox';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -18,9 +19,11 @@ describe('keychainify.component tests:\n', () => {
   });
   it('Must set keychainify', async () => {
     await clickAwait([alCheckbox.keychainify.checkbox]);
-    expect(extraMocks.spy().mock.lastCall).toEqual([
-      'keychainify_enabled',
-      false,
-    ]);
+    await waitFor(() => {
+      expect(extraMocks.spy().mock.lastCall).toEqual([
+        'keychainify_enabled',
+        false,
+      ]);
+    });
   });
 });

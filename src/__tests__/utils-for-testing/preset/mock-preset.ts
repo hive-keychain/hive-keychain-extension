@@ -1,4 +1,5 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
+import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { ConversionUtils } from 'src/utils/conversion.utils';
@@ -37,6 +38,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     proposal,
     chromeRunTime,
     keyChainApiGet,
+    googleAnalytics,
     survey,
     convertions,
     governance,
@@ -50,6 +52,7 @@ const setOrDefault = (toUse: MocksToUse) => {
     _tokens,
     _topBar,
     _chromeRunTime,
+    _googleAnalytics,
     _survey,
     _convertions,
     _governance,
@@ -158,7 +161,7 @@ const setOrDefault = (toUse: MocksToUse) => {
   KeychainApi.get = jest
     .fn()
     .mockImplementation((...args: any[]) =>
-      mocksImplementation.keychainApiGet(args[0], keyChainApiGet?.customData),
+      mocksImplementation.keychainApiGet(args[0], keyChainApiGet),
     );
   RewardsUtils.hasReward = jest
     .fn()
@@ -220,27 +223,39 @@ const setOrDefault = (toUse: MocksToUse) => {
       (proposal && proposal.isRequestingProposalVotes) ??
         _proposal.isRequestingProposalVotes,
     );
-  //Survey bypassed for now.
-  if (_survey.byPassing) {
-    SurveyUtils.getSurvey = jest.fn().mockResolvedValue(undefined);
-    SurveyUtils.setCurrentAsSeen = jest.fn().mockImplementation(() => {});
-  }
-  //Governance utils related bypassed for now.
-  if (_governance.bypass) {
-    GovernanceUtils.addToIgnoreRenewal = jest
+
+  //TODO implement when writing tests for new feature.
+  if (_googleAnalytics.initializeGoogleAnalytics === 'bypass') {
+    AnalyticsUtils.initializeSettings = jest.fn().mockResolvedValue(true);
+    window.gtag = jest.fn().mockImplementation((...args) => undefined);
+    AnalyticsUtils.initializeGoogleAnalytics = jest
       .fn()
-      .mockImplementation(() => Promise.resolve(undefined));
-    GovernanceUtils.getGovernanceReminderList = jest.fn().mockResolvedValue([]);
-    GovernanceUtils.getGovernanceRenewalIgnored = jest
-      .fn()
-      .mockResolvedValue([]);
-    GovernanceUtils.removeFromIgnoreRenewal = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(undefined));
-    GovernanceUtils.renewUsersGovernance = jest
-      .fn()
-      .mockImplementation(() => Promise.resolve(undefined));
+      .mockImplementation(() => undefined);
+    AnalyticsUtils.acceptAll = jest.fn().mockImplementation(() => undefined);
+    AnalyticsUtils.rejectAll = jest.fn().mockImplementation(() => undefined);
+    //Survey bypassed for now.
+    if (_survey.byPassing) {
+      SurveyUtils.getSurvey = jest.fn().mockResolvedValue(undefined);
+      SurveyUtils.setCurrentAsSeen = jest.fn().mockImplementation(() => {});
+    }
+    //Governance utils related bypassed for now.
+    if (_governance.bypass) {
+      GovernanceUtils.addToIgnoreRenewal = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(undefined));
+      GovernanceUtils.getGovernanceReminderList = jest
+        .fn()
+        .mockResolvedValue([]);
+      GovernanceUtils.getGovernanceRenewalIgnored = jest
+        .fn()
+        .mockResolvedValue([]);
+      GovernanceUtils.removeFromIgnoreRenewal = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(undefined));
+      GovernanceUtils.renewUsersGovernance = jest
+        .fn()
+        .mockImplementation(() => Promise.resolve(undefined));
+    }
   }
 };
-
 export default { setOrDefault };

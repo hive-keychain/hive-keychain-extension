@@ -11,11 +11,11 @@ import { Screen } from 'src/reference-data/screen.enum';
 import './add-account-main.component.scss';
 
 const AddAccountMain = ({
-  mk,
   navigateTo,
   accounts,
   setAccounts,
   setTitleContainerProperties,
+  isLedgerSupported,
 }: PropsFromRedux) => {
   const [importWindow, setImportWindow] = useState<number>();
 
@@ -54,8 +54,11 @@ const AddAccountMain = ({
 
   const onSentBackAccountsListener = (message: BackgroundMessage) => {
     if (message.command === BackgroundCommand.SEND_BACK_IMPORTED_ACCOUNTS) {
-      if (!(typeof message.value === 'string') && message.value?.length) {
-        setAccounts(message.value);
+      if (
+        !(typeof message.value === 'string') &&
+        message.value?.accounts.length
+      ) {
+        setAccounts(message.value.accounts);
       }
       chrome.runtime.onMessage.removeListener(onSentBackAccountsListener);
     }
@@ -94,18 +97,23 @@ const AddAccountMain = ({
           label={'popup_html_import_keys'}
           onClick={handleImportKeys}
         />
-        <ButtonComponent
-          ariaLabel="import-keys-button"
-          label={'popup_html_add_account_with_ledger'}
-          onClick={handleAddFromLedger}
-        />
+        {isLedgerSupported && (
+          <ButtonComponent
+            ariaLabel="import-keys-button"
+            label={'popup_html_add_account_with_ledger'}
+            onClick={handleAddFromLedger}
+          />
+        )}
       </div>
     </div>
   );
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { accounts: state.accounts, mk: state.mk };
+  return {
+    accounts: state.accounts,
+    isLedgerSupported: state.appStatus.isLedgerSupported,
+  };
 };
 
 const connector = connect(mapStateToProps, {

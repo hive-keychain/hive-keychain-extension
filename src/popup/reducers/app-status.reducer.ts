@@ -5,11 +5,13 @@ export interface AppStatus {
   processingDecryptAccount: boolean;
   priceLoaded: boolean;
   globalPropertiesLoaded: boolean;
+  isLedgerSupported: boolean;
 }
 const INITIAL_STATE: AppStatus = {
   processingDecryptAccount: false,
   priceLoaded: false,
   globalPropertiesLoaded: false,
+  isLedgerSupported: false,
 };
 
 export const AppStatusReducer = (

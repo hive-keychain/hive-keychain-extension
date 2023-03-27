@@ -7,6 +7,7 @@ import {
   RequestVote,
 } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -48,8 +49,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    //TODO rm comments
-    // mocks.client.broadcast.vote(confirmed);
   }),
   assert: {
     error: (
@@ -73,7 +72,7 @@ const methods = {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           message,

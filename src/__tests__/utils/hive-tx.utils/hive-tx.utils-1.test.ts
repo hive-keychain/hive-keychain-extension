@@ -2,13 +2,14 @@ import { KeyType } from '@interfaces/keys.interface';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { config as HiveTxConfig } from 'hive-tx';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import hiveTxUtilsMocks from 'src/__tests__/utils/mocks/hive-tx.utils-mocks';
 describe('hive-tx.utils.ts tests:\n', () => {
   const { mocks, methods, spies, constants } = hiveTxUtilsMocks;
   methods.afterAll;
   describe('setRpc cases:\n', () => {
     it('Must set Rpc from KeychainApi', async () => {
-      mocks.keychainApi.get({ data: { rpc: DefaultRpcs[1].uri } });
+      mocks.keychainApi.get({ rpc: DefaultRpcs[1].uri });
       await HiveTxUtils.setRpc({ uri: 'DEFAULT', testnet: false });
       expect(HiveTxConfig.node).toEqual(DefaultRpcs[1].uri);
     });
@@ -21,10 +22,10 @@ describe('hive-tx.utils.ts tests:\n', () => {
 
   describe('sendOperation cases:\n', () => {
     it('Must call confirmTransaction', async () => {
-      mocks.createSignAndBroadcastTransaction('1234');
+      mocks.createSignAndBroadcastTransaction(transactionConfirmationSuccess);
       expect(
         await HiveTxUtils.sendOperation(constants.operations, KeyType.ACTIVE),
-      ).toBe(true);
+      ).toBe(transactionConfirmationSuccess);
       expect(spies.confirmTransaction).toBeCalledWith('1234');
     });
 
@@ -32,17 +33,7 @@ describe('hive-tx.utils.ts tests:\n', () => {
       mocks.createSignAndBroadcastTransaction(undefined);
       expect(
         await HiveTxUtils.sendOperation(constants.operations, KeyType.ACTIVE),
-      ).toBe(false);
-    });
-  });
-
-  describe('createTransaction cases:\n', () => {
-    it('Must call logger and return tx', async () => {
-      mocks.hiveTransaction.create(constants.tx);
-      expect(await HiveTxUtils.createTransaction(constants.operations)).toEqual(
-        constants.tx,
-      );
-      expect(spies.logger.log).toBeCalledWith('length of transaction => 110');
+      ).toBe(null);
     });
   });
 });

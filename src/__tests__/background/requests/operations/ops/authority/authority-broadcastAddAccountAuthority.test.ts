@@ -9,6 +9,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:\n', () => {
@@ -36,21 +37,22 @@ describe('authority tests:\n', () => {
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
-      const result = await broadcastAddAccountAuthority(
+      const resultOperation = await broadcastAddAccountAuthority(
         requestHandler,
         cloneData,
       );
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
-      const error = new TypeError(errorMessage);
-      const message = i18n.get('bgd_ops_error') + ' : ' + errorMessage;
-      expect(result.msg.error).toEqual(error);
-      expect(result.msg.message).toBe(message);
+      const error = new Error('html_popup_error_while_signing_transaction');
+      const message =
+        i18n.get('bgd_ops_error') +
+        ' : ' +
+        'html_popup_error_while_signing_transaction';
+      expect(resultOperation.msg.error).toEqual(error);
+      expect(resultOperation.msg.message).toBe(message);
     });
     it('Must broadcast update account using active key', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
@@ -64,14 +66,19 @@ describe('authority tests:\n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.addAuth(true, datas, cloneData, request_id),
+        messages.success.addAuth(
+          transactionConfirmationSuccess,
+          datas,
+          cloneData,
+          request_id,
+        ),
       );
       mHiveTxSendOp.mockRestore();
     });
     it('Must broadcast update account using posting key', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       const cloneData = objects.clone(data) as RequestAddAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
@@ -85,7 +92,12 @@ describe('authority tests:\n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.addAuth(true, datas, cloneData, request_id),
+        messages.success.addAuth(
+          transactionConfirmationSuccess,
+          datas,
+          cloneData,
+          request_id,
+        ),
       );
       mHiveTxSendOp.mockRestore();
     });

@@ -1,7 +1,9 @@
 import { broadcastUpdateProposalVote } from '@background/requests/operations/ops/proposals';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import proposalsMocks from 'src/__tests__/background/requests/operations/ops/mocks/proposals-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('proposals tests:\n', () => {
   const { methods, constants, mocks } = proposalsMocks;
   const { requestHandler, data } = constants;
@@ -10,8 +12,6 @@ describe('proposals tests:\n', () => {
   describe('broadcastUpdateProposalVote cases:\n', () => {
     describe('default cases:\n', () => {
       it('Must return error if no key on handler', async () => {
-        const errorMessage =
-          "Cannot read properties of undefined (reading 'toString')";
         data.update.proposal_ids = [];
         data.update.extensions = [];
         const result = await broadcastUpdateProposalVote(
@@ -20,16 +20,18 @@ describe('proposals tests:\n', () => {
         );
         methods.assert.error(
           result,
-          new TypeError(errorMessage),
+          new Error('html_popup_error_while_signing_transaction'),
           data.update,
-          errorMessage,
+          mocksImplementation.i18nGetMessageCustom(
+            'html_popup_error_while_signing_transaction',
+          ),
         );
       });
       it('Must return success on approvals', async () => {
         data.update.proposal_ids = [1, 2];
         data.update.extensions = [1, 2];
         requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         const result = await broadcastUpdateProposalVote(
           requestHandler,
           data.update,
@@ -47,7 +49,7 @@ describe('proposals tests:\n', () => {
         const ids_parsed = JSON.parse(data.update.proposal_ids);
         data.update.extensions = [1, 2];
         requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         const result = await broadcastUpdateProposalVote(
           requestHandler,
           data.update,
@@ -55,7 +57,7 @@ describe('proposals tests:\n', () => {
         const { request_id, ...datas } = data.update;
         expect(result).toEqual(
           messages.success.answerSucess(
-            true,
+            transactionConfirmationSuccess,
             datas,
             request_id,
             chrome.i18n.getMessage(
@@ -70,7 +72,7 @@ describe('proposals tests:\n', () => {
         data.update.proposal_ids = [1];
         data.update.extensions = [1, 2];
         requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         const result = await broadcastUpdateProposalVote(
           requestHandler,
           data.update,
@@ -88,7 +90,7 @@ describe('proposals tests:\n', () => {
         data.update.extensions = [1, 2];
         data.update.approve = false;
         requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         const result = await broadcastUpdateProposalVote(
           requestHandler,
           data.update,
@@ -106,7 +108,7 @@ describe('proposals tests:\n', () => {
         data.update.extensions = [1, 2];
         data.update.approve = false;
         requestHandler.data.key = userData.one.nonEncryptKeys.active;
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         const result = await broadcastUpdateProposalVote(
           requestHandler,
           data.update,
@@ -127,7 +129,9 @@ describe('proposals tests:\n', () => {
         data.update.approve = true;
         requestHandler.data.key = '#keyUsingLedger1234';
         mocks.LedgerModule.getSignatureFromLedger('signed!');
-        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.broadcastAndConfirmTransactionWithSignature(
+          transactionConfirmationSuccess,
+        );
         const result = await broadcastUpdateProposalVote(
           requestHandler,
           data.update,
@@ -135,7 +139,7 @@ describe('proposals tests:\n', () => {
         const { request_id, ...datas } = data.update;
         expect(result).toEqual(
           messages.success.answerSucess(
-            true,
+            transactionConfirmationSuccess,
             datas,
             request_id,
             chrome.i18n.getMessage('bgd_ops_proposal_vote', [
@@ -152,7 +156,9 @@ describe('proposals tests:\n', () => {
         data.update.approve = true;
         requestHandler.data.key = '#keyUsingLedger1234';
         mocks.LedgerModule.getSignatureFromLedger('signed!');
-        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.broadcastAndConfirmTransactionWithSignature(
+          transactionConfirmationSuccess,
+        );
         const result = await broadcastUpdateProposalVote(
           requestHandler,
           data.update,
@@ -160,7 +166,7 @@ describe('proposals tests:\n', () => {
         const { request_id, ...datas } = data.update;
         expect(result).toEqual(
           messages.success.answerSucess(
-            true,
+            transactionConfirmationSuccess,
             datas,
             request_id,
             chrome.i18n.getMessage('bgd_ops_proposal_vote', ['1']),

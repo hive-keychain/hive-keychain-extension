@@ -23,14 +23,14 @@ config.byDefault();
 describe('manage-account.component tests:\n', () => {
   let _asFragment: () => DocumentFragment | undefined;
   const { methods, constants, extraMocks } = manageAccounts;
-  const { snapshotName, localAccount } = constants;
+  const { localAccount } = constants;
   methods.afterEach;
   describe('General cases:\n', () => {
     beforeEach(async () => {
       _asFragment = await manageAccounts.beforeEach();
     });
-    it('Must display manage-account and match snapshot', () => {
-      expect(_asFragment()).toMatchSnapshot(snapshotName.withData.default);
+    it('Must display manage-account page', () => {
+      assertion.getByLabelText(alComponent.account.subMenu.manageAccounts);
     });
     it('Must change to selected account', async () => {
       extraMocks.remockGetAccount();

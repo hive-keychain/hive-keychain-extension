@@ -28,17 +28,27 @@ const Loading = ({ hide, operations, caption }: Props) => {
       <div className="operations">
         {operations &&
           operations.map((operation) => (
-            <span key={operation.name}>
-              {chrome.i18n.getMessage(operation.name)}
-              {operation.done ? (
-                <Icon
-                  name={Icons.DONE}
-                  type={IconType.STROKED}
-                  additionalClassName="done"></Icon>
-              ) : (
-                '...'
+            <div className="loading-operation" key={operation.name}>
+              <span
+                dangerouslySetInnerHTML={{
+                  __html: chrome.i18n.getMessage(
+                    operation.name,
+                    operation.operationParams,
+                  ),
+                }}></span>
+              {!operation.hideDots && (
+                <span>
+                  {operation.done ? (
+                    <Icon
+                      name={Icons.DONE}
+                      type={IconType.STROKED}
+                      additionalClassName="done"></Icon>
+                  ) : (
+                    '...'
+                  )}
+                </span>
               )}
-            </span>
+            </div>
           ))}
       </div>
     </div>

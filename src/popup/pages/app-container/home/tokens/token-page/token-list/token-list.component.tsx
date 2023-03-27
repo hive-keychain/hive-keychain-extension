@@ -117,6 +117,7 @@ const TokenList = ({
                 key={token.symbol}
                 tokenBalance={token}
                 tokenInfo={allTokens.find((t) => t.symbol === token.symbol)!}
+                market={market}
               />
             ))}
           </div>

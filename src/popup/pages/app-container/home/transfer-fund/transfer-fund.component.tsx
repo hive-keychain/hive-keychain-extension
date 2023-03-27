@@ -1,4 +1,3 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
@@ -15,7 +14,6 @@ import {
 import { fetchPhishingAccounts } from '@popup/actions/phishing.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import Select, {
@@ -27,15 +25,18 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
-import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
+import {
+  FavoriteUserList,
+  FavoriteUserUtils,
+} from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './transfer-fund.component.scss';
@@ -46,6 +47,7 @@ const TransferFunds = ({
   currencyLabels,
   phishing,
   formParams,
+  localAccounts,
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
@@ -79,8 +81,9 @@ const TransferFunds = ({
   const [iteration, setIterations] = useState(
     formParams.iteration ? formParams.iteration : '',
   );
-  const [autocompleteTransferUsernames, setAutocompleteTransferUsernames] =
-    useState<string[]>([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    FavoriteUserList[]
+  >([]);
 
   let balances = {
     hive: FormatUtils.toNumber(activeAccount.account.balance),
@@ -99,6 +102,7 @@ const TransferFunds = ({
 
   useEffect(() => {
     setBalance(balances[selectedCurrency]);
+    loadAutocompleteTransferUsernames();
   }, [selectedCurrency]);
 
   const options = [
@@ -107,13 +111,13 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    const favoriteUsers: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
+    const autoCompleteListByCategories: FavoriteUserList[] =
+      await FavoriteUserUtils.getAutocompleteListByCategories(
+        activeAccount.name!,
+        localAccounts,
+        { addExchanges: true, token: selectedCurrency.toUpperCase() },
       );
-    setAutocompleteTransferUsernames(
-      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
-    );
+    setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };
 
   const setAmountToMaxValue = () => {
@@ -233,7 +237,7 @@ const TransferFunds = ({
           ),
         );
         try {
-          let success = false;
+          let success;
           let memoParam = memo;
           if (memo.length) {
             if (memo.startsWith('#')) {
@@ -265,7 +269,7 @@ const TransferFunds = ({
 
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(
+            await FavoriteUserUtils.saveFavoriteUser(
               receiverUsername,
               activeAccount,
             );
@@ -335,10 +339,10 @@ const TransferFunds = ({
   return (
     <>
       <div className="transfer-funds-page" aria-label="transfer-funds-page">
-        <AvailableCurrentPanelComponent
-          available={balance}
-          availableCurrency={currencyLabels[selectedCurrency]}
-          availableLabel={'popup_html_balance'}
+        <SummaryPanelComponent
+          bottom={balance}
+          bottomRight={currencyLabels[selectedCurrency]}
+          bottomLeft={'popup_html_balance'}
         />
         <div className="form-container">
           <InputComponent
@@ -348,7 +352,7 @@ const TransferFunds = ({
             placeholder="popup_html_username"
             value={receiverUsername}
             onChange={setReceiverUsername}
-            autocompleteValues={autocompleteTransferUsernames}
+            autocompleteValues={autocompleteFavoriteUsers}
           />
           <div className="value-panel">
             <div className="value-input-panel">
@@ -434,6 +438,7 @@ const mapStateToProps = (state: RootState) => {
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
     phishing: state.phishing,
+    localAccounts: state.accounts,
   };
 };
 

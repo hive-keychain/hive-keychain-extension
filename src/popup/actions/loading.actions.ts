@@ -4,10 +4,17 @@ import { ActionType } from '@popup/actions/action-type.enum';
 export const addToLoadingList = (
   operation: string,
   privateKeyType?: PrivateKeyType,
+  operationParams?: string[],
+  hideDots?: boolean,
 ) => {
   return {
     type: ActionType.ADD_TO_LOADING_LIST,
-    payload: { operation: operation, privateKeyType: privateKeyType },
+    payload: {
+      operation: operation,
+      operationParams: operationParams,
+      privateKeyType: privateKeyType,
+      hideDots: hideDots,
+    },
   };
 };
 

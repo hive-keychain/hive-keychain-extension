@@ -12,6 +12,7 @@ const config = {
     importAccounts: './src/import/import-accounts.tsx',
     importSettings: './src/import/import-settings.tsx',
     addKeyFromLedger: './src/ledger/add-key/index.tsx',
+    linkLedgerDevice: './src/ledger/link-device/index.tsx',
     addAccountsFromLedger: './src/ledger/add-accounts/index.tsx',
     web_interface: './src/content-scripts/web-interface/index.ts',
     keychainify: './src/content-scripts/keychainify/index.ts',

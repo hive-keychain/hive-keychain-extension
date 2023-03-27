@@ -122,34 +122,33 @@ const keychainApiGet = async (
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
   switch (true) {
-    case urlToGet === '/hive/v2/witnesses-ranks':
+    case urlToGet === 'hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
-    case urlToGet === '/hive/v2/price':
+    case urlToGet === 'hive/v2/price':
       return customData?.currenciesPrices ?? currencies.prices;
-    case urlToGet === '/hive/rpc':
-      return customData?.rpc ?? { data: { rpc: 'https://api.hive.blog' } };
-    case urlToGet === '/hive/phishingAccounts':
+    case urlToGet === 'hive/rpc':
+      return customData?.rpc ?? { rpc: 'https://api.hive.blog' };
+    case urlToGet === 'hive/phishingAccounts':
       return customData?.phishingAccounts ?? phishing.accounts;
-    case urlToGet === '/hive/last-extension-version':
+    case urlToGet === 'hive/last-extension-version':
       return (
-        customData?.extensionVersion ?? {
-          data: {
-            version: manifestFile.chromium.version, //by default same version as current
-            //name: manifestFile.chromium.name,
-            features: {},
-            url: 'https://hive-keychain.com',
-          } as WhatsNewContent,
-        }
+        customData?.extensionVersion ??
+        ({
+          version: manifestFile.chromium.version, //by default same version as current
+          //name: manifestFile.chromium.name,
+          features: {},
+          url: 'https://hive-keychain.com',
+        } as WhatsNewContent)
       );
-    case urlToGet.includes('/hive/delegators/'):
-      return customData?.delegators ?? { data: delegations.delegators };
+    case urlToGet.includes('hive/delegators/'):
+      return customData?.delegators ?? delegations.delegators;
     default:
       return 'Please check on default cases as not found condition ->/implementations/...';
   }
 };
 
 const hiveTxUtils = {
-  //TODO add types + default data.
+  //TODO add types when needed
   getData: (toUse: {
     conversionRequests?: any;
     collateralized?: any;
@@ -176,6 +175,22 @@ const hiveTxUtils = {
   },
 };
 
+/**
+ * Note: for now this mock is related to
+ * src/utils/currency-prices.utils.ts
+ * > getBittrexCurrency
+ */
+const mockFetch = (data: any, status: number, reject?: boolean) => {
+  jest.spyOn(global, 'fetch').mockImplementationOnce(() =>
+    reject
+      ? Promise.reject(data)
+      : Promise.resolve({
+          json: () => Promise.resolve(data),
+          status: status,
+        } as Response),
+  );
+};
+
 const mocksImplementation = {
   getValuefromLS,
   i18nGetMessage,
@@ -183,6 +198,7 @@ const mocksImplementation = {
   keychainApiGet,
   manifestFile,
   hiveTxUtils,
+  mockFetch,
 };
 
 export default mocksImplementation;

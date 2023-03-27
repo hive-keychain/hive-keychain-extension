@@ -2,7 +2,9 @@ import { broadcastPowerUp } from '@background/requests/operations/ops/power';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import powerMocks from 'src/__tests__/background/requests/operations/ops/mocks/power-mocks';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('power tests:\n', () => {
   const { methods, constants, mocks } = powerMocks;
   const { requestHandler, data } = constants;
@@ -11,16 +13,16 @@ describe('power tests:\n', () => {
   describe('broadcastPowerUp cases:\n', () => {
     describe('Default cases:\n', () => {
       it('Must return error if no key on handler', async () => {
-        const errorMessage =
-          "Cannot read properties of undefined (reading 'toString')";
         const result = await broadcastPowerUp(requestHandler, data.powerUp);
         const { request_id, ...datas } = data.powerUp;
         expect(result).toEqual(
           messages.error.answerError(
-            new TypeError(errorMessage),
+            new Error('html_popup_error_while_signing_transaction'),
             datas,
             request_id,
-            errorMessage,
+            mocksImplementation.i18nGetMessageCustom(
+              'html_popup_error_while_signing_transaction',
+            ),
             undefined,
           ),
         );
@@ -28,13 +30,13 @@ describe('power tests:\n', () => {
       it('Must return success', async () => {
         const mhiveTxSendOp = jest
           .spyOn(HiveTxUtils, 'sendOperation')
-          .mockResolvedValue(true);
+          .mockResolvedValue(transactionConfirmationSuccess);
         requestHandler.data.key = userData.one.nonEncryptKeys.active;
         const result = await broadcastPowerUp(requestHandler, data.powerUp);
         const { request_id, ...datas } = data.powerUp;
         expect(result).toEqual(
           messages.success.answerSucess(
-            true,
+            transactionConfirmationSuccess,
             datas,
             request_id,
             chrome.i18n.getMessage('bgd_ops_pu', [datas.hive, datas.recipient]),
@@ -47,15 +49,17 @@ describe('power tests:\n', () => {
 
     describe('Using ledger cases:\n', () => {
       it('Must return success', async () => {
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         mocks.LedgerModule.getSignatureFromLedger('signed!');
-        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.broadcastAndConfirmTransactionWithSignature(
+          transactionConfirmationSuccess,
+        );
         requestHandler.data.key = '#ledgerKEY1233';
         const result = await broadcastPowerUp(requestHandler, data.powerUp);
         const { request_id, ...datas } = data.powerUp;
         expect(result).toEqual(
           messages.success.answerSucess(
-            true,
+            transactionConfirmationSuccess,
             datas,
             request_id,
             chrome.i18n.getMessage('bgd_ops_pu', [datas.hive, datas.recipient]),

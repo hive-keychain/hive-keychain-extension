@@ -31,9 +31,9 @@ import { LocalStorageKeyEnum } from 'src/reference-data/local-storage-key.enum';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
 import { DelegationUtils } from 'src/utils/delegation.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import TransferUtils from 'src/utils/transfer.utils';
 import './delegations.component.scss';
 
 const Delegations = ({
@@ -211,7 +211,7 @@ const Delegations = ({
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage('popup_html_delegation_successful');
           } else {
             setErrorMessage('popup_html_delegation_fail');
@@ -248,7 +248,7 @@ const Delegations = ({
           );
           if (success) {
             navigateTo(Screen.HOME_PAGE, true);
-            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage('popup_html_cancel_delegation_successful');
           } else {
             setErrorMessage('popup_html_cancel_delegation_fail');

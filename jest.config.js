@@ -19,6 +19,7 @@ module.exports = {
     '^@reference-data(.*)$': '<rootDir>/src/reference-data/$1',
     '^@api(.*)$': '<rootDir>/src/api/$1',
     '\\.(css|less|scss)$': 'identity-obj-proxy',
+    '@ledgerhq/devices/hid-framing': '@ledgerhq/devices/lib/hid-framing',
   },
   modulePaths: ['<rootDir>'],
   collectCoverageFrom: ['<rootDir>/**/*.{ts, tsx}'],

@@ -1,4 +1,4 @@
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import tokensTransfer from 'src/__tests__/popup/pages/app-container/home/tokens/tokens-transfer/mocks/tokens-transfer';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -139,7 +139,9 @@ describe('tokens-transfer.component tests:\n', () => {
         hasMemo: true,
         confirm: true,
       });
-      await assertion.awaitFor(messages.success, QueryDOM.BYTEXT);
+      await waitFor(() => {
+        expect(screen.getByText('successful', { exact: false })).toBeDefined();
+      });
     });
   });
   describe('No Memo Key:\n', () => {

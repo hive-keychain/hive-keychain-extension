@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
@@ -102,9 +102,9 @@ const WitnessTab = ({
     setLoading(true);
     let requestResult;
     try {
-      requestResult = await KeychainApi.get('/hive/v2/witnesses-ranks');
-      if (requestResult?.data !== '') {
-        const ranking = requestResult?.data;
+      requestResult = await KeychainApi.get('hive/v2/witnesses-ranks');
+      if (!!requestResult && requestResult !== '') {
+        const ranking = requestResult;
         setRanking(ranking);
         setFilteredRanking(ranking);
       } else {

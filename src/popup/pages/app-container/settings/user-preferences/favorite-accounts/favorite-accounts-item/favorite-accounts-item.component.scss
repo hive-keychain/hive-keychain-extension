@@ -1,0 +1,74 @@
+@import '../../../../../../variable.scss';
+
+.favorite-accounts-item {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-content: center;
+  row-gap: 12px;
+
+  .buttons {
+    display: none;
+    margin-right: 16px;
+
+    .remove-button,
+    .edit-button {
+      color: white;
+      cursor: pointer;
+      font-size: 22px;
+      margin-left: 3px;
+      &:hover {
+        color: $red-dark;
+      }
+    }
+  }
+
+  &:hover {
+    .buttons {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  .item {
+    flex-direction: row;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+
+    .item-user-favorite {
+      display: flex;
+      align-items: center;
+      column-gap: 16px;
+      padding: 8px 16px;
+      box-sizing: border-box;
+      width: auto;
+
+      .item-username {
+        flex-direction: column;
+        display: flex;
+        font-weight: bold;
+        align-items: flex-start;
+      }
+
+      .as-column {
+        flex-direction: column;
+      }
+
+      .item-username-label {
+        font-weight: 400;
+        font-size: 16px;
+        font-style: italic;
+        color: lightgray;
+      }
+
+      img {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+      }
+    }
+  }
+}

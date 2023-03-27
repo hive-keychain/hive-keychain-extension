@@ -3,6 +3,7 @@ export enum Icons {
   ACCOUNTS = 'people',
   ADD_ACCOUNT = 'person_add',
   ADD_CIRCLE = 'add_circle_outline',
+  ANALYTICS = 'analytics',
   ARROW_CIRCLE_UP = 'arrow_circle_up',
   ARROW_DROPDOWN = 'arrow_drop_down',
   ARROW_UP = 'arrow_circle_up',
@@ -31,6 +32,7 @@ export enum Icons {
   ERROR = 'error',
   EXPAND_MORE = 'expand_more',
   EXPORT = 'file_download',
+  FAVORITE = 'favorite_border',
   FILTER = 'filter_alt',
   HIDDEN = 'visibility_off',
   HISTORY = 'history',
@@ -67,6 +69,7 @@ export enum Icons {
   TIMELAPSE = 'timelapse',
   TOKENS = 'generating_tokens',
   TWITTER = 'twitter.svg',
+  USB = 'usb',
   VISIBLE = 'visibility',
   WARNING = 'warning',
 }

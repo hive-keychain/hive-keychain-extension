@@ -58,7 +58,7 @@ const AddAccountsComponent = () => {
     setMessage('');
     setLoading(true);
     try {
-      if (await LedgerUtils.init()) {
+      if (await LedgerUtils.init(true)) {
         let discoveredAccounts = await LedgerUtils.getAllAccounts();
         if (discoveredAccounts.length === 0) {
           setMessage('no_account_found_on_ledger_error');
@@ -107,7 +107,7 @@ const AddAccountsComponent = () => {
     } catch (err: any) {
       Logger.log(err);
       setLoading(false);
-      setMessage(ErrorUtils.parse(err).message);
+      setMessage(ErrorUtils.parseLedger(err).message);
     }
   };
 
@@ -423,7 +423,16 @@ const AddAccountsComponent = () => {
       )}
 
       {step === SynchronizeLedgerStep.FINISHED && (
-        <div>{chrome.i18n.getMessage(message)}</div>
+        <>
+          <div>{chrome.i18n.getMessage(message)}</div>
+          <div className="fill-space"></div>
+          <div className="bottom-button-panel">
+            <ButtonComponent
+              label="popup_html_close"
+              onClick={() => window.close()}
+            />
+          </div>
+        </>
       )}
 
       <LoadingComponent hide={!loading} />

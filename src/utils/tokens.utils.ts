@@ -26,11 +26,11 @@ const getStakeTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'stake',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
@@ -67,11 +67,11 @@ const getUnstakeTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'unstake',
     contractPayload: { symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
@@ -109,11 +109,11 @@ const getDelegateTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'delegate',
     contractPayload: { to: to, symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
@@ -159,11 +159,11 @@ const getCancelDelegationTokenOperation = (
   amount: string,
   username: string,
 ) => {
-  const json = JSON.stringify({
+  const json = {
     contractName: 'tokens',
     contractAction: 'undelegate',
     contractPayload: { from: from, symbol: symbol, quantity: amount },
-  });
+  };
   return CustomJsonUtils.getCustomJsonOperation(
     json,
     username,
@@ -239,6 +239,19 @@ const getSendTokenTransaction = (
   ]);
 };
 
+const getHiveEngineTokenPrice = (
+  balance: TokenBalance,
+  market: TokenMarket[],
+) => {
+  const tokenMarket = market.find((t) => t.symbol === balance.symbol);
+  const price = tokenMarket
+    ? parseFloat(tokenMarket.lastPrice)
+    : balance.symbol === 'SWAP.HIVE'
+    ? 1
+    : 0;
+  return price;
+};
+
 const getHiveEngineTokenValue = (
   balance: TokenBalance,
   market: TokenMarket[],
@@ -249,7 +262,14 @@ const getHiveEngineTokenValue = (
     : balance.symbol === 'SWAP.HIVE'
     ? 1
     : 0;
-  return parseFloat(balance.balance) * price;
+
+  const totalToken =
+    parseFloat(balance.balance) +
+    parseFloat(balance.pendingUndelegations) +
+    parseFloat(balance.pendingUnstake) +
+    parseFloat(balance.delegationsOut) +
+    parseFloat(balance.stake);
+  return totalToken * price;
 };
 /* istanbul ignore next */
 const getUserBalance = (account: string) => {
@@ -359,6 +379,7 @@ const TokensUtils = {
   getDelegateTokenTransaction,
   getCancelDelegationTokenTransaction,
   getSendTokenTransaction,
+  getHiveEngineTokenPrice,
 };
 
 export default TokensUtils;

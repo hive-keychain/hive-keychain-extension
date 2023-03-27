@@ -16,7 +16,7 @@
     flex-direction: column;
     row-gap: 32px;
     height: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
     .panel {
       flex: 1;
       padding: 0 24px;

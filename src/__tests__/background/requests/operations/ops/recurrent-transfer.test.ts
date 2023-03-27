@@ -5,7 +5,9 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import recurrentTransferMocks from 'src/__tests__/background/requests/operations/ops/mocks/recurrent-transfer-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('recurrent-transfer tests:\n', () => {
   const { methods, constants, spies, mocks } = recurrentTransferMocks;
   const { requestHandler, data } = constants;
@@ -21,26 +23,26 @@ describe('recurrent-transfer tests:\n', () => {
       );
     });
     it('Must return error if no key on handler', async () => {
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await recurrentTransfer(requestHandler, data);
       methods.assert.error(
         result,
-        new TypeError(errorMessage),
+        new Error('html_popup_error_while_signing_transaction'),
         data,
-        errorMessage,
+        mocksImplementation.i18nGetMessageCustom(
+          'html_popup_error_while_signing_transaction',
+        ),
       );
     });
     it('Must return sucess on start recurrent', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       const result = await recurrentTransfer(requestHandler, data);
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
@@ -50,15 +52,17 @@ describe('recurrent-transfer tests:\n', () => {
       mHiveTxSendOp.mockRestore();
     });
     it('Must return sucess on start recurrent, using ledger', async () => {
-      mocks.HiveTxUtils.sendOperation(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
       mocks.LedgerModule.getSignatureFromLedger('signed!');
-      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      mocks.broadcastAndConfirmTransactionWithSignature(
+        transactionConfirmationSuccess,
+      );
       requestHandler.data.key = '#ledgerKEY1234';
       const result = await recurrentTransfer(requestHandler, data);
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
@@ -69,14 +73,14 @@ describe('recurrent-transfer tests:\n', () => {
     it('Must return sucess on stop recurrent', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       data.amount = '0';
       requestHandler.data.key = userData.one.nonEncryptKeys.active;
       const result = await recurrentTransfer(requestHandler, data);
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer'),
@@ -128,7 +132,7 @@ describe('recurrent-transfer tests:\n', () => {
       requestHandler.data.accounts = accounts.twoAccounts;
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       mocks.getExtendedAccount(accounts.extended);
       data.amount = '1000';
       data.memo = '# To encrypt!';
@@ -137,7 +141,7 @@ describe('recurrent-transfer tests:\n', () => {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_recurrent_transfer'),
@@ -149,7 +153,7 @@ describe('recurrent-transfer tests:\n', () => {
     it('Must return success on stop recurrent', async () => {
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       requestHandler.data.accounts = accounts.twoAccounts;
       mocks.getExtendedAccount(accounts.extended);
       data.memo = '# To encrypt!';
@@ -159,7 +163,7 @@ describe('recurrent-transfer tests:\n', () => {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_stop_recurrent_transfer'),

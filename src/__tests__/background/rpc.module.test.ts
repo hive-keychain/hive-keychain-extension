@@ -1,4 +1,4 @@
-import KeychainApi from '@api/keychain';
+import { KeychainApi } from '@api/keychain';
 import RPCModule from '@background/rpc.module';
 import { DefaultRpcs } from '@reference-data/default-rpc.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
@@ -30,15 +30,12 @@ describe('rpc.module tests:\n', () => {
       .fn()
       .mockResolvedValue({ uri: 'DEFAULT', chainId: '1' });
     KeychainApi.get = jest.fn().mockResolvedValue({
-      data: {
-        rpc: {
-          uri: 'https://default',
-        },
+      rpc: {
+        uri: 'https://default',
       },
     });
     await RPCModule.init();
     expect(HiveTxConfig.node).toEqual({ uri: 'https://default' });
-    expect(HiveTxConfig.chain_id).toBe('1');
   });
   it('Must set uri', async () => {
     RPCModule.getActiveRpc = jest

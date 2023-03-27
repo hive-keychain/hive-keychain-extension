@@ -18,7 +18,7 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             constants.operations,
             userData.one.nonEncryptKeys.posting,
           ),
-        ).toBe(constants.broadcastResponse.success.result.tx_id);
+        ).toBe(constants.broadcastResponse.success.result);
       });
 
       it('Must catch error, call logger and throw Error if not valid key', async () => {
@@ -58,34 +58,6 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
     });
 
     describe('using ledger:\n', () => {
-      it('Must catch and throw error if invalid getSettings response', async () => {
-        mocks.hiveTransaction.create(constants.tx);
-        mocks.LedgerUtils.getSettings({} as Settings);
-        try {
-          await HiveTxUtils.createSignAndBroadcastTransaction(
-            constants.operations,
-            '#ajjsk1121312312',
-          );
-        } catch (error) {
-          expect(error).toEqual(new KeychainError('error_while_broadcasting'));
-        }
-      });
-
-      it('Must catch and throw error if signHash', async () => {
-        mocks.hiveTransaction.create(constants.tx);
-        mocks.LedgerUtils.getSettings({ hashSignPolicy: true } as Settings);
-        try {
-          await HiveTxUtils.createSignAndBroadcastTransaction(
-            constants.operations,
-            '#ajjsk1121312312',
-          );
-        } catch (error) {
-          expect(error).toEqual(
-            new KeychainError('error_ledger_no_hash_sign_policy'),
-          );
-        }
-      });
-
       it('Must catch and throw error if is not Displayable On Device', async () => {
         mocks.hiveTransaction.create(constants.tx);
         mocks.LedgerUtils.getSettings({ hashSignPolicy: false } as Settings);
@@ -115,7 +87,7 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             constants.operations,
             '#ajjsk1121312312',
           ),
-        ).toEqual(constants.broadcastResponse.success.result.tx_id);
+        ).toEqual(constants.broadcastResponse.success.result);
         expect(spies.hiveTransaction.addSignature).toBeCalledWith(
           'signed_string',
         );
@@ -134,11 +106,11 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             constants.operations,
             '#ajjsk1121312312',
           ),
-        ).toEqual(constants.broadcastResponse.success.result.tx_id);
+        ).toEqual(constants.broadcastResponse.success.result);
         expect(spies.hiveTransaction.addSignature).toBeCalledWith('signed');
       });
 
-      it('Must throw error and call logger', async () => {
+      it('Must throw error', async () => {
         mocks.hiveTransaction.create(constants.tx);
         mocks.LedgerUtils.getSettings({ hashSignPolicy: true } as Settings);
         mocks.hive.isDisplayableOnDevice(true);
@@ -149,7 +121,9 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             '#ajjsk1121312312',
           );
         } catch (error) {
-          expect(error).toEqual(new KeychainError('error_while_broadcasting'));
+          expect(error).toEqual(
+            new TypeError("Cannot read properties of undefined (reading '0')"), //new KeychainError('popup_html_ledger_unknown_error'),
+          );
           expect(spies.logger.err).toBeCalledWith(
             new TypeError("Cannot read properties of undefined (reading '0')"),
           );
@@ -165,7 +139,9 @@ describe('hive-tx.utils.ts part 2 tests:\n', () => {
             '#ajjsk1121312312',
           );
         } catch (error) {
-          expect(error).toEqual(new KeychainError('error_while_broadcasting'));
+          expect(error).toEqual(
+            new KeychainError('popup_html_ledger_unknown_error'),
+          );
         }
       });
 

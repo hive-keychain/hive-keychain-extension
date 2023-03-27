@@ -4,11 +4,13 @@ import { KeychainError } from 'src/keychain-error';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import transferMocks from 'src/__tests__/background/requests/operations/ops/mocks/transfer-mocks';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 describe('transfer tests:\n', () => {
   const { methods, constants, spies, mocks } = transferMocks;
-  const { requestHandler, data, params, confirmed } = constants;
+  const { requestHandler, data, params } = constants;
   methods.afterEach;
   methods.beforeEach;
   describe('broadcastTransfer cases:\n', () => {
@@ -20,10 +22,15 @@ describe('transfer tests:\n', () => {
           expect(spies.getUserKey).toBeCalledWith(...params.getUserKey[0]);
         });
         it('Must return error if no key on handler', async () => {
-          const errorMsg =
-            "Cannot read properties of undefined (reading 'toString')";
           const result = await broadcastTransfer(requestHandler, data);
-          methods.assert.error(result, new TypeError(errorMsg), data, errorMsg);
+          methods.assert.error(
+            result,
+            new Error('html_popup_error_while_signing_transaction'),
+            data,
+            mocksImplementation.i18nGetMessageCustom(
+              'html_popup_error_while_signing_transaction',
+            ),
+          );
         });
         it('Must return error if receiver not found', async () => {
           data.currency = 'HIVE';
@@ -44,7 +51,7 @@ describe('transfer tests:\n', () => {
         it('Must return success', async () => {
           const mHiveTxSendOp = jest
             .spyOn(HiveTxUtils, 'sendOperation')
-            .mockResolvedValue(true);
+            .mockResolvedValue(transactionConfirmationSuccess);
           mocks.getExtendedAccount(accounts.extended);
           requestHandler.data.key = userData.one.nonEncryptKeys.active;
           requestHandler.data.accounts = accounts.twoAccounts;
@@ -95,7 +102,7 @@ describe('transfer tests:\n', () => {
         it('Must return success', async () => {
           const mHiveTxSendOp = jest
             .spyOn(HiveTxUtils, 'sendOperation')
-            .mockResolvedValue(true);
+            .mockResolvedValue(transactionConfirmationSuccess);
           mocks.getExtendedAccount(accounts.extended);
           requestHandler.data.key = userData.one.nonEncryptKeys.active;
           requestHandler.data.accounts = accounts.twoAccounts;
@@ -118,9 +125,11 @@ describe('transfer tests:\n', () => {
 
     describe('Using ledger cases:\n', () => {
       it('Must return success', async () => {
-        mocks.HiveTxUtils.sendOperation(true);
+        mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
         mocks.LedgerModule.getSignatureFromLedger('signed!');
-        mocks.broadcastAndConfirmTransactionWithSignature(true);
+        mocks.broadcastAndConfirmTransactionWithSignature(
+          transactionConfirmationSuccess,
+        );
         mocks.getExtendedAccount(accounts.extended);
         const clonedAccounts = objects.clone(
           accounts.twoAccounts,

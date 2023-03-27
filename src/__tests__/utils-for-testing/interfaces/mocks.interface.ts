@@ -76,6 +76,10 @@ export interface MocksChromeRunTime {
   getManifest?: GetManifest;
   sendMessage: jest.Mock;
 }
+
+export interface MocksGoogleAnalytics {
+  initializeGoogleAnalytics?: string; //To be used for now as 'bypass' to just mock without impl.
+}
 //TODO implement as dataMocks/CustomDataFromLocalStorage, when coding tests for survey.
 export interface MocksSurvey {
   byPassing: boolean;
@@ -99,7 +103,8 @@ export interface MocksToUse {
   tokens?: MocksTokens;
   proposal?: MocksProposal;
   chromeRunTime?: MocksChromeRunTime;
-  keyChainApiGet?: MocksKeyChainApi;
+  keyChainApiGet?: KeyChainApiGetCustomData;
+  googleAnalytics?: MocksGoogleAnalytics;
   survey?: MocksSurvey;
   convertions?: MocksConvertionRequests;
   governance?: MocksGovernance;

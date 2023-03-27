@@ -9,11 +9,12 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:/n', () => {
   const { methods, constants, mocks } = authority;
-  const { requestHandler, confirmed, i18n } = constants;
+  const { requestHandler, i18n } = constants;
   const data = constants.data.removeAccountAuthority;
   methods.afterEach;
   methods.beforeEach;
@@ -22,7 +23,7 @@ describe('authority tests:/n', () => {
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'notAddedAccount';
-      const localeMessageKey = 'nothing_to_remove_error';
+      const localeMessageKey = 'html_popup_error_while_signing_transaction';
       const result = await broadcastRemoveAccountAuthority(
         requestHandler,
         data,
@@ -33,7 +34,7 @@ describe('authority tests:/n', () => {
           datas,
           request_id,
           new Error(localeMessageKey),
-          i18n.get('nothing_to_remove_error'),
+          i18n.get(localeMessageKey),
         ),
       );
     });
@@ -70,7 +71,7 @@ describe('authority tests:/n', () => {
         mocks.getExtendedAccount(cloneExtended);
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'theghost1980';
@@ -85,7 +86,11 @@ describe('authority tests:/n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.removedAuth(true, datas, request_id),
+        messages.success.removedAuth(
+          transactionConfirmationSuccess,
+          datas,
+          request_id,
+        ),
       );
       mhiveTxSendOp.mockRestore();
     });
@@ -93,7 +98,7 @@ describe('authority tests:/n', () => {
       mocks.getExtendedAccount(accounts.extended);
       const mhiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       const cloneData = objects.clone(data) as RequestRemoveAccountAuthority &
         RequestId;
       cloneData.authorizedUsername = 'theghost1980';
@@ -108,7 +113,11 @@ describe('authority tests:/n', () => {
       );
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
-        messages.success.removedAuth(true, datas, request_id),
+        messages.success.removedAuth(
+          transactionConfirmationSuccess,
+          datas,
+          request_id,
+        ),
       );
       mhiveTxSendOp.mockRestore();
     });

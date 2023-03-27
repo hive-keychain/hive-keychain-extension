@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { LoadingComponent } from 'src/common-ui/loading/loading.component';
 import AccountUtils from 'src/utils/account.utils';
+import { ErrorUtils } from 'src/utils/error.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import './add-key.component.scss';
@@ -13,6 +14,7 @@ const AddKeyComponent = () => {
   const [keyType, setKeyType] = useState<KeyType>();
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
   useEffect(() => {
     const queryParamsTable = window.location.search.replace('?', '').split('&');
@@ -28,18 +30,24 @@ const AddKeyComponent = () => {
   const discoverAccounts = async () => {
     setLoading(true);
     try {
-      if (keyType && username && (await LedgerUtils.init())) {
+      if (keyType && username && (await LedgerUtils.init(true))) {
         let keysToAdd = await LedgerUtils.getKeyForAccount(keyType, username);
         await AccountUtils.addKeyFromLedger(username, keysToAdd);
         setMessage('add_key_from_ledger_sucessful');
+        setDone(true);
       } else {
         Logger.error('Unable to detect Ledger');
       }
       setLoading(false);
     } catch (err: any) {
       Logger.log(err);
+      setMessage(ErrorUtils.parseLedger(err).message);
       setLoading(false);
     }
+  };
+
+  const closeTab = () => {
+    window.close();
   };
 
   return (
@@ -60,8 +68,8 @@ const AddKeyComponent = () => {
         <div>{chrome.i18n.getMessage(message)}</div>
         <div className="fill-space"></div>
         <ButtonComponent
-          label="ledger_discover_key"
-          onClick={discoverAccounts}
+          label={!done ? 'ledger_discover_key' : 'popup_html_close'}
+          onClick={!done ? discoverAccounts : closeTab}
         />
       </div>
       <LoadingComponent hide={!loading} />

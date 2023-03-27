@@ -10,11 +10,12 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import authority from 'src/__tests__/background/requests/operations/ops/mocks/authority';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
 import objects from 'src/__tests__/utils-for-testing/helpers/objects';
 describe('authority tests:\n', () => {
   const { methods, constants, mocks } = authority;
-  const { requestHandler, confirmed, i18n } = constants;
+  const { requestHandler, i18n } = constants;
   const data = constants.data.addKeyAuthority;
   methods.afterEach;
   methods.beforeEach;
@@ -37,16 +38,14 @@ describe('authority tests:\n', () => {
       const cloneData = objects.clone(data) as RequestAddKeyAuthority &
         RequestId;
       cloneData.authorizedKey = '';
-      const errorMessage =
-        "Cannot read properties of undefined (reading 'toString')";
       const result = await broadcastAddKeyAuthority(requestHandler, cloneData);
       const { request_id, ...datas } = cloneData;
       expect(result).toEqual(
         messages.error.keyBuffer(
           datas,
           request_id,
-          new TypeError(errorMessage),
-          errorMessage,
+          new Error('html_popup_error_while_signing_transaction'),
+          i18n.get('html_popup_error_while_signing_transaction'),
         ),
       );
     });
@@ -55,7 +54,7 @@ describe('authority tests:\n', () => {
       beforeEach(() => {
         mhiveTxSendOp = jest
           .spyOn(HiveTxUtils, 'sendOperation')
-          .mockResolvedValue(true);
+          .mockResolvedValue(transactionConfirmationSuccess);
       });
       afterEach(() => {
         mhiveTxSendOp.mockRestore();
@@ -83,7 +82,12 @@ describe('authority tests:\n', () => {
         );
         const { request_id, ...datas } = cloneData;
         expect(result).toEqual(
-          messages.success.addKey(true, datas, cloneData, request_id),
+          messages.success.addKey(
+            transactionConfirmationSuccess,
+            datas,
+            cloneData,
+            request_id,
+          ),
         );
       });
       it('Must broadcast update account posting key', async () => {
@@ -109,7 +113,12 @@ describe('authority tests:\n', () => {
         );
         const { request_id, ...datas } = cloneData;
         expect(result).toEqual(
-          messages.success.addKey(true, datas, cloneData, request_id),
+          messages.success.addKey(
+            transactionConfirmationSuccess,
+            datas,
+            cloneData,
+            request_id,
+          ),
         );
       });
     });

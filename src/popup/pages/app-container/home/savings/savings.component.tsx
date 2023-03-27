@@ -1,5 +1,5 @@
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
   addToLoadingList,
   removeFromLoadingList,
@@ -14,11 +14,9 @@ import {
 } from '@popup/actions/navigation.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { AvailableCurrentPanelComponent } from '@popup/pages/app-container/home/power-up-down/available-current-panel/available-current-panel.component';
 import { PowerType } from '@popup/pages/app-container/home/power-up-down/power-type.enum';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { RootState } from '@popup/store';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import Select, {
   SelectItemRenderer,
@@ -29,11 +27,15 @@ import { OperationButtonComponent } from 'src/common-ui/button/operation-button.
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
+import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
+import {
+  FavoriteUserList,
+  FavoriteUserUtils,
+} from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import { SavingsUtils } from 'src/utils/savings.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import './savings.component.scss';
@@ -44,6 +46,7 @@ const SavingsPage = ({
   activeAccount,
   globalProperties,
   formParams,
+  localAccounts,
   navigateToWithParams,
   navigateTo,
   setSuccessMessage,
@@ -61,10 +64,14 @@ const SavingsPage = ({
   );
   const [savings, setSavings] = useState<string | number>('...');
   const [liquid, setLiquid] = useState<string | number>('...');
-
-  const [autoCompleteUsernames, setAutoCompleteUsernames] = useState<string[]>(
-    [],
-  );
+  const [savingsPendingWithdrawalList, setSavingsPendingWithdrawalList] =
+    useState<SavingsWithdrawal[]>([]);
+  const [totalPendingValue, setTotalPendingValue] = useState<
+    number | undefined
+  >();
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
+    FavoriteUserList[]
+  >([]);
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
     useState<SavingOperationType>(
@@ -97,7 +104,7 @@ const SavingsPage = ({
   ];
 
   useEffect(() => {
-    loadAutocompleteTransferUsernames();
+    loadAutocompleteFavoriteUsers();
     setTitleContainerProperties({
       title: 'popup_html_savings',
       isBackButtonEnabled: true,
@@ -106,6 +113,9 @@ const SavingsPage = ({
   }, [currency]);
 
   useEffect(() => {
+    if (activeAccount.account.savings_withdraw_requests > 0) {
+      fetchCurrentWithdrawingList();
+    }
     const hbdSavings = FormatUtils.toNumber(
       activeAccount.account.savings_hbd_balance,
     );
@@ -133,13 +143,32 @@ const SavingsPage = ({
     setText(text);
   }, [selectedCurrency, selectedSavingOperationType]);
 
-  const loadAutocompleteTransferUsernames = async () => {
-    const favoriteUsers: FavoriteUserItems =
-      await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.FAVORITE_USERS,
-      );
-    setAutoCompleteUsernames(
-      favoriteUsers ? favoriteUsers[activeAccount.name!] : [],
+  const fetchCurrentWithdrawingList = async () => {
+    const savingsPendingWithdrawalList =
+      await SavingsUtils.getSavingsWithdrawals(activeAccount.name!);
+
+    const totalPendingValue = filterSavingsPendingWithdrawalList(
+      savingsPendingWithdrawalList,
+      currency,
+    ).reduce((acc, curr) => acc + parseFloat(curr.amount.split(' ')[0]), 0);
+    setTotalPendingValue(
+      totalPendingValue !== 0 ? totalPendingValue : undefined,
+    );
+
+    setSavingsPendingWithdrawalList(
+      filterSavingsPendingWithdrawalList(
+        savingsPendingWithdrawalList,
+        currency,
+      ),
+    );
+  };
+
+  const loadAutocompleteFavoriteUsers = async () => {
+    setAutocompleteFavoriteUsers(
+      await FavoriteUserUtils.getAutocompleteListByCategories(
+        activeAccount.name!,
+        localAccounts,
+      ),
     );
   };
 
@@ -185,7 +214,7 @@ const SavingsPage = ({
       formParams: getFormParams(),
       afterConfirmAction: async () => {
         try {
-          let success = false;
+          let success;
           switch (selectedSavingOperationType) {
             case SavingOperationType.DEPOSIT:
               addToLoadingList('html_popup_deposit_to_savings_operation');
@@ -209,7 +238,7 @@ const SavingsPage = ({
 
           navigateTo(Screen.HOME_PAGE, true);
           if (success) {
-            await TransferUtils.saveFavoriteUser(username, activeAccount);
+            await FavoriteUserUtils.saveFavoriteUser(username, activeAccount);
             setSuccessMessage(
               selectedSavingOperationType === SavingOperationType.DEPOSIT
                 ? 'popup_html_deposit_success'
@@ -314,15 +343,39 @@ const SavingsPage = ({
     );
   };
 
+  const goToPendingSavingsWithdrawal = () => {
+    navigateToWithParams(Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE, {
+      savingsPendingWithdrawalList: filterSavingsPendingWithdrawalList(
+        savingsPendingWithdrawalList,
+        currency,
+      ),
+      currency,
+    });
+  };
+
+  const filterSavingsPendingWithdrawalList = (
+    pendinSavingsWidrawal: SavingsWithdrawal[],
+    currency: string,
+  ) => {
+    return pendinSavingsWidrawal.filter(
+      (pendingWithdrawItem) =>
+        pendingWithdrawItem.amount.split(' ')[1] === currency,
+    );
+  };
+
   return (
     <div className="savings-page" aria-label="savings-page">
-      <AvailableCurrentPanelComponent
-        available={liquid}
-        availableCurrency={currency}
-        availableLabel={'popup_html_savings_available'}
-        current={savings}
-        currentCurrency={currency}
-        currentLabel={'popup_html_savings_current'}
+      <SummaryPanelComponent
+        bottom={liquid}
+        bottomRight={currency}
+        bottomLeft={'popup_html_savings_available'}
+        top={savings}
+        topRight={currency}
+        topLeft={'popup_html_savings_current'}
+        center={totalPendingValue}
+        centerLeft={'popup_html_savings_current_withdrawing'}
+        centerRight={currency}
+        onCenterPanelClick={goToPendingSavingsWithdrawal}
       />
 
       <Select
@@ -344,7 +397,7 @@ const SavingsPage = ({
           placeholder="popup_html_transfer_to"
           value={username}
           onChange={setUsername}
-          autocompleteValues={autoCompleteUsernames}
+          autocompleteValues={autocompleteFavoriteUsers}
         />
       }
       <div className="amount-panel">
@@ -396,6 +449,7 @@ const mapStateToProps = (state: RootState) => {
     formParams: state.navigation.stack[0].previousParams?.formParams
       ? state.navigation.stack[0].previousParams?.formParams
       : {},
+    localAccounts: state.accounts,
   };
 };
 

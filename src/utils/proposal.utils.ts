@@ -1,12 +1,12 @@
 import {
   Asset,
   CreateProposalOperation,
+  DynamicGlobalProperties,
   RemoveProposalOperation,
   UpdateProposalVotesOperation,
 } from '@hiveio/dhive';
 import { Key } from '@interfaces/keys.interface';
 import { FundedOption, Proposal } from '@interfaces/proposal.interface';
-import { store } from '@popup/store';
 import moment from 'moment';
 import Config from 'src/config';
 import AccountUtils from 'src/utils/account.utils';
@@ -141,7 +141,10 @@ const getFundedOption = (dailyPay: number, dailyBudget: number) => {
   return fundedOption;
 };
 
-const getProposalList = async (accountName: string): Promise<Proposal[]> => {
+const getProposalList = async (
+  accountName: string,
+  globals: DynamicGlobalProperties,
+): Promise<Proposal[]> => {
   const listProposals = await HiveTxUtils.getData(
     'condenser_api.list_proposals',
     [[-1], 1000, 'by_total_votes', 'descending', 'votable'],
@@ -178,7 +181,7 @@ const getProposalList = async (accountName: string): Promise<Proposal[]> => {
       totalVotes: `${FormatUtils.nFormatter(
         FormatUtils.toHP(
           (parseFloat(p.total_votes) / 1000000).toString(),
-          store.getState().globalProperties.globals,
+          globals,
         ),
         2,
       )} HP`,
@@ -195,7 +198,7 @@ const getProposalList = async (accountName: string): Promise<Proposal[]> => {
   return proposals;
 };
 
-const isRequestingProposalVotes = async () => {
+const isRequestingProposalVotes = async (globals: DynamicGlobalProperties) => {
   let dailyBudget = await ProposalUtils.getProposalDailyBudget();
 
   const proposals = (
@@ -219,7 +222,7 @@ const isRequestingProposalVotes = async () => {
     proposal.fundedOption = fundedOption;
     proposal.totalVotes = FormatUtils.toHP(
       (parseFloat(proposal.total_votes) / 1000000).toString(),
-      store.getState().globalProperties.globals,
+      globals,
     );
     return proposal;
   });

@@ -16,19 +16,29 @@ export const signTx = async (
   let key = requestHandler.data.key;
   let result, err, err_message;
 
+  const transaction = data.tx;
+  if (!transaction.extensions) {
+    transaction.extensions = [];
+  }
+  if (typeof transaction.expiration !== 'string') {
+    transaction.expiration = (transaction.expiration as Date).toISOString();
+  }
+
+  transaction.expiration = transaction.expiration.split('.')[0];
+
   try {
     switch (KeysUtils.getKeyType(key!)) {
       case PrivateKeyType.LEDGER: {
         LedgerModule.signTransactionFromLedger({
-          transaction: data.tx,
+          transaction: transaction,
           key: key!,
         });
         const signature = await LedgerModule.getSignatureFromLedger();
-        result = { ...data.tx, signatures: [signature] };
+        result = { ...transaction, signatures: [signature] };
         break;
       }
       default: {
-        result = await HiveTxUtils.signTransaction(data.tx, key!);
+        result = await HiveTxUtils.signTransaction(transaction, key!);
         break;
       }
     }
