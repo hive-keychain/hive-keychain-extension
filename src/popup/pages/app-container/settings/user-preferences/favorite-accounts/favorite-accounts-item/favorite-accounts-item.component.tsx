@@ -31,20 +31,16 @@ const FavoriteAccountsItem = ({
   handleEditFavoriteLabel,
   listName,
 }: PropsFromRedux) => {
-  const [selectedFavoriteToEdit, setSelectedFavoriteToEdit] =
-    useState<FavoriteAccounts>();
   const [label, setLabel] = useState('');
   const [isEditMode, setEditMode] = useState<boolean>(false);
 
   const save = () => {
     setEditMode(false);
     handleEditFavoriteLabel(listName, favorite, label);
-    setSelectedFavoriteToEdit(undefined);
   };
 
   const cancel = () => {
     setEditMode(false);
-    setSelectedFavoriteToEdit(undefined);
     setLabel('');
   };
 
