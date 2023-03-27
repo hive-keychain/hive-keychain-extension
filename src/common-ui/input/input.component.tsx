@@ -1,6 +1,10 @@
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import {
+  FavoriteUserList,
+  FavoriteUserListName,
+} from 'src/utils/favorite-user.utils';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
@@ -23,7 +27,7 @@ interface InputProps {
   skipPlaceholderTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  autocompleteValues?: AutoCompleteValue[];
+  autocompleteValues?: FavoriteUserList[];
   required?: boolean;
   hasError?: boolean;
   ariaLabel?: string;
@@ -33,7 +37,7 @@ interface InputProps {
 }
 
 const InputComponent = (props: InputProps) => {
-  const [filteredValues, setFilteredValues] = useState<AutoCompleteValue[]>(
+  const [filteredValues, setFilteredValues] = useState<FavoriteUserList[]>(
     props.autocompleteValues ? props.autocompleteValues : [],
   );
 
@@ -49,14 +53,79 @@ const InputComponent = (props: InputProps) => {
   });
 
   useEffect(() => {
-    if (props.autocompleteValues) {
-      setFilteredValues(
-        props.autocompleteValues.filter(
-          (val) =>
-            val.value?.toLowerCase().includes(props.value) ||
-            val.subLabel?.toLowerCase().includes(props.value),
-        ),
-      );
+    if (props.autocompleteValues && props.autocompleteValues.length > 0) {
+      const filteredFavoritesCompleteList: FavoriteUserList[] = [];
+      if (
+        props.autocompleteValues.find(
+          (autoCompleteCategory) =>
+            autoCompleteCategory.name === FavoriteUserListName.USERS,
+        )
+      ) {
+        const filteredUserList = props.autocompleteValues
+          .filter(
+            (autoCompleteCategory) =>
+              autoCompleteCategory.name === FavoriteUserListName.USERS,
+          )[0]
+          .list.filter(
+            (listItem) =>
+              listItem.account.toLowerCase().includes(props.value) ||
+              listItem.label.toLowerCase().includes(props.value),
+          );
+        if (filteredUserList.length > 0) {
+          filteredFavoritesCompleteList.push({
+            name: FavoriteUserListName.USERS,
+            list: filteredUserList,
+          });
+        }
+      }
+      if (
+        props.autocompleteValues.find(
+          (autoCompleteCategory) =>
+            autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
+        )
+      ) {
+        const filteredLocalAccountsList = props.autocompleteValues
+          .filter(
+            (autoCompleteCategory) =>
+              autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
+          )[0]
+          .list.filter(
+            (listItem) =>
+              listItem.account.toLowerCase().includes(props.value) ||
+              listItem.label.toLowerCase().includes(props.value),
+          );
+        if (filteredLocalAccountsList.length > 0) {
+          filteredFavoritesCompleteList.push({
+            name: FavoriteUserListName.LOCAL_ACCOUNTS,
+            list: filteredLocalAccountsList,
+          });
+        }
+      }
+      if (
+        props.autocompleteValues.find(
+          (autoCompleteCategory) =>
+            autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
+        )
+      ) {
+        const filteredExchangesList = props.autocompleteValues
+          .filter(
+            (autoCompleteCategory) =>
+              autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
+          )[0]
+          .list.filter(
+            (listItem) =>
+              listItem.account.toLowerCase().includes(props.value) ||
+              listItem.label.toLowerCase().includes(props.value) ||
+              listItem.subLabel?.toLowerCase().includes(props.value),
+          );
+        if (filteredExchangesList.length > 0) {
+          filteredFavoritesCompleteList.push({
+            name: FavoriteUserListName.EXCHANGES,
+            list: filteredExchangesList,
+          });
+        }
+      }
+      setFilteredValues(filteredFavoritesCompleteList);
     }
   }, [props.value, props.autocompleteValues]);
 
@@ -138,12 +207,24 @@ const InputComponent = (props: InputProps) => {
           )}
         {isFocused && filteredValues && filteredValues.length > 0 && (
           <div className="autocomplete-panel">
-            {filteredValues.map((val, index) => (
-              <div
-                key={index}
-                className="value"
-                onClick={() => props.onChange(val.value)}>
-                {val.value} {val.subLabel ? `(${val.subLabel})` : ''}
+            {filteredValues.map((autoCompleteValue, index) => (
+              <div className="title-category" key={`auto-complete-${index}`}>
+                {autoCompleteValue.name.split('_').join(' ')}
+                {autoCompleteValue.list.map((autoCompleteItem) => (
+                  <div
+                    className="value"
+                    key={`auto-complete-${index}-${autoCompleteItem.account}`}
+                    onClick={() => props.onChange(autoCompleteItem.account)}>
+                    {autoCompleteItem.account}{' '}
+                    {autoCompleteItem.label &&
+                    autoCompleteItem.label.trim().length > 0
+                      ? `(${autoCompleteItem.label})`
+                      : autoCompleteItem.subLabel &&
+                        autoCompleteItem.subLabel.trim().length > 0
+                      ? `(${autoCompleteItem.subLabel})`
+                      : ''}
+                  </div>
+                ))}
               </div>
             ))}
           </div>

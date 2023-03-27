@@ -107,6 +107,10 @@
     "message": "Password",
     "description": "Placeholder in input for password"
   },
+  "popup_html_new_label": {
+    "message": "New Label",
+    "description": "Placeholder in input for new favorite label item"
+  },
   "popup_html_signin": {
     "message": "Sign In"
   },
@@ -278,6 +282,14 @@
   "popup_html_operations": {
     "message": "Operations",
     "description": "on settings page"
+  },
+  "popup_html_favorite_accounts": {
+    "message": "Favorite accounts",
+    "description": "on settings page"
+  },
+  "popup_html_favorite_accounts_no_favorites": {
+    "message": "No favorites yet in $1 list",
+    "description": "on favorite settings page results"
   },
   "popup_html_operation_popup": {
     "message": "Operation popup",
@@ -1419,6 +1431,10 @@
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
+  },
+  "popup_html_favorite_accounts_intro": {
+    "message": "Setup accounts that you use the most, when doing transfers, hive engine operations, exchange operations, and more.",
+    "description": "When on favorite accounts page"
   },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Claim Rewards",

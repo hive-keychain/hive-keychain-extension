@@ -13,6 +13,11 @@ const UserPreferencesMenuItems: MenuItem[] = [
     icon: Icons.AUTOMATED_TASKS,
     nextScreen: Screen.SETTINGS_AUTOMATED_TASKS,
   },
+  {
+    label: 'popup_html_favorite_accounts',
+    icon: Icons.FAVORITE,
+    nextScreen: Screen.SETTINGS_FAVORITE_ACCOUNTS,
+  },
 ];
 
 export default UserPreferencesMenuItems;

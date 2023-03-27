@@ -24,15 +24,16 @@ import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent, {
-  AutoCompleteValue,
-} from 'src/common-ui/input/input.component';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+import {
+  FavoriteUserList,
+  FavoriteUserUtils,
+} from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -81,7 +82,7 @@ const TransferFunds = ({
     formParams.iteration ? formParams.iteration : '',
   );
   const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    AutoCompleteValue[]
+    FavoriteUserList[]
   >([]);
 
   let balances = {
@@ -110,16 +111,13 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    setAutocompleteFavoriteUsers(
-      await FavoriteUserUtils.getAutocompleteList(
+    const autoCompleteListByCategories: FavoriteUserList[] =
+      await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
-        {
-          addExchanges: true,
-          token: selectedCurrency.toUpperCase(),
-        },
-      ),
-    );
+        { addExchanges: true, token: selectedCurrency.toUpperCase() },
+      );
+    setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };
 
   const setAmountToMaxValue = () => {
