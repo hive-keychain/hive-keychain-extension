@@ -63,4 +63,45 @@
       }
     }
   }
+
+  .search-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 8px;
+    margin-bottom: 16px;
+    .input-container {
+      input {
+        height: 30px;
+        font-size: 14px;
+        &:focus {
+          box-shadow: unset;
+        }
+        &::-webkit-input-placeholder {
+          font-size: 14px;
+        }
+      }
+      .input-img.erase {
+        top: 8px;
+        height: 14px;
+        width: 14px;
+      }
+    }
+  }
+
+  .filter-button {
+    padding: 4px;
+    border: 1px solid white;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    min-width: 60px;
+
+    &.selected,
+    &:hover {
+      background: white;
+      color: black;
+    }
+  }
 }
