@@ -1,3 +1,5 @@
+import BgdAccountsUtils from '@background/utils/accounts.utils';
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
@@ -86,6 +88,54 @@ const checkAndUpdateLocalStorage = async () => {
           );
         }
         saveNewLocalStorageVersion(3);
+      }
+      case 3: {
+        const actualFavoriteUsers: any =
+          await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.FAVORITE_USERS,
+          );
+        //check on format
+        let oldFormat = true;
+        //validation
+        for (const [key, value] of Object.entries(actualFavoriteUsers)) {
+          if (Array.isArray(value)) {
+            value.map((favoriteObject) => {
+              if (typeof favoriteObject === 'object') {
+                oldFormat = false;
+              }
+            });
+          }
+        }
+
+        if (oldFormat) {
+          const favoriteUserData: any = {};
+          const mk = await LocalStorageUtils.getValueFromLocalStorage(
+            LocalStorageKeyEnum.__MK,
+          );
+          const localAccounts =
+            await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
+          //initialize object.
+          for (const localAccount of localAccounts) {
+            favoriteUserData[localAccount.name] = [];
+          }
+          //fill the object initialized
+          for (const [key, value] of Object.entries(
+            actualFavoriteUsers as FavoriteUserItems,
+          )) {
+            favoriteUserData[key] = value.map((account) => {
+              return {
+                account: account,
+                label: '',
+              };
+            });
+          }
+          //save in local storage
+          LocalStorageUtils.saveValueInLocalStorage(
+            LocalStorageKeyEnum.FAVORITE_USERS,
+            favoriteUserData,
+          );
+          saveNewLocalStorageVersion(4);
+        }
       }
     }
   }

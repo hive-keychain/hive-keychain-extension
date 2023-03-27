@@ -22,14 +22,15 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent, {
-  AutoCompleteValue,
-} from 'src/common-ui/input/input.component';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
-import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
+import {
+  FavoriteUserList,
+  FavoriteUserUtils,
+} from 'src/utils/favorite-user.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import './token-operation.component.scss';
@@ -84,7 +85,7 @@ const TokensOperation = ({
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
   const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    AutoCompleteValue[]
+    FavoriteUserList[]
   >([]);
 
   useEffect(() => {
@@ -97,7 +98,7 @@ const TokensOperation = ({
 
   const loadAutocompleteFavoriteUsers = async () => {
     setAutocompleteFavoriteUsers(
-      await FavoriteUserUtils.getAutocompleteList(
+      await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
       ),
