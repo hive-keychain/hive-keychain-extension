@@ -30,24 +30,26 @@ const FavoriteAccountsItem = ({
   handleDeleteFavorite,
   handleEditFavoriteLabel,
   listName,
-  activeAccount,
 }: PropsFromRedux) => {
   const [selectedFavoriteToEdit, setSelectedFavoriteToEdit] =
     useState<FavoriteAccounts>();
   const [label, setLabel] = useState('');
+  const [isEditMode, setEditMode] = useState<boolean>(false);
 
-  const onClickEditIcon = () => {
+  const save = () => {
+    setEditMode(false);
     handleEditFavoriteLabel(listName, favorite, label);
     setSelectedFavoriteToEdit(undefined);
   };
 
-  const onClickCancelIcon = () => {
+  const cancel = () => {
+    setEditMode(false);
     setSelectedFavoriteToEdit(undefined);
     setLabel('');
   };
 
-  const handleAboutToEdit = (favorite: FavoriteAccounts) => {
-    setSelectedFavoriteToEdit(favorite);
+  const edit = (favorite: FavoriteAccounts) => {
+    setEditMode(true);
     setLabel(favorite.label);
   };
 
@@ -61,17 +63,19 @@ const FavoriteAccountsItem = ({
             e.target.src = '/assets/images/accounts.png';
           }}
         />
-        <div
-          className={`item-username${
-            favorite.label.length > 13 ? 'as-column' : ''
-          }`}>
-          {favorite.account}
-          {selectedFavoriteToEdit !== favorite && (
-            <div className="item-username-label">
-              {favorite.label ? `(${favorite.label})` : ''}
-            </div>
-          )}
-        </div>
+        {!isEditMode && (
+          <div
+            className={`item-username${
+              favorite.label.length > 13 ? 'as-column' : ''
+            }`}>
+            <span>{favorite.account}</span>
+            {
+              <div className="item-username-label">
+                {favorite.label ? `${favorite.label}` : ''}
+              </div>
+            }
+          </div>
+        )}
       </div>
     );
   };
@@ -81,7 +85,7 @@ const FavoriteAccountsItem = ({
       <div className="item">
         {customLabelRender(favorite)}
         <div className="buttons">
-          {selectedFavoriteToEdit?.account === favorite.account && (
+          {isEditMode && (
             <InputComponent
               onChange={(value) => setLabel(value)}
               type={InputType.TEXT}
@@ -89,31 +93,31 @@ const FavoriteAccountsItem = ({
               placeholder="popup_html_new_label"
             />
           )}
-          {selectedFavoriteToEdit?.account !== favorite.account && (
+          {!isEditMode && (
             <Icon
-              onClick={() => handleAboutToEdit(favorite)}
+              onClick={() => edit(favorite)}
               name={Icons.EDIT}
               type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
-          {selectedFavoriteToEdit?.account === favorite.account && (
+          {isEditMode && (
             <Icon
-              onClick={() => onClickEditIcon()}
+              onClick={() => save()}
               name={Icons.SAVE}
               type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
-          {selectedFavoriteToEdit?.account === favorite.account && (
+          {isEditMode && (
             <Icon
-              onClick={() => onClickCancelIcon()}
+              onClick={() => cancel()}
               name={Icons.CLEAR}
               type={IconType.OUTLINED}
               additionalClassName="edit-button"
             />
           )}
-          {selectedFavoriteToEdit?.account !== favorite.account && (
+          {!isEditMode && (
             <Icon
               onClick={() => handleDeleteFavorite(listName, favorite)}
               name={Icons.DELETE}
@@ -128,7 +132,7 @@ const FavoriteAccountsItem = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return {};
 };
 
 const connector = connect(mapStateToProps, {});

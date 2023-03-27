@@ -11,7 +11,7 @@
     background: $black-transparent;
   }
 
-  .favorite-accounts-item:nth-child(even) {
+  .favorite-accounts-item:nth-child(odd) {
     background: $red-transparent;
   }
 
