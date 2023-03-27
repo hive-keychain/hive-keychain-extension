@@ -134,6 +134,7 @@ const checkAndUpdateLocalStorage = async () => {
             LocalStorageKeyEnum.FAVORITE_USERS,
             favoriteUserData,
           );
+          saveNewLocalStorageVersion(4);
         }
       }
     }
