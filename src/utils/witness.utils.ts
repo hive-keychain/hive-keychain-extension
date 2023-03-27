@@ -78,6 +78,23 @@ const getUpdateWitnessTransaction = (
   ]);
 };
 
+//TODO discuss about types
+const getWitnessAccountInfo = async (
+  accountName: string,
+): Promise<any | undefined> => {
+  try {
+    const witnessAccount = await HiveTxUtils.getData(
+      'condenser_api.get_witness_by_account',
+      [accountName],
+    );
+    console.log({ witnessAccount }); //TODO to remove
+    return witnessAccount;
+  } catch (error) {
+    console.log({ error }); //TODO to remove
+    return undefined;
+  }
+};
+
 const WitnessUtils = {
   unvoteWitness,
   voteWitness,
@@ -85,6 +102,7 @@ const WitnessUtils = {
   sendWitnessOperation,
   updateWitnessVote,
   getUpdateWitnessTransaction,
+  getWitnessAccountInfo,
 };
 
 export default WitnessUtils;

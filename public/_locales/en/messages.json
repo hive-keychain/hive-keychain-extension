@@ -215,6 +215,10 @@
     "message": "Active Key",
     "description": "When adding an account via master key"
   },
+  "popup_html_operation_button_save": {
+    "message": "Save",
+    "description": "When using operation button to save data"
+  },
   "popup_html_master": {
     "message": "Master Key",
     "description": "When adding an account via master key"
@@ -1648,6 +1652,18 @@
   "popup_html_proposal": {
     "message": "Proposal",
     "description": "Governance"
+  },
+  "popup_html_witness_page": {
+    "message": "Witness page",
+    "description": "Governance"
+  },
+  "popup_html_witness_page_text": {
+    "message": "All the info of your witness account, and editable fields",
+    "description": "Governance, witness page"
+  },
+  "popup_html_witness_page_expand_more_tooltip": {
+    "message": "Click to view full witness account information",
+    "description": "Governance, witness page"
   },
   "html_popup_witness_display_voted_only": {
     "message": "Only voted for",

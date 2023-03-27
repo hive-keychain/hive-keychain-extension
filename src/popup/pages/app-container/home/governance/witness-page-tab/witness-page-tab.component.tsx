@@ -1,4 +1,6 @@
 import { KeychainApi } from '@api/keychain';
+import { WitnessProps } from '@hiveio/dhive/lib/utils';
+import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
@@ -10,33 +12,39 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
+import WitnessPageTabItemComponent from '@popup/pages/app-container/home/governance/witness-page-tab/witness-page-tab-item.component/witness-page-tab-item.component';
 import { RootState } from '@popup/store';
-import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import AccountUtils from 'src/utils/account.utils';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
+import { BaseCurrencies } from 'src/utils/currency.utils';
 import ProxyUtils from 'src/utils/proxy.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import * as ValidUrl from 'valid-url';
-import './witness-tab.component.scss';
+import './witness-page-tab.component.scss';
 
 const MAX_WITNESS_VOTE = 30;
 
+interface WitnessPageTabProps {
+  witnessAccountInfo: any; //TODO type?
+}
+
 const WitnessPageTab = ({
+  witnessAccountInfo,
   activeAccount,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
-}: PropsFromRedux) => {
+}: PropsFromRedux & WitnessPageTabProps) => {
   const [displayVotedOnly, setDisplayVotedOnly] = useState(false);
   const [hideNonActive, setHideNonActive] = useState(true);
   const [remainingVotes, setRemainingVotes] = useState<string | number>('...');
@@ -49,9 +57,35 @@ const WitnessPageTab = ({
   const [hasError, setHasError] = useState(false);
   const [isLoading, setLoading] = useState(false);
 
+  //new ones
+  const [isExpandablePanelOpened, setExpandablePanelOpened] = useState(false);
+  const [formParams, setFormParams] = useState<{
+    owner: string;
+    props: WitnessProps & { url: string };
+  }>({
+    owner: witnessAccountInfo.owner,
+    props: {
+      account_creation_fee: witnessAccountInfo.props.account_creation_fee,
+      account_subsidy_budget: witnessAccountInfo.props.account_subsidy_budget,
+      account_subsidy_decay: witnessAccountInfo.props.account_subsidy_decay,
+      maximum_block_size: witnessAccountInfo.props.maximum_block_size,
+      hbd_exchange_rate: witnessAccountInfo.hbd_exchange_rate,
+      hbd_interest_rate: witnessAccountInfo.props.hbd_interest_rate,
+      new_signing_key: witnessAccountInfo.signing_key,
+      //TODO here, when submitting in test(i guess that will be done by quentin)
+      key: witnessAccountInfo.signing_key,
+      url: witnessAccountInfo.url,
+    },
+  });
+  const [editMode, setEditMode] = useState(false);
+
   useEffect(() => {
     init();
   }, []);
+
+  //TODO here the update should be using witness_set_properties
+  //if neesed check on https://gitlab.syncad.com/hive/hive/-/blob/master/doc/witness_parameters.md
+  //also here: https://developers.hive.io/apidefinitions/#broadcast_ops_witness_set_properties
 
   const init = async () => {
     setRemainingVotes(
@@ -230,8 +264,8 @@ const WitnessPageTab = ({
   };
 
   return (
-    <div aria-label="witness-tab" className="witness-tab">
-      {!usingProxy && (
+    <div aria-label="witness-tab-page" className="witness-tab-page">
+      {/* {!usingProxy && (
         <div className="remaining-votes">
           {chrome.i18n.getMessage('popup_html_witness_remaining', [
             remainingVotes + '',
@@ -323,7 +357,224 @@ const WitnessPageTab = ({
           }}>
           <RotatingLogoComponent></RotatingLogoComponent>
         </div>
+      )} */}
+
+      <div className="text">
+        {chrome.i18n.getMessage('popup_html_witness_page_text')}
+      </div>
+      <div className="page-information">
+        <div className="row-line">
+          <WitnessPageTabItemComponent
+            label={'Owner'}
+            data={witnessAccountInfo.owner}
+          />
+          <Icon
+            name={Icons.EXPAND_MORE}
+            type={IconType.OUTLINED}
+            onClick={() => setExpandablePanelOpened(!isExpandablePanelOpened)}
+            tooltipMessage={'popup_html_witness_page_expand_more_tooltip'}
+            tooltipPosition={'bottom'}
+            additionalClassName={
+              isExpandablePanelOpened ? 'rotate-icon-180' : 'non-rotate-icon'
+            }
+          />
+        </div>
+        <WitnessPageTabItemComponent
+          label={'Created'}
+          data={witnessAccountInfo.created}
+          isDate={true}
+        />
+        <WitnessPageTabItemComponent
+          //TODO add "external link icon" to the component when isUrl
+          label={'Last confirmed block num'}
+          data={`https://hiveblocks.com/b/${witnessAccountInfo.last_confirmed_block_num}`}
+          isUrl={true}
+        />
+        <WitnessPageTabItemComponent
+          label={'Signing key'}
+          data={witnessAccountInfo.signing_key}
+          extraClassName={'small-text'}
+        />
+        <WitnessPageTabItemComponent
+          label={'Hbd exchange rate'}
+          data={witnessAccountInfo.hbd_exchange_rate as Object}
+        />
+        <WitnessPageTabItemComponent
+          label={'Available account subsidies'}
+          data={witnessAccountInfo.available_witness_account_subsidies}
+        />
+
+        {/* //TODO to be expandable from here */}
+        {isExpandablePanelOpened && (
+          <div>
+            <WitnessPageTabItemComponent
+              label={'Id'}
+              data={witnessAccountInfo.id}
+            />
+            <WitnessPageTabItemComponent
+              label={'Votes'}
+              data={witnessAccountInfo.votes}
+            />
+            <WitnessPageTabItemComponent
+              label={'Total missed'}
+              data={witnessAccountInfo.total_missed}
+            />
+            <WitnessPageTabItemComponent
+              label={'Last hbd exchange update'}
+              data={witnessAccountInfo.last_hbd_exchange_update}
+              isDate={true}
+            />
+            <WitnessPageTabItemComponent
+              label={'Running version'}
+              data={witnessAccountInfo.running_version}
+            />
+            <WitnessPageTabItemComponent
+              label={'Hardfork version vote'}
+              data={witnessAccountInfo.hardfork_version_vote}
+            />
+            <WitnessPageTabItemComponent
+              label={'Hardfork time vote'}
+              data={witnessAccountInfo.hardfork_time_vote}
+              isDate={true}
+            />
+            <WitnessPageTabItemComponent
+              label={'URL'}
+              data={witnessAccountInfo.url}
+              isUrl={true}
+              //TODO add clickeable to the component
+            />
+          </div>
+        )}
+      </div>
+      {editMode && (
+        <div className="form-container">
+          <div className="column-line">
+            <div>Account creation fee</div>
+            <div className="row-line">
+              <InputComponent
+                type={InputType.TEXT}
+                // logo={Icons.AT}
+                skipPlaceholderTranslation={true}
+                //TODO add to locales + remove skip
+                placeholder=""
+                value={
+                  formParams.props.account_creation_fee
+                    ?.toString()
+                    .split(' ')[0]
+                }
+                onChange={() => {}}
+              />
+              <div>{BaseCurrencies.HIVE.toUpperCase()}</div>
+            </div>
+            <div className="row-line">
+              <div>Account subsidy budget</div>
+              <InputComponent
+                type={InputType.TEXT}
+                // logo={Icons.AT}
+                skipPlaceholderTranslation={true}
+                //TODO add to locales + remove skip
+                placeholder=""
+                value={formParams.props.account_subsidy_budget}
+                onChange={() => {}}
+              />
+            </div>
+            <div className="row-line">
+              <div>Account subsidy decay</div>
+              <InputComponent
+                type={InputType.TEXT}
+                // logo={Icons.AT}
+                skipPlaceholderTranslation={true}
+                //TODO add to locales + remove skip
+                placeholder=""
+                value={formParams.props.account_subsidy_decay}
+                onChange={() => {}}
+              />
+            </div>
+            <div className="row-line">
+              <div>Maximum block size</div>
+              <InputComponent
+                type={InputType.TEXT}
+                // logo={Icons.AT}
+                skipPlaceholderTranslation={true}
+                //TODO add to locales + remove skip
+                placeholder=""
+                value={formParams.props.maximum_block_size}
+                onChange={() => {}}
+              />
+            </div>
+            <div>Hbd exchange rate</div>
+            <div className="row-line">
+              <div>Base</div>
+              <InputComponent
+                type={InputType.TEXT}
+                // logo={Icons.AT}
+                skipPlaceholderTranslation={true}
+                //TODO add to locales + remove skip
+                placeholder=""
+                value={formParams.props.hbd_exchange_rate?.base}
+                onChange={() => {}}
+              />
+            </div>
+            <div className="row-line">
+              <div>Quote</div>
+              <InputComponent
+                type={InputType.TEXT}
+                // logo={Icons.AT}
+                skipPlaceholderTranslation={true}
+                //TODO add to locales + remove skip
+                placeholder=""
+                value={formParams.props.hbd_exchange_rate?.quote}
+                onChange={() => {}}
+              />
+            </div>
+            <div>Hbd interest rate</div>
+            <div className="row-line">
+              <InputComponent
+                type={InputType.TEXT}
+                // logo={Icons.AT}
+                skipPlaceholderTranslation={true}
+                //TODO add to locales + remove skip
+                placeholder=""
+                value={formParams.props.hbd_interest_rate}
+                onChange={() => {}}
+              />
+              <div>{BaseCurrencies.HIVE.toUpperCase()}</div>
+            </div>
+            <div>New Signing Key</div>
+            <InputComponent
+              type={InputType.TEXT}
+              // logo={Icons.AT}
+              skipPlaceholderTranslation={true}
+              //TODO add to locales + remove skip
+              placeholder=""
+              value={formParams.props.new_signing_key}
+              onChange={() => {}}
+            />
+            <div>URL</div>
+            <InputComponent
+              type={InputType.TEXT}
+              // logo={Icons.AT}
+              skipPlaceholderTranslation={true}
+              //TODO add to locales + remove skip
+              placeholder=""
+              value={formParams.props.url}
+              onChange={() => {}}
+            />
+          </div>
+          <OperationButtonComponent
+            requiredKey={KeychainKeyTypesLC.active}
+            onClick={() => {}}
+            label={'popup_html_operation_button_save'}
+          />
+        </div>
       )}
+      <ButtonComponent
+        //TODO add to locales, remove skip
+        //finish the update/save logic
+        label={editMode ? 'UPDATE' : 'EDIT'}
+        onClick={() => setEditMode(!editMode)}
+        skipLabelTranslation={true}
+      />
     </div>
   );
 };

@@ -1,0 +1,51 @@
+@import '../../../../../variable.scss';
+
+.witness-tab-page {
+  flex: 1;
+  padding: 0px 10px;
+  font-size: 16px;
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  .text {
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .page-information {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid red;
+    border-radius: 4px;
+    padding: 4px;
+  }
+
+  .column-line {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+  }
+
+  .row-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .rotate-icon-180 {
+    rotate: 180deg;
+  }
+
+  .non-rotate-icon {
+    rotate: 0deg;
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    margin-bottom: 16px;
+  }
+}

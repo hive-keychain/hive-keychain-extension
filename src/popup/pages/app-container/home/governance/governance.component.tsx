@@ -4,34 +4,34 @@ import { ProxyTabComponent } from '@popup/pages/app-container/home/governance/pr
 import { WitnessPageTabComponent } from '@popup/pages/app-container/home/governance/witness-page-tab/witness-page-tab.component';
 import { WitnessTabComponent } from '@popup/pages/app-container/home/governance/witness-tab/witness-tab.component';
 import { RootState } from '@popup/store';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import 'react-tabs/style/react-tabs.scss';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import WitnessUtils from 'src/utils/witness.utils';
 import './governance.component.scss';
 
 const Governance = ({
   setTitleContainerProperties,
   activeAccount,
 }: PropsFromRedux) => {
-  //testing part hook //TODO to remove or clean up
-  useEffect(() => {
-    checkIfWitnessAccount('stoodkev'); //TODO later to be activeAccount.name!
-    //the idea is checking if isWitness, so the page will be displayed.
-  });
+  const [witnessAccountInfo, setWitnessAccountInfo] = useState<any>();
 
-  const checkIfWitnessAccount = async (accountName: string) => {
-    const witnessAccount = await HiveTxUtils.getData(
-      'condenser_api.get_witness_by_account',
-      [accountName],
+  useEffect(() => {
+    init();
+  }, []);
+
+  const init = async () => {
+    setWitnessAccountInfo(
+      await WitnessUtils.getWitnessAccountInfo(activeAccount.name!),
     );
-    console.log({ witnessAccount });
-    // await HiveTxUtils.getData('condenser_api.get_witness_by_account', [
-    //   username,
-    // ]);
   };
-  //end testing part
+
+  //just to see props //TODO to remove
+  useEffect(() => {
+    console.log({ witnessAccountInfo });
+  }, [witnessAccountInfo]);
+  //end to remove
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -41,27 +41,34 @@ const Governance = ({
   });
 
   return (
-    <div className="governance-page" aria-label="governance-page">
+    <div
+      className={`governance-page ${
+        witnessAccountInfo ? 'extra-grid-tab' : ''
+      }`}
+      aria-label="governance-page">
       <Tabs>
         <TabList>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proxy')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proposal')}</Tab>
-          {/* //TODO add bellow to locales */}
-          <Tab>{chrome.i18n.getMessage('popup_html_witness_page')}</Tab>
+          {witnessAccountInfo && (
+            <Tab>{chrome.i18n.getMessage('popup_html_witness_page')}</Tab>
+          )}
         </TabList>
         <TabPanel>
-          <WitnessTabComponent></WitnessTabComponent>
+          <WitnessTabComponent />
         </TabPanel>
         <TabPanel>
-          <ProxyTabComponent></ProxyTabComponent>
+          <ProxyTabComponent />
         </TabPanel>
         <TabPanel>
-          <ProposalTabComponent></ProposalTabComponent>
+          <ProposalTabComponent />
         </TabPanel>
-        <TabPanel>
-          <WitnessPageTabComponent></WitnessPageTabComponent>
-        </TabPanel>
+        {witnessAccountInfo && (
+          <TabPanel>
+            <WitnessPageTabComponent witnessAccountInfo={witnessAccountInfo} />
+          </TabPanel>
+        )}
       </Tabs>
     </div>
   );
