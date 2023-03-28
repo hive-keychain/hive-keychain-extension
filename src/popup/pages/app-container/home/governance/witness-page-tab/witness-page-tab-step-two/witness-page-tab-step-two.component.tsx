@@ -21,17 +21,14 @@ import InputComponent from 'src/common-ui/input/input.component';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import WitnessUtils from 'src/utils/witness.utils';
+//TODO here check on scss what it not needed.
 import './witness-page-tab-step-two.component.scss';
-//TODO here check on scss
 
 interface WitnessPageTabStepTwoProps {
   witnessAccountInfo: any; //TODO type?
   setWitnessPageStep: React.Dispatch<React.SetStateAction<number>>;
 }
-//TODO here important -> change to a 2 steps page:
-//    1. Present Info. with a "next step" button
-//    2. Updatable data/form with a "update" button
-//    the step 3 will be the confirmation, if cancel goes back to step 2.
+
 const WitnessPageTabStepTwo = ({
   witnessAccountInfo,
   setWitnessPageStep,
@@ -50,7 +47,6 @@ const WitnessPageTabStepTwo = ({
     hbd_exchange_rate: witnessAccountInfo.hbd_exchange_rate,
     hbd_interest_rate: witnessAccountInfo.props.hbd_interest_rate,
     new_signing_key: witnessAccountInfo.signing_key,
-    //TODO here, when submitting in test(i guess that will be done by quentin)
     key: witnessAccountInfo.signing_key,
     url: witnessAccountInfo.url,
   });
@@ -73,7 +69,7 @@ const WitnessPageTabStepTwo = ({
       addToLoadingList('html_popup_update_witness_operation');
       const success = await WitnessUtils.sendWitnessAccountUpdateOperation(
         activeAccount.name!,
-        activeAccount.keys.posting!, //TODO change to active to really test the OP
+        activeAccount.keys.posting!, //TODO change to activeKey to really test the OP
         formParams,
       );
       addToLoadingList('html_popup_confirm_transaction_operation');
@@ -82,13 +78,20 @@ const WitnessPageTabStepTwo = ({
       removeFromLoadingList('html_popup_confirm_transaction_operation');
       refreshActiveAccount();
       console.log({ success }); //TODO to remove
-      // if (success) {
-      //   setSuccessMessage('popup_success_unvote_wit', [`${witness.name}`]);
-      // } else {
-      //   setErrorMessage('popup_error_unvote_wit', [`${witness.name}`]);
-      // }
+      if (success) {
+        setSuccessMessage('popup_success_witness_account_update', [
+          `${activeAccount.name!}`,
+        ]);
+        //TODO what to do here?? move to step 1 but reloading data???
+      } else {
+        setErrorMessage('popup_error_witness_account_update', [
+          `${activeAccount.name!}`,
+        ]);
+      }
     } catch (err: any) {
+      console.log('Error: ', { err }); //TODO to remove
       setErrorMessage(err.message);
+      removeFromLoadingList('html_popup_update_witness_operation');
       removeFromLoadingList('html_popup_confirm_transaction_operation');
     } finally {
       removeFromLoadingList('html_popup_confirm_transaction_operation');
@@ -97,7 +100,6 @@ const WitnessPageTabStepTwo = ({
   };
 
   const handleFormParams = (name: string, value: string | PriceType) => {
-    console.log({ name, value });
     setFormParams((prevFormParams) => {
       return { ...prevFormParams, [name]: value };
     });
@@ -120,8 +122,7 @@ const WitnessPageTabStepTwo = ({
             <InputComponent
               type={InputType.TEXT}
               skipPlaceholderTranslation={true}
-              //TODO add to locales + remove skip
-              placeholder=""
+              placeholder="Account Creation Fee"
               value={formParams.account_creation_fee?.toString().split(' ')[0]}
               onChange={(value) =>
                 handleFormParams(
@@ -136,10 +137,8 @@ const WitnessPageTabStepTwo = ({
             <div>Account subsidy budget</div>
             <InputComponent
               type={InputType.TEXT}
-              // logo={Icons.AT}
               skipPlaceholderTranslation={true}
-              //TODO add to locales + remove skip
-              placeholder=""
+              placeholder="Account Subsidt Budget"
               value={formParams.account_subsidy_budget}
               onChange={(value) =>
                 handleFormParams('account_subsidy_budget', value)
@@ -150,10 +149,8 @@ const WitnessPageTabStepTwo = ({
             <div>Account subsidy decay</div>
             <InputComponent
               type={InputType.TEXT}
-              // logo={Icons.AT}
               skipPlaceholderTranslation={true}
-              //TODO add to locales + remove skip
-              placeholder=""
+              placeholder="Account Subsidy Decay"
               value={formParams.account_subsidy_decay}
               onChange={(value) =>
                 handleFormParams('account_subsidy_decay', value)
@@ -164,10 +161,8 @@ const WitnessPageTabStepTwo = ({
             <div>Maximum block size</div>
             <InputComponent
               type={InputType.TEXT}
-              // logo={Icons.AT}
               skipPlaceholderTranslation={true}
-              //TODO add to locales + remove skip
-              placeholder=""
+              placeholder="Maximum Block Size"
               value={formParams.maximum_block_size}
               onChange={(value) =>
                 handleFormParams('maximum_block_size', value)
@@ -179,10 +174,8 @@ const WitnessPageTabStepTwo = ({
             <div>Base</div>
             <InputComponent
               type={InputType.TEXT}
-              // logo={Icons.AT}
               skipPlaceholderTranslation={true}
-              //TODO add to locales + remove skip
-              placeholder=""
+              placeholder="Base Exchange Rate"
               value={hbdExchangeRate.base.toString().split(' ')[0]}
               onChange={(value) =>
                 setHbdExchangeRate((prevExchangerate) => {
@@ -199,10 +192,8 @@ const WitnessPageTabStepTwo = ({
             <div>Quote</div>
             <InputComponent
               type={InputType.TEXT}
-              // logo={Icons.AT}
               skipPlaceholderTranslation={true}
-              //TODO add to locales + remove skip
-              placeholder=""
+              placeholder="Quote Exchange Rate"
               value={hbdExchangeRate.quote.toString().split(' ')[0]}
               onChange={(value) =>
                 setHbdExchangeRate((prevExchangerate) => {
@@ -219,10 +210,8 @@ const WitnessPageTabStepTwo = ({
           <div className="row-line">
             <InputComponent
               type={InputType.TEXT}
-              // logo={Icons.AT}
               skipPlaceholderTranslation={true}
-              //TODO add to locales + remove skip
-              placeholder=""
+              placeholder="Interest Rate(%)"
               value={formParams.hbd_interest_rate}
               onChange={(value) => handleFormParams('hbd_interest_rate', value)}
             />
@@ -231,20 +220,16 @@ const WitnessPageTabStepTwo = ({
           <div>New Signing Key</div>
           <InputComponent
             type={InputType.TEXT}
-            // logo={Icons.AT}
             skipPlaceholderTranslation={true}
-            //TODO add to locales + remove skip
-            placeholder=""
+            placeholder="Signing Key"
             value={formParams.new_signing_key}
             onChange={(value) => handleFormParams('new_signing_key', value)}
           />
           <div>URL</div>
           <InputComponent
             type={InputType.TEXT}
-            // logo={Icons.AT}
             skipPlaceholderTranslation={true}
-            //TODO add to locales + remove skip
-            placeholder=""
+            placeholder="Url"
             value={formParams.url}
             onChange={(value) => handleFormParams('url', value)}
           />
@@ -258,10 +243,8 @@ const WitnessPageTabStepTwo = ({
             additionalClass={'margin-bottom margin-top'}
           />
           <ButtonComponent
-            //TODO add to locales, remove skip
-            label={'Cancel'}
+            label={'popup_html_button_label_cancel'}
             onClick={() => goBackStepOne()}
-            skipLabelTranslation={true}
             additionalClass={'margin-bottom'}
           />
         </div>

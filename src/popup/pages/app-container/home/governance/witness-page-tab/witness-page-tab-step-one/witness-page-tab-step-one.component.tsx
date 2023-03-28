@@ -125,10 +125,8 @@ const WitnessPageTabStepOne = ({
         )}
       </div>
       <ButtonComponent
-        //TODO add to locales, remove skip
-        label={'Next step'}
+        label={'html_popup_button_next_step_label'}
         onClick={() => gotoNextPage()}
-        skipLabelTranslation={true}
         additionalClass={'margin-bottom margin-top'}
       />
     </div>

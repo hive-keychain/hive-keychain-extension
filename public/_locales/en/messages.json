@@ -555,6 +555,10 @@
     "message": "Total Outgoing",
     "description": "Main page > Delegate > Click on Outgoing"
   },
+  "popup_html_button_label_cancel": {
+    "message": "Cancel",
+    "description": "when using a cancel button"
+  },
   "popup_html_total_incoming": {
     "message": "Total Incoming",
     "description": "Main page > Delegate > Click on Incoming"
@@ -716,12 +720,20 @@
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
+    "message": "Succesfully updated witness account @$1.",
+    "description": "on witness when updating a witness"
+  },
+  "popup_success_witness_account_update": {
     "message": "Succesfully unvoted @$1 as a witness.",
-    "description": "on witness page when unvoting a witness"
+    "description": "on witness edit tab page on success updating"
   },
   "popup_error_wit": {
     "message": "Error while voting for @$1 as a witness.",
     "description": "on witness page "
+  },
+  "popup_error_witness_account_update": {
+    "message": "Error while updating witness account @$1.",
+    "description": "on witness edit tab page on failure updating"
   },
   "popup_error_unvote_wit": {
     "message": "Error while unvoting @$1 as a witness.",
@@ -2739,6 +2751,10 @@
   "html_popup_witness_already_voted": {
     "message": "You already voted for this witness",
     "description": "Error if trying to vote for a witness that has alreay been voted for"
+  },
+  "html_popup_button_next_step_label": {
+    "message": "Next step",
+    "description": "when using a button as next step process"
   },
   "html_popup_witness_not_voted": {
     "message": "You did not vote for this witness, you can't unvote it",

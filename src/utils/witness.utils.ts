@@ -103,7 +103,6 @@ const getWitnessAccountUpdateOperation = (
   witnessAccountName: string,
   witnessUpdateProps: WitnessProps,
 ) => {
-  //TODO fix this...
   return [
     'witness_update',
     {
@@ -121,12 +120,12 @@ const sendWitnessAccountUpdateOperation = async (
   activeKey: Key,
   witnessUpdateProps: WitnessProps,
 ) => {
-  const witnessAccountSetOperation = getWitnessAccountUpdateOperation(
+  const witnessAccountUpdateOperation = getWitnessAccountUpdateOperation(
     witnessAccountName,
     witnessUpdateProps,
   );
   return await HiveTxUtils.sendOperation(
-    [witnessAccountSetOperation],
+    [witnessAccountUpdateOperation],
     activeKey,
   );
 };

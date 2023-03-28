@@ -6,7 +6,7 @@ import './witness-page-tab-item.component.scss';
 
 type Props = {
   label: string;
-  data: string | object; //TODO what if object.
+  data: string | object;
   isDate?: boolean;
   extraClassName?: string;
   isUrl?: boolean;
