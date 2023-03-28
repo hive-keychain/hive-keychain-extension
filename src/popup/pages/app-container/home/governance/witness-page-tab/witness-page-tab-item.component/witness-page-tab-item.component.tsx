@@ -1,5 +1,7 @@
+import { Icons } from '@popup/icons.enum';
 import moment from 'moment';
 import React from 'react';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './witness-page-tab-item.component.scss';
 
 type Props = {
@@ -38,7 +40,7 @@ const WitnessPageTabItemComponent = ({
     <div className="row-information">
       <div className="label-title">{label}</div>
       <div
-        className={`label-info-data ${extraClassName} ${
+        className={`row-line label-info-data ${extraClassName} ${
           isUrl ? 'url-clickeable' : ''
         }`}
         onClick={isUrl ? () => goTo(data as string) : () => {}}>
@@ -47,6 +49,13 @@ const WitnessPageTabItemComponent = ({
           : typeof data === 'object'
           ? renderObject(data)
           : data}
+        {isUrl && (
+          <Icon
+            name={Icons.OPEN_IN_NEW}
+            type={IconType.OUTLINED}
+            additionalClassName="small-icon"
+          />
+        )}
       </div>
     </div>
   );

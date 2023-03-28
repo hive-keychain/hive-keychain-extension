@@ -571,6 +571,10 @@
     "message": "This is a public key! Please enter a private key or your master key.",
     "description": "If entered password is public key"
   },
+  "popup_html_public_key_needed": {
+    "message": "Please enter a public.",
+    "description": "If entered is private key"
+  },
   "popup_accounts_already_registered": {
     "message": "You already registered an account for @$1!",
     "description": "when trying to add an account already saved on keychain"
@@ -1776,6 +1780,10 @@
   "html_popup_unvote_witness_operation": {
     "message": "Unvoting a witness",
     "description": "unvote witness operation"
+  },
+  "html_popup_update_witness_operation": {
+    "message": "Updating witness account",
+    "description": "When updating witness account"
   },
   "html_popup_confirm_transaction_operation": {
     "message": "Confirming transaction",

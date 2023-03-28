@@ -1,7 +1,8 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ProposalTabComponent } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { ProxyTabComponent } from '@popup/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
-import { WitnessPageTabComponent } from '@popup/pages/app-container/home/governance/witness-page-tab/witness-page-tab.component';
+import { WitnessPageTabStepOneComponent } from '@popup/pages/app-container/home/governance/witness-page-tab/witness-page-tab-step-one/witness-page-tab-step-one.component';
+import { WitnessPageTabStepTwoComponent } from '@popup/pages/app-container/home/governance/witness-page-tab/witness-page-tab-step-two/witness-page-tab-step-two.component';
 import { WitnessTabComponent } from '@popup/pages/app-container/home/governance/witness-tab/witness-tab.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -16,6 +17,7 @@ const Governance = ({
   activeAccount,
 }: PropsFromRedux) => {
   const [witnessAccountInfo, setWitnessAccountInfo] = useState<any>();
+  const [witnessPageStep, setWitnessPageStep] = useState(1);
 
   useEffect(() => {
     init();
@@ -27,7 +29,7 @@ const Governance = ({
     );
   };
 
-  //just to see props //TODO to remove
+  //just to see props //TODO clean up
   useEffect(() => {
     console.log({ witnessAccountInfo });
   }, [witnessAccountInfo]);
@@ -40,14 +42,32 @@ const Governance = ({
     });
   });
 
+  const renderWitnessPageStep = () => {
+    switch (witnessPageStep) {
+      case 1:
+        return (
+          <WitnessPageTabStepOneComponent
+            witnessAccountInfo={witnessAccountInfo}
+            setWitnessPageStep={setWitnessPageStep}
+          />
+        );
+      case 2:
+        return (
+          <WitnessPageTabStepTwoComponent
+            witnessAccountInfo={witnessAccountInfo}
+            setWitnessPageStep={setWitnessPageStep}
+          />
+        );
+    }
+  };
+
   return (
-    <div
-      className={`governance-page ${
-        witnessAccountInfo ? 'extra-grid-tab' : ''
-      }`}
-      aria-label="governance-page">
+    <div className="governance-page" aria-label="governance-page">
       <Tabs>
-        <TabList>
+        <TabList
+          className={`react-tabs__tab-list ${
+            witnessAccountInfo ? 'make-flex' : 'make-grid'
+          }`}>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proxy')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proposal')}</Tab>
@@ -64,11 +84,7 @@ const Governance = ({
         <TabPanel>
           <ProposalTabComponent />
         </TabPanel>
-        {witnessAccountInfo && (
-          <TabPanel>
-            <WitnessPageTabComponent witnessAccountInfo={witnessAccountInfo} />
-          </TabPanel>
-        )}
+        {witnessAccountInfo && <TabPanel>{renderWitnessPageStep()}</TabPanel>}
       </Tabs>
     </div>
   );

@@ -1,11 +1,11 @@
-@import '../../../../../variable.scss';
+@import '../../../../../../variable.scss';
 
 .witness-tab-page {
   flex: 1;
   padding: 0px 10px;
   font-size: 16px;
-  overflow-x: hidden;
   overflow-y: auto;
+  overflow-x: hidden;
 
   .text {
     text-align: center;
@@ -14,9 +14,8 @@
 
   .page-information {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    border: 1px solid red;
-    border-radius: 4px;
     padding: 4px;
   }
 
@@ -47,5 +46,13 @@
     justify-content: space-between;
     flex: 1;
     margin-bottom: 16px;
+  }
+
+  .margin-bottom {
+    margin-bottom: 10px;
+  }
+
+  .margin-top {
+    margin-top: 10px;
   }
 }

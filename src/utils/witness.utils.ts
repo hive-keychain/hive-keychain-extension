@@ -1,4 +1,8 @@
-import { AccountWitnessVoteOperation } from '@hiveio/dhive';
+import {
+  AccountWitnessVoteOperation,
+  WitnessUpdateOperation,
+} from '@hiveio/dhive';
+import { WitnessProps } from '@hiveio/dhive/lib/utils';
 import { Key } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -95,6 +99,38 @@ const getWitnessAccountInfo = async (
   }
 };
 
+const getWitnessAccountUpdateOperation = (
+  witnessAccountName: string,
+  witnessUpdateProps: WitnessProps,
+) => {
+  //TODO fix this...
+  return [
+    'witness_update',
+    {
+      owner: witnessAccountName,
+      props: witnessUpdateProps,
+      block_signing_key: witnessUpdateProps.new_signing_key!,
+      url: witnessUpdateProps.url!,
+      fee: witnessUpdateProps.account_creation_fee!,
+    },
+  ] as WitnessUpdateOperation;
+};
+
+const sendWitnessAccountUpdateOperation = async (
+  witnessAccountName: string,
+  activeKey: Key,
+  witnessUpdateProps: WitnessProps,
+) => {
+  const witnessAccountSetOperation = getWitnessAccountUpdateOperation(
+    witnessAccountName,
+    witnessUpdateProps,
+  );
+  return await HiveTxUtils.sendOperation(
+    [witnessAccountSetOperation],
+    activeKey,
+  );
+};
+
 const WitnessUtils = {
   unvoteWitness,
   voteWitness,
@@ -103,6 +139,7 @@ const WitnessUtils = {
   updateWitnessVote,
   getUpdateWitnessTransaction,
   getWitnessAccountInfo,
+  sendWitnessAccountUpdateOperation,
 };
 
 export default WitnessUtils;
