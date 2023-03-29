@@ -335,6 +335,24 @@ const getAllTokens = async (): Promise<Token[]> => {
   });
 };
 
+const getTokenInfo = async (symbol: string): Promise<Token> => {
+  return (
+    await HiveEngineUtils.get<any[]>({
+      contract: 'tokens',
+      table: 'tokens',
+      query: { symbol: symbol },
+      limit: 1000,
+      offset: 0,
+      indexes: [],
+    })
+  ).map((t: any) => {
+    return {
+      ...t,
+      metadata: JSON.parse(t.metadata),
+    };
+  })[0];
+};
+
 /* istanbul ignore next */
 /**
  * SSCJS request using HiveEngineConfigUtils.getApi().find.
@@ -380,6 +398,7 @@ const TokensUtils = {
   getCancelDelegationTokenTransaction,
   getSendTokenTransaction,
   getHiveEngineTokenPrice,
+  getTokenInfo,
 };
 
 export default TokensUtils;

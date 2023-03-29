@@ -1,4 +1,6 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { Token } from '@interfaces/tokens.interface';
+import { setErrorMessage } from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
@@ -12,12 +14,13 @@ import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.com
 import CustomSelect, {
   SelectOption,
 } from 'src/common-ui/select/custom-select.component';
+import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
-import { SwapTokenUtils } from 'src/utils/swap-token.utils';
+import { SwapStep, SwapTokenUtils } from 'src/utils/swap-token.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import './token-swaps.component.scss';
 
-const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
+const TokenSwaps = ({ activeAccount, setErrorMessage }: PropsFromRedux) => {
   const [loading, setLoading] = useState(true);
   const [slipperage, setSlipperage] = useState(5);
   const [amount, setAmount] = useState<string>('');
@@ -30,14 +33,41 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
   const [endTokenListOptions, setEndTokenListOptions] = useState<
     SelectOption[]
   >([]);
-  const [swapFinalValue, setSwapFinalValue] = useState<number>();
+  const [estimate, setEstimate] = useState<SwapStep[]>();
+
+  const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     initTokenSelectOptions();
   }, []);
 
   useEffect(() => {
-    calculateFinalValue();
+    if (autoRefreshCountdown === null) {
+      return;
+    }
+
+    if (autoRefreshCountdown === 0) {
+      calculateEstimate();
+      setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      setAutoRefreshCountdown(autoRefreshCountdown! - 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [autoRefreshCountdown]);
+
+  useEffect(() => {
+    if (parseFloat(amount) > 0) {
+      calculateEstimate();
+      setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+    }
   }, [amount]);
 
   const initTokenSelectOptions = async () => {
@@ -48,11 +78,13 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
     let list = startList.map((token) => {
       const tokenInfo = allTokens.find((t) => t.symbol === token.symbol);
       let img = '';
+      let imgBackup = '';
       if (tokenInfo) {
         img =
           tokenInfo.metadata.icon && tokenInfo.metadata.icon.length > 0
             ? tokenInfo.metadata.icon
             : '/assets/images/hive-engine.svg';
+        imgBackup = '/assets/images/hive-engine.svg';
       } else {
         img =
           token.symbol === BaseCurrencies.HIVE
@@ -60,27 +92,28 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
             : `/assets/images/${Icons.HBD}`;
       }
       return {
-        value: token.symbol,
+        value: token,
         label: token.symbol,
         img: img,
+        imgBackup,
       };
     });
     let endList: SelectOption[] = [
       {
-        value: BaseCurrencies.HIVE,
+        value: { symbol: BaseCurrencies.HIVE.toUpperCase(), precision: 3 },
         label: BaseCurrencies.HIVE.toUpperCase(),
         img: `/assets/images/${Icons.HIVE}`,
       },
       {
-        value: BaseCurrencies.HBD,
+        value: { symbol: BaseCurrencies.HBD.toUpperCase(), precision: 3 },
         label: BaseCurrencies.HBD.toUpperCase(),
         img: `/assets/images/${Icons.HBD}`,
       },
-      ...allTokens.map((token) => {
+      ...allTokens.map((token: Token) => {
         let img = '';
         img = token.metadata.icon ?? '/assets/images/hive-engine.svg';
         return {
-          value: token.symbol,
+          value: token,
           label: token.symbol,
           img: img,
           imgBackup: '/assets/images/hive-engine.svg',
@@ -92,24 +125,44 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
     setEndToken(endList[0]);
     setEndTokenListOptions(endList);
     setLoading(false);
-
-    calculateFinalValue();
   };
 
-  const calculateFinalValue = async () => {
-    setSwapFinalValue(
-      await SwapTokenUtils.getFinalValue(
-        startToken?.value!,
-        endToken?.value!,
+  const calculateEstimate = async () => {
+    setEstimate(
+      await SwapTokenUtils.getEstimate(
+        startToken?.value.symbol,
+        endToken?.value.symbol,
         amount,
       ),
     );
   };
 
-  const processSwap = () => {
+  const processSwap = async () => {
+    if (!amount || amount.length === 0) {
+      setErrorMessage('popup_html_need_positive_amount');
+      return;
+    }
+
+    if (parseFloat(amount) > parseFloat(startToken?.value.balance)) {
+      setErrorMessage('hive_engine_overdraw_balance_error', [
+        startToken?.label!,
+      ]);
+    }
+
     console.log(
       `start processing swap from ${startToken?.label} to ${endToken?.label}`,
     );
+
+    console.log(startToken?.value, endToken!.value);
+
+    // await SwapTokenUtils.processSwap(
+    //   estimate!,
+    //   slipperage,
+    //   activeAccount,
+    //   startToken?.value,
+    //   endToken?.value,
+    //   parseFloat(amount),
+    // );
   };
 
   const swapStartAndEnd = () => {
@@ -122,23 +175,33 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
     <div className="token-swaps" aria-label="token-swaps">
       {!loading && (
         <>
+          {!!autoRefreshCountdown && (
+            <div>Auto refresh in {autoRefreshCountdown} sec</div>
+          )}
+
           <div className="start-token">
-            {startTokenListOptions.length > 0 && (
-              <CustomSelect
-                selectedValue={startToken}
-                options={startTokenListOptions}
-                skipLabelTranslation
-                setSelectedValue={setStartToken}
+            <div className="inputs">
+              {startTokenListOptions.length > 0 && (
+                <CustomSelect
+                  selectedValue={startToken}
+                  options={startTokenListOptions}
+                  skipLabelTranslation
+                  setSelectedValue={setStartToken}
+                />
+              )}
+              <InputComponent
+                type={InputType.NUMBER}
+                value={amount}
+                onChange={setAmount}
+                label="popup_html_transfer_amount"
+                placeholder="popup_html_transfer_amount"
+                min={0}
               />
-            )}
-            <InputComponent
-              type={InputType.NUMBER}
-              value={amount}
-              onChange={setAmount}
-              label="popup_html_transfer_amount"
-              placeholder="popup_html_transfer_amount"
-              min={0}
-            />
+            </div>
+            <span className="available">
+              {chrome.i18n.getMessage('popup_html_available')} :{' '}
+              {startToken?.value.balance}
+            </span>
           </div>
           <Icon
             type={IconType.OUTLINED}
@@ -156,10 +219,10 @@ const TokenSwaps = ({ activeAccount }: PropsFromRedux) => {
                   setSelectedValue={setEndToken}
                   filterable
                 />
-                {swapFinalValue && (
+                {estimate && estimate.length > 0 && (
                   <div className="final-value">
                     {chrome.i18n.getMessage('html_popup_swaps_final_price', [
-                      swapFinalValue.toString(),
+                      estimate[estimate.length - 1].estimate.toString(),
                       endToken?.label!,
                     ])}
                   </div>
@@ -195,7 +258,9 @@ const mapStateToProps = (state: RootState) => {
   return { activeAccount: state.activeAccount };
 };
 
-const connector = connect(mapStateToProps, {});
+const connector = connect(mapStateToProps, {
+  setErrorMessage,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const TokenSwapsComponent = connector(TokenSwaps);

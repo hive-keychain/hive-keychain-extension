@@ -20,9 +20,18 @@
   }
 
   .start-token {
-    display: grid;
-    align-items: flex-end;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
+    .inputs {
+      display: grid;
+      align-items: flex-end;
+      grid-template-columns: 1fr 1fr;
+    }
+    .available {
+      font-style: italic;
+      font-size: 16px;
+      margin-top: 4px;
+    }
   }
 
   .end-token {

@@ -35,6 +35,10 @@ const Config = {
   transactions: {
     expirationTimeInMinutes: 10,
   },
+  swaps: {
+    autoRefreshEveryXSec: Number(process.env.DEV_SWAP_AUTO_REFRESH) ?? 30,
+    swapAccount: process.env.DEV_SWAP_ACCOUNT || '...',
+  },
 };
 
 export default Config;
