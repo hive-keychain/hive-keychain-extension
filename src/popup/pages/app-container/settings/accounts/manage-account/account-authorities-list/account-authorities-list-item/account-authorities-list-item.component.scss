@@ -1,0 +1,87 @@
+@import '../../../../../../../variable.scss';
+
+.account-authorities-list-item {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  margin: 0px -24px;
+  padding: 6px 24px;
+  .top-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .key-name {
+      text-transform: uppercase;
+      font-size: 20px;
+    }
+  }
+
+  .keys-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+
+    .key-field {
+      font-size: 11px;
+      cursor: pointer;
+
+      &.hidden {
+        font-size: 14px;
+      }
+    }
+
+    .using-authorized-account {
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .remove-button {
+      color: white;
+      cursor: pointer;
+      font-size: 20px;
+      &:hover {
+        color: $black-transparent;
+      }
+    }
+  }
+
+  .account-auths-list {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    margin: 0px 10px;
+    justify-content: space-between;
+    font-size: 14px;
+
+    .titles {
+      display: grid;
+      font-weight: bold;
+      grid-template-columns: 2fr 2fr;
+    }
+
+    .title {
+      font-size: 16px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 3fr 2fr 0fr;
+      &:hover {
+        background-color: $red-dark;
+      }
+
+      .item-account-name {
+        display: flex;
+        flex-direction: row;
+        column-gap: 5px;
+      }
+    }
+  }
+
+  .add-key-icon {
+    text-align: center;
+    font-size: 32px;
+    cursor: pointer;
+  }
+}

@@ -195,6 +195,10 @@
     "message": "Username",
     "description": "placeholder for entering username"
   },
+  "popup_html_role": {
+    "message": "Role",
+    "description": "placeholder for entering role"
+  },
   "popup_html_import_keys": {
     "message": "Import keys",
     "description": "Import all keys"
@@ -210,6 +214,10 @@
   "popup_html_import_success": {
     "message": "Import successful! <br><br>Please select the Keys you wish to store with Hive Keychain:",
     "description": "When adding an account via master key"
+  },
+  "popup_html_owner": {
+    "message": "Owner Key",
+    "description": "When using owner key"
   },
   "popup_html_posting": {
     "message": "Posting Key",
@@ -257,6 +265,10 @@
   },
   "popup_html_manage_accounts": {
     "message": "Manage accounts",
+    "description": "on settings page"
+  },
+  "popup_html_manage_accounts_authorities": {
+    "message": "Manage authorities",
     "description": "on settings page"
   },
   "popup_html_change_password": {
@@ -1517,13 +1529,21 @@
     "message": "Please confirm that you want to cancel this delegation.",
     "description": "while confirming power up and down"
   },
+  "popup_html_confirm_remove_account_authority_message": {
+    "message": "Please confirm that you want to remove $1 authority on account $2.",
+    "description": "while confirming remove account authority"
+  },
   "popup_html_confirm_cancel_withdraw_savings_message": {
     "message": "Please confirm that you want to cancel this $1 withdraw from savings.",
     "description": "while confirming savings withdraw"
   },
   "popup_html_cancel_delegation": {
     "message": "Cancel delegation",
-    "description": "while confirming power up and down"
+    "description": "while confirming "
+  },
+  "popup_html_remove_account_authority": {
+    "message": "Remove authority",
+    "description": "while confirming remove account authority"
   },
   "popup_html_cancel_withdraw_savings": {
     "message": "Cancel Withdraw",
@@ -1769,6 +1789,10 @@
     "message": "Canceling delegation",
     "description": "delegation operation"
   },
+  "html_popup_remove_authorized_account_operation": {
+    "message": "Removing authorized account",
+    "description": "remove authority operation"
+  },
   "html_popup_cancel_withdraw_savings_operation": {
     "message": "Canceling withdraw from savings",
     "description": "savings operation"
@@ -1857,6 +1881,10 @@
     "message": "Successfully canceled a delegation",
     "description": "Success message cancel delegation"
   },
+  "popup_html_remove_account_authority_successful": {
+    "message": "Successfully removed an account authority",
+    "description": "Success message remove account authority"
+  },
   "popup_html_cancel_withdraw_savings_successful": {
     "message": "Successfully canceled a withdraw of $1 $2 from savings",
     "description": "Success message cancel withdraw"
@@ -1868,6 +1896,10 @@
   "popup_html_cancel_delegation_fail": {
     "message": "Failed to cancel a delegation",
     "description": "Failed message cancel delegation"
+  },
+  "popup_html_remove_account_authority_fail": {
+    "message": "Failed to remove an account authority",
+    "description": "Failed message remove account authority"
   },
   "popup_html_delegation_successful": {
     "message": "Delegation successful",

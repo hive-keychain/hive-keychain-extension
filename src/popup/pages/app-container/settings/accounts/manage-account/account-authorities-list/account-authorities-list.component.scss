@@ -1,0 +1,19 @@
+@import '../../../../../../variable.scss';
+
+.account-keys-list {
+  @include pageLayoutRowGap;
+  padding: 0px 24px;
+  padding-bottom: 24px;
+
+  .account-keys-list-item:nth-child(even) {
+    background: $red-transparent;
+  }
+
+  scroll-behavior: smooth;
+}
+
+.qrcode {
+  margin: 16px 0px;
+  align-self: center;
+  border: solid 3px white;
+}

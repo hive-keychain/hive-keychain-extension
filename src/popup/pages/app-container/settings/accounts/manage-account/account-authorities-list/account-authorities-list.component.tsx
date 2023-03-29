@@ -1,0 +1,207 @@
+import { setAccounts } from '@popup/actions/account.actions';
+import { loadActiveAccount } from '@popup/actions/active-account.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
+import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import { AccountAuthoritiesListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
+import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
+import React, { useEffect, useRef, useState } from 'react';
+import QRCode from 'react-qr-code';
+import { connect, ConnectedProps } from 'react-redux';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import { LocalAccount } from 'src/interfaces/local-account.interface';
+import AccountUtils from 'src/utils/account.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+//TODO bellow change all classes to its new names
+import './account-authorities-list.component.scss';
+
+const AccountAuthoritiesList = ({
+  activeAccount,
+  accounts,
+  setAccounts,
+  loadActiveAccount,
+  navigateToWithParams,
+  addToLoadingList,
+  removeFromLoadingList,
+}: PropsType) => {
+  const [qrCodeDisplayed, setQRCodeDisplayed] = useState(false);
+  const [account, setAccount] = useState<LocalAccount>();
+  const [canDeleteKey, setCanDeleteKey] = useState(true);
+
+  const qrCodeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setQRCodeDisplayed(false);
+    const acc = accounts.find(
+      (account: LocalAccount) => account.name === activeAccount.name,
+    );
+    setAccount(acc!);
+    setCanDeleteKey(KeysUtils.keysCount(activeAccount.keys) > 2);
+  }, [activeAccount]);
+
+  const deleteAccount = () => {
+    let warningMessage, warningParams;
+    const hasAuthorizedAccountLinkedToActiveAccount = accounts.some((account) =>
+      [
+        account.keys.activePubkey,
+        account.keys.memoPubkey,
+        account.keys.postingPubkey,
+      ].includes(`@${activeAccount.name}`),
+    );
+    if (hasAuthorizedAccountLinkedToActiveAccount) {
+      warningMessage = 'popup_html_deleting_account_linked_to_authorized';
+      warningParams = [activeAccount.name];
+    }
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage(
+        'popup_html_delete_account_confirmation_message',
+        [activeAccount.name!],
+      ),
+      title: 'popup_html_delete_account',
+      warningMessage: warningMessage,
+      warningParams: warningParams,
+      afterConfirmAction: async () => {
+        addToLoadingList('html_popup_delete_account_operation');
+        let newAccounts = AccountUtils.deleteAccount(
+          activeAccount.name!,
+          accounts,
+        );
+
+        let finalAccounts = [];
+        if (hasAuthorizedAccountLinkedToActiveAccount) {
+          for (let i = 0; i < newAccounts.length; i++) {
+            let tmp = newAccounts[i];
+            if (tmp.keys.activePubkey === `@${activeAccount.name}`) {
+              delete tmp.keys.activePubkey;
+              delete tmp.keys.active;
+            }
+            if (tmp.keys.postingPubkey === `@${activeAccount.name}`) {
+              delete tmp.keys.posting;
+              delete tmp.keys.postingPubkey;
+            }
+            if (tmp.keys.memoPubkey === `@${activeAccount.name}`) {
+              delete tmp.keys.memo;
+              delete tmp.keys.memoPubkey;
+            }
+
+            newAccounts[i] = tmp;
+
+            if (Object.keys(newAccounts[i].keys).length > 0) {
+              finalAccounts.push(newAccounts[i]);
+            }
+          }
+        } else {
+          finalAccounts = newAccounts;
+        }
+
+        setAccounts(finalAccounts);
+        if (finalAccounts.length) {
+          loadActiveAccount(finalAccounts[0]);
+        }
+        removeFromLoadingList('html_popup_delete_account_operation');
+      },
+    });
+  };
+
+  const toggleQRCode = () => {
+    setQRCodeDisplayed(!qrCodeDisplayed);
+    setTimeout(() => {
+      if (qrCodeRef && qrCodeRef.current) {
+        qrCodeRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
+  };
+
+  return (
+    <div className="account-keys-list">
+      <div className="keys-panel">
+        {/* //TODO on each list item comp: remove old props */}
+        {/* <AccountAuthoritiesListItemComponent
+          privateKey={activeAccount.keys.posting}
+          publicKey={activeAccount.keys.postingPubkey}
+          keyName={'popup_html_posting'}
+          keyType={KeyType.POSTING}
+          canDelete={canDeleteKey}
+          //
+          role={'owner'}
+          authority={activeAccount.account.owner}
+        /> */}
+
+        <AccountAuthoritiesListItemComponent
+          //
+          // signing={????}
+          role={'active'}
+          authority={activeAccount.account.active}
+          // memo={??????}
+        />
+
+        <AccountAuthoritiesListItemComponent
+          // signing={????}
+          role={'posting'}
+          authority={activeAccount.account.posting}
+          // memo={??????}
+        />
+
+        {/* //TODO bellow finish other authorities. */}
+        {/* <AccountAuthoritiesListItemComponent
+          privateKey={activeAccount.keys.memo}
+          publicKey={activeAccount.keys.memoPubkey}
+          keyName={'popup_html_memo'}
+          keyType={KeyType.MEMO}
+          canDelete={canDeleteKey}
+        /> */}
+      </div>
+
+      {/* //TODO possible to generate this qr but for authority??? */}
+      <ButtonComponent
+        ariaLabel="button-toogle-qr-code"
+        label={qrCodeDisplayed ? 'popup_html_hide_qr' : 'popup_html_show_qr'}
+        onClick={() => toggleQRCode()}
+      />
+      {qrCodeDisplayed && (
+        <>
+          <div ref={qrCodeRef}></div>
+          <QRCode
+            aria-label="qrcode"
+            className="qrcode"
+            value={`keychain://add_account=${AccountUtils.generateQRCode(
+              account!,
+            )}`}
+          />
+        </>
+      )}
+
+      {/* {accounts.length > 1 && (
+        <ButtonComponent
+          ariaLabel="button-delete-account"
+          label="popup_html_delete_account"
+          type={ButtonType.IMPORTANT}
+          onClick={() => deleteAccount()}
+        />
+      )} */}
+    </div>
+  );
+};
+
+const mapStateToProps = (state: RootState) => {
+  return {
+    activeAccount: state.activeAccount,
+    accounts: state.accounts as LocalAccount[],
+  };
+};
+
+const connector = connect(mapStateToProps, {
+  setAccounts,
+  loadActiveAccount,
+  navigateToWithParams,
+  addToLoadingList,
+  removeFromLoadingList,
+});
+type PropsType = ConnectedProps<typeof connector>;
+
+export const AccountAuthoritiesListComponent = connector(
+  AccountAuthoritiesList,
+);
