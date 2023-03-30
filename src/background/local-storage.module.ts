@@ -127,7 +127,6 @@ const checkAndUpdateLocalStorage = async () => {
             }
           }
         }
-        console.log({ oldFormat }); //TODO to remove
         if (oldFormat) {
           const favoriteUserData: any = {};
           const mk = await LocalStorageUtils.getValueFromLocalStorage(
@@ -152,7 +151,6 @@ const checkAndUpdateLocalStorage = async () => {
               });
             }
           }
-          console.log({ favoriteUserData }); //TODO to remove
           //save in local storage
           LocalStorageUtils.saveValueInLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,

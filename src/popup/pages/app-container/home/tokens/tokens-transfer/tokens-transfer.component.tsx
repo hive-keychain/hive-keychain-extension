@@ -1,3 +1,4 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import {
@@ -25,10 +26,7 @@ import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils from 'src/utils/currency.utils';
-import {
-  FavoriteUserList,
-  FavoriteUserUtils,
-} from 'src/utils/favorite-user.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
 import TokensUtils from 'src/utils/tokens.utils';
@@ -64,9 +62,8 @@ const TokensTransfer = ({
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
   const [memo, setMemo] = useState(formParams.memo ? formParams.memo : '');
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    FavoriteUserList[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({ categories: [] });
 
   useEffect(() => {
     setTitleContainerProperties({

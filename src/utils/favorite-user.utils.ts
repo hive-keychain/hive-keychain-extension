@@ -91,6 +91,8 @@ const saveFavoriteUser = async (
   );
 };
 
+//TODO for later on discuss with cedric
+// remove this types and just add the autocompletes from its interface.
 export enum FavoriteUserListName {
   USERS = 'USERS',
   LOCAL_ACCOUNTS = 'LOCAL_ACCOUNTS',

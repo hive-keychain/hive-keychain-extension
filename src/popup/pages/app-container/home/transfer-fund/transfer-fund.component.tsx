@@ -116,7 +116,6 @@ const TransferFunds = ({
         localAccounts,
         { addExchanges: true, token: selectedCurrency.toUpperCase() },
       );
-    console.log({ autoCompleteListByCategories }); //TODO to remove
     setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };
 
@@ -352,14 +351,7 @@ const TransferFunds = ({
             placeholder="popup_html_username"
             value={receiverUsername}
             onChange={setReceiverUsername}
-            autocompleteValues={autocompleteFavoriteUsers} //TODO uncomment + fix
-            // autocompleteValues={['item1', 'item2', 'hola']}
-            // autocompleteValues={
-            //   [
-            //     { value: 'account', subLabel: 'label 1' },
-            //     { value: 'yolo', subLabel: 'xxxxx' },
-            //   ] as AutoCompleteValue[]
-            // }
+            autocompleteValues={autocompleteFavoriteUsers}
           />
           <div className="value-panel">
             <div className="value-input-panel">

@@ -5,7 +5,6 @@ export interface AutoCompleteValue {
 
 export interface AutoCompleteCategory {
   title: string;
-  skipTitleTranslation?: boolean;
   values: AutoCompleteValue[];
 }
 
@@ -17,8 +16,3 @@ export type AutoCompleteValuesType =
   | AutoCompleteValue[]
   | AutoCompleteValues
   | string[];
-
-//   AutocompleteValueItem
-//   take two props value sublabel
-// for string[] => value = string[i] sublabel nothing
-// for AutoCompleteValue[] => value = value // sublabel = sublabel

@@ -3,18 +3,29 @@ import {
   AutoCompleteValues,
 } from '@interfaces/autocomplete.interface';
 
-// make sure to compare both lowercase values (query and value in list)
-
 const filterStringList = (list: string[], query: string) => {
-  return [];
+  return list.filter((item) => item.toLowerCase().includes(query));
 };
 
 const filterCategoriesList = (list: AutoCompleteValues, query: string) => {
-  return [];
+  return list.categories.map((category) => {
+    return {
+      ...category,
+      values: category.values.filter(
+        (autocompleteValue) =>
+          autocompleteValue.value.toLowerCase().includes(query) ||
+          autocompleteValue.subLabel?.toLowerCase().includes(query),
+      ),
+    };
+  });
 };
 
 const filterValuesList = (list: AutoCompleteValue[], query: string) => {
-  return [];
+  return list.filter(
+    (item) =>
+      item.value.toLowerCase().includes(query) ||
+      item.subLabel?.toLowerCase().includes(query),
+  );
 };
 
 export const AutoCompleteUtils = {
