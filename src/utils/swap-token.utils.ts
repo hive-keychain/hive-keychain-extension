@@ -78,7 +78,7 @@ const saveEstimate = async (
   startToken: string,
   endToken: string,
   amount: number,
-) => {
+): Promise<string> => {
   return await KeychainApi.post(`token-swap/estimate/save`, {
     slipperage,
     steps,
@@ -89,26 +89,16 @@ const saveEstimate = async (
 };
 
 const processSwap = async (
-  estimate: SwapStep[],
-  slipperage: number,
-  activeAccount: ActiveAccount,
+  estimateId: string,
   startToken: string,
-  endToken: string,
   amount: number,
+  activeAccount: ActiveAccount,
 ) => {
-  // const estimateId = await saveEstimate(
-  //   estimate,
-  //   slipperage,
-  //   startToken,
-  //   endToken,
-  //   amount,
-  // );
-  const estimateId = 'todo';
   if (
     startToken === BaseCurrencies.HBD.toUpperCase() ||
     startToken === BaseCurrencies.HIVE.toUpperCase()
   ) {
-    await TransferUtils.sendTransfer(
+    const status = await TransferUtils.sendTransfer(
       activeAccount.name!,
       Config.swaps.swapAccount,
       `${amount.toFixed(3)} ${startToken}`,
@@ -118,9 +108,10 @@ const processSwap = async (
       0,
       activeAccount.keys.active!,
     );
+    return status?.tx_id;
   } else {
     const tokenInfo = await TokensUtils.getTokenInfo(startToken);
-    await TokensUtils.sendToken(
+    const status = await TokensUtils.sendToken(
       startToken,
       Config.swaps.swapAccount,
       `${amount.toFixed(tokenInfo.precision)}`,
@@ -128,6 +119,7 @@ const processSwap = async (
       activeAccount.keys.active!,
       activeAccount.name!,
     );
+    return status.tx_id;
   }
 };
 
@@ -136,4 +128,5 @@ export const SwapTokenUtils = {
   getSwapTokenEndList,
   processSwap,
   getEstimate,
+  saveEstimate,
 };

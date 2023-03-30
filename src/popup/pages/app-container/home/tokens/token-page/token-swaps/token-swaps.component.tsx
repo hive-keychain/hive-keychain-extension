@@ -1,8 +1,20 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token } from '@interfaces/tokens.interface';
-import { setErrorMessage } from '@popup/actions/message.actions';
+import {
+  addToLoadingList,
+  removeFromLoadingList,
+} from '@popup/actions/loading.actions';
+import {
+  setErrorMessage,
+  setSuccessMessage,
+} from '@popup/actions/message.actions';
+import {
+  navigateTo,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
+import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -16,11 +28,17 @@ import CustomSelect, {
 } from 'src/common-ui/select/custom-select.component';
 import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import { SwapStep, SwapTokenUtils } from 'src/utils/swap-token.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import './token-swaps.component.scss';
 
-const TokenSwaps = ({ activeAccount, setErrorMessage }: PropsFromRedux) => {
+const TokenSwaps = ({
+  activeAccount,
+  setErrorMessage,
+  setSuccessMessage,
+  navigateToWithParams,
+}: PropsFromRedux) => {
   const [loading, setLoading] = useState(true);
   const [slipperage, setSlipperage] = useState(5);
   const [amount, setAmount] = useState<string>('');
@@ -153,16 +171,89 @@ const TokenSwaps = ({ activeAccount, setErrorMessage }: PropsFromRedux) => {
       `start processing swap from ${startToken?.label} to ${endToken?.label}`,
     );
 
-    console.log(startToken?.value, endToken!.value);
+    const estimateId = await SwapTokenUtils.saveEstimate(
+      estimate!,
+      slipperage,
+      startToken?.value.symbol,
+      endToken?.value.symbol,
+      parseFloat(amount),
+    );
 
-    // await SwapTokenUtils.processSwap(
-    //   estimate!,
-    //   slipperage,
-    //   activeAccount,
-    //   startToken?.value,
-    //   endToken?.value,
-    //   parseFloat(amount),
-    // );
+    const expectedAmount = estimate![estimate!.length - 1].estimate;
+
+    const fields = [
+      { label: 'html_popup_swap_swap_id', value: estimateId },
+      { label: 'html_popup_swap_swap_from', value: startToken?.value.symbol },
+      { label: 'html_popup_swap_swap_to', value: endToken?.value.symbol },
+      {
+        label: 'html_popup_swap_swap_amount',
+        value: `${amount} ${startToken?.value.symbol}`,
+      },
+      {
+        label: 'html_popup_swap_swap_expected_amount',
+        value: `${expectedAmount} ${endToken?.value.symbol}`,
+      },
+      {
+        label: 'html_popup_swap_swap_slipperage',
+        value: `${slipperage}% (for each step)`,
+      },
+    ];
+
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage('html_popup_swap_token_confirm_message'),
+      fields: fields,
+      title: 'html_popup_swap_token_confirm_title',
+      formParams: getFormParams(),
+      afterConfirmAction: async () => {
+        addToLoadingList(
+          'html_popup_swap_sending_token_to_swap_account',
+          KeysUtils.getKeyType(
+            activeAccount.keys.active!,
+            activeAccount.keys.activePubkey!,
+          ),
+          [startToken?.value.symbol, Config.swaps.swapAccount],
+        );
+        try {
+          let success;
+
+          success = await SwapTokenUtils.processSwap(
+            estimateId,
+            startToken?.value.symbol,
+            parseFloat(amount),
+            activeAccount,
+          );
+
+          removeFromLoadingList(
+            'html_popup_swap_sending_token_to_swap_account',
+          );
+
+          if (success) {
+            navigateTo(Screen.HOME_PAGE, true);
+
+            {
+              setSuccessMessage('html_popup_swap_sending_token_successful');
+            }
+          } else {
+            setErrorMessage('html_popup_swap_error_sending_token', [
+              Config.swaps.swapAccount,
+            ]);
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_delegate_rc_operation');
+        }
+      },
+    });
+  };
+
+  const getFormParams = () => {
+    return {
+      startToken: startToken,
+      endToken: endToken,
+      amount: amount,
+      slipperage: slipperage,
+    };
   };
 
   const swapStartAndEnd = () => {
@@ -260,6 +351,10 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   setErrorMessage,
+  setSuccessMessage,
+  navigateToWithParams,
+  addToLoadingList,
+  removeFromLoadingList,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

@@ -3044,5 +3044,49 @@
   "broadcast_error_transaction_expired": {
     "message": "Your transaction has expired. Please try to broadcast it again.",
     "description": "transaction expireed error"
+  },
+  "html_popup_swap_token_confirm_title": {
+    "message": "Confirm token swap",
+    "description": "Confirm token swap"
+  },
+  "html_popup_swap_token_confirm_message": {
+    "message": "You are about to use Keychain to swap token. blablablabla",
+    "description": "confirm token swap message"
+  },
+  "html_popup_swap_swap_id": {
+    "message": "Swap ID",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_from": {
+    "message": "Swapping from",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_to": {
+    "message": "Swapping to",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_amount": {
+    "message": "Amount",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_expected_amount": {
+    "message": "Expected amount",
+    "description": "token swap"
+  },
+  "html_popup_swap_swap_slipperage": {
+    "message": "Slipperage",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_to_swap_account": {
+    "message": "Send $1 to @$2",
+    "description": "token swap"
+  },
+  "html_popup_swap_sending_token_successful": {
+    "message": "You successfully sent your tokens to Keychain. Thank you for trusting us!",
+    "description": "token swap"
+  },
+  "html_popup_swap_error_sending_token": {
+    "message": "There was an error while sending tokens to @$1.",
+    "description": "token swap general error message"
   }
 }
