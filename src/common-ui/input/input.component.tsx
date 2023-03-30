@@ -1,10 +1,7 @@
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import {
-  FavoriteUserList,
-  FavoriteUserListName,
-} from 'src/utils/favorite-user.utils';
+import { FavoriteUserListName } from 'src/utils/favorite-user.utils';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
@@ -14,6 +11,7 @@ export interface AutoCompleteValue {
 }
 
 export interface AutoCompleteCategory {
+  title: FavoriteUserListName;
   values: AutoCompleteValue[];
 }
 
@@ -23,7 +21,7 @@ export interface AutoCompleteValues {
 
 type AutoCompleteValuesType =
   | AutoCompleteValue[]
-  | AutoCompleteValues[]
+  | AutoCompleteValues
   | string[];
 
 interface InputProps {
@@ -66,79 +64,132 @@ const InputComponent = (props: InputProps) => {
   });
 
   useEffect(() => {
-    if (props.autocompleteValues && props.autocompleteValues.length > 0) {
-      const filteredFavoritesCompleteList: FavoriteUserList[] = [];
-      if (
-        props.autocompleteValues.find(
-          (autoCompleteCategory) =>
-            autoCompleteCategory.name === FavoriteUserListName.USERS,
-        )
-      ) {
-        const filteredUserList = props.autocompleteValues
-          .filter(
-            (autoCompleteCategory) =>
-              autoCompleteCategory.name === FavoriteUserListName.USERS,
-          )[0]
-          .list.filter(
-            (listItem) =>
-              listItem.account.toLowerCase().includes(props.value) ||
-              listItem.label.toLowerCase().includes(props.value),
+    //removed from bellow props.autocompleteValues.length > 0
+    //TODO see what happens when passing empty arrays
+    if (props.autocompleteValues) {
+      const autoCompleteValues = props.autocompleteValues;
+      //TODO create autocomplete utils file & move all bellow, just return
+      //  filtered + typeObject so we can use it to render.
+      let filtered: AutoCompleteValuesType;
+      switch (true) {
+        //TODO change bellow
+        // if (a !== undefined)
+        // You can write If(!!a)
+        case (autoCompleteValues as AutoCompleteValues).categories !==
+          undefined:
+          console.log('We have AutoCompleteValues');
+          ///////
+          //OLD code
+          // const filteredFavoritesCompleteList: FavoriteUserList[] = [];
+          // if (
+          //   props.autocompleteValues.find(
+          //     (autoCompleteCategory) =>
+          //       autoCompleteCategory.name === FavoriteUserListName.USERS,
+          //   )
+          // ) {
+          //   const filteredUserList = props.autocompleteValues
+          //     .filter(
+          //       (autoCompleteCategory) =>
+          //         autoCompleteCategory.name === FavoriteUserListName.USERS,
+          //     )[0]
+          //     .list.filter(
+          //       (listItem) =>
+          //         listItem.account.toLowerCase().includes(props.value) ||
+          //         listItem.label.toLowerCase().includes(props.value),
+          //     );
+          //   if (filteredUserList.length > 0) {
+          //     filteredFavoritesCompleteList.push({
+          //       name: FavoriteUserListName.USERS,
+          //       list: filteredUserList,
+          //     });
+          //   }
+          // }
+          // if (
+          //   props.autocompleteValues.find(
+          //     (autoCompleteCategory) =>
+          //       autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
+          //   )
+          // ) {
+          //   const filteredLocalAccountsList = props.autocompleteValues
+          //     .filter(
+          //       (autoCompleteCategory) =>
+          //         autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
+          //     )[0]
+          //     .list.filter(
+          //       (listItem) =>
+          //         listItem.account.toLowerCase().includes(props.value) ||
+          //         listItem.label.toLowerCase().includes(props.value),
+          //     );
+          //   if (filteredLocalAccountsList.length > 0) {
+          //     filteredFavoritesCompleteList.push({
+          //       name: FavoriteUserListName.LOCAL_ACCOUNTS,
+          //       list: filteredLocalAccountsList,
+          //     });
+          //   }
+          // }
+          // if (
+          //   props.autocompleteValues.find(
+          //     (autoCompleteCategory) =>
+          //       autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
+          //   )
+          // ) {
+          //   const filteredExchangesList = props.autocompleteValues
+          //     .filter(
+          //       (autoCompleteCategory) =>
+          //         autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
+          //     )[0]
+          //     .list.filter(
+          //       (listItem) =>
+          //         listItem.account.toLowerCase().includes(props.value) ||
+          //         listItem.label.toLowerCase().includes(props.value) ||
+          //         listItem.subLabel?.toLowerCase().includes(props.value),
+          //     );
+          //   if (filteredExchangesList.length > 0) {
+          //     filteredFavoritesCompleteList.push({
+          //       name: FavoriteUserListName.EXCHANGES,
+          //       list: filteredExchangesList,
+          //     });
+          //   }
+          // }
+          // setFilteredValues(filteredFavoritesCompleteList);
+          //END Old code
+          ///////
+          const testFiltered = (
+            autoCompleteValues as AutoCompleteValues
+          ).categories.filter(
+            (category) => category.title.toLowerCase().includes(props.value),
+            // ||
+            // category.values.filter(
+            //   (categoryItem) =>
+            //     categoryItem.value.toLowerCase().includes(props.value) ||
+            //     categoryItem.subLabel?.toLowerCase().includes(props.value),
+            // )
           );
-        if (filteredUserList.length > 0) {
-          filteredFavoritesCompleteList.push({
-            name: FavoriteUserListName.USERS,
-            list: filteredUserList,
-          });
-        }
-      }
-      if (
-        props.autocompleteValues.find(
-          (autoCompleteCategory) =>
-            autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
-        )
-      ) {
-        const filteredLocalAccountsList = props.autocompleteValues
-          .filter(
-            (autoCompleteCategory) =>
-              autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
-          )[0]
-          .list.filter(
-            (listItem) =>
-              listItem.account.toLowerCase().includes(props.value) ||
-              listItem.label.toLowerCase().includes(props.value),
+          console.log({ testFiltered }); //TODO to remove
+
+          // setFilteredValues(filtered);
+          break;
+        case Array.isArray(autoCompleteValues) &&
+          typeof (autoCompleteValues as string[]).at(0) === 'string':
+          console.log('Array of strings!!!');
+          filtered = (autoCompleteValues as string[]).filter((item) =>
+            item.toLowerCase().includes(props.value),
           );
-        if (filteredLocalAccountsList.length > 0) {
-          filteredFavoritesCompleteList.push({
-            name: FavoriteUserListName.LOCAL_ACCOUNTS,
-            list: filteredLocalAccountsList,
-          });
-        }
-      }
-      if (
-        props.autocompleteValues.find(
-          (autoCompleteCategory) =>
-            autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
-        )
-      ) {
-        const filteredExchangesList = props.autocompleteValues
-          .filter(
-            (autoCompleteCategory) =>
-              autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
-          )[0]
-          .list.filter(
-            (listItem) =>
-              listItem.account.toLowerCase().includes(props.value) ||
-              listItem.label.toLowerCase().includes(props.value) ||
-              listItem.subLabel?.toLowerCase().includes(props.value),
+          console.log({ filtered }); //TODO to remove
+          setFilteredValues(filtered);
+          break;
+        case Array.isArray(autoCompleteValues) &&
+          typeof (autoCompleteValues as AutoCompleteValue[]).at(0) === 'object':
+          console.log('Array of objects!!!');
+          filtered = (autoCompleteValues as AutoCompleteValue[]).filter(
+            (item) =>
+              item.value.toLowerCase().includes(props.value) ||
+              item.subLabel?.toLowerCase().includes(props.value),
           );
-        if (filteredExchangesList.length > 0) {
-          filteredFavoritesCompleteList.push({
-            name: FavoriteUserListName.EXCHANGES,
-            list: filteredExchangesList,
-          });
-        }
+          console.log({ filtered }); //TODO to remove
+          setFilteredValues(filtered);
+          break;
       }
-      setFilteredValues(filteredFavoritesCompleteList);
     }
   }, [props.value, props.autocompleteValues]);
 
@@ -218,9 +269,10 @@ const InputComponent = (props: InputProps) => {
               type={IconType.OUTLINED}
               additionalClassName="input-img erase"></Icon>
           )}
-        {isFocused && filteredValues && filteredValues.length > 0 && (
+        {/* //removed from bellow && filteredValues.length > 0 //TODO check */}
+        {isFocused && filteredValues && (
           <div className="autocomplete-panel">
-            {filteredValues.map((autoCompleteValue, index) => (
+            {/* {filteredValues.map((autoCompleteValue, index) => (
               <div className="title-category" key={`auto-complete-${index}`}>
                 {autoCompleteValue.name.split('_').join(' ')}
                 {autoCompleteValue.list.map((autoCompleteItem) => (
@@ -239,7 +291,7 @@ const InputComponent = (props: InputProps) => {
                   </div>
                 ))}
               </div>
-            ))}
+            ))} */}
           </div>
         )}
         {props.hint && (
