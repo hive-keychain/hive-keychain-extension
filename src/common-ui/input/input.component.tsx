@@ -13,8 +13,20 @@ export interface AutoCompleteValue {
   subLabel?: string;
 }
 
+export interface AutoCompleteCategory {
+  values: AutoCompleteValue[];
+}
+
+export interface AutoCompleteValues {
+  categories: AutoCompleteCategory[];
+}
+
+type AutoCompleteValuesType =
+  | AutoCompleteValue[]
+  | AutoCompleteValues[]
+  | string[];
+
 interface InputProps {
-  onChange: (value: any) => void;
   value: any;
   logo?: Icons | string;
   label?: string;
@@ -27,17 +39,18 @@ interface InputProps {
   skipPlaceholderTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  autocompleteValues?: FavoriteUserList[];
+  autocompleteValues?: AutoCompleteValuesType;
   required?: boolean;
   hasError?: boolean;
   ariaLabel?: string;
   disabled?: boolean;
+  onChange: (value: any) => void;
   onEnterPress?(): any;
   onSetToMaxClicked?(): any;
 }
 
 const InputComponent = (props: InputProps) => {
-  const [filteredValues, setFilteredValues] = useState<FavoriteUserList[]>(
+  const [filteredValues, setFilteredValues] = useState<AutoCompleteValuesType>(
     props.autocompleteValues ? props.autocompleteValues : [],
   );
 
