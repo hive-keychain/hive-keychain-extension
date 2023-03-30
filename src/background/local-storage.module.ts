@@ -1,15 +1,15 @@
 import BgdAccountsUtils from '@background/utils/accounts.utils';
+import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { AutoCompleteValue } from 'src/common-ui/input/input.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
 const checkAndUpdateLocalStorage = async () => {
   //TODO remove code block after finish work
   //Code Block to temporary change  storage version to 3
-  saveNewLocalStorageVersion(3);
+  // saveNewLocalStorageVersion(3);
   //END Code Block
 
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
@@ -99,13 +99,13 @@ const checkAndUpdateLocalStorage = async () => {
       case 3: {
         /////
         //TODO remove test block
-        LocalStorageUtils.saveValueInLocalStorage(
-          LocalStorageKeyEnum.FAVORITE_USERS,
-          {
-            theghost1980: ['account1', 'account 2'],
-            'keychain.tests': ['stoodkev', 'favUser1'],
-          },
-        );
+        // LocalStorageUtils.saveValueInLocalStorage(
+        //   LocalStorageKeyEnum.FAVORITE_USERS,
+        //   {
+        //     theghost1980: ['account1', 'account 2'],
+        //     'keychain.tests': ['stoodkev', 'favUser1'],
+        //   },
+        // );
         //END block
 
         const actualFavoriteUsers: any =

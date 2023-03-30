@@ -1,9 +1,9 @@
+import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteAccountsItemComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
-  FavoriteAccounts,
   FavoriteUserList,
   FavoriteUserListName,
 } from 'src/utils/favorite-user.utils';
@@ -13,11 +13,11 @@ interface FavoriteAccountsListProps {
   favoriteList: FavoriteUserList;
   handleDeleteFavorite: (
     listName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
   ) => void;
   handleEditFavoriteLabel: (
     listName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
     newLabel: string,
   ) => void;
 }

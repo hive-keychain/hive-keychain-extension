@@ -1,14 +1,14 @@
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
-import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
-import { LocalAccount } from '@interfaces/local-account.interface';
-import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import {
   AutoCompleteCategory,
   AutoCompleteValue,
   AutoCompleteValues,
-} from 'src/common-ui/input/input.component';
+} from '@interfaces/autocomplete.interface';
+import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
+import { LocalAccount } from '@interfaces/local-account.interface';
+import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface AutocompleteListOption {
@@ -98,7 +98,7 @@ export enum FavoriteUserListName {
 }
 export interface FavoriteUserList {
   name: FavoriteUserListName;
-  list: FavoriteAccounts[];
+  list: AutoCompleteValue[];
 }
 export interface FavoriteAccounts {
   account: string;
