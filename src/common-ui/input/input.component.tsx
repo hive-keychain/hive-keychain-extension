@@ -1,28 +1,13 @@
+import {
+  AutoCompleteValue,
+  AutoCompleteValues,
+  AutoCompleteValuesType,
+} from '@interfaces/autocomplete.interface';
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import { FavoriteUserListName } from 'src/utils/favorite-user.utils';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
-
-export interface AutoCompleteValue {
-  value: string;
-  subLabel?: string;
-}
-
-export interface AutoCompleteCategory {
-  title: FavoriteUserListName;
-  values: AutoCompleteValue[];
-}
-
-export interface AutoCompleteValues {
-  categories: AutoCompleteCategory[];
-}
-
-type AutoCompleteValuesType =
-  | AutoCompleteValue[]
-  | AutoCompleteValues
-  | string[];
 
 interface InputProps {
   value: any;
@@ -71,6 +56,9 @@ const InputComponent = (props: InputProps) => {
       //TODO create autocomplete utils file & move all bellow, just return
       //  filtered + typeObject so we can use it to render.
       let filtered: AutoCompleteValuesType;
+
+      // TODO use if else instead of a switch
+
       switch (true) {
         //TODO change bellow
         // if (a !== undefined)
