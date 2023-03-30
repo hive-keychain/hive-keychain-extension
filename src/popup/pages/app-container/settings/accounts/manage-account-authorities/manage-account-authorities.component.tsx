@@ -21,8 +21,11 @@ const ManageAccountAuthorities = ({
     <div
       aria-label="settings-manage-account"
       className="settings-manage-account">
+      <div className="text">
+        {chrome.i18n.getMessage('popup_html_manage_accounts_authorities_text')}
+      </div>
+
       <SelectAccountSectionComponent />
-      {/* //TODO: a similar component as accountKeylist but showing/handling authorities */}
       <AccountAuthoritiesListComponent />
     </div>
   );

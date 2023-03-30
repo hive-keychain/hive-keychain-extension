@@ -563,6 +563,10 @@
     "message": "You may delegate your Hive Power (HP) to another user. Click on the Outgoing amount to review or make changes.",
     "description": "Main page > Delegate"
   },
+  "popup_html_manage_accounts_authorities_text": {
+    "message": "Accounts with granted authorities can perform operations on your behalf. Most of the time, these authorizations are tied to a dApp or game and only authorize the posting authority. We recommend giving such authorities only when necessary and when the recipient is trusted.",
+    "description": "Accounts > Manage Authorities"
+  },
   "popup_html_incoming": {
     "message": "Incoming $1",
     "description": "Main page > Delegate. Incoming delegations ($1 is a variable, should be HP)"

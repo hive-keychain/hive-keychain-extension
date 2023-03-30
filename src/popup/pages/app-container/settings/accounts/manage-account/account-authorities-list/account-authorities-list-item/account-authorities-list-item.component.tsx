@@ -152,7 +152,7 @@ const AccountAuthoritiesListItem = ({
           <div className="account-auths-list">
             <div className="titles">
               <div className="title">Username</div>
-              <div className="title">Weight</div>
+              <div className="title text-centered">Weight</div>
             </div>
             {authority.account_auths.map((accountAuth, index) => {
               return (
@@ -168,18 +168,20 @@ const AccountAuthoritiesListItem = ({
                       additionalClassName="remove-button"
                     />
                   </div>
-                  <div>{accountAuth[1]}</div>
-                  <Icon
-                    onClick={() =>
-                      handleClickOnRemoveAccountAuth(
-                        accountAuth[0],
-                        accountAuth[1],
-                      )
-                    }
-                    name={Icons.DELETE}
-                    type={IconType.OUTLINED}
-                    additionalClassName="remove-button"
-                  />
+                  <div className="text-centered">{accountAuth[1]}</div>
+                  <div className="buttons-item text-centered">
+                    <Icon
+                      onClick={() =>
+                        handleClickOnRemoveAccountAuth(
+                          accountAuth[0],
+                          accountAuth[1],
+                        )
+                      }
+                      name={Icons.DELETE}
+                      type={IconType.OUTLINED}
+                      additionalClassName="remove-button"
+                    />
+                  </div>
                 </div>
               );
             })}
