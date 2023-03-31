@@ -353,6 +353,24 @@ const TransferFunds = ({
             onChange={setReceiverUsername}
             autocompleteValues={autocompleteFavoriteUsers}
           />
+          <InputComponent
+            ariaLabel="input-username"
+            type={InputType.TEXT}
+            logo={Icons.AT}
+            placeholder="popup_html_username"
+            value={receiverUsername}
+            onChange={setReceiverUsername}
+            autocompleteValues={[{ subLabel: 'test', value: 'toto' }]}
+          />
+          <InputComponent
+            ariaLabel="input-username"
+            type={InputType.TEXT}
+            logo={Icons.AT}
+            placeholder="popup_html_username"
+            value={receiverUsername}
+            onChange={setReceiverUsername}
+            autocompleteValues={['pomme', 'banane', 'mangue']}
+          />
           <div className="value-panel">
             <div className="value-input-panel">
               <InputComponent

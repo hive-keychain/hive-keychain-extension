@@ -288,7 +288,7 @@
     "description": "on settings page"
   },
   "popup_html_favorite_accounts_no_favorites": {
-    "message": "No favorites yet in $1 list",
+    "message": "No favorites saved for this account",
     "description": "on favorite settings page results"
   },
   "popup_html_operation_popup": {
@@ -3024,5 +3024,17 @@
   "broadcast_error_transaction_expired": {
     "message": "Your transaction has expired. Please try to broadcast it again.",
     "description": "transaction expireed error"
+  },
+  "local_accounts": {
+    "message": "Local accounts",
+    "description": "General word"
+  },
+  "users": {
+    "message": "Users",
+    "description": "General word"
+  },
+  "exchanges": {
+    "message": "Exchanges",
+    "description": "General word"
   }
 }

@@ -1,7 +1,7 @@
 import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
-import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box';
+import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
@@ -20,6 +20,7 @@ interface InputProps {
   hint?: string;
   skipHintTranslation?: boolean;
   autocompleteValues?: AutoCompleteValuesType;
+  translateSimpleAutoCompleteValues?: boolean;
   required?: boolean;
   hasError?: boolean;
   ariaLabel?: string;
@@ -117,7 +118,7 @@ const InputComponent = (props: InputProps) => {
               type={IconType.OUTLINED}
               additionalClassName="input-img erase"></Icon>
           )}
-        {isFocused && (
+        {isFocused && props.autocompleteValues && (
           <AutocompleteBox
             autoCompleteValues={props.autocompleteValues}
             handleOnChange={props.onChange}

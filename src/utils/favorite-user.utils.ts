@@ -91,12 +91,10 @@ const saveFavoriteUser = async (
   );
 };
 
-//TODO for later on discuss with cedric
-// remove this types and just add the autocompletes from its interface.
 export enum FavoriteUserListName {
-  USERS = 'USERS',
-  LOCAL_ACCOUNTS = 'LOCAL_ACCOUNTS',
-  EXCHANGES = 'EXCHANGES',
+  USERS = 'users',
+  LOCAL_ACCOUNTS = 'local_accounts',
+  EXCHANGES = 'exchanges',
 }
 export interface FavoriteUserList {
   name: FavoriteUserListName;
@@ -119,14 +117,17 @@ const getAutocompleteListByCategories = async (
   );
   const favoriteUsersList: AutoCompleteCategory = {
     title: FavoriteUserListName.USERS,
+    translateTitle: true,
     values: [],
   };
   const favoriteLocalAccountsList: AutoCompleteCategory = {
     title: FavoriteUserListName.LOCAL_ACCOUNTS,
+    translateTitle: true,
     values: [],
   };
   const favoriteExchangesList: AutoCompleteCategory = {
     title: FavoriteUserListName.EXCHANGES,
+    translateTitle: true,
     values: [],
   };
   const favoriteUsersCompleteList: AutoCompleteValues = {

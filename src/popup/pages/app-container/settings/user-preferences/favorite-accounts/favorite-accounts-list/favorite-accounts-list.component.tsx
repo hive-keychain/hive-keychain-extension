@@ -36,9 +36,7 @@ const FavoriteAccountsList = ({
       key={`${Math.random().toFixed(6).toString()}-${favoriteListName}`}>
       {favoriteList.list.length === 0 && (
         <div className="text-no-favorites">
-          {chrome.i18n.getMessage('popup_html_favorite_accounts_no_favorites', [
-            favoriteListName,
-          ])}
+          {chrome.i18n.getMessage('popup_html_favorite_accounts_no_favorites')}
         </div>
       )}
       {favoriteList.list.map((favoriteItem) => {

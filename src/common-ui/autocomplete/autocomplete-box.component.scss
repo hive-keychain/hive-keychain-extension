@@ -12,21 +12,13 @@ $autoCompleteItemHeight: 30px;
   max-height: $autoCompleteItemHeight * 5;
   overflow: auto;
 
-  .title-category {
-    font-weight: bold;
-    margin-left: 10px;
-    margin-top: 8px;
-  }
-
-  .value {
-    font-weight: 400;
-    height: 30px;
-    cursor: pointer;
-    padding-left: 16px;
-    display: flex;
-    align-items: center;
-    &:hover {
-      background-color: $red-dark;
+  .category {
+    padding-top: 8px;
+    .title {
+      font-weight: bold;
+      margin-left: 10px;
+      font-size: 18px;
+      font-style: italic;
     }
   }
 }
