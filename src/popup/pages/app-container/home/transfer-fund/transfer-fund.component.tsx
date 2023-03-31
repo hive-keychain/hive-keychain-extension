@@ -1,3 +1,4 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
@@ -30,10 +31,7 @@ import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
-import {
-  FavoriteUserList,
-  FavoriteUserUtils,
-} from 'src/utils/favorite-user.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
@@ -81,9 +79,10 @@ const TransferFunds = ({
   const [iteration, setIterations] = useState(
     formParams.iteration ? formParams.iteration : '',
   );
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    FavoriteUserList[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({
+      categories: [],
+    });
 
   let balances = {
     hive: FormatUtils.toNumber(activeAccount.account.balance),
@@ -111,7 +110,7 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    const autoCompleteListByCategories: FavoriteUserList[] =
+    const autoCompleteListByCategories: AutoCompleteValues =
       await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,

@@ -1,3 +1,4 @@
+import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
@@ -5,21 +6,18 @@ import { connect, ConnectedProps } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import {
-  FavoriteAccounts,
-  FavoriteUserListName,
-} from 'src/utils/favorite-user.utils';
+import { FavoriteUserListName } from 'src/utils/favorite-user.utils';
 import './favorite-accounts-item.component.scss';
 
 interface FavoriteAccountsItemProps {
-  favorite: FavoriteAccounts;
+  favorite: AutoCompleteValue;
   handleDeleteFavorite: (
     favoriteUserListName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
   ) => void;
   handleEditFavoriteLabel: (
     listName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
     newLabel: string,
   ) => void;
   listName: FavoriteUserListName;
@@ -44,16 +42,16 @@ const FavoriteAccountsItem = ({
     setLabel('');
   };
 
-  const edit = (favorite: FavoriteAccounts) => {
+  const edit = (favorite: AutoCompleteValue) => {
     setEditMode(true);
-    setLabel(favorite.label);
+    setLabel(favorite.subLabel!);
   };
 
-  const customLabelRender = (favorite: FavoriteAccounts) => {
+  const customLabelRender = (favorite: AutoCompleteValue) => {
     return (
       <div className="item-user-favorite">
         <img
-          src={`https://images.hive.blog/u/${favorite.account}/avatar`}
+          src={`https://images.hive.blog/u/${favorite.value}/avatar`}
           onError={(e: any) => {
             e.target.onError = null;
             e.target.src = '/assets/images/accounts.png';
@@ -62,12 +60,12 @@ const FavoriteAccountsItem = ({
         {!isEditMode && (
           <div
             className={`item-username${
-              favorite.label.length > 13 ? 'as-column' : ''
+              favorite.value.length > 13 ? 'as-column' : ''
             }`}>
-            <span>{favorite.account}</span>
+            <span>{favorite.value}</span>
             {
               <div className="item-username-label">
-                {favorite.label ? `${favorite.label}` : ''}
+                {favorite.subLabel ? `${favorite.subLabel!}` : ''}
               </div>
             }
           </div>

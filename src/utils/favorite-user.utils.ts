@@ -1,10 +1,14 @@
 import BgdAccountsUtils from '@background/utils/accounts.utils';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import {
+  AutoCompleteCategory,
+  AutoCompleteValue,
+  AutoCompleteValues,
+} from '@interfaces/autocomplete.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { AutoCompleteValue } from 'src/common-ui/input/input.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export interface AutocompleteListOption {
@@ -76,7 +80,10 @@ const saveFavoriteUser = async (
     !exchanges.find((exchange) => exchange.username === username) &&
     !localAccounts.find((localAccount) => localAccount.name === username)
   ) {
-    favoriteUser[activeAccount.name!].push({ account: username, label: '' });
+    favoriteUser[activeAccount.name!].push({
+      value: username,
+      subLabel: '',
+    } as AutoCompleteValue);
   }
   LocalStorageUtils.saveValueInLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
@@ -85,13 +92,13 @@ const saveFavoriteUser = async (
 };
 
 export enum FavoriteUserListName {
-  USERS = 'USERS',
-  LOCAL_ACCOUNTS = 'LOCAL_ACCOUNTS',
-  EXCHANGES = 'EXCHANGES',
+  USERS = 'users',
+  LOCAL_ACCOUNTS = 'local_accounts',
+  EXCHANGES = 'exchanges',
 }
 export interface FavoriteUserList {
   name: FavoriteUserListName;
-  list: FavoriteAccounts[];
+  list: AutoCompleteValue[];
 }
 export interface FavoriteAccounts {
   account: string;
@@ -102,39 +109,45 @@ const getAutocompleteListByCategories = async (
   username: string,
   localAccounts: LocalAccount[],
   options?: AutocompleteListOption,
-): Promise<FavoriteUserList[]> => {
+): Promise<AutoCompleteValues> => {
   const favoriteUsers: {
     [key: string]: any[];
   } = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.FAVORITE_USERS,
   );
-  const favoriteUsersList: FavoriteUserList = {
-    name: FavoriteUserListName.USERS,
-    list: [],
+  const favoriteUsersList: AutoCompleteCategory = {
+    title: FavoriteUserListName.USERS,
+    translateTitle: true,
+    values: [],
   };
-  const favoriteLocalAccountsList: FavoriteUserList = {
-    name: FavoriteUserListName.LOCAL_ACCOUNTS,
-    list: [],
+  const favoriteLocalAccountsList: AutoCompleteCategory = {
+    title: FavoriteUserListName.LOCAL_ACCOUNTS,
+    translateTitle: true,
+    values: [],
   };
-  const favoriteExchangesList: FavoriteUserList = {
-    name: FavoriteUserListName.EXCHANGES,
-    list: [],
+  const favoriteExchangesList: AutoCompleteCategory = {
+    title: FavoriteUserListName.EXCHANGES,
+    translateTitle: true,
+    values: [],
   };
-  const favoriteUsersCompleteList: FavoriteUserList[] = [];
+  const favoriteUsersCompleteList: AutoCompleteValues = {
+    categories: [],
+  };
+
   if (favoriteUsers && favoriteUsers[username]) {
     for (const fav of favoriteUsers[username]) {
       if (
         !exchanges.find((exchange) => exchange.username === fav) &&
         !localAccounts.find((localAccount) => localAccount.name === fav)
       )
-        favoriteUsersList.list.push(fav);
+        favoriteUsersList.values.push(fav);
     }
   }
   for (const localAccount of localAccounts) {
     if (localAccount.name !== username) {
-      favoriteLocalAccountsList.list.push({
-        account: localAccount.name,
-        label: '',
+      favoriteLocalAccountsList.values.push({
+        value: localAccount.name,
+        subLabel: '',
       });
     }
   }
@@ -145,20 +158,19 @@ const getAutocompleteListByCategories = async (
           !options?.token) &&
         exchange.username.length > 0
       )
-        favoriteExchangesList.list.push({
-          account: exchange.username,
-          label: '',
+        favoriteExchangesList.values.push({
+          value: exchange.username,
           subLabel: exchange.name,
         });
     }
-  if (favoriteUsersList.list.length > 0) {
-    favoriteUsersCompleteList.push(favoriteUsersList);
+  if (favoriteUsersList.values.length > 0) {
+    favoriteUsersCompleteList.categories.push(favoriteUsersList);
   }
-  if (favoriteLocalAccountsList.list.length > 0) {
-    favoriteUsersCompleteList.push(favoriteLocalAccountsList);
+  if (favoriteLocalAccountsList.values.length > 0) {
+    favoriteUsersCompleteList.categories.push(favoriteLocalAccountsList);
   }
-  if (favoriteExchangesList.list.length > 0) {
-    favoriteUsersCompleteList.push(favoriteExchangesList);
+  if (favoriteExchangesList.values.length > 0) {
+    favoriteUsersCompleteList.categories.push(favoriteExchangesList);
   }
   return favoriteUsersCompleteList;
 };
