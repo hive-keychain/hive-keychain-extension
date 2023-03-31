@@ -1,3 +1,4 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import {
   addToLoadingList,
@@ -24,9 +25,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent, {
-  AutoCompleteValue,
-} from 'src/common-ui/input/input.component';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -80,9 +79,10 @@ const TransferFunds = ({
   const [iteration, setIterations] = useState(
     formParams.iteration ? formParams.iteration : '',
   );
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    AutoCompleteValue[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({
+      categories: [],
+    });
 
   let balances = {
     hive: FormatUtils.toNumber(activeAccount.account.balance),
@@ -110,16 +110,13 @@ const TransferFunds = ({
   ];
 
   const loadAutocompleteTransferUsernames = async () => {
-    setAutocompleteFavoriteUsers(
-      await FavoriteUserUtils.getAutocompleteList(
+    const autoCompleteListByCategories: AutoCompleteValues =
+      await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
-        {
-          addExchanges: true,
-          token: selectedCurrency.toUpperCase(),
-        },
-      ),
-    );
+        { addExchanges: true, token: selectedCurrency.toUpperCase() },
+      );
+    setAutocompleteFavoriteUsers(autoCompleteListByCategories);
   };
 
   const setAmountToMaxValue = () => {

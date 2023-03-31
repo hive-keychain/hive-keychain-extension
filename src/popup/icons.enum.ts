@@ -32,6 +32,7 @@ export enum Icons {
   ERROR = 'error',
   EXPAND_MORE = 'expand_more',
   EXPORT = 'file_download',
+  FAVORITE = 'favorite_border',
   FILTER = 'filter_alt',
   HIDDEN = 'visibility_off',
   HISTORY = 'history',

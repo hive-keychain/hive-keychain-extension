@@ -15,12 +15,9 @@ const DialogError = ({ data }: Props) => {
   return (
     <>
       <DialogHeader title={chrome.i18n.getMessage('dialog_header_error')} />
-      <p
-        dangerouslySetInnerHTML={{
-          __html: data.msg.display_msg,
-        }}
-        style={{ wordBreak: 'break-word' }}></p>
-
+      {data.msg.display_msg.split(/<br\s?\/?>/g).map((msg) => (
+        <p style={{ wordBreak: 'break-word' }}>{msg}</p>
+      ))}
       <ButtonComponent
         label={'dialog_ok'}
         onClick={() => {
