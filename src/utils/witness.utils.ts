@@ -130,6 +130,46 @@ const sendWitnessAccountUpdateOperation = async (
   );
 };
 
+export const NB_WITNESS_VOTES_FETCHED = 10;
+const getWitnessVoteListOrTotalVotes = async (
+  witnessAccountName: string,
+  returnList?: boolean,
+) => {
+  const resultArray: any[] = [];
+  let lastAccountName = '';
+  let foundDifferentWitnessIndex = -1;
+  do {
+    try {
+      const witnessVotes = await HiveTxUtils.getData(
+        'database_api.list_witness_votes',
+        {
+          start: [witnessAccountName, lastAccountName],
+          limit: 100,
+          order: 'by_witness_account',
+        },
+      );
+      const votesArray = witnessVotes.votes;
+      resultArray.push(votesArray);
+      foundDifferentWitnessIndex = votesArray.findIndex(
+        (vote: any) => vote.witness !== witnessAccountName,
+      );
+      lastAccountName = votesArray[votesArray.length - 1].account;
+    } catch (error) {
+      //exit per error
+      foundDifferentWitnessIndex = -1;
+      console.log('Error getting witnesses votes list.', { error });
+    }
+  } while (foundDifferentWitnessIndex === -1);
+  console.log({ foundDifferentWitnessIndex }); //TODO to remove
+  //final array
+  resultArray[resultArray.length - 1] = resultArray[
+    resultArray.length - 1
+  ].filter((voter: any) => voter.witness === witnessAccountName);
+  return returnList
+    ? resultArray
+    : resultArray.reduce((acc, curr) => acc + curr.length, 0);
+};
+
 const WitnessUtils = {
   unvoteWitness,
   voteWitness,
@@ -139,6 +179,7 @@ const WitnessUtils = {
   getUpdateWitnessTransaction,
   getWitnessAccountInfo,
   sendWitnessAccountUpdateOperation,
+  getWitnessVoteListOrTotalVotes,
 };
 
 export default WitnessUtils;
