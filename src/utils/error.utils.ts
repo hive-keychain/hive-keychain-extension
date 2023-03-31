@@ -106,11 +106,12 @@ const parse = (error: any) => {
         }
       }
     }
-  } else if (stack && stack.format) {
+  }
+  Logger.log('error:', error);
+  if (stack && stack.format && !stack.format.includes('${what}')) {
     return new KeychainError('error_while_broadcasting', [stack.format], error);
   }
-
-  return new KeychainError('error_while_broadcasting', [], error);
+  return new KeychainError('html_popup_error_while_broadcasting', [], error);
 };
 
 const parseHiveEngine = (error: string, payload: any) => {

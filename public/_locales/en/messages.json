@@ -1340,6 +1340,14 @@
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
   },
+  "popup_html_proposal_funded_option_hive": {
+    "message": "Convert to HBD",
+    "description": "When converting"
+  },
+  "popup_html_proposal_funded_option_hbd": {
+    "message": "Convert to HIVE",
+    "description": "When converting"
+  },
   "popup_html_save_hive": {
     "message": "HIVE Savings",
     "description": "When clicking on the Hive arrow menu"
