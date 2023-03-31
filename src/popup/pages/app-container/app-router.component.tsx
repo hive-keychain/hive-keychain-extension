@@ -41,6 +41,7 @@ import { RpcNodesComponent } from '@popup/pages/app-container/settings/advanced-
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { AuthorizedOperationsComponent } from '@popup/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from '@popup/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
+import { FavoriteAccountsComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
 import { OperationPopupComponent } from '@popup/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
 import { UserPreferencesPageComponent } from '@popup/pages/app-container/settings/user-preferences/user-preferences.component';
 import { RootState } from '@popup/store';
@@ -146,6 +147,8 @@ const AppRouter = ({
         return <OperationPopupComponent />;
       case Screen.SETTINGS_AUTOMATED_TASKS:
         return <AutomatedTasksComponent />;
+      case Screen.SETTINGS_FAVORITE_ACCOUNTS:
+        return <FavoriteAccountsComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
       case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:

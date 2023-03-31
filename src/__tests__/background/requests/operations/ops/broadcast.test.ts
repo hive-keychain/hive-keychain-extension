@@ -5,6 +5,7 @@ import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import broadcast from 'src/__tests__/background/requests/operations/ops/mocks/broadcast';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import operation from 'src/__tests__/utils-for-testing/data/operation';
 import userData from 'src/__tests__/utils-for-testing/data/user-data';
@@ -98,7 +99,7 @@ describe('broadcast tests:\n', () => {
       mocks.getExtendedAccount(accounts.extended);
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
       const transfers = operation.array.filter((op) => op['0'] === 'transfer');
       transfers[0]['1'].memo = '# enconded memo';
       const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
@@ -120,7 +121,7 @@ describe('broadcast tests:\n', () => {
       const result = await broadcastOperations(requestHandler, cloneData);
       expect(result).toEqual(
         messages.success.broadcast(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_broadcast'),
@@ -132,7 +133,7 @@ describe('broadcast tests:\n', () => {
       mocks.getExtendedAccount(accounts.extended);
       const mHiveTxSendOp = jest
         .spyOn(HiveTxUtils, 'sendOperation')
-        .mockResolvedValue(true);
+        .mockResolvedValue(transactionConfirmationSuccess);
 
       const operations = operation.array.filter((op) => op['0'] !== 'transfer');
       const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
@@ -145,7 +146,7 @@ describe('broadcast tests:\n', () => {
       const result = await broadcastOperations(requestHandler, cloneData);
       expect(result).toEqual(
         messages.success.broadcast(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_broadcast'),
@@ -158,9 +159,11 @@ describe('broadcast tests:\n', () => {
   describe('Using ledger cases:\n', () => {
     it('Must return success on transfer', async () => {
       mocks.getExtendedAccount(accounts.extended);
-      mocks.HiveTxUtils.sendOperation(true);
+      mocks.HiveTxUtils.sendOperation(transactionConfirmationSuccess);
       mocks.LedgerModule.getSignatureFromLedger('signed!');
-      mocks.broadcastAndConfirmTransactionWithSignature(true);
+      mocks.broadcastAndConfirmTransactionWithSignature(
+        transactionConfirmationSuccess,
+      );
       const transfers = operation.array.filter((op) => op['0'] === 'transfer');
       transfers[0]['1'].memo = '# enconded memo';
       const cloneData = objects.clone(data) as RequestBroadcast & RequestId;
@@ -179,7 +182,7 @@ describe('broadcast tests:\n', () => {
       const result = await broadcastOperations(requestHandler, cloneData);
       expect(result).toEqual(
         messages.success.broadcast(
-          true,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           chrome.i18n.getMessage('bgd_ops_broadcast'),

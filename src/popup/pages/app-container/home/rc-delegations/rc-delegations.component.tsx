@@ -172,7 +172,7 @@ const RCDelegations = ({
             : 'html_popup_delegate_rc_operation',
         );
         try {
-          let success = false;
+          let success;
 
           success = await RcDelegationsUtils.sendDelegation(
             RcDelegationsUtils.gigaRcToRc(parseFloat(value.gigaRcValue)),

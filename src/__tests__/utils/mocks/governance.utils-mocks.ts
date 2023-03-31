@@ -3,6 +3,7 @@ import AccountUtils from 'src/utils/account.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import ProposalUtils from 'src/utils/proposal.utils';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 
 const constants = {
   extendedAccountsResponse: [
@@ -83,12 +84,12 @@ const spies = {
     unvoteProposal: jest
       .spyOn(ProposalUtils, 'unvoteProposal')
       .mockImplementation((...args) => {
-        return Promise.resolve(true);
+        return Promise.resolve(transactionConfirmationSuccess);
       }),
     voteProposal: jest
       .spyOn(ProposalUtils, 'voteForProposal')
       .mockImplementation((...args) => {
-        return Promise.resolve(true);
+        return Promise.resolve(transactionConfirmationSuccess);
       }),
   },
   logger: {

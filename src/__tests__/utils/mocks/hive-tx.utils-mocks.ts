@@ -5,6 +5,7 @@ import {
   Operation,
   SignedTransaction,
 } from '@hiveio/dhive';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import { Transaction as HiveTransaction } from 'hive-tx';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
@@ -80,7 +81,9 @@ const mocks = {
     get: (response: { rpc: string }) =>
       jest.spyOn(KeychainApi, 'get').mockResolvedValue(response),
   },
-  createSignAndBroadcastTransaction: (value: string | undefined) =>
+  createSignAndBroadcastTransaction: (
+    value: HiveTxConfirmationResult | undefined,
+  ) =>
     jest
       .spyOn(HiveTxUtils, 'createSignAndBroadcastTransaction')
       .mockResolvedValue(value),

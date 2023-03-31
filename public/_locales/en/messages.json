@@ -107,6 +107,10 @@
     "message": "Password",
     "description": "Placeholder in input for password"
   },
+  "popup_html_new_label": {
+    "message": "New Label",
+    "description": "Placeholder in input for new favorite label item"
+  },
   "popup_html_signin": {
     "message": "Sign In"
   },
@@ -279,6 +283,14 @@
     "message": "Operations",
     "description": "on settings page"
   },
+  "popup_html_favorite_accounts": {
+    "message": "Favorite accounts",
+    "description": "on settings page"
+  },
+  "popup_html_favorite_accounts_no_favorites": {
+    "message": "No favorites saved for this account",
+    "description": "on favorite settings page results"
+  },
   "popup_html_operation_popup": {
     "message": "Operation popup",
     "description": "on settings page"
@@ -374,6 +386,10 @@
   "popup_html_no_pref": {
     "message": "No whitelisted operation",
     "description": "on preferences"
+  },
+  "popup_html_nothing_found_using_filter": {
+    "message": "Nothing found, try to clear your filter(s)",
+    "description": "on multiple pages where filter is used"
   },
   "popup_html_add_rpc": {
     "message": "Add RPC",
@@ -1324,6 +1340,14 @@
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
   },
+  "popup_html_proposal_funded_option_hive": {
+    "message": "Convert to HBD",
+    "description": "When converting"
+  },
+  "popup_html_proposal_funded_option_hbd": {
+    "message": "Convert to HIVE",
+    "description": "When converting"
+  },
   "popup_html_save_hive": {
     "message": "HIVE Savings",
     "description": "When clicking on the Hive arrow menu"
@@ -1415,6 +1439,10 @@
   "popup_html_automated_intro": {
     "message": "Setup automated tasks that will run every hour if fitting your conditions.",
     "description": "When on automated tasks page"
+  },
+  "popup_html_favorite_accounts_intro": {
+    "message": "Setup accounts that you use the most, when doing transfers, hive engine operations, exchange operations, and more.",
+    "description": "When on favorite accounts page"
   },
   "popup_html_enable_autoclaim_rewards": {
     "message": "Claim Rewards",
@@ -3004,5 +3032,17 @@
   "broadcast_error_transaction_expired": {
     "message": "Your transaction has expired. Please try to broadcast it again.",
     "description": "transaction expireed error"
+  },
+  "local_accounts": {
+    "message": "Local accounts",
+    "description": "General word"
+  },
+  "users": {
+    "message": "Users",
+    "description": "General word"
+  },
+  "exchanges": {
+    "message": "Exchanges",
+    "description": "General word"
   }
 }
