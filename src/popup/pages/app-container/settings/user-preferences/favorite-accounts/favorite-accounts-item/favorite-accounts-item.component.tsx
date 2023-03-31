@@ -60,7 +60,7 @@ const FavoriteAccountsItem = ({
         {!isEditMode && (
           <div
             className={`item-username${
-              favorite.value.length > 13 ? 'as-column' : ''
+              favorite.value && favorite.value.length > 13 ? 'as-column' : ''
             }`}>
             <span>{favorite.value}</span>
             {

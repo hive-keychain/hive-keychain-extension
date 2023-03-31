@@ -8,15 +8,10 @@ import RpcUtils from 'src/utils/rpc.utils';
 
 const CURRENT_LOCAL_STORAGE_VERSION = 4;
 const checkAndUpdateLocalStorage = async () => {
-  //TODO remove code block after finish work
-  //Code Block to temporary change  storage version to 3
-  // saveNewLocalStorageVersion(3);
-  //END Code Block
-
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
   );
-  console.log({ localStorageVersion }); //TODO to remove
+
   if (!localStorageVersion) {
     try {
       const autolock = await LocalStorageUtils.getValueFromLocalStorage(
@@ -80,8 +75,9 @@ const checkAndUpdateLocalStorage = async () => {
           JSON.parse(noConfirm),
         );
       }
-    } catch (e) {
-      saveNewLocalStorageVersion(CURRENT_LOCAL_STORAGE_VERSION);
+    } finally {
+      await saveNewLocalStorageVersion(2);
+      checkAndUpdateLocalStorage();
     }
   } else {
     switch (localStorageVersion) {
@@ -105,22 +101,10 @@ const checkAndUpdateLocalStorage = async () => {
         saveNewLocalStorageVersion(3);
       }
       case 3: {
-        /////
-        //TODO remove test block
-        // LocalStorageUtils.saveValueInLocalStorage(
-        //   LocalStorageKeyEnum.FAVORITE_USERS,
-        //   {
-        //     theghost1980: ['account1', 'account 2'],
-        //     'keychain.tests': ['stoodkev', 'favUser1'],
-        //   },
-        // );
-        //END block
-
         const actualFavoriteUsers: any =
           await LocalStorageUtils.getValueFromLocalStorage(
             LocalStorageKeyEnum.FAVORITE_USERS,
           );
-        console.log({ actualFavoriteUsers }); //TODO to remove
         //check on format
         let oldFormat = true;
         //validation
@@ -142,28 +126,30 @@ const checkAndUpdateLocalStorage = async () => {
           );
           const localAccounts =
             await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
-          //initialize object.
-          for (const localAccount of localAccounts) {
-            favoriteUserData[localAccount.name] = [];
-          }
-          //fill the object initialized
-          if (actualFavoriteUsers) {
-            for (const [key, value] of Object.entries(
-              actualFavoriteUsers as FavoriteUserItems,
-            )) {
-              favoriteUserData[key] = value.map((account) => {
-                return {
-                  value: account,
-                  subLabel: '',
-                } as AutoCompleteValue;
-              });
+          if (localAccounts) {
+            //initialize object.
+            for (const localAccount of localAccounts) {
+              favoriteUserData[localAccount.name] = [];
             }
+            //fill the object initialized
+            if (actualFavoriteUsers) {
+              for (const [key, value] of Object.entries(
+                actualFavoriteUsers as FavoriteUserItems,
+              )) {
+                favoriteUserData[key] = value.map((account) => {
+                  return {
+                    value: account,
+                    subLabel: '',
+                  } as AutoCompleteValue;
+                });
+              }
+            }
+            //save in local storage
+            LocalStorageUtils.saveValueInLocalStorage(
+              LocalStorageKeyEnum.FAVORITE_USERS,
+              favoriteUserData,
+            );
           }
-          //save in local storage
-          LocalStorageUtils.saveValueInLocalStorage(
-            LocalStorageKeyEnum.FAVORITE_USERS,
-            favoriteUserData,
-          );
           saveNewLocalStorageVersion(4);
         }
       }

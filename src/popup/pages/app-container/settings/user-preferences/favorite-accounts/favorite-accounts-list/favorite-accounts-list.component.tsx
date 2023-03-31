@@ -29,29 +29,29 @@ const FavoriteAccountsList = ({
   handleEditFavoriteLabel,
 }: PropsFromRedux) => {
   const favoriteListName = favoriteList.name.split('_').join(' ');
-
   return (
     <div
       className="favorite-accounts-list"
       key={`${Math.random().toFixed(6).toString()}-${favoriteListName}`}>
-      {favoriteList.list.length === 0 && (
+      {(!favoriteList.list || favoriteList.list.length === 0) && (
         <div className="text-no-favorites">
           {chrome.i18n.getMessage('popup_html_favorite_accounts_no_favorites')}
         </div>
       )}
-      {favoriteList.list.map((favoriteItem) => {
-        return (
-          <FavoriteAccountsItemComponent
-            key={`${Math.random()
-              .toFixed(6)
-              .toString()}-${favoriteListName}-item`}
-            favorite={favoriteItem}
-            listName={favoriteList.name}
-            handleDeleteFavorite={handleDeleteFavorite}
-            handleEditFavoriteLabel={handleEditFavoriteLabel}
-          />
-        );
-      })}
+      {favoriteList.list &&
+        favoriteList.list.map((favoriteItem) => {
+          return (
+            <FavoriteAccountsItemComponent
+              key={`${Math.random()
+                .toFixed(6)
+                .toString()}-${favoriteListName}-item`}
+              favorite={favoriteItem}
+              listName={favoriteList.name}
+              handleDeleteFavorite={handleDeleteFavorite}
+              handleEditFavoriteLabel={handleEditFavoriteLabel}
+            />
+          );
+        })}
     </div>
   );
 };
