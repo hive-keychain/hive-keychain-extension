@@ -13,7 +13,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import FlatList from 'flatlist-react';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -29,14 +29,19 @@ import './witness-tab.component.scss';
 
 const MAX_WITNESS_VOTE = 30;
 
+interface WitnessTabProps {
+  setWitnessRakings: React.Dispatch<React.SetStateAction<Witness[]>>;
+}
+
 const WitnessTab = ({
   activeAccount,
+  setWitnessRakings,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
-}: PropsFromRedux) => {
+}: PropsFromRedux & WitnessTabProps) => {
   const [displayVotedOnly, setDisplayVotedOnly] = useState(false);
   const [hideNonActive, setHideNonActive] = useState(true);
   const [remainingVotes, setRemainingVotes] = useState<string | number>('...');
@@ -103,9 +108,11 @@ const WitnessTab = ({
     let requestResult;
     try {
       requestResult = await KeychainApi.get('hive/v2/witnesses-ranks');
+      console.log({ requestResult }); //TODO to remove
       if (!!requestResult && requestResult !== '') {
         const ranking = requestResult;
         setRanking(ranking);
+        setWitnessRakings(ranking);
         setFilteredRanking(ranking);
       } else {
         throw new Error('Witness-ranks data error');

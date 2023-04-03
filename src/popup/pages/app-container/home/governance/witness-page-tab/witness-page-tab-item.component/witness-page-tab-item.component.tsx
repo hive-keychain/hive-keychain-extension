@@ -6,7 +6,7 @@ import './witness-page-tab-item.component.scss';
 
 type Props = {
   label: string;
-  data: string | object;
+  data: string | object | number | undefined;
   isDate?: boolean;
   extraClassName?: string;
   isUrl?: boolean;

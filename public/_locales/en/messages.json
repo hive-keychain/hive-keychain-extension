@@ -1669,8 +1669,8 @@
     "message": "Proposal",
     "description": "Governance"
   },
-  "popup_html_witness_page": {
-    "message": "Witness page",
+  "popup_html_my_witness_page": {
+    "message": "My Witness",
     "description": "Governance"
   },
   "popup_html_witness_page_text": {

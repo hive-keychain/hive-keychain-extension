@@ -1,3 +1,4 @@
+import { Witness } from '@interfaces/witness.interface';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { ProposalTabComponent } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { ProxyTabComponent } from '@popup/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
@@ -6,10 +7,9 @@ import { WitnessPageTabStepTwoComponent } from '@popup/pages/app-container/home/
 import { WitnessTabComponent } from '@popup/pages/app-container/home/governance/witness-tab/witness-tab.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import 'react-tabs/style/react-tabs.scss';
-import WitnessUtils from 'src/utils/witness.utils';
 import './governance.component.scss';
 
 const Governance = ({
@@ -17,23 +17,10 @@ const Governance = ({
   activeAccount,
 }: PropsFromRedux) => {
   const [witnessAccountInfo, setWitnessAccountInfo] = useState<any>();
+
   const [witnessPageStep, setWitnessPageStep] = useState(1);
-
-  useEffect(() => {
-    init();
-  }, []);
-
-  const init = async () => {
-    setWitnessAccountInfo(
-      await WitnessUtils.getWitnessAccountInfo(activeAccount.name!),
-    );
-  };
-
-  //just to see props //TODO clean up
-  useEffect(() => {
-    console.log({ witnessAccountInfo });
-  }, [witnessAccountInfo]);
-  //end to remove
+  const [witnessRakings, setWitnessRakings] = useState<Witness[]>([]);
+  const [isWitness, setIsWitness] = useState(false);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -42,12 +29,24 @@ const Governance = ({
     });
   });
 
+  useEffect(() => {
+    setIsWitness(
+      witnessRakings &&
+        witnessRakings.length > 0 &&
+        witnessRakings.find(
+          (witness) => witness.name === activeAccount.name!,
+        ) !== undefined,
+    );
+  }, [witnessRakings]);
+
   const renderWitnessPageStep = () => {
     switch (witnessPageStep) {
       case 1:
         return (
           <WitnessPageTabStepOneComponent
             witnessAccountInfo={witnessAccountInfo}
+            setWitnessAccountInfo={setWitnessAccountInfo}
+            witnessRakings={witnessRakings}
             setWitnessPageStep={setWitnessPageStep}
           />
         );
@@ -66,17 +65,17 @@ const Governance = ({
       <Tabs>
         <TabList
           className={`react-tabs__tab-list ${
-            witnessAccountInfo ? 'make-flex' : 'make-grid'
+            isWitness ? 'make-flex' : 'make-grid'
           }`}>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proxy')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proposal')}</Tab>
-          {witnessAccountInfo && (
-            <Tab>{chrome.i18n.getMessage('popup_html_witness_page')}</Tab>
+          {isWitness && (
+            <Tab>{chrome.i18n.getMessage('popup_html_my_witness_page')}</Tab>
           )}
         </TabList>
         <TabPanel>
-          <WitnessTabComponent />
+          <WitnessTabComponent setWitnessRakings={setWitnessRakings} />
         </TabPanel>
         <TabPanel>
           <ProxyTabComponent />
@@ -84,7 +83,7 @@ const Governance = ({
         <TabPanel>
           <ProposalTabComponent />
         </TabPanel>
-        {witnessAccountInfo && <TabPanel>{renderWitnessPageStep()}</TabPanel>}
+        {isWitness && <TabPanel>{renderWitnessPageStep()}</TabPanel>}
       </Tabs>
     </div>
   );
