@@ -22,7 +22,11 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import TransactionUtils from 'src/utils/transaction.utils';
+import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import ArrayUtils from 'src/utils/array.utils';
+import TransactionUtils, {
+  NB_TRANSACTION_FETCHED,
+} from 'src/utils/transaction.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './witness-page-tab-step-one.component.scss';
 interface WitnessPageTabProps {
@@ -48,12 +52,13 @@ const WitnessPageTabStepOne = ({
   refreshActiveAccount,
   fetchAccountTransactions,
 }: PropsFromRedux & WitnessPageTabProps) => {
-  //TODO add a loading to display info.
+  //TODO add a loading to display info, clean up
   const [isInformationPanelOpened, setIsInformationPanelOpened] =
     useState(true);
   const [isParametersPanelOpened, setIsParametersPanelOpened] = useState(false);
   const [isPropsPanelOpened, setIsPropsPanelOpened] = useState(false);
   const [isRewardPanelOpened, setIsRewardPanelOpened] = useState(false);
+  const [isRewardListOpened, setIsRewardListOpened] = useState(true);
 
   const [witnessFullInfo, setWitnessFullInfo] = useState<{
     parameters: {
@@ -165,9 +170,38 @@ const WitnessPageTabStepOne = ({
         );
         console.log({ filteredRewardTransactions }); //TODO to remove
         //get actual date & add 7 days, to compare later on
-        const sevenDaysAhead = moment(new Date()).add(7, 'days').toISOString();
-        console.log({ sevenDaysAhead }); // 2022-03-17T23:59:59.000Z
+        //we add +1 so we stop on the first found on the 8th day
+        const sevenPlusOneDaysBefore = moment(new Date())
+          .subtract(8, 'days')
+          .toISOString()
+          .split('T')[0];
+        console.log({ sevenPlusOneDaysBefore });
         //check last received to know if need more fecthing
+        const dateLast =
+          filteredRewardTransactions[filteredRewardTransactions.length - 1]
+            .timestamp;
+        console.log({
+          dateLast,
+          isIncluded: dateLast.includes(sevenPlusOneDaysBefore),
+        });
+        //set lastIndex doesnt matter if founded or not.
+        setLastTransactionIndex(
+          ArrayUtils.getMinValue(transactions.list, 'index'),
+        );
+        if (dateLast.includes(sevenPlusOneDaysBefore)) {
+          //end loading
+          //filter & gather data to calculate
+          console.log('is included now what???'); //TODO to remove
+          //omit last one
+          filteredRewardTransactions.pop();
+          console.log({ filteredRewardTransactions }); //TODO to remove
+          finalizeDisplayedList(filteredRewardTransactions);
+        } else {
+          fetchAccountTransactions(
+            activeAccount.name!,
+            transactions.lastUsedStart - NB_TRANSACTION_FETCHED,
+          );
+        }
       }
     }
   }, [transactions]);
@@ -212,6 +246,27 @@ const WitnessPageTabStepOne = ({
     console.log({ list }); //TODO to remove
     setDisplayedTransactions(list);
     setLoading(false);
+  };
+
+  const totalizeRewards = (displayedTransactions: any[]) => {
+    const totalHBD = displayedTransactions.reduce(
+      (acc, tr: any) => acc + parseFloat(tr.hbd.split(' ')[0]),
+      0,
+    );
+    const totalHIVE = displayedTransactions.reduce(
+      (acc, tr: any) => acc + parseFloat(tr.hive.split(' ')[0]),
+      0,
+    );
+    const totalHP = displayedTransactions.reduce(
+      (acc, tr: any) => acc + parseFloat(tr.hp.split(' ')[0]),
+      0,
+    );
+    console.log({ totalHBD, totalHIVE, totalHP });
+    return {
+      totalHBD,
+      totalHIVE,
+      totalHP,
+    };
   };
 
   return (
@@ -421,36 +476,66 @@ const WitnessPageTabStepOne = ({
             {isRewardPanelOpened && (
               <div>
                 <hr />
-                <FlatList
-                  list={displayedTransactions}
-                  renderItem={renderListItem}
-                  renderOnScroll
-                  renderWhenEmpty={() => {
-                    if (loading) {
-                      return <div></div>;
-                    } else {
-                      return (
-                        <div className="empty-list">
-                          <Icon
-                            name={Icons.INBOX}
-                            type={IconType.OUTLINED}></Icon>
-                          <div className="labels">
-                            <span>
-                              {chrome.i18n.getMessage(
-                                'popup_html_transaction_list_is_empty',
-                              )}
-                            </span>
-                            <span>
-                              {chrome.i18n.getMessage(
-                                'popup_html_transaction_list_is_empty_try_clear_filter',
-                              )}
-                            </span>
-                          </div>
-                        </div>
-                      );
+                <div className="row-line">
+                  <div>
+                    <div className="panel-title">Witness Rewards 7 days</div>
+                    <div className="panel-title">Totals 7 days</div>
+                    <div>
+                      HBD: {totalizeRewards(displayedTransactions).totalHBD}
+                    </div>
+                    <div>
+                      HIVE: {totalizeRewards(displayedTransactions).totalHIVE}
+                    </div>
+                    <div>
+                      HP: {totalizeRewards(displayedTransactions).totalHP}
+                    </div>
+                  </div>
+                  <Icon
+                    name={Icons.EXPAND_MORE}
+                    type={IconType.OUTLINED}
+                    onClick={() => setIsRewardListOpened(!isRewardListOpened)}
+                    additionalClassName={
+                      isRewardListOpened ? 'rotate-icon-180' : 'non-rotate-icon'
                     }
-                  }}
-                />
+                  />
+                </div>
+                {isRewardListOpened && !loading && (
+                  <FlatList
+                    list={displayedTransactions}
+                    renderItem={renderListItem}
+                    renderOnScroll
+                    renderWhenEmpty={() => {
+                      if (loading) {
+                        return <div></div>;
+                      } else {
+                        return (
+                          <div className="empty-list">
+                            <Icon
+                              name={Icons.INBOX}
+                              type={IconType.OUTLINED}></Icon>
+                            <div className="labels">
+                              <span>
+                                {chrome.i18n.getMessage(
+                                  'popup_html_transaction_list_is_empty',
+                                )}
+                              </span>
+                              <span>
+                                {chrome.i18n.getMessage(
+                                  'popup_html_transaction_list_is_empty_try_clear_filter',
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      }
+                    }}
+                  />
+                )}
+                {loading && (
+                  <div className="rotating-logo-container">
+                    <RotatingLogoComponent />
+                  </div>
+                )}
                 <hr />
               </div>
             )}

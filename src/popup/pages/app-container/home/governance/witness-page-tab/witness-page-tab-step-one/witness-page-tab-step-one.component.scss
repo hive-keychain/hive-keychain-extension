@@ -37,6 +37,19 @@
     align-items: center;
   }
 
+  .rotating-logo-container {
+    min-height: 80px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    .rotating-logo {
+      align-self: center;
+      justify-self: center;
+      height: 30px;
+      width: 30px;
+    }
+  }
+
   .rotate-icon-180 {
     rotate: 180deg;
   }
