@@ -73,4 +73,24 @@
   .margin-top {
     margin-top: 10px;
   }
+
+  .witness-rewards-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    .reward-column {
+      text-align: center;
+      background: $red-transparent;
+      &:nth-child(even) {
+        background: $black-transparent;
+      }
+    }
+
+    .reward-column-title {
+      font-weight: bold;
+    }
+  }
 }

@@ -3,13 +3,14 @@ import moment from 'moment';
 import React from 'react';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './witness-page-tab-item.component.scss';
-
+//TODO here add same skipTranslation Option.
 type Props = {
   label: string;
   data: string | object | number | undefined;
   isDate?: boolean;
   extraClassName?: string;
   isUrl?: boolean;
+  //skipTooltipTranslation?: boolean;
 };
 
 const WitnessPageTabItemComponent = ({
