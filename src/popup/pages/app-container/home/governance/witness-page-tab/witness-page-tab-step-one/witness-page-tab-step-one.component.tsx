@@ -45,7 +45,7 @@ const WitnessPageTabStepOne = ({
   refreshActiveAccount,
   fetchAccountTransactions,
 }: PropsFromRedux & WitnessPageTabProps) => {
-  //TODO add a loading to display info, clean up
+  //TODO clean up, waiting review
 
   const [loading, setLoading] = useState(true);
 
@@ -58,7 +58,6 @@ const WitnessPageTabStepOne = ({
 
   const init = async () => {
     setLoading(true);
-    //using BE
     let requestResult;
     try {
       requestResult = await KeychainApi.get(
@@ -72,11 +71,9 @@ const WitnessPageTabStepOne = ({
         throw new Error('Witness-info data error');
       }
     } catch (err) {
-      //TODO add locale
-      setErrorMessage('popup_html_error_retrieving_witness_ranking');
+      setErrorMessage('popup_html_error_retrieving_witness_information');
       // setHasError(true);
     }
-    //end using BE
   };
 
   useEffect(() => {
@@ -110,36 +107,37 @@ const WitnessPageTabStepOne = ({
       ) * currencyPrices.hive.usd!
     ).toFixed(decimals);
 
-  //sample code
-  const response = {
-    lastWeekValue: 4461098.410653,
-    lastMonthValue: 19787660.631344,
-    lastYearValue: 229322533.648884,
-    allValue: 4461098.410653,
-    timestamp: '2023-04-04T09:38:33.000Z',
-    name: 'stoodkev',
-    votes_count: 9899,
-    created: '2018-01-24T03:55:09.000Z',
-    url: 'https://peakd.com/witness-category/@stoodkev/witness-update-running-v1-24-2',
-    votes: '134536006413411484',
-    total_missed: 552,
-    last_aslot: '73921971',
-    last_confirmed_block_num: '73707495',
-    signing_key: 'STM7wEZ2Sj1embiofddWjkRHDDA5EZfcEPmdLN7Pbc4X8afrRCX9n',
-    account_creation_fee: 1,
-    account_creation_fee_symbol: 'HIVE',
-    maximum_block_size: 65536,
-    hbd_interest_rate: 2000,
-    hbd_exchange_rate_base: 0.404,
-    hbd_exchange_rate_base_symbol: 'HBD',
-    hbd_exchange_rate_quote: 1,
-    hbd_exchange_rate_quote_symbol: 'HIVE',
-    last_hbd_exchange_update: '2023-04-04T09:06:54.000Z',
-    running_version: '1.27.3',
-    hardfork_version_vote: '1.27.0',
-    hardfork_time_vote: '2022-10-24T12:00:00.000Z',
-  };
-  ///end sample
+  //TODO remove block
+  // //sample code
+  // const response = {
+  //   lastWeekValue: 4461098.410653,
+  //   lastMonthValue: 19787660.631344,
+  //   lastYearValue: 229322533.648884,
+  //   allValue: 4461098.410653,
+  //   timestamp: '2023-04-04T09:38:33.000Z',
+  //   name: 'stoodkev',
+  //   votes_count: 9899,
+  //   created: '2018-01-24T03:55:09.000Z',
+  //   url: 'https://peakd.com/witness-category/@stoodkev/witness-update-running-v1-24-2',
+  //   votes: '134536006413411484',
+  //   total_missed: 552,
+  //   last_aslot: '73921971',
+  //   last_confirmed_block_num: '73707495',
+  //   signing_key: 'STM7wEZ2Sj1embiofddWjkRHDDA5EZfcEPmdLN7Pbc4X8afrRCX9n',
+  //   account_creation_fee: 1,
+  //   account_creation_fee_symbol: 'HIVE',
+  //   maximum_block_size: 65536,
+  //   hbd_interest_rate: 2000,
+  //   hbd_exchange_rate_base: 0.404,
+  //   hbd_exchange_rate_base_symbol: 'HBD',
+  //   hbd_exchange_rate_quote: 1,
+  //   hbd_exchange_rate_quote_symbol: 'HIVE',
+  //   last_hbd_exchange_update: '2023-04-04T09:06:54.000Z',
+  //   running_version: '1.27.3',
+  //   hardfork_version_vote: '1.27.0',
+  //   hardfork_time_vote: '2022-10-24T12:00:00.000Z',
+  // };
+  // ///end sample
 
   return (
     <div aria-label="witness-tab-page" className="witness-tab-page">
@@ -149,88 +147,111 @@ const WitnessPageTabStepOne = ({
       {!loading && witnessRanking && witnessInfo && (
         <>
           <WitnessPageTabItemComponent
-            label={'Owner'}
-            data={witnessInfo.name}
+            label={'popup_html_witness_information_owner_label'}
+            data={`https://peakd.com/@${witnessInfo.name}`}
+            isUrl={true}
           />
           <WitnessPageTabItemComponent
-            label={'Votes Count'}
+            label={'popup_html_witness_information_votes_count_label'}
             data={witnessInfo.votes_count}
           />
           <WitnessPageTabItemComponent
-            label={'Active Rank'}
+            label={'popup_html_witness_information_active_rank_label'}
             data={witnessRanking.active_rank}
           />
           <WitnessPageTabItemComponent
-            label={'Rank'}
+            label={'popup_html_witness_information_rank_label'}
             data={witnessRanking.rank}
           />
           <WitnessPageTabItemComponent
-            label={'Created'}
+            label={'popup_html_witness_information_created_label'}
             data={witnessInfo.created}
             isDate={true}
           />
           <WitnessPageTabItemComponent
-            label={'total_missed'}
+            label={'popup_html_witness_information_total_missed_label'}
             data={witnessInfo.total_missed}
           />
           <WitnessPageTabItemComponent
-            label={'last_aslot'}
+            label={'popup_html_witness_information_last_aslot_label'}
             data={witnessInfo.last_aslot}
           />
           <WitnessPageTabItemComponent
-            label={'last_confirmed_block_num'}
+            label={'popup_html_witness_information_last_confirmed_block_label'}
             data={getUrlBlock(witnessInfo.last_confirmed_block_num)}
             isUrl={true}
           />
           <WitnessPageTabItemComponent
-            label={'signing_key'}
+            label={'popup_html_witness_information_signing_key_label'}
             data={witnessInfo.signing_key}
           />
           <WitnessPageTabItemComponent
-            label={'Fee'}
+            label={'popup_html_witness_information_fee_label'}
             data={`${witnessInfo.account_creation_fee} ${witnessInfo.account_creation_fee_symbol}`}
           />
           <WitnessPageTabItemComponent
-            label={'maximum_block_size'}
+            label={'popup_html_witness_information_maximum_block_size_label'}
             data={witnessInfo.maximum_block_size}
           />
           <WitnessPageTabItemComponent
-            label={'hbd_interest_rate'}
+            label={'popup_html_witness_information_hbd_interest_rate_label'}
             data={witnessInfo.hbd_interest_rate}
           />
           <WitnessPageTabItemComponent
-            label={'Exchange rate base'}
+            label={'popup_html_witness_information_exchange_rate_base_label'}
             data={`${witnessInfo.hbd_exchange_rate_base} ${witnessInfo.hbd_exchange_rate_base_symbol}`}
           />
           <WitnessPageTabItemComponent
-            label={'Exchange rate quote'}
+            label={'popup_html_witness_information_exchange_rate_quote_label'}
             data={`${witnessInfo.hbd_exchange_rate_quote} ${witnessInfo.hbd_exchange_rate_quote_symbol}`}
           />
           <WitnessPageTabItemComponent
-            label={'last_hbd_exchange_update'}
+            label={
+              'popup_html_witness_information_last_hbd_exchange_update_label'
+            }
             data={witnessInfo.last_hbd_exchange_update}
             isDate={true}
           />
           <WitnessPageTabItemComponent
-            label={'running_version'}
+            label={'popup_html_witness_information_running_version_label'}
             data={witnessInfo.running_version}
           />
           <WitnessPageTabItemComponent
-            label={'hardfork_version_vote'}
+            label={'popup_html_witness_information_hardfork_version_vote_label'}
             data={witnessInfo.hardfork_version_vote}
           />
           <WitnessPageTabItemComponent
-            label={'hardfork_time_vote'}
+            label={'popup_html_witness_information_hardfork_time_vote_label'}
             data={witnessInfo.hardfork_time_vote}
             isDate={true}
           />
           <div className="witness-rewards-panel">
             <div className="reward-column">
-              <div className="reward-column-title">Time frame</div>
-              <div className="reward-column-title">Last Week Value</div>
-              <div className="reward-column-title">Last Month Value</div>
-              <div className="reward-column-title">Last Year Value</div>
-              <div className="reward-column-title">All Time value</div>
+              <div className="reward-column-title">
+                {chrome.i18n.getMessage(
+                  'popup_html_witness_information_reward_panel_time_frame_label',
+                )}
+              </div>
+              <div className="reward-column-title">
+                {chrome.i18n.getMessage(
+                  'popup_html_witness_information_reward_panel_last_week_label',
+                )}
+              </div>
+              <div className="reward-column-title">
+                {chrome.i18n.getMessage(
+                  'popup_html_witness_information_reward_panel_last_month_label',
+                )}
+              </div>
+              <div className="reward-column-title">
+                {chrome.i18n.getMessage(
+                  'popup_html_witness_information_reward_panel_last_year_label',
+                )}
+              </div>
+              <div className="reward-column-title">
+                {chrome.i18n.getMessage(
+                  'popup_html_witness_information_reward_panel_all_time_label',
+                )}
+              </div>
             </div>
             <div className="reward-column">
               <div className="reward-column-title">HP</div>

@@ -487,6 +487,98 @@
     "message": "Votes remaining: $1",
     "description": "On witness page"
   },
+  "popup_html_witness_information_owner_label": {
+    "message": "Owner",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_votes_count_label": {
+    "message": "Votes Count",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_active_rank_label": {
+    "message": "Active Rank",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_rank_label": {
+    "message": "Rank",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_created_label": {
+    "message": "Created",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_total_missed_label": {
+    "message": "Total missed",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_last_aslot_label": {
+    "message": "Last aslot",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_last_confirmed_block_label": {
+    "message": "Last confirmed block",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_signing_key_label": {
+    "message": "Signing key",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_fee_label": {
+    "message": "Fee",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_maximum_block_size_label": {
+    "message": "Maximum block size",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_label": {
+    "message": "HBD interest rate",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_base_label": {
+    "message": "Exchange rate base",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_exchange_rate_quote_label": {
+    "message": "Exchange rate quote",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_last_hbd_exchange_update_label": {
+    "message": "Last hbd exchange update",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_running_version_label": {
+    "message": "Running version",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hardfork_version_vote_label": {
+    "message": "Hardfork version vote",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hardfork_time_vote_label": {
+    "message": "Hardfork time vote",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_time_frame_label": {
+    "message": "Time frame",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_week_label": {
+    "message": "Last week",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_month_label": {
+    "message": "Last month",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_last_year_label": {
+    "message": "Last year",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_reward_panel_all_time_label": {
+    "message": "All time",
+    "description": "On My witness page"
+  },
   "popup_html_tokens_available": {
     "message": "Tokens Available",
     "description": "On tokens page"
@@ -2141,6 +2233,10 @@
   },
   "popup_html_error_retrieving_witness_ranking": {
     "message": "An error occured while retrieving the witness ranking. Please try again later.",
+    "description": "Error while retrieving witness ranking, hivesql not down"
+  },
+  "popup_html_error_retrieving_witness_information": {
+    "message": "An error occured while retrieving the witness account information. Please try again later.",
     "description": "Error while retrieving witness ranking, hivesql not down"
   },
   "popup_html_error_retrieving_incoming_delegations": {

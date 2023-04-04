@@ -10,7 +10,7 @@ type Props = {
   isDate?: boolean;
   extraClassName?: string;
   isUrl?: boolean;
-  //skipTooltipTranslation?: boolean;
+  skipLabelTranslation?: boolean;
 };
 
 const WitnessPageTabItemComponent = ({
@@ -19,6 +19,7 @@ const WitnessPageTabItemComponent = ({
   isDate,
   extraClassName,
   isUrl,
+  skipLabelTranslation,
 }: Props) => {
   const renderObject = (data: object) => {
     let items: JSX.Element[] = [];
@@ -39,7 +40,9 @@ const WitnessPageTabItemComponent = ({
 
   return (
     <div className="row-information">
-      <div className="label-title">{label}</div>
+      <div className="label-title">
+        {skipLabelTranslation ? label : chrome.i18n.getMessage(label)}
+      </div>
       <div
         className={`row-line label-info-data ${extraClassName} ${
           isUrl ? 'url-clickeable' : ''
