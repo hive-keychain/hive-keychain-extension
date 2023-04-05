@@ -12,7 +12,7 @@ import {
 } from '@popup/actions/message.actions';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
@@ -25,12 +25,17 @@ import WitnessUtils from 'src/utils/witness.utils';
 import './witness-page-tab-step-two.component.scss';
 
 interface WitnessPageTabStepTwoProps {
-  witnessAccountInfo: any; //TODO type?
-  setWitnessPageStep: React.Dispatch<React.SetStateAction<number>>;
+  witnessInfo: any;
+  setWitnessPageStep: React.Dispatch<
+    React.SetStateAction<{
+      page: number;
+      props?: any;
+    }>
+  >;
 }
 
 const WitnessPageTabStepTwo = ({
-  witnessAccountInfo,
+  witnessInfo,
   setWitnessPageStep,
   activeAccount,
   addToLoadingList,
@@ -40,28 +45,42 @@ const WitnessPageTabStepTwo = ({
   refreshActiveAccount,
 }: PropsFromRedux & WitnessPageTabStepTwoProps) => {
   const [formParams, setFormParams] = useState<WitnessProps>({
-    account_creation_fee: witnessAccountInfo.props.account_creation_fee,
-    account_subsidy_budget: witnessAccountInfo.props.account_subsidy_budget,
-    account_subsidy_decay: witnessAccountInfo.props.account_subsidy_decay,
-    maximum_block_size: witnessAccountInfo.props.maximum_block_size,
-    hbd_exchange_rate: witnessAccountInfo.hbd_exchange_rate,
-    hbd_interest_rate: witnessAccountInfo.props.hbd_interest_rate,
-    new_signing_key: witnessAccountInfo.signing_key,
-    key: witnessAccountInfo.signing_key,
-    url: witnessAccountInfo.url,
+    account_creation_fee:
+      witnessInfo.account_creation_fee +
+      ' ' +
+      witnessInfo.account_creation_fee_symbol,
+    maximum_block_size: witnessInfo.maximum_block_size,
+    hbd_exchange_rate: {
+      base:
+        witnessInfo.hbd_exchange_rate_base +
+        ' ' +
+        witnessInfo.hbd_exchange_rate_base_symbol,
+      quote:
+        witnessInfo.hbd_exchange_rate_quote +
+        ' ' +
+        witnessInfo.hbd_exchange_rate_quote_symbol,
+    },
+    hbd_interest_rate: witnessInfo.hbd_interest_rate,
+    new_signing_key: witnessInfo.signing_key,
+    key: witnessInfo.signing_key,
+    url: witnessInfo.url,
   });
-  const [hbdExchangeRate, setHbdExchangeRate] = useState<PriceType>(
-    witnessAccountInfo.hbd_exchange_rate,
-  );
+  const [hbdExchangeRate, setHbdExchangeRate] = useState<PriceType>({
+    base:
+      witnessInfo.hbd_exchange_rate_base +
+      ' ' +
+      witnessInfo.hbd_exchange_rate_base_symbol,
+    quote:
+      witnessInfo.hbd_exchange_rate_quote +
+      ' ' +
+      witnessInfo.hbd_exchange_rate_quote_symbol,
+  });
 
   const handleUpdateWitnessProps = async () => {
-    //TODO validation
-    //check if any other needed?
     if (!(formParams.new_signing_key as string).startsWith('STM')) {
       setErrorMessage('popup_html_public_key_needed');
       return;
     }
-    //add owner
     formParams['key'] = formParams['new_signing_key']!;
     console.log('about to process: ', { formParams });
     //execute operation + loading
@@ -110,11 +129,11 @@ const WitnessPageTabStepTwo = ({
   }, [hbdExchangeRate]);
 
   const goBackStepOne = () => {
-    setWitnessPageStep(1);
+    setWitnessPageStep({ page: 1 });
   };
 
   return (
-    <div aria-label="witness-tab-page" className="witness-tab-page">
+    <div className="witness-tab-page-step-two">
       <div className="form-container">
         <div className="column-line">
           <div>Account creation fee</div>
@@ -132,30 +151,6 @@ const WitnessPageTabStepTwo = ({
               }
             />
             <div>{BaseCurrencies.HIVE.toUpperCase()}</div>
-          </div>
-          <div className="row-line">
-            <div>Account subsidy budget</div>
-            <InputComponent
-              type={InputType.TEXT}
-              skipPlaceholderTranslation={true}
-              placeholder="Account Subsidt Budget"
-              value={formParams.account_subsidy_budget}
-              onChange={(value) =>
-                handleFormParams('account_subsidy_budget', value)
-              }
-            />
-          </div>
-          <div className="row-line">
-            <div>Account subsidy decay</div>
-            <InputComponent
-              type={InputType.TEXT}
-              skipPlaceholderTranslation={true}
-              placeholder="Account Subsidy Decay"
-              value={formParams.account_subsidy_decay}
-              onChange={(value) =>
-                handleFormParams('account_subsidy_decay', value)
-              }
-            />
           </div>
           <div className="row-line">
             <div>Maximum block size</div>

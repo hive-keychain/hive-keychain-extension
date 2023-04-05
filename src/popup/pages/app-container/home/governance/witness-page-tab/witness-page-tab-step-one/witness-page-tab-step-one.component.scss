@@ -1,6 +1,8 @@
 @import '../../../../../../variable.scss';
 
-.witness-tab-page {
+.witness-tab-page-step-one {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   padding: 0px 10px;
   font-size: 16px;
@@ -8,8 +10,8 @@
   overflow-x: hidden;
 
   .text {
-    text-align: center;
     padding-bottom: 8px;
+    font-size: 18px;
   }
 
   .panel-title {
@@ -38,16 +40,10 @@
   }
 
   .rotating-logo-container {
-    min-height: 80px;
-    flex: 1;
     display: flex;
+    align-items: center;
     justify-content: center;
-    .rotating-logo {
-      align-self: center;
-      justify-self: center;
-      height: 30px;
-      width: 30px;
-    }
+    flex: 1;
   }
 
   .rotate-icon-180 {
@@ -56,22 +52,6 @@
 
   .non-rotate-icon {
     rotate: 0deg;
-  }
-
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex: 1;
-    margin-bottom: 16px;
-  }
-
-  .margin-bottom {
-    margin-bottom: 10px;
-  }
-
-  .margin-top {
-    margin-top: 10px;
   }
 
   .witness-rewards-panel {
@@ -92,5 +72,17 @@
     .reward-column-title {
       font-weight: bold;
     }
+  }
+
+  .padding-bottom {
+    padding-bottom: 15px;
+  }
+
+  .title {
+    font-weight: bold;
+  }
+
+  .centered-text {
+    text-align: center;
   }
 }

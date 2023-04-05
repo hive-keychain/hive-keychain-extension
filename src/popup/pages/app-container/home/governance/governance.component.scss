@@ -3,6 +3,7 @@
 .governance-page {
   @include pageLayoutRowGap;
   overflow: hidden;
+  height: 100%;
   .disclaimer,
   .remaining-votes {
     font-size: 20px;

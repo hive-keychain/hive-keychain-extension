@@ -18,7 +18,12 @@ const Governance = ({
 }: PropsFromRedux) => {
   const [witnessAccountInfo, setWitnessAccountInfo] = useState<any>();
 
-  const [witnessPageStep, setWitnessPageStep] = useState(1);
+  const [witnessPageStep, setWitnessPageStep] = useState<{
+    page: number;
+    props?: any;
+  }>({
+    page: 1,
+  });
   const [witnessRakings, setWitnessRakings] = useState<Witness[]>([]);
   const [isWitness, setIsWitness] = useState(false);
 
@@ -40,11 +45,10 @@ const Governance = ({
   }, [witnessRakings]);
 
   const renderWitnessPageStep = () => {
-    switch (witnessPageStep) {
+    switch (witnessPageStep.page) {
       case 1:
         return (
           <WitnessPageTabStepOneComponent
-            witnessAccountInfo={witnessAccountInfo}
             setWitnessAccountInfo={setWitnessAccountInfo}
             witnessRakings={witnessRakings}
             setWitnessPageStep={setWitnessPageStep}
@@ -53,7 +57,7 @@ const Governance = ({
       case 2:
         return (
           <WitnessPageTabStepTwoComponent
-            witnessAccountInfo={witnessAccountInfo}
+            witnessInfo={witnessPageStep.props}
             setWitnessPageStep={setWitnessPageStep}
           />
         );

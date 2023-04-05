@@ -1,23 +1,11 @@
 @import '../../../../../../variable.scss';
 
-.witness-tab-page {
+.witness-tab-page-step-two {
   flex: 1;
   padding: 0px 10px;
   font-size: 16px;
   overflow-y: auto;
   overflow-x: hidden;
-
-  .text {
-    text-align: center;
-    margin-bottom: 8px;
-  }
-
-  .page-information {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    padding: 4px;
-  }
 
   .column-line {
     display: flex;
@@ -30,14 +18,6 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .rotate-icon-180 {
-    rotate: 180deg;
-  }
-
-  .non-rotate-icon {
-    rotate: 0deg;
   }
 
   .form-container {
