@@ -88,7 +88,7 @@ const WitnessPageTabStepTwo = ({
       addToLoadingList('html_popup_update_witness_operation');
       const success = await WitnessUtils.sendWitnessAccountUpdateOperation(
         activeAccount.name!,
-        activeAccount.keys.posting!, //TODO change to activeKey to really test the OP
+        activeAccount.keys.active!,
         formParams,
       );
       addToLoadingList('html_popup_confirm_transaction_operation');
@@ -231,8 +231,7 @@ const WitnessPageTabStepTwo = ({
         </div>
         <div>
           <OperationButtonComponent
-            //TODO change to active after tests
-            requiredKey={KeychainKeyTypesLC.posting}
+            requiredKey={KeychainKeyTypesLC.active}
             onClick={() => handleUpdateWitnessProps()}
             label={'popup_html_operation_button_save'}
             additionalClass={'margin-bottom margin-top'}
