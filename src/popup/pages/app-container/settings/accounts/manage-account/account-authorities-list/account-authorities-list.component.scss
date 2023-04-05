@@ -1,19 +1,29 @@
 @import '../../../../../../variable.scss';
 
-.account-keys-list {
+.account-authorities-list {
   @include pageLayoutRowGap;
-  padding: 0px 24px;
+  padding: 0px 5px;
   padding-bottom: 24px;
 
-  .account-keys-list-item:nth-child(even) {
-    background: $red-transparent;
+  .authorities-panel {
+    display: flex;
+    flex-direction: column;
+    row-gap: 6px;
+
+    .key-field {
+      font-size: 11px;
+      cursor: pointer;
+
+      &.hidden {
+        font-size: 14px;
+      }
+    }
+
+    .using-authorized-account {
+      cursor: pointer;
+      font-size: 14px;
+    }
   }
 
   scroll-behavior: smooth;
-}
-
-.qrcode {
-  margin: 16px 0px;
-  align-self: center;
-  border: solid 3px white;
 }

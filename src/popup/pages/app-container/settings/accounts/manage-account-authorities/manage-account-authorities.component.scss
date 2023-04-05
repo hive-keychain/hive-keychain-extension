@@ -1,8 +1,10 @@
 @import '../../../../../variable.scss';
 
-.settings-manage-account {
+.settings-manage-account-authorities {
   @include pageLayout;
   justify-content: flex-start;
+  overflow-x: hidden;
+  overflow-y: auto;
 
   .text {
     font-size: 16px;

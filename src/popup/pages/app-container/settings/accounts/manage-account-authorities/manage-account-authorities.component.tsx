@@ -4,7 +4,6 @@ import { AccountAuthoritiesListComponent } from '@popup/pages/app-container/sett
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-//TODO bellow change all classes to its new names
 import './manage-account-authorities.component.scss';
 
 const ManageAccountAuthorities = ({
@@ -18,9 +17,7 @@ const ManageAccountAuthorities = ({
   });
 
   return (
-    <div
-      aria-label="settings-manage-account"
-      className="settings-manage-account">
+    <div className="settings-manage-account-authorities">
       <div className="text">
         {chrome.i18n.getMessage('popup_html_manage_accounts_authorities_text')}
       </div>

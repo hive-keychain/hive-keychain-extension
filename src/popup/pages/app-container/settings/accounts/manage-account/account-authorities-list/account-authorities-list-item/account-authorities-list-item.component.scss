@@ -4,8 +4,6 @@
   display: flex;
   flex-direction: column;
   row-gap: 8px;
-  margin: 0px -24px;
-  padding: 6px 24px;
 
   .text-centered {
     text-align: center;
@@ -19,35 +17,6 @@
     .key-name {
       text-transform: uppercase;
       font-size: 20px;
-    }
-  }
-
-  .keys-panel {
-    display: flex;
-    flex-direction: column;
-    row-gap: 6px;
-
-    .key-field {
-      font-size: 11px;
-      cursor: pointer;
-
-      &.hidden {
-        font-size: 14px;
-      }
-    }
-
-    .using-authorized-account {
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .remove-button {
-      color: white;
-      cursor: pointer;
-      font-size: 20px;
-      &:hover {
-        color: $black-transparent;
-      }
     }
   }
 
@@ -73,11 +42,15 @@
       display: grid;
       grid-template-columns: 3fr 2fr 1fr;
       &:hover {
-        background-color: $red-dark;
+        background-color: $red-transparent;
 
         .buttons-item {
           display: inline;
         }
+      }
+
+      &:nth-child(even) {
+        background: $red-transparent;
       }
 
       .buttons-item {
@@ -86,14 +59,22 @@
 
       .item-account-name {
         display: grid;
-        grid-template-columns: 3fr 2fr 1fr;
+        grid-template-columns: 3fr 2fr;
+
+        .item-flex-justify-center {
+          display: flex;
+          justify-items: center;
+        }
+      }
+
+      .remove-button {
+        color: white;
+        cursor: pointer;
+        font-size: 20px;
+        &:hover {
+          color: $black-transparent;
+        }
       }
     }
-  }
-
-  .add-key-icon {
-    text-align: center;
-    font-size: 32px;
-    cursor: pointer;
   }
 }

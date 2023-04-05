@@ -271,6 +271,18 @@
     "message": "Manage authorities",
     "description": "on settings page"
   },
+  "popup_html_manage_no_accounts_authorities": {
+    "message": "No auths on this key.",
+    "description": "On Accounts > Manage Authorities"
+  },
+  "popup_html_manage_account_authority_username_label": {
+    "message": "Username",
+    "description": "On Accounts > Manage Authorities"
+  },
+  "popup_html_manage_account_authority_weight_label": {
+    "message": "Weight",
+    "description": "On Accounts > Manage Authorities"
+  },
   "popup_html_change_password": {
     "message": "Change password",
     "description": "on settings page"
