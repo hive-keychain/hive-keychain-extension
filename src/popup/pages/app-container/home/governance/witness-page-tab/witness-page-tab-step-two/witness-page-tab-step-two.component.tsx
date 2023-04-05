@@ -22,6 +22,7 @@ import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 //TODO here check on scss what it not needed.
+import FormatUtils from 'src/utils/format.utils';
 import './witness-page-tab-step-two.component.scss';
 
 interface WitnessPageTabStepTwoProps {
@@ -46,17 +47,20 @@ const WitnessPageTabStepTwo = ({
 }: PropsFromRedux & WitnessPageTabStepTwoProps) => {
   const [formParams, setFormParams] = useState<WitnessProps>({
     account_creation_fee:
-      witnessInfo.account_creation_fee +
+      FormatUtils.formatCurrencyValue(witnessInfo.account_creation_fee, 3) +
       ' ' +
       witnessInfo.account_creation_fee_symbol,
     maximum_block_size: witnessInfo.maximum_block_size,
     hbd_exchange_rate: {
       base:
-        witnessInfo.hbd_exchange_rate_base +
+        FormatUtils.formatCurrencyValue(witnessInfo.hbd_exchange_rate_base, 3) +
         ' ' +
         witnessInfo.hbd_exchange_rate_base_symbol,
       quote:
-        witnessInfo.hbd_exchange_rate_quote +
+        FormatUtils.formatCurrencyValue(
+          witnessInfo.hbd_exchange_rate_quote,
+          3,
+        ) +
         ' ' +
         witnessInfo.hbd_exchange_rate_quote_symbol,
     },
@@ -67,11 +71,11 @@ const WitnessPageTabStepTwo = ({
   });
   const [hbdExchangeRate, setHbdExchangeRate] = useState<PriceType>({
     base:
-      witnessInfo.hbd_exchange_rate_base +
+      FormatUtils.formatCurrencyValue(witnessInfo.hbd_exchange_rate_base, 3) +
       ' ' +
       witnessInfo.hbd_exchange_rate_base_symbol,
     quote:
-      witnessInfo.hbd_exchange_rate_quote +
+      FormatUtils.formatCurrencyValue(witnessInfo.hbd_exchange_rate_quote, 3) +
       ' ' +
       witnessInfo.hbd_exchange_rate_quote_symbol,
   });
@@ -83,7 +87,6 @@ const WitnessPageTabStepTwo = ({
     }
     formParams['key'] = formParams['new_signing_key']!;
     console.log('about to process: ', { formParams });
-    //execute operation + loading
     try {
       addToLoadingList('html_popup_update_witness_operation');
       const success = await WitnessUtils.sendWitnessAccountUpdateOperation(
@@ -136,110 +139,158 @@ const WitnessPageTabStepTwo = ({
     <div className="witness-tab-page-step-two">
       <div className="form-container">
         <div className="column-line">
-          <div>Account creation fee</div>
           <div className="row-line">
+            <div className="label-title">
+              {chrome.i18n.getMessage(
+                'popup_html_witness_information_fee_label',
+              )}
+            </div>
+            <div className="row-line half-width">
+              <InputComponent
+                type={InputType.TEXT}
+                skipPlaceholderTranslation={true}
+                placeholder="Account Creation Fee"
+                value={
+                  formParams.account_creation_fee?.toString().split(' ')[0]
+                }
+                onChange={(value) =>
+                  handleFormParams(
+                    'account_creation_fee',
+                    value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
+                  )
+                }
+              />
+              <div className="label-title">
+                {BaseCurrencies.HIVE.toUpperCase()}
+              </div>
+            </div>
+          </div>
+          <div className="row-line">
+            <div className="label-title">
+              {chrome.i18n.getMessage(
+                'popup_html_witness_information_maximum_block_size_label',
+              )}
+            </div>
+            <div className="half-width">
+              <InputComponent
+                type={InputType.TEXT}
+                skipPlaceholderTranslation={true}
+                placeholder="Maximum Block Size"
+                value={formParams.maximum_block_size}
+                onChange={(value) =>
+                  handleFormParams('maximum_block_size', value)
+                }
+              />
+            </div>
+          </div>
+          <div className="row-line">
+            <div className="label-title">
+              {chrome.i18n.getMessage(
+                'popup_html_witness_information_exchange_rate_base_label',
+              )}
+            </div>
+            <div className="row-line half-width">
+              <InputComponent
+                type={InputType.TEXT}
+                skipPlaceholderTranslation={true}
+                placeholder="Base Exchange Rate"
+                value={hbdExchangeRate.base.toString().split(' ')[0]}
+                onChange={(value) =>
+                  setHbdExchangeRate((prevExchangerate) => {
+                    return {
+                      ...prevExchangerate,
+                      base: value + ` ${BaseCurrencies.HBD.toUpperCase()}`,
+                    };
+                  })
+                }
+              />
+              <div className="label-title">
+                {BaseCurrencies.HBD.toUpperCase()}
+              </div>
+            </div>
+          </div>
+          <div className="row-line">
+            <div className="label-title">
+              {chrome.i18n.getMessage(
+                'popup_html_witness_information_exchange_rate_quote_label',
+              )}
+            </div>
+            <div className="row-line half-width">
+              <InputComponent
+                type={InputType.TEXT}
+                skipPlaceholderTranslation={true}
+                placeholder="Quote Exchange Rate"
+                value={hbdExchangeRate.quote.toString().split(' ')[0]}
+                onChange={(value) =>
+                  setHbdExchangeRate((prevExchangerate) => {
+                    return {
+                      ...prevExchangerate,
+                      quote: value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
+                    };
+                  })
+                }
+              />
+              <div className="label-title">
+                {BaseCurrencies.HIVE.toUpperCase()}
+              </div>
+            </div>
+          </div>
+          <div className="row-line">
+            <div className="label-title">
+              {chrome.i18n.getMessage(
+                'popup_html_witness_information_hbd_interest_rate_label',
+              )}
+            </div>
+            <div className="row-line half-width">
+              <InputComponent
+                type={InputType.TEXT}
+                skipPlaceholderTranslation={true}
+                placeholder="Interest Rate(%)"
+                value={formParams.hbd_interest_rate}
+                onChange={(value) =>
+                  handleFormParams('hbd_interest_rate', value)
+                }
+              />
+            </div>
+          </div>
+          <div className="label-title padding-top">
+            {chrome.i18n.getMessage(
+              'popup_html_witness_information_signing_key_label',
+            )}
+          </div>
+          <div className="customised-width">
             <InputComponent
               type={InputType.TEXT}
               skipPlaceholderTranslation={true}
-              placeholder="Account Creation Fee"
-              value={formParams.account_creation_fee?.toString().split(' ')[0]}
-              onChange={(value) =>
-                handleFormParams(
-                  'account_creation_fee',
-                  value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
-                )
-              }
+              placeholder="Signing Key"
+              value={formParams.new_signing_key}
+              onChange={(value) => handleFormParams('new_signing_key', value)}
             />
-            <div>{BaseCurrencies.HIVE.toUpperCase()}</div>
           </div>
-          <div className="row-line">
-            <div>Maximum block size</div>
+          <div className="label-title padding-top">
+            {chrome.i18n.getMessage('popup_html_witness_information_url_label')}
+          </div>
+          <div className="customised-width">
             <InputComponent
               type={InputType.TEXT}
               skipPlaceholderTranslation={true}
-              placeholder="Maximum Block Size"
-              value={formParams.maximum_block_size}
-              onChange={(value) =>
-                handleFormParams('maximum_block_size', value)
-              }
+              placeholder="Url"
+              value={formParams.url}
+              onChange={(value) => handleFormParams('url', value)}
             />
           </div>
-          <div>Hbd exchange rate</div>
-          <div className="row-line">
-            <div>Base</div>
-            <InputComponent
-              type={InputType.TEXT}
-              skipPlaceholderTranslation={true}
-              placeholder="Base Exchange Rate"
-              value={hbdExchangeRate.base.toString().split(' ')[0]}
-              onChange={(value) =>
-                setHbdExchangeRate((prevExchangerate) => {
-                  return {
-                    ...prevExchangerate,
-                    base: value + ` ${BaseCurrencies.HBD.toUpperCase()}`,
-                  };
-                })
-              }
-            />
-            <div>{BaseCurrencies.HBD.toUpperCase()}</div>
-          </div>
-          <div className="row-line">
-            <div>Quote</div>
-            <InputComponent
-              type={InputType.TEXT}
-              skipPlaceholderTranslation={true}
-              placeholder="Quote Exchange Rate"
-              value={hbdExchangeRate.quote.toString().split(' ')[0]}
-              onChange={(value) =>
-                setHbdExchangeRate((prevExchangerate) => {
-                  return {
-                    ...prevExchangerate,
-                    quote: value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
-                  };
-                })
-              }
-            />
-            <div>{BaseCurrencies.HIVE.toUpperCase()}</div>
-          </div>
-          <div>Hbd interest rate</div>
-          <div className="row-line">
-            <InputComponent
-              type={InputType.TEXT}
-              skipPlaceholderTranslation={true}
-              placeholder="Interest Rate(%)"
-              value={formParams.hbd_interest_rate}
-              onChange={(value) => handleFormParams('hbd_interest_rate', value)}
-            />
-            <div>{BaseCurrencies.HIVE.toUpperCase()}</div>
-          </div>
-          <div>New Signing Key</div>
-          <InputComponent
-            type={InputType.TEXT}
-            skipPlaceholderTranslation={true}
-            placeholder="Signing Key"
-            value={formParams.new_signing_key}
-            onChange={(value) => handleFormParams('new_signing_key', value)}
-          />
-          <div>URL</div>
-          <InputComponent
-            type={InputType.TEXT}
-            skipPlaceholderTranslation={true}
-            placeholder="Url"
-            value={formParams.url}
-            onChange={(value) => handleFormParams('url', value)}
-          />
         </div>
-        <div>
+        <div className="padding-bottom padding-top">
           <OperationButtonComponent
             requiredKey={KeychainKeyTypesLC.active}
             onClick={() => handleUpdateWitnessProps()}
             label={'popup_html_operation_button_save'}
-            additionalClass={'margin-bottom margin-top'}
           />
+        </div>
+        <div className="padding-bottom">
           <ButtonComponent
             label={'popup_html_button_label_cancel'}
             onClick={() => goBackStepOne()}
-            additionalClass={'margin-bottom'}
           />
         </div>
       </div>

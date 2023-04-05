@@ -559,6 +559,14 @@
     "message": "Hardfork time vote",
     "description": "On My witness page"
   },
+  "popup_html_witness_information_url_label": {
+    "message": "Url",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_rewards_label": {
+    "message": "Rewards",
+    "description": "On My witness page"
+  },
   "popup_html_witness_information_reward_panel_time_frame_label": {
     "message": "Time frame",
     "description": "On My witness page"

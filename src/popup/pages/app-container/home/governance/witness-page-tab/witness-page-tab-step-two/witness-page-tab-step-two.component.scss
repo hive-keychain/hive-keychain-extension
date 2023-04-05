@@ -13,26 +13,39 @@
     margin-bottom: 5px;
   }
 
-  .row-line {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
   .form-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     flex: 1;
     margin-bottom: 16px;
+
+    .label-title {
+      font-weight: bold;
+    }
   }
 
-  .margin-bottom {
-    margin-bottom: 10px;
+  .row-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .half-width {
+      width: 50%;
+    }
   }
 
-  .margin-top {
-    margin-top: 10px;
+  .customised-width {
+    width: 95% !important;
+  }
+
+  .padding-bottom {
+    padding-bottom: 10px;
+  }
+
+  .padding-top {
+    padding-top: 10px;
   }
 }

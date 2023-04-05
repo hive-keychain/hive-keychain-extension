@@ -114,6 +114,7 @@ const WitnessPageTabStepOne = ({
           <div className="text">
             {chrome.i18n.getMessage('popup_html_witness_page_text')}
           </div>
+          <hr />
           <WitnessPageTabItemComponent
             label={'popup_html_witness_information_owner_label'}
             data={`https://peakd.com/@${witnessInfo.name}`}
@@ -193,7 +194,17 @@ const WitnessPageTabStepOne = ({
             data={witnessInfo.hardfork_time_vote}
             isDate={true}
           />
-          <div className="title centered-text">Rewards</div>
+          <WitnessPageTabItemComponent
+            label={'popup_html_witness_information_url_label'}
+            data={witnessInfo.url}
+            isUrl={true}
+          />
+          <hr />
+          <div className="title centered-text">
+            {chrome.i18n.getMessage(
+              'popup_html_witness_information_rewards_label',
+            )}
+          </div>
           <div className="witness-rewards-panel">
             <div className="reward-column">
               <div className="reward-column-title">
@@ -241,6 +252,7 @@ const WitnessPageTabStepOne = ({
               </div>
             </div>
           </div>
+          <hr />
           <ButtonComponent
             label={'html_popup_button_next_step_label'}
             onClick={() => gotoNextPage()}
