@@ -1,73 +1,84 @@
 import BgdAccountsUtils from '@background/utils/accounts.utils';
+import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import RpcUtils from 'src/utils/rpc.utils';
 
+const CURRENT_LOCAL_STORAGE_VERSION = 4;
 const checkAndUpdateLocalStorage = async () => {
   const localStorageVersion = await LocalStorageUtils.getValueFromLocalStorage(
     LocalStorageKeyEnum.LOCAL_STORAGE_VERSION,
   );
+
   if (!localStorageVersion) {
-    const autolock = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.AUTOLOCK,
-    );
-    if (autolock) {
-      LocalStorageUtils.saveValueInLocalStorage(
+    try {
+      const autolock = await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.AUTOLOCK,
-        JSON.parse(autolock),
       );
-    }
-    const rpcList = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.RPC_LIST,
-    );
-    if (rpcList) {
-      LocalStorageUtils.saveValueInLocalStorage(
+      if (autolock) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.AUTOLOCK,
+          JSON.parse(autolock),
+        );
+      }
+      const rpcList = await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.RPC_LIST,
-        JSON.parse(rpcList),
       );
-    }
+      if (rpcList) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.RPC_LIST,
+          JSON.parse(rpcList),
+        );
+      }
 
-    let activeRpc = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.CURRENT_RPC,
-    );
-    if (typeof activeRpc === 'string' && activeRpc !== 'DEFAULT') {
-      activeRpc =
-        RpcUtils.getFullList().find((rpc) => rpc.uri === activeRpc) ||
-        RpcUtils.getFullList()[0];
-    }
-
-    if (!activeRpc || activeRpc.uri === 'DEFAULT' || activeRpc === 'DEFAULT') {
-      LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.SWITCH_RPC_AUTO,
-        true,
-      );
-      LocalStorageUtils.saveValueInLocalStorage(
+      let activeRpc = await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.CURRENT_RPC,
-        RpcUtils.getFullList()[0],
       );
-    } else {
-      LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.CURRENT_RPC,
-        activeRpc,
-      );
-      LocalStorageUtils.saveValueInLocalStorage(
-        LocalStorageKeyEnum.SWITCH_RPC_AUTO,
-        false,
-      );
-    }
+      if (typeof activeRpc === 'string' && activeRpc !== 'DEFAULT') {
+        activeRpc =
+          RpcUtils.getFullList().find((rpc) => rpc.uri === activeRpc) ||
+          RpcUtils.getFullList()[0];
+      }
 
-    const noConfirm = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.NO_CONFIRM,
-    );
-    if (noConfirm) {
-      LocalStorageUtils.saveValueInLocalStorage(
+      if (
+        !activeRpc ||
+        activeRpc.uri === 'DEFAULT' ||
+        activeRpc === 'DEFAULT'
+      ) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+          true,
+        );
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.CURRENT_RPC,
+          RpcUtils.getFullList()[0],
+        );
+      } else {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.CURRENT_RPC,
+          activeRpc,
+        );
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.SWITCH_RPC_AUTO,
+          false,
+        );
+      }
+
+      const noConfirm = await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.NO_CONFIRM,
-        JSON.parse(noConfirm),
       );
+      if (noConfirm) {
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.NO_CONFIRM,
+          JSON.parse(noConfirm),
+        );
+      }
+    } finally {
+      await saveNewLocalStorageVersion(2);
+      checkAndUpdateLocalStorage();
     }
-    saveNewLocalStorageVersion(2);
   } else {
     switch (localStorageVersion) {
       case 2: {
@@ -97,16 +108,17 @@ const checkAndUpdateLocalStorage = async () => {
         //check on format
         let oldFormat = true;
         //validation
-        for (const [key, value] of Object.entries(actualFavoriteUsers)) {
-          if (Array.isArray(value)) {
-            value.map((favoriteObject) => {
-              if (typeof favoriteObject === 'object') {
-                oldFormat = false;
-              }
-            });
+        if (actualFavoriteUsers) {
+          for (const [key, value] of Object.entries(actualFavoriteUsers)) {
+            if (Array.isArray(value)) {
+              value.map((favoriteObject) => {
+                if (typeof favoriteObject === 'object') {
+                  oldFormat = false;
+                }
+              });
+            }
           }
         }
-
         if (oldFormat) {
           const favoriteUserData: any = {};
           const mk = await LocalStorageUtils.getValueFromLocalStorage(
@@ -114,26 +126,30 @@ const checkAndUpdateLocalStorage = async () => {
           );
           const localAccounts =
             await BgdAccountsUtils.getAccountsFromLocalStorage(mk);
-          //initialize object.
-          for (const localAccount of localAccounts) {
-            favoriteUserData[localAccount.name] = [];
+          if (localAccounts) {
+            //initialize object.
+            for (const localAccount of localAccounts) {
+              favoriteUserData[localAccount.name] = [];
+            }
+            //fill the object initialized
+            if (actualFavoriteUsers) {
+              for (const [key, value] of Object.entries(
+                actualFavoriteUsers as FavoriteUserItems,
+              )) {
+                favoriteUserData[key] = value.map((account) => {
+                  return {
+                    value: account,
+                    subLabel: '',
+                  } as AutoCompleteValue;
+                });
+              }
+            }
+            //save in local storage
+            LocalStorageUtils.saveValueInLocalStorage(
+              LocalStorageKeyEnum.FAVORITE_USERS,
+              favoriteUserData,
+            );
           }
-          //fill the object initialized
-          for (const [key, value] of Object.entries(
-            actualFavoriteUsers as FavoriteUserItems,
-          )) {
-            favoriteUserData[key] = value.map((account) => {
-              return {
-                account: account,
-                label: '',
-              };
-            });
-          }
-          //save in local storage
-          LocalStorageUtils.saveValueInLocalStorage(
-            LocalStorageKeyEnum.FAVORITE_USERS,
-            favoriteUserData,
-          );
           saveNewLocalStorageVersion(4);
         }
       }

@@ -1,3 +1,4 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
@@ -31,10 +32,7 @@ import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils, { CurrencyLabels } from 'src/utils/currency.utils';
-import {
-  FavoriteUserList,
-  FavoriteUserUtils,
-} from 'src/utils/favorite-user.utils';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import FormatUtils from 'src/utils/format.utils';
 import { SavingsUtils } from 'src/utils/savings.utils';
 import TransferUtils from 'src/utils/transfer.utils';
@@ -69,9 +67,8 @@ const SavingsPage = ({
   const [totalPendingValue, setTotalPendingValue] = useState<
     number | undefined
   >();
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    FavoriteUserList[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({ categories: [] });
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
     useState<SavingOperationType>(

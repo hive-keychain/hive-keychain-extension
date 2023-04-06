@@ -312,7 +312,7 @@
     "description": "on settings page"
   },
   "popup_html_favorite_accounts_no_favorites": {
-    "message": "No favorites yet in $1 list",
+    "message": "No favorites saved for this account",
     "description": "on favorite settings page results"
   },
   "popup_html_operation_popup": {
@@ -1367,6 +1367,14 @@
   "popup_html_convert_hive_intro": {
     "message": "You deposit collateral (HIVE), then you are given HBD up front worth half of the collateral amount (minus a 5% fee). Your official final payment is in 3.5 days. At that point remaining collateral (HIVE) is returned.",
     "description": "When clicking on the HIVE arrow menu"
+  },
+  "popup_html_proposal_funded_option_hive": {
+    "message": "Convert to HBD",
+    "description": "When converting"
+  },
+  "popup_html_proposal_funded_option_hbd": {
+    "message": "Convert to HIVE",
+    "description": "When converting"
   },
   "popup_html_save_hive": {
     "message": "HIVE Savings",
@@ -3072,5 +3080,17 @@
   "broadcast_error_transaction_expired": {
     "message": "Your transaction has expired. Please try to broadcast it again.",
     "description": "transaction expireed error"
+  },
+  "local_accounts": {
+    "message": "Local accounts",
+    "description": "General word"
+  },
+  "users": {
+    "message": "Users",
+    "description": "General word"
+  },
+  "exchanges": {
+    "message": "Exchanges",
+    "description": "General word"
   }
 }
