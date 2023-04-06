@@ -2,14 +2,12 @@
 
 .account-authorities-list {
   @include pageLayoutRowGap;
-  padding: 0px 4px;
-  padding-bottom: 24px;
   padding-top: 12px;
 
   .authorities-panel {
     display: flex;
     flex-direction: column;
-    row-gap: 8px;
+    row-gap: 24px;
 
     .key-field {
       font-size: 12px;

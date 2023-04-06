@@ -4,16 +4,17 @@
   display: flex;
   flex-direction: column;
   row-gap: 8px;
+  font-size: 18px;
 
-  .text-centered {
-    text-align: center;
+  .text-end {
+    text-align: end;
   }
 
   .top-panel {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 5fr 1fr;
     align-items: center;
-    font-size: 16px;
+    padding: 0 8px;
 
     .key-name {
       text-transform: uppercase;
@@ -29,12 +30,12 @@
     flex-direction: column;
     overflow: auto;
     justify-content: space-between;
-    font-size: 16px;
 
     .titles {
       display: grid;
       font-weight: bold;
-      grid-template-columns: 3fr 2fr 1fr;
+      grid-template-columns: 4fr 1fr 1fr;
+      padding: 0px 0px 8px 8px;
     }
 
     .title {
@@ -43,12 +44,14 @@
 
     .item {
       display: grid;
-      grid-template-columns: 3fr 2fr 1fr;
+      grid-template-columns: 4fr 1fr 1fr;
+      align-items: center;
+      height: 48px;
       &:hover {
-        background-color: $red-transparent;
-
         .buttons-item {
-          display: inline;
+          display: flex;
+          justify-content: flex-end;
+          padding: 0px 4px;
         }
       }
 
@@ -60,24 +63,33 @@
         display: none;
       }
 
-      .item-account-name {
-        display: grid;
-        grid-template-columns: 3fr 2fr;
+      .item-account {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        height: 100%;
+        padding-left: 8px;
 
-        .item-flex-justify-center {
-          display: flex;
-          justify-items: center;
+        .account-img {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+        }
+        .account-name {
+          padding-left: 8px;
+          padding-right: 8px;
         }
       }
 
       .remove-button {
         color: white;
         cursor: pointer;
-        font-size: 16px;
-        &:hover {
-          color: $black-transparent;
-        }
+        padding-bottom: 0px !important;
       }
     }
+  }
+
+  .padding-left {
+    padding-left: 8px;
   }
 }

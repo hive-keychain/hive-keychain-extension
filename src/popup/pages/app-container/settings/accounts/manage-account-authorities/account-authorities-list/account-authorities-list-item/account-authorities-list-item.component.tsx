@@ -40,7 +40,7 @@ const AccountAuthoritiesListItem = ({
   navigateTo,
 }: PropsType) => {
   const goTo = (accountName: string) => {
-    chrome.tabs.create({ url: `https://hiveblocks.com/@${accountName}` });
+    chrome.tabs.create({ url: `https://hive.blog/@${accountName}` });
   };
 
   const handleClickOnRemoveAccountAuth = async (
@@ -100,13 +100,13 @@ const AccountAuthoritiesListItem = ({
           position="left"
           message="popup_html_weight_threshold_tooltip_text"
           messageParams={[role]}
-          additionalClassName="weight-threshold">
+          additionalClassName="weight-threshold text-end">
           {authority.weight_threshold}
         </CustomTooltip>
       </div>
       <div className="keys-panel">
         {authority.account_auths.length === 0 && (
-          <div className="account-auths-list">
+          <div className="account-auths-list padding-left">
             {chrome.i18n.getMessage(
               'popup_html_manage_no_accounts_authorities',
             )}
@@ -120,7 +120,7 @@ const AccountAuthoritiesListItem = ({
                   'popup_html_manage_account_authority_username_label',
                 )}
               </div>
-              <div className="title text-centered">
+              <div className="title text-end">
                 {chrome.i18n.getMessage(
                   'popup_html_manage_account_authority_weight_label',
                 )}
@@ -131,19 +131,29 @@ const AccountAuthoritiesListItem = ({
                 <div
                   className="item"
                   key={`account-auth-item-${accountAuth[0]}-${index}`}>
-                  <div className="item-account-name">
-                    <div>{accountAuth[0]}</div>
-                    <div className="item-flex-justify-center">
+                  <div className="item-account">
+                    <img
+                      className="account-img"
+                      src={`https://images.hive.blog/u/${accountAuth[0]}/avatar`}
+                      onError={(e: any) => {
+                        e.target.onError = null;
+                        e.target.src = '/assets/images/accounts.png';
+                      }}
+                    />
+                    <div className="account-name">{accountAuth[0]}</div>
+                    <CustomTooltip
+                      skipTranslation={true}
+                      message="Open a new browser tab with account's hive profile">
                       <Icon
                         onClick={() => goTo(accountAuth[0])}
-                        name={Icons.LINK}
+                        name={Icons.OPEN_IN_NEW}
                         type={IconType.OUTLINED}
                         additionalClassName="remove-button"
                       />
-                    </div>
+                    </CustomTooltip>
                   </div>
-                  <div className="text-centered">{accountAuth[1]}</div>
-                  <div className="buttons-item text-centered">
+                  <div className="text-end">{accountAuth[1]}</div>
+                  <div className="buttons-item text-end">
                     <Icon
                       onClick={() =>
                         handleClickOnRemoveAccountAuth(accountAuth[0])
