@@ -1,17 +1,14 @@
 import { AuthorityType } from '@hiveio/dhive';
-import { removeKey, setAccounts } from '@popup/actions/account.actions';
-import { loadActiveAccount } from '@popup/actions/active-account.actions';
+import { setAccounts } from '@popup/actions/account.actions';
 import {
   addToLoadingList,
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
 import {
   setErrorMessage,
-  setInfoMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import {
-  goBack,
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
@@ -21,7 +18,6 @@ import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import './account-authorities-list-item.component.scss';
 
@@ -30,17 +26,11 @@ export interface AuthoritiesListItemProps {
   role: 'active' | 'posting';
 }
 
-// TODO remove unused properties
 const AccountAuthoritiesListItem = ({
   activeAccount,
-  accounts,
   authority,
   role,
-  setInfoMessage,
   navigateToWithParams,
-  removeKey,
-  goBack,
-  loadActiveAccount,
   addToLoadingList,
   setSuccessMessage,
   setErrorMessage,
@@ -83,9 +73,6 @@ const AccountAuthoritiesListItem = ({
             copyActiveAccount.account.json_metadata,
             activeAccount.keys.active!,
           );
-
-          //TODO remove console.log
-          console.log({ success });
           if (success) {
             navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES, true);
             setSuccessMessage('popup_html_remove_account_authority_successful');
@@ -171,18 +158,13 @@ const AccountAuthoritiesListItem = ({
 
 const mapStateToProps = (state: RootState) => {
   return {
-    accounts: state.accounts as LocalAccount[],
     activeAccount: state.activeAccount,
   };
 };
 
 const connector = connect(mapStateToProps, {
-  setInfoMessage,
   setAccounts,
   navigateToWithParams,
-  removeKey,
-  goBack,
-  loadActiveAccount,
   addToLoadingList,
   setSuccessMessage,
   setErrorMessage,
