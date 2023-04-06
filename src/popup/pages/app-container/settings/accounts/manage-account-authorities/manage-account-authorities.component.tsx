@@ -7,7 +7,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import './manage-account-authorities.component.scss';
 
 const ManageAccountAuthorities = ({
-  acc,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   useEffect(() => {
@@ -30,7 +29,7 @@ const ManageAccountAuthorities = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { acc: state.activeAccount };
+  return {};
 };
 
 const connector = connect(mapStateToProps, { setTitleContainerProperties });
