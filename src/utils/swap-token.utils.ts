@@ -1,4 +1,4 @@
-import { KeychainApi } from '@api/keychain';
+import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
@@ -65,7 +65,7 @@ const getEstimate = async (
   amount: string,
 ) => {
   if (startToken && endToken && amount.length && parseFloat(amount) > 0) {
-    const estimate = await KeychainApi.get(
+    const estimate = await KeychainSwapApi.get(
       `token-swap/estimate/${startToken}/${endToken}/${parseFloat(amount)}`,
     );
     return estimate;
@@ -79,7 +79,7 @@ const saveEstimate = async (
   endToken: string,
   amount: number,
 ): Promise<string> => {
-  return await KeychainApi.post(`token-swap/estimate/save`, {
+  return await KeychainSwapApi.post(`token-swap/estimate/save`, {
     slipperage,
     steps,
     startToken,
