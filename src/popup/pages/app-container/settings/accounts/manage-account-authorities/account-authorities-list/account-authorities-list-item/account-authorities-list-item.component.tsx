@@ -19,6 +19,7 @@ import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import AccountUtils from 'src/utils/account.utils';
+import ActiveAccountUtils from 'src/utils/active-account.utils';
 import './account-authorities-list-item.component.scss';
 
 export interface AuthoritiesListItemProps {
@@ -56,22 +57,20 @@ const AccountAuthoritiesListItem = ({
       title: 'popup_html_remove_account_authority',
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_remove_authorized_account_operation');
-        //TODO put in account utils
-        const copyActiveAccount = { ...activeAccount };
-        copyActiveAccount.account[role] = {
-          ...copyActiveAccount.account[role],
-          account_auths: copyActiveAccount.account[role].account_auths.filter(
-            (auth) => auth[0] !== authorizedAccountName,
-          ),
-        };
         try {
+          const updatedActiveAccountAuth =
+            ActiveAccountUtils.removeAuthorizedAccount(
+              activeAccount,
+              role,
+              authorizedAccountName,
+            );
           let success = await AccountUtils.updateAccount(
-            copyActiveAccount.name!,
-            copyActiveAccount.account.active,
-            copyActiveAccount.account.posting,
-            copyActiveAccount.account.memo_key,
-            copyActiveAccount.account.json_metadata,
-            activeAccount.keys.active!,
+            updatedActiveAccountAuth.name!,
+            updatedActiveAccountAuth.account.active,
+            updatedActiveAccountAuth.account.posting,
+            updatedActiveAccountAuth.account.memo_key,
+            updatedActiveAccountAuth.account.json_metadata,
+            updatedActiveAccountAuth.keys.active!,
           );
           if (success) {
             navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES, true);
