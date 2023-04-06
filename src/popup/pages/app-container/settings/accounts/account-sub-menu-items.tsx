@@ -22,7 +22,7 @@ const AccountSubMenuItems: MenuItem[] = [
   },
   {
     label: 'popup_html_manage_accounts_authorities',
-    icon: Icons.MANAGE_ACCOUNTS,
+    icon: Icons.MANAGE_AUTHORITTIES,
     nextScreen: Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES,
   },
   {
