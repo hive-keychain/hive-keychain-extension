@@ -17,7 +17,6 @@ import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
@@ -94,15 +93,13 @@ const AccountAuthoritiesListItem = ({
     <div className="account-authorities-list-item">
       <div className="top-panel">
         <div className="key-name">
-          {chrome.i18n.getMessage(`popup_html_${role}`)}
+          <div className="name">
+            {chrome.i18n.getMessage(`popup_html_${role}`)}
+          </div>
+          <div className="threshold">
+            {chrome.i18n.getMessage('threshold')}: {authority.weight_threshold}
+          </div>
         </div>
-        <CustomTooltip
-          position="left"
-          message="popup_html_weight_threshold_tooltip_text"
-          messageParams={[role]}
-          additionalClassName="weight-threshold text-end">
-          {authority.weight_threshold}
-        </CustomTooltip>
       </div>
       <div className="keys-panel">
         {authority.account_auths.length === 0 && (
@@ -120,7 +117,7 @@ const AccountAuthoritiesListItem = ({
                   'popup_html_manage_account_authority_username_label',
                 )}
               </div>
-              <div className="title text-end">
+              <div className="title weight">
                 {chrome.i18n.getMessage(
                   'popup_html_manage_account_authority_weight_label',
                 )}
@@ -141,18 +138,14 @@ const AccountAuthoritiesListItem = ({
                       }}
                     />
                     <div className="account-name">{accountAuth[0]}</div>
-                    <CustomTooltip
-                      skipTranslation={true}
-                      message="Open a new browser tab with account's hive profile">
-                      <Icon
-                        onClick={() => goTo(accountAuth[0])}
-                        name={Icons.OPEN_IN_NEW}
-                        type={IconType.OUTLINED}
-                        additionalClassName="remove-button"
-                      />
-                    </CustomTooltip>
+                    <Icon
+                      onClick={() => goTo(accountAuth[0])}
+                      name={Icons.OPEN_IN_NEW}
+                      type={IconType.OUTLINED}
+                      additionalClassName="open-in-new-tab-icon"
+                    />
                   </div>
-                  <div className="text-end">{accountAuth[1]}</div>
+                  <div className="weight">{accountAuth[1]}</div>
                   <div className="buttons-item text-end">
                     <Icon
                       onClick={() =>

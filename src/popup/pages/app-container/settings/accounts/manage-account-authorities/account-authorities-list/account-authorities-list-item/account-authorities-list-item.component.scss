@@ -6,8 +6,8 @@
   row-gap: 8px;
   font-size: 18px;
 
-  .text-end {
-    text-align: end;
+  .weight {
+    text-align: center;
   }
 
   .top-panel {
@@ -17,7 +17,13 @@
     padding: 0 8px;
 
     .key-name {
-      text-transform: uppercase;
+      .name {
+        text-transform: uppercase;
+      }
+      .threshold {
+        font-size: 14px;
+        font-style: italic;
+      }
     }
 
     .weight-threshold {
@@ -79,6 +85,15 @@
           padding-left: 8px;
           padding-right: 8px;
         }
+      }
+
+      .open-in-new-tab-icon {
+        color: white;
+        cursor: pointer;
+        padding-bottom: 0px !important;
+        height: 18px;
+        width: 18px;
+        font-size: 18px;
       }
 
       .remove-button {

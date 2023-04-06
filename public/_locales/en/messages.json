@@ -3096,5 +3096,9 @@
   "exchanges": {
     "message": "Exchanges",
     "description": "General word"
+  },
+  "threshold": {
+    "message": "Threshold",
+    "description": "General word"
   }
 }
