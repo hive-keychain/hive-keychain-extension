@@ -7,6 +7,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import './manage-account-authorities.component.scss';
 
 const ManageAccountAuthorities = ({
+  acc,
   setTitleContainerProperties,
 }: PropsFromRedux) => {
   useEffect(() => {
@@ -14,7 +15,7 @@ const ManageAccountAuthorities = ({
       title: 'popup_html_manage_accounts_authorities',
       isBackButtonEnabled: true,
     });
-  });
+  }, []);
 
   return (
     <div className="settings-manage-account-authorities">
@@ -29,7 +30,7 @@ const ManageAccountAuthorities = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return { acc: state.activeAccount };
 };
 
 const connector = connect(mapStateToProps, { setTitleContainerProperties });
