@@ -12,6 +12,8 @@ import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import './account-authorities-list.component.scss';
 
+// TODO remove unused properties
+
 const AccountAuthoritiesList = ({
   activeAccount,
   accounts,

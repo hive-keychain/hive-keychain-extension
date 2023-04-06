@@ -30,6 +30,7 @@ export interface AuthoritiesListItemProps {
   role: 'active' | 'posting';
 }
 
+// TODO remove unused properties
 const AccountAuthoritiesListItem = ({
   activeAccount,
   accounts,
@@ -65,6 +66,7 @@ const AccountAuthoritiesListItem = ({
       title: 'popup_html_remove_account_authority',
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_remove_authorized_account_operation');
+        //TODO put in account utils
         const copyActiveAccount = { ...activeAccount };
         copyActiveAccount.account[role] = {
           ...copyActiveAccount.account[role],
@@ -81,6 +83,8 @@ const AccountAuthoritiesListItem = ({
             copyActiveAccount.account.json_metadata,
             activeAccount.keys.active!,
           );
+
+          //TODO remove console.log
           console.log({ success });
           if (success) {
             navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES, true);
