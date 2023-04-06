@@ -2,27 +2,27 @@
 
 .account-authorities-list {
   @include pageLayoutRowGap;
-  padding: 0px 5px;
+  padding: 0px 4px;
   padding-bottom: 24px;
-  padding-top: 10px;
+  padding-top: 12px;
 
   .authorities-panel {
     display: flex;
     flex-direction: column;
-    row-gap: 6px;
+    row-gap: 8px;
 
     .key-field {
-      font-size: 11px;
+      font-size: 12px;
       cursor: pointer;
 
       &.hidden {
-        font-size: 14px;
+        font-size: 16px;
       }
     }
 
     .using-authorized-account {
       cursor: pointer;
-      font-size: 14px;
+      font-size: 16px;
     }
   }
 
