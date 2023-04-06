@@ -21,7 +21,7 @@
     margin-bottom: 16px;
 
     .label-title {
-      font-weight: bold;
+      @include fake-input;
     }
   }
 

@@ -140,16 +140,12 @@ const WitnessPageTabStepTwo = ({
       <div className="form-container">
         <div className="column-line">
           <div className="row-line">
-            <div className="label-title">
-              {chrome.i18n.getMessage(
-                'popup_html_witness_information_fee_label',
-              )}
-            </div>
             <div className="row-line half-width">
               <InputComponent
+                label="popup_html_witness_information_fee_label"
                 type={InputType.TEXT}
                 skipPlaceholderTranslation={true}
-                placeholder="Account Creation Fee"
+                placeholder="popup_html_witness_information_fee_label"
                 value={
                   formParams.account_creation_fee?.toString().split(' ')[0]
                 }
@@ -166,13 +162,9 @@ const WitnessPageTabStepTwo = ({
             </div>
           </div>
           <div className="row-line">
-            <div className="label-title">
-              {chrome.i18n.getMessage(
-                'popup_html_witness_information_maximum_block_size_label',
-              )}
-            </div>
             <div className="half-width">
               <InputComponent
+                label="popup_html_witness_information_maximum_block_size_label"
                 type={InputType.TEXT}
                 skipPlaceholderTranslation={true}
                 placeholder="Maximum Block Size"
