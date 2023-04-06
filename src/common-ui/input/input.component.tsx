@@ -1,16 +1,12 @@
+import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
+import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
-export interface AutoCompleteValue {
-  value: string;
-  subLabel?: string;
-}
-
 interface InputProps {
-  onChange: (value: any) => void;
   value: any;
   logo?: Icons | string;
   label?: string;
@@ -23,20 +19,18 @@ interface InputProps {
   skipPlaceholderTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  autocompleteValues?: AutoCompleteValue[];
+  autocompleteValues?: AutoCompleteValuesType;
+  translateSimpleAutoCompleteValues?: boolean;
   required?: boolean;
   hasError?: boolean;
   ariaLabel?: string;
   disabled?: boolean;
+  onChange: (value: any) => void;
   onEnterPress?(): any;
   onSetToMaxClicked?(): any;
 }
 
 const InputComponent = (props: InputProps) => {
-  const [filteredValues, setFilteredValues] = useState<AutoCompleteValue[]>(
-    props.autocompleteValues ? props.autocompleteValues : [],
-  );
-
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -47,18 +41,6 @@ const InputComponent = (props: InputProps) => {
       setMounted(false);
     };
   });
-
-  useEffect(() => {
-    if (props.autocompleteValues) {
-      setFilteredValues(
-        props.autocompleteValues.filter(
-          (val) =>
-            val.value?.toLowerCase().includes(props.value) ||
-            val.subLabel?.toLowerCase().includes(props.value),
-        ),
-      );
-    }
-  }, [props.value, props.autocompleteValues]);
 
   const handleOnBlur = () => {
     if (mounted) {
@@ -136,17 +118,12 @@ const InputComponent = (props: InputProps) => {
               type={IconType.OUTLINED}
               additionalClassName="input-img erase"></Icon>
           )}
-        {isFocused && filteredValues && filteredValues.length > 0 && (
-          <div className="autocomplete-panel">
-            {filteredValues.map((val, index) => (
-              <div
-                key={index}
-                className="value"
-                onClick={() => props.onChange(val.value)}>
-                {val.value} {val.subLabel ? `(${val.subLabel})` : ''}
-              </div>
-            ))}
-          </div>
+        {isFocused && props.autocompleteValues && (
+          <AutocompleteBox
+            autoCompleteValues={props.autocompleteValues}
+            handleOnChange={props.onChange}
+            propsValue={props.value}
+          />
         )}
         {props.hint && (
           <div className="hint">

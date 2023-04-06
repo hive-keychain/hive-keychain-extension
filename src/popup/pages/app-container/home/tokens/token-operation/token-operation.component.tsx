@@ -1,3 +1,4 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { Token, TokenBalance } from '@interfaces/tokens.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
@@ -22,9 +23,7 @@ import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent, {
-  AutoCompleteValue,
-} from 'src/common-ui/input/input.component';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import AccountUtils from 'src/utils/account.utils';
@@ -83,9 +82,8 @@ const TokensOperation = ({
 
   const symbol = formParams.symbol ? formParams.symbol : tokenBalance.symbol;
 
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    AutoCompleteValue[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({ categories: [] });
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -97,7 +95,7 @@ const TokensOperation = ({
 
   const loadAutocompleteFavoriteUsers = async () => {
     setAutocompleteFavoriteUsers(
-      await FavoriteUserUtils.getAutocompleteList(
+      await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
       ),

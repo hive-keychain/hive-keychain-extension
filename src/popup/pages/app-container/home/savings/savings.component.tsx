@@ -1,3 +1,4 @@
+import { AutoCompleteValues } from '@interfaces/autocomplete.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { SavingsWithdrawal } from '@interfaces/savings.interface';
 import {
@@ -26,9 +27,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { ConfirmationPageParams } from 'src/common-ui/confirmation-page/confirmation-page.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
-import InputComponent, {
-  AutoCompleteValue,
-} from 'src/common-ui/input/input.component';
+import InputComponent from 'src/common-ui/input/input.component';
 import { SummaryPanelComponent } from 'src/common-ui/summary-panel/summary-panel.component';
 import { CurrencyListItem } from 'src/interfaces/list-item.interface';
 import { Screen } from 'src/reference-data/screen.enum';
@@ -68,9 +67,8 @@ const SavingsPage = ({
   const [totalPendingValue, setTotalPendingValue] = useState<
     number | undefined
   >();
-  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] = useState<
-    AutoCompleteValue[]
-  >([]);
+  const [autocompleteFavoriteUsers, setAutocompleteFavoriteUsers] =
+    useState<AutoCompleteValues>({ categories: [] });
 
   const [selectedSavingOperationType, setSelectedSavingOperationType] =
     useState<SavingOperationType>(
@@ -164,7 +162,7 @@ const SavingsPage = ({
 
   const loadAutocompleteFavoriteUsers = async () => {
     setAutocompleteFavoriteUsers(
-      await FavoriteUserUtils.getAutocompleteList(
+      await FavoriteUserUtils.getAutocompleteListByCategories(
         activeAccount.name!,
         localAccounts,
       ),
