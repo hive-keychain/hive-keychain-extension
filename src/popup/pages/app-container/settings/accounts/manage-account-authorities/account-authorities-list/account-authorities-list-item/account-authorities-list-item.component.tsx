@@ -17,6 +17,7 @@ import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
@@ -95,6 +96,13 @@ const AccountAuthoritiesListItem = ({
         <div className="key-name">
           {chrome.i18n.getMessage(`popup_html_${role}`)}
         </div>
+        <CustomTooltip
+          position="left"
+          message="popup_html_weight_threshold_tooltip_text"
+          messageParams={[role]}
+          additionalClassName="weight-threshold">
+          {authority.weight_threshold}
+        </CustomTooltip>
       </div>
       <div className="keys-panel">
         {authority.account_auths.length === 0 && (
