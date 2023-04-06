@@ -55,35 +55,36 @@ $autoCompleteItemHeight: 30px;
       }
     }
 
-    .autocomplete-panel {
-      position: absolute;
-      width: 100%;
-      z-index: 2;
-      font-size: $input-font-size;
-      background-color: $black;
-      color: white;
-      box-sizing: border-box;
-      max-height: $autoCompleteItemHeight * 5;
-      overflow: auto;
+    //TODO cedric, I guess this can be removed?
+    // .autocomplete-panel {
+    //   position: absolute;
+    //   width: 100%;
+    //   z-index: 2;
+    //   font-size: $input-font-size;
+    //   background-color: $black;
+    //   color: white;
+    //   box-sizing: border-box;
+    //   max-height: $autoCompleteItemHeight * 5;
+    //   overflow: auto;
 
-      .title-category {
-        font-weight: bold;
-        margin-left: 10px;
-        margin-top: 8px;
-      }
+    //   .title-category {
+    //     font-weight: bold;
+    //     margin-left: 10px;
+    //     margin-top: 8px;
+    //   }
 
-      .value {
-        font-weight: 400;
-        height: 30px;
-        cursor: pointer;
-        padding-left: 16px;
-        display: flex;
-        align-items: center;
-        &:hover {
-          background-color: $red-dark;
-        }
-      }
-    }
+    //   .value {
+    //     font-weight: 400;
+    //     height: 30px;
+    //     cursor: pointer;
+    //     padding-left: 16px;
+    //     display: flex;
+    //     align-items: center;
+    //     &:hover {
+    //       background-color: $red-dark;
+    //     }
+    //   }
+    // }
 
     &.no-logo > input {
       padding-left: 12px;

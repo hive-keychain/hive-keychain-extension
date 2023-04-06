@@ -1,9 +1,9 @@
+import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteAccountsItemComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts-item/favorite-accounts-item.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
-  FavoriteAccounts,
   FavoriteUserList,
   FavoriteUserListName,
 } from 'src/utils/favorite-user.utils';
@@ -13,11 +13,11 @@ interface FavoriteAccountsListProps {
   favoriteList: FavoriteUserList;
   handleDeleteFavorite: (
     listName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
   ) => void;
   handleEditFavoriteLabel: (
     listName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
     newLabel: string,
   ) => void;
 }
@@ -29,31 +29,29 @@ const FavoriteAccountsList = ({
   handleEditFavoriteLabel,
 }: PropsFromRedux) => {
   const favoriteListName = favoriteList.name.split('_').join(' ');
-
   return (
     <div
       className="favorite-accounts-list"
       key={`${Math.random().toFixed(6).toString()}-${favoriteListName}`}>
-      {favoriteList.list.length === 0 && (
+      {(!favoriteList.list || favoriteList.list.length === 0) && (
         <div className="text-no-favorites">
-          {chrome.i18n.getMessage('popup_html_favorite_accounts_no_favorites', [
-            favoriteListName,
-          ])}
+          {chrome.i18n.getMessage('popup_html_favorite_accounts_no_favorites')}
         </div>
       )}
-      {favoriteList.list.map((favoriteItem) => {
-        return (
-          <FavoriteAccountsItemComponent
-            key={`${Math.random()
-              .toFixed(6)
-              .toString()}-${favoriteListName}-item`}
-            favorite={favoriteItem}
-            listName={favoriteList.name}
-            handleDeleteFavorite={handleDeleteFavorite}
-            handleEditFavoriteLabel={handleEditFavoriteLabel}
-          />
-        );
-      })}
+      {favoriteList.list &&
+        favoriteList.list.map((favoriteItem) => {
+          return (
+            <FavoriteAccountsItemComponent
+              key={`${Math.random()
+                .toFixed(6)
+                .toString()}-${favoriteListName}-item`}
+              favorite={favoriteItem}
+              listName={favoriteList.name}
+              handleDeleteFavorite={handleDeleteFavorite}
+              handleEditFavoriteLabel={handleEditFavoriteLabel}
+            />
+          );
+        })}
     </div>
   );
 };

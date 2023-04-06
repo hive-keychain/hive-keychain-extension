@@ -1,20 +1,12 @@
+import { AutoCompleteValuesType } from '@interfaces/autocomplete.interface';
 import { Icons } from '@popup/icons.enum';
 import React, { useEffect, useState } from 'react';
+import AutocompleteBox from 'src/common-ui/autocomplete/autocomplete-box.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
-import {
-  FavoriteUserList,
-  FavoriteUserListName,
-} from 'src/utils/favorite-user.utils';
 import { InputType } from './input-type.enum';
 import './input.component.scss';
 
-export interface AutoCompleteValue {
-  value: string;
-  subLabel?: string;
-}
-
 interface InputProps {
-  onChange: (value: any) => void;
   value: any;
   logo?: Icons | string;
   label?: string;
@@ -27,22 +19,20 @@ interface InputProps {
   skipPlaceholderTranslation?: boolean;
   hint?: string;
   skipHintTranslation?: boolean;
-  autocompleteValues?: FavoriteUserList[];
+  autocompleteValues?: AutoCompleteValuesType;
+  translateSimpleAutoCompleteValues?: boolean;
   required?: boolean;
   hasError?: boolean;
   ariaLabel?: string;
   disabled?: boolean;
   tooltip?: string;
   skipTooltipTranslation?: boolean;
+  onChange: (value: any) => void;
   onEnterPress?(): any;
   onSetToMaxClicked?(): any;
 }
 
 const InputComponent = (props: InputProps) => {
-  const [filteredValues, setFilteredValues] = useState<FavoriteUserList[]>(
-    props.autocompleteValues ? props.autocompleteValues : [],
-  );
-
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordDisplay, setPasswordDisplayed] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -53,83 +43,6 @@ const InputComponent = (props: InputProps) => {
       setMounted(false);
     };
   });
-
-  useEffect(() => {
-    if (props.autocompleteValues && props.autocompleteValues.length > 0) {
-      const filteredFavoritesCompleteList: FavoriteUserList[] = [];
-      if (
-        props.autocompleteValues.find(
-          (autoCompleteCategory) =>
-            autoCompleteCategory.name === FavoriteUserListName.USERS,
-        )
-      ) {
-        const filteredUserList = props.autocompleteValues
-          .filter(
-            (autoCompleteCategory) =>
-              autoCompleteCategory.name === FavoriteUserListName.USERS,
-          )[0]
-          .list.filter(
-            (listItem) =>
-              listItem.account.toLowerCase().includes(props.value) ||
-              listItem.label.toLowerCase().includes(props.value),
-          );
-        if (filteredUserList.length > 0) {
-          filteredFavoritesCompleteList.push({
-            name: FavoriteUserListName.USERS,
-            list: filteredUserList,
-          });
-        }
-      }
-      if (
-        props.autocompleteValues.find(
-          (autoCompleteCategory) =>
-            autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
-        )
-      ) {
-        const filteredLocalAccountsList = props.autocompleteValues
-          .filter(
-            (autoCompleteCategory) =>
-              autoCompleteCategory.name === FavoriteUserListName.LOCAL_ACCOUNTS,
-          )[0]
-          .list.filter(
-            (listItem) =>
-              listItem.account.toLowerCase().includes(props.value) ||
-              listItem.label.toLowerCase().includes(props.value),
-          );
-        if (filteredLocalAccountsList.length > 0) {
-          filteredFavoritesCompleteList.push({
-            name: FavoriteUserListName.LOCAL_ACCOUNTS,
-            list: filteredLocalAccountsList,
-          });
-        }
-      }
-      if (
-        props.autocompleteValues.find(
-          (autoCompleteCategory) =>
-            autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
-        )
-      ) {
-        const filteredExchangesList = props.autocompleteValues
-          .filter(
-            (autoCompleteCategory) =>
-              autoCompleteCategory.name === FavoriteUserListName.EXCHANGES,
-          )[0]
-          .list.filter(
-            (listItem) =>
-              listItem.account.toLowerCase().includes(props.value) ||
-              listItem.label.toLowerCase().includes(props.value) ||
-              listItem.subLabel?.toLowerCase().includes(props.value),
-          );
-        if (filteredExchangesList.length > 0) {
-          filteredFavoritesCompleteList.push({
-            name: FavoriteUserListName.EXCHANGES,
-            list: filteredExchangesList,
-          });
-        }
-      }
-      setFilteredValues(filteredFavoritesCompleteList);
-    }
-  }, [props.value, props.autocompleteValues]);
 
   const handleOnBlur = () => {
     if (mounted) {
@@ -218,29 +131,12 @@ const InputComponent = (props: InputProps) => {
               type={IconType.OUTLINED}
               additionalClassName="input-img erase"></Icon>
           )}
-        {isFocused && filteredValues && filteredValues.length > 0 && (
-          <div className="autocomplete-panel">
-            {filteredValues.map((autoCompleteValue, index) => (
-              <div className="title-category" key={`auto-complete-${index}`}>
-                {autoCompleteValue.name.split('_').join(' ')}
-                {autoCompleteValue.list.map((autoCompleteItem) => (
-                  <div
-                    className="value"
-                    key={`auto-complete-${index}-${autoCompleteItem.account}`}
-                    onClick={() => props.onChange(autoCompleteItem.account)}>
-                    {autoCompleteItem.account}{' '}
-                    {autoCompleteItem.label &&
-                    autoCompleteItem.label.trim().length > 0
-                      ? `(${autoCompleteItem.label})`
-                      : autoCompleteItem.subLabel &&
-                        autoCompleteItem.subLabel.trim().length > 0
-                      ? `(${autoCompleteItem.subLabel})`
-                      : ''}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
+        {isFocused && props.autocompleteValues && (
+          <AutocompleteBox
+            autoCompleteValues={props.autocompleteValues}
+            handleOnChange={props.onChange}
+            propsValue={props.value}
+          />
         )}
         {props.hint && (
           <div className="hint">

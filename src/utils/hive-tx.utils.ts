@@ -15,6 +15,7 @@ import {
   PrivateKey,
   Transaction as HiveTransaction,
 } from 'hive-tx';
+import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';
 import { AsyncUtils } from 'src/utils/async.utils';
 import { ErrorUtils } from 'src/utils/error.utils';
@@ -55,7 +56,10 @@ const sendOperation = async (
 
 const createTransaction = async (operations: Operation[]) => {
   let hiveTransaction = new HiveTransaction();
-  const tx = await hiveTransaction.create(operations, 5 * MINUTE);
+  const tx = await hiveTransaction.create(
+    operations,
+    Config.transactions.expirationTimeInMinutes * MINUTE,
+  );
   Logger.log(`length of transaction => ${JSON.stringify(tx).length}`);
   return tx;
 };
@@ -65,7 +69,11 @@ const createSignAndBroadcastTransaction = async (
   key: Key,
 ): Promise<HiveTxBroadcastResult | undefined> => {
   let hiveTransaction = new HiveTransaction();
-  let transaction = await hiveTransaction.create(operations, 5 * MINUTE);
+  let transaction = await hiveTransaction.create(
+    operations,
+    Config.transactions.expirationTimeInMinutes * MINUTE,
+  );
+
   if (KeysUtils.isUsingLedger(key)) {
     let hashSignPolicy;
     try {

@@ -1,3 +1,4 @@
+import { AutoCompleteValue } from '@interfaces/autocomplete.interface';
 import { FavoriteUserItems } from '@interfaces/favorite-user.interface';
 import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
@@ -120,7 +121,7 @@ const FavoriteAccounts = ({
 
   const handleDeleteFavorite = (
     listName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
   ) => {
     const favoriteAccountsListCopy = [...favoriteAccountsList];
     const selectedList = favoriteAccountsListCopy.filter(
@@ -151,7 +152,7 @@ const FavoriteAccounts = ({
 
   const handleEditFavoriteLabel = (
     listName: FavoriteUserListName,
-    favoriteItem: FavoriteAccounts,
+    favoriteItem: AutoCompleteValue,
     newLabel: string,
   ) => {
     const favoriteAccountsListCopy = [...favoriteAccountsList];
@@ -163,7 +164,7 @@ const FavoriteAccounts = ({
     );
     selectedList.list[favoriteItemIndexToEdit] = {
       ...selectedList.list[favoriteItemIndexToEdit],
-      label: newLabel,
+      subLabel: newLabel,
     };
     setFavoriteAccountsList([...favoriteAccountsListCopy]);
     saveFavoriteList(selectedList);

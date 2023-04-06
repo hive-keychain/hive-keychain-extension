@@ -1,0 +1,24 @@
+@import '/src/popup/variable.scss';
+
+$autoCompleteItemHeight: 30px;
+.autocomplete-panel {
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+  font-size: $input-font-size;
+  background-color: $black;
+  color: white;
+  box-sizing: border-box;
+  max-height: $autoCompleteItemHeight * 5;
+  overflow: auto;
+
+  .category {
+    padding-top: 8px;
+    .title {
+      font-weight: bold;
+      margin-left: 10px;
+      font-size: 18px;
+      font-style: italic;
+    }
+  }
+}
