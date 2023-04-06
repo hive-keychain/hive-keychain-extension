@@ -31,8 +31,14 @@
 
   .react-tabs__tab-list {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
     margin: 0 0 32px !important;
+
+    &.three-items {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+    &.four-items {
+      grid-template-columns: auto auto auto auto;
+    }
 
     .react-tabs__tab {
       text-align: center;

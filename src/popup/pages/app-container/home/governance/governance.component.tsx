@@ -32,7 +32,7 @@ const Governance = ({
       title: 'popup_html_governance',
       isBackButtonEnabled: true,
     });
-  });
+  }, []);
 
   useEffect(() => {
     setIsWitness(
@@ -69,7 +69,7 @@ const Governance = ({
       <Tabs>
         <TabList
           className={`react-tabs__tab-list ${
-            isWitness ? 'make-flex' : 'make-grid'
+            isWitness ? 'four-items' : 'three-items'
           }`}>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>
           <Tab>{chrome.i18n.getMessage('popup_html_proxy')}</Tab>
