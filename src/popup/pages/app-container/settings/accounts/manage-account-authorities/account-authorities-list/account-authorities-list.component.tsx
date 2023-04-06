@@ -5,7 +5,7 @@ import {
   removeFromLoadingList,
 } from '@popup/actions/loading.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
-import { AccountAuthoritiesListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
+import { AccountAuthoritiesListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';

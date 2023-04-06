@@ -1,6 +1,6 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
-import { AccountAuthoritiesListComponent } from '@popup/pages/app-container/settings/accounts/manage-account/account-authorities-list/account-authorities-list.component';
+import { AccountAuthoritiesListComponent } from '@popup/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list.component';
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
