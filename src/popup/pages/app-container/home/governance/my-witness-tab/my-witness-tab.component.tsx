@@ -1,15 +1,15 @@
 import { KeychainApi } from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
 import { setErrorMessage } from '@popup/actions/message.actions';
+import { Icons } from '@popup/icons.enum';
 import { EditMyWitnessComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/edit-my-witness/edit-my-witness.component';
 import { WitnessInformationComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
 import './my-witness-tab.component.scss';
-
-export type MyWitnessPage = 'witness_information' | 'edit_my_witness';
 
 type Props = {
   ranking: Witness[];
@@ -20,9 +20,10 @@ const MyWitnessTab = ({
   activeAccount,
   setErrorMessage,
 }: PropsFromRedux & Props) => {
-  const [page, setPage] = useState<MyWitnessPage>('witness_information');
   const [witnessInfo, setWitnessInfo] = useState<any>();
   const [isLoading, setIsLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     init();
@@ -40,6 +41,7 @@ const MyWitnessTab = ({
         setWitnessInfo(requestResult);
         setIsLoading(false);
       } else {
+        setHasError(true);
         throw new Error('Witness-info data error');
       }
     } catch (err) {
@@ -47,22 +49,36 @@ const MyWitnessTab = ({
     }
   };
   //TODO bellow create sccs + classes
+  //TODO errorData? what to render bellow if error on BE data?
   return (
     <div className="my-witness-tab">
       {!isLoading &&
         witnessInfo &&
-        (page === 'witness_information' ? (
+        (!editMode ? (
           <WitnessInformationComponent
             ranking={ranking}
-            setPage={setPage}
+            setEditMode={setEditMode}
             witnessInfo={witnessInfo}
           />
         ) : (
-          <EditMyWitnessComponent setPage={setPage} witnessInfo={witnessInfo} />
+          <EditMyWitnessComponent
+            setEditMode={setEditMode}
+            witnessInfo={witnessInfo}
+          />
         ))}
       {isLoading && (
         <div className="rotating-logo-container">
           <RotatingLogoComponent />
+        </div>
+      )}
+      {hasError && (
+        <div aria-label="error-witness" className="error-witness">
+          <Icon name={Icons.ERROR} type={IconType.OUTLINED}></Icon>
+          <span>
+            {chrome.i18n.getMessage(
+              'popup_html_error_retrieving_witness_information',
+            )}
+          </span>
         </div>
       )}
     </div>

@@ -10,21 +10,18 @@ import {
 } from '@popup/actions/message.actions';
 import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { fetchAccountTransactions } from '@popup/actions/transaction.actions';
-import WitnessPageTabItemComponent from '@popup/pages/app-container/home/governance/witness-page-tab/witness-page-tab-item.component/witness-page-tab-item.component';
 import { RootState, store } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import ButtonComponent from 'src/common-ui/button/button.component';
 import FormatUtils from 'src/utils/format.utils';
 //TODO change scss name file & check
-import { MyWitnessPage } from '@popup/pages/app-container/home/governance/my-witness-tab/my-witness-tab.component';
 import './witness-information.component.scss';
 
 interface WitnessInformationProps {
   witnessInfo: any;
   ranking: Witness[];
-  setPage: React.Dispatch<React.SetStateAction<MyWitnessPage>>;
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const WitnessInformation = ({
@@ -36,7 +33,8 @@ const WitnessInformation = ({
   currencyPrices,
   witnessInfo,
   ranking,
-  setPage,
+  setEditMode,
+  //   setPage,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
@@ -57,7 +55,7 @@ const WitnessInformation = ({
   }, [ranking]);
 
   const gotoNextPage = () => {
-    setPage('edit_my_witness');
+    setEditMode(true);
   };
 
   const getUrlBlock = (block: string | number) =>
@@ -73,7 +71,9 @@ const WitnessInformation = ({
 
   return (
     <div className="witness-tab-page-step-one">
-      {witnessRanking && witnessInfo && (
+      {/* //TODO remake following requests in card... */}
+      {/* {witnessRanking && witnessInfo && (
+        
         <div className="padding-bottom">
           <div className="text">
             {chrome.i18n.getMessage('popup_html_witness_page_text')}
@@ -222,7 +222,7 @@ const WitnessInformation = ({
             onClick={() => gotoNextPage()}
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };

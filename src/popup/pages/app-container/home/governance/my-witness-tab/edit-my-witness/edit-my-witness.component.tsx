@@ -20,20 +20,19 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import { BaseCurrencies } from 'src/utils/currency.utils';
+import FormatUtils from 'src/utils/format.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 //TODO here check on scss what it not needed.
-import { MyWitnessPage } from '@popup/pages/app-container/home/governance/my-witness-tab/my-witness-tab.component';
-import FormatUtils from 'src/utils/format.utils';
 import './edit-my-witness.component.scss';
 
 interface EditMyWitnessProps {
   witnessInfo: any;
-  setPage: React.Dispatch<React.SetStateAction<MyWitnessPage>>;
+  setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const EditMyWitness = ({
   witnessInfo,
-  setPage,
+  setEditMode,
   //   setWitnessPageStep,
   activeAccount,
   addToLoadingList,
@@ -128,8 +127,8 @@ const EditMyWitness = ({
     handleFormParams('hbd_exchange_rate', hbdExchangeRate);
   }, [hbdExchangeRate]);
 
-  const goBackStepOne = () => {
-    setPage('witness_information');
+  const goBackPage = () => {
+    setEditMode(false);
   };
 
   return (
@@ -279,7 +278,7 @@ const EditMyWitness = ({
         <div className="padding-bottom">
           <ButtonComponent
             label={'popup_html_button_label_cancel'}
-            onClick={() => goBackStepOne()}
+            onClick={() => goBackPage()}
           />
         </div>
       </div>

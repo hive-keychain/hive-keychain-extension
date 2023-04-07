@@ -2273,7 +2273,7 @@
   },
   "popup_html_error_retrieving_witness_information": {
     "message": "An error occured while retrieving the witness account information. Please try again later.",
-    "description": "Error while retrieving witness ranking, hivesql not down"
+    "description": "Error while retrieving witness information, hivesql not down"
   },
   "popup_html_error_retrieving_incoming_delegations": {
     "message": "An error occured while retrieving the incoming delegations. Please try again later.",
