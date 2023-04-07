@@ -1,0 +1,14 @@
+@import '../../../../../variable.scss';
+
+.my-witness-tab {
+  @include pageLayoutRowGap;
+  overflow: hidden;
+  height: 100%;
+
+  .rotating-logo-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+  }
+}

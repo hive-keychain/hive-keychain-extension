@@ -1,0 +1,88 @@
+@import '../../../../../../variable.scss';
+//TODO bellow change names
+.witness-tab-page-step-one {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 0px 10px;
+  font-size: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .text {
+    padding-bottom: 8px;
+    font-size: 18px;
+  }
+
+  .panel-title {
+    font-weight: bold;
+    font-size: 18px;
+  }
+
+  .page-information {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: 4px;
+  }
+
+  .column-line {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+  }
+
+  .row-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .rotating-logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+  }
+
+  .rotate-icon-180 {
+    rotate: 180deg;
+  }
+
+  .non-rotate-icon {
+    rotate: 0deg;
+  }
+
+  .witness-rewards-panel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    row-gap: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
+    .reward-column {
+      text-align: center;
+      background: $red-transparent;
+      &:nth-child(even) {
+        background: $black-transparent;
+      }
+    }
+
+    .reward-column-title {
+      font-weight: bold;
+    }
+  }
+
+  .padding-bottom {
+    padding-bottom: 15px;
+  }
+
+  .title {
+    font-weight: bold;
+  }
+
+  .centered-text {
+    text-align: center;
+  }
+}

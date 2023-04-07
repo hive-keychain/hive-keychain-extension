@@ -1,0 +1,51 @@
+@import '../../../../../../variable.scss';
+//TODO bellow change names
+.witness-tab-page-step-two {
+  flex: 1;
+  padding: 0px 10px;
+  font-size: 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  .column-line {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 5px;
+  }
+
+  .form-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+    margin-bottom: 16px;
+
+    .label-title {
+      @include fake-input;
+    }
+  }
+
+  .row-line {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+
+    .half-width {
+      width: 50%;
+    }
+  }
+
+  .customised-width {
+    width: 95% !important;
+  }
+
+  .padding-bottom {
+    padding-bottom: 10px;
+  }
+
+  .padding-top {
+    padding-top: 10px;
+  }
+}
