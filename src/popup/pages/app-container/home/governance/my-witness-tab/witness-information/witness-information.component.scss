@@ -1,6 +1,7 @@
 @import '../../../../../../variable.scss';
 //TODO bellow change names
-.witness-tab-page-step-one {
+// clean up, removing unused classes
+.witness-information {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -8,6 +9,12 @@
   font-size: 16px;
   overflow-y: auto;
   overflow-x: hidden;
+
+  .top-panel {
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 8px;
+  }
 
   .text {
     padding-bottom: 8px;
@@ -37,13 +44,6 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .rotating-logo-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex: 1;
   }
 
   .rotate-icon-180 {

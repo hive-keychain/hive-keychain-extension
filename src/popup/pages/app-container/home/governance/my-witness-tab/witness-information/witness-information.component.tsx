@@ -16,6 +16,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import FormatUtils from 'src/utils/format.utils';
 //TODO change scss name file & check
+import SwitchComponent from 'src/common-ui/switch/switch.component';
 import './witness-information.component.scss';
 
 interface WitnessInformationProps {
@@ -46,6 +47,7 @@ const WitnessInformation = ({
 
   //   const [isLoading, setIsLoading] = useState(true);
 
+  const [isInfoParamSelected, setIsInfoParamSelected] = useState(true);
   const [witnessRanking, setWitnessRanking] = useState<Witness>();
 
   useEffect(() => {
@@ -70,7 +72,7 @@ const WitnessInformation = ({
     ).toFixed(decimals);
 
   return (
-    <div className="witness-tab-page-step-one">
+    <div className="witness-information">
       {/* //TODO remake following requests in card... */}
       {/* {witnessRanking && witnessInfo && (
         
@@ -223,6 +225,19 @@ const WitnessInformation = ({
           />
         </div>
       )} */}
+      {/* //TODO bellow add trasnlations */}
+      <div className="top-panel">
+        <SwitchComponent
+          onChange={(value) => setIsInfoParamSelected(value)}
+          skipLeftTranslation={true}
+          skipRightTranslation={true}
+          leftValueLabel="global"
+          leftValue={false}
+          rightValueLabel="params"
+          rightValue={true}
+          selectedValue={isInfoParamSelected}
+        />
+      </div>
     </div>
   );
 };
