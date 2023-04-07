@@ -1,7 +1,7 @@
 import { AccountAuthoritiesListItemComponent } from '@popup/pages/app-container/settings/accounts/manage-account-authorities/account-authorities-list/account-authorities-list-item/account-authorities-list-item.component';
 import { RootState } from '@popup/store';
 import React from 'react';
-import { ConnectedProps, connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import './account-authorities-list.component.scss';
 
 const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {

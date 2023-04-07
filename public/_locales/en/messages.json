@@ -1558,8 +1558,8 @@
     "description": "while confirming power up and down"
   },
   "popup_html_confirm_remove_account_authority_message": {
-    "message": "Please confirm that you want to remove $1 authority on account $2.",
-    "description": "while confirming remove account authority"
+    "message": "Please confirm that you want to remove @$2's $1 authority on your account.",
+    "description": "while confirming remove account authority: $2 is account, $1 is posting or active"
   },
   "popup_html_confirm_cancel_withdraw_savings_message": {
     "message": "Please confirm that you want to cancel this $1 withdraw from savings.",
