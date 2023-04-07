@@ -79,13 +79,14 @@ const saveEstimate = async (
   endToken: string,
   amount: number,
 ): Promise<string> => {
-  return await KeychainSwapApi.post(`token-swap/estimate/save`, {
+  const result = await KeychainSwapApi.post(`token-swap/estimate/save`, {
     slipperage,
     steps,
     startToken,
     endToken,
     amount,
   });
+  return result.estimateId;
 };
 
 const processSwap = async (

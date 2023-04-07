@@ -16,7 +16,7 @@ import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
@@ -178,6 +178,8 @@ const TokenSwaps = ({
       endToken?.value.symbol,
       parseFloat(amount),
     );
+
+    console.log(`estimate Id => ${estimateId}`);
 
     const expectedAmount = estimate![estimate!.length - 1].estimate;
 
