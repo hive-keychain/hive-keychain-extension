@@ -1,30 +1,12 @@
 import { KeychainSwapApi } from '@api/keychain-swap';
 import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Swap, SwapStep } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
 import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransferUtils from 'src/utils/transfer.utils';
-
-export interface SwapStep {
-  step: SwapStepType;
-  estimate: number;
-  startToken: string;
-  endToken: string;
-  provider: string;
-}
-
-export enum SwapStepType {
-  DEPOSIT_TO_HIVE_ENGINE = 'DEPOSIT_TO_HIVE_ENGINE',
-  WITHDRAWAL_FROM_HIVE_ENGINE = 'WITHDRAWAL_FROM_HIVE_ENGINE',
-  CONVERT_INTERNAL_MARKET = 'CONVERT_INTERNAL_MARKET',
-  SWAP_TOKEN = 'SWAP',
-  BUY_ON_HIVE_ENGINE_MARKET = 'BUY_ON_HIVE_ENGINE_MARKET',
-  SELL_ON_HIVE_ENGINE_MARKET = 'SELL_ON_HIVE_ENGINE_MARKET',
-  BUY_ON_MARKET = 'BUY_ON_MARKET',
-  SELL_ON_MARKET = 'SELL_ON_MARKET',
-}
 
 const getSwapTokenStartList = async (account: ExtendedAccount) => {
   let userTokenList: TokenBalance[] = await TokensUtils.getUserBalance(
@@ -78,6 +60,7 @@ const saveEstimate = async (
   startToken: string,
   endToken: string,
   amount: number,
+  username: string,
 ): Promise<string> => {
   const result = await KeychainSwapApi.post(`token-swap/estimate/save`, {
     slipperage,
@@ -85,6 +68,7 @@ const saveEstimate = async (
     startToken,
     endToken,
     amount,
+    username,
   });
   return result.estimateId;
 };
@@ -124,10 +108,30 @@ const processSwap = async (
   }
 };
 
+const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
+  const result = await KeychainSwapApi.get(`token-swap/history/${username}`);
+  const swaps = [];
+  for (const s of result) {
+    const precisionStartToken = await TokensUtils.getTokenPrecision(
+      s.startToken,
+    );
+    const precisionEndToken = await TokensUtils.getTokenPrecision(s.endToken);
+    swaps.push({
+      ...s,
+      amount: Number(s.amount).toFixed(precisionStartToken),
+      estimatedFinalAmount: Number(
+        s.steps[s.steps.length - 1].estimate,
+      ).toFixed(precisionEndToken),
+    });
+  }
+  return swaps;
+};
+
 export const SwapTokenUtils = {
   getSwapTokenStartList,
   getSwapTokenEndList,
   processSwap,
   getEstimate,
   saveEstimate,
+  retrieveSwapHistory,
 };

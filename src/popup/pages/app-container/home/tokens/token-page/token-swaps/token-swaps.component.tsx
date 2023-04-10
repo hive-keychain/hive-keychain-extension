@@ -1,4 +1,5 @@
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { SwapStep } from '@interfaces/swap-token.interface';
 import { Token } from '@interfaces/tokens.interface';
 import {
   addToLoadingList,
@@ -29,7 +30,7 @@ import CustomSelect, {
 import Config from 'src/config';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import { KeysUtils } from 'src/utils/keys.utils';
-import { SwapStep, SwapTokenUtils } from 'src/utils/swap-token.utils';
+import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import './token-swaps.component.scss';
 
@@ -38,6 +39,7 @@ const TokenSwaps = ({
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
+  navigateTo,
 }: PropsFromRedux) => {
   const [loading, setLoading] = useState(true);
   const [slipperage, setSlipperage] = useState(5);
@@ -177,6 +179,7 @@ const TokenSwaps = ({
       startToken?.value.symbol,
       endToken?.value.symbol,
       parseFloat(amount),
+      activeAccount.name!,
     );
 
     console.log(`estimate Id => ${estimateId}`);
@@ -268,9 +271,19 @@ const TokenSwaps = ({
     <div className="token-swaps" aria-label="token-swaps">
       {!loading && (
         <>
-          {!!autoRefreshCountdown && (
-            <div>Auto refresh in {autoRefreshCountdown} sec</div>
-          )}
+          <div className="top-row">
+            <div className="countdown">
+              {!!autoRefreshCountdown && (
+                <span>Auto refresh in {autoRefreshCountdown} sec</span>
+              )}
+            </div>
+
+            <Icon
+              name={Icons.HISTORY}
+              type={IconType.OUTLINED}
+              onClick={() => navigateTo(Screen.TOKENS_SWAP_HISTORY)}
+            />
+          </div>
 
           <div className="start-token">
             <div className="inputs">
@@ -355,6 +368,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   navigateToWithParams,
+  navigateTo,
   addToLoadingList,
   removeFromLoadingList,
 });

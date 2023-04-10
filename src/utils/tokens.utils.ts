@@ -375,6 +375,14 @@ const getTokensMarket = async (
   } as TokenRequestParams);
 };
 
+const getTokenPrecision = async (symbol: string) => {
+  if (symbol === 'HBD' || symbol === 'HIVE') {
+    return 3;
+  }
+  const token = await getTokenInfo(symbol);
+  return token.precision;
+};
+
 const TokensUtils = {
   sendToken,
   stakeToken,
@@ -399,6 +407,7 @@ const TokensUtils = {
   getSendTokenTransaction,
   getHiveEngineTokenPrice,
   getTokenInfo,
+  getTokenPrecision,
 };
 
 export default TokensUtils;

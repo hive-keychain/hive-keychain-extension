@@ -3108,5 +3108,33 @@
   "exchanges": {
     "message": "Exchanges",
     "description": "General word"
+  },
+  "html_popup_token_swaps_history": {
+    "message": "Swaps history",
+    "description": "token swap history"
+  },
+  "swap_refresh_countdown": {
+    "message": "Auto refresh in $1 sec",
+    "description": "swap token auto refresh"
+  },
+  "swap_status_started": {
+    "message": "Started",
+    "description": "swap status"
+  },
+  "swap_status_finished": {
+    "message": "Finished",
+    "description": "swap status"
+  },
+  "swap_status_pending": {
+    "message": "Pending",
+    "description": "swap status"
+  },
+  "swap_status_canceled": {
+    "message": "Canceled",
+    "description": "swap status"
+  },
+  "swap_copied_to_clipboard": {
+    "message": "Copied to clipboard!",
+    "description": "on preferences when clicking on swap id"
   }
 }

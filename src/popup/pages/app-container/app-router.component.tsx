@@ -18,6 +18,7 @@ import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/sa
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { TokensPageComponent } from '@popup/pages/app-container/home/tokens/token-page/token-page.component';
+import { TokenSwapsHistoryComponent } from '@popup/pages/app-container/home/tokens/token-page/token-swaps-history/token-swaps-history.component';
 import { TokensFilterComponent } from '@popup/pages/app-container/home/tokens/tokens-filter/tokens-filter.component';
 import { TokensHistoryComponent } from '@popup/pages/app-container/home/tokens/tokens-history/tokens-history.component';
 import { TokensSettingsComponent } from '@popup/pages/app-container/home/tokens/tokens-settings/tokens-settings.component';
@@ -105,6 +106,8 @@ const AppRouter = ({
         return <TokenIncomingOutgoingPageComponent />;
       case Screen.TOKENS_FILTER:
         return <TokensFilterComponent />;
+      case Screen.TOKENS_SWAP_HISTORY:
+        return <TokenSwapsHistoryComponent />;
 
       //Settings Routes
       case Screen.SETTINGS_MAIN_PAGE:
