@@ -1,8 +1,14 @@
-// @import '../../../../../variable.scss';
 @import '../../../../../../variable.scss';
 
 .token-swaps-history {
   @include pageLayoutRowGap;
+
+  .refresh-panel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 24px;
+  }
 
   .history-item {
     &:nth-child(even) {

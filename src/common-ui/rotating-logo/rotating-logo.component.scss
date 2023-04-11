@@ -1,15 +1,8 @@
+@import '../../popup/variable.scss';
+
 .rotating-logo {
   width: 80px;
   height: 80px;
   animation: rotate-stop 2s infinite linear;
   transform: rotate();
-}
-
-@keyframes rotate-stop {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }

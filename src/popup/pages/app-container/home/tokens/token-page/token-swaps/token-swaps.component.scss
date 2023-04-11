@@ -28,6 +28,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    .countdown {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+    }
   }
 
   .start-token {

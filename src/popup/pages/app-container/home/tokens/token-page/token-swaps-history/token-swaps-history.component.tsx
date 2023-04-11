@@ -5,6 +5,7 @@ import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import Config from 'src/config';
 import { SwapTokenUtils } from 'src/utils/swap-token.utils';
 import './token-swaps-history.component.scss';
 
@@ -14,6 +15,11 @@ const TokenSwapsHistory = ({
   setInfoMessage,
 }: PropsFromRedux) => {
   const [history, setHistory] = useState<Swap[]>([]);
+  const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
+    number | null
+  >(null);
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     setTitleContainerProperties({
       title: 'html_popup_token_swaps_history',
@@ -22,12 +28,35 @@ const TokenSwapsHistory = ({
     initSwapHistory();
   }, []);
 
+  useEffect(() => {
+    if (autoRefreshCountdown === null) {
+      return;
+    }
+
+    if (autoRefreshCountdown === 0) {
+      initSwapHistory();
+      setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+      return;
+    }
+
+    const intervalId = setInterval(() => {
+      setAutoRefreshCountdown(autoRefreshCountdown! - 1);
+    }, 1000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [autoRefreshCountdown]);
+
   const initSwapHistory = async () => {
+    setLoading(true);
     const result = await SwapTokenUtils.retrieveSwapHistory(
       activeAccount.name!,
     );
     console.log(result);
     setHistory(result);
+    setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+    setLoading(false);
   };
 
   const copyIdToCliplboard = (id: string) => {
@@ -54,6 +83,15 @@ const TokenSwapsHistory = ({
 
   return (
     <div className="token-swaps-history">
+      <div className="refresh-panel">
+        {autoRefreshCountdown && (
+          <span>
+            {chrome.i18n.getMessage('swap_refresh_countdown', [
+              autoRefreshCountdown?.toString(),
+            ])}
+          </span>
+        )}
+      </div>
       {history.map((item, index) => {
         return (
           <div key={`item-${index}`} className={`history-item`}>

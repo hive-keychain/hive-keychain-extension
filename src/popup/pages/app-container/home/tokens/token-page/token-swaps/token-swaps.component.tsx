@@ -42,6 +42,7 @@ const TokenSwaps = ({
   navigateTo,
 }: PropsFromRedux) => {
   const [loading, setLoading] = useState(true);
+  const [loadingEstimate, setLoadingEstimate] = useState(false);
   const [slipperage, setSlipperage] = useState(5);
   const [amount, setAmount] = useState<string>('');
 
@@ -54,6 +55,7 @@ const TokenSwaps = ({
     SelectOption[]
   >([]);
   const [estimate, setEstimate] = useState<SwapStep[]>();
+  const [estimateValue, setEstimateValue] = useState<string | undefined>();
 
   const [autoRefreshCountdown, setAutoRefreshCountdown] = useState<
     number | null
@@ -148,13 +150,25 @@ const TokenSwaps = ({
   };
 
   const calculateEstimate = async () => {
-    setEstimate(
-      await SwapTokenUtils.getEstimate(
-        startToken?.value.symbol,
-        endToken?.value.symbol,
-        amount,
-      ),
+    setLoadingEstimate(true);
+    const result: SwapStep[] = await SwapTokenUtils.getEstimate(
+      startToken?.value.symbol,
+      endToken?.value.symbol,
+      amount,
     );
+    setEstimate(result);
+    if (result.length) {
+      const precision = await TokensUtils.getTokenPrecision(
+        result[result.length - 1].endToken,
+      );
+      const value = Number(result[result.length - 1].estimate).toFixed(
+        precision,
+      );
+      setEstimateValue(value);
+    } else {
+      setEstimateValue(undefined);
+    }
+    setLoadingEstimate(false);
   };
 
   const processSwap = async () => {
@@ -274,7 +288,14 @@ const TokenSwaps = ({
           <div className="top-row">
             <div className="countdown">
               {!!autoRefreshCountdown && (
-                <span>Auto refresh in {autoRefreshCountdown} sec</span>
+                <>
+                  {<span>Auto refresh in {autoRefreshCountdown} sec</span>}
+                  <Icon
+                    name={Icons.REFRESH}
+                    onClick={calculateEstimate}
+                    rotate={loadingEstimate}
+                  />
+                </>
               )}
             </div>
 
@@ -328,7 +349,7 @@ const TokenSwaps = ({
                 {estimate && estimate.length > 0 && (
                   <div className="final-value">
                     {chrome.i18n.getMessage('html_popup_swaps_final_price', [
-                      estimate[estimate.length - 1].estimate.toString(),
+                      estimateValue!,
                       endToken?.label!,
                     ])}
                   </div>

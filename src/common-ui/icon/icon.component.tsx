@@ -14,21 +14,24 @@ export enum IconType {
 interface IconProps {
   onClick?: (params: any) => void;
   name: Icons | string;
-  type: IconType;
+  type?: IconType;
   additionalClassName?: string;
   tooltipMessage?: string;
   tooltipPosition?: CustomTooltipPosition;
   skipTooltipTranslation?: boolean;
   ariaLabel?: string;
+  rotate?: boolean;
 }
 
 const getIconTemplate = (props: IconProps) => {
   return (
     <span
       aria-label={props.ariaLabel}
-      className={`icon-component material-icons${props.type} ${
-        props.additionalClassName ?? ''
-      } ${props.onClick ? 'clickable' : ''}`}
+      className={`icon-component material-icons ${
+        props.type ?? IconType.OUTLINED
+      } ${props.additionalClassName ?? ''} ${
+        props.onClick ? 'clickable' : ''
+      } ${props.rotate ? 'rotate' : ''}`}
       onClick={props.onClick}>
       {props.name}
     </span>
