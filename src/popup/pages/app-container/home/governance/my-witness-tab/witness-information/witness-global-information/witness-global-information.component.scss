@@ -1,0 +1,41 @@
+@import '../../../../../../../variable.scss';
+
+.witness-global-information {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+
+  .label-title {
+    font-weight: bold;
+  }
+
+  .smaller-text {
+    font-size: 12px;
+  }
+
+  .row-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .data-clickeable {
+    display: flex;
+    flex-direction: row;
+    row-gap: 4px;
+    align-items: center;
+    cursor: pointer;
+    padding-bottom: 0px !important;
+  }
+
+  .info-last-update {
+    text-align: right;
+    font-size: 16px;
+    color: white;
+    font-style: italic;
+  }
+
+  .warning-red-color {
+    color: red;
+  }
+}

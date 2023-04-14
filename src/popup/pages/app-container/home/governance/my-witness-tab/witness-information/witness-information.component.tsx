@@ -16,6 +16,9 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import FormatUtils from 'src/utils/format.utils';
 //TODO change scss name file & check
+import { WitnessGlobalInformationComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
+import { WitnessInformationParametersComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
+import ButtonComponent from 'src/common-ui/button/button.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import './witness-information.component.scss';
 
@@ -43,7 +46,7 @@ const WitnessInformation = ({
   refreshActiveAccount,
   fetchAccountTransactions,
 }: PropsFromRedux & WitnessInformationProps) => {
-  //TODO clean up, waiting review
+  //TODO clean up & finish
 
   //   const [isLoading, setIsLoading] = useState(true);
 
@@ -55,6 +58,12 @@ const WitnessInformation = ({
       ranking.filter((witness: any) => witness.name === activeAccount.name!)[0],
     );
   }, [ranking]);
+
+  //TODO remove block
+  useEffect(() => {
+    console.log({ witnessRanking });
+  }, [witnessRanking]);
+  /////
 
   const gotoNextPage = () => {
     setEditMode(true);
@@ -238,6 +247,40 @@ const WitnessInformation = ({
           selectedValue={isInfoParamSelected}
         />
       </div>
+      <div className="text">
+        {chrome.i18n.getMessage('popup_html_witness_page_text')}
+      </div>
+      <div className="witness-profile-container">
+        <img
+          src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
+          onError={(e: any) => {
+            e.target.onError = null;
+            e.target.src = '/assets/images/accounts.png';
+          }}
+        />
+        <div className="info-container">
+          <div className="witness-name">@{activeAccount.name!}</div>
+          <div className="witness-ranking">
+            {witnessRanking?.active_rank}
+            {'th'}
+            {'('}
+            {witnessRanking?.rank}
+            {')'}
+          </div>
+        </div>
+      </div>
+      {isInfoParamSelected ? (
+        <WitnessInformationParametersComponent witnessInfo={witnessInfo} />
+      ) : (
+        <WitnessGlobalInformationComponent
+          witnessRanking={witnessRanking!}
+          witnessInfo={witnessInfo}
+        />
+      )}
+      <ButtonComponent
+        label={'html_popup_button_next_step_label'}
+        onClick={() => gotoNextPage()}
+      />
     </div>
   );
 };

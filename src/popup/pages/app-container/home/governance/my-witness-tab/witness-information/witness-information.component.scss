@@ -16,6 +16,33 @@
     padding-right: 8px;
   }
 
+  .witness-profile-container {
+    display: flex;
+    justify-content: flex-start;
+    padding: 8px;
+
+    .info-container {
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+      padding-left: 8px;
+    }
+
+    .witness-name {
+      font-weight: bold;
+    }
+
+    .witness-ranking {
+      font-style: italic;
+    }
+  }
+
+  img {
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+  }
+
   .text {
     padding-bottom: 8px;
     font-size: 18px;

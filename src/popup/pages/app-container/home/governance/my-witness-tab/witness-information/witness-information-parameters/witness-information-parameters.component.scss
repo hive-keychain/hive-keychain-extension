@@ -1,0 +1,21 @@
+@import '../../../../../../../variable.scss';
+
+.witness-information-parameters {
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+
+  .label-title {
+    font-weight: bold;
+  }
+
+  .smaller-text {
+    font-size: 12px;
+  }
+
+  .row-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
