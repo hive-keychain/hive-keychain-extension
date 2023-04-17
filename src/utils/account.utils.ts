@@ -396,7 +396,7 @@ const getRCMana = async (username: string) => {
 
   const delta: number = Date.now() / 1000 - manabar.last_update_time;
   let current_mana = Number(manabar.current_mana) + (delta * max_mana) / 432000;
-  let percentage: number = Math.round((current_mana / max_mana) * 100);
+  let percentage: number = +((current_mana / max_mana) * 100).toFixed(2);
 
   if (!isFinite(percentage) || percentage < 0) {
     percentage = 0;
