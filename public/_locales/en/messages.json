@@ -1750,7 +1750,7 @@
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
-    "message": "Vote @stoodkev as witness",
+    "message": "Vote $1 as witness",
     "description": "On main page, in the vote witness section"
   },
   "html_popup_made_with_love_by_stoodkev": {
