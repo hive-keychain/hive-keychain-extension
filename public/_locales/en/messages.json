@@ -1925,6 +1925,54 @@
     "message": "Updating witness account",
     "description": "When updating witness account"
   },
+  "html_popup_witness_information_global_label": {
+    "message": "global",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_global_information_votes_label": {
+    "message": "Amount of votes",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_blocks_missed_label": {
+    "message": "Blocks missed",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_updated_label": {
+    "message": "Updated",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_version_label": {
+    "message": "Version",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_last_block_label": {
+    "message": "Last block",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_global_information_price_feed_label": {
+    "message": "Price feed",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_st_label": {
+    "message": "st",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_nd_label": {
+    "message": "nd",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_rd_label": {
+    "message": "rd",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_ranking_ordinal_th_label": {
+    "message": "th",
+    "description": "When displaying my witness account global data"
+  },
+  "html_popup_witness_information_params_label": {
+    "message": "params",
+    "description": "When displaying my witness account"
+  },
   "html_popup_confirm_transaction_operation": {
     "message": "Confirming transaction",
     "description": "Confirmation transaction operation"

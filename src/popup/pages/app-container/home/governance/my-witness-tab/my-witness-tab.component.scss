@@ -11,4 +11,15 @@
     align-items: center;
     flex: 1;
   }
+
+  .error-witness {
+    display: flex;
+    flex-direction: row;
+    padding: 12px;
+    flex: 1;
+    align-items: center;
+    row-gap: 0px !important;
+    text-align: center;
+    font-size: 16px;
+  }
 }

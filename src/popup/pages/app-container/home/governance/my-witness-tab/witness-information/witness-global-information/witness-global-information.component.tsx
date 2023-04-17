@@ -1,23 +1,12 @@
-import { refreshActiveAccount } from '@popup/actions/active-account.actions';
-import {
-  addToLoadingList,
-  removeFromLoadingList,
-} from '@popup/actions/loading.actions';
-import {
-  setErrorMessage,
-  setSuccessMessage,
-} from '@popup/actions/message.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
-import { fetchAccountTransactions } from '@popup/actions/transaction.actions';
+import { Witness } from '@interfaces/witness.interface';
+import { Icons } from '@popup/icons.enum';
 import { RootState, store } from '@popup/store';
+import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-//TODO change scss name file & check
-import { Witness } from '@interfaces/witness.interface';
-import { Icons } from '@popup/icons.enum';
-import moment from 'moment';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
+import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import './witness-global-information.component.scss';
 
@@ -30,21 +19,22 @@ const WitnessGlobalInformation = ({
   witnessRanking,
   witnessInfo,
   currencyPrices,
-  addToLoadingList,
-  removeFromLoadingList,
-  setErrorMessage,
-  setSuccessMessage,
-  refreshActiveAccount,
-  fetchAccountTransactions,
+  currencyLabels,
 }: PropsFromRedux & WitnessGlobalInformationProps) => {
-  //TODO clean up & finish
-
-  const lastPriceFeedUpdate = moment(witnessInfo.last_hbd_exchange_update)
+  const lastPriceFeedUpdateAgoFormat = moment(
+    witnessInfo.last_hbd_exchange_update,
+  )
     .startOf('hour')
     .fromNow();
 
-  const passedUpdateHoursThreshold =
-    lastPriceFeedUpdate.match(/[1-9][0-9]|[6-9]/);
+  const wasUpdatedAfterThreshold = (last_hbd_exchange_update: string) => {
+    const lasUpdateTimestamp = new Date(last_hbd_exchange_update).getTime();
+    const lastUpdateHoursMs = Date.now() - lasUpdateTimestamp;
+    let seconds = Math.floor(lastUpdateHoursMs / 1000);
+    let minutes = Math.floor(seconds / 60);
+    let hours = Math.floor(minutes / 60);
+    return hours > 5;
+  };
 
   const gotoUrl = (block: string | number) => {
     chrome.tabs.create({ url: `https://hiveblocks.com/b/${block}` });
@@ -61,15 +51,27 @@ const WitnessGlobalInformation = ({
   return (
     <div className="witness-global-information">
       <div className="row-container">
-        <div className="label-title">Amount of votes</div>
+        <div className="label-title">
+          {chrome.i18n.getMessage(
+            'html_popup_witness_global_information_votes_label',
+          )}
+        </div>
         <div>{witnessRanking.votes_count}</div>
       </div>
       <div className="row-container">
-        <div className="label-title">Block missed</div>
+        <div className="label-title">
+          {chrome.i18n.getMessage(
+            'html_popup_witness_global_information_blocks_missed_label',
+          )}
+        </div>
         <div>{witnessInfo.total_missed}</div>
       </div>
       <div className="row-container">
-        <div className="label-title">Last block</div>
+        <div className="label-title">
+          {chrome.i18n.getMessage(
+            'html_popup_witness_global_information_last_block_label',
+          )}
+        </div>
         <div
           className="data-clickeable"
           onClick={() => gotoUrl(witnessInfo.last_confirmed_block_num)}>
@@ -78,7 +80,11 @@ const WitnessGlobalInformation = ({
         </div>
       </div>
       <div className="row-container">
-        <div className="label-title">Price feed</div>
+        <div className="label-title">
+          {chrome.i18n.getMessage(
+            'html_popup_witness_global_information_price_feed_label',
+          )}
+        </div>
         <div>
           {witnessInfo.hbd_exchange_rate_base}{' '}
           {witnessInfo.hbd_exchange_rate_base_symbol}
@@ -86,12 +92,21 @@ const WitnessGlobalInformation = ({
       </div>
       <div
         className={`info-last-update ${
-          passedUpdateHoursThreshold ? 'warning-red-color' : ''
+          wasUpdatedAfterThreshold(witnessInfo.last_hbd_exchange_update)
+            ? 'warning-red-color'
+            : ''
         }`}>
-        Updated {lastPriceFeedUpdate}
+        {chrome.i18n.getMessage(
+          'html_popup_witness_global_information_updated_label',
+        )}{' '}
+        {lastPriceFeedUpdateAgoFormat}
       </div>
       <div className="row-container">
-        <div className="label-title">Version</div>
+        <div className="label-title">
+          {chrome.i18n.getMessage(
+            'html_popup_witness_global_information_version_label',
+          )}
+        </div>
         <div>{witnessInfo.running_version}</div>
       </div>
       <div className="title centered-text">
@@ -116,7 +131,7 @@ const WitnessGlobalInformation = ({
           </div>
         </div>
         <div className="reward-column">
-          <div className="reward-column-title">HP</div>
+          <div className="reward-column-title">{currencyLabels.hp}</div>
           <div>
             {FormatUtils.toHP(
               witnessInfo.lastWeekValue.toString(),
@@ -152,18 +167,11 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     currencyPrices: state.currencyPrices,
+    currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
   };
 };
 
-const connector = connect(mapStateToProps, {
-  addToLoadingList,
-  removeFromLoadingList,
-  setErrorMessage,
-  setSuccessMessage,
-  refreshActiveAccount,
-  navigateToWithParams,
-  fetchAccountTransactions,
-});
+const connector = connect(mapStateToProps, {});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const WitnessGlobalInformationComponent = connector(

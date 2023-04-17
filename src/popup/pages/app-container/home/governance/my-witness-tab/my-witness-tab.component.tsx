@@ -41,6 +41,7 @@ const MyWitnessTab = ({
         setWitnessInfo(requestResult);
         setIsLoading(false);
       } else {
+        setIsLoading(false);
         setHasError(true);
         throw new Error('Witness-info data error');
       }
@@ -48,8 +49,7 @@ const MyWitnessTab = ({
       setErrorMessage('popup_html_error_retrieving_witness_information');
     }
   };
-  //TODO bellow create sccs + classes
-  //TODO errorData? what to render bellow if error on BE data?
+
   return (
     <div className="my-witness-tab">
       {!isLoading &&

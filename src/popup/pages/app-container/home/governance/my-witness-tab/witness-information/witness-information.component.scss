@@ -1,6 +1,5 @@
 @import '../../../../../../variable.scss';
-//TODO bellow change names
-// clean up, removing unused classes
+
 .witness-information {
   display: flex;
   flex-direction: column;
@@ -48,68 +47,8 @@
     font-size: 18px;
   }
 
-  .panel-title {
-    font-weight: bold;
-    font-size: 18px;
-  }
-
-  .page-information {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    padding: 4px;
-  }
-
-  .column-line {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 5px;
-  }
-
-  .row-line {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .rotate-icon-180 {
-    rotate: 180deg;
-  }
-
-  .non-rotate-icon {
-    rotate: 0deg;
-  }
-
-  .witness-rewards-panel {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    row-gap: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-
-    .reward-column {
-      text-align: center;
-      background: $red-transparent;
-      &:nth-child(even) {
-        background: $black-transparent;
-      }
-    }
-
-    .reward-column-title {
-      font-weight: bold;
-    }
-  }
-
-  .padding-bottom {
-    padding-bottom: 15px;
-  }
-
-  .title {
-    font-weight: bold;
-  }
-
-  .centered-text {
-    text-align: center;
+  .button-container {
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
   }
 }
