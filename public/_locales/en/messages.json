@@ -503,52 +503,37 @@
     "message": "Votes remaining: $1",
     "description": "On witness page"
   },
-  "popup_html_witness_information_owner_label": {
-    "message": "Owner",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_votes_count_label": {
-    "message": "Votes Count",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_active_rank_label": {
-    "message": "Active Rank",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_rank_label": {
-    "message": "Rank",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_created_label": {
-    "message": "Created",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_total_missed_label": {
-    "message": "Total missed",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_last_aslot_label": {
-    "message": "Last aslot",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_last_confirmed_block_label": {
-    "message": "Last confirmed block",
-    "description": "On My witness page"
-  },
+
   "popup_html_witness_information_signing_key_label": {
     "message": "Signing key",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_account_creation_fee_label": {
+    "message": "Account creation fee",
     "description": "On My witness page"
   },
   "popup_html_witness_information_fee_label": {
     "message": "Fee",
     "description": "On My witness page"
   },
+  "popup_html_witness_information_account_creation_fee_placeholder_text": {
+    "message": "I.e: 1.000",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_block_size_placeholder_text": {
+    "message": "Size, example: 65536",
+    "description": "On My witness page"
+  },
   "popup_html_witness_information_maximum_block_size_label": {
-    "message": "Maximum block size",
+    "message": "Block size",
     "description": "On My witness page"
   },
   "popup_html_witness_information_hbd_interest_rate_label": {
-    "message": "HBD interest rate",
+    "message": "Interest rate %",
+    "description": "On My witness page"
+  },
+  "popup_html_witness_information_hbd_interest_rate_placeholder_text": {
+    "message": "I.e: 2000",
     "description": "On My witness page"
   },
   "popup_html_witness_information_exchange_rate_base_label": {
@@ -557,22 +542,6 @@
   },
   "popup_html_witness_information_exchange_rate_quote_label": {
     "message": "Exchange rate quote",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_last_hbd_exchange_update_label": {
-    "message": "Last hbd exchange update",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_running_version_label": {
-    "message": "Running version",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_hardfork_version_vote_label": {
-    "message": "Hardfork version vote",
-    "description": "On My witness page"
-  },
-  "popup_html_witness_information_hardfork_time_vote_label": {
-    "message": "Hardfork time vote",
     "description": "On My witness page"
   },
   "popup_html_witness_information_url_label": {
@@ -840,8 +809,8 @@
     "description": "on witness when updating a witness"
   },
   "popup_success_witness_account_update": {
-    "message": "Succesfully unvoted @$1 as a witness.",
-    "description": "on witness edit tab page on success updating"
+    "message": "Succesfully updated witness account.",
+    "description": "on my witness on success updating"
   },
   "popup_error_wit": {
     "message": "Error while voting for @$1 as a witness.",
@@ -2932,9 +2901,9 @@
     "message": "You already voted for this witness",
     "description": "Error if trying to vote for a witness that has alreay been voted for"
   },
-  "html_popup_button_next_step_label": {
-    "message": "Next step",
-    "description": "when using a button as next step process"
+  "html_popup_button_edit_label": {
+    "message": "Edit",
+    "description": "when using a button as to edit"
   },
   "html_popup_witness_not_voted": {
     "message": "You did not vote for this witness, you can't unvote it",

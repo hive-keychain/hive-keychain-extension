@@ -36,7 +36,6 @@ const MyWitnessTab = ({
       requestResult = await KeychainApi.get(
         `hive/witness/${activeAccount.name!}`,
       );
-      console.log({ requestResult }); //TODO to remove
       if (!!requestResult && requestResult !== '') {
         setWitnessInfo(requestResult);
         setIsLoading(false);

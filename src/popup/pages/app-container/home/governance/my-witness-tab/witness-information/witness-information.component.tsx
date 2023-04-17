@@ -30,19 +30,12 @@ const WitnessInformation = ({
     );
   }, [ranking]);
 
-  //TODO remove block
-  useEffect(() => {
-    console.log({ witnessRanking });
-  }, [witnessRanking]);
-  /////
-
   const gotoNextPage = () => {
     setEditMode(true);
   };
 
   const getOrdinalLabelTranslation = (active_rank: string) => {
     const result = parseFloat(active_rank) % 10;
-    console.log({ result });
     switch (result) {
       case 1:
         return 'html_popup_witness_ranking_ordinal_st_label';
@@ -92,20 +85,22 @@ const WitnessInformation = ({
         </div>
       </div>
       {isInfoParamSelected ? (
-        <WitnessInformationParametersComponent witnessInfo={witnessInfo} />
+        <>
+          <WitnessInformationParametersComponent witnessInfo={witnessInfo} />
+          <div className="button-container">
+            <ButtonComponent
+              label={'html_popup_button_edit_label'}
+              onClick={() => gotoNextPage()}
+              additionalClass="padding-top"
+            />
+          </div>
+        </>
       ) : (
         <WitnessGlobalInformationComponent
           witnessRanking={witnessRanking!}
           witnessInfo={witnessInfo}
         />
       )}
-      <div className="button-container">
-        <ButtonComponent
-          label={'html_popup_button_next_step_label'}
-          onClick={() => gotoNextPage()}
-          additionalClass="padding-top"
-        />
-      </div>
     </div>
   );
 };

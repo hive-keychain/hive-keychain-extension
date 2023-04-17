@@ -1,51 +1,43 @@
 @import '../../../../../../variable.scss';
-//TODO bellow change names
-.witness-tab-page-step-two {
+
+.edit-my-witness-component {
   flex: 1;
   padding: 0px 10px;
   font-size: 16px;
   overflow-y: auto;
   overflow-x: hidden;
 
-  .column-line {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 5px;
+  .row-grid-three {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
   }
 
-  .form-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    flex: 1;
-    margin-bottom: 16px;
-
-    .label-title {
-      @include fake-input;
-    }
+  .row-grid-two {
+    display: grid;
+    grid-template-columns: 2fr 2fr;
   }
 
-  .row-line {
+  .label-title-container {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    width: 100%;
-
-    .half-width {
-      width: 50%;
-    }
+    font-weight: bold;
   }
 
-  .customised-width {
-    width: 95% !important;
+  .as-fake-input {
+    @include fake-input;
   }
 
-  .padding-bottom {
-    padding-bottom: 10px;
+  .label-title {
+    font-weight: bold;
+    padding-top: 8px;
   }
 
-  .padding-top {
-    padding-top: 10px;
+  .bottom-panel {
+    position: fixed;
+    left: 24px;
+    bottom: 32px;
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
   }
 }

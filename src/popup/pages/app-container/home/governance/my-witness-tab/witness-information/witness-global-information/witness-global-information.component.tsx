@@ -109,7 +109,7 @@ const WitnessGlobalInformation = ({
         </div>
         <div>{witnessInfo.running_version}</div>
       </div>
-      <div className="title centered-text">
+      <div className="label-title centered-text">
         {chrome.i18n.getMessage('popup_html_witness_information_rewards_label')}
       </div>
       <div className="witness-rewards-panel">

@@ -10,8 +10,10 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
-import React, { useEffect, useState } from 'react';
+import { Screen } from '@reference-data/screen.enum';
+import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import ButtonComponent from 'src/common-ui/button/button.component';
@@ -22,7 +24,6 @@ import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
 import WitnessUtils from 'src/utils/witness.utils';
-//TODO here check on scss what it not needed.
 import './edit-my-witness.component.scss';
 
 interface EditMyWitnessProps {
@@ -30,18 +31,16 @@ interface EditMyWitnessProps {
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-//TODO here, fix using same formats on form inputs, follow ticket...
-
 const EditMyWitness = ({
   witnessInfo,
   setEditMode,
-  //   setWitnessPageStep,
   activeAccount,
   addToLoadingList,
   removeFromLoadingList,
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
+  navigateTo,
 }: PropsFromRedux & EditMyWitnessProps) => {
   const [formParams, setFormParams] = useState<WitnessProps>({
     account_creation_fee:
@@ -67,16 +66,6 @@ const EditMyWitness = ({
     key: witnessInfo.signing_key,
     url: witnessInfo.url,
   });
-  const [hbdExchangeRate, setHbdExchangeRate] = useState<PriceType>({
-    base:
-      FormatUtils.formatCurrencyValue(witnessInfo.hbd_exchange_rate_base, 3) +
-      ' ' +
-      witnessInfo.hbd_exchange_rate_base_symbol,
-    quote:
-      FormatUtils.formatCurrencyValue(witnessInfo.hbd_exchange_rate_quote, 3) +
-      ' ' +
-      witnessInfo.hbd_exchange_rate_quote_symbol,
-  });
 
   const handleUpdateWitnessProps = async () => {
     if (!(formParams.new_signing_key as string).startsWith('STM')) {
@@ -84,7 +73,6 @@ const EditMyWitness = ({
       return;
     }
     formParams['key'] = formParams['new_signing_key']!;
-    console.log('about to process: ', { formParams });
     try {
       addToLoadingList('html_popup_update_witness_operation');
       const success = await WitnessUtils.sendWitnessAccountUpdateOperation(
@@ -97,19 +85,15 @@ const EditMyWitness = ({
       await BlockchainTransactionUtils.delayRefresh();
       removeFromLoadingList('html_popup_confirm_transaction_operation');
       refreshActiveAccount();
-      console.log({ success }); //TODO to remove
       if (success) {
-        setSuccessMessage('popup_success_witness_account_update', [
-          `${activeAccount.name!}`,
-        ]);
-        //TODO what to do here?? move to step 1 but reloading data???
+        navigateTo(Screen.HOME_PAGE, true);
+        setSuccessMessage('popup_success_witness_account_update');
       } else {
         setErrorMessage('popup_error_witness_account_update', [
           `${activeAccount.name!}`,
         ]);
       }
     } catch (err: any) {
-      console.log('Error: ', { err }); //TODO to remove
       setErrorMessage(err.message);
       removeFromLoadingList('html_popup_update_witness_operation');
       removeFromLoadingList('html_popup_confirm_transaction_operation');
@@ -125,164 +109,75 @@ const EditMyWitness = ({
     });
   };
 
-  useEffect(() => {
-    handleFormParams('hbd_exchange_rate', hbdExchangeRate);
-  }, [hbdExchangeRate]);
-
   const goBackPage = () => {
     setEditMode(false);
   };
 
   return (
-    <div className="witness-tab-page-step-two">
-      <div className="form-container">
-        <div className="column-line">
-          <div className="row-line">
-            <div className="row-line half-width">
-              <InputComponent
-                label="popup_html_witness_information_fee_label"
-                type={InputType.TEXT}
-                skipPlaceholderTranslation={true}
-                placeholder="popup_html_witness_information_fee_label"
-                value={
-                  formParams.account_creation_fee?.toString().split(' ')[0]
-                }
-                onChange={(value) =>
-                  handleFormParams(
-                    'account_creation_fee',
-                    value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
-                  )
-                }
-              />
-              <div className="label-title">
-                {BaseCurrencies.HIVE.toUpperCase()}
-              </div>
-            </div>
-          </div>
-          <div className="row-line">
-            <div className="half-width">
-              <InputComponent
-                label="popup_html_witness_information_maximum_block_size_label"
-                type={InputType.TEXT}
-                skipPlaceholderTranslation={true}
-                placeholder="Maximum Block Size"
-                value={formParams.maximum_block_size}
-                onChange={(value) =>
-                  handleFormParams('maximum_block_size', value)
-                }
-              />
-            </div>
-          </div>
-          <div className="row-line">
-            <div className="label-title">
-              {chrome.i18n.getMessage(
-                'popup_html_witness_information_exchange_rate_base_label',
-              )}
-            </div>
-            <div className="row-line half-width">
-              <InputComponent
-                type={InputType.TEXT}
-                skipPlaceholderTranslation={true}
-                placeholder="Base Exchange Rate"
-                value={hbdExchangeRate.base.toString().split(' ')[0]}
-                onChange={(value) =>
-                  setHbdExchangeRate((prevExchangerate) => {
-                    return {
-                      ...prevExchangerate,
-                      base: value + ` ${BaseCurrencies.HBD.toUpperCase()}`,
-                    };
-                  })
-                }
-              />
-              <div className="label-title">
-                {BaseCurrencies.HBD.toUpperCase()}
-              </div>
-            </div>
-          </div>
-          <div className="row-line">
-            <div className="label-title">
-              {chrome.i18n.getMessage(
-                'popup_html_witness_information_exchange_rate_quote_label',
-              )}
-            </div>
-            <div className="row-line half-width">
-              <InputComponent
-                type={InputType.TEXT}
-                skipPlaceholderTranslation={true}
-                placeholder="Quote Exchange Rate"
-                value={hbdExchangeRate.quote.toString().split(' ')[0]}
-                onChange={(value) =>
-                  setHbdExchangeRate((prevExchangerate) => {
-                    return {
-                      ...prevExchangerate,
-                      quote: value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
-                    };
-                  })
-                }
-              />
-              <div className="label-title">
-                {BaseCurrencies.HIVE.toUpperCase()}
-              </div>
-            </div>
-          </div>
-          <div className="row-line">
-            <div className="label-title">
-              {chrome.i18n.getMessage(
-                'popup_html_witness_information_hbd_interest_rate_label',
-              )}
-            </div>
-            <div className="row-line half-width">
-              <InputComponent
-                type={InputType.TEXT}
-                skipPlaceholderTranslation={true}
-                placeholder="Interest Rate(%)"
-                value={formParams.hbd_interest_rate}
-                onChange={(value) =>
-                  handleFormParams('hbd_interest_rate', value)
-                }
-              />
-            </div>
-          </div>
-          <div className="label-title padding-top">
-            {chrome.i18n.getMessage(
-              'popup_html_witness_information_signing_key_label',
-            )}
-          </div>
-          <div className="customised-width">
-            <InputComponent
-              type={InputType.TEXT}
-              skipPlaceholderTranslation={true}
-              placeholder="Signing Key"
-              value={formParams.new_signing_key}
-              onChange={(value) => handleFormParams('new_signing_key', value)}
-            />
-          </div>
-          <div className="label-title padding-top">
-            {chrome.i18n.getMessage('popup_html_witness_information_url_label')}
-          </div>
-          <div className="customised-width">
-            <InputComponent
-              type={InputType.TEXT}
-              skipPlaceholderTranslation={true}
-              placeholder="Url"
-              value={formParams.url}
-              onChange={(value) => handleFormParams('url', value)}
-            />
-          </div>
+    <div className="edit-my-witness-component">
+      <div className="row-grid-three">
+        <div className="label-title-container">
+          {chrome.i18n.getMessage(
+            'popup_html_witness_information_account_creation_fee_label',
+          )}
         </div>
-        <div className="padding-bottom padding-top">
-          <OperationButtonComponent
-            requiredKey={KeychainKeyTypesLC.active}
-            onClick={() => handleUpdateWitnessProps()}
-            label={'popup_html_operation_button_save'}
-          />
+        <InputComponent
+          type={InputType.TEXT}
+          placeholder="popup_html_witness_information_account_creation_fee_placeholder_text"
+          value={formParams.account_creation_fee?.toString().split(' ')[0]}
+          onChange={(value) =>
+            handleFormParams(
+              'account_creation_fee',
+              value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
+            )
+          }
+        />
+        <div className="as-fake-input">{BaseCurrencies.HIVE.toUpperCase()}</div>
+      </div>
+      <div className="row-grid-two">
+        <div className="label-title-container">
+          {chrome.i18n.getMessage(
+            'popup_html_witness_information_maximum_block_size_label',
+          )}
         </div>
-        <div className="padding-bottom">
-          <ButtonComponent
-            label={'popup_html_button_label_cancel'}
-            onClick={() => goBackPage()}
-          />
-        </div>
+        <InputComponent
+          type={InputType.TEXT}
+          placeholder="popup_html_witness_information_block_size_placeholder_text"
+          value={formParams.maximum_block_size}
+          onChange={(value) => handleFormParams('maximum_block_size', value)}
+        />
+      </div>
+      <InputComponent
+        label="popup_html_witness_information_hbd_interest_rate_label"
+        type={InputType.TEXT}
+        placeholder="popup_html_witness_information_hbd_interest_rate_placeholder_text"
+        value={formParams.hbd_interest_rate}
+        onChange={(value) => handleFormParams('hbd_interest_rate', value)}
+      />
+      <InputComponent
+        type={InputType.TEXT}
+        label="popup_html_witness_information_signing_key_label"
+        placeholder="popup_html_witness_information_signing_key_label"
+        value={formParams.new_signing_key}
+        onChange={(value) => handleFormParams('new_signing_key', value)}
+      />
+      <InputComponent
+        type={InputType.TEXT}
+        label="popup_html_witness_information_url_label"
+        placeholder="popup_html_witness_information_url_label"
+        value={formParams.url}
+        onChange={(value) => handleFormParams('url', value)}
+      />
+      <div className="bottom-panel">
+        <OperationButtonComponent
+          requiredKey={KeychainKeyTypesLC.active}
+          onClick={() => handleUpdateWitnessProps()}
+          label={'popup_html_operation_button_save'}
+        />
+        <ButtonComponent
+          label={'popup_html_button_label_cancel'}
+          onClick={() => goBackPage()}
+        />
       </div>
     </div>
   );
@@ -300,6 +195,7 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
+  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
