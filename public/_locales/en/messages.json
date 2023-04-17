@@ -2156,19 +2156,19 @@
     "description": "token action"
   },
   "popup_html_token_staking": {
-    "message": "Staking",
+    "message": "Staked",
     "description": "token action"
   },
   "popup_html_token_pending_unstake": {
-    "message": "Pending unstake",
+    "message": "Pending unstaking",
     "description": "token action"
   },
   "popup_html_token_delegation_out": {
-    "message": "Delegation out",
+    "message": "Outgoing delegations",
     "description": "token action"
   },
   "popup_html_token_delegation_in": {
-    "message": "Delegation in",
+    "message": "Incoming delegations",
     "description": "token action"
   },
   "popup_html_token_pending_undelegation": {
@@ -3006,7 +3006,15 @@
     "description": "Ledger signing hash confirmation"
   },
   "token_value": {
-    "message": "Value",
+    "message": "Total value",
+    "description": "Value of token in USD"
+  },
+  "token": {
+    "message": "Token",
+    "description": "Value of token in USD"
+  },
+  "liquid_balance": {
+    "message": "Liquid balance",
     "description": "Value of token in USD"
   },
   "ledger_link_device": {
