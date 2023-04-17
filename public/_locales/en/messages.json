@@ -3048,5 +3048,9 @@
   "exchanges": {
     "message": "Exchanges",
     "description": "General word"
+  },
+  "hive_tx_network_error": {
+    "message": "Network Timeout Error: Please check your connection!",
+    "description": "General word"
   }
 }
