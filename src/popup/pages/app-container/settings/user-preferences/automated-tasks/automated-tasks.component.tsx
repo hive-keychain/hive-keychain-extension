@@ -129,7 +129,11 @@ const AutomatedTasks = ({
       </div>
     );
   };
-
+  console.log(
+    activeAccount.rc,
+    activeAccount.rc.max_rc,
+    Config.claims.freeAccount.MIN_RC,
+  );
   return (
     <div aria-label="automated-tasks-page" className="automated-tasks-page">
       <div className="intro">
@@ -166,8 +170,16 @@ const AutomatedTasks = ({
           'popup_html_enable_autoclaim_accounts_info',
           [Config.claims.freeAccount.MIN_RC_PCT + ''],
         )}
-        tooltipMessage={claimAccountErrorMessage}
-        disabled={!!claimSavingsErrorMessage}
+        tooltipMessage={
+          claimAccountErrorMessage ||
+          activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5
+            ? 'popup_html_insufficient_hp_claim_accounts'
+            : undefined
+        }
+        disabled={
+          !!claimSavingsErrorMessage ||
+          activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5
+        }
       />
       <CheckboxComponent
         ariaLabel="checkbox-autoclaim-savings"
