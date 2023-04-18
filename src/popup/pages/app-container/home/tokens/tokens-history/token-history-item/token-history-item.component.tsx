@@ -202,7 +202,7 @@ const TokenHistoryItem = ({
     <div
       aria-label={ariaLabel}
       id={transaction._id}
-      className={`token-history-item ${getMemo() ? 'has-memo' : ''}`}
+      className={`token-history-item`}
       onClick={() => setIsMemoOpened(!isMemoOpened)}>
       <div className="transaction">
         <div className="information-panel">

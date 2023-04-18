@@ -1,9 +1,6 @@
 @import '../../../../../../variable.scss';
 .token-history-item {
   padding: 8px 16px;
-  &.has-memo {
-    cursor: pointer;
-  }
   .transaction {
     min-height: 48px;
     display: flex;
