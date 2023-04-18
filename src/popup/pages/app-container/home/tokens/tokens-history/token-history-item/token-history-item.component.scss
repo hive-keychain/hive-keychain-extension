@@ -20,6 +20,22 @@
         align-items: center;
         font-size: 16px;
       }
+      .top-icon-date {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+      }
+      .padding-right {
+        padding-right: 8px;
+      }
+      .open {
+        transform: rotate(-180deg);
+        transition: 0.3s ease-out;
+      }
+      .closed {
+        transform: rotate(0deg);
+        transition: 0.3s ease-in;
+      }
     }
     .memo-panel {
       max-height: 0;
