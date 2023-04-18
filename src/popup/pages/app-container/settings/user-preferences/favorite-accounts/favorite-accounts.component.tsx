@@ -17,6 +17,7 @@ import {
   FavoriteAccounts,
   FavoriteUserList,
   FavoriteUserListName,
+  FavoriteUserUtils,
 } from 'src/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './favorite-accounts.component.scss';
@@ -56,13 +57,16 @@ const FavoriteAccounts = ({
   }, [accounts, activeAccount]);
 
   const init = async () => {
-    const tempToRemove = await LocalStorageUtils.getValueFromLocalStorage(
+    const favoriteUsers = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.FAVORITE_USERS,
     );
+
+    await FavoriteUserUtils.fixFavoriteList(favoriteUsers);
+
     setFavoriteAccountsList([
       {
         name: FavoriteUserListName.USERS,
-        list: tempToRemove[activeAccount.name!],
+        list: favoriteUsers[activeAccount.name!],
       },
     ]);
   };
