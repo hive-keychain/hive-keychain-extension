@@ -59,9 +59,7 @@ const GenericTransaction = ({
 
   const openTransactionOnHiveblocks = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
-    chrome.windows.create({
-      url: transaction.url,
-    });
+    window.open(transaction.url);
   };
 
   return (

@@ -16,6 +16,7 @@ import { RewardsUtils } from 'src/utils/rewards.utils';
 import { SavingsUtils } from 'src/utils/savings.utils';
 
 const start = async () => {
+  if (!!process.env.STOP_AUTOLOCK) return;
   Logger.info(`Will autoclaim every ${Config.claims.FREQUENCY}mn`);
   chrome.alarms.create({ periodInMinutes: Config.claims.FREQUENCY });
   await alarmHandler();

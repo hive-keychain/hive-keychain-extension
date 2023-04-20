@@ -112,8 +112,10 @@ const getAutocompleteListByCategories = async (
 ): Promise<AutoCompleteValues> => {
   const favoriteUsers: {
     [key: string]: any[];
-  } = await LocalStorageUtils.getValueFromLocalStorage(
-    LocalStorageKeyEnum.FAVORITE_USERS,
+  } = await fixFavoriteList(
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+    ),
   );
   const favoriteUsersList: AutoCompleteCategory = {
     title: FavoriteUserListName.USERS,
@@ -175,8 +177,29 @@ const getAutocompleteListByCategories = async (
   return favoriteUsersCompleteList;
 };
 
+const fixFavoriteList = async (favoriteUsers: any) => {
+  let hasChanged = false;
+  for (const user in favoriteUsers) {
+    if (!Array.isArray(favoriteUsers[user])) favoriteUsers[user] = [];
+    favoriteUsers[user] = favoriteUsers[user].map((e: any) => {
+      if (typeof e === 'string') {
+        hasChanged = true;
+        return { label: e, value: e };
+      } else return e;
+    });
+  }
+  if (hasChanged) {
+    await LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.FAVORITE_USERS,
+      favoriteUsers,
+    );
+  }
+  return favoriteUsers;
+};
+
 export const FavoriteUserUtils = {
   getAutocompleteList,
   saveFavoriteUser,
   getAutocompleteListByCategories,
+  fixFavoriteList,
 };
