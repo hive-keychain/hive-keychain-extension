@@ -192,9 +192,7 @@ const TokenHistoryItem = ({
 
   const openTransactionOnHiveblocks = (event: BaseSyntheticEvent) => {
     event.stopPropagation();
-    chrome.windows.create({
-      url: `https://hiveblocks.com/tx/${transaction.transactionId}`,
-    });
+    window.open(`https://he.dtools.dev/tx/${transaction.transactionId}`);
   };
 
   const label = getLabel();
