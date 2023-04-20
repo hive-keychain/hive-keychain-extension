@@ -16,6 +16,14 @@ const AccountAuthoritiesList = ({ activeAccount }: PropsType) => {
           role={'posting'}
           authority={activeAccount.account.posting}
         />
+        {activeAccount.account.active.account_auths.length === 0 &&
+          activeAccount.account.posting.account_auths.length === 0 && (
+            <div className="no-authorities-found">
+              {chrome.i18n.getMessage(
+                'popup_html_manage_no_accounts_authorities',
+              )}
+            </div>
+          )}
       </div>
     </div>
   );

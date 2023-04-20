@@ -39,7 +39,7 @@ const AccountAuthoritiesListItem = ({
   navigateTo,
 }: PropsType) => {
   const goTo = (accountName: string) => {
-    chrome.tabs.create({ url: `https://hive.blog/@${accountName}` });
+    window.open(`https://hive.blog/@${accountName}`);
   };
 
   const handleClickOnRemoveAccountAuth = async (
@@ -89,81 +89,52 @@ const AccountAuthoritiesListItem = ({
     });
   };
 
-  return (
+  return authority.account_auths.length > 0 ? (
     <div className="account-authorities-list-item">
       <div className="top-panel">
         <div className="key-name">
           <div className="name">
-            {chrome.i18n.getMessage(`popup_html_${role}`)}
-          </div>
-          <div className="threshold">
-            {chrome.i18n.getMessage('threshold')}: {authority.weight_threshold}
+            {chrome.i18n.getMessage(`popup_html_authority_${role}`)}
           </div>
         </div>
       </div>
       <div className="keys-panel">
-        {authority.account_auths.length === 0 && (
-          <div className="account-auths-list padding-left">
-            {chrome.i18n.getMessage(
-              'popup_html_manage_no_accounts_authorities',
-            )}
-          </div>
-        )}
-        {authority.account_auths.length > 0 && (
-          <div className="account-auths-list">
-            <div className="titles">
-              <div className="title">
-                {chrome.i18n.getMessage(
-                  'popup_html_manage_account_authority_username_label',
-                )}
-              </div>
-              <div className="title weight">
-                {chrome.i18n.getMessage(
-                  'popup_html_manage_account_authority_weight_label',
-                )}
-              </div>
-            </div>
-            {authority.account_auths.map((accountAuth, index) => {
-              return (
+        <div className="account-auths-list">
+          {authority.account_auths.map((accountAuth, index) => {
+            return (
+              <div
+                className="item"
+                key={`account-auth-item-${accountAuth[0]}-${index}`}>
                 <div
-                  className="item"
-                  key={`account-auth-item-${accountAuth[0]}-${index}`}>
-                  <div className="item-account">
-                    <img
-                      className="account-img"
-                      src={`https://images.hive.blog/u/${accountAuth[0]}/avatar`}
-                      onError={(e: any) => {
-                        e.target.onError = null;
-                        e.target.src = '/assets/images/accounts.png';
-                      }}
-                    />
-                    <div className="account-name">{accountAuth[0]}</div>
-                    <Icon
-                      onClick={() => goTo(accountAuth[0])}
-                      name={Icons.OPEN_IN_NEW}
-                      type={IconType.OUTLINED}
-                      additionalClassName="open-in-new-tab-icon"
-                    />
-                  </div>
-                  <div className="weight">{accountAuth[1]}</div>
-                  <div className="buttons-item text-end">
-                    <Icon
-                      onClick={() =>
-                        handleClickOnRemoveAccountAuth(accountAuth[0])
-                      }
-                      name={Icons.DELETE}
-                      type={IconType.OUTLINED}
-                      additionalClassName="remove-button"
-                    />
-                  </div>
+                  className="item-account"
+                  onClick={() => goTo(accountAuth[0])}>
+                  <img
+                    className="account-img"
+                    src={`https://images.hive.blog/u/${accountAuth[0]}/avatar`}
+                    onError={(e: any) => {
+                      e.target.onError = null;
+                      e.target.src = '/assets/images/accounts.png';
+                    }}
+                  />
+                  <div className="account-name">{accountAuth[0]}</div>
                 </div>
-              );
-            })}
-          </div>
-        )}
+                <div className="buttons-item text-end">
+                  <Icon
+                    onClick={() =>
+                      handleClickOnRemoveAccountAuth(accountAuth[0])
+                    }
+                    name={Icons.DELETE}
+                    type={IconType.OUTLINED}
+                    additionalClassName="remove-button"
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 const mapStateToProps = (state: RootState) => {

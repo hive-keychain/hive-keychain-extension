@@ -223,9 +223,17 @@
     "message": "Posting Key",
     "description": "When adding an account via master key"
   },
+  "popup_html_authority_posting": {
+    "message": "Posting Authority",
+    "description": "on manage authorities list item"
+  },
   "popup_html_active": {
     "message": "Active Key",
     "description": "When adding an account via master key"
+  },
+  "popup_html_authority_active": {
+    "message": "Active Authority",
+    "description": "on manage authorities list item"
   },
   "popup_html_master": {
     "message": "Master Key",
@@ -272,11 +280,7 @@
     "description": "on settings page"
   },
   "popup_html_manage_no_accounts_authorities": {
-    "message": "No auths on this key.",
-    "description": "On Accounts > Manage Authorities"
-  },
-  "popup_html_manage_account_authority_username_label": {
-    "message": "Username",
+    "message": "No authority has been given to other accounts",
     "description": "On Accounts > Manage Authorities"
   },
   "popup_html_manage_account_authority_weight_label": {
@@ -3107,10 +3111,6 @@
   },
   "exchanges": {
     "message": "Exchanges",
-    "description": "General word"
-  },
-  "threshold": {
-    "message": "Threshold",
     "description": "General word"
   },
   "hive_tx_network_error": {

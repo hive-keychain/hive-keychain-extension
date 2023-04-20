@@ -20,14 +20,6 @@
       .name {
         text-transform: uppercase;
       }
-      .threshold {
-        font-size: 14px;
-        font-style: italic;
-      }
-    }
-
-    .weight-threshold {
-      padding-right: 4px;
     }
   }
 
@@ -37,22 +29,11 @@
     overflow: auto;
     justify-content: space-between;
 
-    .titles {
-      display: grid;
-      font-weight: bold;
-      grid-template-columns: 4fr 1fr 1fr;
-      padding: 0px 0px 8px 8px;
-    }
-
-    .title {
-      font-size: 16px;
-    }
-
     .item {
-      display: grid;
-      grid-template-columns: 4fr 1fr 1fr;
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      height: 48px;
+      height: 52px;
       &:hover {
         .buttons-item {
           display: flex;
@@ -75,6 +56,7 @@
         flex-direction: row;
         height: 100%;
         padding-left: 8px;
+        cursor: pointer;
 
         .account-img {
           width: 36px;
@@ -85,15 +67,6 @@
           padding-left: 8px;
           padding-right: 8px;
         }
-      }
-
-      .open-in-new-tab-icon {
-        color: white;
-        cursor: pointer;
-        padding-bottom: 0px !important;
-        height: 18px;
-        width: 18px;
-        font-size: 18px;
       }
 
       .remove-button {
