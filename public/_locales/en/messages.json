@@ -1914,6 +1914,14 @@
     "message": "info",
     "description": "When displaying my witness account"
   },
+  "html_popup_witness_information_votes_label": {
+    "message": "Votes",
+    "description": "When displaying my witness account"
+  },
+  "html_popup_witness_information_vote_value_label": {
+    "message": "Vote value",
+    "description": "When displaying my witness account"
+  },
   "html_popup_witness_global_information_votes_label": {
     "message": "Amount of votes",
     "description": "When displaying my witness account global data"

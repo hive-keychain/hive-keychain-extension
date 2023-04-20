@@ -73,11 +73,17 @@ const WitnessGlobalInformation = ({
         <div>{witnessRanking.votes_count}</div>
       </div>
       <div className="row-container">
-        <div className="label-title">Votes</div>
+        <div className="label-title">
+          {chrome.i18n.getMessage('html_popup_witness_information_votes_label')}
+        </div>
         <div>{witnessInfo.votes}</div>
       </div>
       <div className="row-container">
-        <div className="label-title">Vote value</div>
+        <div className="label-title">
+          {chrome.i18n.getMessage(
+            'html_popup_witness_information_vote_value_label',
+          )}
+        </div>
         <div>
           {getVPInUSD()} {currencyLabels.hp}
         </div>
