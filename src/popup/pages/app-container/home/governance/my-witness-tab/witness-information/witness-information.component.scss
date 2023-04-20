@@ -32,6 +32,8 @@
     }
 
     .witness-ranking {
+      display: flex;
+      flex-direction: row;
       font-style: italic;
     }
   }
@@ -42,13 +44,19 @@
     height: 46px;
   }
 
-  .text {
-    padding-bottom: 8px;
-    font-size: 18px;
+  .buttons-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    row-gap: 8px;
   }
 
-  .button-container {
-    padding-top: 12px !important;
-    padding-bottom: 12px !important;
+  .bottom-panel {
+    position: fixed;
+    left: 24px;
+    bottom: 32px;
+    width: calc(100% - 48px);
+    display: flex;
+    column-gap: 16px;
   }
 }

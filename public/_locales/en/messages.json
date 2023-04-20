@@ -164,7 +164,7 @@
     "description": "on popup main page"
   },
   "popup_html_witness": {
-    "message": "Witness",
+    "message": "Witnesses",
     "description": "on popup main page"
   },
   "popup_html_estimation_info": {
@@ -363,9 +363,21 @@
     "message": "Remove from Keychain",
     "description": "on manage accounts"
   },
+  "popup_html_disable_witness": {
+    "message": "Disable witness",
+    "description": "on manage accounts"
+  },
+  "popup_html_witness_rank_label": {
+    "message": "rank",
+    "description": "on my witness"
+  },
   "popup_html_delete_account_confirmation_message": {
     "message": "You are about to remove @$1 from Keychain. This cannot be undone without reimporting your keys. Please confirm to proceed.",
     "description": "on manage accounts"
+  },
+  "popup_html_disable_witness_account_confirmation_message": {
+    "message": "You are about to disable @$1 witness account. Please confirm to proceed.",
+    "description": "on my witness"
   },
   "popup_html_show_qr": {
     "message": "Show QR Code",
@@ -508,6 +520,10 @@
     "message": "Signing key",
     "description": "On My witness page"
   },
+  "popup_html_witness_information_witness_disabled_text": {
+    "message": "Witness account currently disabled!",
+    "description": "On My witness page"
+  },
   "popup_html_witness_information_account_creation_fee_label": {
     "message": "Account creation fee",
     "description": "On My witness page"
@@ -529,7 +545,7 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_hbd_interest_rate_label": {
-    "message": "Interest rate %",
+    "message": "Interest rate",
     "description": "On My witness page"
   },
   "popup_html_witness_information_hbd_interest_rate_placeholder_text": {
@@ -1767,16 +1783,12 @@
     "description": "Governance"
   },
   "popup_html_proposal": {
-    "message": "Proposal",
+    "message": "Proposals",
     "description": "Governance"
   },
   "popup_html_my_witness_page": {
     "message": "My Witness",
     "description": "Governance"
-  },
-  "popup_html_witness_page_text": {
-    "message": "All the info of your witness account, and editable fields",
-    "description": "Governance, witness page"
   },
   "popup_html_witness_page_expand_more_tooltip": {
     "message": "Click to view full witness account information",
@@ -1898,8 +1910,8 @@
     "message": "Updating witness account",
     "description": "When updating witness account"
   },
-  "html_popup_witness_information_global_label": {
-    "message": "global",
+  "html_popup_witness_information_info_label": {
+    "message": "info",
     "description": "When displaying my witness account"
   },
   "html_popup_witness_global_information_votes_label": {

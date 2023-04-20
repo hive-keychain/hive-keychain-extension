@@ -13,6 +13,13 @@
     font-size: 12px;
   }
 
+  .disabled-text {
+    text-transform: uppercase;
+    color: red;
+    text-align: center;
+    font-weight: bold;
+  }
+
   .row-container {
     display: flex;
     flex-direction: row;

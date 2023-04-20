@@ -8,6 +8,7 @@ import 'react-tabs/style/react-tabs.scss';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
+import HiveUtils from 'src/utils/hive.utils';
 import './witness-global-information.component.scss';
 
 interface WitnessGlobalInformationProps {
@@ -20,6 +21,8 @@ const WitnessGlobalInformation = ({
   witnessInfo,
   currencyPrices,
   currencyLabels,
+  globalProperties,
+  activeAccount,
 }: PropsFromRedux & WitnessGlobalInformationProps) => {
   const lastPriceFeedUpdateAgoFormat = moment(
     witnessInfo.last_hbd_exchange_update,
@@ -37,7 +40,7 @@ const WitnessGlobalInformation = ({
   };
 
   const gotoUrl = (block: string | number) => {
-    chrome.tabs.create({ url: `https://hiveblocks.com/b/${block}` });
+    window.open(`https://hiveblocks.com/b/${block}`);
   };
 
   const getUSDFromVests = (vestAmount: Number, decimals: number = 3) =>
@@ -48,6 +51,17 @@ const WitnessGlobalInformation = ({
       ) * currencyPrices.hive.usd!
     ).toFixed(decimals);
 
+  const getVPInUSD = () => {
+    const manaValue = HiveUtils.getVotingDollarsPerAccount(
+      100,
+      globalProperties,
+      activeAccount.account,
+      true,
+    ) as string;
+    const votingHPInUSD = parseFloat(manaValue) / currencyPrices.hive.usd!;
+    return FormatUtils.withCommas(votingHPInUSD.toString(), 3);
+  };
+
   return (
     <div className="witness-global-information">
       <div className="row-container">
@@ -57,6 +71,16 @@ const WitnessGlobalInformation = ({
           )}
         </div>
         <div>{witnessRanking.votes_count}</div>
+      </div>
+      <div className="row-container">
+        <div className="label-title">Votes</div>
+        <div>{witnessInfo.votes}</div>
+      </div>
+      <div className="row-container">
+        <div className="label-title">Vote value</div>
+        <div>
+          {getVPInUSD()} {currencyLabels.hp}
+        </div>
       </div>
       <div className="row-container">
         <div className="label-title">
@@ -168,6 +192,7 @@ const mapStateToProps = (state: RootState) => {
     activeAccount: state.activeAccount,
     currencyPrices: state.currencyPrices,
     currencyLabels: CurrencyUtils.getCurrencyLabels(state.activeRpc?.testnet!),
+    globalProperties: state.globalProperties,
   };
 };
 

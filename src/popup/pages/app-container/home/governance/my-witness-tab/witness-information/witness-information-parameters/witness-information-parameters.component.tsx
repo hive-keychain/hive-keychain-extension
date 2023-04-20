@@ -2,6 +2,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import FormatUtils from 'src/utils/format.utils';
 import './witness-information-parameters.component.scss';
 
 interface WitnessParametersInformationProps {
@@ -11,8 +12,23 @@ interface WitnessParametersInformationProps {
 const WitnessInformationParameters = ({
   witnessInfo,
 }: PropsFromRedux & WitnessParametersInformationProps) => {
+  //TODO to remove
+  // witnessInfo['signing_key'] = 'STM1111111111111111111111111111111114T1Anm';
+  //
+  const isWitnessDisabled =
+    witnessInfo.signing_key === 'STM1111111111111111111111111111111114T1Anm'
+      ? true
+      : false;
+
   return (
     <div className="witness-information-parameters">
+      {isWitnessDisabled && (
+        <div className="disabled-text">
+          {chrome.i18n.getMessage(
+            'popup_html_witness_information_witness_disabled_text',
+          )}
+        </div>
+      )}
       <div className="label-title">
         {chrome.i18n.getMessage(
           'popup_html_witness_information_signing_key_label',
@@ -34,7 +50,10 @@ const WitnessInformationParameters = ({
           )}
         </div>
         <div>
-          {witnessInfo.account_creation_fee}{' '}
+          {FormatUtils.withCommas(
+            witnessInfo.account_creation_fee.toString(),
+            3,
+          )}{' '}
           {witnessInfo.account_creation_fee_symbol}
         </div>
       </div>
@@ -45,7 +64,11 @@ const WitnessInformationParameters = ({
           )}
         </div>
         <div>
-          {(parseFloat(witnessInfo.hbd_interest_rate) / 100).toFixed(2)}
+          {FormatUtils.withCommas(
+            (parseFloat(witnessInfo.hbd_interest_rate) / 100).toString(),
+            3,
+          )}
+          %
         </div>
       </div>
     </div>
