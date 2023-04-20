@@ -1546,7 +1546,11 @@
     "description": "When on automated tasks page"
   },
   "popup_html_enable_autoclaim_accounts_info": {
-    "message": "Claim a free account ticket when your RC percentage are over $1%. Depending on your Hive Power, this might use up a big chunk of your RC.",
+    "message": "Claim a free account ticket when your RC is charged over $1%. Depending on your Hive Power, this might use up a big chunk of your RC.",
+    "description": "When on automated tasks page"
+  },
+  "popup_html_insufficient_hp_claim_accounts": {
+    "message": "Insufficient HP to claim accounts.",
     "description": "When on automated tasks page"
   },
   "popup_html_proposal_request": {
@@ -1847,7 +1851,7 @@
     "description": "Link to witness website"
   },
   "html_popup_vote_for_witness": {
-    "message": "Vote @stoodkev as witness",
+    "message": "Vote $1 as witness",
     "description": "On main page, in the vote witness section"
   },
   "html_popup_made_with_love_by_stoodkev": {
@@ -2309,19 +2313,19 @@
     "description": "token action"
   },
   "popup_html_token_staking": {
-    "message": "Staking",
+    "message": "Staked",
     "description": "token action"
   },
   "popup_html_token_pending_unstake": {
-    "message": "Pending unstake",
+    "message": "Pending unstaking",
     "description": "token action"
   },
   "popup_html_token_delegation_out": {
-    "message": "Delegation out",
+    "message": "Outgoing delegations",
     "description": "token action"
   },
   "popup_html_token_delegation_in": {
-    "message": "Delegation in",
+    "message": "Incoming delegations",
     "description": "token action"
   },
   "popup_html_token_pending_undelegation": {
@@ -3054,7 +3058,7 @@
     "description": "automated tasks => cant claim with Ledger"
   },
   "popup_html_not_enough_rc_to_claim_account": {
-    "message": "You don't have enough RC to claim account.",
+    "message": "You don't have enough RC to claim an account.",
     "description": "automated tasks => need more RC to claim account"
   },
   "popup_html_validate_transaction_on_ledger": {
@@ -3163,7 +3167,15 @@
     "description": "Ledger signing hash confirmation"
   },
   "token_value": {
-    "message": "Value",
+    "message": "Total value",
+    "description": "Value of token in USD"
+  },
+  "token": {
+    "message": "Token",
+    "description": "Value of token in USD"
+  },
+  "liquid_balance": {
+    "message": "Liquid balance",
     "description": "Value of token in USD"
   },
   "ledger_link_device": {
@@ -3204,6 +3216,10 @@
   },
   "exchanges": {
     "message": "Exchanges",
+    "description": "General word"
+  },
+  "hive_tx_network_error": {
+    "message": "Network Timeout Error: Please check your connection!",
     "description": "General word"
   }
 }

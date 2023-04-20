@@ -129,7 +129,8 @@ const AutomatedTasks = ({
       </div>
     );
   };
-
+  const isClaimedAccountDisabled =
+    activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5;
   return (
     <div aria-label="automated-tasks-page" className="automated-tasks-page">
       <div className="intro">
@@ -159,15 +160,19 @@ const AutomatedTasks = ({
       <CheckboxComponent
         ariaLabel="checkbox-autoclaim-accounts"
         title="popup_html_enable_autoclaim_accounts"
-        checked={claimAccounts}
+        checked={claimAccounts && !isClaimedAccountDisabled}
         onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
         skipHintTranslation
         hint={chrome.i18n.getMessage(
           'popup_html_enable_autoclaim_accounts_info',
           [Config.claims.freeAccount.MIN_RC_PCT + ''],
         )}
-        tooltipMessage={claimAccountErrorMessage}
-        disabled={!!claimSavingsErrorMessage}
+        tooltipMessage={
+          claimAccountErrorMessage || isClaimedAccountDisabled
+            ? 'popup_html_insufficient_hp_claim_accounts'
+            : undefined
+        }
+        disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
       />
       <CheckboxComponent
         ariaLabel="checkbox-autoclaim-savings"
