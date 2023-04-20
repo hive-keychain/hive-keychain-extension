@@ -17,9 +17,9 @@ import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './witness-voting-section.component.scss';
 
-const STOODKEV_WITNESS: Witness = {
-  name: 'stoodkev',
-};
+const toWitnessObject = (name: string): Witness => ({
+  name,
+});
 
 const WitnessVotingSection = ({
   activeAccount,
@@ -28,16 +28,15 @@ const WitnessVotingSection = ({
   refreshActiveAccount,
   addToLoadingList,
   removeFromLoadingList,
-  shouldDisplayWitnessVoting,
 }: PropsFromRedux) => {
-  const handleVoteForWitnessClicked = async () => {
+  const handleVoteForWitnessClicked = async (account: string) => {
     if (activeAccount.account.witnesses_voted_for === 30) {
       setErrorMessage('html_popup_vote_stoodkev_witness_error_30_votes');
     } else {
       try {
         addToLoadingList('html_popup_vote_witness_operation');
         const transactionConfirmed = await WitnessUtils.voteWitness(
-          STOODKEV_WITNESS,
+          toWitnessObject(account),
           activeAccount.name!,
           activeAccount.keys.active!,
         );
@@ -57,16 +56,27 @@ const WitnessVotingSection = ({
       }
     }
   };
-
+  let voteForAccount: string | undefined = undefined;
+  if (activeAccount.account.proxy.length === 0) {
+    for (const acc of ['stoodkev', 'cedricguillas']) {
+      if (!activeAccount.account.witness_votes.includes(acc)) {
+        voteForAccount = acc;
+        break;
+      }
+    }
+  }
   return (
     <div className="witness-voting-section">
       <div className="text">
         {chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev')}
       </div>
-      {shouldDisplayWitnessVoting && (
+      {voteForAccount && (
         <OperationButtonComponent
           ariaLabel="vote-for-stoodkev-witness"
-          onClick={handleVoteForWitnessClicked}
+          labelParams={[`@${voteForAccount}`]}
+          onClick={() => {
+            handleVoteForWitnessClicked(voteForAccount!);
+          }}
           label={'html_popup_vote_for_witness'}
           requiredKey={KeychainKeyTypesLC.active}
         />
@@ -78,9 +88,6 @@ const WitnessVotingSection = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
-    shouldDisplayWitnessVoting:
-      state.activeAccount.account.proxy.length === 0 &&
-      !state.activeAccount.account.witness_votes.includes('stoodkev'),
   };
 };
 
@@ -91,6 +98,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
 });
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const WitnessVotingSectionComponent = connector(WitnessVotingSection);

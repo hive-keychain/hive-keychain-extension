@@ -1,3 +1,4 @@
+import { Currency } from '@interfaces/bittrex.interface';
 import { Key, KeyType } from '@interfaces/keys.interface';
 import { TokenDelegation } from '@interfaces/token-delegation.interface';
 import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
@@ -255,6 +256,7 @@ const getHiveEngineTokenPrice = (
 const getHiveEngineTokenValue = (
   balance: TokenBalance,
   market: TokenMarket[],
+  hive: Currency = { usd: 1 },
 ) => {
   const tokenMarket = market.find((t) => t.symbol === balance.symbol);
   const price = tokenMarket
@@ -269,7 +271,7 @@ const getHiveEngineTokenValue = (
     parseFloat(balance.pendingUnstake) +
     parseFloat(balance.delegationsOut) +
     parseFloat(balance.stake);
-  return totalToken * price;
+  return totalToken * price * hive?.usd!;
 };
 /* istanbul ignore next */
 const getUserBalance = (account: string) => {

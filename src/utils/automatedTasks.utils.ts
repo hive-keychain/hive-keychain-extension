@@ -142,7 +142,7 @@ const canClaimAccountErrorMessage = (activeAccount: ActiveAccount) => {
     return 'popup_html_need_active_key_for_claim_savings';
   } else if (KeysUtils.isUsingLedger(activeAccount.keys.active)) {
     return 'popup_html_cant_automatically_claim_ledger';
-  } else if (activeAccount.rc.max_mana > Config.claims.freeAccount.MIN_RC) {
+  } else if (activeAccount.rc.max_mana < Config.claims.freeAccount.MIN_RC) {
     return 'popup_html_not_enough_rc_to_claim_account';
   }
 };
