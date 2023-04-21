@@ -44,18 +44,13 @@ export const NavigationReducer = (
       const newStack = state.stack;
       const goBacktoPage = payload?.goBackTo ?? newStack[1].currentPage;
 
-      console.log(newStack, goBacktoPage);
-
       do {
         if (newStack.length > 1) {
           newStack[1].previousParams = newStack[0].params;
         }
         newStack.shift();
-        console.log(goBacktoPage, newStack[0].currentPage);
       } while (goBacktoPage !== newStack[0].currentPage);
-      const test = navigateTo({ stack: newStack }, payload);
-      console.log(test);
-      return test;
+      return navigateTo({ stack: newStack }, payload);
     }
     default:
       return state;
@@ -63,28 +58,16 @@ export const NavigationReducer = (
 };
 
 const navigateTo = (state: NavigationState, payload?: NavigatePayload) => {
-  console.log(state, payload);
   let oldStack = state.stack;
   if (payload?.resetStack) {
     oldStack = [];
   }
-  console.log(
-    payload,
-    payload?.nextPage,
-    state.stack[0] && payload?.nextPage !== state.stack[0].currentPage,
-    !state.stack[0],
-    payload &&
-      payload.nextPage &&
-      ((state.stack[0] && payload.nextPage !== state.stack[0].currentPage) ||
-        !state.stack[0]),
-  );
   if (
     payload &&
     payload.nextPage &&
     ((state.stack[0] && payload.nextPage !== state.stack[0].currentPage) ||
       !state.stack[0])
   ) {
-    console.log('add new page');
     return {
       stack: [
         { currentPage: payload.nextPage, params: payload.params },
@@ -93,7 +76,6 @@ const navigateTo = (state: NavigationState, payload?: NavigatePayload) => {
       params: payload.params,
     };
   } else {
-    console.log('nothing to add');
     return state;
   }
 };

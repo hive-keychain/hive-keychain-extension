@@ -54,7 +54,6 @@ const TokenSwapsHistory = ({
     const result = await SwapTokenUtils.retrieveSwapHistory(
       activeAccount.name!,
     );
-    console.log(result);
     setHistory(result);
     setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
     setLoading(false);

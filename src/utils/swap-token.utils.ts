@@ -3,8 +3,11 @@ import { Asset, ExtendedAccount } from '@hiveio/dhive';
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { Swap, SwapStep } from '@interfaces/swap-token.interface';
 import { TokenBalance } from '@interfaces/tokens.interface';
+import Config from 'src/config';
+import { KeychainError } from 'src/keychain-error';
 import { BaseCurrencies } from 'src/utils/currency.utils';
 import TokensUtils from 'src/utils/tokens.utils';
+import TransferUtils from 'src/utils/transfer.utils';
 
 const getSwapTokenStartList = async (account: ExtendedAccount) => {
   let userTokenList: TokenBalance[] = await TokensUtils.getUserBalance(
@@ -66,20 +69,19 @@ const saveEstimate = async (
   amount: number,
   username: string,
 ): Promise<string> => {
-  return 'toto';
-  // const response = await KeychainSwapApi.post(`token-swap/estimate/save`, {
-  //   slipperage,
-  //   steps,
-  //   startToken,
-  //   endToken,
-  //   amount,
-  //   username,
-  // });
-  // if (response.error) {
-  //   throw new KeychainError(response.error);
-  // } else {
-  //   return response.result.estimateId;
-  // }
+  const response = await KeychainSwapApi.post(`token-swap/estimate/save`, {
+    slipperage,
+    steps,
+    startToken,
+    endToken,
+    amount,
+    username,
+  });
+  if (response.error) {
+    throw new KeychainError(response.error);
+  } else {
+    return response.result.estimateId;
+  }
 };
 
 const processSwap = async (
@@ -88,34 +90,33 @@ const processSwap = async (
   amount: number,
   activeAccount: ActiveAccount,
 ) => {
-  return '45645';
-  // if (
-  //   startToken === BaseCurrencies.HBD.toUpperCase() ||
-  //   startToken === BaseCurrencies.HIVE.toUpperCase()
-  // ) {
-  //   const status = await TransferUtils.sendTransfer(
-  //     activeAccount.name!,
-  //     Config.swaps.swapAccount,
-  //     `${amount.toFixed(3)} ${startToken}`,
-  //     estimateId,
-  //     false,
-  //     0,
-  //     0,
-  //     activeAccount.keys.active!,
-  //   );
-  //   return status?.tx_id;
-  // } else {
-  //   const tokenInfo = await TokensUtils.getTokenInfo(startToken);
-  //   const status = await TokensUtils.sendToken(
-  //     startToken,
-  //     Config.swaps.swapAccount,
-  //     `${amount.toFixed(tokenInfo.precision)}`,
-  //     estimateId,
-  //     activeAccount.keys.active!,
-  //     activeAccount.name!,
-  //   );
-  //   return status.tx_id;
-  // }
+  if (
+    startToken === BaseCurrencies.HBD.toUpperCase() ||
+    startToken === BaseCurrencies.HIVE.toUpperCase()
+  ) {
+    const status = await TransferUtils.sendTransfer(
+      activeAccount.name!,
+      Config.swaps.swapAccount,
+      `${amount.toFixed(3)} ${startToken}`,
+      estimateId,
+      false,
+      0,
+      0,
+      activeAccount.keys.active!,
+    );
+    return status?.tx_id;
+  } else {
+    const tokenInfo = await TokensUtils.getTokenInfo(startToken);
+    const status = await TokensUtils.sendToken(
+      startToken,
+      Config.swaps.swapAccount,
+      `${amount.toFixed(tokenInfo.precision)}`,
+      estimateId,
+      activeAccount.keys.active!,
+      activeAccount.name!,
+    );
+    return status.tx_id;
+  }
 };
 
 const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
