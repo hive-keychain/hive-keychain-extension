@@ -10,6 +10,7 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import {
+  goBackToThenNavigate,
   navigateTo,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
@@ -40,6 +41,9 @@ const TokenSwaps = ({
   setSuccessMessage,
   navigateToWithParams,
   navigateTo,
+  goBackToThenNavigate,
+  addToLoadingList,
+  removeFromLoadingList,
 }: PropsFromRedux) => {
   const [loading, setLoading] = useState(true);
   const [loadingEstimate, setLoadingEstimate] = useState(false);
@@ -247,11 +251,8 @@ const TokenSwaps = ({
           );
 
           if (success) {
-            navigateTo(Screen.HOME_PAGE, true);
-
-            {
-              setSuccessMessage('html_popup_swap_sending_token_successful');
-            }
+            goBackToThenNavigate(Screen.TOKENS_SWAP_HISTORY);
+            setSuccessMessage('html_popup_swap_sending_token_successful');
           } else {
             setErrorMessage('html_popup_swap_error_sending_token', [
               Config.swaps.swapAccount,
@@ -285,6 +286,12 @@ const TokenSwaps = ({
     <div className="token-swaps" aria-label="token-swaps">
       {!loading && (
         <>
+          <div className="caption">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
+            feugiat ligula a neque gravida dignissim. Nulla fermentum magna eu
+            mi interdum rutrum. Proin cursus gravida dictum. Curabitur quis
+            consequat enim.
+          </div>
           <div className="top-row">
             <div className="countdown">
               {!!autoRefreshCountdown && (
@@ -392,6 +399,7 @@ const connector = connect(mapStateToProps, {
   navigateTo,
   addToLoadingList,
   removeFromLoadingList,
+  goBackToThenNavigate,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

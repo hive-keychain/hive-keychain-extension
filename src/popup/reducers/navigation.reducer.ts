@@ -15,6 +15,7 @@ export interface Navigation {
 
 export interface NavigatePayload {
   nextPage?: Screen;
+  goBackTo?: Screen;
   params?: any;
   resetStack?: boolean;
 }
@@ -28,27 +29,8 @@ export const NavigationReducer = (
       return { stack: [], params: null };
     case ActionType.NAVIGATE_TO:
     case ActionType.NAVIGATE_TO_WITH_PARAMS:
-      let oldStack = state.stack;
-      if (payload?.resetStack) {
-        oldStack = [];
-      }
-      if (
-        payload &&
-        payload.nextPage &&
-        ((state.stack[0] && payload.nextPage !== state.stack[0].currentPage) ||
-          !state.stack[0])
-      ) {
-        return {
-          stack: [
-            { currentPage: payload.nextPage, params: payload.params },
-            ...oldStack,
-          ],
-          params: payload.params,
-        };
-      } else {
-        return state;
-      }
-    case ActionType.GO_BACK:
+      return navigateTo(state, payload);
+    case ActionType.GO_BACK: {
       const newStack = state.stack;
       if (newStack.length > 1) {
         newStack[1].previousParams = newStack[0].params;
@@ -57,8 +39,61 @@ export const NavigationReducer = (
       return {
         stack: newStack,
       };
+    }
+    case ActionType.GO_BACK_TO_THEN_NAVIGATE: {
+      const newStack = state.stack;
+      const goBacktoPage = payload?.goBackTo ?? newStack[1].currentPage;
 
+      console.log(newStack, goBacktoPage);
+
+      do {
+        if (newStack.length > 1) {
+          newStack[1].previousParams = newStack[0].params;
+        }
+        newStack.shift();
+        console.log(goBacktoPage, newStack[0].currentPage);
+      } while (goBacktoPage !== newStack[0].currentPage);
+      const test = navigateTo({ stack: newStack }, payload);
+      console.log(test);
+      return test;
+    }
     default:
       return state;
+  }
+};
+
+const navigateTo = (state: NavigationState, payload?: NavigatePayload) => {
+  console.log(state, payload);
+  let oldStack = state.stack;
+  if (payload?.resetStack) {
+    oldStack = [];
+  }
+  console.log(
+    payload,
+    payload?.nextPage,
+    state.stack[0] && payload?.nextPage !== state.stack[0].currentPage,
+    !state.stack[0],
+    payload &&
+      payload.nextPage &&
+      ((state.stack[0] && payload.nextPage !== state.stack[0].currentPage) ||
+        !state.stack[0]),
+  );
+  if (
+    payload &&
+    payload.nextPage &&
+    ((state.stack[0] && payload.nextPage !== state.stack[0].currentPage) ||
+      !state.stack[0])
+  ) {
+    console.log('add new page');
+    return {
+      stack: [
+        { currentPage: payload.nextPage, params: payload.params },
+        ...oldStack,
+      ],
+      params: payload.params,
+    };
+  } else {
+    console.log('nothing to add');
+    return state;
   }
 };

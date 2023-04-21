@@ -34,6 +34,7 @@ export interface Swap {
   slipperage: number;
   status: SwapStatus;
   steps: Step[];
+  history: HistoryStep[];
 }
 
 export interface Step {
@@ -44,6 +45,18 @@ export interface Step {
   startToken: string;
   endToken: string;
   provider: Provider;
+}
+
+export interface HistoryStep {
+  stepNumber: number;
+  startToken: string;
+  amountStartToken: number;
+  amountEndToken: number;
+  endToken: string;
+  type: string;
+  provider: string;
+  status: string;
+  transactionId: string;
 }
 
 export enum Provider {

@@ -1,0 +1,77 @@
+@import '../../../../../../../variable.scss';
+
+.history-item {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  &:nth-child(even) {
+    background-color: $red-transparent;
+  }
+  .expand-panel {
+    justify-self: center;
+  }
+  .history-item-information {
+    flex: 1;
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .id {
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .chip {
+        margin-right: 16px;
+        margin-top: 8px;
+        border: 1px solid white;
+        padding: 4px;
+        border-radius: 8px;
+        min-width: 60px;
+        text-align: center;
+        font-size: 14px;
+      }
+    }
+
+    .swap-details {
+    }
+
+    .history {
+      flex: 1;
+      .step {
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        .step-number {
+          font-size: 16px;
+          border: 2px solid;
+          border-radius: 50px;
+          width: 24px;
+          height: 24px;
+          text-align: center;
+          vertical-align: middle;
+          padding-top: 2px;
+          box-sizing: border-box;
+          font-weight: bold;
+        }
+        .details {
+          .amount {
+          }
+          .go-to-tx {
+            cursor: pointer;
+          }
+        }
+        .step-status {
+          &.success {
+            color: rgb(1, 106, 1);
+          }
+          &.pending {
+            color: rgb(207, 142, 2);
+          }
+          &.canceled {
+            color: $red-dark;
+          }
+        }
+      }
+    }
+  }
+}

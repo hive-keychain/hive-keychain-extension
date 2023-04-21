@@ -1,6 +1,7 @@
-import { Swap, SwapStatus } from '@interfaces/swap-token.interface';
+import { Swap } from '@interfaces/swap-token.interface';
 import { setInfoMessage } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { TokenSwapsHistoryItemComponent } from '@popup/pages/app-container/home/tokens/token-page/token-swaps-history/token-swaps-history-item/token-swaps-history-item.component';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -59,28 +60,6 @@ const TokenSwapsHistory = ({
     setLoading(false);
   };
 
-  const copyIdToCliplboard = (id: string) => {
-    navigator.clipboard.writeText(id.toString());
-    setInfoMessage('swap_copied_to_clipboard');
-  };
-
-  const getStatusMessage = (status: Swap['status']) => {
-    switch (status) {
-      case SwapStatus.PENDING:
-        return chrome.i18n.getMessage('swap_status_pending');
-      case SwapStatus.CANCELED:
-        return chrome.i18n.getMessage('swap_status_canceled');
-      case SwapStatus.FINISHED:
-        return chrome.i18n.getMessage('swap_status_finished');
-      case SwapStatus.STARTED:
-        return chrome.i18n.getMessage('swap_status_started');
-    }
-  };
-
-  const getShortenedId = (id: string) => {
-    return id.substring(0, 6) + '...' + id.slice(-6);
-  };
-
   return (
     <div className="token-swaps-history">
       <div className="refresh-panel">
@@ -94,22 +73,7 @@ const TokenSwapsHistory = ({
       </div>
       {history.map((item, index) => {
         return (
-          <div key={`item-${index}`} className={`history-item`}>
-            <div className="top-row">
-              <div className="id" onClick={() => copyIdToCliplboard(item.id)}>
-                {getShortenedId(item.id)}
-              </div>
-              <div className={`chip ${item.status}`}>
-                {getStatusMessage(item.status)}
-              </div>
-            </div>
-            <div className="swap-details">
-              <div className="from-to">
-                {item.amount} {item.startToken} {'=>'}{' '}
-                {item.estimatedFinalAmount} {item.endToken}
-              </div>
-            </div>
-          </div>
+          <TokenSwapsHistoryItemComponent key={`item-${index}`} swap={item} />
         );
       })}
     </div>
