@@ -17,7 +17,8 @@ import {
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
-import React, { useEffect, useState } from 'react';
+import { ThrottleSettings, throttle } from 'lodash';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
@@ -65,6 +66,31 @@ const TokenSwaps = ({
     number | null
   >(null);
 
+  const throttledRefresh = useMemo(
+    () =>
+      throttle(
+        (newAmount) => {
+          if (parseFloat(newAmount) > 0) {
+            calculateEstimate();
+            setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
+          }
+        },
+        1000,
+        {} as ThrottleSettings,
+      ),
+    [],
+  );
+
+  useEffect(() => {
+    throttledRefresh(amount);
+  }, [amount]);
+
+  useEffect(() => {
+    return () => {
+      throttledRefresh.cancel();
+    };
+  }, []);
+
   useEffect(() => {
     initTokenSelectOptions();
   }, []);
@@ -88,13 +114,6 @@ const TokenSwaps = ({
       clearInterval(intervalId);
     };
   }, [autoRefreshCountdown]);
-
-  useEffect(() => {
-    if (parseFloat(amount) > 0) {
-      calculateEstimate();
-      setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
-    }
-  }, [amount]);
 
   const initTokenSelectOptions = async () => {
     const startList = await SwapTokenUtils.getSwapTokenStartList(
