@@ -107,7 +107,10 @@ const parse = (error: any) => {
       }
     }
   }
-  Logger.log('error:', error);
+
+  if (error.data && error.data.name === 'not_enough_rc_exception') {
+    return new KeychainError('not_enough_rc', [], error);
+  }
   if (stack && stack.format && !stack.format.includes('${what}')) {
     return new KeychainError('error_while_broadcasting', [stack.format], error);
   }
