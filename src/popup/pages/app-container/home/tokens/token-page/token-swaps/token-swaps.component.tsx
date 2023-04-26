@@ -206,10 +206,6 @@ const TokenSwaps = ({
       ]);
     }
 
-    console.log(
-      `start processing swap from ${startToken?.label} to ${endToken?.label}`,
-    );
-
     const estimateId = await SwapTokenUtils.saveEstimate(
       estimate!,
       slipperage,
@@ -218,8 +214,6 @@ const TokenSwaps = ({
       parseFloat(amount),
       activeAccount.name!,
     );
-
-    console.log(`estimate Id => ${estimateId}`);
 
     const expectedAmount = estimate![estimate!.length - 1].estimate;
 
@@ -282,6 +276,9 @@ const TokenSwaps = ({
         } finally {
           removeFromLoadingList('html_popup_delegate_rc_operation');
         }
+      },
+      afterCancelAction: async () => {
+        await SwapTokenUtils.cancelSwap(estimateId);
       },
     });
   };

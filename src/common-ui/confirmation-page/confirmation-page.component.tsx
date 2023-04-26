@@ -11,7 +11,7 @@ import { ConfirmationPageFields } from 'src/common-ui/confirmation-page/confirma
 import './confirmation-page.component.scss';
 
 export interface ConfirmationPageParams {
-  fields: any;
+  fields: ConfirmationPageFields[];
   message: string;
   warningMessage?: string;
   warningParams?: string[];
@@ -19,6 +19,7 @@ export interface ConfirmationPageParams {
   title: string;
   skipTitleTranslation?: boolean;
   afterConfirmAction: () => {};
+  afterCancelAction?: () => {};
   formParams?: any;
 }
 
@@ -26,6 +27,7 @@ const ConfirmationPage = ({
   fields,
   message,
   afterConfirmAction,
+  afterCancelAction,
   warningMessage,
   warningParams,
   skipWarningTranslation,
@@ -46,6 +48,13 @@ const ConfirmationPage = ({
   const handleClickOnConfirm = () => {
     AnalyticsUtils.sendRequestEvent(title);
     afterConfirmAction();
+  };
+
+  const handleClickOnCancel = async () => {
+    if (afterCancelAction) {
+      afterCancelAction();
+    }
+    goBack();
   };
 
   return (
@@ -82,7 +91,7 @@ const ConfirmationPage = ({
         <ButtonComponent
           ariaLabel="dialog_cancel-button"
           label={'dialog_cancel'}
-          onClick={goBack}></ButtonComponent>
+          onClick={handleClickOnCancel}></ButtonComponent>
         <ButtonComponent
           ariaLabel="dialog_confirm-button"
           label={'popup_html_confirm'}
@@ -102,6 +111,7 @@ const mapStateToProps = (state: RootState) => {
     skipWarningTranslation:
       state.navigation.stack[0].params.skipWarningTranslation,
     afterConfirmAction: state.navigation.stack[0].params.afterConfirmAction,
+    afterCancelAction: state.navigation.stack[0].params.afterCancelAction,
     title: state.navigation.stack[0].params.title,
     skipTitleTranslation: state.navigation.stack[0].params.skipTitleTranslation,
   };
@@ -111,6 +121,6 @@ const connector = connect(mapStateToProps, {
   goBack,
   setTitleContainerProperties,
 });
-type PropsType = ConnectedProps<typeof connector>;
+type PropsType = ConnectedProps<typeof connector> & ConfirmationPageParams;
 
 export const ConfirmationPageComponent = connector(ConfirmationPage);

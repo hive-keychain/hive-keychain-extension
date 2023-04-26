@@ -142,6 +142,10 @@ const retrieveSwapHistory = async (username: string): Promise<Swap[]> => {
   return swaps;
 };
 
+export const cancelSwap = async (swapId: string) => {
+  await KeychainSwapApi.post(`token-swap/${swapId}/cancel`, {});
+};
+
 export const SwapTokenUtils = {
   getSwapTokenStartList,
   getSwapTokenEndList,
@@ -149,4 +153,5 @@ export const SwapTokenUtils = {
   getEstimate,
   saveEstimate,
   retrieveSwapHistory,
+  cancelSwap,
 };
