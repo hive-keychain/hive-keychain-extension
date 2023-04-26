@@ -55,7 +55,7 @@ export const addKey =
   ): AppThunk =>
   async (dispatch, getState) => {
     const { activeAccount, accounts, mk } = getState();
-
+    console.log('about to add key: ', keyType, privateKey); //TODO to remove
     let newAccounts;
     try {
       newAccounts = await AccountUtils.addKey(
@@ -86,7 +86,7 @@ export const removeKey =
   (type: KeyType): AppThunk =>
   async (dispatch, getState) => {
     const { activeAccount, accounts, mk } = getState();
-
+    console.log('About to remove: ', type, activeAccount.name!); //TODO to remove
     const activeLocalAccount = accounts.find(
       (account: LocalAccount) => account.name === activeAccount.name,
     );

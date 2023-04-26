@@ -6,12 +6,27 @@ import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import './manage-account.component.scss';
 
-const ManageAccount = ({ setTitleContainerProperties }: PropsFromRedux) => {
+const ManageAccount = ({
+  // overrideActiveAccountName,
+  setTitleContainerProperties,
+}: // accounts,
+// loadActiveAccount,
+PropsFromRedux) => {
   useEffect(() => {
     setTitleContainerProperties({
       title: 'popup_html_manage_accounts',
       isBackButtonEnabled: true,
     });
+
+    //TODO check if works properly //TODO clean up
+    // if (overrideActiveAccountName) {
+    //   console.log({ overrideActiveAccountName });
+    //   loadActiveAccount(
+    //     accounts.find(
+    //       (account: LocalAccount) => account.name === overrideActiveAccountName,
+    //     )!,
+    //   );
+    // }
   });
 
   return (
@@ -25,10 +40,19 @@ const ManageAccount = ({ setTitleContainerProperties }: PropsFromRedux) => {
 };
 
 const mapStateToProps = (state: RootState) => {
-  return {};
+  return {
+    // overrideActiveAccountName: state.navigation.stack[0].params
+    //   .overrideActiveAccountName
+    //   ? state.navigation.stack[0].params.overrideActiveAccountName
+    //   : undefined,
+    // accounts: state.accounts,
+  };
 };
 
-const connector = connect(mapStateToProps, { setTitleContainerProperties });
+const connector = connect(mapStateToProps, {
+  setTitleContainerProperties,
+  // loadActiveAccount,
+});
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const ManageAccountComponent = connector(ManageAccount);

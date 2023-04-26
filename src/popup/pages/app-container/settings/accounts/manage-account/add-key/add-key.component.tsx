@@ -5,7 +5,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -29,6 +29,7 @@ const AddKey = ({
       title: 'popup_html_add_key',
       isBackButtonEnabled: true,
     });
+    console.log('Called using: ', keyType);
   });
 
   const importKey = async () => {

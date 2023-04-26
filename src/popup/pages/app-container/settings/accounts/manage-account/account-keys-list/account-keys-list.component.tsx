@@ -10,7 +10,7 @@ import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
@@ -71,7 +71,8 @@ const AccountKeysList = ({
           activeAccount.name!,
           accounts,
         );
-
+        //TODO here important
+        // Also, remove no_key_check[accountDeleted] from ls when a key or account is manually deleted.
         let finalAccounts = [];
         if (hasAuthorizedAccountLinkedToActiveAccount) {
           for (let i = 0; i < newAccounts.length; i++) {

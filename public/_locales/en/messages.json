@@ -2531,6 +2531,14 @@
     "message": "Governance renewal",
     "description": "Governance expiration renewal popup"
   },
+  "html_popup_wrong_key_title": {
+    "message": "Wrong key$1 found",
+    "description": "Wrong key popup"
+  },
+  "html_popup_wrong_key_introduction": {
+    "message": "Your account @$1 has wrong <strong>$2</strong> key$3. Would you like to update the key$4 right now?",
+    "description": "Governance expiration renewal popup"
+  },
   "html_popup_governance_renewal_introduction": {
     "message": "Your governance votes are about to expire for the following accounts.<br/>If you want to keep them active, click on the renew button. To cancel the expiry, we will help you vote/unvote the return proposal. If you would rather review your votes manually, uncheck the checkbox to ignore.",
     "description": "Governance expiration renewal popup"
@@ -2606,6 +2614,14 @@
   "popup_html_analytics_save": {
     "message": "Save",
     "description": "accept button on analytics popup"
+  },
+  "popup_html_wrong_key_popup_replace": {
+    "message": "Replace",
+    "description": "replace key button on wrong key popup"
+  },
+  "popup_html_wrong_key_popup_do_nothing": {
+    "message": "Do nothing",
+    "description": "do nothing button on wrong key popup"
   },
   "popup_html_analytics_accept_to_share": {
     "message": "I agree to share usage data with Keychain",

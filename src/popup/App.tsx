@@ -18,7 +18,6 @@ import { navigateTo } from '@popup/actions/navigation.actions';
 import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { BackgroundMessage } from 'src/background/background-message.interface';
@@ -33,7 +32,6 @@ import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import Logger from 'src/utils/logger.utils';
 import MkUtils from 'src/utils/mk.utils';
 import PopupUtils from 'src/utils/popup.utils';
 import RpcUtils from 'src/utils/rpc.utils';
@@ -72,7 +70,6 @@ const App = ({
   const [switchToRpc, setSwitchToRpc] = useState<Rpc>();
   const [initialRpc, setInitialRpc] = useState<Rpc>();
   const [displaySplashscreen, setDisplaySplashscreen] = useState(false);
-  const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<any>(); //TODO types needed?
 
   useEffect(() => {
     PopupUtils.fixPopupOnMacOs();
@@ -206,11 +203,6 @@ const App = ({
         mkFromStorage,
       );
       setAccounts(accountsFromStorage);
-      //to clear //TODO remove
-      //testing
-      // resetNoKeyCheck();
-      //end testing
-      initCheckKeysOnAccounts(accountsFromStorage);
     }
 
     setAppReady(true);
@@ -225,99 +217,6 @@ const App = ({
     if (accountsFromStorage.length > 0) {
       initActiveAccount(accountsFromStorage);
     }
-  };
-
-  const initCheckKeysOnAccounts = async (localAccounts: LocalAccount[]) => {
-    console.log({ localAccounts }); //TODO to remove
-    const extendedAccountsList = await AccountUtils.getExtendedAccounts(
-      localAccounts.map((acc) => acc.name!),
-    );
-    console.log({ extendedAccountsList });
-
-    // }); //TODO clean up
-    let foundWrongKey: any;
-    try {
-      const lessRecordsExtendedAccountList = [
-        extendedAccountsList[0],
-        extendedAccountsList[1],
-      ];
-      //change key here
-      // oneRecordExtendedAccountList[1].posting.key_auths[0][0] = '1989879823u1i';
-      lessRecordsExtendedAccountList[0].active.key_auths[0][0] =
-        '1989879823u1i';
-      lessRecordsExtendedAccountList[0].posting.key_auths[0][0] =
-        '1989879823u1i';
-      //end change
-      //TODO bellow to use later on
-      let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.NO_KEY_CHECK,
-      );
-      console.log({ initial: no_key_check }); //TODO to remove
-      if (!no_key_check) no_key_check = { [localAccounts[0].name!]: [] };
-
-      for (let i = 0; i < lessRecordsExtendedAccountList.length; i++) {
-        const accountName = localAccounts[i].name!;
-        const keys = localAccounts[i].keys;
-        foundWrongKey = { [accountName]: [] };
-        if (!no_key_check.hasOwnProperty(accountName)) {
-          no_key_check = { ...no_key_check, [accountName]: [] };
-        }
-        console.log({ no_key_check }); //TODO to remove
-        for (const [key, value] of Object.entries(keys)) {
-          if (!String(value).includes('@')) {
-            const pubKey = keys[`${key as KeychainKeyTypesLC}Pubkey`];
-            switch (key) {
-              case KeychainKeyTypesLC.active:
-                if (
-                  !lessRecordsExtendedAccountList[i]['active'].key_auths.find(
-                    (keyAuth) => keyAuth[0] === pubKey,
-                  ) &&
-                  !no_key_check[accountName].find(
-                    (keyName: string) => keyName === key,
-                  )
-                ) {
-                  foundWrongKey[accountName].push(key);
-                }
-                break;
-              case KeychainKeyTypesLC.posting:
-                if (
-                  !lessRecordsExtendedAccountList[i]['posting'].key_auths.find(
-                    (keyAuth) => keyAuth[0] === pubKey,
-                  ) &&
-                  !no_key_check[accountName].find(
-                    (keyName: string) => keyName === key,
-                  )
-                ) {
-                  foundWrongKey[accountName].push(key);
-                }
-                break;
-              case KeychainKeyTypesLC.memo:
-                if (
-                  lessRecordsExtendedAccountList[i]['memo_key'] !== pubKey &&
-                  !no_key_check[accountName].find(
-                    (keyName: string) => keyName === key,
-                  )
-                ) {
-                  foundWrongKey[accountName].push(key);
-                }
-                break;
-            }
-          }
-          // if (foundWrongKey[accountName].length > 0) {
-          //   setDisplayWrongKeyPopup(foundWrongKey);
-          //   break;
-          // }
-        }
-        if (foundWrongKey[accountName].length > 0) {
-          setDisplayWrongKeyPopup(foundWrongKey);
-          break;
-        }
-      }
-    } catch (error) {
-      Logger.error(error);
-      console.log({ error }); //TODO remove when clean up
-    }
-    console.log({ foundWrongKey }); //TODO remove when finish
   };
 
   const initActiveAccount = async (accounts: LocalAccount[]) => {
@@ -366,44 +265,12 @@ const App = ({
     }
   };
 
-  const skipKeyCheckOnAccount = async () => {
-    let prevNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
-      LocalStorageKeyEnum.NO_KEY_CHECK,
-    );
-    console.log({ prevNoKeyCheck }); //TODO to remove
-    if (prevNoKeyCheck) {
-      prevNoKeyCheck = { ...displayWrongKeyPopup, ...prevNoKeyCheck };
-    }
-    console.log('About to save: ', prevNoKeyCheck); //TODO to remove
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.NO_KEY_CHECK,
-      prevNoKeyCheck,
-    );
-    setDisplayWrongKeyPopup(undefined);
-  };
-
-  //just for testing //TODO to remove
-  const resetNoKeyCheck = () =>
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.NO_KEY_CHECK,
-      undefined,
-    );
-  //end just for testing
-
-  const replaceKeyOnAccount = () => {
-    //Change key : Delete the missing keys and navigate to the corresponding Manage account page (with correct username). If only one key was changed, you can navigate directly to the Add Key page with the proper username and key type
-    //check multiple keys.
-    //if multiple -> navigate to manage accounts, setting properly account selector
-    //if not -> navigate to add key...idem...
-  };
-
   const renderPopup = (
     loading: number,
     activeRpc: Rpc | undefined,
     displayProxySuggestion: boolean,
     displayChangeRpcPopup: boolean,
     switchToRpc: Rpc | undefined,
-    displayWrongKeyPopup: any, //TODO need type?
   ) => {
     if (loading || !activeRpc) {
       return (
@@ -417,39 +284,7 @@ const App = ({
     //    Uncomment if need to
     //   return <ProxySuggestionComponent />;
     // }
-    else if (displayWrongKeyPopup) {
-      //TODO bellow create new scss classes + add locales.
-      // TODO important (use existing style from governance reminder popup) maybe needs to be moved to home.tsx, check
-      return (
-        <div className="change-rpc-popup">
-          <div className="message">
-            The account{' '}
-            {Object.entries(displayWrongKeyPopup).map((wrongKey: any) => {
-              const multipleKeys = wrongKey[1].length > 1;
-              return `@${wrongKey[0]} has a wrong ${wrongKey[1]} key${
-                multipleKeys ? 's' : ''
-              }. Would you like to set the right key${
-                multipleKeys ? 's' : ''
-              } now?`;
-            })}
-          </div>
-          <div className="buttons-container">
-            <ButtonComponent
-              skipLabelTranslation
-              label="Replace"
-              onClick={replaceKeyOnAccount}
-              additionalClass="larger-buttons"
-            />
-            <ButtonComponent
-              skipLabelTranslation
-              label="Do nothing"
-              onClick={skipKeyCheckOnAccount}
-              additionalClass="larger-buttons"
-            />
-          </div>
-        </div>
-      );
-    } else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
+    else if (displayChangeRpcPopup && activeRpc && switchToRpc) {
       return (
         <div className="change-rpc-popup">
           <div className="message">
@@ -481,7 +316,6 @@ const App = ({
         displayProxySuggestion,
         displayChangeRpcPopup,
         switchToRpc,
-        displayWrongKeyPopup,
       )}
       {displaySplashscreen && (
         <div className="splashscreen">

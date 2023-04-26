@@ -59,16 +59,6 @@
       max-width: 130px;
       height: 36px;
     }
-
-    .buttons-container {
-      display: flex;
-      flex-direction: row;
-      column-gap: 12px;
-    }
-
-    .larger-buttons {
-      width: auto !important;
-    }
   }
 
   ::-webkit-scrollbar {

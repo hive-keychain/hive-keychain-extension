@@ -12,14 +12,18 @@ import { SurveyComponent } from '@popup/pages/app-container/survey/survey.compon
 import { Survey } from '@popup/pages/app-container/survey/survey.interface';
 import { WhatsNewComponent } from '@popup/pages/app-container/whats-new/whats-new.component';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
+import { WrongKeyPopupComponent } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
+import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
+import Logger from 'src/utils/logger.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
 import { VersionLogUtils } from 'src/utils/version-log.utils';
 import { WhatsNewUtils } from 'src/utils/whats-new.utils';
@@ -38,6 +42,7 @@ const Home = ({
   >([]);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
+  const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<any>(); //TODO add types
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -47,6 +52,11 @@ const Home = ({
     }
     initWhatsNew();
     initSurvey();
+    //to clear //TODO remove
+    //testing
+    // resetNoKeyCheck();
+    //end testing
+    initCheckKeysOnAccounts(accounts);
   }, []);
 
   useEffect(() => {
@@ -94,10 +104,111 @@ const Home = ({
     }
   };
 
+  const initCheckKeysOnAccounts = async (localAccounts: LocalAccount[]) => {
+    console.log({ localAccounts }); //TODO to remove
+    const extendedAccountsList = await AccountUtils.getExtendedAccounts(
+      localAccounts.map((acc) => acc.name!),
+    );
+    console.log({ extendedAccountsList });
+
+    // }); //TODO clean up
+    let foundWrongKey: any;
+    try {
+      //TODO to properly test, add localAccounts using localstorage from vm console
+      // //change key here
+      // extendedAccountsList[1].active.key_auths[0][0] = '1989879823u1i';
+      // extendedAccountsList[2].posting.key_auths[0][0] = '1989879823u1i';
+      // //end change
+      console.log({ modifyToTest: extendedAccountsList });
+      //TODO bellow to use later on
+      let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
+        LocalStorageKeyEnum.NO_KEY_CHECK,
+      );
+      console.log({ initial: no_key_check }); //TODO to remove
+      if (!no_key_check) no_key_check = { [localAccounts[0].name!]: [] };
+
+      for (let i = 0; i < extendedAccountsList.length; i++) {
+        const accountName = localAccounts[i].name!;
+        const keys = localAccounts[i].keys;
+        foundWrongKey = { [accountName]: [] };
+        if (!no_key_check.hasOwnProperty(accountName)) {
+          no_key_check = { ...no_key_check, [accountName]: [] };
+        }
+        console.log({ no_key_check, keys, accountName }); //TODO to remove
+        for (const [key, value] of Object.entries(keys)) {
+          // if (!String(value).includes('@')) {
+          if (key.includes('Pubkey') && !String(value).includes('@')) {
+            // const pubKey = keys[`${key as KeychainKeyTypesLC}Pubkey`];
+            console.log({ key, value, accountName }); //TODO to remove
+            const keyType = key.split('Pubkey')[0];
+            switch (keyType) {
+              case KeychainKeyTypesLC.active:
+                if (
+                  !extendedAccountsList[i]['active'].key_auths.find(
+                    (keyAuth) => keyAuth[0] === value,
+                  ) &&
+                  !no_key_check[accountName].find(
+                    (keyName: string) => keyName === keyType,
+                  )
+                ) {
+                  foundWrongKey[accountName].push(keyType);
+                }
+                break;
+              case KeychainKeyTypesLC.posting:
+                if (
+                  !extendedAccountsList[i]['posting'].key_auths.find(
+                    (keyAuth) => keyAuth[0] === value,
+                  ) &&
+                  !no_key_check[accountName].find(
+                    (keyName: string) => keyName === keyType,
+                  )
+                ) {
+                  foundWrongKey[accountName].push(keyType);
+                }
+                break;
+              case KeychainKeyTypesLC.memo:
+                if (
+                  extendedAccountsList[i]['memo_key'] !== value &&
+                  !no_key_check[accountName].find(
+                    (keyName: string) => keyName === keyType,
+                  )
+                ) {
+                  foundWrongKey[accountName].push(keyType);
+                }
+                break;
+            }
+            // }
+            // if (foundWrongKey[accountName].length > 0) {
+            //   setDisplayWrongKeyPopup(foundWrongKey);
+            //   break;
+            // }
+          }
+        }
+        if (foundWrongKey[accountName].length > 0) {
+          setDisplayWrongKeyPopup(foundWrongKey);
+          break;
+        }
+      }
+    } catch (error) {
+      Logger.error(error);
+      console.log({ error }); //TODO remove when clean up
+    }
+    console.log({ foundWrongKey }); //TODO remove when finish
+  };
+
+  //just for testing //TODO to remove
+  const resetNoKeyCheck = () =>
+    LocalStorageUtils.saveValueInLocalStorage(
+      LocalStorageKeyEnum.NO_KEY_CHECK,
+      null,
+    );
+  //end just for testing
+
   const renderPopup = (
     displayWhatsNew: boolean,
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
+    displayWrongKeyPopup: any, //TODO need type?
   ) => {
     if (displayWhatsNew) {
       return (
@@ -112,6 +223,13 @@ const Home = ({
       );
     } else if (surveyToDisplay) {
       return <SurveyComponent survey={surveyToDisplay} />;
+    } else if (displayWrongKeyPopup) {
+      return (
+        <WrongKeyPopupComponent
+          displayWrongKeyPopup={displayWrongKeyPopup}
+          setDisplayWrongKeyPopup={setDisplayWrongKeyPopup}
+        />
+      );
     }
   };
 
@@ -132,6 +250,7 @@ const Home = ({
         displayWhatsNew,
         governanceAccountsToExpire,
         surveyToDisplay,
+        displayWrongKeyPopup,
       )}
     </div>
   );

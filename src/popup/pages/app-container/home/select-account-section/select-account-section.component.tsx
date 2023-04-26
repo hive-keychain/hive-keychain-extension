@@ -8,7 +8,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import './select-account-section.component.scss';
@@ -28,6 +28,7 @@ const SelectAccountSection = ({
       }),
     );
     setSelectedLocalAccount(activeAccount.name!);
+    console.log({ activeAccount }); //TODO to remove
   }, [accounts, activeAccount]);
 
   const [options, setOptions] = useState(defaultOptions);
