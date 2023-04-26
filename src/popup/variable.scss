@@ -81,7 +81,7 @@ $caption-font-size: 16px;
   .react-tabs__tab-list {
     display: grid;
     grid-template-columns: repeat($nbTab, 1fr);
-    margin: 0 0 32px !important;
+    margin: 0 0 16px !important;
 
     .react-tabs__tab {
       text-align: center;

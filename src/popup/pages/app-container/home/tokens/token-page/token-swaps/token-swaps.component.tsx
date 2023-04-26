@@ -329,67 +329,70 @@ const TokenSwaps = ({
             />
           </div>
 
-          <div className="start-token">
-            <div className="inputs">
-              {startTokenListOptions.length > 0 && (
-                <CustomSelect
-                  selectedValue={startToken}
-                  options={startTokenListOptions}
-                  skipLabelTranslation
-                  setSelectedValue={setStartToken}
-                />
-              )}
-              <InputComponent
-                type={InputType.NUMBER}
-                value={amount}
-                onChange={setAmount}
-                label="popup_html_transfer_amount"
-                placeholder="popup_html_transfer_amount"
-                min={0}
-              />
-            </div>
-            <span className="available">
-              {chrome.i18n.getMessage('popup_html_available')} :{' '}
-              {startToken?.value.balance}
-            </span>
-          </div>
-          <Icon
-            type={IconType.OUTLINED}
-            name={Icons.SWAP}
-            onClick={swapStartAndEnd}
-            additionalClassName="swap-icon"
-          />
-          <div className="end-token">
-            {endTokenListOptions.length > 0 && (
-              <>
-                <CustomSelect
-                  selectedValue={endToken}
-                  options={endTokenListOptions}
-                  skipLabelTranslation
-                  setSelectedValue={setEndToken}
-                  filterable
-                />
-                {estimate && estimate.length > 0 && (
-                  <div className="final-value">
-                    {chrome.i18n.getMessage('html_popup_swaps_final_price', [
-                      estimateValue!,
-                      endToken?.label!,
-                    ])}
-                  </div>
+          <div className="form">
+            <div className="start-token">
+              <div className="inputs">
+                {startTokenListOptions.length > 0 && (
+                  <CustomSelect
+                    selectedValue={startToken}
+                    options={startTokenListOptions}
+                    skipLabelTranslation
+                    setSelectedValue={setStartToken}
+                  />
                 )}
-              </>
-            )}
+                <InputComponent
+                  type={InputType.NUMBER}
+                  value={amount}
+                  onChange={setAmount}
+                  label="popup_html_transfer_amount"
+                  placeholder="popup_html_transfer_amount"
+                  min={0}
+                />
+              </div>
+              <span className="available">
+                {chrome.i18n.getMessage('popup_html_available')} :{' '}
+                {startToken?.value.balance}
+              </span>
+            </div>
+            <Icon
+              type={IconType.OUTLINED}
+              name={Icons.SWAP}
+              onClick={swapStartAndEnd}
+              additionalClassName="swap-icon"
+            />
+            <div className="end-token">
+              {endTokenListOptions.length > 0 && (
+                <div>
+                  <CustomSelect
+                    selectedValue={endToken}
+                    options={endTokenListOptions}
+                    skipLabelTranslation
+                    setSelectedValue={setEndToken}
+                    filterable
+                  />
+                  {estimate && estimate.length > 0 && (
+                    <div className="final-value">
+                      {chrome.i18n.getMessage('html_popup_swaps_final_price', [
+                        estimateValue!,
+                        endToken?.label!,
+                      ])}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            <InputComponent
+              type={InputType.NUMBER}
+              min={5}
+              step={1}
+              value={slipperage}
+              onChange={setSlipperage}
+              label="html_popup_swaps_slipperage"
+              placeholder="html_popup_swaps_slipperage"
+              tooltip="html_popup_swaps_slippage_definition"
+            />
           </div>
-          <InputComponent
-            type={InputType.NUMBER}
-            min={5}
-            step={1}
-            value={slipperage}
-            onChange={setSlipperage}
-            label="html_popup_swaps_slipperage"
-            placeholder="html_popup_swaps_slipperage"
-            tooltip="html_popup_swaps_slippage_definition"
-          />
+
           <OperationButtonComponent
             ariaLabel="operation-process-button"
             requiredKey={KeychainKeyTypesLC.active}
