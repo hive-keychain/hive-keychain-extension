@@ -3140,5 +3140,9 @@
   "swap_advanced_parameters": {
     "message": "Advanced parameters",
     "description": "Swap advanced parameters"
+  },
+  "swap_no_history": {
+    "message": "Your history is empty",
+    "description": "History swap empty"
   }
 }
