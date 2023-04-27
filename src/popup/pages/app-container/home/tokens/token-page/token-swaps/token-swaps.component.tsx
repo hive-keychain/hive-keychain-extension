@@ -66,6 +66,9 @@ const TokenSwaps = ({
     number | null
   >(null);
 
+  const [isAdvancedParametersOpen, setIsAdvancedParametersOpen] =
+    useState(false);
+
   const throttledRefresh = useMemo(
     () =>
       throttle(
@@ -381,16 +384,37 @@ const TokenSwaps = ({
                 </div>
               )}
             </div>
-            <InputComponent
-              type={InputType.NUMBER}
-              min={5}
-              step={1}
-              value={slipperage}
-              onChange={setSlipperage}
-              label="html_popup_swaps_slipperage"
-              placeholder="html_popup_swaps_slipperage"
-              tooltip="html_popup_swaps_slippage_definition"
-            />
+            <div className="advanced-parameters">
+              <div
+                className="title-panel"
+                onClick={() =>
+                  setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
+                }>
+                <div className="title">
+                  {chrome.i18n.getMessage('swap_advanced_parameters')}
+                </div>
+                <Icon
+                  name={Icons.ARROW_DROPDOWN}
+                  onClick={() =>
+                    setIsAdvancedParametersOpen(!isAdvancedParametersOpen)
+                  }
+                />
+              </div>
+              {isAdvancedParametersOpen && (
+                <div className="advanced-parameters-container">
+                  <InputComponent
+                    type={InputType.NUMBER}
+                    min={5}
+                    step={1}
+                    value={slipperage}
+                    onChange={setSlipperage}
+                    label="html_popup_swaps_slipperage"
+                    placeholder="html_popup_swaps_slipperage"
+                    tooltip="html_popup_swaps_slippage_definition"
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           <OperationButtonComponent
@@ -398,7 +422,6 @@ const TokenSwaps = ({
             requiredKey={KeychainKeyTypesLC.active}
             onClick={processSwap}
             label={'html_popup_swaps_process_swap'}
-            fixToBottom
           />
         </>
       )}

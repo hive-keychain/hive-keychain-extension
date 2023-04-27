@@ -3136,5 +3136,9 @@
   "swap_copied_to_clipboard": {
     "message": "Copied to clipboard!",
     "description": "on preferences when clicking on swap id"
+  },
+  "swap_advanced_parameters": {
+    "message": "Advanced parameters",
+    "description": "Swap advanced parameters"
   }
 }

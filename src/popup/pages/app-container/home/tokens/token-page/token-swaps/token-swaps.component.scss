@@ -6,6 +6,7 @@
   overflow: hidden;
   flex: 1;
   padding: 0px 24px 24px 24px;
+  flex-flow: column wrap;
 
   .react-tabs {
     flex: 1;
@@ -42,6 +43,7 @@
   }
 
   .form {
+    flex: 1;
     display: flex;
     flex-direction: column;
     row-gap: 8px;
@@ -65,6 +67,21 @@
         font-size: 18px;
         font-style: italic;
         padding-top: 6px;
+      }
+    }
+
+    .advanced-parameters {
+      margin-top: 16px;
+      font-size: 18px;
+      .title-panel {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+      }
+      .advanced-parameters-container {
+        padding-top: 8px;
+        padding-bottom: 8px;
       }
     }
   }
