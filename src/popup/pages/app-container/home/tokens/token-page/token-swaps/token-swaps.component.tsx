@@ -220,17 +220,24 @@ const TokenSwaps = ({
 
     const expectedAmount = estimate![estimate!.length - 1].estimate;
 
+    const startTokenPrecision = await TokensUtils.getTokenPrecision(
+      startToken?.value.symbol,
+    );
+    const endTokenPrecision = await TokensUtils.getTokenPrecision(
+      endToken?.value.symbol,
+    );
+
     const fields = [
       { label: 'html_popup_swap_swap_id', value: estimateId },
       { label: 'html_popup_swap_swap_from', value: startToken?.value.symbol },
       { label: 'html_popup_swap_swap_to', value: endToken?.value.symbol },
       {
         label: 'html_popup_swap_swap_amount',
-        value: `${amount} ${startToken?.value.symbol}`,
-      },
-      {
-        label: 'html_popup_swap_swap_expected_amount',
-        value: `${expectedAmount} ${endToken?.value.symbol}`,
+        value: `${Number(amount).toFixed(startTokenPrecision)} ${
+          startToken?.value.symbol
+        } => ${expectedAmount.toFixed(endTokenPrecision)} ${
+          endToken?.value.symbol
+        }`,
       },
       {
         label: 'html_popup_swap_swap_slipperage',
