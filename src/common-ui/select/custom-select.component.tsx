@@ -54,7 +54,7 @@ const CustomSelect = ({
         onClick={() => {
           selectProps.methods.dropDown('close');
         }}>
-        {selectedValue.img && (
+        {selectedValue && selectedValue.img && (
           <img
             src={selectedValue.img}
             className="image"
@@ -64,11 +64,13 @@ const CustomSelect = ({
             }}
           />
         )}
-        <div className="label">
-          {skipLabelTranslation
-            ? selectedValue.label
-            : chrome.i18n.getMessage(selectedValue.label)}
-        </div>
+        {selectedValue && (
+          <div className="label">
+            {skipLabelTranslation
+              ? selectedValue.label
+              : chrome.i18n.getMessage(selectedValue.label)}
+          </div>
+        )}
       </div>
     );
   };

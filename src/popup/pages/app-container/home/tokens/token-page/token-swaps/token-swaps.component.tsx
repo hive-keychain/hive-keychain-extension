@@ -72,9 +72,9 @@ const TokenSwaps = ({
   const throttledRefresh = useMemo(
     () =>
       throttle(
-        (newAmount) => {
-          if (parseFloat(newAmount) > 0) {
-            calculateEstimate();
+        (newAmount, newEndToken, newStartToken) => {
+          if (parseFloat(newAmount) > 0 && newEndToken && newStartToken) {
+            calculateEstimate(newAmount, newStartToken, newEndToken);
             setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
           }
         },
@@ -85,8 +85,8 @@ const TokenSwaps = ({
   );
 
   useEffect(() => {
-    throttledRefresh(amount);
-  }, [amount]);
+    throttledRefresh(amount, endToken, startToken);
+  }, [amount, endToken, startToken]);
 
   useEffect(() => {
     return () => {
@@ -103,8 +103,8 @@ const TokenSwaps = ({
       return;
     }
 
-    if (autoRefreshCountdown === 0) {
-      calculateEstimate();
+    if (autoRefreshCountdown === 0 && startToken && endToken) {
+      calculateEstimate(amount, startToken, endToken);
       setAutoRefreshCountdown(Config.swaps.autoRefreshEveryXSec);
       return;
     }
@@ -170,18 +170,23 @@ const TokenSwaps = ({
     ];
     setStartToken(list[0]);
     setStartTokenListOptions(list);
-    setEndToken(endList[0]);
+    setEndToken(undefined);
     setEndTokenListOptions(endList);
     setLoading(false);
   };
 
-  const calculateEstimate = async () => {
+  const calculateEstimate = async (
+    amount: string,
+    startToken: SelectOption,
+    endToken: SelectOption,
+  ) => {
     setLoadingEstimate(true);
     const result: SwapStep[] = await SwapTokenUtils.getEstimate(
       startToken?.value.symbol,
       endToken?.value.symbol,
       amount,
     );
+    console.log(result, startToken, endToken, amount);
     setEstimate(result);
     if (result.length) {
       const precision = await TokensUtils.getTokenPrecision(
@@ -325,7 +330,9 @@ const TokenSwaps = ({
                   {<span>Auto refresh in {autoRefreshCountdown} sec</span>}
                   <Icon
                     name={Icons.REFRESH}
-                    onClick={calculateEstimate}
+                    onClick={() =>
+                      calculateEstimate(amount, startToken!, endToken!)
+                    }
                     rotate={loadingEstimate}
                   />
                 </>
