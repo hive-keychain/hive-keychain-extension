@@ -3144,5 +3144,9 @@
   "swap_no_history": {
     "message": "Your history is empty",
     "description": "History swap empty"
+  },
+  "swap_under_maintenance": {
+    "message": "Keychain Swap is under maintenance, try again later",
+    "description": "Keychain swap under maintenance"
   }
 }

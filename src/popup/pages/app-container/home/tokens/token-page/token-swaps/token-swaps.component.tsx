@@ -46,6 +46,7 @@ const TokenSwaps = ({
   addToLoadingList,
   removeFromLoadingList,
 }: PropsFromRedux) => {
+  const [underMaintenance, setUnderMaintenance] = useState(false);
   const [loading, setLoading] = useState(true);
   const [loadingEstimate, setLoadingEstimate] = useState(false);
   const [slipperage, setSlipperage] = useState(5);
@@ -95,8 +96,18 @@ const TokenSwaps = ({
   }, []);
 
   useEffect(() => {
-    initTokenSelectOptions();
+    init();
   }, []);
+
+  const init = async () => {
+    const isUnderMaintenance = await SwapTokenUtils.isUnderMaintenance();
+    setUnderMaintenance(isUnderMaintenance);
+    if (!isUnderMaintenance) {
+      initTokenSelectOptions();
+    } else {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (autoRefreshCountdown === null) {
@@ -315,7 +326,7 @@ const TokenSwaps = ({
 
   return (
     <div className="token-swaps" aria-label="token-swaps">
-      {!loading && (
+      {!loading && !underMaintenance && (
         <>
           <div className="caption">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla
@@ -440,6 +451,14 @@ const TokenSwaps = ({
         </>
       )}
       {loading && <RotatingLogoComponent />}
+      {underMaintenance && (
+        <div className="maintenance-mode">
+          <Icon name={Icons.MAINTENANCE} />
+          <div className="text">
+            {chrome.i18n.getMessage('swap_under_maintenance')}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

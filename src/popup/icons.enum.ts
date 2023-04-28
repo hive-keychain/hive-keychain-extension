@@ -49,6 +49,7 @@ export enum Icons {
   LOCK = 'lock',
   LOGIN = 'login',
   LOGOUT = 'logout',
+  MAINTENANCE = 'engineering',
   MANAGE_ACCOUNTS = 'manage_accounts',
   MENU = 'menu',
   MORE_VERT = 'more_vert',
