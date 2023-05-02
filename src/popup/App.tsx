@@ -15,7 +15,6 @@ import { loadGlobalProperties } from '@popup/actions/global-properties.actions';
 import { initHiveEngineConfigFromStorage } from '@popup/actions/hive-engine-config.actions';
 import { setMk } from '@popup/actions/mk.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
-import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -309,7 +308,6 @@ const App = ({
     <div className={`App ${isCurrentPageHomePage ? 'homepage' : ''}`}>
       {isAppReady && renderMainLayoutNav()}
       <MessageContainerComponent />
-      <ProposalVotingSectionComponent />
       {renderPopup(
         loading,
         activeRpc,
