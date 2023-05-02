@@ -1,3 +1,4 @@
+import { ExtendedAccount } from '@hiveio/dhive';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
@@ -12,7 +13,10 @@ import { SurveyComponent } from '@popup/pages/app-container/survey/survey.compon
 import { Survey } from '@popup/pages/app-container/survey/survey.interface';
 import { WhatsNewComponent } from '@popup/pages/app-container/whats-new/whats-new.component';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
-import { WrongKeyPopupComponent } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
+import {
+  WrongKeyPopupComponent,
+  WrongKeysOnUser,
+} from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { KeychainKeyTypesLC } from 'hive-keychain-commons';
@@ -42,7 +46,9 @@ const Home = ({
   >([]);
   const [whatsNewContent, setWhatsNewContent] = useState<WhatsNewContent>();
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
-  const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<any>(); //TODO add types
+  const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
+    WrongKeysOnUser | undefined
+  >(); //TODO add types
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -105,26 +111,26 @@ const Home = ({
   };
 
   const initCheckKeysOnAccounts = async (localAccounts: LocalAccount[]) => {
-    console.log({ localAccounts }); //TODO to remove
     const extendedAccountsList = await AccountUtils.getExtendedAccounts(
       localAccounts.map((acc) => acc.name!),
     );
-    console.log({ extendedAccountsList });
-
-    // }); //TODO clean up
     let foundWrongKey: any;
     try {
       //TODO to properly test, add localAccounts using localstorage from vm console
       // //change key here
-      // extendedAccountsList[1].active.key_auths[0][0] = '1989879823u1i';
-      // extendedAccountsList[2].posting.key_auths[0][0] = '1989879823u1i';
+      // const indexToUpdate1 = extendedAccountsList.findIndex(
+      //   (extAccount) => extAccount.name === 'keychain.tests',
+      // );
+      // extendedAccountsList[indexToUpdate1].active.key_auths[0][0] =
+      //   '1989879823u1i';
+      // extendedAccountsList[indexToUpdate1].posting.key_auths[0][0] =
+      //   '1989879823u1i';
       // //end change
-      console.log({ modifyToTest: extendedAccountsList });
-      //TODO bellow to use later on
+
       let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
         LocalStorageKeyEnum.NO_KEY_CHECK,
       );
-      console.log({ initial: no_key_check }); //TODO to remove
+      console.log({ no_key_check }); //TODO to remove
       if (!no_key_check) no_key_check = { [localAccounts[0].name!]: [] };
 
       for (let i = 0; i < extendedAccountsList.length; i++) {
@@ -134,54 +140,17 @@ const Home = ({
         if (!no_key_check.hasOwnProperty(accountName)) {
           no_key_check = { ...no_key_check, [accountName]: [] };
         }
-        console.log({ no_key_check, keys, accountName }); //TODO to remove
         for (const [key, value] of Object.entries(keys)) {
-          // if (!String(value).includes('@')) {
           if (key.includes('Pubkey') && !String(value).includes('@')) {
-            // const pubKey = keys[`${key as KeychainKeyTypesLC}Pubkey`];
-            console.log({ key, value, accountName }); //TODO to remove
             const keyType = key.split('Pubkey')[0];
-            switch (keyType) {
-              case KeychainKeyTypesLC.active:
-                if (
-                  !extendedAccountsList[i]['active'].key_auths.find(
-                    (keyAuth) => keyAuth[0] === value,
-                  ) &&
-                  !no_key_check[accountName].find(
-                    (keyName: string) => keyName === keyType,
-                  )
-                ) {
-                  foundWrongKey[accountName].push(keyType);
-                }
-                break;
-              case KeychainKeyTypesLC.posting:
-                if (
-                  !extendedAccountsList[i]['posting'].key_auths.find(
-                    (keyAuth) => keyAuth[0] === value,
-                  ) &&
-                  !no_key_check[accountName].find(
-                    (keyName: string) => keyName === keyType,
-                  )
-                ) {
-                  foundWrongKey[accountName].push(keyType);
-                }
-                break;
-              case KeychainKeyTypesLC.memo:
-                if (
-                  extendedAccountsList[i]['memo_key'] !== value &&
-                  !no_key_check[accountName].find(
-                    (keyName: string) => keyName === keyType,
-                  )
-                ) {
-                  foundWrongKey[accountName].push(keyType);
-                }
-                break;
-            }
-            // }
-            // if (foundWrongKey[accountName].length > 0) {
-            //   setDisplayWrongKeyPopup(foundWrongKey);
-            //   break;
-            // }
+            addWrongKeyIfMissing(
+              keyType as KeychainKeyTypesLC,
+              accountName,
+              value,
+              extendedAccountsList[i],
+              foundWrongKey,
+              no_key_check,
+            );
           }
         }
         if (foundWrongKey[accountName].length > 0) {
@@ -191,9 +160,41 @@ const Home = ({
       }
     } catch (error) {
       Logger.error(error);
-      console.log({ error }); //TODO remove when clean up
     }
-    console.log({ foundWrongKey }); //TODO remove when finish
+  };
+
+  const addWrongKeyIfMissing = (
+    keyType: KeychainKeyTypesLC,
+    accountName: string,
+    value: string,
+    extendedAccountsListItem: ExtendedAccount,
+    foundWrongKey: WrongKeysOnUser,
+    no_key_check: any,
+  ) => {
+    if (
+      keyType === KeychainKeyTypesLC.active ||
+      keyType === KeychainKeyTypesLC.posting
+    ) {
+      if (
+        !extendedAccountsListItem[keyType].key_auths.find(
+          (keyAuth) => keyAuth[0] === value,
+        ) &&
+        !no_key_check[accountName].find(
+          (keyName: string) => keyName === keyType,
+        )
+      ) {
+        foundWrongKey[accountName].push(keyType);
+      }
+    } else if (keyType === KeychainKeyTypesLC.memo) {
+      if (
+        extendedAccountsListItem['memo_key'] !== value &&
+        !no_key_check[accountName].find(
+          (keyName: string) => keyName === keyType,
+        )
+      ) {
+        foundWrongKey[accountName].push(keyType);
+      }
+    }
   };
 
   //just for testing //TODO to remove
@@ -208,7 +209,7 @@ const Home = ({
     displayWhatsNew: boolean,
     governanceAccountsToExpire: string[],
     surveyToDisplay: Survey | undefined,
-    displayWrongKeyPopup: any, //TODO need type?
+    displayWrongKeyPopup: WrongKeysOnUser | undefined,
   ) => {
     if (displayWhatsNew) {
       return (

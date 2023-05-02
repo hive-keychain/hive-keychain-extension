@@ -39,6 +39,14 @@
       &.hidden {
         font-size: 14px;
       }
+
+      &.wrong-key {
+        color: $red-dark;
+      }
+    }
+
+    .tool-tip-custom {
+      margin-top: -40px !important;
     }
 
     .using-authorized-account {

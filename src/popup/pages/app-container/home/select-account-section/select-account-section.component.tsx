@@ -28,7 +28,6 @@ const SelectAccountSection = ({
       }),
     );
     setSelectedLocalAccount(activeAccount.name!);
-    console.log({ activeAccount }); //TODO to remove
   }, [accounts, activeAccount]);
 
   const [options, setOptions] = useState(defaultOptions);

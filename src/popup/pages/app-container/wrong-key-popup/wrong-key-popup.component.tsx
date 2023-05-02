@@ -5,30 +5,27 @@ import ButtonComponent from 'src/common-ui/button/button.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 //TODO bellow change classes names
 import { LocalAccount } from '@interfaces/local-account.interface';
-import { removeKey } from '@popup/actions/account.actions';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from '@popup/actions/navigation.actions';
+import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import { ConnectedProps, connect } from 'react-redux';
-import { KeyType } from 'src/interfaces/keys.interface';
-import Logger from 'src/utils/logger.utils';
 import './wrong-key-popup.component.scss';
 
+export interface WrongKeysOnUser {
+  [key: string]: string[];
+}
 interface Props {
-  displayWrongKeyPopup: any; //TODO add type
-  setDisplayWrongKeyPopup: React.Dispatch<any>; //TODO add type
+  displayWrongKeyPopup: WrongKeysOnUser;
+  setDisplayWrongKeyPopup: React.Dispatch<
+    React.SetStateAction<WrongKeysOnUser | undefined>
+  >;
 }
 
 const WrongKeyPopup = ({
   displayWrongKeyPopup,
   setDisplayWrongKeyPopup,
-  navigateTo,
   navigateToWithParams,
-  removeKey,
   loadActiveAccount,
   accounts,
 }: Props & PropsType) => {
@@ -36,24 +33,19 @@ const WrongKeyPopup = ({
   const [wrongKeysFound, setWrongKeysFound] = useState<string[]>();
 
   useEffect(() => {
-    console.log('running useffect in wk.comp!');
     if (displayWrongKeyPopup) {
       setaccountFound(Object.keys(displayWrongKeyPopup)[0]);
       setWrongKeysFound(Object.values(displayWrongKeyPopup)[0] as string[]);
     }
   }, []);
 
-  console.log({ accountFound, wrongKeysFound }); //TODO to remove
-
   const skipKeyCheckOnAccount = async () => {
     let prevNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_KEY_CHECK,
     );
-    console.log({ prevNoKeyCheck }); //TODO to remove
     if (prevNoKeyCheck) {
       prevNoKeyCheck = { ...displayWrongKeyPopup, ...prevNoKeyCheck };
     }
-    console.log('About to save: ', { prevNoKeyCheck, displayWrongKeyPopup }); //TODO to remove
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.NO_KEY_CHECK,
       prevNoKeyCheck ?? displayWrongKeyPopup,
@@ -61,53 +53,24 @@ const WrongKeyPopup = ({
     setDisplayWrongKeyPopup(undefined);
   };
 
-  const replaceKeysOnAccount = async () => {
-    //Change key : Delete the missing keys and navigate to the corresponding Manage account page (with correct username). If only one key was changed, you can navigate directly to the Add Key page with the proper username and key type
-    //check multiple keys.
-
-    //TODO important remove accountName + remove keys from no_check_keys in ls
+  const loadAccountGotoManage = async () => {
     let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_KEY_CHECK,
     );
     if (actualNoKeyCheck) {
       delete actualNoKeyCheck[accountFound!];
-      console.log('Found previous, about to save: ', { actualNoKeyCheck });
     }
     LocalStorageUtils.saveValueInLocalStorage(
       LocalStorageKeyEnum.NO_KEY_CHECK,
       actualNoKeyCheck,
     );
-    try {
-      //load account to remove keys from
-      loadActiveAccount(
-        accounts.find(
-          (account: LocalAccount) => account.name === accountFound!,
-        )!,
-      );
-      //remove keys
-      wrongKeysFound!.forEach(async (keyToDelete) => {
-        removeKey(keyToDelete.toUpperCase() as KeyType);
-        console.log('deleted: ', { keyToDelete }); //TODO to remove
-      });
-      if (wrongKeysFound!.length > 1) {
-        //multiple to erase
-        console.log('Multiple keys found!'); //TODO to remove
-        navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS);
-      } else {
-        //TODO one wrong key, navigate to add key...idem..
-        console.log('One key found!'); //TODO to remove
-        navigateToWithParams(
-          Screen.SETTINGS_ADD_KEY,
-          wrongKeysFound![0] as KeyType,
-        );
-      }
-    } catch (error) {
-      Logger.error(error, error);
-    }
+    loadActiveAccount(
+      accounts.find((account: LocalAccount) => account.name === accountFound!)!,
+    );
+    const wrongUserKeys = { [accountFound!]: wrongKeysFound };
+    navigateToWithParams(Screen.SETTINGS_MANAGE_ACCOUNTS, wrongUserKeys);
   };
 
-  //TODO bellow create new scss classes + add locales.
-  // TODO important (use existing style from governance reminder popup) + create new component for this.
   return accountFound && wrongKeysFound ? (
     <div className="wrong-key-popup">
       <div className="overlay"></div>
@@ -133,7 +96,7 @@ const WrongKeyPopup = ({
         <div className="buttons-container fix-to-bottom">
           <ButtonComponent
             label="popup_html_wrong_key_popup_replace"
-            onClick={replaceKeysOnAccount}
+            onClick={loadAccountGotoManage}
           />
           <ButtonComponent
             label="popup_html_wrong_key_popup_do_nothing"
@@ -152,9 +115,7 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  navigateTo,
   navigateToWithParams,
-  removeKey,
   loadActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;

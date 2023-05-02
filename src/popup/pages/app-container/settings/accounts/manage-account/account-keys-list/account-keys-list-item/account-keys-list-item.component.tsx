@@ -8,7 +8,8 @@ import {
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
@@ -22,6 +23,7 @@ export interface KeyListItemProps {
   keyName: string;
   keyType: KeyType;
   canDelete: boolean;
+  isWrongKey?: boolean;
 }
 
 const AccountKeysListItem = ({
@@ -32,6 +34,7 @@ const AccountKeysListItem = ({
   activeAccount,
   accounts,
   canDelete,
+  isWrongKey,
   setInfoMessage,
   navigateToWithParams,
   removeKey,
@@ -75,6 +78,7 @@ const AccountKeysListItem = ({
       title: 'html_popup_delete_key',
       afterConfirmAction: async () => {
         removeKey(keyType);
+        //TODO here about the stored object?
         goBack();
       },
     });
@@ -134,9 +138,20 @@ const AccountKeysListItem = ({
                   : privateKey}
               </div>
               <div
-                className="public-key key-field"
+                className={`public-key key-field ${
+                  isWrongKey ? 'wrong-key' : ''
+                }`}
                 onClick={() => copyToClipboard(publicKey)}>
-                {publicKey}
+                {isWrongKey ? (
+                  <CustomTooltip
+                    message="popup_html_wrong_key_tooltip_text"
+                    position={'top'}
+                    additionalClassContent="tool-tip-custom">
+                    <>{publicKey}</>
+                  </CustomTooltip>
+                ) : (
+                  publicKey
+                )}
               </div>
             </>
           )}

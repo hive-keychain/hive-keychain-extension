@@ -20,7 +20,7 @@
   }
 
   .wrong-key-popup-container {
-    height: 80%;
+    height: 40%;
     overflow-y: scroll;
     width: calc(100% - 72px);
     background: $black;
@@ -56,7 +56,7 @@
     }
     .fix-to-bottom {
       position: fixed;
-      bottom: 52px;
+      bottom: 174px;
       left: 24px;
       width: calc(100% - 48px);
     }
