@@ -1769,6 +1769,10 @@
     "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
   },
+  "html_popup_vote_cedricguillas_witness_success": {
+    "message": "Successfully voted @cedricguillas as a witness. Thanks for your support!",
+    "description": "Success message when vote for stoodkev as witness"
+  },
   "html_popup_conversion_operation": {
     "message": "Conversion",
     "description": "conversion operation"
