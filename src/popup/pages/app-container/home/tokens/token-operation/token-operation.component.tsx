@@ -123,6 +123,11 @@ const TokensOperation = ({
       return;
     }
 
+    if (parseFloat(amount.toString()) <= 0) {
+      setErrorMessage('popup_html_need_positive_amount');
+      return;
+    }
+
     if (parseFloat(amount.toString()) > parseFloat(balance.toString())) {
       setErrorMessage('popup_html_power_up_down_error');
       return;
@@ -191,7 +196,6 @@ const TokensOperation = ({
           if (tokenOperationResult && tokenOperationResult.broadcasted) {
             addToLoadingList('html_popup_confirm_transaction_operation');
             removeFromLoadingList(`popup_html_${operationType}_tokens`);
-
             removeFromLoadingList('html_popup_confirm_transaction_operation');
             if (tokenOperationResult.confirmed) {
               await FavoriteUserUtils.saveFavoriteUser(
@@ -204,14 +208,14 @@ const TokensOperation = ({
               setErrorMessage('popup_token_timeout');
             }
           } else {
-            removeFromLoadingList('html_popup_transfer_token_operation');
+            removeFromLoadingList(`popup_html_${operationType}_tokens`);
             setErrorMessage(`popup_html_${operationType}_tokens_failed`);
           }
         } catch (err: any) {
-          setErrorMessage(err.message);
+          setErrorMessage(err.message, [err]);
         } finally {
           removeFromLoadingList('html_popup_confirm_transaction_operation');
-          removeFromLoadingList('html_popup_transfer_token_operation');
+          removeFromLoadingList(`popup_html_${operationType}_tokens`);
         }
       },
     });
