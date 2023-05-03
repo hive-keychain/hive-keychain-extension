@@ -20,7 +20,7 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
@@ -68,7 +68,9 @@ const TokensOperation = ({
   let balance: number | string;
   switch (operationType) {
     case TokenOperationType.UNSTAKE:
-      balance = tokenBalance.stake;
+      balance =
+        parseFloat(tokenBalance.stake) -
+        parseFloat(tokenBalance.pendingUnstake);
       break;
     case TokenOperationType.STAKE:
       balance = tokenBalance.balance;
