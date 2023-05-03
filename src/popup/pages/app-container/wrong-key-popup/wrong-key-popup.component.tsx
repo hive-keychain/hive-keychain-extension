@@ -6,7 +6,7 @@ import LocalStorageUtils from 'src/utils/localStorage.utils';
 //TODO bellow change classes names
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import { ConnectedProps, connect } from 'react-redux';
@@ -25,7 +25,7 @@ interface Props {
 const WrongKeyPopup = ({
   displayWrongKeyPopup,
   setDisplayWrongKeyPopup,
-  navigateToWithParams,
+  navigateTo,
   loadActiveAccount,
   accounts,
 }: Props & PropsType) => {
@@ -57,7 +57,7 @@ const WrongKeyPopup = ({
     let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
       LocalStorageKeyEnum.NO_KEY_CHECK,
     );
-    if (actualNoKeyCheck) {
+    if (actualNoKeyCheck && actualNoKeyCheck[accountFound!]) {
       delete actualNoKeyCheck[accountFound!];
     }
     LocalStorageUtils.saveValueInLocalStorage(
@@ -67,8 +67,7 @@ const WrongKeyPopup = ({
     loadActiveAccount(
       accounts.find((account: LocalAccount) => account.name === accountFound!)!,
     );
-    const wrongUserKeys = { [accountFound!]: wrongKeysFound };
-    navigateToWithParams(Screen.SETTINGS_MANAGE_ACCOUNTS, wrongUserKeys);
+    navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS);
   };
 
   return accountFound && wrongKeysFound ? (
@@ -115,7 +114,7 @@ const mapStateToProps = (state: RootState) => {
 };
 
 const connector = connect(mapStateToProps, {
-  navigateToWithParams,
+  navigateTo,
   loadActiveAccount,
 });
 type PropsType = ConnectedProps<typeof connector>;

@@ -7,6 +7,7 @@ import {
 } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
@@ -15,6 +16,7 @@ import { Key, KeyType } from 'src/interfaces/keys.interface';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import { Screen } from 'src/reference-data/screen.enum';
 import { KeysUtils } from 'src/utils/keys.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './account-keys-list-item.component.scss';
 
 export interface KeyListItemProps {
@@ -78,7 +80,16 @@ const AccountKeysListItem = ({
       title: 'html_popup_delete_key',
       afterConfirmAction: async () => {
         removeKey(keyType);
-        //TODO here about the stored object?
+        let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+        );
+        if (actualNoKeyCheck && actualNoKeyCheck[activeAccount.name!]) {
+          delete actualNoKeyCheck[activeAccount.name!];
+        }
+        LocalStorageUtils.saveValueInLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+          actualNoKeyCheck,
+        );
         goBack();
       },
     });

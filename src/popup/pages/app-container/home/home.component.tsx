@@ -1,4 +1,3 @@
-import { ExtendedAccount } from '@hiveio/dhive';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import { loadCurrencyPrices } from '@popup/actions/currency-prices.actions';
 import { resetTitleContainerProperties } from '@popup/actions/title-container.actions';
@@ -20,13 +19,13 @@ import {
 } from '@popup/pages/app-container/wrong-key-popup/wrong-key-popup.component';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
@@ -49,7 +48,7 @@ const Home = ({
   const [surveyToDisplay, setSurveyToDisplay] = useState<Survey>();
   const [displayWrongKeyPopup, setDisplayWrongKeyPopup] = useState<
     WrongKeysOnUser | undefined
-  >(); //TODO add types
+  >();
 
   useEffect(() => {
     resetTitleContainerProperties();
@@ -115,23 +114,23 @@ const Home = ({
     const extendedAccountsList = await AccountUtils.getExtendedAccounts(
       localAccounts.map((acc) => acc.name!),
     );
-    let foundWrongKey: any;
+    let foundWrongKey: WrongKeysOnUser;
     try {
-      //TODO to properly test, add localAccounts using localstorage from vm console
+      //TODO to properly test
       // //change key here
-      // const indexToUpdate1 = extendedAccountsList.findIndex(
+      // const indexToUpdate = extendedAccountsList.findIndex(
       //   (extAccount) => extAccount.name === 'keychain.tests',
       // );
-      // extendedAccountsList[indexToUpdate1].active.key_auths[0][0] =
+      // extendedAccountsList[indexToUpdate].active.key_auths[0][0] =
       //   '1989879823u1i';
-      // extendedAccountsList[indexToUpdate1].posting.key_auths[0][0] =
+      // extendedAccountsList[indexToUpdate].posting.key_auths[0][0] =
       //   '1989879823u1i';
       // //end change
 
-      let no_key_check = await LocalStorageUtils.getValueFromLocalStorage(
-        LocalStorageKeyEnum.NO_KEY_CHECK,
-      );
-      console.log({ no_key_check }); //TODO to remove
+      let no_key_check: WrongKeysOnUser =
+        await LocalStorageUtils.getValueFromLocalStorage(
+          LocalStorageKeyEnum.NO_KEY_CHECK,
+        );
       if (!no_key_check) no_key_check = { [localAccounts[0].name!]: [] };
 
       for (let i = 0; i < extendedAccountsList.length; i++) {
@@ -142,17 +141,16 @@ const Home = ({
           no_key_check = { ...no_key_check, [accountName]: [] };
         }
         for (const [key, value] of Object.entries(keys)) {
-          if (key.includes('Pubkey') && !String(value).includes('@')) {
-            const keyType = key.split('Pubkey')[0];
-            addWrongKeyIfMissing(
-              keyType as KeychainKeyTypesLC,
-              accountName,
-              value,
-              extendedAccountsList[i],
-              foundWrongKey,
-              no_key_check,
-            );
-          }
+          foundWrongKey = KeysUtils.checkWrongKeyOnAccount(
+            key,
+            value,
+            accountName,
+            extendedAccountsList[i],
+            foundWrongKey,
+            !!no_key_check[accountName].find(
+              (keyName: string) => keyName === key.split('Pubkey')[0],
+            ),
+          );
         }
         if (foundWrongKey[accountName].length > 0) {
           setDisplayWrongKeyPopup(foundWrongKey);
@@ -161,40 +159,6 @@ const Home = ({
       }
     } catch (error) {
       Logger.error(error);
-    }
-  };
-
-  const addWrongKeyIfMissing = (
-    keyType: KeychainKeyTypesLC,
-    accountName: string,
-    value: string,
-    extendedAccountsListItem: ExtendedAccount,
-    foundWrongKey: WrongKeysOnUser,
-    no_key_check: any,
-  ) => {
-    if (
-      keyType === KeychainKeyTypesLC.active ||
-      keyType === KeychainKeyTypesLC.posting
-    ) {
-      if (
-        !extendedAccountsListItem[keyType].key_auths.find(
-          (keyAuth) => keyAuth[0] === value,
-        ) &&
-        !no_key_check[accountName].find(
-          (keyName: string) => keyName === keyType,
-        )
-      ) {
-        foundWrongKey[accountName].push(keyType);
-      }
-    } else if (keyType === KeychainKeyTypesLC.memo) {
-      if (
-        extendedAccountsListItem['memo_key'] !== value &&
-        !no_key_check[accountName].find(
-          (keyName: string) => keyName === keyType,
-        )
-      ) {
-        foundWrongKey[accountName].push(keyType);
-      }
     }
   };
 
