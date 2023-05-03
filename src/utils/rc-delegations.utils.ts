@@ -1,16 +1,17 @@
-import { Asset, PrivateKey } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
+import { Asset } from '@hiveio/dhive';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
+import { Key, KeyType } from '@interfaces/keys.interface';
 import { RcDelegation } from '@interfaces/rc-delegation.interface';
-import HiveUtils from 'src/utils/hive.utils';
+import { CustomJsonUtils } from 'src/utils/custom-json.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const GIGA = 1000000000;
 
 const getAllOutgoingDelegations = async (
   username: string,
 ): Promise<RcDelegation[]> => {
-  const result = await HiveUtils.getClient().rc.call(
-    'list_rc_direct_delegations',
+  const result = await HiveTxUtils.getData(
+    'rc_api.list_rc_direct_delegations',
     { start: [username, ''], limit: 1000 },
   );
   let list = result
@@ -24,42 +25,45 @@ const getAllOutgoingDelegations = async (
     : [];
   return list;
 };
-
+/* istanbul ignore next */
 const cancelDelegation = async (
+  delegatee: string,
   username: string,
-  activeAccount: ActiveAccount,
+  postingKey: Key,
 ) => {
-  return sendDelegation(0, username, activeAccount);
+  return sendDelegation(0, delegatee, username, postingKey);
 };
-
+/* istanbul ignore next */
 const sendDelegation = async (
   value: number,
   delegatee: string,
-  activeAccount: ActiveAccount,
+  username: string,
+  postingKey: Key,
 ) => {
-  try {
-    const transactionConfirmation = HiveUtils.getClient().broadcast.json(
+  return HiveTxUtils.sendOperation(
+    [RcDelegationsUtils.getRcDelegationOperation(delegatee, value, username)],
+    postingKey,
+  );
+};
+/* istanbul ignore next */
+const getRcDelegationOperation = (
+  delegatee: string,
+  value: number,
+  username: string,
+) => {
+  return CustomJsonUtils.getCustomJsonOperation(
+    [
+      'delegate_rc',
       {
-        id: 'rc',
-        required_posting_auths: [activeAccount.name!],
-        required_auths: [],
-        json: JSON.stringify([
-          'delegate_rc',
-          {
-            from: activeAccount.name!,
-            delegatees: [delegatee],
-            max_rc: value,
-          },
-        ]),
+        from: username,
+        delegatees: [delegatee],
+        max_rc: value,
       },
-      PrivateKey.fromString(activeAccount.keys.posting as string),
-    );
-    await HiveUtils.sendOperationWithConfirmation(transactionConfirmation);
-  } catch (err) {
-    return false;
-  }
-
-  return true;
+    ],
+    username,
+    KeyType.POSTING,
+    'rc',
+  );
 };
 
 const getHivePerVests = (properties: GlobalProperties) => {
@@ -127,4 +131,5 @@ export const RcDelegationsUtils = {
   rcToHp,
   cancelDelegation,
   formatRcWithUnit,
+  getRcDelegationOperation,
 };

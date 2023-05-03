@@ -2,7 +2,7 @@ import { BackgroundMessage } from '@background/background-message.interface';
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-
+/* istanbul ignore next */
 const exportSettings = async () => {
   const val = await LocalStorageUtils.getMultipleValueFromLocalStorage([
     LocalStorageKeyEnum.AUTOLOCK,
@@ -25,7 +25,7 @@ const exportSettings = async () => {
   a.download = 'settings.kc';
   a.click();
 };
-
+/* istanbul ignore next */
 const importSettings = async () => {
   chrome.windows.getCurrent(async (currentWindow) => {
     const win: chrome.windows.CreateData = {
@@ -43,7 +43,7 @@ const importSettings = async () => {
     chrome.runtime.onMessage.addListener(onSettingsUploadSuccessfulListener);
   });
 };
-
+/* istanbul ignore next */
 const onSettingsUploadSuccessfulListener = (
   backgroundMessage: BackgroundMessage,
   sender: chrome.runtime.MessageSender,

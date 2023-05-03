@@ -13,13 +13,13 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
-import BlockchainTransactionUtils from 'src/utils/tokens.utils';
+import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './witness-voting-section.component.scss';
 
-const STOODKEV_WITNESS: Witness = {
-  name: 'stoodkev',
-};
+const toWitnessObject = (name: string): Witness => ({
+  name,
+});
 
 const WitnessVotingSection = ({
   activeAccount,
@@ -28,37 +28,55 @@ const WitnessVotingSection = ({
   refreshActiveAccount,
   addToLoadingList,
   removeFromLoadingList,
-  shouldDisplayWitnessVoting,
 }: PropsFromRedux) => {
-  const handleVoteForWitnessClicked = async () => {
+  const handleVoteForWitnessClicked = async (account: string) => {
     if (activeAccount.account.witnesses_voted_for === 30) {
       setErrorMessage('html_popup_vote_stoodkev_witness_error_30_votes');
     } else {
-      addToLoadingList('html_popup_vote_witness_operation');
-      const transactionConfirmed = await WitnessUtils.voteWitness(
-        STOODKEV_WITNESS,
-        activeAccount,
-      );
-      addToLoadingList('html_popup_confirm_transaction_operation');
-      removeFromLoadingList('html_popup_vote_witness_operation');
-      if (transactionConfirmed) {
-        await BlockchainTransactionUtils.delayRefresh();
+      try {
+        addToLoadingList('html_popup_vote_witness_operation');
+        const transactionConfirmed = await WitnessUtils.voteWitness(
+          toWitnessObject(account),
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        );
+        addToLoadingList('html_popup_confirm_transaction_operation');
+        removeFromLoadingList('html_popup_vote_witness_operation');
+        if (transactionConfirmed) {
+          await BlockchainTransactionUtils.delayRefresh();
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
+          refreshActiveAccount();
+          setSuccessMessage(`html_popup_vote_${account}_witness_success`);
+        }
+      } catch (err: any) {
+        setErrorMessage(err.message);
+      } finally {
+        removeFromLoadingList('html_popup_vote_witness_operation');
         removeFromLoadingList('html_popup_confirm_transaction_operation');
-        refreshActiveAccount();
-        setSuccessMessage('html_popup_vote_stoodkev_witness_success');
       }
     }
   };
-
+  let voteForAccount: string | undefined = undefined;
+  if (activeAccount.account.proxy.length === 0) {
+    for (const acc of ['stoodkev', 'cedricguillas']) {
+      if (!activeAccount.account.witness_votes.includes(acc)) {
+        voteForAccount = acc;
+        break;
+      }
+    }
+  }
   return (
     <div className="witness-voting-section">
       <div className="text">
         {chrome.i18n.getMessage('html_popup_made_with_love_by_stoodkev')}
       </div>
-      {shouldDisplayWitnessVoting && (
+      {voteForAccount && (
         <OperationButtonComponent
           ariaLabel="vote-for-stoodkev-witness"
-          onClick={handleVoteForWitnessClicked}
+          labelParams={[`@${voteForAccount}`]}
+          onClick={() => {
+            handleVoteForWitnessClicked(voteForAccount!);
+          }}
           label={'html_popup_vote_for_witness'}
           requiredKey={KeychainKeyTypesLC.active}
         />
@@ -70,9 +88,6 @@ const WitnessVotingSection = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
-    shouldDisplayWitnessVoting:
-      state.activeAccount.account.proxy.length === 0 &&
-      !state.activeAccount.account.witness_votes.includes('stoodkev'),
   };
 };
 
@@ -83,6 +98,7 @@ const connector = connect(mapStateToProps, {
   addToLoadingList,
   removeFromLoadingList,
 });
+
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
 export const WitnessVotingSectionComponent = connector(WitnessVotingSection);

@@ -1,9 +1,10 @@
+import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
 const withFixedValues = () => {
-  HiveUtils.getDynamicGlobalProperties = jest
+  DynamicGlobalPropertiesUtils.getDynamicGlobalProperties = jest
     .fn()
     .mockResolvedValue(dynamic.globalProperties);
   HiveUtils.getCurrentMedianHistoryPrice = jest

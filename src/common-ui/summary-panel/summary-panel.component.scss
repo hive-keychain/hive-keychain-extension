@@ -1,0 +1,22 @@
+@import '/src/popup/variable.scss';
+
+.summary-panel {
+  background-color: $grey-transparent;
+  margin: 0px -24px;
+  padding: 16px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  row-gap: 16px;
+  min-height: 50px;
+  user-select: none;
+  .panel-row {
+    display: flex;
+    font-size: 20px;
+    justify-content: space-between;
+
+    &.clickable {
+      cursor: pointer;
+    }
+  }
+}

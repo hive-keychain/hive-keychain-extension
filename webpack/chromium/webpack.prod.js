@@ -2,6 +2,8 @@ const { merge } = require('webpack-merge');
 const common = require('./webpack.chromium.js');
 const path = require('path');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = merge(common, {
   mode: 'production',
@@ -20,5 +22,6 @@ module.exports = merge(common, {
       failOnWarning: true,
       exclude: ['../../node_modules', '../../src/utils/logger.utils.ts'],
     }),
+    // new BundleAnalyzerPlugin(),
   ],
 });

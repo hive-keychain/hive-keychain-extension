@@ -42,8 +42,12 @@ version=${version//'version: '/''}
 version=${version//','/''}
 version=`echo ${version} | xargs` 
 
-zip -q "_releases/${version}-firefox.zip" dist-prod-firefox/*
-zip -q "_releases/${version}-chromium.zip" dist-prod/*
-zip -q "_releases/${version}-chromium-beta.zip" dist-beta/*
+cd dist-prod-firefox
+zip -qr "../_releases/${version}-firefox.zip" *
+cd ../dist-prod
+zip -qr "../_releases/${version}-chromium.zip" *
+cd ../dist-beta
+zip -qr "../_releases/${version}-chromium-beta.zip" *
+cd ..
 zip -q -r "_releases/${version}-source.zip" . -x node_modules\* dist-*\* example\* coverage\* .github\* _releases\* .vscode\* scripts\* .env
 

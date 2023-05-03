@@ -4,30 +4,24 @@ import {
   HiveEngineConfig,
 } from '@interfaces/hive-engine-rpc.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import axios from 'axios';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import SSC from 'sscjs';
 
-let rpc = new SSC('https://api.hive-engine.com/rpc');
+let rpc = 'https://api.hive-engine.com/rpc';
 
-let accountHistoryApi = axios.create({
-  baseURL: 'https://history.hive-engine.com/',
-});
+let accountHistoryApi = 'https://history.hive-engine.com';
 
 const getApi = () => {
   return rpc;
 };
 const setActiveApi = (api: string) => {
-  rpc = new SSC(api);
+  rpc = api;
 };
 
 const getAccountHistoryApi = () => {
   return accountHistoryApi;
 };
 const setActiveAccountHistoryApi = (api: string) => {
-  accountHistoryApi = axios.create({
-    baseURL: api,
-  });
+  accountHistoryApi = api;
 };
 
 const addCustomRpc = async (api: string) => {

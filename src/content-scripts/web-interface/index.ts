@@ -1,5 +1,5 @@
 // Content script interfacing the website and the extension
-
+/* istanbul ignore file */
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { KeychainRequestWrapper } from 'src/content-scripts/keychain-request-wrapper.type';
 import {

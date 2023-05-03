@@ -1,46 +1,63 @@
-import { RequestsHandler } from '@background/requests';
-import {
-  beautifyErrorMessage,
-  createMessage,
-} from '@background/requests/operations/operations.utils';
-import { AccountWitnessProxyOperation, PrivateKey } from '@hiveio/dhive';
+import LedgerModule from '@background/ledger.module';
+import { createMessage } from '@background/requests/operations/operations.utils';
+import { RequestsHandler } from '@background/requests/request-handler';
 import {
   KeychainKeyTypesLC,
   RequestId,
   RequestProxy,
 } from '@interfaces/keychain.interface';
+import { PrivateKeyType } from '@interfaces/keys.interface';
+import { KeychainError } from 'src/keychain-error';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import Logger from 'src/utils/logger.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 
 export const broadcastProxy = async (
   requestHandler: RequestsHandler,
   data: RequestProxy & RequestId,
 ) => {
-  const client = requestHandler.getHiveClient();
-  let result, err;
+  let result, err, err_message;
 
   try {
     let key = requestHandler.data.key;
     if (!key) {
-      [key] = requestHandler.getUserKey(
+      [key] = requestHandler.getUserKeyPair(
         data.username!,
         KeychainKeyTypesLC.active,
       ) as [string, string];
     }
-    result = await client.broadcast.sendOperations(
-      [
-        [
-          'account_witness_proxy',
-          {
-            account: data.username,
-            proxy: data.proxy,
-          },
-        ] as AccountWitnessProxyOperation,
-      ],
-      PrivateKey.from(key!),
-    );
+
+    switch (KeysUtils.getKeyType(key!)) {
+      case PrivateKeyType.LEDGER: {
+        const tx = await ProxyUtils.getSetProxyTransaction(
+          data.proxy,
+          data.username!,
+        );
+        LedgerModule.signTransactionFromLedger({
+          transaction: tx,
+          key: key!,
+        });
+        const signature = await LedgerModule.getSignatureFromLedger();
+        result = await HiveTxUtils.broadcastAndConfirmTransactionWithSignature(
+          tx,
+          signature,
+        );
+        break;
+      }
+      default: {
+        result = await ProxyUtils.setAsProxy(data.proxy, data.username!, key);
+        break;
+      }
+    }
   } catch (e) {
-    err = e;
+    Logger.error(e);
+    err = (e as KeychainError).trace || e;
+    err_message = await chrome.i18n.getMessage(
+      (e as KeychainError).message,
+      (e as KeychainError).messageParams,
+    );
   } finally {
-    const err_message = await beautifyErrorMessage(err);
     const message = createMessage(
       err,
       result,

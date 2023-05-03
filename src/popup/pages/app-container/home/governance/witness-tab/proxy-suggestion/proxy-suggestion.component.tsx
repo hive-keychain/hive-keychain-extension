@@ -11,14 +11,14 @@ import { connect, ConnectedProps } from 'react-redux';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
-import WitnessUtils from 'src/utils/witness.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import './proxy-suggestion.component.scss';
 
 const ProxySuggestion = ({
   activeAccount,
+  isMessageContainerDisplayed,
   setSuccessMessage,
   setErrorMessage,
-  isMessageContainerDisplayed,
   refreshActiveAccount,
 }: PropsType) => {
   const [forceClosed, setForcedClosed] = useState(false);
@@ -40,13 +40,22 @@ const ProxySuggestion = ({
   };
 
   const handleSetProxy = async () => {
-    const success = await WitnessUtils.setAsProxy('keychain', activeAccount);
-    if (success) {
-      setSuccessMessage('popup_success_proxy', ['keychain']);
-      handleClose();
-      refreshActiveAccount();
-    } else {
-      setErrorMessage('popup_error_proxy', ['keychain']);
+    try {
+      if (
+        await ProxyUtils.setAsProxy(
+          'keychain',
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
+      ) {
+        setSuccessMessage('popup_success_proxy', ['keychain']);
+        handleClose();
+        refreshActiveAccount();
+      } else {
+        setErrorMessage('popup_error_proxy', ['keychain']);
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
     }
   };
 

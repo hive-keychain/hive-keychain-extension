@@ -41,16 +41,19 @@ const AddByAuth = ({
       setErrorMessage('popup_html_account_already_existing');
       return;
     }
-
-    const keys = await AccountUtils.addAuthorizedAccount(
-      username.trim(),
-      authorizedAccount.trim(),
-      localAccounts,
-      setErrorMessage,
-    );
-    if (keys && KeysUtils.keysCount(keys) >= 2) {
-      addAccount({ name: username, keys: keys });
-      navigateTo(Screen.SETTINGS_MAIN_PAGE);
+    try {
+      const keys = await AccountUtils.addAuthorizedAccount(
+        username.trim(),
+        authorizedAccount.trim(),
+        localAccounts,
+      );
+      if (keys && KeysUtils.keysCount(keys) >= 2) {
+        addAccount({ name: username, keys: keys });
+        navigateTo(Screen.SETTINGS_MAIN_PAGE);
+      }
+    } catch (err: any) {
+      //TODO add type
+      setErrorMessage(err.message, err.messageParams);
     }
   };
 

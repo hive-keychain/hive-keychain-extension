@@ -1,14 +1,22 @@
-import { RequestsHandler } from '@background/requests';
+import LedgerModule from '@background/ledger.module';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { Operation, Transaction, TransactionConfirmation } from '@hiveio/dhive';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestData,
   KeychainRequestTypes,
   RequestId,
   RequestSignTx,
 } from '@interfaces/keychain.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+
+const i18n = {
+  get: (message: string, options?: string[]) =>
+    mocksImplementation.i18nGetMessageCustom(message, options),
+};
 
 const requestHandler = new RequestsHandler();
 
@@ -47,6 +55,22 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
+  broadcastAndConfirmTransactionWithSignature: (
+    result: HiveTxConfirmationResult,
+  ) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: HiveTxConfirmationResult) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
+  },
 };
 
 const methods = {
@@ -70,7 +94,7 @@ const methods = {
           error,
           datas,
           request_id,
-          `${chrome.i18n.getMessage('bgd_ops_error')} : ${errorMessage}`,
+          errorMessage,
           undefined,
         ),
       );
@@ -98,6 +122,7 @@ const constants = {
   data,
   requestHandler,
   confirmed,
+  i18n,
 };
 
 export default {

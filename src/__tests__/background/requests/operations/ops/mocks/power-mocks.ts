@@ -1,15 +1,16 @@
-import { RequestsHandler } from '@background/requests';
-import {
-  DynamicGlobalProperties,
-  TransactionConfirmation,
-} from '@hiveio/dhive';
+import LedgerModule from '@background/ledger.module';
+import { RequestsHandler } from '@background/requests/request-handler';
+import { TransactionConfirmation } from '@hiveio/dhive';
+import { GlobalProperties } from '@interfaces/global-properties.interface';
+import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestTypes,
   RequestId,
   RequestPowerDown,
   RequestPowerUp,
 } from '@interfaces/keychain.interface';
-import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
+import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -45,18 +46,25 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      sendOperations: (id: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(id)),
-    },
-    database: {
-      getDynamicGlobalProperties: (data: DynamicGlobalProperties) =>
-        (requestHandler.getHiveClient().database.getDynamicGlobalProperties =
-          jest.fn().mockResolvedValue(data)),
-    },
+  getDynamicGlobalProperties: (globalDataProperties: GlobalProperties | {}) =>
+    (DynamicGlobalPropertiesUtils.getDynamicGlobalProperties = jest
+      .fn()
+      .mockResolvedValue(globalDataProperties)),
+  broadcastAndConfirmTransactionWithSignature: (
+    result: HiveTxConfirmationResult,
+  ) =>
+    jest
+      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+      .mockResolvedValue(result),
+  LedgerModule: {
+    getSignatureFromLedger: (signature: string) =>
+      jest
+        .spyOn(LedgerModule, 'getSignatureFromLedger')
+        .mockResolvedValue(signature),
+  },
+  HiveTxUtils: {
+    sendOperation: (result: HiveTxConfirmationResult) =>
+      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
   },
 };
 
@@ -67,8 +75,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.sendOperations(confirmed);
-    mocks.client.database.getDynamicGlobalProperties(dynamic.globalProperties);
   }),
 };
 

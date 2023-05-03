@@ -6,11 +6,11 @@ import { setTitleContainerProperties } from '@popup/actions/title-container.acti
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
 import React, { useEffect } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
-import AccountUtils from 'src/utils/account.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './clear-all-data.component.scss';
 
 const ClearAllData = ({
@@ -28,8 +28,11 @@ const ClearAllData = ({
     });
   }, []);
 
-  const reset = () => {
-    AccountUtils.clearAllData(resetAccount, forgetMk, resetActiveAccount);
+  const reset = async () => {
+    resetAccount();
+    forgetMk();
+    resetActiveAccount();
+    await LocalStorageUtils.clearLocalStorage();
     navigateTo(Screen.SIGN_UP_PAGE, true);
   };
 

@@ -33,6 +33,7 @@ export enum Icons {
   EXPAND_MORE = 'expand_more',
   EXPORT = 'file_download',
   EXTENSION = 'extension',
+  FAVORITE = 'favorite_border',
   FILTER = 'filter_alt',
   HIDDEN = 'visibility_off',
   HISTORY = 'history',
@@ -67,6 +68,7 @@ export enum Icons {
   TIMELAPSE = 'timelapse',
   TOKENS = 'generating_tokens',
   TWITTER = 'twitter.svg',
+  USB = 'usb',
   VISIBLE = 'visibility',
   WARNING = 'warning',
 }

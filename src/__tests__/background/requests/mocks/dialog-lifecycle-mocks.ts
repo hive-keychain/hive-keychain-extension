@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import * as DialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 

@@ -1,4 +1,5 @@
 import * as globalPropertiesActions from 'src/popup/actions/global-properties.actions';
+import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
@@ -12,7 +13,7 @@ afterEach(() => {
 describe('global-properties.actions tests:\n', () => {
   describe('loadGlobalProperties tests:\n', () => {
     test('Must load global props', async () => {
-      HiveUtils.getDynamicGlobalProperties = jest
+      DynamicGlobalPropertiesUtils.getDynamicGlobalProperties = jest
         .fn()
         .mockResolvedValue(dynamic.globalProperties);
 
@@ -34,7 +35,7 @@ describe('global-properties.actions tests:\n', () => {
     test('Must catch the error, call Logger.error', async () => {
       const promiseError = new Error('Custom Message');
       const spyLoggerError = jest.spyOn(Logger, 'error');
-      HiveUtils.getDynamicGlobalProperties = jest
+      DynamicGlobalPropertiesUtils.getDynamicGlobalProperties = jest
         .fn()
         .mockImplementation(() => Promise.reject(promiseError));
       const fakeStore = getFakeStore(initialEmptyStateStore);

@@ -56,14 +56,18 @@ export const addKey =
   async (dispatch, getState) => {
     const { activeAccount, accounts, mk } = getState();
 
-    const newAccounts = await AccountUtils.addKey(
-      activeAccount,
-      accounts,
-      privateKey,
-      keyType,
-      setErrorMessage,
-      mk,
-    );
+    let newAccounts;
+    try {
+      newAccounts = await AccountUtils.addKey(
+        activeAccount,
+        accounts,
+        privateKey,
+        keyType,
+        mk,
+      );
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    }
 
     if (newAccounts && newAccounts?.length > 0) {
       const activeLocalAccount = newAccounts.find(

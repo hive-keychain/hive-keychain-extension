@@ -19,8 +19,8 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import { Screen } from 'src/reference-data/screen.enum';
 import CurrencyUtils from 'src/utils/currency.utils';
+import { DelegationUtils } from 'src/utils/delegation.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import './incoming-outgoing-item.component.scss';
 
 interface IncomingOutgoingProps {
@@ -65,18 +65,24 @@ const IncomingOutgoing = ({
       fields: [{ label: 'popup_html_transfer_to', value: `@${username}` }],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_cancel_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
-          activeAccount,
-          username!,
-          '0.000000 VESTS',
-        );
-        removeFromLoadingList('html_popup_cancel_delegation_operation');
 
-        navigateTo(Screen.HOME_PAGE, true);
-        if (success) {
-          setSuccessMessage('popup_html_cancel_delegation_successful');
-        } else {
-          setErrorMessage('popup_html_cancel_delegation_fail');
+        try {
+          let success = await DelegationUtils.delegateVestingShares(
+            activeAccount.name!,
+            username!,
+            '0.000000 VESTS',
+            activeAccount.keys.active!,
+          );
+          navigateTo(Screen.HOME_PAGE, true);
+          if (success) {
+            setSuccessMessage('popup_html_cancel_delegation_successful');
+          } else {
+            setErrorMessage('popup_html_cancel_delegation_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_cancel_delegation_operation');
         }
       },
     });
@@ -116,19 +122,25 @@ const IncomingOutgoing = ({
       ],
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_delegation_operation');
-        let success = await HiveUtils.delegateVestingShares(
-          activeAccount,
-          username!,
-          FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
-            ' VESTS',
-        );
-        removeFromLoadingList('html_popup_delegation_operation');
 
-        navigateTo(Screen.HOME_PAGE, true);
-        if (success) {
-          setSuccessMessage('popup_html_delegation_successful');
-        } else {
-          setErrorMessage('popup_html_delegation_fail');
+        try {
+          let success = await DelegationUtils.delegateVestingShares(
+            activeAccount.name!,
+            username!,
+            FormatUtils.fromHP(value.toString(), globalProperties!).toFixed(6) +
+              ' VESTS',
+            activeAccount.keys.active!,
+          );
+          navigateTo(Screen.HOME_PAGE, true);
+          if (success) {
+            setSuccessMessage('popup_html_delegation_successful');
+          } else {
+            setErrorMessage('popup_html_delegation_fail');
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+        } finally {
+          removeFromLoadingList('html_popup_delegation_operation');
         }
       },
     });

@@ -29,6 +29,12 @@ const AutomatedTasks = ({
   const [selectedLocalAccount, setSelectedLocalAccount] = useState(
     accounts[0].name,
   );
+  const claimSavingsErrorMessage =
+    AutomatedTasksUtils.canClaimSavingsErrorMessage(activeAccount);
+  const claimAccountErrorMessage =
+    AutomatedTasksUtils.canClaimAccountErrorMessage(activeAccount);
+  const claimRewardsErrorMessage =
+    AutomatedTasksUtils.canClaimRewardsErrorMessage(activeAccount);
 
   useEffect(() => {
     setTitleContainerProperties({
@@ -123,7 +129,8 @@ const AutomatedTasks = ({
       </div>
     );
   };
-
+  const isClaimedAccountDisabled =
+    activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5;
   return (
     <div aria-label="automated-tasks-page" className="automated-tasks-page">
       <div className="intro">
@@ -147,26 +154,34 @@ const AutomatedTasks = ({
         checked={claimRewards}
         onChange={(value) => saveClaims(value, claimAccounts, claimSavings)}
         hint="popup_html_enable_autoclaim_rewards_info"
+        tooltipMessage={claimRewardsErrorMessage}
+        disabled={!!claimRewardsErrorMessage}
       />
-      {activeAccount.rc.max_mana > Config.claims.freeAccount.MIN_RC && (
-        <CheckboxComponent
-          ariaLabel="checkbox-autoclaim-accounts"
-          title="popup_html_enable_autoclaim_accounts"
-          checked={claimAccounts}
-          onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
-          skipHintTranslation
-          hint={chrome.i18n.getMessage(
-            'popup_html_enable_autoclaim_accounts_info',
-            [Config.claims.freeAccount.MIN_RC_PCT + ''],
-          )}
-        />
-      )}
+      <CheckboxComponent
+        ariaLabel="checkbox-autoclaim-accounts"
+        title="popup_html_enable_autoclaim_accounts"
+        checked={claimAccounts && !isClaimedAccountDisabled}
+        onChange={(value) => saveClaims(claimRewards, value, claimSavings)}
+        skipHintTranslation
+        hint={chrome.i18n.getMessage(
+          'popup_html_enable_autoclaim_accounts_info',
+          [Config.claims.freeAccount.MIN_RC_PCT + ''],
+        )}
+        tooltipMessage={
+          claimAccountErrorMessage || isClaimedAccountDisabled
+            ? 'popup_html_insufficient_hp_claim_accounts'
+            : undefined
+        }
+        disabled={!!claimSavingsErrorMessage || isClaimedAccountDisabled}
+      />
       <CheckboxComponent
         ariaLabel="checkbox-autoclaim-savings"
         title="popup_html_enable_autoclaim_savings"
         checked={claimSavings}
         onChange={(value) => saveClaims(claimRewards, claimAccounts, value)}
         hint="popup_html_enable_autoclaim_savings_info"
+        tooltipMessage={claimSavingsErrorMessage}
+        disabled={!!claimSavingsErrorMessage}
       />
     </div>
   );

@@ -25,7 +25,7 @@ describe('account.actions tests:\n', () => {
       const mk = utilsT.userData.username;
       jest
         .spyOn(AccountUtils, 'getAccountsFromLocalStorage')
-        .mockResolvedValueOnce(undefined);
+        .mockResolvedValueOnce([]);
 
       await fakeStore.dispatch<any>(accountActions.retrieveAccounts(mk));
       expect(fakeStore.getState().accounts).toEqual([]);

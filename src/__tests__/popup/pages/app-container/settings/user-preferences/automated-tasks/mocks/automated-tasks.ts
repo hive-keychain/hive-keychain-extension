@@ -19,7 +19,8 @@ import {
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
 
 const i18n = {
-  get: (key: string) => mocksImplementation.i18nGetMessageCustom(key),
+  get: (key: string, options?: string[] | undefined) =>
+    mocksImplementation.i18nGetMessageCustom(key, options),
 };
 
 const constants = {
@@ -40,7 +41,9 @@ const constants = {
   },
   message: {
     intro: i18n.get('popup_html_automated_intro'),
-    autoClaims: i18n.get('popup_html_enable_autoclaim_accounts'),
+    autoclaimInfo: i18n.get('popup_html_enable_autoclaim_accounts_info', [
+      Config.claims.freeAccount.MIN_RC_PCT + '',
+    ]),
   },
 };
 

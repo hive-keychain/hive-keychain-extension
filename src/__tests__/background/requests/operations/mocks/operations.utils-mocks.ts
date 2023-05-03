@@ -6,6 +6,7 @@ import {
   RequestSendToken,
 } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -77,7 +78,7 @@ const methods = {
       const { request_id, ...datas } = data;
       expect(result).toEqual(
         messages.success.answerSucess(
-          confirmed,
+          transactionConfirmationSuccess,
           datas,
           request_id,
           message,

@@ -1,4 +1,5 @@
 import { KeychainRequestData, RequestId } from '@interfaces/keychain.interface';
+import { Key } from '@interfaces/keys.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 
 export const createMessage = (
@@ -6,8 +7,8 @@ export const createMessage = (
   result: any,
   datas: KeychainRequestData & RequestId,
   success_message: string | null,
-  fail_message: string | null,
-  publicKey?: string,
+  fail_message?: string | null,
+  publicKey?: Key,
 ) => {
   const { request_id, ...data } = datas;
   return {

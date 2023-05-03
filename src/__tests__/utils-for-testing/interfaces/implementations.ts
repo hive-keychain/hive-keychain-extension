@@ -4,12 +4,12 @@ import { TokenBalance, TokenMarket } from '@interfaces/tokens.interface';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 
 export interface KeyChainApiGetCustomData {
-  witnessRanking?: { data: any };
-  currenciesPrices?: { data: any };
-  rpc?: { data: { rpc: Rpc } };
-  phishingAccounts?: { data: string[] };
-  extensionVersion?: { data: WhatsNewContent };
-  delegators?: { data: any };
+  witnessRanking?: any;
+  currenciesPrices?: any;
+  rpc?: { rpc: Rpc };
+  phishingAccounts?: string[];
+  extensionVersion?: WhatsNewContent;
+  delegators?: any;
 }
 
 export interface FindSmartContractsHive {

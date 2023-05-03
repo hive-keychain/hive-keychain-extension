@@ -16,7 +16,8 @@ import 'react-tabs/style/react-tabs.scss';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
-import WitnessUtils from 'src/utils/witness.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
+import ProxyUtils from 'src/utils/proxy.utils';
 import './proxy-tab.component.scss';
 
 const ProxyTab = ({
@@ -33,27 +34,61 @@ const ProxyTab = ({
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList('popup_html_setting_proxy');
-    if (await WitnessUtils.setAsProxy(proxyUsername, activeAccount)) {
-      setSuccessMessage('popup_success_proxy', [proxyUsername]);
-      refreshActiveAccount();
-    } else {
-      setErrorMessage('html_popup_set_as_proxy_error');
+    addToLoadingList(
+      'popup_html_setting_proxy',
+      KeysUtils.getKeyType(
+        activeAccount.keys.active!,
+        activeAccount.keys.activePubkey!,
+      ),
+    );
+    try {
+      if (
+        await ProxyUtils.setAsProxy(
+          proxyUsername,
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
+      ) {
+        setSuccessMessage('popup_success_proxy', [proxyUsername]);
+        refreshActiveAccount();
+      } else {
+        setErrorMessage('html_popup_set_as_proxy_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_setting_proxy');
     }
-    removeFromLoadingList('popup_html_setting_proxy');
   };
+
   const removeProxy = async () => {
     if (!activeAccount.keys.active) {
       setErrorMessage('html_popup_proxy_requires_active_key');
     }
-    addToLoadingList('popup_html_clearing_proxy');
-    if (await WitnessUtils.removeProxy(activeAccount)) {
-      refreshActiveAccount();
-      setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
-    } else {
-      setErrorMessage('html_popup_clear_proxy_error');
+    addToLoadingList(
+      'popup_html_clearing_proxy',
+      KeysUtils.getKeyType(
+        activeAccount.keys.active!,
+        activeAccount.keys.activePubkey!,
+      ),
+    );
+    try {
+      if (
+        await ProxyUtils.removeProxy(
+          activeAccount.name!,
+          activeAccount.keys.active!,
+        )
+      ) {
+        refreshActiveAccount();
+        setSuccessMessage('bgd_ops_unproxy', [`@${proxyUsername}`]);
+      } else {
+        setErrorMessage('html_popup_clear_proxy_error');
+      }
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      removeFromLoadingList('popup_html_clearing_proxy');
     }
-    removeFromLoadingList('popup_html_clearing_proxy');
   };
 
   return (
@@ -107,7 +142,9 @@ const ProxyTab = ({
 };
 
 const mapStateToProps = (state: RootState) => {
-  return { activeAccount: state.activeAccount };
+  return {
+    activeAccount: state.activeAccount,
+  };
 };
 
 const connector = connect(mapStateToProps, {

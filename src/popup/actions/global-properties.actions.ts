@@ -2,13 +2,14 @@ import { ActionType } from '@popup/actions/action-type.enum';
 import { ActionPayload, AppThunk } from '@popup/actions/interfaces';
 import { AppStatus } from '@popup/reducers/app-status.reducer';
 import { GlobalProperties } from 'src/interfaces/global-properties.interface';
+import { DynamicGlobalPropertiesUtils } from 'src/utils/dynamic-global-properties.utils';
 import HiveUtils from 'src/utils/hive.utils';
 import Logger from 'src/utils/logger.utils';
 
 export const loadGlobalProperties = (): AppThunk => async (dispatch) => {
   try {
     const [globals, price, rewardFund] = await Promise.all([
-      HiveUtils.getDynamicGlobalProperties(),
+      DynamicGlobalPropertiesUtils.getDynamicGlobalProperties(),
       HiveUtils.getCurrentMedianHistoryPrice(),
       HiveUtils.getRewardFund(),
     ]);

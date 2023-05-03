@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
 import {
   KeychainRequestData,
@@ -7,6 +7,7 @@ import {
   RequestPost,
 } from '@interfaces/keychain.interface';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
+import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -40,18 +41,6 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  client: {
-    broadcast: {
-      comment: (id: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.comment = jest
-          .fn()
-          .mockResolvedValue(id)),
-      sendOperations: (id: TransactionConfirmation) =>
-        (requestHandler.getHiveClient().broadcast.sendOperations = jest
-          .fn()
-          .mockResolvedValue(id)),
-    },
-  },
 };
 
 const methods = {
@@ -61,8 +50,6 @@ const methods = {
   beforeEach: beforeEach(() => {
     mocks.getUILanguage();
     mocks.i18n();
-    mocks.client.broadcast.comment(confirmed);
-    mocks.client.broadcast.sendOperations(confirmed);
   }),
   assertMsgSucess: (
     result: any,
@@ -72,7 +59,7 @@ const methods = {
     const { request_id, ...datas } = data;
     expect(result).toEqual(
       messages.success.answerSucess(
-        confirmed,
+        transactionConfirmationSuccess,
         datas,
         request_id,
         chrome.i18n.getMessage(messageKey),

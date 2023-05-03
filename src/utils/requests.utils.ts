@@ -20,10 +20,6 @@ export const getRequiredWifType = (request: KeychainRequest) => {
     case KeychainRequestTypes.encode:
     case KeychainRequestTypes.signBuffer:
     case KeychainRequestTypes.broadcast:
-    case KeychainRequestTypes.addAccountAuthority:
-    case KeychainRequestTypes.removeAccountAuthority:
-    case KeychainRequestTypes.removeKeyAuthority:
-    case KeychainRequestTypes.addKeyAuthority:
     case KeychainRequestTypes.signTx:
       return request.method.toLowerCase() as KeychainKeyTypesLC;
     case KeychainRequestTypes.post:
@@ -49,6 +45,10 @@ export const getRequiredWifType = (request: KeychainRequest) => {
     case KeychainRequestTypes.updateProposalVote:
     case KeychainRequestTypes.convert:
     case KeychainRequestTypes.recurrentTransfer:
+    case KeychainRequestTypes.addAccountAuthority:
+    case KeychainRequestTypes.removeAccountAuthority:
+    case KeychainRequestTypes.removeKeyAuthority:
+    case KeychainRequestTypes.addKeyAuthority:
     default:
       return KeychainKeyTypesLC.active;
   }

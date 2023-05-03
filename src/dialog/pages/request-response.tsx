@@ -13,7 +13,7 @@ type ResultMessage = {
 const RequestResponse = ({ data }: Props) => {
   if (data.msg.success) {
     setTimeout(() => {
-      window.close();
+      // window.close();
     }, 3000);
   }
   return (
@@ -25,7 +25,9 @@ const RequestResponse = ({ data }: Props) => {
             : `${chrome.i18n.getMessage('dialog_header_error')} !`
         }
       />
-      <p style={{ wordBreak: 'break-word' }}>{data.msg.message}</p>
+      {data.msg.message.split(/<br\s?\/?>/g).map((msg) => (
+        <p style={{ wordBreak: 'break-word' }}>{msg}</p>
+      ))}
 
       <ButtonComponent
         label={'dialog_ok'}

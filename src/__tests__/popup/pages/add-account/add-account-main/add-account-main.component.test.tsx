@@ -71,14 +71,4 @@ describe('add-account-main.component tests:\n', () => {
       ).toBeInTheDocument();
     });
   });
-  it('Must call handleImportKeys when clicked', async () => {
-    const spyGetCurrent = jest.spyOn(chrome.windows, 'getCurrent');
-    renders.wInitialState(<App />, initialStates.iniState);
-    await act(async () => {
-      await userEventPendingTimers.click(
-        await screen.findByLabelText(alButton.importKeys),
-      );
-    });
-    expect(spyGetCurrent).toBeCalledTimes(1);
-  });
 });

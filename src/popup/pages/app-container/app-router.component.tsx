@@ -15,6 +15,7 @@ import { PluginsComponent } from '@popup/pages/app-container/home/plugin/plugins
 import { PowerUpDownComponent } from '@popup/pages/app-container/home/power-up-down/power-up-down.component';
 import { IncomingOutgoingRcPageComponent } from '@popup/pages/app-container/home/rc-delegations/incoming-outgoing-rc-page/incoming-outgoing-rc-page.component';
 import { RcDelegationsComponent } from '@popup/pages/app-container/home/rc-delegations/rc-delegations.component';
+import { PendingSavingsWithdrawalPageComponent } from '@popup/pages/app-container/home/savings/pending-savings-withdrawal/pending-savings-withdrawal-page.component';
 import { SavingsPageComponent } from '@popup/pages/app-container/home/savings/savings.component';
 import { TokenIncomingOutgoingPageComponent } from '@popup/pages/app-container/home/tokens/token-delegations/token-incoming-outgoing-page/token-incoming-outgoing-page.component';
 import { TokensOperationComponent } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
@@ -42,6 +43,7 @@ import { RpcNodesComponent } from '@popup/pages/app-container/settings/advanced-
 import { SettingsMainPageComponent } from '@popup/pages/app-container/settings/settings-main-page/settings-main-page.component';
 import { AuthorizedOperationsComponent } from '@popup/pages/app-container/settings/user-preferences/authorized-operations/authorized-operations.component';
 import { AutomatedTasksComponent } from '@popup/pages/app-container/settings/user-preferences/automated-tasks/automated-tasks.component';
+import { FavoriteAccountsComponent } from '@popup/pages/app-container/settings/user-preferences/favorite-accounts/favorite-accounts.component';
 import { OperationPopupComponent } from '@popup/pages/app-container/settings/user-preferences/operation-popup/operation-popup.component';
 import { UserPreferencesPageComponent } from '@popup/pages/app-container/settings/user-preferences/user-preferences.component';
 import { RootState } from '@popup/store';
@@ -80,6 +82,8 @@ const AppRouter = ({
         return <PendingConersionPageComponent />;
       case Screen.SAVINGS_PAGE:
         return <SavingsPageComponent />;
+      case Screen.PENDING_SAVINGS_WITHDRAWAL_PAGE:
+        return <PendingSavingsWithdrawalPageComponent />;
       case Screen.DELEGATION_PAGE:
         return <DelegationsComponent />;
       case Screen.INCOMING_OUTGOING_PAGE:
@@ -150,6 +154,8 @@ const AppRouter = ({
         return <OperationPopupComponent />;
       case Screen.SETTINGS_AUTOMATED_TASKS:
         return <AutomatedTasksComponent />;
+      case Screen.SETTINGS_FAVORITE_ACCOUNTS:
+        return <FavoriteAccountsComponent />;
       case Screen.SETTINGS_ABOUT:
         return <AboutPageComponent />;
       case Screen.CREATE_ACCOUNT_PAGE_STEP_ONE:

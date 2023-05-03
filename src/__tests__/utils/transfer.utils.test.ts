@@ -1,5 +1,6 @@
 import { ActiveAccount } from '@interfaces/active-account.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { FavoriteUserUtils } from 'src/utils/favorite-user.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import TransferUtils from 'src/utils/transfer.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
@@ -12,7 +13,7 @@ describe('transfer.utils tests:\n', () => {
       chrome.i18n.getMessage = jest.fn().mockReturnValueOnce(messageFromI18n);
       expect(
         await TransferUtils.getExchangeValidationWarning(
-          'bittrex',
+          'deepcrypto8',
           'HIVE',
           true,
           true,
@@ -37,7 +38,7 @@ describe('transfer.utils tests:\n', () => {
         .mockReturnValueOnce(messageFromI18n));
       expect(
         await TransferUtils.getExchangeValidationWarning(
-          'bittrex',
+          'deepcrypto8',
           currencyToCheck,
           false,
         ),
@@ -59,7 +60,7 @@ describe('transfer.utils tests:\n', () => {
         .mockReturnValueOnce(messageFromI18n));
       expect(
         await TransferUtils.getExchangeValidationWarning(
-          'blocktrades',
+          'user.dunamu',
           currencyToCheck,
           false,
         ),
@@ -69,59 +70,6 @@ describe('transfer.utils tests:\n', () => {
       mocki18nGetMessage.mockReset();
       mocki18nGetMessage.mockRestore();
     });
-    // test('If account is bittrex, currency supported and hasMemo is true, and bittrex API returns an empty object must call i18n and return a message', async () => {
-    //   const i18nMessageName = 'popup_warning_exchange_wallet';
-    //   const currencyToCheck = 'HBD';
-    //   const messageFromI18n =
-    //     'WARNING: Deposits/Withdrawals are disabled on this exchange.';
-    //   const mocki18nGetMessage = (chrome.i18n.getMessage = jest
-    //     .fn()
-    //     .mockReturnValueOnce(messageFromI18n));
-    //   const mockGetBittrexCurrency = (CurrencyPricesUtils.getBittrexCurrency =
-    //     jest.fn().mockResolvedValueOnce({}));
-    //   expect(
-    //     await TransferUtils.getExchangeValidationWarning(
-    //       'bittrex',
-    //       currencyToCheck,
-    //       true,
-    //     ),
-    //   ).toBe(messageFromI18n);
-    //   expect(mockGetBittrexCurrency).toBeCalledTimes(1);
-    //   expect(mockGetBittrexCurrency).toBeCalledWith(currencyToCheck);
-    //   expect(mocki18nGetMessage).toBeCalledTimes(1);
-    //   expect(mocki18nGetMessage).toBeCalledWith(i18nMessageName);
-    //   mocki18nGetMessage.mockReset();
-    //   mocki18nGetMessage.mockRestore();
-    //   mockGetBittrexCurrency.mockReset();
-    //   mockGetBittrexCurrency.mockRestore();
-    // });
-    // test('If account is bittrex, currency supported and hasMemo is true, and bittrex API returns an expected object must return null', async () => {
-    //   const fakeCurrencyResponseObject = {
-    //     Currency: 'HBD',
-    //     CurrencyLong: 'HiveDollars',
-    //     MinConfirmation: 20,
-    //     TxFee: 0.01,
-    //     IsActive: true,
-    //     IsRestricted: false,
-    //     CoinType: 'STEEM',
-    //     BaseAddress: 'bittrex',
-    //     Notice: '',
-    //   };
-    //   const currencyToCheck = fakeCurrencyResponseObject.Currency;
-    //   const mockGetBittrexCurrency = (CurrencyPricesUtils.getBittrexCurrency =
-    //     jest.fn().mockResolvedValueOnce(fakeCurrencyResponseObject));
-    //   expect(
-    //     await TransferUtils.getExchangeValidationWarning(
-    //       'bittrex',
-    //       currencyToCheck,
-    //       true,
-    //     ),
-    //   ).toBe(null);
-    //   expect(mockGetBittrexCurrency).toBeCalledTimes(1);
-    //   expect(mockGetBittrexCurrency).toBeCalledWith(currencyToCheck);
-    //   mockGetBittrexCurrency.mockReset();
-    //   mockGetBittrexCurrency.mockRestore();
-    // });
   });
 
   describe('saveFavoriteUser tests:\n', () => {
@@ -138,7 +86,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -162,7 +110,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -190,7 +138,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);
@@ -216,7 +164,7 @@ describe('transfer.utils tests:\n', () => {
         'saveValueInLocalStorage',
       );
       expect(
-        await TransferUtils.saveFavoriteUser(username, activeAccount),
+        await FavoriteUserUtils.saveFavoriteUser(username, activeAccount),
       ).toBe(undefined);
       expect(spyGetValueFromLocalStorage).toBeCalledTimes(1);
       expect(spyGetValueFromLocalStorage).toBeCalledWith(enumCallingGetvalue);

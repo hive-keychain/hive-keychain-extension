@@ -1,4 +1,4 @@
-import { RequestsHandler } from '@background/requests';
+import { RequestsHandler } from '@background/requests/request-handler';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import * as dialogLifeCycle from 'src/background/requests/dialog-lifecycle';
 import keychainRequest from 'src/__tests__/utils-for-testing/data/keychain-request';
