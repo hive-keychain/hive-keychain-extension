@@ -4,7 +4,6 @@ import {
 } from '@popup/actions/message.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
 import { Icons } from '@popup/icons.enum';
-import { PluginMessage } from '@popup/pages/app-container/home/plugin/plugin-message.enum';
 import {
   CheckboxSetting,
   DropdownSetting,
@@ -16,9 +15,10 @@ import {
 import { Extension } from '@popup/pages/app-container/home/plugin/plugins.whitelist';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { RootState } from '@popup/store';
+import { PluginMessage } from 'hive-keychain-commons/lib/plugins';
 import React, { useEffect, useState } from 'react';
 import Select from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
 import ButtonComponent from 'src/common-ui/button/button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';

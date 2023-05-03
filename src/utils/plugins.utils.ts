@@ -1,9 +1,9 @@
-import { PluginMessage } from '@popup/pages/app-container/home/plugin/plugin-message.enum';
 import { Plugin } from '@popup/pages/app-container/home/plugin/plugin.interface';
 import {
   Extension,
   PluginsWhitelist,
 } from '@popup/pages/app-container/home/plugin/plugins.whitelist';
+import { PluginMessage } from 'hive-keychain-commons/lib/plugins';
 
 const getPluginInfo = async (plugin: Extension): Promise<Plugin> => {
   return new Promise(async (fulfill) => {

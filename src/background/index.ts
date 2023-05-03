@@ -15,6 +15,7 @@ import {
 import { BackgroundCommand } from '@reference-data/background-message-key.enum';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
+import { sendIncompleteDataResponse } from 'src/content-scripts/web-interface/response.logic';
 import { KeychainRequestsUtils } from 'src/utils/keychain-requests.utils';
 import LocalStorageUtils from 'src/utils/localStorage.utils';
 import Logger from 'src/utils/logger.utils';
@@ -128,19 +129,16 @@ const processRequest = async (
 const externalMessagesHandler = (
   externalMessage: any,
   sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void,
 ) => {
   if (PluginsUtils.isPluginWhitelisted(sender.id!)) {
-    console.log('This extension is whitelisted');
     const { error, value } = KeychainRequestsUtils.validateRequest(
       externalMessage as KeychainRequest,
     );
-    console.log(error, value);
     if (!error) {
       processRequest(
         {
           command: 'sendRequest',
-          domain: 'localhost',
+          domain: sender.id,
           request: value,
           request_id: value.request_id,
         } as KeychainRequestWrapper,
@@ -151,11 +149,16 @@ const externalMessagesHandler = (
       //   cancelPreviousRequest(prevReq);
       // }
     } else {
-      // sendIncompleteDataResponse(value!, error);
+      sendIncompleteDataResponse(value!, error, sender.id);
       // req = prevReq;
     }
   } else {
-    console.log('This extension is not whitelisted... aborting...');
+    //TODO : no incomplete type, should be different error
+    sendIncompleteDataResponse(
+      externalMessage!,
+      'Your extension has not been whitelisted! Please contact us on Discord!',
+      sender.id,
+    );
   }
 };
 

@@ -37,6 +37,7 @@ import {
   KeychainRequest,
   KeychainRequestTypes,
 } from '@interfaces/keychain.interface';
+import { sendExternalResponse } from 'src/content-scripts/web-interface/response.logic';
 import Logger from 'src/utils/logger.utils';
 import { addToWhitelist } from 'src/utils/preferences.utils';
 
@@ -153,7 +154,7 @@ export const performOperation = async (
     } else chrome.runtime.sendMessage(message);
     requestHandler.reset(false);
     if (!tab) {
-      console.log('here need to send response to plugin');
+      sendExternalResponse(message?.msg, domain);
     }
   }
 };

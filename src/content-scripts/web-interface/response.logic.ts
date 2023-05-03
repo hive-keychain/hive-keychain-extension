@@ -1,3 +1,4 @@
+import { PluginMessage } from 'hive-keychain-commons/lib/plugins';
 import Joi from 'joi';
 import {
   KeychainRequest,
@@ -28,6 +29,7 @@ export const sendRequestToBackground = (req: KeychainRequest) => {
 export const sendIncompleteDataResponse = (
   value: KeychainRequest,
   error: string | Joi.ValidationError,
+  senderId?: string,
 ) => {
   let message = typeof error === 'string' ? error : error.stack!;
   var response = {
@@ -38,7 +40,11 @@ export const sendIncompleteDataResponse = (
     data: value,
     request_id: value.request_id,
   };
-  sendResponse(response);
+  if (!!senderId) {
+    sendExternalResponse(response, senderId);
+  } else {
+    sendResponse(response);
+  }
 };
 /* istanbul ignore next */
 export const sendResponse = (response: RequestResponse) => {
@@ -53,4 +59,13 @@ export const sendResponse = (response: RequestResponse) => {
       window.location.origin,
     );
   }
+};
+
+/* istanbul ignore next */
+export const sendExternalResponse = (response: any, senderId: string) => {
+  const resp = {
+    command: PluginMessage.HIVE_KEYCHAIN_RESPONSE,
+    response,
+  };
+  chrome.runtime.sendMessage(senderId, resp);
 };
