@@ -43,7 +43,7 @@ const ProposalVotingSection = ({
         FormatUtils.toHP(
           activeAccount.account.vesting_shares.toString(),
           globalProperties.globals,
-        ) < 500;
+        ) < 100;
       sethasVoted(hasVoted);
     }
   };
