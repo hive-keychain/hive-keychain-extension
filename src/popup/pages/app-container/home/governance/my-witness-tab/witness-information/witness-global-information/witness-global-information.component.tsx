@@ -1,4 +1,3 @@
-import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
@@ -9,7 +8,6 @@ import 'react-tabs/style/react-tabs.scss';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import CurrencyUtils from 'src/utils/currency.utils';
 import FormatUtils from 'src/utils/format.utils';
-import HiveUtils from 'src/utils/hive.utils';
 import './witness-global-information.component.scss';
 
 interface WitnessGlobalInformationProps {
@@ -44,27 +42,6 @@ const WitnessGlobalInformation = ({
     window.open(`https://hiveblocks.com/b/${block}`);
   };
 
-  const getUSDFromVests = (
-    vestAmount: Number,
-    decimals: number = 3,
-    globalProperties: GlobalProperties,
-  ) =>
-    (
-      FormatUtils.toHP(vestAmount.toString(), globalProperties.globals!) *
-      currencyPrices.hive.usd!
-    ).toFixed(decimals);
-
-  const getVPInUSD = () => {
-    const manaValue = HiveUtils.getVotingDollarsPerAccount(
-      100,
-      globalProperties,
-      activeAccount.account,
-      true,
-    ) as string;
-    const votingHPInUSD = parseFloat(manaValue) / currencyPrices.hive.usd!;
-    return FormatUtils.withCommas(votingHPInUSD.toString(), 3);
-  };
-
   return (
     <div className="witness-global-information">
       <div className="row-container">
@@ -88,7 +65,12 @@ const WitnessGlobalInformation = ({
           )}
         </div>
         <div>
-          {getVPInUSD()} {currencyLabels.hp}
+          {FormatUtils.getVPInUSD(
+            globalProperties,
+            activeAccount,
+            currencyPrices,
+          )}{' '}
+          {currencyLabels.hp}
         </div>
       </div>
       <div className="row-container">
@@ -182,19 +164,21 @@ const WitnessGlobalInformation = ({
           <div className="reward-column-title">$USD</div>
           <div>
             {currencyPrices && currencyPrices.hive
-              ? getUSDFromVests(
-                  witnessInfo.lastWeekValue.toString(),
+              ? FormatUtils.getUSDFromVests(
+                  witnessInfo.lastWeekValue,
                   3,
                   globalProperties,
+                  currencyPrices,
                 )
               : '...'}
           </div>
           <div>
             {currencyPrices && currencyPrices.hive
-              ? getUSDFromVests(
-                  witnessInfo.lastMonthValue.toString(),
+              ? FormatUtils.getUSDFromVests(
+                  witnessInfo.lastMonthValue,
                   3,
                   globalProperties,
+                  currencyPrices,
                 )
               : '...'}
           </div>
