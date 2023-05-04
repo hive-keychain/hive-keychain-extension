@@ -166,7 +166,7 @@ const WitnessGlobalInformation = ({
             {currencyPrices && currencyPrices.hive
               ? FormatUtils.getUSDFromVests(
                   witnessInfo.lastWeekValue,
-                  3,
+                  2,
                   globalProperties,
                   currencyPrices,
                 )
@@ -176,7 +176,7 @@ const WitnessGlobalInformation = ({
             {currencyPrices && currencyPrices.hive
               ? FormatUtils.getUSDFromVests(
                   witnessInfo.lastMonthValue,
-                  3,
+                  2,
                   globalProperties,
                   currencyPrices,
                 )
