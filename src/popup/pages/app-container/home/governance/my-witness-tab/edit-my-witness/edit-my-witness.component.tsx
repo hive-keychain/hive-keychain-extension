@@ -74,7 +74,7 @@ const EditMyWitness = ({
     formParams['key'] = formParams['new_signing_key']!;
     try {
       addToLoadingList('html_popup_update_witness_operation');
-      const success = await WitnessUtils.sendWitnessAccountUpdateOperation(
+      const success = await WitnessUtils.updateWitnessParameters(
         activeAccount.name!,
         activeAccount.keys.active!,
         formParams,

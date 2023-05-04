@@ -2,6 +2,7 @@ import { RootState } from '@popup/store';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
+import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
 import './witness-information-parameters.component.scss';
 
@@ -12,11 +13,8 @@ interface WitnessParametersInformationProps {
 const WitnessInformationParameters = ({
   witnessInfo,
 }: PropsFromRedux & WitnessParametersInformationProps) => {
-  //TODO to remove
-  // witnessInfo['signing_key'] = 'STM1111111111111111111111111111111114T1Anm';
-  //
   const isWitnessDisabled =
-    witnessInfo.signing_key === 'STM1111111111111111111111111111111114T1Anm'
+    witnessInfo.signing_key === Config.myWitness.disabled_signing_key
       ? true
       : false;
 

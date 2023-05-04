@@ -22,6 +22,7 @@ export interface ButtonProps {
   fixToBottom?: boolean;
   ariaLabel?: string;
   additionalClass?: string;
+  disableButton?: boolean;
 }
 
 const ButtonComponent = (props: ButtonProps) => {
@@ -32,8 +33,9 @@ const ButtonComponent = (props: ButtonProps) => {
         props.type ? props.type : ButtonType.DEFAULT
       } ${props.fixToBottom ? 'fix-to-bottom' : ''} ${
         props.additionalClass ?? ''
-      }`}
-      onClick={props.onClick}>
+      } ${props.disableButton ? 'disabled' : ''}`}
+      onClick={props.onClick}
+      disabled={props.disableButton}>
       <div className="button-label">
         {props.skipLabelTranslation
           ? props.label

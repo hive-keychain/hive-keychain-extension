@@ -98,7 +98,7 @@ const getWitnessAccountUpdateOperation = (
   ] as WitnessUpdateOperation;
 };
 
-const sendWitnessAccountUpdateOperation = async (
+const updateWitnessParameters = async (
   witnessAccountName: string,
   activeKey: Key,
   witnessUpdateProps: WitnessProps,
@@ -120,7 +120,7 @@ const WitnessUtils = {
   sendWitnessOperation,
   updateWitnessVote,
   getUpdateWitnessTransaction,
-  sendWitnessAccountUpdateOperation,
+  updateWitnessParameters,
 };
 
 export default WitnessUtils;

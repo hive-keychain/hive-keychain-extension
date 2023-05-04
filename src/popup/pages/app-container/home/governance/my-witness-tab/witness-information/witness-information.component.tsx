@@ -9,10 +9,7 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import {
-  navigateTo,
-  navigateToWithParams,
-} from '@popup/actions/navigation.actions';
+import { navigateToWithParams } from '@popup/actions/navigation.actions';
 import { WitnessGlobalInformationComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
 import { WitnessInformationParametersComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
 import { RootState } from '@popup/store';
@@ -25,6 +22,7 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
+import Config from 'src/config';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './witness-information.component.scss';
@@ -35,20 +33,26 @@ interface WitnessInformationProps {
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+enum WitnessInfoScreen {
+  INFO = 'INFO',
+  PARAMS = 'PARAMS',
+}
+
 const WitnessInformation = ({
   activeAccount,
   witnessInfo,
   ranking,
   setEditMode,
   navigateToWithParams,
-  navigateTo,
   addToLoadingList,
   setErrorMessage,
   setSuccessMessage,
   removeFromLoadingList,
   refreshActiveAccount,
 }: PropsFromRedux & WitnessInformationProps) => {
-  const [isInfoParamSelected, setIsInfoParamSelected] = useState(false);
+  const [selectedScreen, setSelectedScreen] = useState<WitnessInfoScreen>(
+    WitnessInfoScreen.INFO,
+  );
   const [witnessRanking, setWitnessRanking] = useState<Witness>();
 
   useEffect(() => {
@@ -90,11 +94,11 @@ const WitnessInformation = ({
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_update_witness_operation');
         try {
-          const success = await WitnessUtils.sendWitnessAccountUpdateOperation(
+          const success = await WitnessUtils.updateWitnessParameters(
             activeAccount.name!,
             activeAccount.keys.active!,
             {
-              new_signing_key: 'STM1111111111111111111111111111111114T1Anm',
+              new_signing_key: Config.myWitness.disabled_signing_key,
             } as WitnessProps,
           );
           addToLoadingList('html_popup_confirm_transaction_operation');
@@ -103,7 +107,7 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           refreshActiveAccount();
           if (success) {
-            navigateTo(Screen.HOME_PAGE, true);
+            setSelectedScreen(WitnessInfoScreen.INFO);
             setSuccessMessage('popup_success_witness_account_update');
           } else {
             setErrorMessage('popup_error_witness_account_update', [
@@ -122,16 +126,20 @@ const WitnessInformation = ({
     });
   };
 
+  const changeSelectedScreen = (selectedValue: WitnessInfoScreen) => {
+    setSelectedScreen(selectedValue);
+  };
+
   return (
     <div className="witness-information">
       <div className="top-panel">
         <SwitchComponent
-          onChange={(value) => setIsInfoParamSelected(value)}
-          leftValueLabel="html_popup_witness_information_info_label"
-          leftValue={false}
-          rightValueLabel="html_popup_witness_information_params_label"
-          rightValue={true}
-          selectedValue={isInfoParamSelected}
+          onChange={changeSelectedScreen}
+          selectedValue={selectedScreen}
+          leftValue={WitnessInfoScreen.INFO}
+          rightValue={WitnessInfoScreen.PARAMS}
+          leftValueLabel={'html_popup_witness_information_info_label'}
+          rightValueLabel={'html_popup_witness_information_params_label'}
         />
       </div>
       <div className="witness-profile-container">
@@ -163,7 +171,13 @@ const WitnessInformation = ({
           )}
         </div>
       </div>
-      {isInfoParamSelected ? (
+      {selectedScreen === WitnessInfoScreen.INFO && witnessRanking && (
+        <WitnessGlobalInformationComponent
+          witnessRanking={witnessRanking!}
+          witnessInfo={witnessInfo}
+        />
+      )}
+      {selectedScreen === WitnessInfoScreen.PARAMS && (
         <>
           <WitnessInformationParametersComponent witnessInfo={witnessInfo} />
           <div className="bottom-panel">
@@ -172,9 +186,13 @@ const WitnessInformation = ({
                 label={'html_popup_button_edit_label'}
                 onClick={() => gotoNextPage()}
                 additionalClass="padding-top"
+                disableButton={
+                  witnessInfo.signing_key ===
+                  Config.myWitness.disabled_signing_key
+                }
               />
               {witnessInfo.signing_key !==
-                'STM1111111111111111111111111111111114T1Anm' && (
+                Config.myWitness.disabled_signing_key && (
                 <ButtonComponent
                   label="popup_html_disable_witness"
                   type={ButtonType.IMPORTANT}
@@ -184,13 +202,6 @@ const WitnessInformation = ({
             </div>
           </div>
         </>
-      ) : (
-        witnessRanking && (
-          <WitnessGlobalInformationComponent
-            witnessRanking={witnessRanking!}
-            witnessInfo={witnessInfo}
-          />
-        )
       )}
     </div>
   );
@@ -204,7 +215,6 @@ const mapStateToProps = (state: RootState) => {
 
 const connector = connect(mapStateToProps, {
   navigateToWithParams,
-  navigateTo,
   addToLoadingList,
   setErrorMessage,
   setSuccessMessage,
