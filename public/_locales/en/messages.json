@@ -677,7 +677,7 @@
     "description": "If entered password is public key"
   },
   "popup_html_public_key_needed": {
-    "message": "Please enter a public.",
+    "message": "Please enter a public key",
     "description": "If entered is private key"
   },
   "popup_accounts_already_registered": {
@@ -821,11 +821,11 @@
     "description": "on witness page "
   },
   "popup_success_unvote_wit": {
-    "message": "Succesfully updated witness account @$1.",
+    "message": "Successfully updated witness account @$1.",
     "description": "on witness when updating a witness"
   },
   "popup_success_witness_account_update": {
-    "message": "Succesfully updated witness account.",
+    "message": "Successfully updated witness account.",
     "description": "on my witness on success updating"
   },
   "popup_error_wit": {
@@ -1915,7 +1915,7 @@
     "description": "When updating witness account"
   },
   "html_popup_witness_information_info_label": {
-    "message": "info",
+    "message": "Info",
     "description": "When displaying my witness account"
   },
   "html_popup_witness_information_votes_label": {
@@ -1967,7 +1967,7 @@
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_information_params_label": {
-    "message": "params",
+    "message": "Params",
     "description": "When displaying my witness account"
   },
   "html_popup_confirm_transaction_operation": {
