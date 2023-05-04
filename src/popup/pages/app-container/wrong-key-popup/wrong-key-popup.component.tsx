@@ -1,15 +1,14 @@
-import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import React, { useEffect, useState } from 'react';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
-import ButtonComponent from 'src/common-ui/button/button.component';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
-//TODO bellow change classes names
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import { Screen } from '@reference-data/screen.enum';
+import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import ButtonComponent from 'src/common-ui/button/button.component';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 import './wrong-key-popup.component.scss';
 
 export interface WrongKeysOnUser {

@@ -79,7 +79,6 @@ const AccountKeysListItem = ({
       ]),
       title: 'html_popup_delete_key',
       afterConfirmAction: async () => {
-        removeKey(keyType);
         let actualNoKeyCheck = await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
         );
@@ -90,6 +89,7 @@ const AccountKeysListItem = ({
           LocalStorageKeyEnum.NO_KEY_CHECK,
           actualNoKeyCheck,
         );
+        removeKey(keyType);
         goBack();
       },
     });

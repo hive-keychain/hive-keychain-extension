@@ -52,16 +52,11 @@ const Home = ({
 
   useEffect(() => {
     resetTitleContainerProperties();
-
     if (!ActiveAccountUtils.isEmpty(activeAccount)) {
       refreshActiveAccount();
     }
     initWhatsNew();
     initSurvey();
-    //to clear //TODO remove
-    //testing
-    // resetNoKeyCheck();
-    //end testing
     initCheckKeysOnAccounts(accounts);
   }, []);
 
@@ -116,17 +111,6 @@ const Home = ({
     );
     let foundWrongKey: WrongKeysOnUser;
     try {
-      //TODO to properly test
-      // //change key here
-      // const indexToUpdate = extendedAccountsList.findIndex(
-      //   (extAccount) => extAccount.name === 'keychain.tests',
-      // );
-      // extendedAccountsList[indexToUpdate].active.key_auths[0][0] =
-      //   '1989879823u1i';
-      // extendedAccountsList[indexToUpdate].posting.key_auths[0][0] =
-      //   '1989879823u1i';
-      // //end change
-
       let no_key_check: WrongKeysOnUser =
         await LocalStorageUtils.getValueFromLocalStorage(
           LocalStorageKeyEnum.NO_KEY_CHECK,
@@ -161,14 +145,6 @@ const Home = ({
       Logger.error(error);
     }
   };
-
-  //just for testing //TODO to remove
-  const resetNoKeyCheck = () =>
-    LocalStorageUtils.saveValueInLocalStorage(
-      LocalStorageKeyEnum.NO_KEY_CHECK,
-      null,
-    );
-  //end just for testing
 
   const renderPopup = (
     displayWhatsNew: boolean,

@@ -29,10 +29,6 @@ const ManageAccount = ({
       const selectedLocalAccount = localAccounts.find(
         (localAccount) => localAccount.name === activeAccount.name!,
       );
-      //just for testing bellow //TODO remove when finished
-      // activeAccount.account.posting.key_auths[0][0] = '1989879823u1i';
-      // activeAccount.account.active.key_auths[0][0] = '1989879823u1i';
-      //end remove
       let tempFoundWrongKeys: WrongKeysOnUser;
       tempFoundWrongKeys = { [activeAccount.name!]: [] };
       for (const [key, value] of Object.entries(selectedLocalAccount!.keys)) {
@@ -46,6 +42,8 @@ const ManageAccount = ({
       }
       if (tempFoundWrongKeys[activeAccount.name!].length > 0) {
         setWrongKeysFound(tempFoundWrongKeys);
+      } else {
+        setWrongKeysFound(undefined);
       }
     }
   }, [activeAccount]);
