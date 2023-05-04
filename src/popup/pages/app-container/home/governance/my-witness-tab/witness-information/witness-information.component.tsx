@@ -22,9 +22,9 @@ import ButtonComponent, {
   ButtonType,
 } from 'src/common-ui/button/button.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
-import Config from 'src/config';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
-import WitnessUtils from 'src/utils/witness.utils';
+import FormatUtils from 'src/utils/format.utils';
+import WitnessUtils, { WITNESS_DISABLED_KEY } from 'src/utils/witness.utils';
 import './witness-information.component.scss';
 
 interface WitnessInformationProps {
@@ -67,20 +67,6 @@ const WitnessInformation = ({
     setEditMode(true);
   };
 
-  const getOrdinalLabelTranslation = (active_rank: string) => {
-    const result = parseFloat(active_rank) % 10;
-    switch (result) {
-      case 1:
-        return 'html_popup_witness_ranking_ordinal_st_label';
-      case 2:
-        return 'html_popup_witness_ranking_ordinal_nd_label';
-      case 3:
-        return 'html_popup_witness_ranking_ordinal_rd_label';
-      default:
-        return 'html_popup_witness_ranking_ordinal_th_label';
-    }
-  };
-
   const onDisableWitness = () => {
     if (!activeAccount.keys.active)
       return setErrorMessage('popup_missing_key', [KeychainKeyTypes.active]);
@@ -98,7 +84,7 @@ const WitnessInformation = ({
             activeAccount.name!,
             activeAccount.keys.active!,
             {
-              new_signing_key: Config.myWitness.disabled_signing_key,
+              new_signing_key: WITNESS_DISABLED_KEY,
             } as WitnessProps,
           );
           addToLoadingList('html_popup_confirm_transaction_operation');
@@ -156,7 +142,9 @@ const WitnessInformation = ({
             <div className="witness-ranking">
               {witnessRanking?.active_rank}
               {chrome.i18n.getMessage(
-                getOrdinalLabelTranslation(witnessRanking?.active_rank!),
+                FormatUtils.getOrdinalLabelTranslation(
+                  witnessRanking?.active_rank!,
+                ),
               )}{' '}
               {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '}
               {(witnessRanking?.active_rank as any).toString() !==
@@ -186,13 +174,8 @@ const WitnessInformation = ({
                 label={'html_popup_button_edit_label'}
                 onClick={() => gotoNextPage()}
                 additionalClass="padding-top"
-                disableButton={
-                  witnessInfo.signing_key ===
-                  Config.myWitness.disabled_signing_key
-                }
               />
-              {witnessInfo.signing_key !==
-                Config.myWitness.disabled_signing_key && (
+              {witnessInfo.signing_key !== WITNESS_DISABLED_KEY && (
                 <ButtonComponent
                   label="popup_html_disable_witness"
                   type={ButtonType.IMPORTANT}

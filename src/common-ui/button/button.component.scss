@@ -84,8 +84,4 @@
     border: none;
     color: white;
   }
-
-  &.disabled {
-    @include fake-input;
-  }
 }

@@ -7,6 +7,10 @@ import { Key } from '@interfaces/keys.interface';
 import { Witness } from '@interfaces/witness.interface';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+
+export const WITNESS_DISABLED_KEY =
+  'STM1111111111111111111111111111111114T1Anm';
+
 /* istanbul ignore next */
 const voteWitness = async (witness: Witness, voter: string, activeKey: Key) => {
   const witnessOperation = WitnessUtils.getWitnessVoteOperation(

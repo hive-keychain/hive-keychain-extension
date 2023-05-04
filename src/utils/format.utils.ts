@@ -141,6 +141,20 @@ const getVPInUSD = (
   return FormatUtils.withCommas(votingHPInUSD.toString(), 3);
 };
 
+const getOrdinalLabelTranslation = (active_rank: string) => {
+  const result = parseFloat(active_rank) % 10;
+  switch (result) {
+    case 1:
+      return 'html_popup_witness_ranking_ordinal_st_label';
+    case 2:
+      return 'html_popup_witness_ranking_ordinal_nd_label';
+    case 3:
+      return 'html_popup_witness_ranking_ordinal_rd_label';
+    default:
+      return 'html_popup_witness_ranking_ordinal_th_label';
+  }
+};
+
 const FormatUtils = {
   withCommas,
   toHP,
@@ -156,6 +170,7 @@ const FormatUtils = {
   trimUselessZero,
   getUSDFromVests,
   getVPInUSD,
+  getOrdinalLabelTranslation,
 };
 
 export default FormatUtils;

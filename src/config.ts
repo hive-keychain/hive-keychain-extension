@@ -35,9 +35,6 @@ const Config = {
   transactions: {
     expirationTimeInMinutes: 10,
   },
-  myWitness: {
-    disabled_signing_key: 'STM1111111111111111111111111111111114T1Anm',
-  },
 };
 
 export default Config;
