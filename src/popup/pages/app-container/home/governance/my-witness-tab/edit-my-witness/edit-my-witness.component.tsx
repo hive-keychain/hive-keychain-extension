@@ -12,7 +12,6 @@ import {
 } from '@popup/actions/message.actions';
 import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
-import { Screen } from '@reference-data/screen.enum';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -86,7 +85,7 @@ const EditMyWitness = ({
       removeFromLoadingList('html_popup_confirm_transaction_operation');
       refreshActiveAccount();
       if (success) {
-        navigateTo(Screen.HOME_PAGE, true);
+        goBackPage();
         setSuccessMessage('popup_success_witness_account_update');
       } else {
         setErrorMessage('popup_error_witness_account_update', [
