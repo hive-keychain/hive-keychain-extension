@@ -10,10 +10,10 @@ import {
 import { Key } from '@interfaces/keys.interface';
 import { Rpc } from '@interfaces/rpc.interface';
 import {
-  call,
+  Transaction as HiveTransaction,
   config as HiveTxConfig,
   PrivateKey,
-  Transaction as HiveTransaction,
+  call,
 } from 'hive-tx';
 import Config from 'src/config';
 import { KeychainError } from 'src/keychain-error';

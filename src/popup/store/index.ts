@@ -37,9 +37,10 @@ store.subscribe(() => {
     ) {
       AnalyticsUtils.sendAddFirstAccountEvent();
     }
-
     previousAccounts = accounts;
-    AccountUtils.saveAccounts(accounts, mk);
+    if (accounts.length !== 0) {
+      AccountUtils.saveAccounts(accounts, mk);
+    }
   }
   if (previousRpc && previousRpc.uri !== activeRpc?.uri && activeRpc) {
     previousRpc = activeRpc;
