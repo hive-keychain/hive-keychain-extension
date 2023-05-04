@@ -7,17 +7,21 @@ interface TooltipProps {
   delayShow?: number;
   children: any;
   message?: string;
+  messageParams?: any;
   skipTranslation?: boolean;
   ariaLabel?: string;
+  additionalClassName?: string;
 }
 
 export const CustomTooltip = ({
   position,
   delayShow,
   message,
+  messageParams,
   skipTranslation,
   children,
   ariaLabel,
+  additionalClassName,
 }: TooltipProps) => {
   const [isOpen, setOpen] = useState(false);
   let timeout: NodeJS.Timeout;
@@ -39,7 +43,7 @@ export const CustomTooltip = ({
   return (
     <div
       aria-label={ariaLabel}
-      className="tooltip-container"
+      className={`tooltip-container ${additionalClassName}`}
       onMouseEnter={show}
       onMouseLeave={hide}>
       <div className="tooltip-anchor">{children}</div>
@@ -48,7 +52,9 @@ export const CustomTooltip = ({
           aria-label="tooltip-content"
           className={`tooltip ${position ? position : 'top'}`}
           dangerouslySetInnerHTML={{
-            __html: skipTranslation ? message : chrome.i18n.getMessage(message),
+            __html: skipTranslation
+              ? message
+              : chrome.i18n.getMessage(message, messageParams),
           }}></div>
       )}
     </div>
