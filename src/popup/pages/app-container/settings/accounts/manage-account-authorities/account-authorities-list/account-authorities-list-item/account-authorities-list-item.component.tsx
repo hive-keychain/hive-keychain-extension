@@ -9,7 +9,7 @@ import {
   setSuccessMessage,
 } from '@popup/actions/message.actions';
 import {
-  navigateTo,
+  goBack,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
 import { Icons } from '@popup/icons.enum';
@@ -36,7 +36,7 @@ const AccountAuthoritiesListItem = ({
   setSuccessMessage,
   setErrorMessage,
   removeFromLoadingList,
-  navigateTo,
+  goBack,
 }: PropsType) => {
   const goTo = (accountName: string) => {
     window.open(`https://hive.blog/@${accountName}`);
@@ -73,7 +73,7 @@ const AccountAuthoritiesListItem = ({
             updatedActiveAccountAuth.keys.active!,
           );
           if (success) {
-            navigateTo(Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES, true);
+            goBack();
             setSuccessMessage('popup_html_remove_account_authority_successful');
           } else {
             setErrorMessage('popup_html_remove_account_authority_fail');
@@ -150,7 +150,7 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   setErrorMessage,
   removeFromLoadingList,
-  navigateTo,
+  goBack,
 });
 type PropsType = ConnectedProps<typeof connector> & AuthoritiesListItemProps;
 
