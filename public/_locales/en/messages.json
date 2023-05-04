@@ -1813,6 +1813,10 @@
     "message": "Successfully voted @stoodkev as a witness. Thanks for your support!",
     "description": "Success message when vote for stoodkev as witness"
   },
+  "html_popup_vote_cedricguillas_witness_success": {
+    "message": "Successfully voted @cedricguillas as a witness. Thanks for your support!",
+    "description": "Success message when vote for stoodkev as witness"
+  },
   "html_popup_conversion_operation": {
     "message": "Conversion",
     "description": "conversion operation"
@@ -3116,5 +3120,9 @@
   "hive_tx_network_error": {
     "message": "Network Timeout Error: Please check your connection!",
     "description": "General word"
+  },
+  "not_enough_rc": {
+    "message": "You don't have enough RC to broadcast this operation. Please wait for your RC to refill or power up.",
+    "description": "Need more RC"
   }
 }

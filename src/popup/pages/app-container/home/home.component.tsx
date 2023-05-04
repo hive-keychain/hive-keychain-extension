@@ -7,6 +7,7 @@ import { GovernanceRenewalComponent } from '@popup/pages/app-container/home/gove
 import { ResourcesSectionComponent } from '@popup/pages/app-container/home/resources-section/resources-section.component';
 import { SelectAccountSectionComponent } from '@popup/pages/app-container/home/select-account-section/select-account-section.component';
 import { TopBarComponent } from '@popup/pages/app-container/home/top-bar/top-bar.component';
+import { ProposalVotingSectionComponent } from '@popup/pages/app-container/home/voting-section/proposal-voting-section/proposal-voting-section.component';
 import { WalletInfoSectionComponent } from '@popup/pages/app-container/home/wallet-info-section/wallet-info-section.component';
 import { SurveyComponent } from '@popup/pages/app-container/survey/survey.component';
 import { Survey } from '@popup/pages/app-container/survey/survey.interface';
@@ -15,7 +16,7 @@ import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { LocalAccount } from 'src/interfaces/local-account.interface';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
@@ -125,6 +126,7 @@ const Home = ({
           <EstimatedAccountValueSectionComponent />
           <WalletInfoSectionComponent />
           <ActionsSectionComponent />
+          <ProposalVotingSectionComponent />
         </div>
       )}
 
