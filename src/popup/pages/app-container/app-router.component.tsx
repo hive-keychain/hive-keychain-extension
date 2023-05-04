@@ -28,6 +28,7 @@ import { AboutPageComponent } from '@popup/pages/app-container/settings/about/ab
 import { AccountSubMenuComponent } from '@popup/pages/app-container/settings/accounts/account-sub-menu.component';
 import { CreateAccountStepOneComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-one/create-account-step-one.component';
 import { CreateAccountStepTwoComponent } from '@popup/pages/app-container/settings/accounts/create-account/create-account-step-two/create-account-step-two.component';
+import { ManageAccountAuthoritiesComponent } from '@popup/pages/app-container/settings/accounts/manage-account-authorities/manage-account-authorities.component';
 import { AddKeyComponent } from '@popup/pages/app-container/settings/accounts/manage-account/add-key/add-key.component';
 import { ManageAccountComponent } from '@popup/pages/app-container/settings/accounts/manage-account/manage-account.component';
 import { AdvancedSettingsPageComponent } from '@popup/pages/app-container/settings/advanced-settings/advanced-settings.component';
@@ -123,6 +124,8 @@ const AppRouter = ({
         return <SelectKeysComponent />;
       case Screen.SETTINGS_MANAGE_ACCOUNTS:
         return <ManageAccountComponent />;
+      case Screen.SETTINGS_MANAGE_ACCOUNTS_AUTHORITIES:
+        return <ManageAccountAuthoritiesComponent />;
       case Screen.SETTINGS_ADD_KEY:
         return <AddKeyComponent />;
       case Screen.SETTINGS_ADVANCED:

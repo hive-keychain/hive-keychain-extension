@@ -7,6 +7,7 @@ interface TooltipProps {
   delayShow?: number;
   children: any;
   message?: string;
+  messageParams?: any;
   skipTranslation?: boolean;
   ariaLabel?: string;
   additionalClassContainer?: string;
@@ -17,6 +18,7 @@ export const CustomTooltip = ({
   position,
   delayShow,
   message,
+  messageParams,
   skipTranslation,
   children,
   ariaLabel,
@@ -54,7 +56,9 @@ export const CustomTooltip = ({
             position ? position : 'top'
           } ${additionalClassContent}`}
           dangerouslySetInnerHTML={{
-            __html: skipTranslation ? message : chrome.i18n.getMessage(message),
+            __html: skipTranslation
+              ? message
+              : chrome.i18n.getMessage(message, messageParams),
           }}></div>
       )}
     </div>
