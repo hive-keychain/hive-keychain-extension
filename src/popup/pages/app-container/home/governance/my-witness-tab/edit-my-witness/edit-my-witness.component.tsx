@@ -10,7 +10,6 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import { navigateTo } from '@popup/actions/navigation.actions';
 import { RootState } from '@popup/store';
 import React, { useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
@@ -39,7 +38,6 @@ const EditMyWitness = ({
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
-  navigateTo,
 }: PropsFromRedux & EditMyWitnessProps) => {
   const [formParams, setFormParams] = useState<WitnessProps>({
     account_creation_fee:
@@ -194,7 +192,6 @@ const connector = connect(mapStateToProps, {
   setErrorMessage,
   setSuccessMessage,
   refreshActiveAccount,
-  navigateTo,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 
