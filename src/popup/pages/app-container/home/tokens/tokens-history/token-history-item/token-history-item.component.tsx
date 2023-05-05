@@ -13,10 +13,13 @@ import {
   UnStakeTokenDoneTransaction,
   UnStakeTokenStartTransaction,
 } from '@interfaces/tokens.interface';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { BaseSyntheticEvent, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { CustomTooltip } from 'src/common-ui/custom-tooltip/custom-tooltip.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import './token-history-item.component.scss';
 
 interface TokenHistoryItemProps {
@@ -30,6 +33,27 @@ const TokenHistoryItem = ({
   ariaLabel,
 }: PropsFromRedux) => {
   const [isMemoOpened, setIsMemoOpened] = useState(false);
+
+  const getIcon = () => {
+    switch (transaction.operation) {
+      case OperationsHiveEngine.COMMENT_AUTHOR_REWARD:
+      case OperationsHiveEngine.COMMENT_CURATION_REWARD:
+      case OperationsHiveEngine.MINING_LOTTERY:
+        return Icons.CLAIM;
+      case OperationsHiveEngine.TOKENS_TRANSFER:
+        return Icons.SEND;
+      case OperationsHiveEngine.TOKEN_UNSTAKE_START:
+      case OperationsHiveEngine.TOKEN_UNSTAKE_DONE:
+        return Icons.ARROW_DOWNWARDS;
+      case OperationsHiveEngine.TOKEN_STAKE:
+        return Icons.ARROW_UPWARDS;
+      case OperationsHiveEngine.TOKEN_UNDELEGATE_START:
+      case OperationsHiveEngine.TOKEN_UNDELEGATE_DONE:
+        return Icons.DELEGATIONS;
+      default:
+        return Icons.LINK;
+    }
+  };
 
   const getLabel = () => {
     switch (transaction.operation) {
@@ -166,19 +190,46 @@ const TokenHistoryItem = ({
     }
   };
 
+  const openTransactionOnHiveblocks = (event: BaseSyntheticEvent) => {
+    event.stopPropagation();
+    window.open(`https://he.dtools.dev/tx/${transaction.transactionId}`);
+  };
+
   const label = getLabel();
   return label ? (
     <div
       aria-label={ariaLabel}
       id={transaction._id}
-      className={`token-history-item ${getMemo() ? 'has-memo' : ''}`}
+      className={`token-history-item`}
       onClick={() => setIsMemoOpened(!isMemoOpened)}>
       <div className="transaction">
         <div className="information-panel">
           <div className="top-row">
-            <div className="date">
-              {moment(transaction.timestamp * 1000).format('L')}
+            <div className="top-icon-date">
+              <Icon
+                ariaLabel="icon-open-new-window"
+                name={getIcon()}
+                type={IconType.OUTLINED}
+                onClick={openTransactionOnHiveblocks}
+                additionalClassName="padding-right"></Icon>
+              <CustomTooltip
+                message={moment(transaction.timestamp * 1000).format(
+                  'YYYY/MM/DD , hh:mm:ss a',
+                )}
+                skipTranslation>
+                <div className="date">
+                  {moment(transaction.timestamp * 1000).format('L')}
+                </div>
+              </CustomTooltip>
             </div>
+            {getMemo() && (
+              <Icon
+                name={Icons.EXPAND_MORE}
+                onClick={() => setIsMemoOpened(!isMemoOpened)}
+                type={IconType.OUTLINED}
+                additionalClassName={isMemoOpened ? 'open' : 'closed'}
+              />
+            )}
           </div>
           <div className="bottom-row">{label}</div>
         </div>
