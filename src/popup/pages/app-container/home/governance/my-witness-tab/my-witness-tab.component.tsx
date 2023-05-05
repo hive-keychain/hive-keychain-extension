@@ -1,4 +1,3 @@
-import { KeychainApi } from '@api/keychain';
 import { Witness } from '@interfaces/witness.interface';
 import { setErrorMessage } from '@popup/actions/message.actions';
 import { Icons } from '@popup/icons.enum';
@@ -9,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import RotatingLogoComponent from 'src/common-ui/rotating-logo/rotating-logo.component';
+import WitnessUtils from 'src/utils/witness.utils';
 import './my-witness-tab.component.scss';
 
 type Props = {
@@ -17,6 +17,7 @@ type Props = {
 
 const MyWitnessTab = ({
   ranking,
+  globalProperties,
   activeAccount,
   setErrorMessage,
 }: PropsFromRedux & Props) => {
@@ -31,20 +32,17 @@ const MyWitnessTab = ({
 
   const init = async () => {
     setIsLoading(true);
-    let requestResult;
     try {
-      requestResult = await KeychainApi.get(
-        `hive/witness/${activeAccount.name!}`,
+      const result = await WitnessUtils.getWitnessInfo(
+        activeAccount.name!,
+        globalProperties,
       );
-      if (!!requestResult && requestResult !== '') {
-        setWitnessInfo(requestResult);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-        setHasError(true);
-        throw new Error('Witness-info data error');
-      }
+      console.log(result);
+      setWitnessInfo(result);
+      setIsLoading(false);
     } catch (err) {
+      setIsLoading(false);
+      setHasError(true);
       setErrorMessage('popup_html_error_retrieving_witness_information');
     }
   };
@@ -87,6 +85,7 @@ const MyWitnessTab = ({
 const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
+    globalProperties: state.globalProperties,
   };
 };
 

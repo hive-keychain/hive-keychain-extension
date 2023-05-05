@@ -1,7 +1,6 @@
-import { Witness } from '@interfaces/witness.interface';
+import { Witness, WitnessInfo } from '@interfaces/witness.interface';
 import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
-import moment from 'moment';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -12,7 +11,7 @@ import './witness-global-information.component.scss';
 
 interface WitnessGlobalInformationProps {
   witnessRanking: Witness;
-  witnessInfo: any;
+  witnessInfo: WitnessInfo;
 }
 
 const WitnessGlobalInformation = ({
@@ -21,25 +20,9 @@ const WitnessGlobalInformation = ({
   currencyPrices,
   currencyLabels,
   globalProperties,
-  activeAccount,
 }: PropsFromRedux & WitnessGlobalInformationProps) => {
-  const lastPriceFeedUpdateAgoFormat = moment(
-    witnessInfo.last_hbd_exchange_update,
-  )
-    .startOf('hour')
-    .fromNow();
-
-  const wasUpdatedAfterThreshold = (last_hbd_exchange_update: string) => {
-    const lasUpdateTimestamp = new Date(last_hbd_exchange_update).getTime();
-    const lastUpdateHoursMs = Date.now() - lasUpdateTimestamp;
-    let seconds = Math.floor(lastUpdateHoursMs / 1000);
-    let minutes = Math.floor(seconds / 60);
-    let hours = Math.floor(minutes / 60);
-    return hours > 5;
-  };
-
-  const gotoUrl = (block: string | number) => {
-    window.open(`https://hiveblocks.com/b/${block}`);
+  const gotoUrl = (url: string) => {
+    window.open(url);
   };
 
   return (
@@ -56,21 +39,8 @@ const WitnessGlobalInformation = ({
         <div className="label-title">
           {chrome.i18n.getMessage('html_popup_witness_information_votes_label')}
         </div>
-        <div>{witnessInfo.votes}</div>
-      </div>
-      <div className="row-container">
-        <div className="label-title">
-          {chrome.i18n.getMessage(
-            'html_popup_witness_information_vote_value_label',
-          )}
-        </div>
         <div>
-          {FormatUtils.getVPInUSD(
-            globalProperties,
-            activeAccount,
-            currencyPrices,
-          )}{' '}
-          {currencyLabels.hp}
+          {witnessInfo.voteValueInHP} {currencyLabels.hp}
         </div>
       </div>
       <div className="row-container">
@@ -79,7 +49,7 @@ const WitnessGlobalInformation = ({
             'html_popup_witness_global_information_blocks_missed_label',
           )}
         </div>
-        <div>{witnessInfo.total_missed}</div>
+        <div>{witnessInfo.blockMissed}</div>
       </div>
       <div className="row-container">
         <div className="label-title">
@@ -89,8 +59,8 @@ const WitnessGlobalInformation = ({
         </div>
         <div
           className="data-clickeable"
-          onClick={() => gotoUrl(witnessInfo.last_confirmed_block_num)}>
-          {witnessInfo.last_confirmed_block_num}
+          onClick={() => gotoUrl(witnessInfo.lastBlockUrl)}>
+          {witnessInfo.lastBlock}
           <Icon name={Icons.OPEN_IN_NEW} type={IconType.OUTLINED} />
         </div>
       </div>
@@ -100,21 +70,16 @@ const WitnessGlobalInformation = ({
             'html_popup_witness_global_information_price_feed_label',
           )}
         </div>
-        <div>
-          {witnessInfo.hbd_exchange_rate_base}{' '}
-          {witnessInfo.hbd_exchange_rate_base_symbol}
-        </div>
+        <div>{witnessInfo.priceFeed}</div>
       </div>
       <div
         className={`info-last-update ${
-          wasUpdatedAfterThreshold(witnessInfo.last_hbd_exchange_update)
-            ? 'warning-red-color'
-            : ''
+          witnessInfo.priceFeedUpdatedAtWarning ? 'warning-red-color' : ''
         }`}>
         {chrome.i18n.getMessage(
           'html_popup_witness_global_information_updated_label',
         )}{' '}
-        {lastPriceFeedUpdateAgoFormat}
+        {witnessInfo.priceFeedUpdatedAt.startOf('hour').fromNow()}
       </div>
       <div className="row-container">
         <div className="label-title">
@@ -122,7 +87,7 @@ const WitnessGlobalInformation = ({
             'html_popup_witness_global_information_version_label',
           )}
         </div>
-        <div>{witnessInfo.running_version}</div>
+        <div>{witnessInfo.version}</div>
       </div>
       <div className="label-title centered-text">
         {chrome.i18n.getMessage('popup_html_witness_information_rewards_label')}

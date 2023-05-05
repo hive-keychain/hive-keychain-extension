@@ -1,5 +1,8 @@
-import { WitnessProps } from '@hiveio/dhive/lib/utils';
-import { Witness } from '@interfaces/witness.interface';
+import {
+  Witness,
+  WitnessInfo,
+  WitnessParamsForm,
+} from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
   addToLoadingList,
@@ -14,13 +17,12 @@ import { WitnessGlobalInformationComponent } from '@popup/pages/app-container/ho
 import { WitnessInformationParametersComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
-import { KeychainKeyTypes } from 'hive-keychain-commons';
+import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
-import ButtonComponent, {
-  ButtonType,
-} from 'src/common-ui/button/button.component';
+import { ButtonType } from 'src/common-ui/button/button.component';
+import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -28,7 +30,7 @@ import WitnessUtils, { WITNESS_DISABLED_KEY } from 'src/utils/witness.utils';
 import './witness-information.component.scss';
 
 interface WitnessInformationProps {
-  witnessInfo: any;
+  witnessInfo: WitnessInfo;
   ranking: Witness[];
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -82,10 +84,14 @@ const WitnessInformation = ({
         try {
           const success = await WitnessUtils.updateWitnessParameters(
             activeAccount.name!,
-            activeAccount.keys.active!,
             {
-              new_signing_key: WITNESS_DISABLED_KEY,
-            } as WitnessProps,
+              accountCreationFee: witnessInfo.params.accountCreationFee,
+              maximumBlockSize: witnessInfo.params.maximumBlockSize,
+              hbdInterestRate: witnessInfo.params.hbdInterestRate,
+              signingKey: WITNESS_DISABLED_KEY,
+              url: witnessInfo.url,
+            } as WitnessParamsForm,
+            activeAccount.keys.active!,
           );
           addToLoadingList('html_popup_confirm_transaction_operation');
           removeFromLoadingList('html_popup_update_witness_operation');
@@ -170,16 +176,18 @@ const WitnessInformation = ({
           <WitnessInformationParametersComponent witnessInfo={witnessInfo} />
           <div className="bottom-panel">
             <div className="buttons-container">
-              <ButtonComponent
-                label={'html_popup_button_edit_label'}
+              <OperationButtonComponent
+                requiredKey={KeychainKeyTypesLC.active}
                 onClick={() => gotoNextPage()}
+                label={'html_popup_button_edit_label'}
                 additionalClass="padding-top"
               />
-              {witnessInfo.signing_key !== WITNESS_DISABLED_KEY && (
-                <ButtonComponent
-                  label="popup_html_disable_witness"
-                  type={ButtonType.IMPORTANT}
+              {witnessInfo.isDisabled && (
+                <OperationButtonComponent
+                  requiredKey={KeychainKeyTypesLC.active}
                   onClick={() => onDisableWitness()}
+                  label={'popup_html_disable_witness'}
+                  type={ButtonType.IMPORTANT}
                 />
               )}
             </div>

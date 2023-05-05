@@ -1,8 +1,6 @@
 import { Asset, DynamicGlobalProperties } from '@hiveio/dhive';
-import { ActiveAccount } from '@interfaces/active-account.interface';
 import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
-import HiveUtils from 'src/utils/hive.utils';
 
 const withCommas = (nb: string, decimals = 3) => {
   const currency = nb.split(' ')[1];
@@ -120,25 +118,11 @@ const getUSDFromVests = (
   decimals: number = 3,
   globalProperties: GlobalProperties,
   currencyPrices: CurrencyPrices,
-) =>
-  (
+) => {
+  return (
     FormatUtils.toHP(vestAmount.toString(), globalProperties.globals!) *
     currencyPrices.hive.usd!
   ).toFixed(decimals);
-
-const getVPInUSD = (
-  globalProperties: GlobalProperties,
-  activeAccount: ActiveAccount,
-  currencyPrices: CurrencyPrices,
-) => {
-  const manaValue = HiveUtils.getVotingDollarsPerAccount(
-    100,
-    globalProperties,
-    activeAccount.account,
-    true,
-  ) as string;
-  const votingHPInUSD = parseFloat(manaValue) / currencyPrices.hive.usd!;
-  return FormatUtils.withCommas(votingHPInUSD.toString(), 3);
 };
 
 const getOrdinalLabelTranslation = (active_rank: string) => {
@@ -169,7 +153,6 @@ const FormatUtils = {
   getValFromString,
   trimUselessZero,
   getUSDFromVests,
-  getVPInUSD,
   getOrdinalLabelTranslation,
 };
 

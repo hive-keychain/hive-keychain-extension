@@ -1,6 +1,6 @@
 import { PriceType } from '@hiveio/dhive';
-import { WitnessProps } from '@hiveio/dhive/lib/utils';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
+import { WitnessInfo, WitnessParamsForm } from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
   addToLoadingList,
@@ -20,12 +20,11 @@ import { InputType } from 'src/common-ui/input/input-type.enum';
 import InputComponent from 'src/common-ui/input/input.component';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import { BaseCurrencies } from 'src/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 import WitnessUtils from 'src/utils/witness.utils';
 import './edit-my-witness.component.scss';
 
 interface EditMyWitnessProps {
-  witnessInfo: any;
+  witnessInfo: WitnessInfo;
   setEditMode: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
@@ -39,43 +38,25 @@ const EditMyWitness = ({
   setSuccessMessage,
   refreshActiveAccount,
 }: PropsFromRedux & EditMyWitnessProps) => {
-  const [formParams, setFormParams] = useState<WitnessProps>({
-    account_creation_fee:
-      FormatUtils.formatCurrencyValue(witnessInfo.account_creation_fee, 3) +
-      ' ' +
-      witnessInfo.account_creation_fee_symbol,
-    maximum_block_size: witnessInfo.maximum_block_size,
-    hbd_exchange_rate: {
-      base:
-        FormatUtils.formatCurrencyValue(witnessInfo.hbd_exchange_rate_base, 3) +
-        ' ' +
-        witnessInfo.hbd_exchange_rate_base_symbol,
-      quote:
-        FormatUtils.formatCurrencyValue(
-          witnessInfo.hbd_exchange_rate_quote,
-          3,
-        ) +
-        ' ' +
-        witnessInfo.hbd_exchange_rate_quote_symbol,
-    },
-    hbd_interest_rate: witnessInfo.hbd_interest_rate,
-    new_signing_key: witnessInfo.signing_key,
-    key: witnessInfo.signing_key,
+  const [formParams, setFormParams] = useState<WitnessParamsForm>({
+    accountCreationFee: witnessInfo.params.accountCreationFee,
+    maximumBlockSize: witnessInfo.params.maximumBlockSize,
+    hbdInterestRate: witnessInfo.params.hbdInterestRate,
+    signingKey: witnessInfo.signingKey,
     url: witnessInfo.url,
   });
 
   const handleUpdateWitnessProps = async () => {
-    if (!(formParams.new_signing_key as string).startsWith('STM')) {
+    if (!(formParams.signingKey as string).startsWith('STM')) {
       setErrorMessage('popup_html_public_key_needed');
       return;
     }
-    formParams['key'] = formParams['new_signing_key']!;
     try {
       addToLoadingList('html_popup_update_witness_operation');
       const success = await WitnessUtils.updateWitnessParameters(
         activeAccount.name!,
-        activeAccount.keys.active!,
         formParams,
+        activeAccount.keys.active!,
       );
       addToLoadingList('html_popup_confirm_transaction_operation');
       removeFromLoadingList('html_popup_update_witness_operation');
@@ -112,50 +93,35 @@ const EditMyWitness = ({
 
   return (
     <div className="edit-my-witness-component">
-      <div className="row-grid-three">
-        <div className="label-title-container">
-          {chrome.i18n.getMessage(
-            'popup_html_witness_information_account_creation_fee_label',
-          )}
-        </div>
+      <div className="field">
         <InputComponent
+          label="popup_html_witness_information_account_creation_fee_label"
           type={InputType.TEXT}
           placeholder="popup_html_witness_information_account_creation_fee_placeholder_text"
-          value={formParams.account_creation_fee?.toString().split(' ')[0]}
-          onChange={(value) =>
-            handleFormParams(
-              'account_creation_fee',
-              value + ` ${BaseCurrencies.HIVE.toUpperCase()}`,
-            )
-          }
+          value={formParams.accountCreationFee}
+          onChange={(value) => handleFormParams('account_creation_fee', value)}
         />
         <div className="as-fake-input">{BaseCurrencies.HIVE.toUpperCase()}</div>
       </div>
-      <div className="row-grid-two">
-        <div className="label-title-container">
-          {chrome.i18n.getMessage(
-            'popup_html_witness_information_maximum_block_size_label',
-          )}
-        </div>
-        <InputComponent
-          type={InputType.TEXT}
-          placeholder="popup_html_witness_information_block_size_placeholder_text"
-          value={formParams.maximum_block_size}
-          onChange={(value) => handleFormParams('maximum_block_size', value)}
-        />
-      </div>
+      <InputComponent
+        label="popup_html_witness_information_maximum_block_size_label"
+        type={InputType.TEXT}
+        placeholder="popup_html_witness_information_block_size_placeholder_text"
+        value={formParams.maximumBlockSize}
+        onChange={(value) => handleFormParams('maximum_block_size', value)}
+      />
       <InputComponent
         label="popup_html_witness_information_hbd_interest_rate_label"
         type={InputType.TEXT}
         placeholder="popup_html_witness_information_hbd_interest_rate_placeholder_text"
-        value={formParams.hbd_interest_rate}
+        value={formParams.hbdInterestRate}
         onChange={(value) => handleFormParams('hbd_interest_rate', value)}
       />
       <InputComponent
         type={InputType.TEXT}
         label="popup_html_witness_information_signing_key_label"
         placeholder="popup_html_witness_information_signing_key_label"
-        value={formParams.new_signing_key}
+        value={formParams.signingKey}
         onChange={(value) => handleFormParams('new_signing_key', value)}
       />
       <InputComponent
