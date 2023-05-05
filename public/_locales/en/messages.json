@@ -395,6 +395,10 @@
     "message": "Disable witness",
     "description": "on manage accounts"
   },
+  "popup_html_enable_witness": {
+    "message": "Enable witness",
+    "description": "on manage accounts"
+  },
   "popup_html_witness_rank_label": {
     "message": "rank",
     "description": "on my witness"
@@ -405,6 +409,10 @@
   },
   "popup_html_disable_witness_account_confirmation_message": {
     "message": "You are about to disable @$1 witness account. Please confirm to proceed.",
+    "description": "on my witness"
+  },
+  "popup_html_enable_witness_account_confirmation_message": {
+    "message": "You are about to enable @$1 witness account. Please confirm to proceed.",
     "description": "on my witness"
   },
   "popup_html_show_qr": {

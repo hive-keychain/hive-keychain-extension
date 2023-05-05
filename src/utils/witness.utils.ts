@@ -6,14 +6,17 @@ import {
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Key } from '@interfaces/keys.interface';
 import {
+  LastSigningKeys,
   Witness,
   WitnessInfo,
   WitnessParamsForm,
 } from '@interfaces/witness.interface';
+import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
 import FormatUtils from 'src/utils/format.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 export const WITNESS_DISABLED_KEY =
   'STM1111111111111111111111111111111114T1Anm';
@@ -175,12 +178,30 @@ const wasUpdatedAfterThreshold = (updatedAt: moment.Moment) => {
   var duration = moment.duration(now.diff(updatedAt));
   var hours = duration.asHours();
 
-  // const lasUpdateTimestamp = new Date(last_hbd_exchange_update).getTime();
-  // const lastUpdateHoursMs = Date.now() - lasUpdateTimestamp;
-  // let seconds = Math.floor(lastUpdateHoursMs / 1000);
-  // let minutes = Math.floor(seconds / 60);
-  // let hours = Math.floor(minutes / 60);
   return hours > 5;
+};
+
+const getLastSigningKeyForWitness = async (username: string) => {
+  const result: LastSigningKeys =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.WITNESS_LAST_SIGNING_KEY,
+    );
+  return result ? result[username] : null;
+};
+
+const saveLastSigningKeyForWitness = async (username: string, key: string) => {
+  let result: LastSigningKeys =
+    await LocalStorageUtils.getValueFromLocalStorage(
+      LocalStorageKeyEnum.WITNESS_LAST_SIGNING_KEY,
+    );
+  if (!result) {
+    result = {};
+  }
+  result[username] = key;
+  LocalStorageUtils.saveValueInLocalStorage(
+    LocalStorageKeyEnum.WITNESS_LAST_SIGNING_KEY,
+    result,
+  );
 };
 
 const WitnessUtils = {
@@ -193,6 +214,8 @@ const WitnessUtils = {
   updateWitnessParameters,
   getWitnessInfo,
   wasUpdatedAfterThreshold,
+  getLastSigningKeyForWitness,
+  saveLastSigningKeyForWitness,
 };
 
 export default WitnessUtils;

@@ -12,12 +12,15 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from '@popup/actions/message.actions';
-import { navigateToWithParams } from '@popup/actions/navigation.actions';
+import {
+  goBack,
+  navigateToWithParams,
+} from '@popup/actions/navigation.actions';
 import { WitnessGlobalInformationComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
 import { WitnessInformationParametersComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
 import { RootState } from '@popup/store';
 import { Screen } from '@reference-data/screen.enum';
-import { KeychainKeyTypes, KeychainKeyTypesLC } from 'hive-keychain-commons';
+import { KeychainKeyTypesLC } from 'hive-keychain-commons';
 import React, { useEffect, useState } from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
@@ -51,13 +54,16 @@ const WitnessInformation = ({
   setSuccessMessage,
   removeFromLoadingList,
   refreshActiveAccount,
+  goBack,
 }: PropsFromRedux & WitnessInformationProps) => {
   const [selectedScreen, setSelectedScreen] = useState<WitnessInfoScreen>(
     WitnessInfoScreen.INFO,
   );
   const [witnessRanking, setWitnessRanking] = useState<Witness>();
+  const [lastSigningKey, setLastSigningKey] = useState<string | null>(null);
 
   useEffect(() => {
+    initLastSigningKey();
     setWitnessRanking(
       ranking.filter(
         (witness: Witness) => witness.name === activeAccount.name!,
@@ -65,14 +71,17 @@ const WitnessInformation = ({
     );
   }, [ranking]);
 
+  const initLastSigningKey = async () => {
+    setLastSigningKey(
+      await WitnessUtils.getLastSigningKeyForWitness(activeAccount.name!),
+    );
+  };
+
   const gotoNextPage = () => {
     setEditMode(true);
   };
 
-  const onDisableWitness = () => {
-    if (!activeAccount.keys.active)
-      return setErrorMessage('popup_missing_key', [KeychainKeyTypes.active]);
-
+  const disableWitness = () => {
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
         'popup_html_disable_witness_account_confirmation_message',
@@ -81,7 +90,13 @@ const WitnessInformation = ({
       title: `popup_html_disable_witness`,
       afterConfirmAction: async () => {
         addToLoadingList('html_popup_update_witness_operation');
+
         try {
+          await WitnessUtils.saveLastSigningKeyForWitness(
+            activeAccount.name!,
+            witnessInfo.signingKey,
+          );
+
           const success = await WitnessUtils.updateWitnessParameters(
             activeAccount.name!,
             {
@@ -99,7 +114,59 @@ const WitnessInformation = ({
           removeFromLoadingList('html_popup_confirm_transaction_operation');
           refreshActiveAccount();
           if (success) {
-            setSelectedScreen(WitnessInfoScreen.INFO);
+            goBack();
+            setSuccessMessage('popup_success_witness_account_update');
+          } else {
+            setErrorMessage('popup_error_witness_account_update', [
+              `${activeAccount.name!}`,
+            ]);
+          }
+        } catch (err: any) {
+          setErrorMessage(err.message);
+          removeFromLoadingList('html_popup_update_witness_operation');
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
+        } finally {
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
+        }
+      },
+    });
+  };
+  const enableWitness = () => {
+    navigateToWithParams(Screen.CONFIRMATION_PAGE, {
+      message: chrome.i18n.getMessage(
+        'popup_html_disable_witness_account_confirmation_message',
+        [activeAccount.name!],
+      ),
+      title: `popup_html_enable_witness`,
+      fields: [
+        {
+          label: 'popup_html_witness_information_signing_key_label',
+          value: lastSigningKey,
+          valueClassName: 'xs-font',
+        },
+      ],
+      afterConfirmAction: async () => {
+        addToLoadingList('html_popup_update_witness_operation');
+        try {
+          const success = await WitnessUtils.updateWitnessParameters(
+            activeAccount.name!,
+            {
+              accountCreationFee: witnessInfo.params.accountCreationFee,
+              maximumBlockSize: witnessInfo.params.maximumBlockSize,
+              hbdInterestRate: witnessInfo.params.hbdInterestRate,
+              signingKey: lastSigningKey,
+              url: witnessInfo.url,
+            } as WitnessParamsForm,
+            activeAccount.keys.active!,
+          );
+          addToLoadingList('html_popup_confirm_transaction_operation');
+          removeFromLoadingList('html_popup_update_witness_operation');
+          await BlockchainTransactionUtils.delayRefresh();
+          removeFromLoadingList('html_popup_confirm_transaction_operation');
+          refreshActiveAccount();
+          if (success) {
+            goBack();
             setSuccessMessage('popup_success_witness_account_update');
           } else {
             setErrorMessage('popup_error_witness_account_update', [
@@ -182,11 +249,19 @@ const WitnessInformation = ({
                 label={'html_popup_button_edit_label'}
                 additionalClass="padding-top"
               />
-              {witnessInfo.isDisabled && (
+              {!witnessInfo.isDisabled && (
                 <OperationButtonComponent
                   requiredKey={KeychainKeyTypesLC.active}
-                  onClick={() => onDisableWitness()}
+                  onClick={() => disableWitness()}
                   label={'popup_html_disable_witness'}
+                  type={ButtonType.IMPORTANT}
+                />
+              )}
+              {witnessInfo.isDisabled && lastSigningKey && (
+                <OperationButtonComponent
+                  requiredKey={KeychainKeyTypesLC.active}
+                  onClick={() => enableWitness()}
+                  label={'popup_html_enable_witness'}
                   type={ButtonType.IMPORTANT}
                 />
               )}
@@ -211,6 +286,7 @@ const connector = connect(mapStateToProps, {
   setSuccessMessage,
   removeFromLoadingList,
   refreshActiveAccount,
+  goBack,
 });
 type PropsFromRedux = ConnectedProps<typeof connector>;
 

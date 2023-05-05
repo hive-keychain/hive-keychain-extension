@@ -41,3 +41,7 @@ export interface WitnessParamsForm {
   signingKey: string;
   url: string;
 }
+
+export interface LastSigningKeys {
+  [username: string]: string;
+}

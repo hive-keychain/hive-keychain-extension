@@ -37,7 +37,7 @@ const MyWitnessTab = ({
         activeAccount.name!,
         globalProperties,
       );
-      console.log(result);
+
       setWitnessInfo(result);
       setIsLoading(false);
     } catch (err) {
