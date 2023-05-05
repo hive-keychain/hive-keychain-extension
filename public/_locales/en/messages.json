@@ -613,11 +613,11 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_reward_panel_last_week_label": {
-    "message": "Last week",
+    "message": "Last 7 days",
     "description": "On My witness page"
   },
   "popup_html_witness_information_reward_panel_last_month_label": {
-    "message": "Last month",
+    "message": "Last 30 days",
     "description": "On My witness page"
   },
   "popup_html_witness_information_reward_panel_last_year_label": {

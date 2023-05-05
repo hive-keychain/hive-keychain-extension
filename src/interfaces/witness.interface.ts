@@ -24,14 +24,23 @@ export interface WitnessInfo {
   priceFeed: string;
   priceFeedUpdatedAt: moment.Moment;
   priceFeedUpdatedAtWarning: boolean;
-  lastMonthValue: number;
-  lastWeekValue: number;
-  lastYearValue: number;
+
   signingKey: string;
   url: string;
   version: string;
   isDisabled: boolean;
   params: WitnessParams;
+  rewards: {
+    lastMonthValue: number;
+    lastMonthInHP: string;
+    lastMonthInUSD: string;
+    lastWeekValue: number;
+    lastWeekInHP: string;
+    lastWeekInUSD: string;
+    lastYearValue: number;
+    lastYearInHP: string;
+    lastYearInUSD: string;
+  };
 }
 
 export interface WitnessParamsForm {

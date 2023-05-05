@@ -21,6 +21,10 @@ const toHP = (vests: string, props?: DynamicGlobalProperties) =>
       parseFloat(props.total_vesting_shares + '')
     : 0;
 
+const toFormattedHP = (vests: number, props?: DynamicGlobalProperties) => {
+  return `${toHP(vests.toString(), props).toFixed(3)} HP`;
+};
+
 const fromHP = (hp: string, props: DynamicGlobalProperties) =>
   (parseFloat(hp) / parseFloat(props.total_vesting_fund_hive + '')) *
   parseFloat(props.total_vesting_shares + '');
@@ -115,14 +119,13 @@ const trimUselessZero = (number: number, precision: number) => {
 
 const getUSDFromVests = (
   vestAmount: Number,
-  decimals: number = 3,
   globalProperties: GlobalProperties,
   currencyPrices: CurrencyPrices,
 ) => {
   return (
     FormatUtils.toHP(vestAmount.toString(), globalProperties.globals!) *
     currencyPrices.hive.usd!
-  ).toFixed(decimals);
+  ).toFixed(2);
 };
 
 const getOrdinalLabelTranslation = (active_rank: string) => {
@@ -142,6 +145,7 @@ const getOrdinalLabelTranslation = (active_rank: string) => {
 const FormatUtils = {
   withCommas,
   toHP,
+  toFormattedHP,
   fromHP,
   formatCurrencyValue,
   nFormatter,

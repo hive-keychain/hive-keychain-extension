@@ -3,6 +3,7 @@ import {
   AccountWitnessVoteOperation,
   WitnessUpdateOperation,
 } from '@hiveio/dhive';
+import { CurrencyPrices } from '@interfaces/bittrex.interface';
 import { GlobalProperties } from '@interfaces/global-properties.interface';
 import { Key } from '@interfaces/keys.interface';
 import {
@@ -136,6 +137,7 @@ const updateWitnessParameters = async (
 const getWitnessInfo = async (
   username: string,
   globalProperties: GlobalProperties,
+  currencyPrices: CurrencyPrices,
 ): Promise<WitnessInfo> => {
   const result = await KeychainApi.get(`hive/witness/${username}`);
   return {
@@ -156,9 +158,6 @@ const getWitnessInfo = async (
     priceFeedUpdatedAtWarning: wasUpdatedAfterThreshold(
       moment(result.last_hbd_exchange_update),
     ),
-    lastMonthValue: result.lastMonthValue,
-    lastWeekValue: result.lastWeekValue,
-    lastYearValue: result.lastYearValue,
     signingKey: result.signing_key,
     url: result.url,
     version: result.running_version,
@@ -170,6 +169,38 @@ const getWitnessInfo = async (
       }`,
       maximumBlockSize: result.maximum_block_size,
       hbdInterestRate: result.hbd_interest_rate / 100,
+    },
+    rewards: {
+      lastMonthValue: result.lastMonthValue,
+      lastMonthInHP: FormatUtils.toFormattedHP(
+        result.lastMonthValue,
+        globalProperties.globals!,
+      ),
+      lastMonthInUSD: FormatUtils.getUSDFromVests(
+        result.lastMonthValue,
+        globalProperties,
+        currencyPrices,
+      ),
+      lastWeekValue: result.lastWeekValue,
+      lastWeekInHP: FormatUtils.toFormattedHP(
+        result.lastWeekValue,
+        globalProperties.globals!,
+      ),
+      lastWeekInUSD: FormatUtils.getUSDFromVests(
+        result.lastWeekValue,
+        globalProperties,
+        currencyPrices,
+      ),
+      lastYearValue: result.lastYearValue,
+      lastYearInHP: FormatUtils.toFormattedHP(
+        result.lastYearValue,
+        globalProperties.globals!,
+      ),
+      lastYearInUSD: FormatUtils.getUSDFromVests(
+        result.lastYearValue,
+        globalProperties,
+        currencyPrices,
+      ),
     },
   };
 };

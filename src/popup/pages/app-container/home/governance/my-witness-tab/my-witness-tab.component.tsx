@@ -19,6 +19,7 @@ const MyWitnessTab = ({
   ranking,
   globalProperties,
   activeAccount,
+  currencyPrices,
   setErrorMessage,
 }: PropsFromRedux & Props) => {
   const [witnessInfo, setWitnessInfo] = useState<any>();
@@ -36,6 +37,7 @@ const MyWitnessTab = ({
       const result = await WitnessUtils.getWitnessInfo(
         activeAccount.name!,
         globalProperties,
+        currencyPrices,
       );
 
       setWitnessInfo(result);
@@ -86,6 +88,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     activeAccount: state.activeAccount,
     globalProperties: state.globalProperties,
+    currencyPrices: state.currencyPrices,
   };
 };
 

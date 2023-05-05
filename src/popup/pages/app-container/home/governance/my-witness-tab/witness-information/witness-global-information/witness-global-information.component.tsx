@@ -6,7 +6,6 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import CurrencyUtils from 'src/utils/currency.utils';
-import FormatUtils from 'src/utils/format.utils';
 import './witness-global-information.component.scss';
 
 interface WitnessGlobalInformationProps {
@@ -89,11 +88,36 @@ const WitnessGlobalInformation = ({
         </div>
         <div>{witnessInfo.version}</div>
       </div>
-      <div className="label-title centered-text">
-        {chrome.i18n.getMessage('popup_html_witness_information_rewards_label')}
-      </div>
+
       <div className="witness-rewards-panel">
-        <div className="reward-column">
+        <div className="title">
+          {chrome.i18n.getMessage(
+            'popup_html_witness_information_rewards_label',
+          )}
+        </div>
+        <div className="rewards-row">
+          <div className="label">
+            {chrome.i18n.getMessage(
+              'popup_html_witness_information_reward_panel_last_week_label',
+            )}
+          </div>
+          <div className="hp-value">{witnessInfo.rewards.lastWeekInHP}</div>
+          <div className="usd-value">
+            ≈ ${witnessInfo.rewards.lastWeekInUSD}
+          </div>
+        </div>
+        <div className="rewards-row">
+          <div className="label">
+            {chrome.i18n.getMessage(
+              'popup_html_witness_information_reward_panel_last_month_label',
+            )}
+          </div>
+          <div className="hp-value">{witnessInfo.rewards.lastMonthInHP}</div>
+          <div className="usd-value">
+            ≈ ${witnessInfo.rewards.lastMonthInUSD}
+          </div>
+        </div>
+        {/* <div className="reward-column">
           <div className="reward-column-title">
             {chrome.i18n.getMessage(
               'popup_html_witness_information_reward_panel_time_frame_label',
@@ -147,7 +171,7 @@ const WitnessGlobalInformation = ({
                 )
               : '...'}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );
