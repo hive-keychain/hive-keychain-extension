@@ -46,7 +46,7 @@ const WitnessGlobalInformation = ({
           value={witnessInfo.priceFeed}
           extraInfo={chrome.i18n.getMessage(
             'html_popup_witness_global_information_updated_label',
-            [witnessInfo.priceFeedUpdatedAt.startOf('hour').fromNow()],
+            [witnessInfo.priceFeedUpdatedAt.fromNow()],
           )}
           extraInfoAdditionalClass={`info-last-update ${
             witnessInfo.priceFeedUpdatedAtWarning ? 'warning-red-color' : ''

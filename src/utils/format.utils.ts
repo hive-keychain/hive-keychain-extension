@@ -101,6 +101,11 @@ const fromNaiAndSymbol = (obj: any) => {
   )}`;
 };
 
+const getAmountFromNai = (obj: any) => {
+  const res = fromNaiAndSymbol(obj);
+  return Asset.fromString(res).amount;
+};
+
 const removeHtmlTags = (str: string) => {
   return str.replace(/<(?:.|\n)*?>/gm, '');
 };
@@ -152,6 +157,7 @@ const FormatUtils = {
   hasMoreThanXDecimal,
   toNumber,
   getSymbol,
+  getAmountFromNai,
   fromNaiAndSymbol,
   removeHtmlTags,
   getValFromString,

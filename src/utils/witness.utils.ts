@@ -14,6 +14,7 @@ import {
 } from '@interfaces/witness.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import moment from 'moment';
+import Config from 'src/config';
 import FormatUtils from 'src/utils/format.utils';
 import { GovernanceUtils } from 'src/utils/governance.utils';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
@@ -139,77 +140,90 @@ const getWitnessInfo = async (
   globalProperties: GlobalProperties,
   currencyPrices: CurrencyPrices,
 ): Promise<WitnessInfo> => {
-  const result = await KeychainApi.get(`hive/witness/${username}`);
-  return {
-    username: result.name,
-    votesCount: result.votes_count,
+  let resultFromAPI, resultFromBlockchain;
+  [resultFromAPI, resultFromBlockchain] = await Promise.all([
+    await KeychainApi.get(`hive/witness/${username}`),
+    await HiveTxUtils.getData('database_api.find_witnesses', {
+      owners: [username],
+    }),
+  ]);
+  resultFromBlockchain = resultFromBlockchain.witnesses[0];
+
+  const lastFeedUpdate = `${resultFromBlockchain.last_hbd_exchange_update}Z`;
+
+  const witnessInfo: WitnessInfo = {
+    username: resultFromBlockchain.owner,
+    votesCount: resultFromAPI.votes_count,
     voteValueInHP: FormatUtils.nFormatter(
       FormatUtils.toHP(
-        (Number(result.votes) / 1000000).toString(),
+        (Number(resultFromAPI.votes) / 1000000).toString(),
         globalProperties.globals,
       ),
       3,
     ),
-    blockMissed: result.total_missed,
-    lastBlock: result.last_confirmed_block_num,
-    lastBlockUrl: `https://hiveblocks.com/b/${result.last_confirmed_block_num}`,
-    priceFeed: `${result.hbd_exchange_rate_base} ${result.hbd_exchange_rate_base_symbol}`,
-    priceFeedUpdatedAt: moment(result.last_hbd_exchange_update),
-    priceFeedUpdatedAtWarning: wasUpdatedAfterThreshold(
-      moment(result.last_hbd_exchange_update),
+    blockMissed: resultFromBlockchain.total_missed,
+    lastBlock: resultFromBlockchain.last_confirmed_block_num,
+    lastBlockUrl: `https://hiveblocks.com/b/${resultFromBlockchain.last_confirmed_block_num}`,
+    priceFeed: FormatUtils.fromNaiAndSymbol(
+      resultFromBlockchain.hbd_exchange_rate.base,
     ),
-    signingKey: result.signing_key,
-    url: result.url,
-    version: result.running_version,
-    isDisabled: result.signing_key === WITNESS_DISABLED_KEY,
+    priceFeedUpdatedAt: moment(lastFeedUpdate),
+    priceFeedUpdatedAtWarning: wasUpdatedAfterThreshold(moment(lastFeedUpdate)),
+    signingKey: resultFromBlockchain.signing_key,
+    url: resultFromBlockchain.url,
+    version: resultFromBlockchain.running_version,
+    isDisabled: resultFromBlockchain.signing_key === WITNESS_DISABLED_KEY,
     params: {
-      accountCreationFee: result.account_creation_fee,
-      accountCreationFeeFormatted: `${result.account_creation_fee.toFixed(3)} ${
-        result.account_creation_fee_symbol
-      }`,
-      maximumBlockSize: result.maximum_block_size,
-      hbdInterestRate: result.hbd_interest_rate / 100,
+      accountCreationFee: FormatUtils.getAmountFromNai(
+        resultFromBlockchain.props.account_creation_fee,
+      ),
+      accountCreationFeeFormatted: FormatUtils.fromNaiAndSymbol(
+        resultFromBlockchain.props.account_creation_fee,
+      ),
+      maximumBlockSize: resultFromBlockchain.props.maximum_block_size,
+      hbdInterestRate: resultFromBlockchain.props.hbd_interest_rate / 100,
     },
     rewards: {
-      lastMonthValue: result.lastMonthValue,
+      lastMonthValue: resultFromAPI.lastMonthValue,
       lastMonthInHP: FormatUtils.toFormattedHP(
-        result.lastMonthValue,
+        resultFromAPI.lastMonthValue,
         globalProperties.globals!,
       ),
       lastMonthInUSD: FormatUtils.getUSDFromVests(
-        result.lastMonthValue,
+        resultFromAPI.lastMonthValue,
         globalProperties,
         currencyPrices,
       ),
-      lastWeekValue: result.lastWeekValue,
+      lastWeekValue: resultFromAPI.lastWeekValue,
       lastWeekInHP: FormatUtils.toFormattedHP(
-        result.lastWeekValue,
+        resultFromAPI.lastWeekValue,
         globalProperties.globals!,
       ),
       lastWeekInUSD: FormatUtils.getUSDFromVests(
-        result.lastWeekValue,
+        resultFromAPI.lastWeekValue,
         globalProperties,
         currencyPrices,
       ),
-      lastYearValue: result.lastYearValue,
+      lastYearValue: resultFromAPI.lastYearValue,
       lastYearInHP: FormatUtils.toFormattedHP(
-        result.lastYearValue,
+        resultFromAPI.lastYearValue,
         globalProperties.globals!,
       ),
       lastYearInUSD: FormatUtils.getUSDFromVests(
-        result.lastYearValue,
+        resultFromAPI.lastYearValue,
         globalProperties,
         currencyPrices,
       ),
     },
   };
+  return witnessInfo;
 };
 const wasUpdatedAfterThreshold = (updatedAt: moment.Moment) => {
-  const now = moment();
-  var duration = moment.duration(now.diff(updatedAt));
+  const now = moment.utc();
+  var duration = moment.duration(now.diff(updatedAt.utc()));
   var hours = duration.asHours();
 
-  return hours > 5;
+  return hours > Config.witnesses.feedWarningLimitInHours;
 };
 
 const getLastSigningKeyForWitness = async (username: string) => {
