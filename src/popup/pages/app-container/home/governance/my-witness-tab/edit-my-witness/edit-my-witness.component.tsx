@@ -1,6 +1,10 @@
 import { PriceType } from '@hiveio/dhive';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
-import { WitnessInfo, WitnessParamsForm } from '@interfaces/witness.interface';
+import {
+  WitnessFormField,
+  WitnessInfo,
+  WitnessParamsForm,
+} from '@interfaces/witness.interface';
 import { refreshActiveAccount } from '@popup/actions/active-account.actions';
 import {
   addToLoadingList,
@@ -47,7 +51,10 @@ const EditMyWitness = ({
   });
 
   const handleUpdateWitnessProps = async () => {
+    console.log(formParams);
+
     if (!(formParams.signingKey as string).startsWith('STM')) {
+      console.log('popup_html_public_key_needed');
       setErrorMessage('popup_html_public_key_needed');
       return;
     }
@@ -72,6 +79,7 @@ const EditMyWitness = ({
         ]);
       }
     } catch (err: any) {
+      console.log(err);
       setErrorMessage(err.message);
       removeFromLoadingList('html_popup_update_witness_operation');
       removeFromLoadingList('html_popup_confirm_transaction_operation');
@@ -81,7 +89,10 @@ const EditMyWitness = ({
     }
   };
 
-  const handleFormParams = (name: string, value: string | PriceType) => {
+  const handleFormParams = (
+    name: WitnessFormField,
+    value: string | PriceType,
+  ) => {
     setFormParams((prevFormParams) => {
       return { ...prevFormParams, [name]: value };
     });
@@ -99,7 +110,7 @@ const EditMyWitness = ({
           type={InputType.TEXT}
           placeholder="popup_html_witness_information_account_creation_fee_placeholder_text"
           value={formParams.accountCreationFee}
-          onChange={(value) => handleFormParams('account_creation_fee', value)}
+          onChange={(value) => handleFormParams('accountCreationFee', value)}
         />
         <div className="as-fake-input">{BaseCurrencies.HIVE.toUpperCase()}</div>
       </div>
@@ -108,21 +119,21 @@ const EditMyWitness = ({
         type={InputType.TEXT}
         placeholder="popup_html_witness_information_block_size_placeholder_text"
         value={formParams.maximumBlockSize}
-        onChange={(value) => handleFormParams('maximum_block_size', value)}
+        onChange={(value) => handleFormParams('maximumBlockSize', value)}
       />
       <InputComponent
         label="popup_html_witness_information_hbd_interest_rate_label"
         type={InputType.TEXT}
         placeholder="popup_html_witness_information_hbd_interest_rate_placeholder_text"
         value={formParams.hbdInterestRate}
-        onChange={(value) => handleFormParams('hbd_interest_rate', value)}
+        onChange={(value) => handleFormParams('hbdInterestRate', value)}
       />
       <InputComponent
         type={InputType.TEXT}
         label="popup_html_witness_information_signing_key_label"
         placeholder="popup_html_witness_information_signing_key_label"
         value={formParams.signingKey}
-        onChange={(value) => handleFormParams('new_signing_key', value)}
+        onChange={(value) => handleFormParams('signingKey', value)}
       />
       <InputComponent
         type={InputType.TEXT}

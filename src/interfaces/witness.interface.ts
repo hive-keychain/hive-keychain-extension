@@ -51,6 +51,8 @@ export interface WitnessParamsForm {
   url: string;
 }
 
+export type WitnessFormField = keyof WitnessParamsForm;
+
 export interface LastSigningKeys {
   [username: string]: string;
 }

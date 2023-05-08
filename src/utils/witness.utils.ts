@@ -109,11 +109,11 @@ const getWitnessAccountUpdateOperation = (
       url: witnessParamsForm.url,
       block_signing_key: witnessParamsForm.signingKey,
       props: {
-        account_creation_fee: `${witnessParamsForm.accountCreationFee.toFixed(
-          3,
-        )} HIVE`,
-        maximum_block_size: witnessParamsForm.maximumBlockSize,
-        hbd_interest_rate: witnessParamsForm.hbdInterestRate * 100,
+        account_creation_fee: `${Number(
+          witnessParamsForm.accountCreationFee,
+        ).toFixed(3)} HIVE`,
+        maximum_block_size: Number(witnessParamsForm.maximumBlockSize),
+        hbd_interest_rate: Number(witnessParamsForm.hbdInterestRate) * 100,
       },
       fee: '0.000 HIVE',
     },
