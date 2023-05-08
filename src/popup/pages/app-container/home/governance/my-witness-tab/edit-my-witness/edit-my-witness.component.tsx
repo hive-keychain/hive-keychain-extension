@@ -51,10 +51,7 @@ const EditMyWitness = ({
   });
 
   const handleUpdateWitnessProps = async () => {
-    console.log(formParams);
-
     if (!(formParams.signingKey as string).startsWith('STM')) {
-      console.log('popup_html_public_key_needed');
       setErrorMessage('popup_html_public_key_needed');
       return;
     }
@@ -79,7 +76,6 @@ const EditMyWitness = ({
         ]);
       }
     } catch (err: any) {
-      console.log(err);
       setErrorMessage(err.message);
       removeFromLoadingList('html_popup_update_witness_operation');
       removeFromLoadingList('html_popup_confirm_transaction_operation');
