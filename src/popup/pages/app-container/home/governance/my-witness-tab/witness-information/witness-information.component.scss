@@ -4,21 +4,32 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: 0px 10px;
+  padding: 0px 16px;
   font-size: 16px;
   overflow-y: auto;
   overflow-x: hidden;
 
+  .witness-disabled {
+    @include icon-size(40px);
+    color: $red-dark;
+  }
+
   .top-panel {
     display: flex;
     justify-content: flex-end;
-    padding-right: 8px;
+    padding-right: 16px;
   }
 
   .witness-profile-container {
     display: flex;
-    justify-content: flex-start;
-    padding: 8px;
+    justify-content: space-between;
+    align-items: center;
+
+    .witness-profile {
+      display: flex;
+      justify-content: flex-start;
+      padding: 16px 8px;
+    }
 
     .info-container {
       display: flex;

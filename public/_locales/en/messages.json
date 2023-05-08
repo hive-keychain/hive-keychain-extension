@@ -1991,7 +1991,7 @@
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_global_information_updated_label": {
-    "message": "Updated",
+    "message": "Updated $1",
     "description": "When displaying my witness account global data"
   },
   "html_popup_witness_global_information_version_label": {

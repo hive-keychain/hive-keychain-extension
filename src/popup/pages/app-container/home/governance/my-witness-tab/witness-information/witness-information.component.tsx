@@ -16,6 +16,7 @@ import {
   goBack,
   navigateToWithParams,
 } from '@popup/actions/navigation.actions';
+import { Icons } from '@popup/icons.enum';
 import { WitnessGlobalInformationComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-global-information/witness-global-information.component';
 import { WitnessInformationParametersComponent } from '@popup/pages/app-container/home/governance/my-witness-tab/witness-information/witness-information-parameters/witness-information-parameters.component';
 import { RootState } from '@popup/store';
@@ -26,6 +27,7 @@ import { ConnectedProps, connect } from 'react-redux';
 import 'react-tabs/style/react-tabs.scss';
 import { ButtonType } from 'src/common-ui/button/button.component';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
+import Icon, { IconType } from 'src/common-ui/icon/icon.component';
 import SwitchComponent from 'src/common-ui/switch/switch.component';
 import BlockchainTransactionUtils from 'src/utils/blockchain.utils';
 import FormatUtils from 'src/utils/format.utils';
@@ -202,41 +204,50 @@ const WitnessInformation = ({
         />
       </div>
       <div className="witness-profile-container">
-        <img
-          src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
-          onError={(e: any) => {
-            e.target.onError = null;
-            e.target.src = '/assets/images/accounts.png';
-          }}
-        />
-        <div className="info-container">
-          <div className="witness-name">@{activeAccount.name!}</div>
-          {witnessRanking && (
-            <div className="witness-ranking">
-              {witnessRanking?.active_rank}
-              {chrome.i18n.getMessage(
-                FormatUtils.getOrdinalLabelTranslation(
-                  witnessRanking?.active_rank!,
-                ),
-              )}{' '}
-              {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '}
-              {(witnessRanking?.active_rank as any).toString() !==
-                (witnessRanking?.rank as any).toString() && (
-                <div>
-                  {'('}
-                  {witnessRanking?.rank}
-                  {')'}
-                </div>
-              )}
-            </div>
-          )}
+        <div className="witness-profile">
+          <img
+            src={`https://images.hive.blog/u/${activeAccount.name!}/avatar`}
+            onError={(e: any) => {
+              e.target.onError = null;
+              e.target.src = '/assets/images/accounts.png';
+            }}
+          />
+          <div className="info-container">
+            <div className="witness-name">@{activeAccount.name!}</div>
+            {witnessRanking && (
+              <div className="witness-ranking">
+                {witnessRanking?.active_rank}
+                {chrome.i18n.getMessage(
+                  FormatUtils.getOrdinalLabelTranslation(
+                    witnessRanking?.active_rank!,
+                  ),
+                )}{' '}
+                {chrome.i18n.getMessage('popup_html_witness_rank_label')}{' '}
+                {(witnessRanking?.active_rank as any).toString() !==
+                  (witnessRanking?.rank as any).toString() && (
+                  <div>
+                    {'('}
+                    {witnessRanking?.rank}
+                    {')'}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
+        {witnessInfo.isDisabled ||
+          (true && (
+            <Icon
+              additionalClassName="witness-disabled"
+              type={IconType.OUTLINED}
+              name={Icons.WITNESS_DISABLED}
+              tooltipMessage="popup_html_witness_information_witness_disabled_text"
+              tooltipPosition="left"
+            />
+          ))}
       </div>
       {selectedScreen === WitnessInfoScreen.INFO && witnessRanking && (
-        <WitnessGlobalInformationComponent
-          witnessRanking={witnessRanking!}
-          witnessInfo={witnessInfo}
-        />
+        <WitnessGlobalInformationComponent witnessInfo={witnessInfo} />
       )}
       {selectedScreen === WitnessInfoScreen.PARAMS && (
         <>
