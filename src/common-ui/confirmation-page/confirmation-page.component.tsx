@@ -27,6 +27,7 @@ const ConfirmationPage = ({
   message,
   afterConfirmAction,
   warningMessage,
+  privateKeyMemoValidationWarning,
   warningParams,
   skipWarningTranslation,
   title,
@@ -64,6 +65,13 @@ const ConfirmationPage = ({
               : chrome.i18n.getMessage(warningMessage, warningParams)}
           </div>
         )}
+        {privateKeyMemoValidationWarning && (
+          <div aria-label="warning-message" className="warning-message">
+            {skipWarningTranslation
+              ? privateKeyMemoValidationWarning
+              : chrome.i18n.getMessage(privateKeyMemoValidationWarning)}
+          </div>
+        )}
         {hasField && (
           <div className="fields">
             {fields.map((field) => (
@@ -98,6 +106,8 @@ const mapStateToProps = (state: RootState) => {
     message: state.navigation.stack[0].params.message as string,
     fields: state.navigation.stack[0].params.fields as ConfirmationPageFields[],
     warningMessage: state.navigation.stack[0].params.warningMessage as string,
+    privateKeyMemoValidationWarning: state.navigation.stack[0].params
+      .privateKeyMemoValidationWarning as string,
     warningParams: state.navigation.stack[0].params.warningParams,
     skipWarningTranslation:
       state.navigation.stack[0].params.skipWarningTranslation,

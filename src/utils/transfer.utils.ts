@@ -3,7 +3,7 @@ import {
   Transaction,
   TransferOperation,
 } from '@hiveio/dhive';
-import { Key } from '@interfaces/keys.interface';
+import { Key, Keys } from '@interfaces/keys.interface';
 import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
@@ -101,6 +101,7 @@ const getTransferOperation = (
     },
   ] as TransferOperation;
 };
+
 const getRecurrentTransferOperation = (
   sender: string,
   receiver: string,
@@ -150,6 +151,41 @@ const getTransferTransaction = (
   }
 };
 
+const getPrivateKeysMemoValidationWarning = (
+  keys: Keys,
+  memo: string,
+  keyPartialThreshold: number = 26,
+) => {
+  //FOR partial keys typed. -> regex //TODO clean up
+  //(betw | between | ween)(?:(e|ee|een)?)
+  //51 chars
+  let found: RegExpMatchArray | null;
+  let memoTemp = memo.toLowerCase();
+  if (memoTemp.startsWith('#'))
+    memoTemp = memoTemp.substring(1, memoTemp.length).trim();
+  for (const [key, value] of Object.entries(keys)) {
+    if (!key.includes('Pubkey')) {
+      const tempKey = String(value).toLowerCase();
+      found = memoTemp.match(
+        new RegExp(
+          `(${tempKey.substring(
+            0,
+            keyPartialThreshold,
+          )}|${tempKey}|${tempKey.substring(
+            keyPartialThreshold,
+            tempKey.length,
+          )})`,
+          'gi',
+        ),
+      );
+      console.log({ found, memoTemp, key });
+      if (found?.length)
+        return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
+    }
+  }
+  return null;
+};
+
 const TransferUtils = {
   getExchangeValidationWarning,
   getTransferFromToSavingsValidationWarning,
@@ -157,6 +193,7 @@ const TransferUtils = {
   getTransferOperation,
   getRecurrentTransferOperation,
   getTransferTransaction,
+  getPrivateKeysMemoValidationWarning,
 };
 
 export default TransferUtils;

@@ -21,7 +21,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import { OperationButtonComponent } from 'src/common-ui/button/operation-button.component';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import { InputType } from 'src/common-ui/input/input-type.enum';
@@ -208,6 +208,12 @@ const TransferFunds = ({
       isRecurrent,
     );
 
+    let privateKeyMemoValidationWarning =
+      TransferUtils.getPrivateKeysMemoValidationWarning(
+        activeAccount.keys,
+        memo,
+      );
+    console.log({ privateKeyMemoValidationWarning }); //TODO to remove
     if (phishing.includes(receiverUsername)) {
       warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
         receiverUsername,
@@ -222,6 +228,7 @@ const TransferFunds = ({
       ),
       fields: fields,
       warningMessage: warningMessage,
+      privateKeyMemoValidationWarning: privateKeyMemoValidationWarning,
       skipWarningTranslation: true,
       title: isCancelRecurrent
         ? 'popup_html_cancel_recurrent_transfer'
