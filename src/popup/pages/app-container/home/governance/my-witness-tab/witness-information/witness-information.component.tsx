@@ -235,16 +235,15 @@ const WitnessInformation = ({
             )}
           </div>
         </div>
-        {witnessInfo.isDisabled ||
-          (true && (
-            <Icon
-              additionalClassName="witness-disabled"
-              type={IconType.OUTLINED}
-              name={Icons.WITNESS_DISABLED}
-              tooltipMessage="popup_html_witness_information_witness_disabled_text"
-              tooltipPosition="left"
-            />
-          ))}
+        {witnessInfo.isDisabled && (
+          <Icon
+            additionalClassName="witness-disabled"
+            type={IconType.OUTLINED}
+            name={Icons.WITNESS_DISABLED}
+            tooltipMessage="popup_html_witness_information_witness_disabled_text"
+            tooltipPosition="left"
+          />
+        )}
       </div>
       {selectedScreen === WitnessInfoScreen.INFO && witnessRanking && (
         <WitnessGlobalInformationComponent witnessInfo={witnessInfo} />

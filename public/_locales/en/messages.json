@@ -561,7 +561,7 @@
     "description": "On My witness page"
   },
   "popup_html_witness_information_witness_disabled_text": {
-    "message": "Witness account currently disabled!",
+    "message": "Witness currently disabled!",
     "description": "On My witness page"
   },
   "popup_html_witness_information_account_creation_fee_label": {
