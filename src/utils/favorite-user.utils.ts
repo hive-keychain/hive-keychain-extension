@@ -75,8 +75,16 @@ const saveFavoriteUser = async (
   if (!favoriteUser[activeAccount.name!]) {
     favoriteUser[activeAccount.name!] = [];
   }
+
+  let found = undefined;
+  if (favoriteUser[activeAccount.name!].length > 0) {
+    found = Object.values(favoriteUser[activeAccount.name!]).find(
+      (favValue: any) => favValue.value === username,
+    );
+  }
+
   if (
-    !favoriteUser[activeAccount.name!].includes(username) &&
+    !found &&
     !exchanges.find((exchange) => exchange.username === username) &&
     !localAccounts.find((localAccount) => localAccount.name === username)
   ) {
