@@ -2,11 +2,13 @@ import {
   RecurrentTransferOperation,
   Transaction,
   TransferOperation,
+  cryptoUtils,
 } from '@hiveio/dhive';
-import { Key, Keys } from '@interfaces/keys.interface';
+import { Key } from '@interfaces/keys.interface';
 import { exchanges } from '@popup/pages/app-container/home/buy-coins/buy-coins-list-item.list';
 import { SavingOperationType } from '@popup/pages/app-container/home/savings/savings-operation-type.enum';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
+import { KeysUtils } from 'src/utils/keys.utils';
 
 const getTransferFromToSavingsValidationWarning = (
   account: string,
@@ -151,32 +153,20 @@ const getTransferTransaction = (
   }
 };
 
-const getPrivateKeysMemoValidationWarning = (
-  keys: Keys,
-  memo: string,
-  keyPartialThreshold: number = 26,
-) => {
+const getPrivateKeysMemoValidationWarning = (memo: string) => {
+  let memoTemp: string = memo.startsWith('#')
+    ? memo.substring(1, memo.length)
+    : memo;
   let found: RegExpMatchArray | null;
-  let memoTemp = memo.toLowerCase();
-  if (memoTemp.startsWith('#'))
-    memoTemp = memoTemp.substring(1, memoTemp.length).trim();
-  for (const [key, value] of Object.entries(keys)) {
-    if (!key.includes('Pubkey')) {
-      const tempKey = String(value).toLowerCase();
-      found = memoTemp.match(
-        new RegExp(
-          `(${tempKey.substring(
-            0,
-            keyPartialThreshold,
-          )}|${tempKey}|${tempKey.substring(
-            keyPartialThreshold,
-            tempKey.length,
-          )})`,
-          'gi',
-        ),
-      );
-      if (found?.length)
+  found = memoTemp.match(/[\w\d]{51,52}/g);
+  if (found) {
+    for (const word of found) {
+      if (cryptoUtils.isWif(word) && word.length === 51) {
+        if (KeysUtils.getPublicKeyFromPrivateKeyString(word))
+          return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
+      } else if (word.startsWith('P') && word.length === 52) {
         return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
+      }
     }
   }
   return null;

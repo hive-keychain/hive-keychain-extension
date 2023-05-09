@@ -209,10 +209,7 @@ const TransferFunds = ({
     );
 
     let privateKeyMemoValidationWarning =
-      TransferUtils.getPrivateKeysMemoValidationWarning(
-        activeAccount.keys,
-        memo,
-      );
+      TransferUtils.getPrivateKeysMemoValidationWarning(memo);
 
     if (phishing.includes(receiverUsername)) {
       warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
