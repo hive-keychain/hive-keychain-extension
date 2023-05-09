@@ -3,8 +3,6 @@ import { Manabar } from '@hiveio/dhive/lib/chain/rc';
 import { Keys, KeyType } from '@interfaces/keys.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { setErrorMessage } from '@popup/actions/message.actions';
-import * as accountActions from 'src/popup/actions/account.actions';
-import AccountUtils from 'src/utils/account.utils';
 import utilsT from 'src/__tests__/utils-for-testing/fake-data.utils';
 import { getFakeStore } from 'src/__tests__/utils-for-testing/fake-store';
 import {
@@ -14,6 +12,8 @@ import {
 } from 'src/__tests__/utils-for-testing/initial-states';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import config from 'src/__tests__/utils-for-testing/setups/config';
+import * as accountActions from 'src/popup/actions/account.actions';
+import AccountUtils from 'src/utils/account.utils';
 config.byDefault();
 afterEach(() => {
   jest.clearAllMocks();
@@ -140,6 +140,11 @@ describe('account.actions tests:\n', () => {
             max_rc: 100,
             delegated_rc: 0,
             percentage: 100,
+            //TODO check bellow & fix.
+            rc_manabar: {
+              current_mana: '12321000',
+              last_update_time: 12311224,
+            },
           },
         },
       });

@@ -114,9 +114,11 @@ describe('tokens-transfer.component tests:\n', () => {
     it('Must show error if transfer fails', async () => {
       extraMocks.doesAccountExist(true);
       extraMocks.getPublicMemo();
+      //TODO check bellow & fix.
       extraMocks.sendToken({
         confirmed: false,
         broadcasted: false,
+        tx_id: 'tx_id',
       });
       await methods.userInteraction({
         receiverUsername: 'theghost1980',
@@ -129,9 +131,11 @@ describe('tokens-transfer.component tests:\n', () => {
     it('Must send transfer', async () => {
       extraMocks.doesAccountExist(true);
       extraMocks.getPublicMemo();
+      //TODO check bellow & fix.
       extraMocks.sendToken({
         confirmed: true,
         broadcasted: true,
+        tx_id: 'tx_id',
       });
       await methods.userInteraction({
         receiverUsername: 'theghost1980',

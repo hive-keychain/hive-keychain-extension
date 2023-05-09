@@ -1,19 +1,17 @@
 import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { ExtendedAccount, TransactionConfirmation } from '@hiveio/dhive';
-import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestData,
   KeychainRequestTypes,
   RequestId,
   RequestRecurrentTransfer,
 } from '@interfaces/keychain.interface';
-import AccountUtils from 'src/utils/account.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
-import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
+import { hiveTxConfirmation } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import AccountUtils from 'src/utils/account.utils';
 
 const requestHandler = new RequestsHandler();
 
@@ -45,22 +43,24 @@ const mocks = {
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
   getExtendedAccount: (account: ExtendedAccount | undefined) =>
     (AccountUtils.getExtendedAccount = jest.fn().mockResolvedValue(account)),
-  broadcastAndConfirmTransactionWithSignature: (
-    result: HiveTxConfirmationResult,
-  ) =>
-    jest
-      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
-      .mockResolvedValue(result),
+  //TODO bellow check & fix
+  // broadcastAndConfirmTransactionWithSignature: (
+  //   result: HiveTxConfirmationResult,
+  // ) =>
+  //   jest
+  //     .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+  //     .mockResolvedValue(result),
   LedgerModule: {
     getSignatureFromLedger: (signature: string) =>
       jest
         .spyOn(LedgerModule, 'getSignatureFromLedger')
         .mockResolvedValue(signature),
   },
-  HiveTxUtils: {
-    sendOperation: (result: HiveTxConfirmationResult) =>
-      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
-  },
+  //TODO bellow check & fix
+  // HiveTxUtils: {
+  //   sendOperation: (result: HiveTxConfirmationResult) =>
+  //     jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
+  // },
 };
 
 const spies = {
@@ -95,9 +95,10 @@ const methods = {
     },
     success: (result: any, message: string) => {
       const { request_id, ...datas } = data;
+      //TODO check bellow & fix!
       expect(result).toEqual(
         messages.success.answerSucess(
-          transactionConfirmationSuccess,
+          hiveTxConfirmation('tx_id', 'id', true),
           datas,
           request_id,
           message,

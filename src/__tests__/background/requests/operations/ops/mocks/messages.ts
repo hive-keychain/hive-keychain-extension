@@ -1,6 +1,6 @@
 import { SignedBuffer } from '@background/requests/operations/ops/sign-buffer';
 import { SignedTransaction } from '@hiveio/dhive';
-import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
+import { TransactionResult } from '@interfaces/hive-tx.interface';
 import { KeychainKeyTypesLC } from '@interfaces/keychain.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { DialogCommand } from '@reference-data/dialog-message-key.enum';
@@ -207,7 +207,8 @@ export default {
   },
   success: {
     addAuth: (
-      result: HiveTxConfirmationResult,
+      //TODO bellow check & fix
+      result: TransactionResult,
       datas: any,
       cloneData: any,
       request_id: number,
@@ -230,7 +231,7 @@ export default {
       };
     },
     removedAuth: (
-      result: HiveTxConfirmationResult,
+      result: TransactionResult,
       datas: any,
       request_id: number,
     ) => {
@@ -252,7 +253,7 @@ export default {
       };
     },
     addKey: (
-      result: HiveTxConfirmationResult,
+      result: TransactionResult,
       datas: any,
       cloneData: any,
       request_id: number,
@@ -275,11 +276,7 @@ export default {
         },
       };
     },
-    removedKey: (
-      result: HiveTxConfirmationResult,
-      datas: any,
-      request_id: number,
-    ) => {
+    removedKey: (result: TransactionResult, datas: any, request_id: number) => {
       return {
         command: DialogCommand.ANSWER_REQUEST,
         msg: {
@@ -298,7 +295,7 @@ export default {
       };
     },
     broadcast: (
-      result: HiveTxConfirmationResult,
+      result: TransactionResult,
       datas: any,
       request_id: number,
       message: string,
@@ -317,7 +314,7 @@ export default {
       };
     },
     convert: (
-      result: HiveTxConfirmationResult,
+      result: TransactionResult,
       datas: any,
       request_id: number,
       collateralized: boolean,
@@ -362,7 +359,7 @@ export default {
     },
     answerSucess: (
       result:
-        | HiveTxConfirmationResult
+        | TransactionResult
         | SignedTransaction
         | SignedBuffer
         | HiveEngineTransactionStatus,

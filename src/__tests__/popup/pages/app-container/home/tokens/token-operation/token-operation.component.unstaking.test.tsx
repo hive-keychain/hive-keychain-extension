@@ -58,7 +58,12 @@ describe('token-operation Unstaking tests:\n', () => {
   });
   it('Must show error if unstaking fails', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.unstakeToken({ broadcasted: false, confirmed: false });
+    //TODO check bellow & fix.
+    extraMocks.unstakeToken({
+      broadcasted: false,
+      confirmed: false,
+      tx_id: 'tx_id',
+    });
     await methods.userInteraction(balance.min, operationType, true);
     await assertion.awaitFor(
       message.error.transactionFailed(operationType),
@@ -76,7 +81,12 @@ describe('token-operation Unstaking tests:\n', () => {
   });
   it('Must unstake and show message', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.unstakeToken({ broadcasted: true, confirmed: true });
+    //TODO check bellow & fix.
+    extraMocks.unstakeToken({
+      broadcasted: true,
+      confirmed: true,
+      tx_id: 'tx_id',
+    });
     await methods.userInteraction(balance.min, operationType, true);
     await assertion.awaitFor(
       message.operationConfirmed(operationType),

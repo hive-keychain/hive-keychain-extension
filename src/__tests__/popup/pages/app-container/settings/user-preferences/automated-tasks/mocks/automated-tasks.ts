@@ -1,7 +1,4 @@
 import { Icons } from '@popup/icons.enum';
-import Config from 'src/config';
-import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
-import LocalStorageUtils from 'src/utils/localStorage.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
@@ -17,6 +14,9 @@ import {
   clickAwait,
 } from 'src/__tests__/utils-for-testing/setups/events';
 import { customRenderFixed } from 'src/__tests__/utils-for-testing/setups/render-fragment';
+import Config from 'src/config';
+import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 const i18n = {
   get: (key: string, options?: string[] | undefined) =>
@@ -68,6 +68,8 @@ const beforeEach = async (toUse?: {
           received_delegated_rc: 0,
           max_rc: 0,
           delegated_rc: 0,
+          //adding while refactoring //TODO check & fix
+          rc_manabar: { current_mana: '10000000', last_update_time: 12321324 },
         },
       },
     };

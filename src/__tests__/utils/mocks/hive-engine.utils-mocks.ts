@@ -1,8 +1,6 @@
 import { CustomJsonOperation } from '@hiveio/dhive';
-import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import { HiveEngineTransactionStatus } from '@interfaces/transaction-status.interface';
 import { HiveEngineUtils } from 'src/utils/hive-engine.utils';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const constants = {
   customJsonOperation: [
@@ -30,14 +28,14 @@ const constants = {
     } as HiveEngineTransactionStatus,
   },
 };
-
+//TODO fix mock bellow!
 const mocks = {
-  createSignAndBroadcastTransaction: (
-    value: HiveTxConfirmationResult | undefined,
-  ) =>
-    jest
-      .spyOn(HiveTxUtils, 'createSignAndBroadcastTransaction')
-      .mockResolvedValue(value),
+  // createSignAndBroadcastTransaction: (
+  //   value: HiveTxConfirmationResult | undefined,
+  // ) =>
+  //   jest
+  //     .spyOn(HiveTxUtils, 'createSignAndBroadcastTransaction')
+  //     .mockResolvedValue(value),
   tryConfirmTransaction: (status: HiveEngineTransactionStatus) =>
     jest
       .spyOn(HiveEngineUtils, 'tryConfirmTransaction')

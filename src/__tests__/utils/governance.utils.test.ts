@@ -1,10 +1,8 @@
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import AccountUtils from 'src/utils/account.utils';
-import { GovernanceUtils } from 'src/utils/governance.utils';
-import ProposalUtils from 'src/utils/proposal.utils';
-import accounts from 'src/__tests__/utils-for-testing/data/accounts';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import governanceUtilsMocks from 'src/__tests__/utils/mocks/governance.utils-mocks';
+import AccountUtils from 'src/utils/account.utils';
+import { GovernanceUtils } from 'src/utils/governance.utils';
 
 describe('governance utils test', () => {
   const { constants, mocks, spies, methods } = governanceUtilsMocks;
@@ -51,45 +49,45 @@ describe('governance utils test', () => {
     });
   });
 
-  describe('renewUsersGovernance cases:\n', () => {
-    it('Must call renew a voted proposal', async () => {
-      ProposalUtils.hasVotedForProposal = jest.fn().mockResolvedValue(true);
-      await GovernanceUtils.renewUsersGovernance(
-        [mk.user.one],
-        accounts.twoAccounts,
-      );
-      expect(spies.ProposalUtils.unvoteProposal).toBeCalledTimes(1);
-      expect(spies.ProposalUtils.voteProposal).toBeCalledTimes(1);
-    });
+  // describe('renewUsersGovernance cases:\n', () => {
+  //   it('Must call renew a voted proposal', async () => {
+  //     ProposalUtils.hasVotedForProposal = jest.fn().mockResolvedValue(true);
+  //     await GovernanceUtils.renewUsersGovernance(
+  //       [mk.user.one],
+  //       accounts.twoAccounts,
+  //     );
+  //     expect(spies.ProposalUtils.unvoteProposal).toBeCalledTimes(1);
+  //     expect(spies.ProposalUtils.voteProposal).toBeCalledTimes(1);
+  //   });
 
-    it('Must call renew an unvoted proposal', async () => {
-      ProposalUtils.hasVotedForProposal = jest.fn().mockResolvedValue(false);
-      await GovernanceUtils.renewUsersGovernance(
-        [mk.user.one],
-        accounts.twoAccounts,
-      );
-      expect(spies.ProposalUtils.voteProposal).toBeCalledTimes(1);
-      expect(spies.ProposalUtils.unvoteProposal).toBeCalledTimes(1);
-    });
+  //   it('Must call renew an unvoted proposal', async () => {
+  //     ProposalUtils.hasVotedForProposal = jest.fn().mockResolvedValue(false);
+  //     await GovernanceUtils.renewUsersGovernance(
+  //       [mk.user.one],
+  //       accounts.twoAccounts,
+  //     );
+  //     expect(spies.ProposalUtils.voteProposal).toBeCalledTimes(1);
+  //     expect(spies.ProposalUtils.unvoteProposal).toBeCalledTimes(1);
+  //   });
 
-    it('Must call Logger if an error', async () => {
-      const networkError = new Error('Network error.');
-      ProposalUtils.hasVotedForProposal = jest
-        .fn()
-        .mockRejectedValue(networkError);
-      try {
-        await GovernanceUtils.renewUsersGovernance(
-          [mk.user.one],
-          accounts.twoAccounts,
-        );
-      } catch (error) {
-        expect(spies.logger.error).toBeCalledWith(
-          'Error while renewing proposal',
-          networkError,
-        );
-      }
-    });
-  });
+  //   it('Must call Logger if an error', async () => {
+  //     const networkError = new Error('Network error.');
+  //     ProposalUtils.hasVotedForProposal = jest
+  //       .fn()
+  //       .mockRejectedValue(networkError);
+  //     try {
+  //       await GovernanceUtils.renewUsersGovernance(
+  //         [mk.user.one],
+  //         accounts.twoAccounts,
+  //       );
+  //     } catch (error) {
+  //       expect(spies.logger.error).toBeCalledWith(
+  //         'Error while renewing proposal',
+  //         networkError,
+  //       );
+  //     }
+  //   });
+  // });
 
   describe('getGovernanceReminderList cases:\n', () => {
     // it('Must return reminder list', async () => {

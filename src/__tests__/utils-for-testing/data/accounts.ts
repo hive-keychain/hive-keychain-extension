@@ -93,6 +93,7 @@ const active = {
     delegated_rc: 0,
     max_rc: 58990650660,
     received_delegated_rc: 0,
+    rc_manabar: { current_mana: '1000000', last_update_time: 1122134 },
   } as RC,
   name: extended.name,
 } as ActiveAccount;

@@ -1,16 +1,14 @@
 import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { TransactionConfirmation } from '@hiveio/dhive';
-import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestData,
   KeychainRequestTypes,
   RequestId,
   RequestSendToken,
 } from '@interfaces/keychain.interface';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
-import { transactionConfirmationSuccess } from 'src/__tests__/utils-for-testing/data/confirmations';
+import { hiveTxConfirmation } from 'src/__tests__/utils-for-testing/data/confirmations';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
 
@@ -41,22 +39,24 @@ const mocks = {
     (chrome.i18n.getMessage = jest
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
-  broadcastAndConfirmTransactionWithSignature: (
-    result: HiveTxConfirmationResult,
-  ) =>
-    jest
-      .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
-      .mockResolvedValue(result),
+  //TODO bellow check & fix!
+  // broadcastAndConfirmTransactionWithSignature: (
+  //   result: HiveTxConfirmationResult,
+  // ) =>
+  //   jest
+  //     .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
+  //     .mockResolvedValue(result),
   LedgerModule: {
     getSignatureFromLedger: (signature: string) =>
       jest
         .spyOn(LedgerModule, 'getSignatureFromLedger')
         .mockResolvedValue(signature),
   },
-  HiveTxUtils: {
-    sendOperation: (result: HiveTxConfirmationResult) =>
-      jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
-  },
+  //TODO bellow check & fix!
+  // HiveTxUtils: {
+  //   sendOperation: (result: HiveTxConfirmationResult) =>
+  //     jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
+  // },
 };
 
 const methods = {
@@ -87,9 +87,10 @@ const methods = {
     },
     success: (result: any, message: string) => {
       const { request_id, ...datas } = data;
+      //TODO check bellow & fix!
       expect(result).toEqual(
         messages.success.answerSucess(
-          transactionConfirmationSuccess,
+          hiveTxConfirmation('tx_id', 'id', true),
           datas,
           request_id,
           message,

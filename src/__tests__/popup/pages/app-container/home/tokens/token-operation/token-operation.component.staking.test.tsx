@@ -2,7 +2,6 @@ import App from '@popup/App';
 import { TokenOperationType } from '@popup/pages/app-container/home/tokens/token-operation/token-operation.component';
 import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import TokensUtils from 'src/utils/tokens.utils';
 import tokenOperation from 'src/__tests__/popup/pages/app-container/home/tokens/token-operation/mocks/token-operation';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
@@ -11,6 +10,7 @@ import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import config from 'src/__tests__/utils-for-testing/setups/config';
 import { clickAwait } from 'src/__tests__/utils-for-testing/setups/events';
+import TokensUtils from 'src/utils/tokens.utils';
 config.byDefault();
 const { methods, constants, extraMocks } = tokenOperation;
 const { message, title, leoToken, displayedCommon } = constants;
@@ -71,7 +71,12 @@ describe('token-operation Staking tests:\n', () => {
   });
   it('Must show error if staking fails', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.stakeToken({ confirmed: false, broadcasted: false });
+    //TODO check bellow & fix.
+    extraMocks.stakeToken({
+      confirmed: false,
+      broadcasted: false,
+      tx_id: 'tx_id',
+    });
     await methods.userInteraction(balance.min, operationType, true);
     await assertion.awaitFor(
       message.error.transactionFailed(operationType),
@@ -86,7 +91,12 @@ describe('token-operation Staking tests:\n', () => {
   });
   it('Must stake and show message', async () => {
     extraMocks.doesAccountExist(true);
-    extraMocks.stakeToken({ confirmed: true, broadcasted: true });
+    //TODO check bellow & fix.
+    extraMocks.stakeToken({
+      confirmed: true,
+      broadcasted: true,
+      tx_id: 'tx_id',
+    });
     await methods.userInteraction(balance.min, operationType, true);
     await assertion.awaitFor(
       message.operationConfirmed(operationType),

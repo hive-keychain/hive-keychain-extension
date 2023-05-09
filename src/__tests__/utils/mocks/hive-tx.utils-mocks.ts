@@ -5,15 +5,14 @@ import {
   Operation,
   SignedTransaction,
 } from '@hiveio/dhive';
-import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import { Transaction as HiveTransaction } from 'hive-tx';
+import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import mk from 'src/__tests__/utils-for-testing/data/mk';
 import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import { LedgerUtils } from 'src/utils/ledger.utils';
 import Logger from 'src/utils/logger.utils';
 import TransferUtils from 'src/utils/transfer.utils';
-import accounts from 'src/__tests__/utils-for-testing/data/accounts';
-import mk from 'src/__tests__/utils-for-testing/data/mk';
-
+//TODO fix all bellow!
 const constants = {
   operations: [
     {
@@ -62,9 +61,9 @@ const constants = {
 };
 
 const spies = {
-  confirmTransaction: jest
-    .spyOn(HiveTxUtils, 'confirmTransaction')
-    .mockResolvedValue(true),
+  // confirmTransaction: jest
+  //   .spyOn(HiveTxUtils, 'confirmTransaction')
+  //   .mockResolvedValue(true),
   logger: {
     log: jest.spyOn(Logger, 'log'),
     err: jest.spyOn(Logger, 'error'),
@@ -81,12 +80,12 @@ const mocks = {
     get: (response: { rpc: string }) =>
       jest.spyOn(KeychainApi, 'get').mockResolvedValue(response),
   },
-  createSignAndBroadcastTransaction: (
-    value: HiveTxConfirmationResult | undefined,
-  ) =>
-    jest
-      .spyOn(HiveTxUtils, 'createSignAndBroadcastTransaction')
-      .mockResolvedValue(value),
+  // createSignAndBroadcastTransaction: (
+  //   value: HiveTxConfirmationResult | undefined,
+  // ) =>
+  //   jest
+  //     .spyOn(HiveTxUtils, 'createSignAndBroadcastTransaction')
+  //     .mockResolvedValue(value),
   hiveTransaction: {
     create: (value: any) =>
       jest.spyOn(HiveTransaction.prototype, 'create').mockResolvedValue(value),
@@ -127,8 +126,8 @@ const mocks = {
   },
   createTransaction: (tx: any) =>
     jest.spyOn(HiveTxUtils, 'createTransaction').mockResolvedValue(tx),
-  confirmTransaction: (result: boolean) =>
-    jest.spyOn(HiveTxUtils, 'confirmTransaction').mockResolvedValue(result),
+  // confirmTransaction: (result: boolean) =>
+  //   jest.spyOn(HiveTxUtils, 'confirmTransaction').mockResolvedValue(result),
 };
 
 const methods = {

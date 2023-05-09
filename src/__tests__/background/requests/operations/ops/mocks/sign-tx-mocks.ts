@@ -1,17 +1,16 @@
 import LedgerModule from '@background/ledger.module';
 import { RequestsHandler } from '@background/requests/request-handler';
 import { Operation, Transaction, TransactionConfirmation } from '@hiveio/dhive';
-import { HiveTxConfirmationResult } from '@interfaces/hive-tx.interface';
 import {
   KeychainRequestData,
   KeychainRequestTypes,
   RequestId,
   RequestSignTx,
 } from '@interfaces/keychain.interface';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import messages from 'src/__tests__/background/requests/operations/ops/mocks/messages';
 import mk from 'src/__tests__/utils-for-testing/data/mk';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const i18n = {
   get: (message: string, options?: string[]) =>
@@ -56,7 +55,8 @@ const mocks = {
       .fn()
       .mockImplementation(mocksImplementation.i18nGetMessageCustom)),
   broadcastAndConfirmTransactionWithSignature: (
-    result: HiveTxConfirmationResult,
+    //TODO fix type bellow!
+    result: any,
   ) =>
     jest
       .spyOn(HiveTxUtils, 'broadcastAndConfirmTransactionWithSignature')
@@ -68,7 +68,8 @@ const mocks = {
         .mockResolvedValue(signature),
   },
   HiveTxUtils: {
-    sendOperation: (result: HiveTxConfirmationResult) =>
+    //TODO fix type bellow!
+    sendOperation: (result: any) =>
       jest.spyOn(HiveTxUtils, 'sendOperation').mockResolvedValue(result),
   },
 };
