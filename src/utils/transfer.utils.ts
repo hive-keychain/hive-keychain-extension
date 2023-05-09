@@ -156,9 +156,6 @@ const getPrivateKeysMemoValidationWarning = (
   memo: string,
   keyPartialThreshold: number = 26,
 ) => {
-  //FOR partial keys typed. -> regex //TODO clean up
-  //(betw | between | ween)(?:(e|ee|een)?)
-  //51 chars
   let found: RegExpMatchArray | null;
   let memoTemp = memo.toLowerCase();
   if (memoTemp.startsWith('#'))
@@ -178,7 +175,6 @@ const getPrivateKeysMemoValidationWarning = (
           'gi',
         ),
       );
-      console.log({ found, memoTemp, key });
       if (found?.length)
         return chrome.i18n.getMessage('popup_warning_private_key_in_memo');
     }

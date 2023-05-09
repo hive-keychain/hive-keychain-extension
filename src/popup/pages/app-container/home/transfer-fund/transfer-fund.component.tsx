@@ -213,7 +213,7 @@ const TransferFunds = ({
         activeAccount.keys,
         memo,
       );
-    console.log({ privateKeyMemoValidationWarning }); //TODO to remove
+
     if (phishing.includes(receiverUsername)) {
       warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
         receiverUsername,
@@ -227,8 +227,7 @@ const TransferFunds = ({
           : 'popup_html_transfer_confirm_text',
       ),
       fields: fields,
-      warningMessage: warningMessage,
-      privateKeyMemoValidationWarning: privateKeyMemoValidationWarning,
+      warningMessage: warningMessage ?? privateKeyMemoValidationWarning,
       skipWarningTranslation: true,
       title: isCancelRecurrent
         ? 'popup_html_cancel_recurrent_transfer'
