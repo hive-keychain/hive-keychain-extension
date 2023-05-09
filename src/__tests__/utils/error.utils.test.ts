@@ -1,6 +1,6 @@
+import errorUtilsMocks from 'src/__tests__/utils/mocks/error.utils-mocks';
 import { KeychainError } from 'src/keychain-error';
 import { ErrorUtils } from 'src/utils/error.utils';
-import errorUtilsMocks from 'src/__tests__/utils/mocks/error.utils-mocks';
 
 describe('error.utils.ts tests:\n', () => {
   const { blockchainErrorData, hiveEngineErrorData } = errorUtilsMocks;
@@ -14,7 +14,7 @@ describe('error.utils.ts tests:\n', () => {
     it('Must return error if statusText', () => {
       expect(
         ErrorUtils.parse({ statusText: 'CONDITIONS_OF_USE_NOT_SATISFIED' }),
-      ).toEqual(new KeychainError('error_while_broadcasting'));
+      ).toEqual(new KeychainError('html_popup_error_while_broadcasting'));
     });
 
     it('Must return KeychainError on each Blockchain error case', () => {

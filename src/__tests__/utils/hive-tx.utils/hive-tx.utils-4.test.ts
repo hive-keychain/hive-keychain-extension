@@ -30,7 +30,9 @@ describe('hive-tx.utils.test.ts part 4', () => {
           'signature',
         );
       } catch (error) {
-        expect(error).toEqual(new KeychainError('error_while_broadcasting'));
+        expect(error).toEqual(
+          new KeychainError('html_popup_error_while_broadcasting'),
+        );
         expect(spies.logger.err).toBeCalledWith(
           'Error during broadcast',
           constants.broadcastResponse.error.error,
