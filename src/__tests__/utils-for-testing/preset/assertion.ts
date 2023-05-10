@@ -4,6 +4,9 @@ import { QueryDOM } from 'src/__tests__/utils-for-testing/enums/enums';
 import { AriaLabelText } from 'src/__tests__/utils-for-testing/interfaces/assertions';
 
 import { ElementQuery } from 'src/__tests__/utils-for-testing/interfaces/elements';
+
+//TODO imp:
+//  - if the code is just replacing one/two lines, use the original no need to "re-code"
 /**
  * Await for assertion, until loads username's on screen.
  * using findBytext.
@@ -71,6 +74,7 @@ const awaitFor = async (ariaLabelOrText: string, query: QueryDOM) => {
 const getOneByText = (text: string) => {
   expect(screen.getByText(text)).toBeInTheDocument();
 };
+//TODO for example this one bellow rename it more descriptive. The rest
 const getManyByText = (texts: string[]) => {
   texts.forEach((text) => {
     expect(screen.getByText(text)).toBeInTheDocument();
