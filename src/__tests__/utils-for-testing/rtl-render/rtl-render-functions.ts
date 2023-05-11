@@ -27,6 +27,7 @@ const renderWithConfiguration = async (
   loadingValuesConfiguration.set(params);
   customRender(reactComponent, { initialState: initialState });
   //Necessary line bellow. It will wait for promises/timers to execute and render after all async processes.
+  //Reference: https://github.com/jestjs/jest/issues/2157#issuecomment-279171856
   await waitFor(() => {});
 };
 

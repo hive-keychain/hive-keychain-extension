@@ -1,5 +1,6 @@
 import { cleanup } from '@testing-library/react';
-
+//TODO move the functions you will need into -> cleaning-reset-tests-module.ts
+//  and remove what you dont need.
 const clean = () => {
   jest.runOnlyPendingTimers();
   jest.clearAllTimers();

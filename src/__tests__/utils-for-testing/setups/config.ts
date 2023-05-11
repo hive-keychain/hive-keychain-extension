@@ -1,5 +1,5 @@
 import Config from 'src/config';
-
+//TODO delete file when refactoring done.
 const useChrome = () => {
   const chrome = require('chrome-mock');
   global.chrome = chrome;

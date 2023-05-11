@@ -5,6 +5,7 @@ import { AriaLabelText } from 'src/__tests__/utils-for-testing/interfaces/assert
 
 import { ElementQuery } from 'src/__tests__/utils-for-testing/interfaces/elements';
 
+//TODO delete this file when refactoring tests is done..
 //TODO imp:
 //  - if the code is just replacing one/two lines, use the original no need to "re-code"
 /**
