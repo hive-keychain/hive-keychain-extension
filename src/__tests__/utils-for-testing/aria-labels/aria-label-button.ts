@@ -1,5 +1,4 @@
-//TODO delete after refactoring tests.
-export default {
+const ariaLabelButton = {
   login: 'login-button',
   submit: 'submit-button',
   addByKeys: 'add-by-keys-button',
@@ -102,3 +101,5 @@ export default {
     },
   },
 };
+
+export default ariaLabelButton;

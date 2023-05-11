@@ -218,7 +218,6 @@ const set = (params?: {
     params?.app?.operativeSystem?.fixPopupOnMacOs ?? jest.fn();
   ///////
 
-  //App related one big group as next.
   ///////
   //Global app data related
   DynamicGlobalPropertiesUtils.getDynamicGlobalProperties = jest

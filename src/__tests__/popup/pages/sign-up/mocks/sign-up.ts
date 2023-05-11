@@ -60,6 +60,6 @@ const methods = {
 };
 
 export default {
-  beforeEach,
-  methods,
+  // beforeEach,
+  // methods,
 };

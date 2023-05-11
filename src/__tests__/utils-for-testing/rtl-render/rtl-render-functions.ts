@@ -14,6 +14,7 @@ import { customRender } from 'src/__tests__/utils-for-testing/setups/render';
  * Params:
  *  1. modules: Configure/add/update modules needed before loading.
  *  2. app: All values needed when loading the app that will affect the state & app behaviour.
+ * @see Important: ->> If no params, the function will load default values on app state.
  */
 const renderWithConfiguration = async (
   reactComponent: ReactElement,

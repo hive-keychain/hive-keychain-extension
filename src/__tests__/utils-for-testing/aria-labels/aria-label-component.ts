@@ -1,5 +1,4 @@
-//TODO delete file after refactoring tests.
-export default {
+const ariaLabelComponent = {
   settingsMainPage: 'settings-main-page-component',
   homePage: 'home-page-component',
   selectPage: 'select-keys-page',
@@ -56,3 +55,5 @@ export default {
   },
   whatsNew: 'whats-new-component',
 };
+
+export default ariaLabelComponent;

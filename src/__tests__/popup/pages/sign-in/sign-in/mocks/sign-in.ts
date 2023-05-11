@@ -1,5 +1,4 @@
 import { ReactElement } from 'react';
-import MkUtils from 'src/utils/mk.utils';
 import alButton from 'src/__tests__/utils-for-testing/aria-labels/al-button';
 import alComponent from 'src/__tests__/utils-for-testing/aria-labels/al-component';
 import alInput from 'src/__tests__/utils-for-testing/aria-labels/al-input';
@@ -12,6 +11,7 @@ import assertion from 'src/__tests__/utils-for-testing/preset/assertion';
 import mockPreset from 'src/__tests__/utils-for-testing/preset/mock-preset';
 import { clickTypeAwait } from 'src/__tests__/utils-for-testing/setups/events';
 import renders from 'src/__tests__/utils-for-testing/setups/renders';
+import MkUtils from 'src/utils/mk.utils';
 
 const constants = {
   errorMessage: mocksImplementation.i18nGetMessageCustom('wrong_password'),

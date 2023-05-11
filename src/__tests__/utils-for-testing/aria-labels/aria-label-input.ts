@@ -1,6 +1,6 @@
-//TODO delete file after refactoring tests.
-export default {
+const ariaLabelInput = {
   password: 'password-input',
+  confirmation: 'password-input-confirmation',
   username: 'input-username',
   privateKey: 'input-private-key',
   authorizedAccount: 'input-authorized-account',
@@ -29,3 +29,5 @@ export default {
     nodeChainId: 'input-node-chain-id',
   },
 };
+
+export default ariaLabelInput;
