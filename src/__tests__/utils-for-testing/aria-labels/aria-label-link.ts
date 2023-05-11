@@ -1,5 +1,4 @@
-//TODO delete file when refactor done.
-export default {
+const ariaLabelLink = {
   resetPassword: 'reset-password-link',
   linkToArcange: 'link-to-arcange',
   whatsNew: {
@@ -8,3 +7,5 @@ export default {
     },
   },
 };
+
+export default ariaLabelLink;

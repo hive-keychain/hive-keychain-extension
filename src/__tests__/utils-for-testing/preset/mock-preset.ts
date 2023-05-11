@@ -1,4 +1,9 @@
 import { KeychainApi } from '@api/keychain';
+import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
+import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
+import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentationNeeded';
+import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
+import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
@@ -17,16 +22,12 @@ import RpcUtils from 'src/utils/rpc.utils';
 import { SurveyUtils } from 'src/utils/survey.utils';
 import TokensUtils from 'src/utils/tokens.utils';
 import TransactionUtils from 'src/utils/transaction.utils';
-import withFixedValues from 'src/__tests__/utils-for-testing/defaults/fixed';
-import mocksDefault from 'src/__tests__/utils-for-testing/defaults/mocks';
-import initialMocks from 'src/__tests__/utils-for-testing/defaults/noImplentationNeeded';
-import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { MocksToUse } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 /**
  * @param app.getExtendedAccount ExtendedAccount Used by refresh_account, loadActiveAccount. The main one to mock when using any process within the HomePage.
  * @param app.getAccount ExtendedAccount[] Used by processes as: add-by-auth.
  * Note for dev: dHive uses some data as {data: {...data}} and HiveTx removes the extra layer.
  */
+//TODO important, delete file after refactoring done.
 const setOrDefault = (toUse: MocksToUse) => {
   const {
     app,

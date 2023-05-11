@@ -1,5 +1,4 @@
-//TODO delete file afet refactoring
-export default {
+const ariaLabelIcon = {
   arrowBack: 'arrow-back-icon',
   refreshHome: 'top-bar-refresh-icon',
   witness: {
@@ -53,3 +52,5 @@ export default {
   },
   governance: 'hive-brands.svg',
 };
+
+export default ariaLabelIcon;
