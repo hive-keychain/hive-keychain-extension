@@ -57,33 +57,18 @@ const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
 };
 
-/**
- * @param hideConfigLoaderAfter When using the loader configuration. Milliseconds.
- */
-const adjustSetTimeOutValues = (hideConfigLoaderAfter: number) => {
-  const minDurationLoader = Config.loader.minDuration;
-  beforeAll(() => {
-    Config.loader.minDuration = hideConfigLoaderAfter;
-  });
-  afterAll(() => {
-    Config.loader.minDuration = minDurationLoader;
-  });
-};
-
-//TODO see if needed to move or not
-
-export interface ConfigureModules {
+export interface TestsConfigureModules {
   jestTimeOut: number;
   hideConfigLoaderAfterMs: number;
 }
-const defaultConfigModules: ConfigureModules = {
+const defaultConfigModules: TestsConfigureModules = {
   jestTimeOut: 10000,
   hideConfigLoaderAfterMs: 0,
 };
 
 //TODO ask cedric if default loading values are needed?
 
-export interface AppMocking {
+export interface TestsAppLoadingValues {
   chrome?: {
     i18n?: {
       getMessageImplementation?: (
@@ -190,21 +175,20 @@ export interface AppMocking {
 }
 
 /**
+ * It will load all necessary values before the app loads. Includes: Mocking/Constants.
  * if not used, default will be loaded before app gets rendered for testing.
  * app: Here you can add/change/update all that affects initial states of the app.
  */
-const set = (params?: { modules?: ConfigureModules; app?: AppMocking }) => {
+const set = (params?: {
+  modules?: TestsConfigureModules;
+  app?: TestsAppLoadingValues;
+}) => {
   //////////////
-  //Jest/Modules configuration
+  //Jest/Global Modules configuration used prior loading the app.
   const chrome = require('chrome-mock');
   global.chrome = chrome;
   jest.setTimeout(
     params?.modules?.jestTimeOut ?? defaultConfigModules.jestTimeOut,
-  );
-  //App configuration
-  adjustSetTimeOutValues(
-    params?.modules?.hideConfigLoaderAfterMs ??
-      defaultConfigModules.hideConfigLoaderAfterMs,
   );
   //////////////
 
@@ -500,6 +484,20 @@ const set = (params?: { modules?: ConfigureModules; app?: AppMocking }) => {
   ///////////
 };
 
-const configureTestMocking = { set };
+/**
+ * May be useful when need to control the loader timeout.
+ * @param hideConfigLoaderAfter When using the loader configuration. Milliseconds.
+ */
+const adjustConfigLoaderMsToHide = (hideConfigLoaderAfter: number) => {
+  const minDurationLoader = Config.loader.minDuration;
+  beforeAll(() => {
+    Config.loader.minDuration = hideConfigLoaderAfter;
+  });
+  afterAll(() => {
+    Config.loader.minDuration = minDurationLoader;
+  });
+};
 
-export default configureTestMocking;
+const loadingValuesConfiguration = { set, adjustConfigLoaderMsToHide };
+
+export default loadingValuesConfiguration;
