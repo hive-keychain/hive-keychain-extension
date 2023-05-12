@@ -19,6 +19,7 @@ import {
 } from '@interfaces/tokens.interface';
 import { Transaction } from '@interfaces/transaction.interface';
 import accounts from 'src/__tests__/utils-for-testing/data/accounts';
+import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
 import dynamic from 'src/__tests__/utils-for-testing/data/dynamic.hive';
 import historyCurrency from 'src/__tests__/utils-for-testing/data/history/transactions/history.currency';
@@ -30,9 +31,12 @@ import tokenMarket from 'src/__tests__/utils-for-testing/data/tokens/token-marke
 import tokensList from 'src/__tests__/utils-for-testing/data/tokens/tokens-list';
 import tokensUser from 'src/__tests__/utils-for-testing/data/tokens/tokens-user';
 import mocksImplementation from 'src/__tests__/utils-for-testing/implementations/implementations';
-import { GetManifest } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
+import {
+  CustomDataFromLocalStorage,
+  GetManifest,
+} from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
 import { AnalyticsUtils } from 'src/analytics/analytics.utils';
-import Config from 'src/config';
 import AccountUtils from 'src/utils/account.utils';
 import ActiveAccountUtils from 'src/utils/active-account.utils';
 import { ConversionUtils } from 'src/utils/conversion.utils';
@@ -58,13 +62,8 @@ const manifestFile = {
 };
 
 export interface TestsConfigureModules {
-  jestTimeOut: number;
-  hideConfigLoaderAfterMs: number;
+  jestTimeOut?: number;
 }
-const defaultConfigModules: TestsConfigureModules = {
-  jestTimeOut: 10000,
-  hideConfigLoaderAfterMs: 0,
-};
 
 //TODO ask cedric if default loading values are needed?
 
@@ -170,7 +169,16 @@ export interface TestsAppLoadingValues {
     };
   };
   apiRelated?: {
-    KeychainApi?: { get?: jest.Mock };
+    KeychainApi?: {
+      get?: jest.Mock;
+      customData?: KeyChainApiGetCustomData; //TODO think if you need to keep using interface file or just define it here.
+    };
+  };
+  localStorageRelated?: {
+    implementations?: {
+      getValueFromLocalStorage?: jest.Mock;
+    };
+    customData?: CustomDataFromLocalStorage;
   };
 }
 
@@ -187,9 +195,7 @@ const set = (params?: {
   //Jest/Global Modules configuration used prior loading the app.
   const chrome = require('chrome-mock');
   global.chrome = chrome;
-  jest.setTimeout(
-    params?.modules?.jestTimeOut ?? defaultConfigModules.jestTimeOut,
-  );
+  jest.setTimeout(params?.modules?.jestTimeOut ?? 10000);
   //////////////
 
   /////////
@@ -207,10 +213,33 @@ const set = (params?: {
     params?.app?.chrome?.storage?.local?.clear ?? jest.fn();
   /////////
 
-  //LocalStorage on init
+  ////////
+  //LocalStorate related
+  //Assigning customData
+  if (params?.app?.localStorageRelated?.customData) {
+    //TODO important to maybe change later on.
+    //  right now this file(dataMocks.customDataFromLocalStorage) it is being
+    //  accessed from the implementation.
+    //  possible idea: why not moving all implementations here into separate function so we can handle/update/control all in one file???
+    dataMocks.customDataFromLocalStorage =
+      params?.app?.localStorageRelated?.customData;
+  }
+  LocalStorageUtils.getValueFromLocalStorage = jest
+    .fn()
+    .mockImplementation(
+      params?.app?.localStorageRelated?.implementations
+        ?.getValueFromLocalStorage ??
+        jest
+          .fn()
+          .mockImplementation((...args: any[]) =>
+            mocksImplementation.getValuefromLS(args[0]),
+          ),
+    );
+  //LocalStorage on App init //TODO do we need to implement this one as well?
   //TODO check if bellow is really needed or not, if yes, add into app as localStorageOnInit.
   LocalStorageUtils.saveValueInLocalStorage = jest.fn(); //no impl
   LocalStorageUtils.removeFromLocalStorage = jest.fn(); //no impl
+  ////////
 
   ///////
   //Specific Operative Systems related
@@ -319,7 +348,7 @@ const set = (params?: {
     .fn()
     .mockReturnValue(
       params?.app?.accountsRelated?.RewardsUtils?.hasReward ?? false,
-    ); //TODO check if is better as default in false???
+    );
   TransactionUtils.getAccountTransactions = jest
     .fn()
     .mockResolvedValue(
@@ -475,28 +504,20 @@ const set = (params?: {
 
   //////////
   //API related
+  //Note: For now it is only passing customData IF no need to change the get implementation.
   KeychainApi.get =
     params?.app?.apiRelated?.KeychainApi?.get ??
-    jest.fn().mockImplementation(
-      (...args: any[]) => mocksImplementation.keychainApiGet(args[0]), //TODO check about this param
-    );
+    jest
+      .fn()
+      .mockImplementation((...args: any[]) =>
+        mocksImplementation.keychainApiGet(
+          args[0],
+          params?.app?.apiRelated?.KeychainApi?.customData,
+        ),
+      );
   ///////////
 };
 
-/**
- * May be useful when need to control the loader timeout.
- * @param hideConfigLoaderAfter When using the loader configuration. Milliseconds.
- */
-const adjustConfigLoaderMsToHide = (hideConfigLoaderAfter: number) => {
-  const minDurationLoader = Config.loader.minDuration;
-  beforeAll(() => {
-    Config.loader.minDuration = hideConfigLoaderAfter;
-  });
-  afterAll(() => {
-    Config.loader.minDuration = minDurationLoader;
-  });
-};
-
-const loadingValuesConfiguration = { set, adjustConfigLoaderMsToHide };
+const loadingValuesConfiguration = { set };
 
 export default loadingValuesConfiguration;

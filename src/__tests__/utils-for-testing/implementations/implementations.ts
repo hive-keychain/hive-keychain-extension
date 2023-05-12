@@ -2,7 +2,6 @@ import { AutoLockType } from '@interfaces/autolock.interface';
 import { NoConfirm } from '@interfaces/no-confirm.interface';
 import { WhatsNewContent } from '@popup/pages/app-container/whats-new/whats-new.interface';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
-import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 import currencies from 'src/__tests__/utils-for-testing/data/currencies';
 import dataMocks from 'src/__tests__/utils-for-testing/data/data-mocks';
 import delegations from 'src/__tests__/utils-for-testing/data/delegations';
@@ -10,6 +9,7 @@ import phishing from 'src/__tests__/utils-for-testing/data/phishing';
 import witness from 'src/__tests__/utils-for-testing/data/witness';
 import { KeyChainApiGetCustomData } from 'src/__tests__/utils-for-testing/interfaces/implementations';
 import { CustomDataFromLocalStorage } from 'src/__tests__/utils-for-testing/interfaces/mocks.interface';
+import { HiveTxUtils } from 'src/utils/hive-tx.utils';
 
 const manifestFile = {
   chromium: require('../../../../manifests/chromium/manifest.json'),
@@ -121,6 +121,7 @@ const keychainApiGet = async (
   urlToGet: string,
   customData?: KeyChainApiGetCustomData,
 ): Promise<any> => {
+  // console.log({ customData }); //TODO to remove
   switch (true) {
     case urlToGet === 'hive/v2/witnesses-ranks':
       return customData?.witnessRanking ?? witness.ranking;
