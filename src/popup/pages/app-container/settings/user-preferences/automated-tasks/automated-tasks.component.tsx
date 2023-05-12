@@ -2,6 +2,7 @@ import { LocalAccountListItem } from '@interfaces/list-item.interface';
 import { LocalAccount } from '@interfaces/local-account.interface';
 import { loadActiveAccount } from '@popup/actions/active-account.actions';
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import { LocalStorageKeyEnum } from '@reference-data/local-storage-key.enum';
 import React, { useEffect, useState } from 'react';
@@ -9,7 +10,7 @@ import Select, {
   SelectItemRenderer,
   SelectRenderer,
 } from 'react-dropdown-select';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 import CheckboxComponent from 'src/common-ui/checkbox/checkbox.component';
 import Config from 'src/config';
 import AutomatedTasksUtils from 'src/utils/automatedTasks.utils';
@@ -132,7 +133,9 @@ const AutomatedTasks = ({
   const isClaimedAccountDisabled =
     activeAccount.rc.max_rc < Config.claims.freeAccount.MIN_RC * 1.5;
   return (
-    <div aria-label="automated-tasks-page" className="automated-tasks-page">
+    <div
+      aria-label={`${Icons.AUTOMATED_TASKS}-page`}
+      className="automated-tasks-page">
       <div className="intro">
         {chrome.i18n.getMessage('popup_html_automated_intro')}
       </div>
