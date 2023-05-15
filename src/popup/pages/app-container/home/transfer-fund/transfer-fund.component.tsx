@@ -201,21 +201,13 @@ const TransferFunds = ({
       fields = [fields[0], fields[1]];
     }
 
-    let warningMessage = await TransferUtils.getExchangeValidationWarning(
+    let warningMessage = await TransferUtils.getTransferWarning(
       receiverUsername,
       currencyLabels[selectedCurrency],
-      memo.length > 0,
+      memo,
+      phishing,
       isRecurrent,
     );
-
-    let privateKeyMemoValidationWarning =
-      TransferUtils.getPrivateKeysMemoValidationWarning(memo);
-
-    if (phishing.includes(receiverUsername)) {
-      warningMessage = chrome.i18n.getMessage('popup_warning_phishing', [
-        receiverUsername,
-      ]);
-    }
 
     navigateToWithParams(Screen.CONFIRMATION_PAGE, {
       message: chrome.i18n.getMessage(
@@ -224,7 +216,7 @@ const TransferFunds = ({
           : 'popup_html_transfer_confirm_text',
       ),
       fields: fields,
-      warningMessage: warningMessage ?? privateKeyMemoValidationWarning,
+      warningMessage: warningMessage,
       skipWarningTranslation: true,
       title: isCancelRecurrent
         ? 'popup_html_cancel_recurrent_transfer'
