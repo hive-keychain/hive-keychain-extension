@@ -1,4 +1,5 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { Icons } from '@popup/icons.enum';
 import { ProposalTabComponent } from '@popup/pages/app-container/home/governance/proposal-tab/proposal-tab.component';
 import { ProxyTabComponent } from '@popup/pages/app-container/home/governance/proxy-tab/proxy-tab.component';
 import { WitnessTabComponent } from '@popup/pages/app-container/home/governance/witness-tab/witness-tab.component';
@@ -18,7 +19,7 @@ const Governance = ({ setTitleContainerProperties }: PropsFromRedux) => {
   });
 
   return (
-    <div className="governance-page" aria-label="governance-page">
+    <div className="governance-page" aria-label={`${Icons.HIVE}-page`}>
       <Tabs>
         <TabList>
           <Tab>{chrome.i18n.getMessage('popup_html_witness')}</Tab>

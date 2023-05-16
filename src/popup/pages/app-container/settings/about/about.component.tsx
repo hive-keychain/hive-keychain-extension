@@ -1,4 +1,5 @@
 import { setTitleContainerProperties } from '@popup/actions/title-container.actions';
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -13,9 +14,9 @@ const AboutPage = ({ setTitleContainerProperties }: PropsFromRedux) => {
   }, []);
 
   return (
-    <div aria-label="about-page" className="about-page">
+    <div aria-label={`${Icons.INFO}-page`} className="about-page">
       <div
-        aria-label="about-page-content"
+        aria-label={`${Icons.INFO}-page-content`}
         className="content"
         dangerouslySetInnerHTML={{
           __html: chrome.i18n.getMessage('popup_html_about_text'),

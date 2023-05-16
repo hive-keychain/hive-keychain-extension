@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import AccountSubMenuItems from '@popup/pages/app-container/settings/accounts/account-sub-menu-items';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -7,7 +8,7 @@ import { MenuComponent } from 'src/common-ui/menu/menu.component';
 const AccountSubMenu = ({}: PropsFromRedux) => {
   return (
     <div
-      aria-label="settings-account-sub-menu-page"
+      aria-label={`${Icons.ACCOUNTS}-page`}
       className="settings-account-sub-menu-page">
       <MenuComponent
         title="popup_html_accounts"

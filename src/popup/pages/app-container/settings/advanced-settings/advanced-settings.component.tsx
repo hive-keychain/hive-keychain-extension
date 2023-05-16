@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import { RootState } from '@popup/store';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -7,7 +8,9 @@ import './advanced-settings.component.scss';
 
 const AdvancedSettingsPage = ({ isLedgerSupported }: PropsFromRedux) => {
   return (
-    <div aria-label="advanced-settings-page" className="advanced-settings-page">
+    <div
+      aria-label={`${Icons.SETTINGS}-page`}
+      className="advanced-settings-page">
       <MenuComponent
         title="popup_html_advanced_settings"
         isBackButtonEnable={true}

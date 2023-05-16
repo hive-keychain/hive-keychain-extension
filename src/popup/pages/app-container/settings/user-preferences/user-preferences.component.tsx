@@ -1,3 +1,4 @@
+import { Icons } from '@popup/icons.enum';
 import UserPreferencesMenuItems from '@popup/pages/app-container/settings/user-preferences/user-preferences-menu-items';
 import { RootState } from '@popup/store';
 import React from 'react';
@@ -7,7 +8,9 @@ import './user-preferences.component.scss';
 
 const UserPreferencesPage = ({}: PropsFromRedux) => {
   return (
-    <div aria-label="user-preferences-page" className="user-preferences-page">
+    <div
+      aria-label={`${Icons.PREFERENCES}-page`}
+      className="user-preferences-page">
       <MenuComponent
         title="popup_html_user_preferences"
         isBackButtonEnable={true}
