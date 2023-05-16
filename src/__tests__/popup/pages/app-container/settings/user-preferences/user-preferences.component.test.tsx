@@ -9,6 +9,7 @@ import ariaLabelButton from 'src/__tests__/utils-for-testing/aria-labels/aria-la
 import ariaLabelIcon from 'src/__tests__/utils-for-testing/aria-labels/aria-label-icon';
 import initialStates from 'src/__tests__/utils-for-testing/data/initial-states';
 import reactTestingLibrary from 'src/__tests__/utils-for-testing/rtl-render/rtl-render-functions';
+import LocalStorageUtils from 'src/utils/localStorage.utils';
 
 describe('user-preferences.component tests:\n', () => {
   beforeEach(async () => {
@@ -25,6 +26,7 @@ describe('user-preferences.component tests:\n', () => {
   });
   afterEach(() => {
     jest.clearAllMocks();
+    jest.resetModules();
     cleanup();
   });
   it('Must load each menu items', () => {
@@ -33,6 +35,9 @@ describe('user-preferences.component tests:\n', () => {
     });
   });
   it('Must open each menu item', async () => {
+    LocalStorageUtils.getMultipleValueFromLocalStorage = jest
+      .fn()
+      .mockResolvedValue([]);
     for (let i = 0; i < UserPreferencesMenuItems.length; i++) {
       const menuButtonAriaLabel =
         ariaLabelButton.menuPreFix + UserPreferencesMenuItems[i].icon;
